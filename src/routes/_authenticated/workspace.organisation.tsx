@@ -13,6 +13,7 @@ import { workspaceBootstrapQuery } from "@/lib/workspace-queries";
 import { updateOrganisation } from "@/lib/workspace.functions";
 
 export const Route = createFileRoute("/_authenticated/workspace/organisation")({
+  head: () => ({ meta: [{ title: "Organisation Settings — DeliverX" }, { name: "description", content: "Manage your organisation details and shared workspace identity." }, { property: "og:title", content: "Organisation Settings — DeliverX" }, { property: "og:description", content: "Manage your DeliverX organisation." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   loader: ({ context }) => context.queryClient.ensureQueryData(workspaceBootstrapQuery),
   component: OrganisationPage,
 });
@@ -59,7 +60,7 @@ function OrganisationPage() {
     >
       <WorkspaceCard title="Details">
         <form
-          className="space-y-4"
+          className="max-w-2xl space-y-5"
           onSubmit={(e) => {
             e.preventDefault();
             mutation.mutate();

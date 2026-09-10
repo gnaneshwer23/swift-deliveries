@@ -20,6 +20,7 @@ import { workspaceBootstrapQuery } from "@/lib/workspace-queries";
 import { completeOnboarding } from "@/lib/workspace.functions";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
+  head: () => ({ meta: [{ title: "Set Up Your Workspace — DeliverX" }, { name: "description", content: "Personalise your DeliverX profile, organisation and team workspace." }, { property: "og:title", content: "Set Up Your Workspace — DeliverX" }, { property: "og:description", content: "Create your personalised DeliverX workspace." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   loader: ({ context }) => context.queryClient.ensureQueryData(workspaceBootstrapQuery),
   component: OnboardingPage,
 });

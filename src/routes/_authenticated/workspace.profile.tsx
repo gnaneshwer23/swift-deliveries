@@ -12,6 +12,7 @@ import { workspaceBootstrapQuery } from "@/lib/workspace-queries";
 import { updateProfile } from "@/lib/workspace.functions";
 
 export const Route = createFileRoute("/_authenticated/workspace/profile")({
+  head: () => ({ meta: [{ title: "Your Profile — DeliverX" }, { name: "description", content: "Manage how your professional profile appears to your organisation." }, { property: "og:title", content: "Your Profile — DeliverX" }, { property: "og:description", content: "Manage your DeliverX professional profile." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   loader: ({ context }) => context.queryClient.ensureQueryData(workspaceBootstrapQuery),
   component: ProfilePage,
 });
@@ -38,7 +39,7 @@ function ProfilePage() {
     <WorkspaceShell title="Your profile" subtitle="How you appear to the rest of your organisation.">
       <WorkspaceCard title="Details">
         <form
-          className="space-y-4"
+          className="max-w-2xl space-y-5"
           onSubmit={(e) => {
             e.preventDefault();
             mutation.mutate();

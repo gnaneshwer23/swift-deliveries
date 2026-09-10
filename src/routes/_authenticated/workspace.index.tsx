@@ -6,6 +6,7 @@ import { WorkspaceShell, WorkspaceCard } from "@/components/workspace/workspace-
 import { workspaceBootstrapQuery } from "@/lib/workspace-queries";
 
 export const Route = createFileRoute("/_authenticated/workspace/")({
+  head: () => ({ meta: [{ title: "Workspace Overview — DeliverX" }, { name: "description", content: "Your personalised DeliverX workspace overview." }, { property: "og:title", content: "Workspace Overview — DeliverX" }, { property: "og:description", content: "Your personalised DeliverX workspace." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   loader: ({ context }) => context.queryClient.ensureQueryData(workspaceBootstrapQuery),
   component: WorkspaceHome,
 });
