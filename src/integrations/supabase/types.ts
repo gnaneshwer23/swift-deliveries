@@ -14,6 +14,307 @@ export type Database = {
   }
   public: {
     Tables: {
+      artefact_versions: {
+        Row: {
+          artefact_id: string
+          body: string
+          content: Json
+          created_at: string
+          id: string
+          owner_id: string
+          version: number
+        }
+        Insert: {
+          artefact_id: string
+          body: string
+          content?: Json
+          created_at?: string
+          id?: string
+          owner_id: string
+          version: number
+        }
+        Update: {
+          artefact_id?: string
+          body?: string
+          content?: Json
+          created_at?: string
+          id?: string
+          owner_id?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artefact_versions_artefact_id_fkey"
+            columns: ["artefact_id"]
+            isOneToOne: false
+            referencedRelation: "artefacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      artefacts: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          kind: string
+          organisation_id: string | null
+          owner_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: string
+          organisation_id?: string | null
+          owner_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: string
+          organisation_id?: string | null
+          owner_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artefacts_organisation_id_fkey"
+            columns: ["organisation_id"]
+            isOneToOne: false
+            referencedRelation: "organisations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      attestations: {
+        Row: {
+          attestor_email: string
+          attestor_name: string
+          claim_id: string
+          created_at: string
+          id: string
+          owner_id: string
+          relationship: string | null
+          requested_at: string
+          responded_at: string | null
+          state: Database["public"]["Enums"]["attestation_state"]
+          statement: string | null
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          attestor_email: string
+          attestor_name: string
+          claim_id: string
+          created_at?: string
+          id?: string
+          owner_id: string
+          relationship?: string | null
+          requested_at?: string
+          responded_at?: string | null
+          state?: Database["public"]["Enums"]["attestation_state"]
+          statement?: string | null
+          token?: string
+          updated_at?: string
+        }
+        Update: {
+          attestor_email?: string
+          attestor_name?: string
+          claim_id?: string
+          created_at?: string
+          id?: string
+          owner_id?: string
+          relationship?: string | null
+          requested_at?: string
+          responded_at?: string | null
+          state?: Database["public"]["Enums"]["attestation_state"]
+          statement?: string | null
+          token?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attestations_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "snapshot_claims"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      capability_frameworks: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          name: string
+          status: string
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          name: string
+          status?: string
+          version: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          name?: string
+          status?: string
+          version?: string
+        }
+        Relationships: []
+      }
+      capability_judgements: {
+        Row: {
+          band: Database["public"]["Enums"]["confidence_band"]
+          capability_key: string
+          created_at: string
+          evidence_ids: string[]
+          id: string
+          level: number
+          owner_id: string
+          rationale: string
+          score_run_id: string
+        }
+        Insert: {
+          band: Database["public"]["Enums"]["confidence_band"]
+          capability_key: string
+          created_at?: string
+          evidence_ids?: string[]
+          id?: string
+          level: number
+          owner_id: string
+          rationale: string
+          score_run_id: string
+        }
+        Update: {
+          band?: Database["public"]["Enums"]["confidence_band"]
+          capability_key?: string
+          created_at?: string
+          evidence_ids?: string[]
+          id?: string
+          level?: number
+          owner_id?: string
+          rationale?: string
+          score_run_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "capability_judgements_score_run_id_fkey"
+            columns: ["score_run_id"]
+            isOneToOne: false
+            referencedRelation: "score_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      evidence_ledger: {
+        Row: {
+          artefact_version_id: string | null
+          capability_key: string | null
+          created_at: string
+          id: string
+          occurred_at: string
+          organisation_id: string | null
+          owner_id: string
+          provenance: Json
+          source: Database["public"]["Enums"]["evidence_source"]
+          strength: Database["public"]["Enums"]["evidence_strength"]
+          summary: string
+        }
+        Insert: {
+          artefact_version_id?: string | null
+          capability_key?: string | null
+          created_at?: string
+          id?: string
+          occurred_at?: string
+          organisation_id?: string | null
+          owner_id: string
+          provenance?: Json
+          source: Database["public"]["Enums"]["evidence_source"]
+          strength: Database["public"]["Enums"]["evidence_strength"]
+          summary: string
+        }
+        Update: {
+          artefact_version_id?: string | null
+          capability_key?: string | null
+          created_at?: string
+          id?: string
+          occurred_at?: string
+          organisation_id?: string | null
+          owner_id?: string
+          provenance?: Json
+          source?: Database["public"]["Enums"]["evidence_source"]
+          strength?: Database["public"]["Enums"]["evidence_strength"]
+          summary?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evidence_ledger_artefact_version_id_fkey"
+            columns: ["artefact_version_id"]
+            isOneToOne: false
+            referencedRelation: "artefact_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evidence_ledger_organisation_id_fkey"
+            columns: ["organisation_id"]
+            isOneToOne: false
+            referencedRelation: "organisations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      framework_capabilities: {
+        Row: {
+          created_at: string
+          description: string | null
+          framework_id: string
+          id: string
+          key: string
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          framework_id: string
+          id?: string
+          key: string
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          framework_id?: string
+          id?: string
+          key?: string
+          name?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "framework_capabilities_framework_id_fkey"
+            columns: ["framework_id"]
+            isOneToOne: false
+            referencedRelation: "capability_frameworks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invitations: {
         Row: {
           accepted_at: string | null
@@ -168,6 +469,107 @@ export type Database = {
         }
         Relationships: []
       }
+      score_runs: {
+        Row: {
+          created_at: string
+          framework_id: string
+          id: string
+          notes: string | null
+          owner_id: string
+          run_kind: Database["public"]["Enums"]["score_run_kind"]
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          framework_id: string
+          id?: string
+          notes?: string | null
+          owner_id: string
+          run_kind: Database["public"]["Enums"]["score_run_kind"]
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          framework_id?: string
+          id?: string
+          notes?: string | null
+          owner_id?: string
+          run_kind?: Database["public"]["Enums"]["score_run_kind"]
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "score_runs_framework_id_fkey"
+            columns: ["framework_id"]
+            isOneToOne: false
+            referencedRelation: "capability_frameworks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      snapshot_claims: {
+        Row: {
+          attestation_status: Database["public"]["Enums"]["attestation_status"]
+          band: Database["public"]["Enums"]["confidence_band"] | null
+          capability_key: string
+          created_at: string
+          evidence_strength: Database["public"]["Enums"]["evidence_strength"]
+          framework_id: string
+          id: string
+          level: number | null
+          owner_id: string
+          readiness_basis: string
+          score_run_id: string | null
+          updated_at: string
+          verified: boolean | null
+        }
+        Insert: {
+          attestation_status?: Database["public"]["Enums"]["attestation_status"]
+          band?: Database["public"]["Enums"]["confidence_band"] | null
+          capability_key: string
+          created_at?: string
+          evidence_strength?: Database["public"]["Enums"]["evidence_strength"]
+          framework_id: string
+          id?: string
+          level?: number | null
+          owner_id: string
+          readiness_basis?: string
+          score_run_id?: string | null
+          updated_at?: string
+          verified?: boolean | null
+        }
+        Update: {
+          attestation_status?: Database["public"]["Enums"]["attestation_status"]
+          band?: Database["public"]["Enums"]["confidence_band"] | null
+          capability_key?: string
+          created_at?: string
+          evidence_strength?: Database["public"]["Enums"]["evidence_strength"]
+          framework_id?: string
+          id?: string
+          level?: number | null
+          owner_id?: string
+          readiness_basis?: string
+          score_run_id?: string | null
+          updated_at?: string
+          verified?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "snapshot_claims_framework_id_fkey"
+            columns: ["framework_id"]
+            isOneToOne: false
+            referencedRelation: "capability_frameworks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "snapshot_claims_score_run_id_fkey"
+            columns: ["score_run_id"]
+            isOneToOne: false
+            referencedRelation: "score_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -198,6 +600,26 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      attestation_state: "pending" | "confirmed" | "declined" | "disputed"
+      attestation_status:
+        | "unattested"
+        | "attestation_requested"
+        | "externally_attested"
+        | "disputed"
+      confidence_band: "low" | "moderate" | "high"
+      evidence_source:
+        | "self_report"
+        | "ai_draft"
+        | "experience_sim"
+        | "workspace_contribution"
+        | "assessment"
+        | "external_verification"
+      evidence_strength:
+        | "self_reported"
+        | "observed"
+        | "assessed"
+        | "externally_verified"
+      score_run_kind: "baseline" | "interim" | "final" | "transfer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -326,6 +748,29 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      attestation_state: ["pending", "confirmed", "declined", "disputed"],
+      attestation_status: [
+        "unattested",
+        "attestation_requested",
+        "externally_attested",
+        "disputed",
+      ],
+      confidence_band: ["low", "moderate", "high"],
+      evidence_source: [
+        "self_report",
+        "ai_draft",
+        "experience_sim",
+        "workspace_contribution",
+        "assessment",
+        "external_verification",
+      ],
+      evidence_strength: [
+        "self_reported",
+        "observed",
+        "assessed",
+        "externally_verified",
+      ],
+      score_run_kind: ["baseline", "interim", "final", "transfer"],
     },
   },
 } as const
