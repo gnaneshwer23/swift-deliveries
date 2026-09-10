@@ -203,7 +203,7 @@ function EvidencePage() {
 
       <WorkspaceCard
         title="Your ledger"
-        description={`${data.ledger.length} entries. Private to you.`}
+        description={`${data.ledger.length} ${data.ledger.length === 1 ? "entry" : "entries"}. Private to you.`}
       >
         {data.ledger.length === 0 ? (
           <p className="text-sm text-[var(--mkt-text2)]">
