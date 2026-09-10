@@ -3,9 +3,9 @@ import { MarketingFooter } from "./marketing-footer";
 
 export function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="marketing-page min-h-screen bg-[var(--mkt-ink)] text-[var(--mkt-text1)]">
+    <div className="dxs marketing-page">
       <MarketingNav />
-      <main className="pt-[var(--mkt-navh)]">{children}</main>
+      <main>{children}</main>
       <MarketingFooter />
     </div>
   );
