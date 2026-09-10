@@ -17,6 +17,7 @@ import { Route as ExperienceRouteImport } from './routes/experience'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as LaunchpadRouteImport } from './routes/launchpad'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as PilotRouteImport } from './routes/pilot'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProfessionalWorkspaceRouteImport } from './routes/professional-workspace'
@@ -72,6 +73,11 @@ const LaunchpadRoute = LaunchpadRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PilotRoute = PilotRouteImport.update({
+  id: '/pilot',
+  path: '/pilot',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PricingRoute = PricingRouteImport.update({
@@ -175,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/how-it-works': typeof HowItWorksRoute
   '/launchpad': typeof LaunchpadRoute
   '/login': typeof LoginRoute
+  '/pilot': typeof PilotRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
@@ -201,6 +208,7 @@ export interface FileRoutesByTo {
   '/how-it-works': typeof HowItWorksRoute
   '/launchpad': typeof LaunchpadRoute
   '/login': typeof LoginRoute
+  '/pilot': typeof PilotRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
@@ -228,6 +236,7 @@ export interface FileRoutesById {
   '/how-it-works': typeof HowItWorksRoute
   '/launchpad': typeof LaunchpadRoute
   '/login': typeof LoginRoute
+  '/pilot': typeof PilotRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
@@ -256,6 +265,7 @@ export interface FileRouteTypes {
     | '/how-it-works'
     | '/launchpad'
     | '/login'
+    | '/pilot'
     | '/pricing'
     | '/privacy'
     | '/professional-workspace'
@@ -282,6 +292,7 @@ export interface FileRouteTypes {
     | '/how-it-works'
     | '/launchpad'
     | '/login'
+    | '/pilot'
     | '/pricing'
     | '/privacy'
     | '/professional-workspace'
@@ -308,6 +319,7 @@ export interface FileRouteTypes {
     | '/how-it-works'
     | '/launchpad'
     | '/login'
+    | '/pilot'
     | '/pricing'
     | '/privacy'
     | '/professional-workspace'
@@ -336,6 +348,7 @@ export interface RootRouteChildren {
   HowItWorksRoute: typeof HowItWorksRoute
   LaunchpadRoute: typeof LaunchpadRoute
   LoginRoute: typeof LoginRoute
+  PilotRoute: typeof PilotRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   ProfessionalWorkspaceRoute: typeof ProfessionalWorkspaceRoute
@@ -402,6 +415,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pilot': {
+      id: '/pilot'
+      path: '/pilot'
+      fullPath: '/pilot'
+      preLoaderRoute: typeof PilotRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pricing': {
@@ -576,6 +596,7 @@ const rootRouteChildren: RootRouteChildren = {
   HowItWorksRoute: HowItWorksRoute,
   LaunchpadRoute: LaunchpadRoute,
   LoginRoute: LoginRoute,
+  PilotRoute: PilotRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   ProfessionalWorkspaceRoute: ProfessionalWorkspaceRoute,
