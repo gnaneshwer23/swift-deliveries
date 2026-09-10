@@ -735,3 +735,70 @@ html:has(.marketing-page) {
 .dxs .included-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .dxs .included-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--x-slate); }
 @media (max-width: 900px) { .dxs .pilot-wrap { grid-template-columns: 1fr; } .dxs .pilot-left { padding: 40px 24px; } .dxs .pilot-right { padding: 40px 24px; } }
+
+/* ===== DeliverX app shell (mockup dashboard pattern) — scoped under .dxa ===== */
+.dxa { background: var(--x-bg-alt); color: var(--x-ink); font-family: Inter, system-ui, sans-serif; }
+.dxa .app-wrap { display: flex; min-height: 100vh; }
+.dxa .sidebar { width: 228px; flex-shrink: 0; background: var(--x-ink); display: flex; flex-direction: column; padding: 20px 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.dxa .sidebar-logo { padding: 0 20px 24px; font-size: 15px; font-weight: 700; color: #fff; letter-spacing: -0.02em; text-decoration: none; display: block; }
+.dxa .sidebar-section { margin-bottom: 8px; }
+.dxa .sidebar-label { font-size: 10px; font-weight: 600; color: rgba(255,255,255,.25); letter-spacing: .1em; text-transform: uppercase; padding: 0 20px; margin-bottom: 4px; }
+.dxa .sidebar-link { display: flex; align-items: center; gap: 10px; padding: 9px 20px; font-size: 13px; color: rgba(255,255,255,.5); transition: all .1s; text-decoration: none; }
+.dxa .sidebar-link:hover { color: #fff; background: rgba(255,255,255,.05); }
+.dxa .sidebar-link.active { color: #fff; background: rgba(255,255,255,.08); }
+.dxa .sidebar-link svg { width: 15px; height: 15px; flex-shrink: 0; opacity: .6; }
+.dxa .sidebar-link.active svg { opacity: 1; }
+.dxa .sidebar-pill { margin-left: auto; font-size: 10px; padding: 2px 7px; border-radius: 20px; background: rgba(255,255,255,.08); color: rgba(255,255,255,.4); }
+.dxa .sidebar-pill.amber { background: rgba(201,146,42,.2); color: var(--x-amber); }
+.dxa .sidebar-bottom { margin-top: auto; padding: 16px 20px; border-top: 1px solid rgba(255,255,255,.06); }
+.dxa .sidebar-user { display: flex; align-items: center; gap: 10px; }
+.dxa .sidebar-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--x-amber); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--x-ink); flex-shrink: 0; }
+.dxa .sidebar-user-name { font-size: 13px; color: #fff; font-weight: 500; }
+.dxa .sidebar-user-stage { font-size: 11px; color: rgba(255,255,255,.3); }
+.dxa .sidebar-signout { margin-top: 10px; width: 100%; font-size: 11px; color: rgba(255,255,255,.4); background: none; border: 1px solid rgba(255,255,255,.12); border-radius: 6px; padding: 6px 0; cursor: pointer; }
+.dxa .sidebar-signout:hover { color: #fff; border-color: rgba(255,255,255,.3); }
+.dxa .mobile-topbar { display: none; }
+.dxa .main { flex: 1; min-width: 0; }
+.dxa .main-header { padding: 16px 32px; background: var(--x-paper); border-bottom: 1px solid var(--x-border); display: flex; justify-content: space-between; align-items: center; }
+.dxa .main-header-title { font-size: 14px; font-weight: 600; }
+.dxa .briefing { padding: 24px 32px; background: var(--x-ink); color: #fff; }
+.dxa .journey-state { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(201,146,42,.15); border: 1px solid rgba(201,146,42,.3); border-radius: 20px; font-size: 11px; color: var(--x-amber); font-weight: 600; margin-bottom: 14px; }
+.dxa .briefing-greeting { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+.dxa .briefing-greeting em { color: var(--x-amber); font-style: normal; }
+.dxa .briefing-sub { font-size: 13px; color: rgba(255,255,255,.4); margin-bottom: 20px; }
+.dxa .briefing-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.dxa .briefing-card { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); border-radius: 10px; padding: 16px; }
+.dxa .briefing-card-label { font-size: 10px; color: rgba(255,255,255,.3); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 8px; }
+.dxa .briefing-card-val { font-size: 24px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 2px; }
+.dxa .briefing-card-sub { font-size: 11px; color: rgba(255,255,255,.3); }
+.dxa .briefing-card.amber-accent .briefing-card-val { color: var(--x-amber); }
+.dxa .app-section { padding: 20px 32px 0; }
+.dxa .app-section:last-child { padding-bottom: 32px; }
+.dxa .section-title { font-size: 12px; font-weight: 600; color: var(--x-slate-light); letter-spacing: .05em; text-transform: uppercase; margin-bottom: 14px; }
+.dxa .action-card { background: var(--x-paper-raised); border: 1px solid var(--x-border); border-left: 3px solid var(--x-amber); border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 16px; }
+.dxa .action-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+.dxa .action-desc { font-size: 12px; color: var(--x-slate); }
+.dxa .content-grid { padding: 20px 32px 32px; display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; }
+.dxa .ev-row { display: flex; align-items: center; padding: 12px 20px; border-bottom: 1px solid var(--x-border); gap: 12px; }
+.dxa .ev-row:last-child { border-bottom: none; }
+.dxa .ev-num { font-size: 10px; color: var(--x-slate-light); font-family: ui-monospace, monospace; min-width: 20px; }
+.dxa .ev-body { flex: 1; min-width: 0; }
+.dxa .ev-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+.dxa .ev-meta { font-size: 10px; color: var(--x-slate-light); font-family: ui-monospace, monospace; }
+.dxa .stage-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dxa .stage-dot.current { background: var(--x-amber); }
+.dxa .stage-dot.done { background: var(--x-teal); }
+.dxa .stage-dot.upcoming { background: var(--x-border-strong); }
+.dxa .readiness-bar { height: 4px; background: var(--x-border); border-radius: 2px; overflow: hidden; }
+.dxa .readiness-fill { height: 100%; border-radius: 2px; background: var(--x-ink); }
+.dxa .readiness-fill.thin { background: var(--x-amber); }
+@media (max-width: 1024px) {
+  .dxa .briefing-cards { grid-template-columns: repeat(2, 1fr); }
+  .dxa .content-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .dxa .sidebar { display: none; }
+  .dxa .sidebar.open { display: flex; position: fixed; z-index: 60; inset: 0 auto 0 0; }
+  .dxa .mobile-topbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--x-ink); color: #fff; position: sticky; top: 0; z-index: 50; }
+  .dxa .main-header, .dxa .briefing, .dxa .app-section, .dxa .content-grid { padding-left: 16px; padding-right: 16px; }
+}
