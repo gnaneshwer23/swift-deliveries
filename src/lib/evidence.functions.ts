@@ -193,7 +193,7 @@ export const getEvidenceOverview = createServerFn({ method: "GET" })
         evidenceStrength: c.evidence_strength,
         attestationStatus: c.attestation_status,
         readinessBasis: c.readiness_basis,
-        verified: c.verified,
+        verified: c.verified === true,
         attestation: attestationByClaim.get(c.id) ?? null,
       })),
       latestRun,

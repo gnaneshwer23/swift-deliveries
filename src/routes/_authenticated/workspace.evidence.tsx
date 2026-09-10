@@ -44,8 +44,7 @@ function EvidencePage() {
   const [claimSummary, setClaimSummary] = useState("");
 
   const work = useMutation({
-    mutationFn: (input: Parameters<typeof recordWorkEvidence>[0]["data"]) =>
-      recordWorkEvidence({ data: input }),
+    mutationFn: (input: WorkEvidenceInput) => recordWorkEvidence({ data: input }),
     onSuccess: () => {
       toast.success("Recorded. The version behind it can never be edited.");
       setTitle("");
