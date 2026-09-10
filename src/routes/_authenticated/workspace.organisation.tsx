@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { workspaceBootstrapQuery } from "@/lib/workspace-queries";
-import { updateOrganisation } from "@/lib/workspace.functions";
+import { createOrganisation, updateOrganisation } from "@/lib/workspace.functions";
 
 export const Route = createFileRoute("/_authenticated/workspace/organisation")({
   head: () => ({ meta: [{ title: "Organisation Settings — DeliverX" }, { name: "description", content: "Manage your organisation details and shared workspace identity." }, { property: "og:title", content: "Organisation Settings — DeliverX" }, { property: "og:description", content: "Manage your DeliverX organisation." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
@@ -22,6 +22,7 @@ function OrganisationPage() {
   const { data } = useSuspenseQuery(workspaceBootstrapQuery);
   const queryClient = useQueryClient();
   const save = useServerFn(updateOrganisation);
+  const create = useServerFn(createOrganisation);
   const canManage = data.role === "owner" || data.role === "admin";
 
   const [name, setName] = useState(data.organisation?.name ?? "");
@@ -45,13 +46,73 @@ function OrganisationPage() {
     onError: (error: Error) => toast.error(error.message),
   });
 
+  const createMutation = useMutation({
+    mutationFn: () => create({ data: { name, description, website } }),
+    onSuccess: async () => {
+      toast.success("Organisation created");
+      await queryClient.invalidateQueries({ queryKey: ["workspace"] });
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+
+
   if (!data.organisation) {
     return (
-      <WorkspaceShell title="Organisation">
-        <WorkspaceCard title="No organisation yet" description="Create one from the overview page." />
+      <WorkspaceShell
+        title="Organisation"
+        subtitle="Optional. Add one when you want to capture observed work alongside colleagues."
+      >
+        <WorkspaceCard
+          title="Create an organisation"
+          description="You own it, and you can invite your team afterwards."
+        >
+          <form
+            className="max-w-2xl space-y-5"
+            onSubmit={(e) => {
+              e.preventDefault();
+              createMutation.mutate();
+            }}
+          >
+            <div className="space-y-2">
+              <Label htmlFor="newOrgName">Name</Label>
+              <Input
+                id="newOrgName"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Northwind Product"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="newOrgDesc">What does it do?</Label>
+              <Textarea
+                id="newOrgDesc"
+                rows={3}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="newOrgSite">Website (optional)</Label>
+              <Input
+                id="newOrgSite"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                placeholder="https://example.com"
+              />
+            </div>
+            <Button type="submit" disabled={createMutation.isPending || name.trim().length < 2}>
+              {createMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
+              Create organisation
+            </Button>
+          </form>
+        </WorkspaceCard>
       </WorkspaceShell>
     );
   }
+
+
 
   return (
     <WorkspaceShell
