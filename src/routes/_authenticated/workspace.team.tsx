@@ -48,7 +48,10 @@ function TeamPage() {
   if (!organisationId) {
     return (
       <WorkspaceShell title="Team">
-        <WorkspaceCard title="No organisation yet" description="Create one first from the overview." />
+        <WorkspaceCard
+          title="No organisation yet"
+          description="Create one on the Organisation page, then invite people here."
+        />
       </WorkspaceShell>
     );
   }
