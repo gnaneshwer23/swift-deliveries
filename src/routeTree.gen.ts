@@ -15,10 +15,12 @@ import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as ExperienceRouteImport } from './routes/experience'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as LaunchpadRouteImport } from './routes/launchpad'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProfessionalWorkspaceRouteImport } from './routes/professional-workspace'
 import { Route as ResourcesRouteImport } from './routes/resources'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as TermsRouteImport } from './routes/terms'
 
 const IndexRoute = IndexRouteImport.update({
@@ -51,6 +53,11 @@ const LaunchpadRoute = LaunchpadRouteImport.update({
   path: '/launchpad',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
@@ -71,6 +78,11 @@ const ResourcesRoute = ResourcesRouteImport.update({
   path: '/resources',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -84,10 +96,12 @@ export interface FileRoutesByFullPath {
   '/experience': typeof ExperienceRoute
   '/how-it-works': typeof HowItWorksRoute
   '/launchpad': typeof LaunchpadRoute
+  '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
   '/resources': typeof ResourcesRoute
+  '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
 }
 export interface FileRoutesByTo {
@@ -97,10 +111,12 @@ export interface FileRoutesByTo {
   '/experience': typeof ExperienceRoute
   '/how-it-works': typeof HowItWorksRoute
   '/launchpad': typeof LaunchpadRoute
+  '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
   '/resources': typeof ResourcesRoute
+  '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
 }
 export interface FileRoutesById {
@@ -111,10 +127,12 @@ export interface FileRoutesById {
   '/experience': typeof ExperienceRoute
   '/how-it-works': typeof HowItWorksRoute
   '/launchpad': typeof LaunchpadRoute
+  '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
   '/resources': typeof ResourcesRoute
+  '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
 }
 export interface FileRouteTypes {
@@ -126,10 +144,12 @@ export interface FileRouteTypes {
     | '/experience'
     | '/how-it-works'
     | '/launchpad'
+    | '/login'
     | '/pricing'
     | '/privacy'
     | '/professional-workspace'
     | '/resources'
+    | '/signup'
     | '/terms'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -139,10 +159,12 @@ export interface FileRouteTypes {
     | '/experience'
     | '/how-it-works'
     | '/launchpad'
+    | '/login'
     | '/pricing'
     | '/privacy'
     | '/professional-workspace'
     | '/resources'
+    | '/signup'
     | '/terms'
   id:
     | '__root__'
@@ -152,10 +174,12 @@ export interface FileRouteTypes {
     | '/experience'
     | '/how-it-works'
     | '/launchpad'
+    | '/login'
     | '/pricing'
     | '/privacy'
     | '/professional-workspace'
     | '/resources'
+    | '/signup'
     | '/terms'
   fileRoutesById: FileRoutesById
 }
@@ -166,10 +190,12 @@ export interface RootRouteChildren {
   ExperienceRoute: typeof ExperienceRoute
   HowItWorksRoute: typeof HowItWorksRoute
   LaunchpadRoute: typeof LaunchpadRoute
+  LoginRoute: typeof LoginRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   ProfessionalWorkspaceRoute: typeof ProfessionalWorkspaceRoute
   ResourcesRoute: typeof ResourcesRoute
+  SignupRoute: typeof SignupRoute
   TermsRoute: typeof TermsRoute
 }
 
@@ -217,6 +243,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LaunchpadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pricing': {
       id: '/pricing'
       path: '/pricing'
@@ -245,6 +278,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResourcesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -262,10 +302,12 @@ const rootRouteChildren: RootRouteChildren = {
   ExperienceRoute: ExperienceRoute,
   HowItWorksRoute: HowItWorksRoute,
   LaunchpadRoute: LaunchpadRoute,
+  LoginRoute: LoginRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   ProfessionalWorkspaceRoute: ProfessionalWorkspaceRoute,
   ResourcesRoute: ResourcesRoute,
+  SignupRoute: SignupRoute,
   TermsRoute: TermsRoute,
 }
 export const routeTree = rootRouteImport
