@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as ExperienceRouteImport } from './routes/experience'
@@ -22,10 +23,21 @@ import { Route as ProfessionalWorkspaceRouteImport } from './routes/professional
 import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated/workspace'
+import { Route as InviteTokenRouteImport } from './routes/invite.$token'
+import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated/workspace.index'
+import { Route as AuthenticatedWorkspaceOrganisationRouteImport } from './routes/_authenticated/workspace.organisation'
+import { Route as AuthenticatedWorkspaceProfileRouteImport } from './routes/_authenticated/workspace.profile'
+import { Route as AuthenticatedWorkspaceTeamRouteImport } from './routes/_authenticated/workspace.team'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -88,6 +100,45 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedWorkspaceRoute = AuthenticatedWorkspaceRouteImport.update({
+  id: '/workspace',
+  path: '/workspace',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const InviteTokenRoute = InviteTokenRouteImport.update({
+  id: '/invite/$token',
+  path: '/invite/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedWorkspaceIndexRoute =
+  AuthenticatedWorkspaceIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
+const AuthenticatedWorkspaceOrganisationRoute =
+  AuthenticatedWorkspaceOrganisationRouteImport.update({
+    id: '/organisation',
+    path: '/organisation',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
+const AuthenticatedWorkspaceProfileRoute =
+  AuthenticatedWorkspaceProfileRouteImport.update({
+    id: '/profile',
+    path: '/profile',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
+const AuthenticatedWorkspaceTeamRoute =
+  AuthenticatedWorkspaceTeamRouteImport.update({
+    id: '/team',
+    path: '/team',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -103,6 +154,13 @@ export interface FileRoutesByFullPath {
   '/resources': typeof ResourcesRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
+  '/invite/$token': typeof InviteTokenRoute
+  '/workspace/organisation': typeof AuthenticatedWorkspaceOrganisationRoute
+  '/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
+  '/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
+  '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -118,10 +176,17 @@ export interface FileRoutesByTo {
   '/resources': typeof ResourcesRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/invite/$token': typeof InviteTokenRoute
+  '/workspace/organisation': typeof AuthenticatedWorkspaceOrganisationRoute
+  '/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
+  '/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
+  '/workspace': typeof AuthenticatedWorkspaceIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/cookies': typeof CookiesRoute
   '/experience': typeof ExperienceRoute
@@ -134,6 +199,13 @@ export interface FileRoutesById {
   '/resources': typeof ResourcesRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
+  '/invite/$token': typeof InviteTokenRoute
+  '/_authenticated/workspace/organisation': typeof AuthenticatedWorkspaceOrganisationRoute
+  '/_authenticated/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
+  '/_authenticated/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
+  '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -151,6 +223,13 @@ export interface FileRouteTypes {
     | '/resources'
     | '/signup'
     | '/terms'
+    | '/onboarding'
+    | '/workspace'
+    | '/invite/$token'
+    | '/workspace/organisation'
+    | '/workspace/profile'
+    | '/workspace/team'
+    | '/workspace/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -166,9 +245,16 @@ export interface FileRouteTypes {
     | '/resources'
     | '/signup'
     | '/terms'
+    | '/onboarding'
+    | '/invite/$token'
+    | '/workspace/organisation'
+    | '/workspace/profile'
+    | '/workspace/team'
+    | '/workspace'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/about'
     | '/cookies'
     | '/experience'
@@ -181,10 +267,18 @@ export interface FileRouteTypes {
     | '/resources'
     | '/signup'
     | '/terms'
+    | '/_authenticated/onboarding'
+    | '/_authenticated/workspace'
+    | '/invite/$token'
+    | '/_authenticated/workspace/organisation'
+    | '/_authenticated/workspace/profile'
+    | '/_authenticated/workspace/team'
+    | '/_authenticated/workspace/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   CookiesRoute: typeof CookiesRoute
   ExperienceRoute: typeof ExperienceRoute
@@ -197,6 +291,7 @@ export interface RootRouteChildren {
   ResourcesRoute: typeof ResourcesRoute
   SignupRoute: typeof SignupRoute
   TermsRoute: typeof TermsRoute
+  InviteTokenRoute: typeof InviteTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -206,6 +301,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -292,11 +394,95 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/onboarding': {
+      id: '/_authenticated/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/workspace': {
+      id: '/_authenticated/workspace'
+      path: '/workspace'
+      fullPath: '/workspace'
+      preLoaderRoute: typeof AuthenticatedWorkspaceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/invite/$token': {
+      id: '/invite/$token'
+      path: '/invite/$token'
+      fullPath: '/invite/$token'
+      preLoaderRoute: typeof InviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/workspace/': {
+      id: '/_authenticated/workspace/'
+      path: '/'
+      fullPath: '/workspace/'
+      preLoaderRoute: typeof AuthenticatedWorkspaceIndexRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
+    '/_authenticated/workspace/organisation': {
+      id: '/_authenticated/workspace/organisation'
+      path: '/organisation'
+      fullPath: '/workspace/organisation'
+      preLoaderRoute: typeof AuthenticatedWorkspaceOrganisationRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
+    '/_authenticated/workspace/profile': {
+      id: '/_authenticated/workspace/profile'
+      path: '/profile'
+      fullPath: '/workspace/profile'
+      preLoaderRoute: typeof AuthenticatedWorkspaceProfileRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
+    '/_authenticated/workspace/team': {
+      id: '/_authenticated/workspace/team'
+      path: '/team'
+      fullPath: '/workspace/team'
+      preLoaderRoute: typeof AuthenticatedWorkspaceTeamRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
   }
 }
 
+interface AuthenticatedWorkspaceRouteChildren {
+  AuthenticatedWorkspaceOrganisationRoute: typeof AuthenticatedWorkspaceOrganisationRoute
+  AuthenticatedWorkspaceProfileRoute: typeof AuthenticatedWorkspaceProfileRoute
+  AuthenticatedWorkspaceTeamRoute: typeof AuthenticatedWorkspaceTeamRoute
+  AuthenticatedWorkspaceIndexRoute: typeof AuthenticatedWorkspaceIndexRoute
+}
+
+const AuthenticatedWorkspaceRouteChildren: AuthenticatedWorkspaceRouteChildren =
+  {
+    AuthenticatedWorkspaceOrganisationRoute:
+      AuthenticatedWorkspaceOrganisationRoute,
+    AuthenticatedWorkspaceProfileRoute: AuthenticatedWorkspaceProfileRoute,
+    AuthenticatedWorkspaceTeamRoute: AuthenticatedWorkspaceTeamRoute,
+    AuthenticatedWorkspaceIndexRoute: AuthenticatedWorkspaceIndexRoute,
+  }
+
+const AuthenticatedWorkspaceRouteWithChildren =
+  AuthenticatedWorkspaceRoute._addFileChildren(
+    AuthenticatedWorkspaceRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedWorkspaceRoute: typeof AuthenticatedWorkspaceRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedWorkspaceRoute: AuthenticatedWorkspaceRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   CookiesRoute: CookiesRoute,
   ExperienceRoute: ExperienceRoute,
@@ -309,6 +495,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResourcesRoute: ResourcesRoute,
   SignupRoute: SignupRoute,
   TermsRoute: TermsRoute,
+  InviteTokenRoute: InviteTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
