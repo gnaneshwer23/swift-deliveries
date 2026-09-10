@@ -629,6 +629,36 @@ export type Database = {
         }
         Relationships: []
       }
+      pi_onboarding_state: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          current_step: number
+          owner_id: string
+          skipped_steps: number[]
+          updated_at: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          current_step?: number
+          owner_id: string
+          skipped_steps?: number[]
+          updated_at?: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          current_step?: number
+          owner_id?: string
+          skipped_steps?: number[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -696,6 +726,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      self_report_claims: {
+        Row: {
+          captured_at: string
+          claim_key: string
+          claim_kind: string
+          claim_value: string
+          created_at: string
+          framework_capability_key: string | null
+          id: string
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          captured_at?: string
+          claim_key: string
+          claim_kind: string
+          claim_value: string
+          created_at?: string
+          framework_capability_key?: string | null
+          id?: string
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          captured_at?: string
+          claim_key?: string
+          claim_kind?: string
+          claim_value?: string
+          created_at?: string
+          framework_capability_key?: string | null
+          id?: string
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       snapshot_claims: {
         Row: {
