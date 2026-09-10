@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as ExperienceRouteImport } from './routes/experience'
@@ -22,10 +23,15 @@ import { Route as ProfessionalWorkspaceRouteImport } from './routes/professional
 import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated/workspace'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -88,6 +94,11 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedWorkspaceRoute = AuthenticatedWorkspaceRouteImport.update({
+  id: '/workspace',
+  path: '/workspace',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -103,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/resources': typeof ResourcesRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/workspace': typeof AuthenticatedWorkspaceRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -118,10 +130,12 @@ export interface FileRoutesByTo {
   '/resources': typeof ResourcesRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/workspace': typeof AuthenticatedWorkspaceRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/cookies': typeof CookiesRoute
   '/experience': typeof ExperienceRoute
@@ -134,6 +148,7 @@ export interface FileRoutesById {
   '/resources': typeof ResourcesRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/_authenticated/workspace': typeof AuthenticatedWorkspaceRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -151,6 +166,7 @@ export interface FileRouteTypes {
     | '/resources'
     | '/signup'
     | '/terms'
+    | '/workspace'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -166,9 +182,11 @@ export interface FileRouteTypes {
     | '/resources'
     | '/signup'
     | '/terms'
+    | '/workspace'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/about'
     | '/cookies'
     | '/experience'
@@ -181,10 +199,12 @@ export interface FileRouteTypes {
     | '/resources'
     | '/signup'
     | '/terms'
+    | '/_authenticated/workspace'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   CookiesRoute: typeof CookiesRoute
   ExperienceRoute: typeof ExperienceRoute
@@ -206,6 +226,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -292,11 +319,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/workspace': {
+      id: '/_authenticated/workspace'
+      path: '/workspace'
+      fullPath: '/workspace'
+      preLoaderRoute: typeof AuthenticatedWorkspaceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedWorkspaceRoute: typeof AuthenticatedWorkspaceRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedWorkspaceRoute: AuthenticatedWorkspaceRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   CookiesRoute: CookiesRoute,
   ExperienceRoute: ExperienceRoute,
