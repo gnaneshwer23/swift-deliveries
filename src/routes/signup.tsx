@@ -33,11 +33,12 @@ function SignupPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const { error: signUpError } = await supabase.auth.signUp({
+    const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: { full_name: fullName },
+        emailRedirectTo: window.location.origin,
       },
     });
     setLoading(false);
@@ -45,8 +46,11 @@ function SignupPage() {
       setError(signUpError.message);
       return;
     }
+    if (data.session) {
+      navigate({ to: "/onboarding" });
+      return;
+    }
     setSuccess(true);
-    setTimeout(() => navigate({ to: "/" }), 1500);
   };
 
   const handleGoogle = async () => {

@@ -40,7 +40,7 @@ function LoginPage() {
       setError(signInError.message);
       return;
     }
-    navigate({ to: "/" });
+    navigate({ to: "/workspace" });
   };
 
   const handleGoogle = async () => {
