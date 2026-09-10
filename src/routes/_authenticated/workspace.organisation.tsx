@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { workspaceBootstrapQuery } from "@/lib/workspace-queries";
-import { updateOrganisation } from "@/lib/workspace.functions";
+import { createOrganisation, updateOrganisation } from "@/lib/workspace.functions";
 
 export const Route = createFileRoute("/_authenticated/workspace/organisation")({
   head: () => ({ meta: [{ title: "Organisation Settings — DeliverX" }, { name: "description", content: "Manage your organisation details and shared workspace identity." }, { property: "og:title", content: "Organisation Settings — DeliverX" }, { property: "og:description", content: "Manage your DeliverX organisation." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
@@ -22,6 +22,7 @@ function OrganisationPage() {
   const { data } = useSuspenseQuery(workspaceBootstrapQuery);
   const queryClient = useQueryClient();
   const save = useServerFn(updateOrganisation);
+  const create = useServerFn(createOrganisation);
   const canManage = data.role === "owner" || data.role === "admin";
 
   const [name, setName] = useState(data.organisation?.name ?? "");
