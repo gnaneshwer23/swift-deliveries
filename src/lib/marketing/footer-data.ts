@@ -6,7 +6,7 @@ export const FOOTER_PRODUCT_LINKS = [
 ] as const;
 
 export const FOOTER_PLATFORM_LINKS = [
-  { href: "/#professional-intelligence", label: "Professional Intelligence" },
+  { href: "/", label: "Professional Intelligence" },
   { href: "/pricing", label: "Pilot access" },
   { href: "/resources", label: "Resources" },
   { href: "/professional-workspace", label: "Team Copilot" },
