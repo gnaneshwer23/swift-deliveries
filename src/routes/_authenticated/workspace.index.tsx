@@ -275,5 +275,3 @@ function nextAction(briefing: DailyBriefing): { label: string; short: string; re
   };
 }
 
-// ArrowRight kept for future CTAs
-void ArrowRight;
