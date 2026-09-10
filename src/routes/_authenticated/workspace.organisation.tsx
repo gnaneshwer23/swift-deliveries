@@ -47,11 +47,60 @@ function OrganisationPage() {
 
   if (!data.organisation) {
     return (
-      <WorkspaceShell title="Organisation">
-        <WorkspaceCard title="No organisation yet" description="Create one from the overview page." />
+      <WorkspaceShell
+        title="Organisation"
+        subtitle="Optional. Add one when you want to capture observed work alongside colleagues."
+      >
+        <WorkspaceCard
+          title="Create an organisation"
+          description="You own it, and you can invite your team afterwards."
+        >
+          <form
+            className="max-w-2xl space-y-5"
+            onSubmit={(e) => {
+              e.preventDefault();
+              createMutation.mutate();
+            }}
+          >
+            <div className="space-y-2">
+              <Label htmlFor="newOrgName">Name</Label>
+              <Input
+                id="newOrgName"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Northwind Product"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="newOrgDesc">What does it do?</Label>
+              <Textarea
+                id="newOrgDesc"
+                rows={3}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="newOrgSite">Website (optional)</Label>
+              <Input
+                id="newOrgSite"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                placeholder="https://example.com"
+              />
+            </div>
+            <Button type="submit" disabled={createMutation.isPending || name.trim().length < 2}>
+              {createMutation.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
+              Create organisation
+            </Button>
+          </form>
+        </WorkspaceCard>
       </WorkspaceShell>
     );
   }
+
+
 
   return (
     <WorkspaceShell
