@@ -8,9 +8,12 @@ import {
   LayoutDashboard,
   User as UserIcon,
   Users,
+  GraduationCap,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { MarketingLogo } from "@/components/marketing/marketing-logo";
 import { useSignOut } from "@/hooks/use-sign-out";
+import { coachingWorkspaceQuery } from "@/lib/coaching-queries";
 
 const NAV = [
   { to: "/workspace", label: "Overview", icon: LayoutDashboard },
@@ -32,6 +35,10 @@ export function WorkspaceShell({
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const signOut = useSignOut();
+  const { data: coaching } = useQuery(coachingWorkspaceQuery);
+  const nav = coaching?.hasEnabledProgramme || coaching?.isCoach
+    ? [...NAV.slice(0, 2), { to: "/workspace/coaching" as const, label: "Coaching", icon: GraduationCap }, ...NAV.slice(2)]
+    : NAV;
 
   return (
     <div className="min-h-screen bg-[var(--mkt-ink)] text-[var(--mkt-text1)] [&_button]:rounded-none [&_input]:rounded-none [&_textarea]:rounded-none [&_[role=combobox]]:rounded-none">
@@ -52,7 +59,7 @@ export function WorkspaceShell({
         <aside className="border-b border-[var(--mkt-border)] bg-[var(--mkt-s2)] md:border-b-0 md:border-r">
           <p className="hidden border-b border-[var(--mkt-border)] px-5 py-5 font-mono text-[0.625rem] font-bold uppercase text-[var(--mkt-green-m)] md:block">Professional record</p>
         <nav className="flex overflow-x-auto md:flex-col md:overflow-visible">
-          {NAV.map((item) => {
+           {nav.map((item) => {
             const active = pathname === item.to;
             const Icon = item.icon;
             return (

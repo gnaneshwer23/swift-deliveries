@@ -27,6 +27,7 @@ const SOURCE_LABEL: Record<string, string> = {
   workspace_contribution: "Workspace contribution",
   assessment: "Assessment",
   external_verification: "External confirmation",
+  coaching_submission: "Coaching · Coach confirmed",
 };
 
 type WorkEvidenceInput = {
@@ -220,6 +221,7 @@ function EvidencePage() {
                       {STRENGTH_LABEL[e.strength] ?? e.strength}
                     </span>
                     <span>{SOURCE_LABEL[e.source] ?? e.source}</span>
+                    {e.coachConfirmed ? <span>· Coach confirmed{e.frameworkVersion ? ` · framework ${e.frameworkVersion}` : ""}</span> : null}
                     {e.artefactTitle ? (
                       <span>
                         · {e.artefactTitle} v{e.artefactVersion}
@@ -228,6 +230,7 @@ function EvidencePage() {
                     <span>· {new Date(e.occurredAt).toLocaleDateString()}</span>
                   </p>
                 </div>
+                {e.coachNote ? <p className="basis-full pl-7 text-xs text-[var(--mkt-text2)]">Coach note: {e.coachNote}</p> : null}
               </li>
             ))}
           </ul>
