@@ -112,9 +112,9 @@ export function WorkspaceShell({
         <div className="main">
           <div className="main-header">
             <span className="main-header-title">{title}</span>
-            {subtitle ? <span className="caption hidden sm:block">{subtitle}</span> : null}
+            {subtitle ? <span className="main-header-sub hidden sm:block">{subtitle}</span> : null}
           </div>
-          {children}
+          <div className="app-content">{children}</div>
         </div>
       </div>
     </div>
@@ -146,7 +146,7 @@ export function WorkspaceCard({
         {action}
       </div>
       {children ? (
-        <div>{children}</div>
+        <div className="px-5 py-5">{children}</div>
       ) : (
         <div className="px-5 py-6 text-xs" style={{ color: "var(--x-slate-light)" }}>
           Awaiting activity — nothing is created before you act.
