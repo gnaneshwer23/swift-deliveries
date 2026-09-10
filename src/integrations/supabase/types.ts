@@ -614,6 +614,7 @@ export type Database = {
         | "workspace_contribution"
         | "assessment"
         | "external_verification"
+        | "coaching_submission"
       evidence_strength:
         | "self_reported"
         | "observed"
@@ -763,6 +764,7 @@ export const Constants = {
         "workspace_contribution",
         "assessment",
         "external_verification",
+        "coaching_submission",
       ],
       evidence_strength: [
         "self_reported",
