@@ -368,6 +368,7 @@ export const updateMemberRole = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data, context }) => {
+    await assertNotOwnerMembership(context.supabase, data.membershipId);
     const { error } = await context.supabase
       .from("organisation_memberships")
       .update({ role: data.role })
@@ -380,6 +381,7 @@ export const removeMember = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => z.object({ membershipId: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
+    await assertNotOwnerMembership(context.supabase, data.membershipId);
     const { error } = await context.supabase
       .from("organisation_memberships")
       .delete()
