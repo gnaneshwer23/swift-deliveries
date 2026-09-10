@@ -241,6 +241,59 @@ export const updateOrganisation = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+const createOrgSchema = z.object({
+  name: z.string().trim().min(2, "Organisation name is required").max(120),
+  description: z.string().trim().max(400).optional().default(""),
+  website: z.string().trim().max(200).optional().default(""),
+});
+
+/** Optional step: a candidate can create an organisation any time after onboarding. */
+export const createOrganisation = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => createOrgSchema.parse(data))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const base = slugify(data.name);
+    let organisationId: string | null = null;
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const candidate = attempt === 0 ? base : `${base}-${Math.random().toString(36).slice(2, 6)}`;
+      const { data: org, error } = await supabase
+        .from("organisations")
+        .insert({
+          name: data.name,
+          slug: candidate,
+          description: data.description || null,
+          website: data.website || null,
+          owner_id: userId,
+        })
+        .select("id")
+        .single();
+      if (!error && org) {
+        organisationId = org.id;
+        break;
+      }
+      if (error && !error.message.toLowerCase().includes("duplicate")) {
+        throw new Error(error.message);
+      }
+    }
+
+    if (!organisationId) throw new Error("Could not create the organisation. Please try again.");
+
+    const { error: memberError } = await supabase.from("organisation_memberships").insert({
+      organisation_id: organisationId,
+      user_id: userId,
+      role: "owner",
+      status: "active",
+    });
+    if (memberError && !memberError.message.toLowerCase().includes("duplicate")) {
+      throw new Error(memberError.message);
+    }
+
+    return { organisationId };
+  });
+
+
 export type TeamData = {
   members: {
     id: string;
