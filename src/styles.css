@@ -15,7 +15,6 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
-  --font-display: "Space Grotesk", sans-serif;
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -135,23 +134,23 @@
   --dx-radius-pill: 9999px;
 
   /* Marketing tokens */
-  --mkt-ink: #F4FBF7;
+  --mkt-ink: #F6F8F6;
   --mkt-s1: #FFFFFF;
-  --mkt-s2: #DDF5E8;
-  --mkt-s3: #CBECD9;
-  --mkt-s4: #AFE1C6;
-  --mkt-border: #CDE8D9;
-  --mkt-border-l: #B6DCC8;
-  --mkt-text1: #102A20;
-  --mkt-text2: #435E53;
-  --mkt-text3: #71877D;
-  --mkt-text-faint: #9AB0A6;
-  --mkt-green: #087A4B;
-  --mkt-green-m: #096B44;
-  --mkt-green-l: #00A861;
-  --mkt-green-bright: #00B96B;
-  --mkt-cream: #F4FBF7;
-  --mkt-mist: #EAF8F0;
+  --mkt-s2: #F0F3F1;
+  --mkt-s3: #E4EAE6;
+  --mkt-s4: #D0D7D2;
+  --mkt-border: #E2E8E4;
+  --mkt-border-l: #CED6D1;
+  --mkt-text1: #0D0D0B;
+  --mkt-text2: #3F4A43;
+  --mkt-text3: #7A857E;
+  --mkt-text-faint: #BEC5C0;
+  --mkt-green: #1C4A2E;
+  --mkt-green-m: #2D7048;
+  --mkt-green-l: #3D9660;
+  --mkt-green-bright: #3D9660;
+  --mkt-cream: #F2F5F2;
+  --mkt-mist: #EAF1EC;
   --mkt-red: #C0392B;
   --mkt-amber: #B7620A;
   --mkt-blue: #1A3F6B;
@@ -168,14 +167,11 @@
   --mkt-on-dark: #FFFFFF;
   --mkt-on-dark-soft: #C8CECA;
   --mkt-on-dark-muted: #858C87;
-  --mkt-on-dark-border: #D5E9DD;
-  --mkt-navh: 64px;
-  --mkt-radius-panel: 1.5rem;
-  --mkt-radius-card: 1rem;
-  --mkt-radius-btn: 0.75rem;
-  --mkt-maxw: 1180px;
-  --mkt-shadow-nav: 0 12px 34px -22px rgba(16, 42, 32, 0.32);
-  --mkt-shadow-card: 0 22px 50px -36px rgba(16, 42, 32, 0.38);
+  --mkt-on-dark-border: #30332F;
+  --mkt-navh: 68px;
+  --mkt-radius-panel: 1.75rem;
+  --mkt-radius-card: 1.5rem;
+  --mkt-radius-btn: 9999px;
 }
 
 .dark {
@@ -221,73 +217,6 @@ html:has(.marketing-page) {
   font-size: 100%;
 }
 
-.marketing-page,
-.marketing-page button,
-.marketing-page input,
-.marketing-page textarea,
-.marketing-page select {
-  font-family: "DM Sans", sans-serif;
-}
-
-.marketing-page h1,
-.marketing-page h2,
-.marketing-page h3,
-.marketing-page .font-serif,
-.marketing-page .mkt-editorial-title,
-.marketing-page .mkt-section-title {
-  font-family: "Space Grotesk", sans-serif;
-  letter-spacing: 0;
-  text-transform: none;
-}
-
-.workspace-page,
-.workspace-page button,
-.workspace-page input,
-.workspace-page textarea,
-.workspace-page select {
-  font-family: "DM Sans", sans-serif;
-}
-
-.workspace-page h1,
-.workspace-page h2,
-.workspace-page h3,
-.workspace-page .font-serif {
-  font-family: "Space Grotesk", sans-serif;
-  letter-spacing: 0;
-  text-transform: none;
-}
-
-.workspace-page button,
-.workspace-page input,
-.workspace-page textarea,
-.workspace-page [role="combobox"] {
-  border-radius: 0.65rem;
-}
-
-.workspace-page button[class*="bg-[var(--mkt-text1)]"] {
-  background: var(--mkt-green-bright);
-}
-
-.mkt-grid {
-  background-image: linear-gradient(var(--mkt-border) 1px, transparent 1px), linear-gradient(90deg, var(--mkt-border) 1px, transparent 1px);
-  background-size: 42px 42px;
-  background-position: center center;
-}
-
-.mkt-surface {
-  border: 1px solid var(--mkt-border);
-  border-radius: var(--mkt-radius-panel);
-  background: var(--mkt-s1);
-  box-shadow: var(--mkt-shadow-card);
-}
-
-.mkt-journey-line {
-  background-image: radial-gradient(circle, var(--mkt-green-bright) 1.5px, transparent 1.75px);
-  background-position: center;
-  background-size: 12px 4px;
-  background-repeat: repeat-x;
-}
-
 .mkt-label {
   font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
   font-size: 0.6875rem;
@@ -307,17 +236,15 @@ html:has(.marketing-page) {
 }
 
 .mkt-editorial-title {
-  font-family: "Space Grotesk", sans-serif;
-  font-size: clamp(2.25rem, 5vw, 4.25rem);
-  font-weight: 700;
-  line-height: 1.02;
+  font-size: clamp(2.25rem, 5vw, 4.5rem);
+  font-weight: 900;
+  line-height: 0.96;
   letter-spacing: 0;
-  text-transform: none;
+  text-transform: uppercase;
   color: var(--mkt-text1);
 }
 
 .mkt-section-title {
-  font-family: "Space Grotesk", sans-serif;
   font-size: clamp(1.875rem, 4.2vw, 2.875rem);
   line-height: 1.06;
   letter-spacing: -0.025em;
@@ -362,20 +289,6 @@ html:has(.marketing-page) {
   background: var(--mkt-s1);
   box-shadow: 0 1px 2px rgba(13, 13, 11, 0.03);
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-}
-
-.marketing-page section > .mx-auto.border-x,
-.marketing-page section > div > .border,
-.marketing-page article.border-b,
-.marketing-page ol.border,
-.marketing-page .border-l.border-t {
-  border-radius: var(--mkt-radius-card);
-  overflow: hidden;
-}
-
-.marketing-page a[class*="bg-[var(--mkt-text1)]"],
-.marketing-page a[class*="bg-[var(--mkt-green)]"] {
-  border-radius: var(--mkt-radius-btn);
 }
 
 .mkt-card:hover {
