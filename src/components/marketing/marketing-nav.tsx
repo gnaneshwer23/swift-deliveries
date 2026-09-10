@@ -17,8 +17,8 @@ export function MarketingNav() {
   const { user, loading } = useSession();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 h-[var(--mkt-navh)] border-b border-[var(--mkt-border)] bg-[var(--mkt-s1)]/95 backdrop-blur-md">
-      <div className="mx-auto flex h-full max-w-[var(--mkt-maxw)] items-center justify-between px-5 lg:px-8">
+    <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3">
+      <div className="mx-auto flex h-[var(--mkt-navh)] max-w-[var(--mkt-maxw)] items-center justify-between rounded-[1.1rem] border border-[var(--mkt-border)] bg-[var(--mkt-s1)]/95 px-4 shadow-[var(--mkt-shadow-nav)] backdrop-blur-md lg:px-5">
         <MarketingLogo />
 
         <nav className="hidden h-full items-center md:flex" aria-label="Primary navigation">
@@ -28,10 +28,10 @@ export function MarketingNav() {
               <Link
                 key={item.href}
                 to={item.href}
-                className={`flex h-full items-center border-x border-transparent px-4 text-xs font-bold uppercase transition-colors ${
+                className={`flex h-9 items-center rounded-lg px-3 text-xs font-semibold transition-colors ${
                   active
-                    ? "border-[var(--mkt-border)] bg-[var(--mkt-s2)] text-[var(--mkt-green)]"
-                    : "text-[var(--mkt-text2)] hover:border-[var(--mkt-border)] hover:bg-[var(--mkt-s2)] hover:text-[var(--mkt-text1)]"
+                    ? "bg-[var(--mkt-s2)] text-[var(--mkt-green)]"
+                    : "text-[var(--mkt-text2)] hover:bg-[var(--mkt-s2)] hover:text-[var(--mkt-text1)]"
                 }`}
               >
                 {item.label}
@@ -49,13 +49,13 @@ export function MarketingNav() {
             <>
               <Link
                 to="/login"
-                className="px-4 py-2 text-xs font-bold uppercase text-[var(--mkt-text2)] transition-colors hover:text-[var(--mkt-text1)]"
+                className="rounded-lg px-4 py-2 text-xs font-semibold text-[var(--mkt-text2)] transition-colors hover:bg-[var(--mkt-s2)] hover:text-[var(--mkt-text1)]"
               >
                 Sign in
               </Link>
               <Link
                 to="/signup"
-                className="bg-[var(--mkt-text1)] px-5 py-2.5 text-xs font-bold uppercase text-[var(--mkt-on-dark)] transition-colors hover:bg-[var(--mkt-green)]"
+                className="rounded-lg bg-[var(--mkt-green-bright)] px-5 py-2.5 text-xs font-bold text-[var(--mkt-on-dark)] transition-colors hover:bg-[var(--mkt-green-m)]"
               >
                 Create account
               </Link>
@@ -66,7 +66,7 @@ export function MarketingNav() {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="inline-flex items-center justify-center border border-[var(--mkt-border)] p-2 text-[var(--mkt-text2)] md:hidden"
+          className="inline-flex items-center justify-center rounded-lg border border-[var(--mkt-border)] p-2 text-[var(--mkt-text2)] md:hidden"
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
         >
@@ -75,7 +75,7 @@ export function MarketingNav() {
       </div>
 
       {open && (
-        <div className="absolute inset-x-0 top-[var(--mkt-navh)] border-b border-[var(--mkt-border)] bg-[var(--mkt-s1)] px-5 pb-6 pt-4 shadow-lg md:hidden">
+        <div className="absolute inset-x-3 top-[calc(var(--mkt-navh)+0.75rem)] rounded-xl border border-[var(--mkt-border)] bg-[var(--mkt-s1)] px-5 pb-6 pt-4 shadow-lg md:hidden">
           <nav className="flex flex-col gap-1">
             {PRIMARY_NAV.map((item) => (
               <Link

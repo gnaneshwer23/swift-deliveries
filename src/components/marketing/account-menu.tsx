@@ -34,9 +34,9 @@ export function AccountMenu({ user }: { user: User }) {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="flex items-center gap-2 rounded-full border border-[var(--mkt-border)] bg-[var(--mkt-s2)] py-1.5 pl-1.5 pr-3 text-sm font-medium text-[var(--mkt-text1)] transition-colors hover:bg-[var(--mkt-s3)]"
+          className="flex items-center gap-2 rounded-xl border border-[var(--mkt-border)] bg-[var(--mkt-s1)] py-1.5 pl-1.5 pr-3 text-sm font-medium text-[var(--mkt-text1)] transition-colors hover:bg-[var(--mkt-s2)]"
         >
-          <span className="grid size-7 place-items-center rounded-full bg-[var(--mkt-green)] text-xs font-semibold text-white">
+          <span className="grid size-7 place-items-center rounded-lg bg-[var(--mkt-green)] text-xs font-semibold text-[var(--mkt-on-dark)]">
             {initialsFor(name) || "DX"}
           </span>
           <span className="max-w-[9rem] truncate">{name}</span>
