@@ -1,38 +1,118 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, CalendarDays, EyeOff, FileClock, GitPullRequestArrow } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 
 export const Route = createFileRoute("/professional-workspace")({
   head: () => ({
     meta: [
-      { title: "Professional Workspace — DeliverX" },
-      { name: "description", content: "Plan, align and document product work with clear ownership, review controls and private-by-default evidence." },
-      { property: "og:title", content: "Professional Workspace — DeliverX" },
-      { property: "og:description", content: "A controlled workspace for product decisions, artefacts, meetings and evidence." },
+      { title: "Professional Workspace — Move the work forward | DeliverX" },
+      {
+        name: "description",
+        content:
+          "One controlled space for meetings, artefacts, decisions and evidence — built around human ownership. Observation starts off; privacy starts on.",
+      },
+      { property: "og:title", content: "DeliverX Professional Workspace" },
+      {
+        property: "og:description",
+        content:
+          "Assistance without loss of control. Nothing becomes a commitment by accident.",
+      },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ProfessionalWorkspacePage,
 });
 
 const FEATURES = [
-  { icon: CalendarDays, number: "01", title: "Meetings with continuity", body: "Keep agendas, decisions and follow-ups connected to the work they affect." },
-  { icon: FileClock, number: "02", title: "Living artefacts", body: "Maintain charters, requirements and change history without losing context." },
-  { icon: GitPullRequestArrow, number: "03", title: "Review before commitment", body: "Drafts remain drafts until a person reviews and submits them." },
-  { icon: EyeOff, number: "04", title: "Consent-led observation", body: "Observation is off by default. People decide when it is active and what stays private." },
-] as const;
+  {
+    n: "01",
+    name: "Meetings with continuity",
+    desc: "Keep agendas, decisions, and follow-ups connected to the work they affect — not in a separate notes app.",
+  },
+  {
+    n: "02",
+    name: "Living artefacts",
+    desc: "Maintain charters, requirements, and change history without losing context. Assistants prepare drafts — drafts remain drafts until you review and submit.",
+  },
+  {
+    n: "03",
+    name: "Review before commitment",
+    desc: "Nothing becomes a commitment by accident. The control path is explicit and enforced at the architecture level.",
+  },
+  {
+    n: "04",
+    name: "Consent-led observation",
+    desc: "Observation is off by default. You must actively consent. When on, contributions with sufficient provenance can enter your evidence record.",
+  },
+];
 
-const FLOW = ["Context captured", "Draft prepared", "Human reviewed", "Team committed"] as const;
+const CONTROL = ["Context captured", "Draft prepared", "Human reviewed", "Team committed"];
 
 function ProfessionalWorkspacePage() {
   return (
     <MarketingLayout>
-      <section className="border-b border-[var(--mkt-border)] px-5 lg:px-8"><div className="mx-auto grid max-w-[var(--mkt-maxw)] border-x border-[var(--mkt-border)] lg:grid-cols-12"><div className="border-b border-[var(--mkt-border)] p-6 sm:p-10 lg:col-span-8 lg:border-b-0 lg:border-r lg:p-14"><p className="mkt-label">Professional Workspace / Succeed in the role</p><h1 className="mt-8 text-[clamp(3rem,6vw,5.75rem)] font-black uppercase leading-[0.9] text-[var(--mkt-text1)]">Move the work forward.<br /><span className="text-[var(--mkt-text-faint)]">Keep the context.</span></h1><p className="mt-10 max-w-xl text-lg font-medium leading-relaxed text-[var(--mkt-text2)]">One controlled space for meetings, artefacts, decisions and evidence—built around human ownership.</p><Link to="/signup" className="mt-8 inline-flex items-center gap-3 bg-[var(--mkt-text1)] px-6 py-4 text-xs font-bold uppercase text-[var(--mkt-on-dark)] transition-colors hover:bg-[var(--mkt-green)]">Join the pilot <ArrowRight className="size-4" /></Link></div><aside className="flex flex-col justify-between bg-[var(--mkt-text1)] p-6 text-[var(--mkt-on-dark)] sm:p-10 lg:col-span-4"><EyeOff className="size-9 text-[var(--mkt-green-l)]" /><div className="mt-24"><p className="mkt-label-dark">Consent standard</p><p className="mt-4 text-2xl font-black uppercase leading-tight">Observation starts off. Privacy starts on.</p></div></aside></div></section>
+      <div className="hero-ws">
+        <div className="hero-ws-tag">03 · Professional Workspace · Succeed in the role</div>
+        <h1>
+          Move the work forward.
+          <br />
+          Keep the context.
+        </h1>
+        <p className="body-lg" style={{ marginBottom: 32 }}>
+          One controlled space for meetings, artefacts, decisions and evidence — built around human
+          ownership.
+        </p>
+        <Link to="/pilot" className="btn btn-primary">
+          Open Workspace →
+        </Link>
+      </div>
 
-      <section className="px-5 py-20 lg:px-8 lg:py-28"><div className="mx-auto max-w-[var(--mkt-maxw)]"><div className="grid gap-8 lg:grid-cols-[1fr_2fr]"><div><p className="mkt-label">Working system</p><h2 className="mkt-editorial-title mt-5">Assistance without<br />loss of control.</h2></div><p className="max-w-xl text-lg leading-relaxed text-[var(--mkt-text2)] lg:justify-self-end">Support can prepare and review work. People remain accountable for decisions, submissions and commitments.</p></div><div className="mt-16 grid border-l border-t border-[var(--mkt-border)] md:grid-cols-2">{FEATURES.map(({ icon: Icon, number, title, body }) => <article key={title} className="min-h-64 border-b border-r border-[var(--mkt-border)] p-6 sm:p-8"><div className="flex items-center justify-between"><span className="font-mono text-xs text-[var(--mkt-green-m)]">{number}</span><Icon className="size-5 text-[var(--mkt-green-m)]" /></div><h3 className="mt-20 text-xl font-black uppercase text-[var(--mkt-text1)]">{title}</h3><p className="mt-3 max-w-sm text-sm leading-relaxed text-[var(--mkt-text2)]">{body}</p></article>)}</div></div></section>
+      <div className="consent-bar">
+        <strong>Observation starts off.</strong> Privacy starts on. You decide when observation is
+        active and what stays private.
+      </div>
 
-      <section className="border-y border-[var(--mkt-border)] bg-[var(--mkt-s2)] px-5 py-20 lg:px-8"><div className="mx-auto max-w-[var(--mkt-maxw)]"><p className="mkt-label">Control path</p><h2 className="mt-5 max-w-3xl text-3xl font-black uppercase text-[var(--mkt-text1)] sm:text-5xl">Nothing becomes a commitment by accident.</h2><ol className="mt-12 grid border border-[var(--mkt-border-l)] bg-[var(--mkt-s1)] md:grid-cols-4">{FLOW.map((item, index) => <li key={item} className="min-h-44 border-b border-[var(--mkt-border)] p-5 last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0"><span className="font-mono text-xs text-[var(--mkt-green-m)]">0{index + 1}</span><p className="mt-16 text-sm font-bold uppercase text-[var(--mkt-text1)]">{item}</p></li>)}</ol><div className="mt-10 flex justify-end"><Link to="/signup" className="inline-flex items-center gap-3 bg-[var(--mkt-text1)] px-6 py-4 text-xs font-bold uppercase text-[var(--mkt-on-dark)] hover:bg-[var(--mkt-green)]">Open Workspace <ArrowRight className="size-4" /></Link></div></div></section>
+      <div className="features-section">
+        <h2 className="heading-2" style={{ marginBottom: 6 }}>
+          Assistance without loss of control.
+        </h2>
+        <p className="body">
+          Support can prepare and review work. People remain accountable for decisions, submissions,
+          and commitments.
+        </p>
+        <div className="features-grid">
+          {FEATURES.map((f) => (
+            <div className="feature-card" key={f.n}>
+              <div className="feature-n">{f.n}</div>
+              <div className="feature-name">{f.name}</div>
+              <div className="feature-desc">{f.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="control-path">
+        <div className="control-inner">
+          <h2 className="control-title">Nothing becomes a commitment by accident.</h2>
+          <p className="control-sub">The control path is explicit, not advisory.</p>
+          <div className="control-steps">
+            {CONTROL.map((c, i) => (
+              <div className="control-step" key={c}>
+                <div className="control-step-n">{String(i + 1).padStart(2, "0")}</div>
+                <div className="control-step-name">{c}</div>
+              </div>
+            ))}
+          </div>
+          <div className="invariant-box">
+            <div className="invariant-label">The human ownership invariant</div>
+            <div className="invariant-text">
+              "AI suggests. Humans decide. Delivery happens." No assisted action in Workspace
+              creates a commitment, a ledger entry, or a capability signal without a human reviewing
+              and submitting it first. This is architecturally enforced, not a policy preference.
+            </div>
+          </div>
+        </div>
+      </div>
     </MarketingLayout>
   );
 }
