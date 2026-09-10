@@ -35,6 +35,7 @@ function CapabilityPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [relationship, setRelationship] = useState("");
+  const [attestLink, setAttestLink] = useState<string | null>(null);
 
   const nameFor = (key: string) =>
     data.capabilities.find((c) => c.key === key)?.name ?? key;
@@ -57,8 +58,9 @@ function CapabilityPage() {
     }) => requestAttestation({ data: input }),
     onSuccess: (r) => {
       const link = `${window.location.origin}/attest/${r.token}`;
-      void navigator.clipboard?.writeText(link);
-      toast.success("Request created. The confirmation link is copied to your clipboard.");
+      setAttestLink(link);
+      void navigator.clipboard?.writeText(link).catch(() => undefined);
+      toast.success("Request created. Copy the confirmation link and send it to them.");
       setOpenClaim(null);
       setName("");
       setEmail("");
@@ -189,6 +191,26 @@ function CapabilityPage() {
             ))}
           </ul>
         )}
+        {attestLink ? (
+          <div className="mt-4 border border-[var(--mkt-border)] p-4">
+            <p className="font-mono text-[0.625rem] font-bold uppercase text-[var(--mkt-green-m)]">
+              Confirmation link
+            </p>
+            <p className="mt-2 break-all text-sm text-[var(--mkt-text2)]">{attestLink}</p>
+            <button
+              type="button"
+              onClick={() => {
+                void navigator.clipboard
+                  ?.writeText(attestLink)
+                  .then(() => toast.success("Link copied."))
+                  .catch(() => toast.error("Copy failed — select the link above instead."));
+              }}
+              className="mt-3 border border-[var(--mkt-border-l)] px-4 py-2 text-xs font-bold uppercase"
+            >
+              Copy link
+            </button>
+          </div>
+        ) : null}
       </WorkspaceCard>
 
       {data.latestRun ? (
