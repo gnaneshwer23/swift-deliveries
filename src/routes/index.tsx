@@ -95,7 +95,7 @@ function HeroSection() {
               </div>
             </div>
           </div>
-        </ol>
+        </div>
         <div className="grid border-t border-[var(--mkt-border)] sm:grid-cols-3">
           {["Evidence stays distinct from self-report", "Capability comes from versioned judgement", "Readiness is explained, never decorated"].map((item) => (
             <div key={item} className="flex items-start gap-3 border-b border-[var(--mkt-border)] p-5 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0">
@@ -169,7 +169,7 @@ function JourneySection() {
           {steps.map((step, index) => (
             <li key={step} className="min-h-44 border-b border-[var(--mkt-border)] p-5 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0"><span className="font-mono text-xs text-[var(--mkt-green-m)]">0{index + 1}</span><p className="mt-12 text-sm font-bold uppercase leading-snug text-[var(--mkt-text1)]">{step}</p></li>
           ))}
-        </div>
+        </ol>
       </div>
     </section>
   );
