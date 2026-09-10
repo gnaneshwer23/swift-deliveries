@@ -1,24 +1,25 @@
 import type { ReactNode } from "react";
+import { useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  ArrowRight,
   Building2,
   FileCheck2,
   Gauge,
   LayoutDashboard,
+  Menu,
   User as UserIcon,
   Users,
   GraduationCap,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { MarketingLogo } from "@/components/marketing/marketing-logo";
 import { useSignOut } from "@/hooks/use-sign-out";
+import { useSession } from "@/hooks/use-session";
 import { coachingWorkspaceQuery } from "@/lib/coaching-queries";
 
 const NAV = [
-  { to: "/workspace", label: "Overview", icon: LayoutDashboard },
-  { to: "/workspace/evidence", label: "Evidence", icon: FileCheck2 },
-  { to: "/workspace/capability", label: "Capability", icon: Gauge },
+  { to: "/workspace", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/workspace/evidence", label: "Evidence record", icon: FileCheck2 },
+  { to: "/workspace/capability", label: "Capability profile", icon: Gauge },
   { to: "/workspace/team", label: "Team", icon: Users },
   { to: "/workspace/profile", label: "Your profile", icon: UserIcon },
   { to: "/workspace/organisation", label: "Organisation", icon: Building2 },
@@ -30,64 +31,91 @@ export function WorkspaceShell({
   children,
 }: {
   title: string;
-  subtitle?: string;
+  subtitle?: string | undefined;
   children: ReactNode;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const signOut = useSignOut();
+  const { user } = useSession();
+  const [open, setOpen] = useState(false);
   const { data: coaching } = useQuery(coachingWorkspaceQuery);
   const nav = coaching?.hasEnabledProgramme || coaching?.isCoach
-    ? [...NAV.slice(0, 2), { to: "/workspace/coaching" as const, label: "Coaching", icon: GraduationCap }, ...NAV.slice(2)]
+    ? [
+        ...NAV.slice(0, 3),
+        { to: "/workspace/coaching" as const, label: "Coaching", icon: GraduationCap },
+        ...NAV.slice(3),
+      ]
     : NAV;
 
-  return (
-    <div className="min-h-screen bg-[var(--mkt-ink)] text-[var(--mkt-text1)] [&_button]:rounded-none [&_input]:rounded-none [&_textarea]:rounded-none [&_[role=combobox]]:rounded-none">
-      <header className="border-b border-[var(--mkt-border-l)] bg-[var(--mkt-s1)]">
-        <div className="mx-auto flex h-[var(--mkt-navh)] max-w-[var(--mkt-maxw)] items-center justify-between border-x border-[var(--mkt-border)] px-5">
-          <MarketingLogo />
-          <button
-            type="button"
-            onClick={() => void signOut()}
-            className="border border-[var(--mkt-border-l)] px-4 py-2 font-mono text-[0.6875rem] font-bold uppercase text-[var(--mkt-text2)] transition-colors hover:bg-[var(--mkt-text1)] hover:text-[var(--mkt-on-dark)]"
-          >
-            Sign out
-          </button>
-        </div>
-      </header>
+  const displayName =
+    (user?.user_metadata?.["full_name"] as string | undefined) ?? user?.email ?? "Account";
+  const initials = displayName
+    .split(/[\s@]/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase())
+    .join("");
 
-      <div className="mx-auto grid max-w-[var(--mkt-maxw)] border-x border-[var(--mkt-border)] md:min-h-[calc(100vh-var(--mkt-navh))] md:grid-cols-[14rem_minmax(0,1fr)]">
-        <aside className="border-b border-[var(--mkt-border)] bg-[var(--mkt-s2)] md:border-b-0 md:border-r">
-          <p className="hidden border-b border-[var(--mkt-border)] px-5 py-5 font-mono text-[0.625rem] font-bold uppercase text-[var(--mkt-green-m)] md:block">Professional record</p>
-        <nav className="flex overflow-x-auto md:flex-col md:overflow-visible">
-           {nav.map((item) => {
-            const active = pathname === item.to;
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={`group flex shrink-0 items-center gap-3 border-r border-[var(--mkt-border)] px-5 py-4 text-xs font-bold uppercase transition-colors md:border-b md:border-r-0 ${
-                  active
-                    ? "bg-[var(--mkt-text1)] text-[var(--mkt-on-dark)]"
-                    : "text-[var(--mkt-text2)] hover:bg-[var(--mkt-s1)] hover:text-[var(--mkt-text1)]"
-                }`}
-              >
-                <Icon className={`size-4 ${active ? "text-[var(--mkt-green-l)]" : "text-[var(--mkt-green-m)]"}`} />
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
+  return (
+    <div className="dxa min-h-screen">
+      <div className="mobile-topbar">
+        <Link to="/workspace" className="text-[15px] font-bold text-white no-underline">
+          DeliverX
+        </Link>
+        <button
+          type="button"
+          aria-label="Toggle menu"
+          onClick={() => setOpen((v) => !v)}
+          className="rounded-md border border-white/20 p-2 text-white"
+        >
+          <Menu className="size-4" />
+        </button>
+      </div>
+      <div className="app-wrap">
+        <aside className={`sidebar${open ? " open" : ""}`}>
+          <Link to="/workspace" className="sidebar-logo" onClick={() => setOpen(false)}>
+            DeliverX
+          </Link>
+          <div className="sidebar-section">
+            <div className="sidebar-label">Workspace</div>
+            {nav.map((item) => {
+              const active =
+                item.to === "/workspace" ? pathname === "/workspace" : pathname.startsWith(item.to);
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setOpen(false)}
+                  className={`sidebar-link${active ? " active" : ""}`}
+                >
+                  <Icon />
+                  {item.label}
+                </Link>
+              );
+            })}
+          </div>
+          <div className="sidebar-bottom">
+            <div className="sidebar-user">
+              <div className="sidebar-avatar">{initials || "·"}</div>
+              <div className="min-w-0">
+                <div className="sidebar-user-name truncate">{displayName}</div>
+                <div className="sidebar-user-stage">Professional record</div>
+              </div>
+            </div>
+            <button type="button" className="sidebar-signout" onClick={() => void signOut()}>
+              Sign out
+            </button>
+          </div>
         </aside>
 
-        <main className="min-w-0">
-          <header className="border-b border-[var(--mkt-border)] p-6 sm:p-8 lg:p-10">
-            <p className="mkt-label">Workspace / Current view</p>
-            <h1 className="mt-4 max-w-3xl font-serif text-3xl font-black uppercase leading-[0.95] sm:text-5xl">{title}</h1>
-            {subtitle ? <p className="mt-5 max-w-2xl text-sm leading-relaxed text-[var(--mkt-text2)]">{subtitle}</p> : null}
-          </header>
-          <div className="space-y-6 p-5 sm:p-8 lg:p-10">{children}</div>
-        </main>
+        <div className="main">
+          <div className="main-header">
+            <span className="main-header-title">{title}</span>
+            {subtitle ? <span className="caption hidden sm:block">{subtitle}</span> : null}
+          </div>
+          {children}
+        </div>
       </div>
     </div>
   );
@@ -105,17 +133,25 @@ export function WorkspaceCard({
   action?: ReactNode;
 }) {
   return (
-    <section className="border border-[var(--mkt-border)] bg-[var(--mkt-s1)]">
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4 border-b border-[var(--mkt-border)] p-5 sm:p-6">
+    <section className="overflow-hidden rounded-xl border bg-[var(--x-paper-raised)]" style={{ borderColor: "var(--x-border)" }}>
+      <div className="flex items-start justify-between gap-4 border-b px-5 py-4" style={{ borderColor: "var(--x-border)" }}>
         <div className="min-w-0">
-          <h2 className="font-serif text-lg font-black uppercase">{title}</h2>
+          <h2 className="text-[13px] font-semibold">{title}</h2>
           {description ? (
-            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[var(--mkt-text2)]">{description}</p>
+            <p className="mt-1 max-w-2xl text-xs leading-relaxed" style={{ color: "var(--x-slate-light)" }}>
+              {description}
+            </p>
           ) : null}
         </div>
         {action}
       </div>
-      {children ? <div className="p-5 sm:p-6">{children}</div> : action ? null : <div className="flex items-center gap-2 p-5 font-mono text-[0.625rem] font-bold uppercase text-[var(--mkt-text3)]"><ArrowRight className="size-3.5" /> Awaiting activity</div>}
+      {children ? (
+        <div>{children}</div>
+      ) : (
+        <div className="px-5 py-6 text-xs" style={{ color: "var(--x-slate-light)" }}>
+          Awaiting activity — nothing is created before you act.
+        </div>
+      )}
     </section>
   );
 }

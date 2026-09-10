@@ -1,44 +1,129 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, FileBadge2, MessagesSquare, ScanSearch, Stamp } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 
 export const Route = createFileRoute("/launchpad")({
   head: () => ({
     meta: [
-      { title: "Launchpad — Evidence-Led Career Readiness" },
-      { name: "description", content: "Turn demonstrated product work into an explainable portfolio, stronger interview stories and externally attested career proof." },
-      { property: "og:title", content: "Launchpad — Evidence-Led Career Readiness" },
-      { property: "og:description", content: "Package demonstrated product work into clear, explainable career proof." },
+      { title: "Launchpad — Make your readiness easy to inspect | DeliverX" },
+      {
+        name: "description",
+        content:
+          "Turn demonstrated work into a portfolio, interview narrative, and trust signal that can be explained. Verified comes only from external attestation.",
+      },
+      { property: "og:title", content: "DeliverX Launchpad — land the opportunity" },
+      {
+        property: "og:description",
+        content:
+          "Package the truth, not the theatre: evidence-backed claims, labelled heuristics, and an external attestation pathway.",
+      },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: LaunchpadPage,
 });
 
-const FEATURES = [
-  { icon: ScanSearch, title: "Explainable readiness", body: "Understand which claims are supported, what is still heuristic and where evidence is thin." },
-  { icon: FileBadge2, title: "Evidence portfolio", body: "Package selected work into a clear story without separating claims from their source." },
-  { icon: MessagesSquare, title: "Interview stories", body: "Practise communicating decisions, trade-offs and outcomes using evidence you can defend." },
-  { icon: Stamp, title: "External attestation", body: "Request independent confirmation. Verified remains off until the required checks are complete." },
-] as const;
+const SURFACES = [
+  {
+    n: "01",
+    name: "Career Intelligence",
+    desc: "Understand which claims are evidence-backed, which are still heuristic, and where your record is thin. Every signal is labelled.",
+    note: "Readiness uses labelled heuristics when ScoreRun data is thin. No unexplained percentages.",
+    cls: "honest",
+  },
+  {
+    n: "02",
+    name: "Evidence Portfolio",
+    desc: "Package selected artefacts into a clear portfolio without separating claims from their source. Private by default — share on your terms.",
+    note: "Private evidence and attestor details are stripped from any shared view automatically.",
+    cls: "trust",
+  },
+  {
+    n: "03",
+    name: "Interview Lab",
+    desc: "Practise communicating decisions, trade-offs, and outcomes using the STAR framework against real artefacts you can defend under questioning.",
+    note: "Stories are grounded in evidence you produced. Not fabricated scenarios or generic examples.",
+    cls: "honest",
+  },
+  {
+    n: "04",
+    name: "External Attestation",
+    desc: "Request independent confirmation of specific evidence from someone outside DeliverX. Verified remains off until the required checks are complete.",
+    note: "Verified is never lit by a ScoreRun or coaching confirmation. External attestation is the only gate.",
+    cls: "trust",
+  },
+];
+
+const PATHWAY = [
+  { h: "Select evidence", p: "In Launchpad, choose the specific artefact and framework dimension you want attested." },
+  { h: "Name your attestor", p: "Identify an independent expert — former manager, senior peer, domain specialist. A secure link is created for them." },
+  { h: "Attestor reviews", p: "They see the artefact, the provenance chain, and the framework dimension — nothing else from your profile." },
+  { h: "Attestor confirms", p: "They confirm the evidence reflects capability they have personally witnessed. Their professional judgement, not a platform score." },
+  { h: "Ledger updated", p: "An external verification record is added to the ledger entry. Attestor identity is held under privacy controls. Dispute mechanism available." },
+  { h: "Verified lights", p: "Only now does the Verified signal activate on your profile and portfolio. It switches off if you revoke sharing." },
+];
 
 function LaunchpadPage() {
   return (
     <MarketingLayout>
-      <section className="border-b border-[var(--mkt-border)] px-5 lg:px-8">
-        <div className="mx-auto max-w-[var(--mkt-maxw)] border-x border-[var(--mkt-border)]">
-          <div className="grid lg:grid-cols-12">
-            <div className="border-b border-[var(--mkt-border)] p-6 sm:p-10 lg:col-span-8 lg:border-b-0 lg:border-r lg:p-14"><p className="mkt-label">Launchpad / Land the opportunity</p><h1 className="mt-8 text-[clamp(3rem,6vw,5.75rem)] font-black uppercase leading-[0.9] text-[var(--mkt-text1)]">Make your readiness<br /><span className="text-[var(--mkt-text-faint)]">easy to inspect.</span></h1><p className="mt-10 max-w-xl text-lg font-medium leading-relaxed text-[var(--mkt-text2)]">Turn demonstrated work into a portfolio, interview narrative and trust signal that can be explained.</p><Link to="/signup" className="mt-8 inline-flex items-center gap-3 bg-[var(--mkt-text1)] px-6 py-4 text-xs font-bold uppercase text-[var(--mkt-on-dark)] transition-colors hover:bg-[var(--mkt-green)]">Join the pilot <ArrowRight className="size-4" /></Link></div>
-            <aside className="flex flex-col justify-between bg-[var(--mkt-green)] p-6 text-[var(--mkt-on-dark)] sm:p-10 lg:col-span-4"><Stamp className="size-9" /><div className="mt-24"><p className="font-mono text-xs uppercase text-[var(--mkt-on-dark-soft)]">Readiness rule</p><p className="mt-4 text-2xl font-black uppercase leading-tight">Explain the signal—or label it heuristic.</p></div></aside>
-          </div>
-          <div className="grid border-t border-[var(--mkt-border)] sm:grid-cols-3">{["Claims link to evidence", "Framework versions stay visible", "Verification comes from outside"].map((item) => <div key={item} className="border-b border-[var(--mkt-border)] p-5 text-xs font-bold uppercase text-[var(--mkt-text2)] last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0">{item}</div>)}</div>
+      <div className="hero-lp">
+        <div className="hero-lp-tag">02 · Launchpad · Land the opportunity</div>
+        <h1>Make your readiness easy to inspect.</h1>
+        <p className="hero-sub" style={{ marginBottom: 32 }}>
+          Turn demonstrated work into a portfolio, interview narrative, and trust signal that can be
+          explained.
+        </p>
+        <Link to="/pilot" className="btn btn-primary">
+          Open Launchpad →
+        </Link>
+      </div>
+
+      <div className="rule-box">
+        <span className="rule-box-mark">◆</span>
+        <span className="rule-box-text">
+          Explain the signal — or label it heuristic. Claims link to evidence. Framework versions
+          stay visible. Verification comes from outside.
+        </span>
+      </div>
+
+      <div className="surfaces-section">
+        <h2 className="heading-2" style={{ marginBottom: 6 }}>
+          Package the truth. Not the theatre.
+        </h2>
+        <p className="body">
+          Launchpad helps you select, explain and present what your record actually supports.
+        </p>
+        <div className="surfaces-grid">
+          {SURFACES.map((s) => (
+            <div className="surface-card" key={s.n}>
+              <div className="surface-n">{s.n}</div>
+              <div className="surface-name">{s.name}</div>
+              <div className="surface-desc">{s.desc}</div>
+              <div className={`surface-note ${s.cls}`}>{s.note}</div>
+            </div>
+          ))}
         </div>
-      </section>
+      </div>
 
-      <section className="px-5 py-20 lg:px-8 lg:py-28"><div className="mx-auto max-w-[var(--mkt-maxw)]"><div className="grid gap-8 lg:grid-cols-[1fr_2fr]"><div><p className="mkt-label">What Launchpad does</p><h2 className="mkt-editorial-title mt-5">Package the truth.<br />Not the theatre.</h2></div><p className="max-w-xl text-lg leading-relaxed text-[var(--mkt-text2)] lg:justify-self-end">Launchpad helps you select, explain and present what your record supports. It does not manufacture capability or inflate confidence.</p></div><div className="mt-16 border-t border-[var(--mkt-border-l)]">{FEATURES.map(({ icon: Icon, title, body }, index) => <article key={title} className="grid gap-5 border-b border-[var(--mkt-border)] py-7 sm:grid-cols-[3rem_1fr_1.5fr_auto] sm:items-start"><span className="font-mono text-xs text-[var(--mkt-green-m)]">0{index + 1}</span><h3 className="text-base font-bold uppercase text-[var(--mkt-text1)]">{title}</h3><p className="text-sm leading-relaxed text-[var(--mkt-text2)]">{body}</p><Icon className="size-5 text-[var(--mkt-green-m)]" /></article>)}</div></div></section>
-
-      <section className="border-y border-[var(--mkt-border)] bg-[var(--mkt-s2)] px-5 py-16 lg:px-8"><div className="mx-auto grid max-w-[var(--mkt-maxw)] gap-8 md:grid-cols-[1fr_auto] md:items-end"><div><p className="mkt-label">From record to opportunity</p><h2 className="mt-5 max-w-3xl text-3xl font-black uppercase text-[var(--mkt-text1)] sm:text-5xl">Show the work behind every claim.</h2></div><Link to="/signup" className="inline-flex items-center gap-3 bg-[var(--mkt-text1)] px-6 py-4 text-xs font-bold uppercase text-[var(--mkt-on-dark)] hover:bg-[var(--mkt-green)]">Open Launchpad <ArrowRight className="size-4" /></Link></div></section>
+      <div className="attest-section">
+        <div className="attest-inner">
+          <h2 className="attest-title">The Verified pathway</h2>
+          <p className="attest-sub">
+            Six steps from request to signal — every one transparent, none skippable.
+          </p>
+          <div className="attest-steps">
+            {PATHWAY.map((s, i) => (
+              <div className="attest-step" key={s.h}>
+                <div className="attest-num active">{i + 1}</div>
+                <div className="attest-body">
+                  <h4>{s.h}</h4>
+                  <p>{s.p}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </MarketingLayout>
   );
 }
