@@ -35,22 +35,10 @@ export const Route = createFileRoute("/_authenticated/workspace/")({
 });
 
 const JOURNEY: Record<JourneyState, { label: string; description: string }> = {
-  A: {
-    label: "Pre-experience",
-    description: "Your record is empty. Evidence only exists after you do the work.",
-  },
-  B: {
-    label: "Evidence building",
-    description: "Artefacts are landing in your ledger. Nothing has been judged yet.",
-  },
-  C: {
-    label: "Readiness packaging",
-    description: "Capability has been judged against the framework. You can package honestly.",
-  },
-  D: {
-    label: "Externally verified",
-    description: "At least one claim carries an external attestation.",
-  },
+  A: { label: "Pre-experience", description: "Your record is empty. Evidence only exists after you do the work." },
+  B: { label: "Evidence building", description: "Artefacts are landing in your ledger. Nothing has been judged yet." },
+  C: { label: "Readiness packaging", description: "Capability has been judged against the framework. You can package honestly." },
+  D: { label: "Externally verified", description: "At least one claim carries an external attestation." },
 };
 
 const SOURCE_LABELS: Record<string, string> = {
@@ -62,6 +50,13 @@ const SOURCE_LABELS: Record<string, string> = {
   external_verification: "External verification",
   coaching_submission: "Coaching",
 };
+
+const STAGES: { key: JourneyState; name: string; desc: string }[] = [
+  { key: "A", name: "Onboarding", desc: "PI profile created" },
+  { key: "B", name: "Experience", desc: "Evidence building" },
+  { key: "C", name: "Launchpad", desc: "Readiness packaging" },
+  { key: "D", name: "Verified", desc: "External attestation" },
+];
 
 function ContextualHome() {
   const { data: bootstrap } = useSuspenseQuery(workspaceBootstrapQuery);
@@ -76,155 +71,210 @@ function ContextualHome() {
   const firstName = bootstrap.profile?.full_name?.split(" ")[0] ?? "there";
   const target = briefing.targets.find((c) => c.key === "target_role")?.value;
   const next = nextAction(briefing);
+  const stageOrder: JourneyState[] = ["A", "B", "C", "D"];
+  const currentIdx = stageOrder.indexOf(briefing.journeyState);
 
   return (
-    <WorkspaceShell
-      title={`Good to see you, ${firstName}`}
-      subtitle={
-        target
-          ? `Your stated target is ${target}. Everything below is drawn from your record — nothing is assumed.`
-          : "Everything below is drawn from your record — nothing is assumed."
-      }
-    >
-      <section className="grid gap-0 border border-[var(--mkt-border)] sm:grid-cols-2 lg:grid-cols-4">
-        <Stat label="Journey state" value={`${briefing.journeyState} — ${journey.label}`} />
-        <Stat label="Evidence records" value={String(briefing.evidenceTotal)} />
-        <Stat
-          label="Capabilities judged"
-          value={`${briefing.judgedCapabilities} / ${briefing.capabilityTotal}`}
-        />
-        <Stat label="Verified claims" value={String(briefing.verifiedClaims)} />
-      </section>
-
-      <WorkspaceCard title="Where you stand" description={journey.description}>
-        <p className="text-sm leading-relaxed text-[var(--mkt-text2)]">
-          A claim is not evidence and a score is not verification. Your journey state is read from
-          the ledger, the judgements and the attestations on your record — never from what you told
-          us during setup.
-        </p>
-      </WorkspaceCard>
-
-      <WorkspaceCard title="Your next action" description={next.reason}>
-        <Link
-          to={next.to}
-          className="inline-flex items-center gap-2 border border-[var(--mkt-border-l)] bg-[var(--mkt-text1)] px-5 py-3 font-mono text-[0.6875rem] font-bold uppercase text-[var(--mkt-on-dark)] transition-colors hover:bg-[var(--mkt-green)]"
-        >
-          {next.label} <ArrowRight className="size-3.5" />
-        </Link>
-      </WorkspaceCard>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <WorkspaceCard
-          title="Evidence by source"
-          description="Every record keeps its origin. Sources are never blended."
-        >
-          {briefing.evidenceBySource.length === 0 ? (
-            <p className="text-sm text-[var(--mkt-text2)]">
-              No evidence yet. Do a piece of work and capture the artefact.
-            </p>
-          ) : (
-            <ul className="border border-[var(--mkt-border-l)]">
-              {briefing.evidenceBySource.map((row) => (
-                <li
-                  key={row.source}
-                  className="flex items-center justify-between border-b border-[var(--mkt-border-l)] px-4 py-3 text-sm last:border-b-0"
-                >
-                  <span className="text-[var(--mkt-text2)]">
-                    {SOURCE_LABELS[row.source] ?? row.source}
-                  </span>
-                  <span className="font-mono text-xs font-bold">{row.count}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </WorkspaceCard>
-
-        <WorkspaceCard
-          title="What you told us"
-          description="Self-reported at setup. Kept separate from evidence, always labelled."
-        >
-          {[...briefing.targets, ...briefing.strengths, ...briefing.workingStyle].length === 0 ? (
-            <p className="text-sm text-[var(--mkt-text2)]">
-              Nothing recorded yet. <Link className="underline" to="/onboarding">Complete setup</Link>.
-            </p>
-          ) : (
-            <ul className="border border-[var(--mkt-border-l)]">
-              {[...briefing.targets, ...briefing.strengths, ...briefing.workingStyle]
-                .slice(0, 10)
-                .map((claim) => (
-                  <li
-                    key={`${claim.kind}-${claim.key}`}
-                    className="grid grid-cols-[8rem_minmax(0,1fr)] gap-3 border-b border-[var(--mkt-border-l)] px-4 py-3 last:border-b-0"
-                  >
-                    <span className="font-mono text-[0.625rem] font-bold uppercase text-[var(--mkt-green-m)]">
-                      {claim.key.replace(/_/g, " ")}
-                    </span>
-                    <span className="min-w-0 break-words text-sm text-[var(--mkt-text2)]">
-                      {claim.value}
-                    </span>
-                  </li>
-                ))}
-            </ul>
-          )}
-        </WorkspaceCard>
+    <WorkspaceShell title="Daily briefing" subtitle={target ? `Target: ${target}` : undefined}>
+      <div className="briefing">
+        <div className="journey-state">
+          Journey stage {briefing.journeyState} · {journey.label}
+        </div>
+        <div className="briefing-greeting">
+          Good to see you, <em>{firstName}</em>.
+        </div>
+        <div className="briefing-sub">{journey.description}</div>
+        <div className="briefing-cards">
+          <div className="briefing-card">
+            <div className="briefing-card-label">Evidence entries</div>
+            <div className="briefing-card-val">{briefing.evidenceTotal}</div>
+            <div className="briefing-card-sub">
+              {briefing.evidenceTotal === 0 ? "Created only by doing work" : "Append-only record"}
+            </div>
+          </div>
+          <div className="briefing-card">
+            <div className="briefing-card-label">Capabilities judged</div>
+            <div className="briefing-card-val">
+              {briefing.judgedCapabilities} / {briefing.capabilityTotal}
+            </div>
+            <div className="briefing-card-sub">Against pm-core@2026.1</div>
+          </div>
+          <div className="briefing-card amber-accent">
+            <div className="briefing-card-label">Next action</div>
+            <div className="briefing-card-val" style={{ fontSize: 16 }}>
+              {next.short}
+            </div>
+            <div className="briefing-card-sub">Recommended for you</div>
+          </div>
+          <div className="briefing-card">
+            <div className="briefing-card-label">Verified claims</div>
+            <div className="briefing-card-val">{briefing.verifiedClaims || "—"}</div>
+            <div className="briefing-card-sub">Requires external attestation</div>
+          </div>
+        </div>
       </div>
 
-      <WorkspaceCard
-        title="Organisation"
-        description={
-          bootstrap.organisation
-            ? `${bootstrap.organisation.name} · ${bootstrap.memberCount} member${bootstrap.memberCount === 1 ? "" : "s"} · you are ${bootstrap.role ?? "a member"}`
-            : "Optional. Add one when you want to capture observed work with colleagues."
-        }
-        action={
-          <Link
-            to={bootstrap.organisation ? "/workspace/team" : "/workspace/organisation"}
-            className="border border-[var(--mkt-border-l)] px-4 py-2 font-mono text-[0.625rem] font-bold uppercase text-[var(--mkt-text2)] transition-colors hover:bg-[var(--mkt-text1)] hover:text-[var(--mkt-on-dark)]"
-          >
-            {bootstrap.organisation ? "Manage team" : "Add organisation"}
+      <div className="app-section">
+        <div className="section-title">Recommended next action</div>
+        <div className="action-card">
+          <div className="action-body" style={{ flex: 1 }}>
+            <div className="action-title">{next.label}</div>
+            <div className="action-desc">{next.reason}</div>
+          </div>
+          <Link to={next.to} className="btn btn-primary btn-sm" style={{ flexShrink: 0 }}>
+            Start now →
           </Link>
-        }
-      />
+        </div>
+      </div>
+
+      <div className="content-grid">
+        <div>
+          <div className="section-title">Evidence by source</div>
+          <WorkspaceCard
+            title={briefing.evidenceTotal === 0 ? "No evidence yet" : `${briefing.evidenceTotal} entries`}
+            action={
+              <Link to="/workspace/evidence" className="text-xs no-underline" style={{ color: "var(--x-slate)" }}>
+                View all →
+              </Link>
+            }
+          >
+            {briefing.evidenceBySource.length === 0 ? (
+              <div className="px-5 py-8 text-center">
+                <p className="text-[13px]" style={{ color: "var(--x-slate-light)" }}>
+                  Nothing is on record. Do a piece of work and capture the artefact.
+                </p>
+              </div>
+            ) : (
+              briefing.evidenceBySource.map((row, i) => (
+                <div key={row.source} className="ev-row">
+                  <span className="ev-num">{String(i + 1).padStart(2, "0")}</span>
+                  <div className="ev-body">
+                    <div className="ev-name">{SOURCE_LABELS[row.source] ?? row.source}</div>
+                    <div className="ev-meta">{row.source}</div>
+                  </div>
+                  <span className="text-sm font-bold">{row.count}</span>
+                </div>
+              ))
+            )}
+          </WorkspaceCard>
+
+          <div className="section-title" style={{ marginTop: 24 }}>
+            What you told us
+          </div>
+          <WorkspaceCard
+            title="Self-reported at setup"
+            description="Kept separate from evidence, always labelled."
+          >
+            {[...briefing.targets, ...briefing.strengths, ...briefing.workingStyle].length === 0 ? (
+              <div className="px-5 py-6 text-[13px]" style={{ color: "var(--x-slate-light)" }}>
+                Nothing recorded yet.{" "}
+                <Link to="/onboarding" className="underline">
+                  Complete setup
+                </Link>
+                .
+              </div>
+            ) : (
+              [...briefing.targets, ...briefing.strengths, ...briefing.workingStyle]
+                .slice(0, 10)
+                .map((claim) => (
+                  <div key={`${claim.kind}-${claim.key}`} className="ev-row">
+                    <div className="ev-body">
+                      <div className="ev-name">{claim.value}</div>
+                      <div className="ev-meta">{claim.key.replace(/_/g, " ")} · self_report</div>
+                    </div>
+                  </div>
+                ))
+            )}
+          </WorkspaceCard>
+        </div>
+
+        <div className="flex flex-col gap-5">
+          <WorkspaceCard
+            title="Your journey"
+            description="State is read from the ledger — never from what you told us."
+          >
+            {STAGES.map((s, i) => {
+              const state = i < currentIdx ? "done" : i === currentIdx ? "current" : "upcoming";
+              return (
+                <div
+                  key={s.key}
+                  className="ev-row"
+                  style={state === "current" ? { background: "var(--x-amber-light)" } : undefined}
+                >
+                  <span className={`stage-dot ${state}`} />
+                  <div className="ev-body">
+                    <div className="ev-name">{s.name}</div>
+                    <div className="ev-meta">{s.desc}</div>
+                  </div>
+                  <span
+                    className="text-[10px] font-semibold"
+                    style={{
+                      color:
+                        state === "done"
+                          ? "var(--x-teal-text)"
+                          : state === "current"
+                            ? "var(--x-amber-text)"
+                            : "var(--x-slate-light)",
+                    }}
+                  >
+                    {state === "done" ? "Done" : state === "current" ? "Now" : "Locked"}
+                  </span>
+                </div>
+              );
+            })}
+          </WorkspaceCard>
+
+          <WorkspaceCard
+            title="Organisation"
+            description={
+              bootstrap.organisation
+                ? `${bootstrap.organisation.name} · ${bootstrap.memberCount} member${bootstrap.memberCount === 1 ? "" : "s"} · you are ${bootstrap.role ?? "a member"}`
+                : "Optional. Add one to capture observed work with colleagues."
+            }
+            action={
+              <Link
+                to={bootstrap.organisation ? "/workspace/team" : "/workspace/organisation"}
+                className="btn btn-secondary btn-sm"
+              >
+                {bootstrap.organisation ? "Manage" : "Add"}
+              </Link>
+            }
+          />
+        </div>
+      </div>
     </WorkspaceShell>
   );
 }
 
-function nextAction(briefing: DailyBriefing): { label: string; reason: string; to: string } {
+function nextAction(briefing: DailyBriefing): { label: string; short: string; reason: string; to: string } {
   if (briefing.evidenceTotal === 0)
     return {
       label: "See how Experience works",
-      reason:
-        "Your record has no evidence yet. Realistic work is the only thing that can create it.",
+      short: "Start",
+      reason: "Your record has no evidence yet. Realistic work is the only thing that can create it.",
       to: "/experience",
     };
   if (briefing.judgedCapabilities === 0)
     return {
       label: "Open your evidence",
-      reason:
-        "You have artefacts on record but no framework judgement yet. Review what is captured and run a judgement.",
+      short: "Judge",
+      reason: "You have artefacts on record but no framework judgement yet. Review what is captured and run a judgement.",
       to: "/workspace/evidence",
     };
   if (briefing.verifiedClaims === 0)
     return {
       label: "Request an attestation",
-      reason:
-        "Capability has been judged. Verified only lights from an external attestation, so ask someone who saw the work.",
+      short: "Verify",
+      reason: "Capability has been judged. Verified only lights from an external attestation, so ask someone who saw the work.",
       to: "/workspace/capability",
     };
   return {
     label: "Review your capability",
+    short: "Review",
     reason: "Your record carries verified signal. Keep it current as new work lands.",
     to: "/workspace/capability",
   };
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="border-b border-r border-[var(--mkt-border)] p-5 last:border-r-0 sm:p-6">
-      <p className="font-mono text-[0.625rem] font-bold uppercase text-[var(--mkt-green-m)]">
-        {label}
-      </p>
-      <p className="mt-3 font-serif text-2xl font-black uppercase leading-none">{value}</p>
-    </div>
-  );
-}
+// ArrowRight kept for future CTAs
+void ArrowRight;
