@@ -1,79 +1,63 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowRight, Building2, FileCheck2, Scale, ShieldCheck } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
-import { ArrowRight, Building2, ClipboardList, Trophy, BarChart3 } from "lucide-react";
 
 export const Route = createFileRoute("/experience")({
   head: () => ({
     meta: [
-      { title: "Experience — DeliverX" },
-      { name: "description", content: "Build product judgement inside living organisations with AI colleagues and an Experience Record employers can evaluate." },
-      { property: "og:title", content: "Experience — DeliverX" },
-      { property: "og:description", content: "Build product judgement inside living organisations with AI colleagues and an Experience Record employers can evaluate." },
+      { title: "Product Management Experience — DeliverX" },
+      { name: "description", content: "Practise product management inside realistic organisations and build provenance-backed evidence through the work you complete." },
+      { property: "og:title", content: "Product Management Experience — DeliverX" },
+      { property: "og:description", content: "Do realistic product work and build a traceable record of what you can demonstrate." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ExperiencePage,
 });
 
 const FEATURES = [
-  {
-    icon: Building2,
-    title: "Living organisations",
-    body: "Practise inside simulated companies with real product constraints, stakeholders and roadmaps.",
-  },
-  {
-    icon: ClipboardList,
-    title: "Real PM work",
-    body: "Own charters, requirements, prioritisation and stakeholder alignment just like in a real role.",
-  },
-  {
-    icon: Trophy,
-    title: "Judgement feedback",
-    body: "Get structured feedback on decisions, trade-offs and communication from AI teammates.",
-  },
-  {
-    icon: BarChart3,
-    title: "Experience Record",
-    body: "Every artefact and outcome becomes evidence of your readiness and craft.",
-  },
-];
+  { icon: Building2, number: "01", title: "Living organisations", body: "Enter simulated companies with real constraints, stakeholders and product context." },
+  { icon: Scale, number: "02", title: "Consequential decisions", body: "Make trade-offs, explain your reasoning and respond as the situation changes." },
+  { icon: FileCheck2, number: "03", title: "Evidence record", body: "Keep artefacts, decisions and provenance together in a private record." },
+  { icon: ShieldCheck, number: "04", title: "Structured judgement", body: "See how demonstrated work maps to a versioned capability framework." },
+] as const;
+
+const ENTRY = ["Offer", "Hiring interview", "Ceremony", "Day one"] as const;
 
 function ExperiencePage() {
   return (
     <MarketingLayout>
+      <section className="border-b border-[var(--mkt-border)] px-5 lg:px-8">
+        <div className="mx-auto grid max-w-[var(--mkt-maxw)] border-x border-[var(--mkt-border)] lg:grid-cols-12">
+          <div className="border-b border-[var(--mkt-border)] p-6 sm:p-10 lg:col-span-8 lg:border-b-0 lg:border-r lg:p-14">
+            <p className="mkt-label">Experience / Build the experience</p>
+            <h1 className="mt-8 text-[clamp(3rem,6vw,5.75rem)] font-black uppercase leading-[0.9] text-[var(--mkt-text1)]">
+              Stop describing potential.<br /><span className="text-[var(--mkt-text-faint)]">Demonstrate it.</span>
+            </h1>
+            <p className="mt-10 max-w-xl text-lg font-medium leading-relaxed text-[var(--mkt-text2)]">Work as a product manager inside realistic organisations. Your actions—not the setup—create the evidence.</p>
+            <Link to="/signup" className="mt-8 inline-flex items-center gap-3 bg-[var(--mkt-text1)] px-6 py-4 text-xs font-bold uppercase text-[var(--mkt-on-dark)] transition-colors hover:bg-[var(--mkt-green)]">Join the pilot <ArrowRight className="size-4" /></Link>
+          </div>
+          <aside className="bg-[var(--mkt-s2)] p-6 sm:p-10 lg:col-span-4">
+            <p className="mkt-label">Joining Experience</p>
+            <ol className="mt-10 border-t border-[var(--mkt-border-l)]">
+              {ENTRY.map((item, index) => <li key={item} className="grid grid-cols-[2rem_1fr] border-b border-[var(--mkt-border)] py-5"><span className="font-mono text-xs text-[var(--mkt-text3)]">0{index + 1}</span><span className="text-sm font-bold uppercase text-[var(--mkt-text1)]">{item}</span></li>)}
+            </ol>
+            <p className="mt-8 text-sm leading-relaxed text-[var(--mkt-text2)]">The interview is skippable. The ceremony is narrative. Neither creates capability.</p>
+          </aside>
+        </div>
+      </section>
+
       <section className="px-5 py-20 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-[var(--mkt-maxw)]">
-          <div className="mx-auto max-w-3xl text-center">
-            <span className="mkt-label">Build the experience</span>
-            <h1 className="mkt-section-title mt-3">Experience</h1>
-            <p className="mkt-section-sub mx-auto">
-              Work as a Product Manager before you are one. Build judgement, craft and a portfolio of
-              evidence that employers can evaluate.
-            </p>
-            <Link
-              to="/signup"
-              className="mt-8 inline-flex items-center gap-2 rounded-full bg-[var(--mkt-green)] px-7 py-3.5 text-base font-semibold text-white shadow-md transition-all hover:bg-[var(--mkt-green-m)]"
-            >
-              Join the pilot
-              <ArrowRight className="size-4" />
-            </Link>
-          </div>
-          <div className="mt-16 grid gap-6 md:grid-cols-2">
-            {FEATURES.map((feature) => (
-              <div key={feature.title} className="mkt-card p-6">
-                <div className="mkt-feature-icon mb-4">
-                  <feature.icon className="size-5" />
-                </div>
-                <h3 className="font-serif text-xl tracking-[-0.01em] text-[var(--mkt-text1)]">
-                  {feature.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-[var(--mkt-text2)]">
-                  {feature.body}
-                </p>
-              </div>
-            ))}
+          <div className="grid gap-8 lg:grid-cols-[1fr_2fr]"><div><p className="mkt-label">The work</p><h2 className="mkt-editorial-title mt-5">A role you act in.<br />Not content you consume.</h2></div><p className="max-w-xl text-lg leading-relaxed text-[var(--mkt-text2)] lg:justify-self-end">Build product judgement through decisions, artefacts and consequences. Feedback helps you improve; only completed work enters the record.</p></div>
+          <div className="mt-16 grid border-l border-t border-[var(--mkt-border)] md:grid-cols-2">
+            {FEATURES.map(({ icon: Icon, number, title, body }) => <article key={title} className="min-h-64 border-b border-r border-[var(--mkt-border)] p-6 sm:p-8"><div className="flex items-center justify-between"><span className="font-mono text-xs text-[var(--mkt-green-m)]">{number}</span><Icon className="size-5 text-[var(--mkt-green-m)]" /></div><h3 className="mt-20 text-xl font-black uppercase text-[var(--mkt-text1)]">{title}</h3><p className="mt-3 max-w-sm text-sm leading-relaxed text-[var(--mkt-text2)]">{body}</p></article>)}
           </div>
         </div>
       </section>
+
+      <section className="bg-[var(--mkt-text1)] px-5 py-16 text-[var(--mkt-on-dark)] lg:px-8"><div className="mx-auto flex max-w-[var(--mkt-maxw)] flex-col justify-between gap-8 md:flex-row md:items-end"><div><p className="mkt-label-dark">Evidence principle</p><h2 className="mt-5 max-w-2xl text-3xl font-black uppercase sm:text-5xl">No evidence before you act.</h2></div><Link to="/signup" className="inline-flex items-center gap-3 border border-[var(--mkt-on-dark-border)] px-6 py-4 text-xs font-bold uppercase hover:bg-[var(--mkt-on-dark)] hover:text-[var(--mkt-text1)]">Start Experience <ArrowRight className="size-4" /></Link></div></section>
     </MarketingLayout>
   );
 }
