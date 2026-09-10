@@ -10,27 +10,28 @@ export function MarketingLogo({
   return (
     <Link
       to={href}
-      className="mr-auto flex items-center gap-2.5 no-underline"
+      className="mr-auto flex items-center gap-3 no-underline"
+      aria-label="DeliverX home"
     >
       <span
-        className={`flex size-[30px] shrink-0 items-center justify-center rounded-[7px] ${
-          light ? "bg-white/15" : "bg-[var(--mkt-green)]"
+        className={`flex size-8 shrink-0 items-center justify-center ${
+          light ? "bg-[var(--mkt-on-dark-muted)]" : "bg-[var(--mkt-text1)]"
         }`}
         aria-hidden
       >
         <svg
-          viewBox="0 0 14 14"
-          className="size-3.5 stroke-white fill-none stroke-2 [stroke-linecap:round]"
+          viewBox="0 0 16 16"
+          className="size-4 fill-none stroke-[var(--mkt-on-dark)] stroke-[2.25] [stroke-linecap:square]"
         >
-          <path d="M1 7h12M7 1v12M2 2l10 10M12 2L2 12" />
+          <path d="M3 3l10 10M13 3L3 13" />
         </svg>
       </span>
       <span
-        className={`font-serif text-lg tracking-[-0.01em] ${
-          light ? "text-white" : "text-[var(--mkt-text1)]"
+        className={`text-lg font-black uppercase ${
+          light ? "text-[var(--mkt-on-dark)]" : "text-[var(--mkt-text1)]"
         }`}
       >
-        DeliverX
+        Deliver<span className="text-[var(--mkt-green-l)]">X</span>
       </span>
     </Link>
   );

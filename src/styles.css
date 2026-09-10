@@ -144,6 +144,7 @@
   --mkt-text1: #0D0D0B;
   --mkt-text2: #3F4A43;
   --mkt-text3: #7A857E;
+  --mkt-text-faint: #BEC5C0;
   --mkt-green: #1C4A2E;
   --mkt-green-m: #2D7048;
   --mkt-green-l: #3D9660;
@@ -163,6 +164,10 @@
   --mkt-stat-up: #3D9660;
   --mkt-stat-down: #C0392B;
   --mkt-stat-warn: #B7620A;
+  --mkt-on-dark: #FFFFFF;
+  --mkt-on-dark-soft: #C8CECA;
+  --mkt-on-dark-muted: #858C87;
+  --mkt-on-dark-border: #30332F;
   --mkt-navh: 68px;
   --mkt-radius-panel: 1.75rem;
   --mkt-radius-card: 1.5rem;
@@ -209,7 +214,7 @@
 
 /* Marketing landing — soft, airy SaaS polish */
 html:has(.marketing-page) {
-  font-size: 112.5%;
+  font-size: 100%;
 }
 
 .mkt-label {
@@ -217,8 +222,26 @@ html:has(.marketing-page) {
   font-size: 0.6875rem;
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
+  letter-spacing: 0;
   color: var(--mkt-green-m);
+}
+
+.mkt-label-dark {
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  color: var(--mkt-green-l);
+}
+
+.mkt-editorial-title {
+  font-size: clamp(2.25rem, 5vw, 4.5rem);
+  font-weight: 900;
+  line-height: 0.96;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--mkt-text1);
 }
 
 .mkt-section-title {

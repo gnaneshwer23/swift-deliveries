@@ -1,21 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
-import {
-  SUITE_PRODUCTS,
-  SUITE_DIFFERENCE,
-  SUITE_LIFECYCLE,
-  SUITE_TAGLINE,
-} from "@/lib/marketing/suite-data";
-import {
-  ArrowRight,
-  CheckCircle2,
-  Sparkles,
-  Users,
-  Briefcase,
-  Target,
-  Zap,
-  Shield,
-} from "lucide-react";
+import { ArrowRight, Check, FileCheck2, Fingerprint, Gauge, Quote } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,7 +9,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Build experience, land opportunities and succeed in the role with AI teammates and evidence-backed Professional Intelligence.",
+          "Do realistic product work, keep provenance-backed evidence and prove capability with DeliverX.",
       },
       {
         property: "og:title",
@@ -33,8 +18,10 @@ export const Route = createFileRoute("/")({
       {
         property: "og:description",
         content:
-          "Build experience, land opportunities and succeed in the role with AI teammates and evidence-backed Professional Intelligence.",
+          "Do realistic product work, keep provenance-backed evidence and prove capability with DeliverX.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: HomePage,
@@ -44,160 +31,76 @@ function HomePage() {
   return (
     <MarketingLayout>
       <HeroSection />
-      <TrustSection />
-      <ProblemSection />
-      <ProductsSection />
+      <ProductPaths />
+      <EvidenceSection />
       <JourneySection />
-      <DifferenceSection />
-      <CTASection />
+      <ClosingSection />
     </MarketingLayout>
   );
 }
 
 function HeroSection() {
   return (
-    <section className="mkt-hero-mesh relative overflow-hidden px-5 pb-20 pt-16 lg:px-8 lg:pb-28 lg:pt-24">
-      <div className="mx-auto max-w-[var(--mkt-maxw)]">
-        <div className="mx-auto max-w-3xl text-center">
-          <span className="mkt-label inline-flex items-center gap-2 rounded-full border border-[var(--mkt-border)] bg-white/70 px-3 py-1.5 backdrop-blur-sm">
-            <Sparkles className="size-3.5" />
-            {SUITE_TAGLINE}
-          </span>
-          <h1 className="mt-6 font-serif text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.02] tracking-[-0.03em] text-[var(--mkt-text1)]">
-            Build the experience. Land the role. Succeed with AI teammates.
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg font-light leading-relaxed text-[var(--mkt-text2)]">
-            DeliverX is the Professional Intelligence platform for product people: practise inside
-            living organisations, package your evidence, and collaborate with role-based AI
-            teammates in one workspace.
-          </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+    <section className="border-b border-[var(--mkt-border)] bg-[var(--mkt-s1)] px-5 lg:px-8">
+      <div className="mx-auto max-w-[var(--mkt-maxw)] border-x border-[var(--mkt-border)]">
+        <div className="grid lg:grid-cols-12">
+          <div className="border-b border-[var(--mkt-border)] p-6 sm:p-10 lg:col-span-8 lg:border-b-0 lg:border-r lg:p-14">
+            <span className="mkt-label">Professional intelligence / Product people</span>
+            <h1 className="mt-8 max-w-4xl text-[clamp(3.25rem,7vw,6.5rem)] font-black uppercase leading-[0.88] text-[var(--mkt-text1)]">
+              Do the work.<br />Keep the proof.<br /><span className="text-[var(--mkt-text-faint)]">Earn the signal.</span>
+            </h1>
+            <p className="mt-10 max-w-xl text-lg font-medium leading-relaxed text-[var(--mkt-text2)]">
+              DeliverX turns realistic product work into traceable evidence, capability judgements and career-ready proof.
+            </p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               to="/signup"
-              className="inline-flex items-center gap-2 rounded-full bg-[var(--mkt-green)] px-7 py-3.5 text-base font-semibold text-white shadow-md transition-all hover:bg-[var(--mkt-green-m)] hover:shadow-lg"
+                className="inline-flex items-center justify-center gap-3 bg-[var(--mkt-text1)] px-6 py-4 text-xs font-bold uppercase text-[var(--mkt-on-dark)] transition-colors hover:bg-[var(--mkt-green)]"
             >
-              Start for free
+                Start with Experience
               <ArrowRight className="size-4" />
             </Link>
             <Link
               to="/how-it-works"
-              className="inline-flex items-center gap-2 rounded-full border border-[var(--mkt-border-l)] bg-white px-7 py-3.5 text-base font-medium text-[var(--mkt-text2)] transition-all hover:border-[var(--mkt-green-l)] hover:text-[var(--mkt-green)]"
+                className="inline-flex items-center justify-center border border-[var(--mkt-border-l)] px-6 py-4 text-xs font-bold uppercase text-[var(--mkt-text1)] transition-colors hover:bg-[var(--mkt-s2)]"
             >
-              See how it works
+                How it works
             </Link>
           </div>
-        </div>
-
-        <div className="mx-auto mt-14 max-w-4xl">
-          <div className="mkt-hero-float mkt-soft-panel-light aspect-[16/10] p-2 shadow-2xl">
-            <div className="flex h-full flex-col rounded-[calc(var(--mkt-radius-panel)-0.5rem)] border border-[var(--mkt-border)] bg-[var(--mkt-s2)] p-6">
-              <div className="flex items-center gap-2 border-b border-[var(--mkt-border)] pb-4">
-                <div className="flex gap-1.5">
-                  <span className="size-3 rounded-full bg-[var(--mkt-red)]" />
-                  <span className="size-3 rounded-full bg-[var(--mkt-amber)]" />
-                  <span className="size-3 rounded-full bg-[var(--mkt-green-l)]" />
-                </div>
-                <span className="ml-3 text-xs text-[var(--mkt-text3)]">Professional Workspace</span>
+          </div>
+          <div className="flex flex-col lg:col-span-4">
+            <div className="border-b border-[var(--mkt-border)] bg-[var(--mkt-s2)] p-6 sm:p-8 lg:p-10">
+              <div className="mkt-label">Evidence record / Private by default</div>
+              <div className="mt-8 space-y-6">
+                {[
+                  ["Discovery brief", "Observed", "01"],
+                  ["Prioritisation decision", "Assessed", "02"],
+                  ["Stakeholder plan", "Awaiting review", "03"],
+                ].map(([title, status, number]) => (
+                  <div className="grid grid-cols-[auto_1fr] gap-4 border-t border-[var(--mkt-border-l)] pt-4" key={title}>
+                    <span className="font-mono text-xs text-[var(--mkt-text3)]">{number}</span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-[var(--mkt-text1)]">{title}</p>
+                      <p className="mt-1 text-xs uppercase text-[var(--mkt-green-m)]">{status}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="grid flex-1 gap-4 pt-4 md:grid-cols-3">
-                <div className="mkt-soft-panel col-span-2 p-4">
-                  <div className="mkt-label mb-2">Sprint goals</div>
-                  <div className="space-y-2">
-                    {[1, 2, 3].map((i) => (
-                      <div
-                        key={i}
-                        className="flex items-center gap-3 rounded-lg bg-white p-3 shadow-sm"
-                      >
-                        <CheckCircle2 className="size-4 text-[var(--mkt-green-l)]" />
-                        <div className="h-2 flex-1 rounded-full bg-[var(--mkt-s3)]" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="mkt-soft-panel p-4">
-                  <div className="mkt-label mb-2">AI teammates</div>
-                  <div className="space-y-2">
-                    {["PM Copilot", "Engineering Lead", "Design Partner"].map((role) => (
-                      <div
-                        key={role}
-                        className="flex items-center gap-2 rounded-lg bg-white p-2 text-xs font-medium text-[var(--mkt-text2)] shadow-sm"
-                      >
-                        <Users className="size-3.5 text-[var(--mkt-green-m)]" />
-                        {role}
-                      </div>
-                    ))}
-                  </div>
-                </div>
+            </div>
+            <div className="flex flex-1 flex-col justify-between bg-[var(--mkt-text1)] p-6 text-[var(--mkt-on-dark)] sm:p-8 lg:p-10">
+              <Fingerprint className="size-8 text-[var(--mkt-green-l)]" />
+              <div className="mt-16">
+                <p className="mkt-label-dark">Verified means verified</p>
+                <p className="mt-3 text-lg font-bold leading-snug">Only external attestation can light the Verified signal.</p>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
-  );
-}
-
-function TrustSection() {
-  const items = [
-    "No credit card required",
-    "Pilot access open",
-    "Human-in-the-loop AI",
-  ];
-  return (
-    <section className="border-y border-[var(--mkt-border)] bg-[var(--mkt-s1)] px-5 py-5 lg:px-8">
-      <div className="mx-auto flex max-w-[var(--mkt-maxw)] flex-wrap items-center justify-center gap-3">
-        {items.map((item) => (
-          <span key={item} className="mkt-trust-pill">
-            <CheckCircle2 className="size-3.5 text-[var(--mkt-green-l)]" />
-            {item}
-          </span>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function ProblemSection() {
-  return (
-    <section className="px-5 py-20 lg:px-8 lg:py-28">
-      <div className="mx-auto max-w-[var(--mkt-maxw)]">
-        <div className="mx-auto max-w-2xl text-center">
-          <span className="mkt-label">The gap</span>
-          <h2 className="mkt-section-title mt-3">
-            Resumes promise. Evidence wins.
-          </h2>
-          <p className="mkt-section-sub mx-auto">
-            Traditional hiring and delivery tools are disconnected. DeliverX connects experience,
-            readiness and delivery in one continuous path — so every project compounds into
-            career momentum.
-          </p>
-        </div>
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
-          {[
-            {
-              icon: Briefcase,
-              title: "Experience without proof",
-              body: "Candidates practise in isolation; employers guess at capability.",
-            },
-            {
-              icon: Target,
-              title: "Opportunity without signal",
-              body: "Applications rely on keywords instead of labelled, verifiable evidence.",
-            },
-            {
-              icon: Zap,
-              title: "Delivery without support",
-              body: "New hires switch tools instead of continuing the same intelligence loop.",
-            },
-          ].map(({ icon: Icon, title, body }) => (
-            <div key={title} className="mkt-card p-6">
-              <div className="mkt-feature-icon mb-4">
-                <Icon className="size-5" />
-              </div>
-              <h3 className="font-serif text-lg tracking-[-0.01em] text-[var(--mkt-text1)]">
-                {title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-[var(--mkt-text2)]">{body}</p>
+        <div className="grid border-t border-[var(--mkt-border)] sm:grid-cols-3">
+          {["Evidence stays distinct from self-report", "Capability comes from versioned judgement", "Readiness is explained, never decorated"].map((item) => (
+            <div key={item} className="flex items-start gap-3 border-b border-[var(--mkt-border)] p-5 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0">
+              <Check className="mt-0.5 size-4 shrink-0 text-[var(--mkt-green-l)]" />
+              <span className="text-xs font-bold uppercase leading-relaxed text-[var(--mkt-text2)]">{item}</span>
             </div>
           ))}
         </div>
@@ -206,38 +109,49 @@ function ProblemSection() {
   );
 }
 
-function ProductsSection() {
+function ProductPaths() {
+  const paths = [
+    { number: "01", name: "Experience", line: "Build the experience", body: "Join a simulated company, work through realistic product situations and produce evidence through action.", href: "/experience" as const },
+    { number: "02", name: "Launchpad", line: "Land the opportunity", body: "Turn judged evidence into a clear portfolio, honest readiness story and stronger interview preparation.", href: "/launchpad" as const },
+    { number: "03", name: "Workspace", line: "Succeed in the role", body: "Carry the same evidence discipline into live product work with your organisation and team.", href: "/professional-workspace" as const },
+  ];
   return (
-    <section className="bg-[var(--mkt-s1)] px-5 py-20 lg:px-8 lg:py-28">
+    <section className="px-5 py-20 lg:px-8 lg:py-28">
       <div className="mx-auto max-w-[var(--mkt-maxw)]">
-        <div className="mx-auto max-w-2xl text-center">
-          <span className="mkt-label">The suite</span>
-          <h2 className="mkt-section-title mt-3">One connected path, three stages</h2>
-          <p className="mkt-section-sub mx-auto">
-            Experience builds evidence. Launchpad turns evidence into opportunity. Professional
-            Workspace turns opportunity into confident delivery.
-          </p>
+        <div className="grid gap-8 border-b border-[var(--mkt-border)] pb-10 lg:grid-cols-[1fr_2fr]">
+          <p className="mkt-label">Choose your stage</p>
+          <h2 className="mkt-editorial-title">One professional journey.<br />Three clear entry points.</h2>
         </div>
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
-          {SUITE_PRODUCTS.map((product) => (
-            <Link
-              key={product.id}
-              to={product.href}
-              className="mkt-card mkt-card-lift group block p-6"
-            >
-              <span className="mkt-label">{product.stage}</span>
-              <h3 className="mt-3 font-serif text-2xl tracking-[-0.02em] text-[var(--mkt-text1)] group-hover:text-[var(--mkt-green)]">
-                {product.name}
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-[var(--mkt-text2)]">
-                {product.promise}
-              </p>
-              <p className="mt-4 text-xs text-[var(--mkt-text3)]">{product.detail}</p>
-              <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--mkt-green)]">
-                {product.cta}
-                <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
-              </span>
+        <div className="divide-y divide-[var(--mkt-border)]">
+          {paths.map((path) => (
+            <Link to={path.href} key={path.name} className="group grid gap-4 py-8 transition-colors hover:bg-[var(--mkt-s2)] sm:grid-cols-[4rem_1fr_1.5fr_auto] sm:items-center sm:px-4">
+              <span className="font-mono text-xs text-[var(--mkt-text3)]">{path.number}</span>
+              <div><h3 className="text-2xl font-black uppercase text-[var(--mkt-text1)]">{path.name}</h3><p className="mt-1 text-xs font-bold uppercase text-[var(--mkt-green-m)]">{path.line}</p></div>
+              <p className="max-w-xl text-sm leading-relaxed text-[var(--mkt-text2)]">{path.body}</p>
+              <ArrowRight className="size-5 text-[var(--mkt-text3)] transition-transform group-hover:translate-x-1 group-hover:text-[var(--mkt-green)]" />
             </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function EvidenceSection() {
+  return (
+    <section className="bg-[var(--mkt-text1)] px-5 py-20 text-[var(--mkt-on-dark)] lg:px-8 lg:py-28">
+      <div className="mx-auto grid max-w-[var(--mkt-maxw)] gap-12 lg:grid-cols-12">
+        <div className="lg:col-span-5">
+          <p className="mkt-label-dark">The trust model</p>
+          <h2 className="mt-6 text-[clamp(2.5rem,5vw,4.5rem)] font-black uppercase leading-[0.94]">A claim is not evidence.<br /><span className="text-[var(--mkt-on-dark-muted)]">A score is not verification.</span></h2>
+          <p className="mt-8 max-w-md text-base leading-relaxed text-[var(--mkt-on-dark-soft)]">DeliverX keeps knowledge, evidence and capability separate. That distinction makes every signal clearer—and harder to fake.</p>
+        </div>
+        <div className="lg:col-span-7 lg:border-l lg:border-[var(--mkt-on-dark-border)] lg:pl-12">
+          {[{ icon: FileCheck2, title: "Provenance-backed evidence", body: "Work is tied to an immutable version and records where it came from." }, { icon: Gauge, title: "Versioned capability judgement", body: "Capability is written only through a pinned framework and an explainable score run." }, { icon: Fingerprint, title: "External verification", body: "Verified appears only after an outside person attests to externally verified evidence." }].map(({ icon: Icon, title, body }, index) => (
+            <div key={title} className="grid grid-cols-[auto_1fr] gap-5 border-t border-[var(--mkt-on-dark-border)] py-7 first:border-t-0 first:pt-0">
+              <span className="font-mono text-xs text-[var(--mkt-green-l)]">0{index + 1}</span>
+              <div><Icon className="mb-5 size-6 text-[var(--mkt-green-l)]" /><h3 className="text-xl font-bold">{title}</h3><p className="mt-2 max-w-lg text-sm leading-relaxed text-[var(--mkt-on-dark-soft)]">{body}</p></div>
+            </div>
           ))}
         </div>
       </div>
@@ -246,25 +160,14 @@ function ProductsSection() {
 }
 
 function JourneySection() {
+  const steps = ["Do realistic work", "Capture the artefact", "Judge against a framework", "Package honest readiness", "Verify externally"];
   return (
     <section className="px-5 py-20 lg:px-8 lg:py-28">
       <div className="mx-auto max-w-[var(--mkt-maxw)]">
-        <div className="mx-auto max-w-2xl text-center">
-          <span className="mkt-label">The journey</span>
-          <h2 className="mkt-section-title mt-3">From first project to senior impact</h2>
-        </div>
-        <div className="mt-14 grid gap-4 md:grid-cols-3">
-          {SUITE_LIFECYCLE.map((stage, index) => (
-            <div key={stage.name} className="relative mkt-soft-panel p-6">
-              <span className="absolute -top-3 left-6 inline-flex size-7 items-center justify-center rounded-full bg-[var(--mkt-green)] text-xs font-bold text-white">
-                {index + 1}
-              </span>
-              <h3 className="mt-2 font-serif text-xl tracking-[-0.01em] text-[var(--mkt-text1)]">
-                {stage.name}
-              </h3>
-              <p className="mt-1 text-sm font-medium text-[var(--mkt-green-m)]">{stage.line}</p>
-              <p className="mt-3 text-sm leading-relaxed text-[var(--mkt-text2)]">{stage.outcome}</p>
-            </div>
+        <div className="grid gap-10 lg:grid-cols-[1fr_2fr]"><div><p className="mkt-label">The loop</p><h2 className="mkt-editorial-title mt-5">Work becomes proof.<br />Proof compounds.</h2></div><blockquote className="border-l border-[var(--mkt-border-l)] pl-8"><Quote className="size-7 text-[var(--mkt-green-l)]" /><p className="mt-6 text-2xl font-bold leading-snug text-[var(--mkt-text1)]">No silent promotion from a self-report, AI draft or score to Verified.</p><p className="mt-4 text-sm text-[var(--mkt-text3)]">The DeliverX evidence principle</p></blockquote></div>
+        <ol className="mt-16 grid border border-[var(--mkt-border)] sm:grid-cols-5">
+          {steps.map((step, index) => (
+            <li key={step} className="min-h-44 border-b border-[var(--mkt-border)] p-5 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0"><span className="font-mono text-xs text-[var(--mkt-green-m)]">0{index + 1}</span><p className="mt-12 text-sm font-bold uppercase leading-snug text-[var(--mkt-text1)]">{step}</p></li>
           ))}
         </div>
       </div>
@@ -272,59 +175,13 @@ function JourneySection() {
   );
 }
 
-function DifferenceSection() {
+function ClosingSection() {
   return (
-    <section className="bg-[var(--mkt-s1)] px-5 py-20 lg:px-8 lg:py-28">
-      <div className="mx-auto max-w-[var(--mkt-maxw)]">
-        <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
-          <div>
-            <span className="mkt-label">Why DeliverX</span>
-            <h2 className="mkt-section-title mt-3">Professional Intelligence, not just another tool</h2>
-            <p className="mkt-section-sub">
-              We combine AI teammates, structured evidence and a continuous readiness model so
-              product people can prove and improve their craft at every stage.
-            </p>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {SUITE_DIFFERENCE.map((item) => (
-              <div key={item.title} className="mkt-card p-5">
-                <div className="mkt-feature-icon mb-3">
-                  <Shield className="size-4" />
-                </div>
-                <h3 className="font-serif text-base tracking-[-0.01em] text-[var(--mkt-text1)]">
-                  {item.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-[var(--mkt-text2)]">{item.body}</p>
-              </div>
-            ))}
-          </div>
+    <section className="border-t border-[var(--mkt-border)] bg-[var(--mkt-s1)] px-5 lg:px-8">
+      <div className="mx-auto grid max-w-[var(--mkt-maxw)] border-x border-[var(--mkt-border)] lg:grid-cols-[2fr_1fr]">
+        <div className="p-8 sm:p-12 lg:p-16"><p className="mkt-label">Pilot access</p><h2 className="mt-6 max-w-3xl text-[clamp(2.75rem,6vw,5.5rem)] font-black uppercase leading-[0.9] text-[var(--mkt-text1)]">Your work should<br />speak for itself.</h2></div>
+        <div className="flex flex-col justify-end border-t border-[var(--mkt-border)] p-8 lg:border-l lg:border-t-0 lg:p-12"><p className="text-sm leading-relaxed text-[var(--mkt-text2)]">Start with realistic product work and build an evidence record you control.</p><Link to="/signup" className="mt-8 inline-flex items-center justify-between bg-[var(--mkt-green)] px-6 py-4 text-xs font-bold uppercase text-[var(--mkt-on-dark)] transition-colors hover:bg-[var(--mkt-green-m)]">Create account <ArrowRight className="size-4" /></Link><Link to="/login" className="mt-3 text-center text-xs font-bold uppercase text-[var(--mkt-text2)] hover:text-[var(--mkt-text1)]">Already a member? Sign in</Link></div>
         </div>
-      </div>
-    </section>
-  );
-}
-
-function CTASection() {
-  return (
-    <section className="px-5 py-20 lg:px-8 lg:py-28">
-      <div className="mx-auto max-w-[var(--mkt-maxw)]">
-        <div className="mkt-soft-panel-highlight px-5 py-14 text-center lg:px-8 lg:py-20">
-          <h2 className="font-serif text-[clamp(1.75rem,4vw,3rem)] leading-[1.05] tracking-[-0.02em]">
-            Start building your Professional Intelligence today
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-base font-light leading-relaxed text-white/85">
-            Join the pilot. Experience, Launchpad and Professional Workspace are open for early
-            access.
-          </p>
-          <Link
-            to="/signup"
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-base font-semibold text-[var(--mkt-green)] shadow-md transition-all hover:bg-[var(--mkt-s2)]"
-          >
-            Create your account
-            <ArrowRight className="size-4" />
-          </Link>
-        </div>
-      </div>
     </section>
   );
 }
