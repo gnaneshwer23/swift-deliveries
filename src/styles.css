@@ -412,7 +412,7 @@ html:has(.marketing-page) {
    deliverx-site/_shared.css + page styles. Scoped under .dxs.
    Palette: ink navy, off-white paper, teal live, amber signal.
    ============================================================ */
-.dxs {
+:root {
   --x-ink: #0D1117;
   --x-ink-soft: #1C2333;
   --x-paper: #F5F4F0;
@@ -433,7 +433,10 @@ html:has(.marketing-page) {
   --x-radius-sm: 6px;
   --x-radius: 10px;
   --x-radius-lg: 16px;
+  --x-bg-alt: #F0EFE9;
+}
 
+.dxs {
   background: var(--x-paper);
   color: var(--x-ink);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
