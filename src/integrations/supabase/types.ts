@@ -220,6 +220,196 @@ export type Database = {
           },
         ]
       }
+      coach_reviews: {
+        Row: {
+          coach_id: string
+          coach_note: string
+          created_at: string
+          decision: Database["public"]["Enums"]["coach_review_decision"]
+          id: string
+          submission_id: string
+        }
+        Insert: {
+          coach_id: string
+          coach_note: string
+          created_at?: string
+          decision: Database["public"]["Enums"]["coach_review_decision"]
+          id?: string
+          submission_id: string
+        }
+        Update: {
+          coach_id?: string
+          coach_note?: string
+          created_at?: string
+          decision?: Database["public"]["Enums"]["coach_review_decision"]
+          id?: string
+          submission_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coach_reviews_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: true
+            referencedRelation: "coaching_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coaching_exercises: {
+        Row: {
+          artefact_type: string
+          created_at: string
+          framework_capability_id: string
+          id: string
+          instructions: string
+          key: string
+          programme_id: string
+          sort_order: number
+          title: string
+        }
+        Insert: {
+          artefact_type: string
+          created_at?: string
+          framework_capability_id: string
+          id?: string
+          instructions: string
+          key: string
+          programme_id: string
+          sort_order?: number
+          title: string
+        }
+        Update: {
+          artefact_type?: string
+          created_at?: string
+          framework_capability_id?: string
+          id?: string
+          instructions?: string
+          key?: string
+          programme_id?: string
+          sort_order?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coaching_exercises_framework_capability_id_fkey"
+            columns: ["framework_capability_id"]
+            isOneToOne: false
+            referencedRelation: "framework_capabilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coaching_exercises_programme_id_fkey"
+            columns: ["programme_id"]
+            isOneToOne: false
+            referencedRelation: "coaching_programmes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coaching_programmes: {
+        Row: {
+          created_at: string
+          description: string | null
+          enabled: boolean
+          framework_id: string
+          id: string
+          key: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          framework_id: string
+          id?: string
+          key: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          framework_id?: string
+          id?: string
+          key?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coaching_programmes_framework_id_fkey"
+            columns: ["framework_id"]
+            isOneToOne: false
+            referencedRelation: "capability_frameworks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coaching_submissions: {
+        Row: {
+          artefact_version_id: string
+          attempt: number
+          content_hash: string
+          exercise_id: string
+          external_url: string | null
+          id: string
+          intake_method: Database["public"]["Enums"]["coaching_intake_method"]
+          owner_id: string
+          reviewed_at: string | null
+          self_confidence: number | null
+          state: Database["public"]["Enums"]["coaching_submission_state"]
+          storage_path: string | null
+          submitted_at: string
+        }
+        Insert: {
+          artefact_version_id: string
+          attempt: number
+          content_hash: string
+          exercise_id: string
+          external_url?: string | null
+          id?: string
+          intake_method: Database["public"]["Enums"]["coaching_intake_method"]
+          owner_id: string
+          reviewed_at?: string | null
+          self_confidence?: number | null
+          state?: Database["public"]["Enums"]["coaching_submission_state"]
+          storage_path?: string | null
+          submitted_at?: string
+        }
+        Update: {
+          artefact_version_id?: string
+          attempt?: number
+          content_hash?: string
+          exercise_id?: string
+          external_url?: string | null
+          id?: string
+          intake_method?: Database["public"]["Enums"]["coaching_intake_method"]
+          owner_id?: string
+          reviewed_at?: string | null
+          self_confidence?: number | null
+          state?: Database["public"]["Enums"]["coaching_submission_state"]
+          storage_path?: string | null
+          submitted_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coaching_submissions_artefact_version_id_fkey"
+            columns: ["artefact_version_id"]
+            isOneToOne: true
+            referencedRelation: "artefact_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coaching_submissions_exercise_id_fkey"
+            columns: ["exercise_id"]
+            isOneToOne: false
+            referencedRelation: "coaching_exercises"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       evidence_ledger: {
         Row: {
           artefact_version_id: string | null
@@ -596,7 +786,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_coaching_submission: {
+        Args: {
+          _body: string
+          _content_hash?: string
+          _exercise_id: string
+          _external_url?: string
+          _intake_method: Database["public"]["Enums"]["coaching_intake_method"]
+          _self_confidence?: number
+          _storage_path?: string
+          _title: string
+        }
+        Returns: string
+      }
+      review_coaching_submission: {
+        Args: {
+          _coach_note: string
+          _decision: Database["public"]["Enums"]["coach_review_decision"]
+          _submission_id: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
@@ -606,6 +816,16 @@ export type Database = {
         | "attestation_requested"
         | "externally_attested"
         | "disputed"
+      coach_review_decision: "confirmed" | "rejected"
+      coaching_intake_method:
+        | "structured_response"
+        | "file_upload"
+        | "external_link"
+      coaching_submission_state:
+        | "pending"
+        | "confirmed"
+        | "rejected"
+        | "superseded"
       confidence_band: "low" | "moderate" | "high"
       evidence_source:
         | "self_report"
@@ -755,6 +975,18 @@ export const Constants = {
         "attestation_requested",
         "externally_attested",
         "disputed",
+      ],
+      coach_review_decision: ["confirmed", "rejected"],
+      coaching_intake_method: [
+        "structured_response",
+        "file_upload",
+        "external_link",
+      ],
+      coaching_submission_state: [
+        "pending",
+        "confirmed",
+        "rejected",
+        "superseded",
       ],
       confidence_band: ["low", "moderate", "high"],
       evidence_source: [
