@@ -1,11 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { Users, UserCircle, Building2 } from "lucide-react";
+import { ArrowRight, Users, UserCircle, Building2 } from "lucide-react";
 import { WorkspaceShell, WorkspaceCard } from "@/components/workspace/workspace-shell";
 import { workspaceBootstrapQuery } from "@/lib/workspace-queries";
 
 export const Route = createFileRoute("/_authenticated/workspace/")({
+  head: () => ({ meta: [{ title: "Workspace Overview — DeliverX" }, { name: "description", content: "Your personalised DeliverX workspace overview." }, { property: "og:title", content: "Workspace Overview — DeliverX" }, { property: "og:description", content: "Your personalised DeliverX workspace." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   loader: ({ context }) => context.queryClient.ensureQueryData(workspaceBootstrapQuery),
   component: WorkspaceHome,
 });
@@ -24,10 +25,10 @@ function WorkspaceHome() {
 
   return (
     <WorkspaceShell
-      title={`Hello, ${name}`}
+      title={`Good to see you, ${name}`}
       subtitle={`${data.organisation.name} · you are ${data.role === "owner" ? "the owner" : `a ${data.role ?? "member"}`}`}
     >
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid border-l border-t border-[var(--mkt-border)] sm:grid-cols-3">
         <StatCard label="Organisation" value={data.organisation.name} icon={Building2} />
         <StatCard label="Active members" value={String(data.memberCount)} icon={Users} />
         <StatCard
@@ -43,9 +44,9 @@ function WorkspaceHome() {
         action={
           <Link
             to="/workspace/team"
-            className="rounded-full bg-[var(--mkt-green)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--mkt-green-m)]"
+            className="inline-flex items-center gap-2 bg-[var(--mkt-text1)] px-4 py-3 text-xs font-bold uppercase text-[var(--mkt-on-dark)] hover:bg-[var(--mkt-green)]"
           >
-            Manage team
+            Manage team <ArrowRight className="size-3.5" />
           </Link>
         }
       />
@@ -60,9 +61,9 @@ function WorkspaceHome() {
         action={
           <Link
             to="/workspace/profile"
-            className="rounded-full border border-[var(--mkt-border)] px-4 py-2 text-sm font-medium text-[var(--mkt-text1)] hover:bg-[var(--mkt-s2)]"
+            className="inline-flex items-center gap-2 border border-[var(--mkt-border-l)] px-4 py-3 text-xs font-bold uppercase text-[var(--mkt-text1)] hover:bg-[var(--mkt-s2)]"
           >
-            Edit profile
+            Edit profile <ArrowRight className="size-3.5" />
           </Link>
         }
       />
@@ -85,12 +86,12 @@ function StatCard({
   icon: typeof Users;
 }) {
   return (
-    <div className="rounded-2xl border border-[var(--mkt-border)] bg-[var(--mkt-s1)] p-5">
-      <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-[var(--mkt-text2)]">
-        <Icon className="size-4" />
+    <div className="min-w-0 border-b border-r border-[var(--mkt-border)] bg-[var(--mkt-s1)] p-5 sm:min-h-40">
+      <div className="flex items-center justify-between gap-2 font-mono text-[0.625rem] font-bold uppercase text-[var(--mkt-green-m)]">
         {label}
+        <Icon className="size-4" />
       </div>
-      <p className="mt-3 truncate text-lg font-semibold capitalize">{value}</p>
+      <p className="mt-12 truncate font-serif text-xl font-black uppercase capitalize">{value}</p>
     </div>
   );
 }

@@ -8,6 +8,7 @@ import { evidenceOverviewQuery } from "@/lib/evidence-queries";
 import { requestAttestation, runCapabilityScoring } from "@/lib/evidence.functions";
 
 export const Route = createFileRoute("/_authenticated/workspace/capability")({
+  head: () => ({ meta: [{ title: "Capability Picture — DeliverX" }, { name: "description", content: "Review evidence-backed capability judgements and external attestations." }, { property: "og:title", content: "Capability Picture — DeliverX" }, { property: "og:description", content: "Your evidence-backed professional capability picture." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   loader: ({ context }) => context.queryClient.ensureQueryData(evidenceOverviewQuery),
   component: CapabilityPage,
 });
@@ -84,15 +85,15 @@ function CapabilityPage() {
             type="button"
             onClick={() => score.mutate()}
             disabled={score.isPending}
-            className="rounded-full bg-[var(--mkt-green)] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+            className="bg-[var(--mkt-text1)] px-4 py-3 text-xs font-bold uppercase text-[var(--mkt-on-dark)] transition-colors hover:bg-[var(--mkt-green)] disabled:opacity-60"
           >
             {score.isPending ? "Judging…" : "Run scoring"}
           </button>
         }
       >
         <div className="flex items-end gap-3">
-          <p className="text-4xl font-semibold">{data.readiness.percent}%</p>
-          <span className="mb-1 rounded-full border border-[var(--mkt-border)] px-2 py-0.5 text-xs text-[var(--mkt-text2)]">
+          <p className="font-serif text-5xl font-black">{data.readiness.percent}%</p>
+          <span className="mb-1 border border-[var(--mkt-border)] px-2 py-0.5 font-mono text-[0.625rem] uppercase text-[var(--mkt-text2)]">
             {data.readiness.basis === "mixed" ? "mixed" : "coverage estimate"}
           </span>
         </div>
@@ -109,13 +110,13 @@ function CapabilityPage() {
         ) : (
           <ul className="space-y-3">
             {data.claims.map((c) => (
-              <li key={c.id} className="rounded-xl border border-[var(--mkt-border)] p-4">
+              <li key={c.id} className="border border-[var(--mkt-border)] p-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <p className="flex items-center gap-2 text-sm font-medium">
                       {nameFor(c.capabilityKey)}
                       {c.verified ? (
-                        <span className="flex items-center gap-1 rounded-full bg-[var(--mkt-green)] px-2 py-0.5 text-xs text-white">
+                        <span className="flex items-center gap-1 bg-[var(--mkt-green)] px-2 py-0.5 text-xs text-[var(--mkt-on-dark)]">
                           <BadgeCheck className="size-3.5" /> Verified
                         </span>
                       ) : null}
@@ -129,7 +130,7 @@ function CapabilityPage() {
                     <button
                       type="button"
                       onClick={() => setOpenClaim(openClaim === c.id ? null : c.id)}
-                      className="rounded-full border border-[var(--mkt-border)] px-4 py-2 text-sm font-medium"
+                      className="border border-[var(--mkt-border-l)] px-4 py-2 text-xs font-bold uppercase"
                     >
                       Ask someone to confirm
                     </button>
@@ -174,7 +175,7 @@ function CapabilityPage() {
                       <button
                         type="submit"
                         disabled={attest.isPending}
-                        className="rounded-full bg-[var(--mkt-green)] px-5 py-2.5 text-sm font-medium text-white disabled:opacity-60"
+                        className="bg-[var(--mkt-text1)] px-5 py-3 text-xs font-bold uppercase text-[var(--mkt-on-dark)] hover:bg-[var(--mkt-green)] disabled:opacity-60"
                       >
                         {attest.isPending ? "Creating…" : "Create confirmation link"}
                       </button>
@@ -218,4 +219,4 @@ function CapabilityPage() {
 }
 
 const inputCls =
-  "w-full rounded-xl border border-[var(--mkt-border)] bg-[var(--mkt-s2)] px-3 py-2.5 text-sm text-[var(--mkt-text1)] outline-none focus:border-[var(--mkt-green)]";
+  "w-full border border-[var(--mkt-border)] bg-[var(--mkt-s2)] px-3 py-2.5 text-sm text-[var(--mkt-text1)] outline-hidden focus:border-[var(--mkt-green)]";

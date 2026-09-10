@@ -8,6 +8,7 @@ import { evidenceOverviewQuery } from "@/lib/evidence-queries";
 import { recordSelfReport, recordWorkEvidence } from "@/lib/evidence.functions";
 
 export const Route = createFileRoute("/_authenticated/workspace/evidence")({
+  head: () => ({ meta: [{ title: "Evidence Record — DeliverX" }, { name: "description", content: "Record and review your private, provenance-backed professional evidence." }, { property: "og:title", content: "Evidence Record — DeliverX" }, { property: "og:description", content: "Your private professional evidence record." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   loader: ({ context }) => context.queryClient.ensureQueryData(evidenceOverviewQuery),
   component: EvidencePage,
 });
@@ -146,7 +147,7 @@ function EvidencePage() {
             <button
               type="submit"
               disabled={work.isPending}
-              className="rounded-full bg-[var(--mkt-green)] px-5 py-2.5 text-sm font-medium text-white disabled:opacity-60"
+              className="bg-[var(--mkt-text1)] px-5 py-3 text-xs font-bold uppercase text-[var(--mkt-on-dark)] transition-colors hover:bg-[var(--mkt-green)] disabled:opacity-60"
             >
               {work.isPending ? "Saving…" : "Record evidence"}
             </button>
@@ -191,7 +192,7 @@ function EvidencePage() {
             <button
               type="submit"
               disabled={selfReport.isPending}
-              className="rounded-full border border-[var(--mkt-border)] px-5 py-2.5 text-sm font-medium text-[var(--mkt-text1)] disabled:opacity-60"
+              className="border border-[var(--mkt-border-l)] px-5 py-3 text-xs font-bold uppercase text-[var(--mkt-text1)] transition-colors hover:bg-[var(--mkt-s2)] disabled:opacity-60"
             >
               {selfReport.isPending ? "Saving…" : "Add self-reported claim"}
             </button>
@@ -215,7 +216,7 @@ function EvidencePage() {
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium">{e.summary}</p>
                   <p className="mt-1 flex flex-wrap items-center gap-2 text-xs text-[var(--mkt-text2)]">
-                    <span className="rounded-full border border-[var(--mkt-border)] px-2 py-0.5">
+                    <span className="border border-[var(--mkt-border)] px-2 py-0.5 font-mono uppercase">
                       {STRENGTH_LABEL[e.strength] ?? e.strength}
                     </span>
                     <span>{SOURCE_LABEL[e.source] ?? e.source}</span>
@@ -240,7 +241,7 @@ function EvidencePage() {
 }
 
 const inputCls =
-  "w-full rounded-xl border border-[var(--mkt-border)] bg-[var(--mkt-s2)] px-3 py-2.5 text-sm text-[var(--mkt-text1)] outline-none focus:border-[var(--mkt-green)]";
+  "w-full border border-[var(--mkt-border)] bg-[var(--mkt-s2)] px-3 py-2.5 text-sm text-[var(--mkt-text1)] outline-hidden focus:border-[var(--mkt-green)]";
 
 function Field({
   label,

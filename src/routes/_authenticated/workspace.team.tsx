@@ -25,6 +25,7 @@ import {
 } from "@/lib/workspace.functions";
 
 export const Route = createFileRoute("/_authenticated/workspace/team")({
+  head: () => ({ meta: [{ title: "Team — DeliverX" }, { name: "description", content: "Manage members, roles and invitations for your DeliverX workspace." }, { property: "og:title", content: "Team — DeliverX" }, { property: "og:description", content: "Manage your DeliverX workspace team." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   loader: async ({ context }) => {
     const bootstrap = await context.queryClient.ensureQueryData(workspaceBootstrapQuery);
     if (bootstrap.organisation) {
@@ -151,7 +152,7 @@ function TeamContent({ organisationId }: { organisationId: string }) {
                 </p>
               </div>
               {member.isOwner || !data.canManage ? (
-                <span className="rounded-full bg-[var(--mkt-s2)] px-3 py-1 text-xs font-medium capitalize">
+                <span className="border border-[var(--mkt-border)] bg-[var(--mkt-s2)] px-3 py-1 font-mono text-[0.625rem] font-bold uppercase">
                   {member.role}
                 </span>
               ) : (
