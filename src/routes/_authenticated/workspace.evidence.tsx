@@ -28,6 +28,15 @@ const SOURCE_LABEL: Record<string, string> = {
   external_verification: "External confirmation",
 };
 
+type WorkEvidenceInput = {
+  title: string;
+  kind: "document" | "decision" | "meeting" | "analysis" | "reflection";
+  body: string;
+  capabilityKey: string;
+  source: "experience_sim" | "workspace_contribution" | "assessment";
+  summary: string;
+};
+
 function EvidencePage() {
   const { data } = useSuspenseQuery(evidenceOverviewQuery);
   const queryClient = useQueryClient();
@@ -56,7 +65,7 @@ function EvidencePage() {
   });
 
   const selfReport = useMutation({
-    mutationFn: (input: Parameters<typeof recordSelfReport>[0]["data"]) =>
+    mutationFn: (input: { capabilityKey: string; summary: string }) =>
       recordSelfReport({ data: input }),
     onSuccess: () => {
       toast.success("Saved and labelled as self-reported.");

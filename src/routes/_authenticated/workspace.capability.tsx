@@ -48,8 +48,12 @@ function CapabilityPage() {
   });
 
   const attest = useMutation({
-    mutationFn: (input: Parameters<typeof requestAttestation>[0]["data"]) =>
-      requestAttestation({ data: input }),
+    mutationFn: (input: {
+      claimId: string;
+      attestorName: string;
+      attestorEmail: string;
+      relationship: string;
+    }) => requestAttestation({ data: input }),
     onSuccess: (r) => {
       const link = `${window.location.origin}/attest/${r.token}`;
       void navigator.clipboard?.writeText(link);
