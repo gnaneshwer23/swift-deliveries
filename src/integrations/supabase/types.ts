@@ -194,7 +194,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      accept_invitation: { Args: { _token: string }; Returns: string }
+      [_ in never]: never
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
