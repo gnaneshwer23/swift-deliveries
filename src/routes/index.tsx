@@ -95,7 +95,7 @@ function HeroSection() {
               </div>
             </div>
           </div>
-        </div>
+        </ol>
         <div className="grid border-t border-[var(--mkt-border)] sm:grid-cols-3">
           {["Evidence stays distinct from self-report", "Capability comes from versioned judgement", "Readiness is explained, never decorated"].map((item) => (
             <div key={item} className="flex items-start gap-3 border-b border-[var(--mkt-border)] p-5 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0">
