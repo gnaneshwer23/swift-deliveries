@@ -76,9 +76,9 @@ function HowItWorksPage() {
           <p className="mkt-label">Choose your entry point</p>
           <div className="mt-8 grid border border-[var(--mkt-border-l)] bg-[var(--mkt-s1)] md:grid-cols-3">
             {PATHS.map(([title, subtitle, href], index) => (
-              <Link key={title} to={href} className="group min-h-56 border-b border-[var(--mkt-border)] p-6 transition-colors hover:bg-[var(--mkt-text1)] md:border-b-0 md:border-r md:last:border-r-0">
+              <Link key={title} to={href} className="group min-h-56 border-b border-[var(--mkt-border)] p-6 transition-colors hover:bg-[var(--mkt-s2)] md:border-b-0 md:border-r md:last:border-r-0">
                 <div className="flex items-center justify-between"><span className="font-mono text-xs text-[var(--mkt-green-m)]">0{index + 1}</span><ArrowRight className="size-4 text-[var(--mkt-text3)] transition-transform group-hover:translate-x-1 group-hover:text-[var(--mkt-green-l)]" /></div>
-                <h3 className="mt-20 font-display text-xl font-bold text-[var(--mkt-text1)] group-hover:text-[var(--mkt-on-dark)]">{title}</h3>
+                <h3 className="mt-20 font-display text-xl font-bold text-[var(--mkt-text1)]">{title}</h3>
                 <p className="mt-2 text-xs font-bold text-[var(--mkt-green-m)] group-hover:text-[var(--mkt-green-l)]">{subtitle}</p>
               </Link>
             ))}

@@ -57,7 +57,7 @@ function ExperiencePage() {
         </div>
       </section>
 
-      <section className="bg-[var(--mkt-s2)] px-5 py-16 text-[var(--mkt-text1)] lg:px-8"><div className="mx-auto flex max-w-[var(--mkt-maxw)] flex-col justify-between gap-8 md:flex-row md:items-end"><div><p className="mkt-label-dark">Evidence principle</p><h2 className="mt-5 max-w-2xl text-3xl font-black uppercase sm:text-5xl">No evidence before you act.</h2></div><Link to="/signup" className="inline-flex items-center gap-3 border border-[var(--mkt-on-dark-border)] px-6 py-4 text-xs font-bold hover:bg-[var(--mkt-on-dark)] hover:text-[var(--mkt-text1)]">Start Experience <ArrowRight className="size-4" /></Link></div></section>
+      <section className="bg-[var(--mkt-s2)] px-5 py-16 text-[var(--mkt-text1)] lg:px-8"><div className="mx-auto flex max-w-[var(--mkt-maxw)] flex-col justify-between gap-8 md:flex-row md:items-end"><div><p className="mkt-label">Evidence principle</p><h2 className="mt-5 max-w-2xl font-display text-3xl font-bold sm:text-5xl">No evidence before you act.</h2></div><Link to="/signup" className="inline-flex items-center gap-3 rounded-xl border border-[var(--mkt-border-l)] bg-[var(--mkt-s1)] px-6 py-4 text-xs font-bold hover:bg-[var(--mkt-ink)]">Start Experience <ArrowRight className="size-4" /></Link></div></section>
     </MarketingLayout>
   );
 }
