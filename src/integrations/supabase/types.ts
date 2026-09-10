@@ -467,6 +467,243 @@ export type Database = {
           },
         ]
       }
+      experience_enrolments: {
+        Row: {
+          completed_at: string | null
+          id: string
+          owner_id: string
+          scenario_id: string
+          started_at: string
+          state: string
+        }
+        Insert: {
+          completed_at?: string | null
+          id?: string
+          owner_id: string
+          scenario_id: string
+          started_at?: string
+          state?: string
+        }
+        Update: {
+          completed_at?: string | null
+          id?: string
+          owner_id?: string
+          scenario_id?: string
+          started_at?: string
+          state?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "experience_enrolments_scenario_id_fkey"
+            columns: ["scenario_id"]
+            isOneToOne: false
+            referencedRelation: "experience_scenarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      experience_scenarios: {
+        Row: {
+          company_mark: string
+          company_name: string
+          company_stage: string
+          created_at: string
+          duration_label: string
+          enabled: boolean
+          framework_id: string
+          id: string
+          key: string
+          name: string
+          role_title: string
+          summary: string
+        }
+        Insert: {
+          company_mark: string
+          company_name: string
+          company_stage: string
+          created_at?: string
+          duration_label: string
+          enabled?: boolean
+          framework_id: string
+          id?: string
+          key: string
+          name: string
+          role_title: string
+          summary: string
+        }
+        Update: {
+          company_mark?: string
+          company_name?: string
+          company_stage?: string
+          created_at?: string
+          duration_label?: string
+          enabled?: boolean
+          framework_id?: string
+          id?: string
+          key?: string
+          name?: string
+          role_title?: string
+          summary?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "experience_scenarios_framework_id_fkey"
+            columns: ["framework_id"]
+            isOneToOne: false
+            referencedRelation: "capability_frameworks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      experience_submissions: {
+        Row: {
+          artefact_version_id: string
+          enrolment_id: string
+          id: string
+          owner_id: string
+          sections_completed: number
+          submitted_at: string
+          task_id: string
+          word_count: number
+        }
+        Insert: {
+          artefact_version_id: string
+          enrolment_id: string
+          id?: string
+          owner_id: string
+          sections_completed: number
+          submitted_at?: string
+          task_id: string
+          word_count: number
+        }
+        Update: {
+          artefact_version_id?: string
+          enrolment_id?: string
+          id?: string
+          owner_id?: string
+          sections_completed?: number
+          submitted_at?: string
+          task_id?: string
+          word_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "experience_submissions_artefact_version_id_fkey"
+            columns: ["artefact_version_id"]
+            isOneToOne: false
+            referencedRelation: "artefact_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "experience_submissions_enrolment_id_fkey"
+            columns: ["enrolment_id"]
+            isOneToOne: false
+            referencedRelation: "experience_enrolments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "experience_submissions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "experience_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      experience_task_drafts: {
+        Row: {
+          body: string
+          owner_id: string
+          sections: Json
+          task_id: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string
+          owner_id: string
+          sections?: Json
+          task_id: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          owner_id?: string
+          sections?: Json
+          task_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "experience_task_drafts_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "experience_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      experience_tasks: {
+        Row: {
+          brief: string
+          capability_key: string
+          context: string
+          created_at: string
+          guidance: Json
+          id: string
+          key: string
+          min_words: number
+          phase_label: string
+          scenario_id: string
+          sections: Json
+          sort_order: number
+          stakeholders: Json
+          title: string
+          week: number
+        }
+        Insert: {
+          brief: string
+          capability_key: string
+          context: string
+          created_at?: string
+          guidance?: Json
+          id?: string
+          key: string
+          min_words?: number
+          phase_label: string
+          scenario_id: string
+          sections?: Json
+          sort_order: number
+          stakeholders?: Json
+          title: string
+          week: number
+        }
+        Update: {
+          brief?: string
+          capability_key?: string
+          context?: string
+          created_at?: string
+          guidance?: Json
+          id?: string
+          key?: string
+          min_words?: number
+          phase_label?: string
+          scenario_id?: string
+          sections?: Json
+          sort_order?: number
+          stakeholders?: Json
+          title?: string
+          week?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "experience_tasks_scenario_id_fkey"
+            columns: ["scenario_id"]
+            isOneToOne: false
+            referencedRelation: "experience_scenarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       framework_capabilities: {
         Row: {
           created_at: string
