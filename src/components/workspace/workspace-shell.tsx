@@ -31,7 +31,7 @@ export function WorkspaceShell({
   children,
 }: {
   title: string;
-  subtitle?: string;
+  subtitle?: string | undefined;
   children: ReactNode;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -48,7 +48,7 @@ export function WorkspaceShell({
     : NAV;
 
   const displayName =
-    (user?.user_metadata?.full_name as string | undefined) ?? user?.email ?? "Account";
+    (user?.user_metadata?.["full_name"] as string | undefined) ?? user?.email ?? "Account";
   const initials = displayName
     .split(/[\s@]/)
     .filter(Boolean)
