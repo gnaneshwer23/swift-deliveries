@@ -25,8 +25,11 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated/workspace'
+import { Route as AttestTokenRouteImport } from './routes/attest.$token'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated/workspace.index'
+import { Route as AuthenticatedWorkspaceCapabilityRouteImport } from './routes/_authenticated/workspace.capability'
+import { Route as AuthenticatedWorkspaceEvidenceRouteImport } from './routes/_authenticated/workspace.evidence'
 import { Route as AuthenticatedWorkspaceOrganisationRouteImport } from './routes/_authenticated/workspace.organisation'
 import { Route as AuthenticatedWorkspaceProfileRouteImport } from './routes/_authenticated/workspace.profile'
 import { Route as AuthenticatedWorkspaceTeamRouteImport } from './routes/_authenticated/workspace.team'
@@ -110,6 +113,11 @@ const AuthenticatedWorkspaceRoute = AuthenticatedWorkspaceRouteImport.update({
   path: '/workspace',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AttestTokenRoute = AttestTokenRouteImport.update({
+  id: '/attest/$token',
+  path: '/attest/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InviteTokenRoute = InviteTokenRouteImport.update({
   id: '/invite/$token',
   path: '/invite/$token',
@@ -119,6 +127,18 @@ const AuthenticatedWorkspaceIndexRoute =
   AuthenticatedWorkspaceIndexRouteImport.update({
     id: '/',
     path: '/',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
+const AuthenticatedWorkspaceCapabilityRoute =
+  AuthenticatedWorkspaceCapabilityRouteImport.update({
+    id: '/capability',
+    path: '/capability',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
+const AuthenticatedWorkspaceEvidenceRoute =
+  AuthenticatedWorkspaceEvidenceRouteImport.update({
+    id: '/evidence',
+    path: '/evidence',
     getParentRoute: () => AuthenticatedWorkspaceRoute,
   } as any)
 const AuthenticatedWorkspaceOrganisationRoute =
@@ -156,7 +176,10 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
+  '/attest/$token': typeof AttestTokenRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
+  '/workspace/evidence': typeof AuthenticatedWorkspaceEvidenceRoute
   '/workspace/organisation': typeof AuthenticatedWorkspaceOrganisationRoute
   '/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
   '/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
@@ -177,7 +200,10 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/attest/$token': typeof AttestTokenRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
+  '/workspace/evidence': typeof AuthenticatedWorkspaceEvidenceRoute
   '/workspace/organisation': typeof AuthenticatedWorkspaceOrganisationRoute
   '/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
   '/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
@@ -201,7 +227,10 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
+  '/attest/$token': typeof AttestTokenRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/_authenticated/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
+  '/_authenticated/workspace/evidence': typeof AuthenticatedWorkspaceEvidenceRoute
   '/_authenticated/workspace/organisation': typeof AuthenticatedWorkspaceOrganisationRoute
   '/_authenticated/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
   '/_authenticated/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
@@ -225,7 +254,10 @@ export interface FileRouteTypes {
     | '/terms'
     | '/onboarding'
     | '/workspace'
+    | '/attest/$token'
     | '/invite/$token'
+    | '/workspace/capability'
+    | '/workspace/evidence'
     | '/workspace/organisation'
     | '/workspace/profile'
     | '/workspace/team'
@@ -246,7 +278,10 @@ export interface FileRouteTypes {
     | '/signup'
     | '/terms'
     | '/onboarding'
+    | '/attest/$token'
     | '/invite/$token'
+    | '/workspace/capability'
+    | '/workspace/evidence'
     | '/workspace/organisation'
     | '/workspace/profile'
     | '/workspace/team'
@@ -269,7 +304,10 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authenticated/onboarding'
     | '/_authenticated/workspace'
+    | '/attest/$token'
     | '/invite/$token'
+    | '/_authenticated/workspace/capability'
+    | '/_authenticated/workspace/evidence'
     | '/_authenticated/workspace/organisation'
     | '/_authenticated/workspace/profile'
     | '/_authenticated/workspace/team'
@@ -291,6 +329,7 @@ export interface RootRouteChildren {
   ResourcesRoute: typeof ResourcesRoute
   SignupRoute: typeof SignupRoute
   TermsRoute: typeof TermsRoute
+  AttestTokenRoute: typeof AttestTokenRoute
   InviteTokenRoute: typeof InviteTokenRoute
 }
 
@@ -408,6 +447,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkspaceRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/attest/$token': {
+      id: '/attest/$token'
+      path: '/attest/$token'
+      fullPath: '/attest/$token'
+      preLoaderRoute: typeof AttestTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/invite/$token': {
       id: '/invite/$token'
       path: '/invite/$token'
@@ -420,6 +466,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/workspace/'
       preLoaderRoute: typeof AuthenticatedWorkspaceIndexRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
+    '/_authenticated/workspace/capability': {
+      id: '/_authenticated/workspace/capability'
+      path: '/capability'
+      fullPath: '/workspace/capability'
+      preLoaderRoute: typeof AuthenticatedWorkspaceCapabilityRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
+    '/_authenticated/workspace/evidence': {
+      id: '/_authenticated/workspace/evidence'
+      path: '/evidence'
+      fullPath: '/workspace/evidence'
+      preLoaderRoute: typeof AuthenticatedWorkspaceEvidenceRouteImport
       parentRoute: typeof AuthenticatedWorkspaceRoute
     }
     '/_authenticated/workspace/organisation': {
@@ -447,6 +507,8 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedWorkspaceRouteChildren {
+  AuthenticatedWorkspaceCapabilityRoute: typeof AuthenticatedWorkspaceCapabilityRoute
+  AuthenticatedWorkspaceEvidenceRoute: typeof AuthenticatedWorkspaceEvidenceRoute
   AuthenticatedWorkspaceOrganisationRoute: typeof AuthenticatedWorkspaceOrganisationRoute
   AuthenticatedWorkspaceProfileRoute: typeof AuthenticatedWorkspaceProfileRoute
   AuthenticatedWorkspaceTeamRoute: typeof AuthenticatedWorkspaceTeamRoute
@@ -455,6 +517,9 @@ interface AuthenticatedWorkspaceRouteChildren {
 
 const AuthenticatedWorkspaceRouteChildren: AuthenticatedWorkspaceRouteChildren =
   {
+    AuthenticatedWorkspaceCapabilityRoute:
+      AuthenticatedWorkspaceCapabilityRoute,
+    AuthenticatedWorkspaceEvidenceRoute: AuthenticatedWorkspaceEvidenceRoute,
     AuthenticatedWorkspaceOrganisationRoute:
       AuthenticatedWorkspaceOrganisationRoute,
     AuthenticatedWorkspaceProfileRoute: AuthenticatedWorkspaceProfileRoute,
@@ -495,6 +560,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResourcesRoute: ResourcesRoute,
   SignupRoute: SignupRoute,
   TermsRoute: TermsRoute,
+  AttestTokenRoute: AttestTokenRoute,
   InviteTokenRoute: InviteTokenRoute,
 }
 export const routeTree = rootRouteImport

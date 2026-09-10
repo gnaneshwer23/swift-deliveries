@@ -1,11 +1,20 @@
 import type { ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Building2, LayoutDashboard, User as UserIcon, Users } from "lucide-react";
+import {
+  Building2,
+  FileCheck2,
+  Gauge,
+  LayoutDashboard,
+  User as UserIcon,
+  Users,
+} from "lucide-react";
 import { MarketingLogo } from "@/components/marketing/marketing-logo";
 import { useSignOut } from "@/hooks/use-sign-out";
 
 const NAV = [
   { to: "/workspace", label: "Overview", icon: LayoutDashboard },
+  { to: "/workspace/evidence", label: "Evidence", icon: FileCheck2 },
+  { to: "/workspace/capability", label: "Capability", icon: Gauge },
   { to: "/workspace/team", label: "Team", icon: Users },
   { to: "/workspace/profile", label: "Your profile", icon: UserIcon },
   { to: "/workspace/organisation", label: "Organisation", icon: Building2 },
