@@ -231,19 +231,19 @@ function OnboardingPage() {
           : true;
 
   return (
-    <div className="min-h-screen bg-[var(--mkt-ink)] text-[var(--mkt-text1)] [&_button]:rounded-none [&_input]:h-11 [&_input]:rounded-none [&_textarea]:rounded-none [&_[role=combobox]]:h-11 [&_[role=combobox]]:rounded-none">
-      <header className="border-b border-[var(--mkt-border-l)] bg-[var(--mkt-s1)]">
-        <div className="mx-auto flex h-[var(--mkt-navh)] max-w-[var(--mkt-maxw)] items-center border-x border-[var(--mkt-border)] px-5">
+    <div className="min-h-screen bg-[var(--mkt-ink)] font-sans text-[var(--mkt-text1)] [&_input]:h-11 [&_[role=combobox]]:h-11">
+      <header className="px-3 pt-3">
+        <div className="mx-auto flex h-[var(--mkt-navh)] max-w-[var(--mkt-maxw)] items-center rounded-[1.1rem] border border-[var(--mkt-border)] bg-[var(--mkt-s1)] px-5 shadow-[var(--mkt-shadow-nav)]">
           <MarketingLogo />
         </div>
       </header>
 
-      <main className="mx-auto grid min-h-[calc(100vh-var(--mkt-navh))] max-w-[var(--mkt-maxw)] border-x border-[var(--mkt-border)] lg:grid-cols-[minmax(0,1fr)_minmax(30rem,0.85fr)]">
-        <section className="border-b border-[var(--mkt-border)] p-6 sm:p-10 lg:border-b-0 lg:border-r lg:p-14">
+      <main className="mx-auto mt-4 grid max-w-[var(--mkt-maxw)] gap-4 px-3 pb-8 lg:grid-cols-[minmax(0,1fr)_minmax(30rem,0.85fr)]">
+        <section className="rounded-2xl border border-[var(--mkt-border)] bg-[var(--mkt-s2)] p-6 shadow-[var(--mkt-shadow-card)] sm:p-10 lg:p-14">
           <p className="mkt-label">
             Professional Intelligence / Step {String(step).padStart(2, "0")} of 08
           </p>
-          <h1 className="mt-8 max-w-2xl font-serif text-5xl font-black uppercase leading-[0.92] sm:text-6xl">
+          <h1 className="mt-8 max-w-2xl font-display text-5xl font-bold leading-[1] sm:text-6xl">
             {STEPS[step - 1]}
           </h1>
           <p className="mt-8 max-w-md text-base leading-relaxed text-[var(--mkt-text2)]">
@@ -270,7 +270,7 @@ function OnboardingPage() {
           </ol>
         </section>
 
-        <section className="bg-[var(--mkt-s1)] p-6 sm:p-10 lg:p-12">
+        <section className="rounded-2xl border border-[var(--mkt-border)] bg-[var(--mkt-s1)] p-6 shadow-[var(--mkt-shadow-card)] sm:p-10 lg:p-12">
           <p className="font-mono text-[0.6875rem] font-bold uppercase text-[var(--mkt-green-m)]">
             {step === 7 ? "Review — all self-reported" : STEPS[step - 1]}
           </p>
