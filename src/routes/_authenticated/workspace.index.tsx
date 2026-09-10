@@ -1,7 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { ArrowRight } from "lucide-react";
 import { WorkspaceShell, WorkspaceCard } from "@/components/workspace/workspace-shell";
 import { workspaceBootstrapQuery } from "@/lib/workspace-queries";
 import { dailyBriefingQuery } from "@/lib/onboarding-queries";
