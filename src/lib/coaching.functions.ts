@@ -167,10 +167,10 @@ export const submitCoachingEvidence = createServerFn({ method: "POST" })
       _title: data.title,
       _body: data.body,
       _intake_method: data.intakeMethod,
-      _external_url: data.externalUrl,
-      _storage_path: data.storagePath,
+      _external_url: data.externalUrl ?? undefined,
+      _storage_path: data.storagePath ?? undefined,
       _content_hash: data.contentHash,
-      _self_confidence: data.selfConfidence,
+      _self_confidence: data.selfConfidence ?? undefined,
     });
     if (error || !submissionId) throw new Error(error?.message ?? "Could not submit this work.");
     return { submissionId };

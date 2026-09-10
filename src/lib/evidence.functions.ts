@@ -187,9 +187,9 @@ export const getEvidenceOverview = createServerFn({ method: "GET" })
           artefactTitle: artefact?.title ?? null,
           artefactVersion: version?.version ?? null,
           occurredAt: e.occurred_at,
-          coachConfirmed: provenance.coach_confirmed === true,
-          coachNote: typeof provenance.coach_note === "string" ? provenance.coach_note : null,
-          frameworkVersion: typeof provenance.framework_version === "string" ? provenance.framework_version : null,
+          coachConfirmed: provenance["coach_confirmed"] === true,
+          coachNote: typeof provenance["coach_note"] === "string" ? provenance["coach_note"] : null,
+          frameworkVersion: typeof provenance["framework_version"] === "string" ? provenance["framework_version"] : null,
         };
       }),
       claims: (claims ?? []).map((c) => ({
