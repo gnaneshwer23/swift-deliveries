@@ -19,6 +19,9 @@ export type LedgerEntry = {
   artefactTitle: string | null;
   artefactVersion: number | null;
   occurredAt: string;
+  coachConfirmed: boolean;
+  coachNote: string | null;
+  frameworkVersion: string | null;
 };
 
 export type ClaimRow = {
@@ -80,7 +83,7 @@ export const getEvidenceOverview = createServerFn({ method: "GET" })
           .eq("owner_id", userId),
         supabase
           .from("evidence_ledger")
-          .select("id, source, strength, capability_key, summary, occurred_at, artefact_version_id")
+          .select("id, source, strength, capability_key, summary, occurred_at, artefact_version_id, provenance")
           .eq("owner_id", userId)
           .order("occurred_at", { ascending: false })
           .limit(100),
@@ -174,6 +177,7 @@ export const getEvidenceOverview = createServerFn({ method: "GET" })
       ledger: (ledger ?? []).map((e) => {
         const version = e.artefact_version_id ? versionById.get(e.artefact_version_id) : undefined;
         const artefact = version ? artefactById.get(version.artefact_id) : undefined;
+        const provenance = e.provenance && typeof e.provenance === "object" && !Array.isArray(e.provenance) ? e.provenance : {};
         return {
           id: e.id,
           source: e.source,
@@ -183,6 +187,9 @@ export const getEvidenceOverview = createServerFn({ method: "GET" })
           artefactTitle: artefact?.title ?? null,
           artefactVersion: version?.version ?? null,
           occurredAt: e.occurred_at,
+          coachConfirmed: provenance.coach_confirmed === true,
+          coachNote: typeof provenance.coach_note === "string" ? provenance.coach_note : null,
+          frameworkVersion: typeof provenance.framework_version === "string" ? provenance.framework_version : null,
         };
       }),
       claims: (claims ?? []).map((c) => ({
