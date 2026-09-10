@@ -231,7 +231,7 @@ function OnboardingPage() {
           : true;
 
   return (
-    <div className="min-h-screen bg-[var(--mkt-ink)] font-sans text-[var(--mkt-text1)] [&_input]:h-11 [&_[role=combobox]]:h-11">
+    <div className="workspace-page min-h-screen bg-[var(--mkt-ink)] font-sans text-[var(--mkt-text1)] [&_input]:h-11 [&_[role=combobox]]:h-11">
       <header className="px-3 pt-3">
         <div className="mx-auto flex h-[var(--mkt-navh)] max-w-[var(--mkt-maxw)] items-center rounded-[1.1rem] border border-[var(--mkt-border)] bg-[var(--mkt-s1)] px-5 shadow-[var(--mkt-shadow-nav)]">
           <MarketingLogo />

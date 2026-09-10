@@ -240,6 +240,34 @@ html:has(.marketing-page) {
   text-transform: none;
 }
 
+.workspace-page,
+.workspace-page button,
+.workspace-page input,
+.workspace-page textarea,
+.workspace-page select {
+  font-family: "DM Sans", sans-serif;
+}
+
+.workspace-page h1,
+.workspace-page h2,
+.workspace-page h3,
+.workspace-page .font-serif {
+  font-family: "Space Grotesk", sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.workspace-page button,
+.workspace-page input,
+.workspace-page textarea,
+.workspace-page [role="combobox"] {
+  border-radius: 0.65rem;
+}
+
+.workspace-page button[class*="bg-[var(--mkt-text1)]"] {
+  background: var(--mkt-green-bright);
+}
+
 .mkt-grid {
   background-image: linear-gradient(var(--mkt-border) 1px, transparent 1px), linear-gradient(90deg, var(--mkt-border) 1px, transparent 1px);
   background-size: 42px 42px;
