@@ -1,187 +1,282 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
-import { ArrowRight, Check, FileCheck2, Fingerprint, Gauge, Quote } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "DeliverX — Professional Intelligence Platform" },
+      { title: "DeliverX — Do the work. Keep the proof. Earn the signal." },
       {
         name: "description",
         content:
-          "Do realistic product work, keep provenance-backed evidence and prove capability with DeliverX.",
+          "DeliverX turns realistic product work into traceable evidence, versioned capability judgements, and career-ready proof. No shortcuts. No silent promotions.",
       },
-      {
-        property: "og:title",
-        content: "DeliverX — Professional Intelligence Platform",
-      },
+      { property: "og:title", content: "DeliverX — Professional Intelligence" },
       {
         property: "og:description",
         content:
-          "Do realistic product work, keep provenance-backed evidence and prove capability with DeliverX.",
+          "Realistic work generates provenance-backed evidence; the Capability Engine judges it under a versioned framework; Verified lights only from external attestation.",
       },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: HomePage,
 });
 
+const docIcon = (
+  <svg width="14" height="14" fill="none" stroke="var(--x-slate)" strokeWidth="1.5" viewBox="0 0 24 24">
+    <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+const clipIcon = (
+  <svg width="14" height="14" fill="none" stroke="var(--x-slate)" strokeWidth="1.5" viewBox="0 0 24 24">
+    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+const badgeIcon = (
+  <svg width="14" height="14" fill="none" stroke="var(--x-amber)" strokeWidth="1.5" viewBox="0 0 24 24">
+    <path d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const STEPS = [
+  { n: "01", name: "Do realistic work", desc: "Product situations with real constraints, stakeholders, and consequences." },
+  { n: "02", name: "Capture the artefact", desc: "Decisions enter a private, provenance-backed evidence record." },
+  { n: "03", name: "Judge capability", desc: "Evidence assessed against a pinned, versioned framework." },
+  { n: "04", name: "Package readiness", desc: "Strong evidence becomes an explainable portfolio and readiness story." },
+  { n: "05", name: "Verify externally", desc: "Only external attestation activates Verified. Nothing inside the platform lights it." },
+];
+
+const PRODUCTS = [
+  {
+    n: "01",
+    name: "Experience",
+    tag: "Build the experience",
+    desc: "Work as a PM inside realistic simulated organisations. Your actions — not the setup — create the evidence.",
+    link: "Start Experience →",
+    to: "/experience",
+  },
+  {
+    n: "02",
+    name: "Launchpad",
+    tag: "Land the opportunity",
+    desc: "Turn judged evidence into an explainable portfolio, honest readiness story, and stronger interview preparation.",
+    link: "Open Launchpad →",
+    to: "/launchpad",
+  },
+  {
+    n: "03",
+    name: "Workspace",
+    tag: "Succeed in the role",
+    desc: "Carry the same evidence discipline into live product work with your organisation and team.",
+    link: "Open Workspace →",
+    to: "/professional-workspace",
+  },
+];
+
+const PILLARS = [
+  {
+    n: "01",
+    title: "Provenance-backed evidence",
+    body: "Work is tied to an immutable version and records exactly where it came from.",
+  },
+  {
+    n: "02",
+    title: "Versioned capability judgement",
+    body: "Capability is written only through a pinned framework and an explainable ScoreRun.",
+  },
+  {
+    n: "03",
+    title: "External verification only",
+    body: "Verified appears only after an outside person attests. A ScoreRun alone can never light it.",
+  },
+];
+
+const USE_CASES = [
+  { tag: "The gap", text: "Job posts say two years PM experience required. You have none on paper." },
+  { tag: "Proof", text: "You did the work. It disappeared the moment you closed the sprint." },
+  { tag: "Trust", text: "Your CV is a best-guess reconstruction. Employers have learned to discount it." },
+  { tag: "The gap", text: "Your course certificate says you completed it. Not that you can do it." },
+  { tag: "Proof", text: "AI generated your portfolio. That's not a credential — it's a liability." },
+  { tag: "Trust", text: "Hiring managers ask for a work sample. You don't have one you can defend." },
+];
+
 function HomePage() {
   return (
     <MarketingLayout>
-      <HeroSection />
-      <ProductPaths />
-      <EvidenceSection />
-      <JourneySection />
-      <ClosingSection />
+      {/* HERO */}
+      <div className="hero">
+        <div className="hero-eyebrow">
+          <span className="hero-dot" />
+          <span className="caption" style={{ color: "var(--x-teal-text)", fontWeight: 500 }}>
+            Professional Intelligence · Pilot open
+          </span>
+        </div>
+        <h1 className="hero-h1">
+          Do the work.
+          <br />
+          Keep the proof.
+          <br />
+          Earn the signal.
+        </h1>
+        <p className="hero-sub">
+          DeliverX turns realistic product work into traceable evidence, versioned capability
+          judgements, and career-ready proof. No shortcuts. No silent promotions.
+        </p>
+        <div className="hero-actions">
+          <Link to="/pilot" className="btn btn-primary">
+            Start with Experience
+          </Link>
+          <Link to="/how-it-works" className="btn btn-secondary">
+            How it works
+          </Link>
+        </div>
+        <div className="hero-trust">
+          <span className="hero-trust-mark">◆</span>
+          Verified means verified — only external attestation lights the signal
+        </div>
+      </div>
+
+      {/* LIVE EVIDENCE RECORD (illustrative sample) */}
+      <div className="record-strip">
+        <div className="strip-wrap">
+          <div className="strip-head">
+            <span className="strip-head-label">Evidence record · Maya R · Private by default</span>
+            <span className="strip-head-live">3 entries this session</span>
+          </div>
+          <div className="record-row">
+            <span className="record-index">01</span>
+            <div className="record-icon-wrap">{docIcon}</div>
+            <div className="record-body">
+              <div className="record-title">Discovery brief — MediFlow Q3</div>
+              <div className="record-sub">experience_simulation · pm-core@2026.1 · artefact:a1f4b3c</div>
+            </div>
+            <div className="record-stat">
+              <div className="record-band">B+</div>
+              <div className="record-band-label">Observed</div>
+            </div>
+            <span className="pill pill-teal">Assessed</span>
+          </div>
+          <div className="record-row">
+            <span className="record-index">02</span>
+            <div className="record-icon-wrap">{clipIcon}</div>
+            <div className="record-body">
+              <div className="record-title">Prioritisation decision — Feature roadmap</div>
+              <div className="record-sub">experience_simulation · pm-core@2026.1 · artefact:b2e7d1f</div>
+            </div>
+            <div className="record-stat">
+              <div className="record-band">A−</div>
+              <div className="record-band-label">ScoreRun</div>
+            </div>
+            <span className="pill pill-purple">Capability</span>
+          </div>
+          <div className="record-row">
+            <span className="record-index">03</span>
+            <div className="record-icon-wrap">{badgeIcon}</div>
+            <div className="record-body">
+              <div className="record-title">Product requirements doc — GreenGrid</div>
+              <div className="record-sub">coaching_submission · coach_confirmed:true · externally_attested</div>
+            </div>
+            <div className="record-stat">
+              <div className="record-band" style={{ color: "var(--x-amber)" }}>
+                ✓
+              </div>
+              <div className="record-band-label">Verified</div>
+            </div>
+            <span className="pill pill-amber">Verified</span>
+          </div>
+        </div>
+      </div>
+
+      {/* FIVE STEPS */}
+      <div className="steps-section">
+        <div className="steps-label">The method — no shortcuts</div>
+        <div className="steps-grid">
+          {STEPS.map((s) => (
+            <div className="step-cell" key={s.n}>
+              <div className="step-num">{s.n}</div>
+              <div className="step-name">{s.name}</div>
+              <div className="step-desc">{s.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* THREE PRODUCTS */}
+      <div className="products-section">
+        <div className="products-grid">
+          {PRODUCTS.map((p) => (
+            <Link to={p.to} className="product-card" key={p.n}>
+              <div className="product-card-head">
+                <div className="product-card-num">{p.n}</div>
+                <div className="product-card-name">{p.name}</div>
+                <div className="product-card-tag">{p.tag}</div>
+              </div>
+              <div className="product-card-body">
+                <div className="product-card-desc">{p.desc}</div>
+                <div className="product-card-link">{p.link}</div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* TRUST MODEL */}
+      <div className="trust-section">
+        <div className="trust-inner">
+          <div className="trust-eyebrow">THE TRUST MODEL</div>
+          <h2 className="trust-heading">
+            A claim is not evidence.
+            <br />
+            <em>A score is not verification.</em>
+          </h2>
+          <div className="trust-pillars">
+            {PILLARS.map((p) => (
+              <div className="trust-pillar" key={p.n}>
+                <div className="trust-pillar-n">{p.n}</div>
+                <div className="trust-pillar-title">{p.title}</div>
+                <div className="trust-pillar-body">{p.body}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* USE CASES */}
+      <div className="uc-section">
+        <h2 className="heading-2" style={{ marginBottom: 8 }}>
+          What brings people here
+        </h2>
+        <p className="body" style={{ marginBottom: 0 }}>
+          Pick the sentence you've said yourself.
+        </p>
+        <div className="uc-grid">
+          {USE_CASES.map((u, i) => (
+            <div className="uc-item" key={i}>
+              <div className="uc-tag">{u.tag}</div>
+              <div className="uc-problem">{u.text}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* CTA */}
+      <div className="cta-section">
+        <div className="cta-box">
+          <h2 className="cta-h">Your work should speak for itself.</h2>
+          <p className="cta-sub">
+            Start with realistic product work and build an evidence record you control.
+          </p>
+          <div className="cta-btns">
+            <Link to="/pilot" className="btn btn-primary">
+              Create account
+            </Link>
+            <Link to="/how-it-works" className="btn btn-secondary">
+              How it works
+            </Link>
+          </div>
+        </div>
+      </div>
     </MarketingLayout>
-  );
-}
-
-function HeroSection() {
-  return (
-    <section className="border-b border-[var(--mkt-border)] bg-[var(--mkt-s1)] px-5 lg:px-8">
-      <div className="mx-auto max-w-[var(--mkt-maxw)] border-x border-[var(--mkt-border)]">
-        <div className="grid lg:grid-cols-12">
-          <div className="border-b border-[var(--mkt-border)] p-6 sm:p-10 lg:col-span-8 lg:border-b-0 lg:border-r lg:p-14">
-            <span className="mkt-label">Professional intelligence / Product people</span>
-            <h1 className="mt-8 max-w-4xl text-[clamp(3.25rem,7vw,6.5rem)] font-black uppercase leading-[0.88] text-[var(--mkt-text1)]">
-              Do the work.<br />Keep the proof.<br /><span className="text-[var(--mkt-text-faint)]">Earn the signal.</span>
-            </h1>
-            <p className="mt-10 max-w-xl text-lg font-medium leading-relaxed text-[var(--mkt-text2)]">
-              DeliverX turns realistic product work into traceable evidence, capability judgements and career-ready proof.
-            </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link
-              to="/signup"
-                className="inline-flex items-center justify-center gap-3 bg-[var(--mkt-text1)] px-6 py-4 text-xs font-bold uppercase text-[var(--mkt-on-dark)] transition-colors hover:bg-[var(--mkt-green)]"
-            >
-                Start with Experience
-              <ArrowRight className="size-4" />
-            </Link>
-            <Link
-              to="/how-it-works"
-                className="inline-flex items-center justify-center border border-[var(--mkt-border-l)] px-6 py-4 text-xs font-bold uppercase text-[var(--mkt-text1)] transition-colors hover:bg-[var(--mkt-s2)]"
-            >
-                How it works
-            </Link>
-          </div>
-          </div>
-          <div className="flex flex-col lg:col-span-4">
-            <div className="border-b border-[var(--mkt-border)] bg-[var(--mkt-s2)] p-6 sm:p-8 lg:p-10">
-              <div className="mkt-label">Evidence record / Private by default</div>
-              <div className="mt-8 space-y-6">
-                {[
-                  ["Discovery brief", "Observed", "01"],
-                  ["Prioritisation decision", "Assessed", "02"],
-                  ["Stakeholder plan", "Awaiting review", "03"],
-                ].map(([title, status, number]) => (
-                  <div className="grid grid-cols-[auto_1fr] gap-4 border-t border-[var(--mkt-border-l)] pt-4" key={title}>
-                    <span className="font-mono text-xs text-[var(--mkt-text3)]">{number}</span>
-                    <div className="min-w-0">
-                      <p className="text-sm font-bold text-[var(--mkt-text1)]">{title}</p>
-                      <p className="mt-1 text-xs uppercase text-[var(--mkt-green-m)]">{status}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="flex flex-1 flex-col justify-between bg-[var(--mkt-text1)] p-6 text-[var(--mkt-on-dark)] sm:p-8 lg:p-10">
-              <Fingerprint className="size-8 text-[var(--mkt-green-l)]" />
-              <div className="mt-16">
-                <p className="mkt-label-dark">Verified means verified</p>
-                <p className="mt-3 text-lg font-bold leading-snug">Only external attestation can light the Verified signal.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="grid border-t border-[var(--mkt-border)] sm:grid-cols-3">
-          {["Evidence stays distinct from self-report", "Capability comes from versioned judgement", "Readiness is explained, never decorated"].map((item) => (
-            <div key={item} className="flex items-start gap-3 border-b border-[var(--mkt-border)] p-5 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0">
-              <Check className="mt-0.5 size-4 shrink-0 text-[var(--mkt-green-l)]" />
-              <span className="text-xs font-bold uppercase leading-relaxed text-[var(--mkt-text2)]">{item}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ProductPaths() {
-  const paths = [
-    { number: "01", name: "Experience", line: "Build the experience", body: "Join a simulated company, work through realistic product situations and produce evidence through action.", href: "/experience" as const },
-    { number: "02", name: "Launchpad", line: "Land the opportunity", body: "Turn judged evidence into a clear portfolio, honest readiness story and stronger interview preparation.", href: "/launchpad" as const },
-    { number: "03", name: "Workspace", line: "Succeed in the role", body: "Carry the same evidence discipline into live product work with your organisation and team.", href: "/professional-workspace" as const },
-  ];
-  return (
-    <section className="px-5 py-20 lg:px-8 lg:py-28">
-      <div className="mx-auto max-w-[var(--mkt-maxw)]">
-        <div className="grid gap-8 border-b border-[var(--mkt-border)] pb-10 lg:grid-cols-[1fr_2fr]">
-          <p className="mkt-label">Choose your stage</p>
-          <h2 className="mkt-editorial-title">One professional journey.<br />Three clear entry points.</h2>
-        </div>
-        <div className="divide-y divide-[var(--mkt-border)]">
-          {paths.map((path) => (
-            <Link to={path.href} key={path.name} className="group grid gap-4 py-8 transition-colors hover:bg-[var(--mkt-s2)] sm:grid-cols-[4rem_1fr_1.5fr_auto] sm:items-center sm:px-4">
-              <span className="font-mono text-xs text-[var(--mkt-text3)]">{path.number}</span>
-              <div><h3 className="text-2xl font-black uppercase text-[var(--mkt-text1)]">{path.name}</h3><p className="mt-1 text-xs font-bold uppercase text-[var(--mkt-green-m)]">{path.line}</p></div>
-              <p className="max-w-xl text-sm leading-relaxed text-[var(--mkt-text2)]">{path.body}</p>
-              <ArrowRight className="size-5 text-[var(--mkt-text3)] transition-transform group-hover:translate-x-1 group-hover:text-[var(--mkt-green)]" />
-            </Link>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function EvidenceSection() {
-  return (
-    <section className="bg-[var(--mkt-text1)] px-5 py-20 text-[var(--mkt-on-dark)] lg:px-8 lg:py-28">
-      <div className="mx-auto grid max-w-[var(--mkt-maxw)] gap-12 lg:grid-cols-12">
-        <div className="lg:col-span-5">
-          <p className="mkt-label-dark">The trust model</p>
-          <h2 className="mt-6 text-[clamp(2.5rem,5vw,4.5rem)] font-black uppercase leading-[0.94]">A claim is not evidence.<br /><span className="text-[var(--mkt-on-dark-muted)]">A score is not verification.</span></h2>
-          <p className="mt-8 max-w-md text-base leading-relaxed text-[var(--mkt-on-dark-soft)]">DeliverX keeps knowledge, evidence and capability separate. That distinction makes every signal clearer—and harder to fake.</p>
-        </div>
-        <div className="lg:col-span-7 lg:border-l lg:border-[var(--mkt-on-dark-border)] lg:pl-12">
-          {[{ icon: FileCheck2, title: "Provenance-backed evidence", body: "Work is tied to an immutable version and records where it came from." }, { icon: Gauge, title: "Versioned capability judgement", body: "Capability is written only through a pinned framework and an explainable score run." }, { icon: Fingerprint, title: "External verification", body: "Verified appears only after an outside person attests to externally verified evidence." }].map(({ icon: Icon, title, body }, index) => (
-            <div key={title} className="grid grid-cols-[auto_1fr] gap-5 border-t border-[var(--mkt-on-dark-border)] py-7 first:border-t-0 first:pt-0">
-              <span className="font-mono text-xs text-[var(--mkt-green-l)]">0{index + 1}</span>
-              <div><Icon className="mb-5 size-6 text-[var(--mkt-green-l)]" /><h3 className="text-xl font-bold">{title}</h3><p className="mt-2 max-w-lg text-sm leading-relaxed text-[var(--mkt-on-dark-soft)]">{body}</p></div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function JourneySection() {
-  const steps = ["Do realistic work", "Capture the artefact", "Judge against a framework", "Package honest readiness", "Verify externally"];
-  return (
-    <section className="px-5 py-20 lg:px-8 lg:py-28">
-      <div className="mx-auto max-w-[var(--mkt-maxw)]">
-        <div className="grid gap-10 lg:grid-cols-[1fr_2fr]"><div><p className="mkt-label">The loop</p><h2 className="mkt-editorial-title mt-5">Work becomes proof.<br />Proof compounds.</h2></div><blockquote className="border-l border-[var(--mkt-border-l)] pl-8"><Quote className="size-7 text-[var(--mkt-green-l)]" /><p className="mt-6 text-2xl font-bold leading-snug text-[var(--mkt-text1)]">No silent promotion from a self-report, AI draft or score to Verified.</p><p className="mt-4 text-sm text-[var(--mkt-text3)]">The DeliverX evidence principle</p></blockquote></div>
-        <ol className="mt-16 grid border border-[var(--mkt-border)] sm:grid-cols-5">
-          {steps.map((step, index) => (
-            <li key={step} className="min-h-44 border-b border-[var(--mkt-border)] p-5 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0"><span className="font-mono text-xs text-[var(--mkt-green-m)]">0{index + 1}</span><p className="mt-12 text-sm font-bold uppercase leading-snug text-[var(--mkt-text1)]">{step}</p></li>
-          ))}
-        </ol>
-      </div>
-    </section>
-  );
-}
-
-function ClosingSection() {
-  return (
-    <section className="border-t border-[var(--mkt-border)] bg-[var(--mkt-s1)] px-5 lg:px-8">
-      <div className="mx-auto grid max-w-[var(--mkt-maxw)] border-x border-[var(--mkt-border)] lg:grid-cols-[2fr_1fr]">
-        <div className="p-8 sm:p-12 lg:p-16"><p className="mkt-label">Pilot access</p><h2 className="mt-6 max-w-3xl text-[clamp(2.75rem,6vw,5.5rem)] font-black uppercase leading-[0.9] text-[var(--mkt-text1)]">Your work should<br />speak for itself.</h2></div>
-        <div className="flex flex-col justify-end border-t border-[var(--mkt-border)] p-8 lg:border-l lg:border-t-0 lg:p-12"><p className="text-sm leading-relaxed text-[var(--mkt-text2)]">Start with realistic product work and build an evidence record you control.</p><Link to="/signup" className="mt-8 inline-flex items-center justify-between bg-[var(--mkt-green)] px-6 py-4 text-xs font-bold uppercase text-[var(--mkt-on-dark)] transition-colors hover:bg-[var(--mkt-green-m)]">Create account <ArrowRight className="size-4" /></Link><Link to="/login" className="mt-3 text-center text-xs font-bold uppercase text-[var(--mkt-text2)] hover:text-[var(--mkt-text1)]">Already a member? Sign in</Link></div>
-        </div>
-    </section>
   );
 }
