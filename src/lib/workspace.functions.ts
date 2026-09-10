@@ -12,6 +12,29 @@ function slugify(name: string) {
   return base || "org";
 }
 
+/** The organisation owner's membership cannot be demoted or removed. */
+async function assertNotOwnerMembership(
+  supabase: { from: (table: string) => any },
+  membershipId: string,
+) {
+  const { data: membership } = await supabase
+    .from("organisation_memberships")
+    .select("user_id, organisation_id")
+    .eq("id", membershipId)
+    .maybeSingle();
+  if (!membership) throw new Error("That member no longer exists.");
+
+  const { data: org } = await supabase
+    .from("organisations")
+    .select("owner_id")
+    .eq("id", membership.organisation_id)
+    .maybeSingle();
+
+  if (org?.owner_id === membership.user_id) {
+    throw new Error("The organisation owner can't be changed or removed.");
+  }
+}
+
 export type WorkspaceBootstrap = {
   userId: string;
   email: string | null;
