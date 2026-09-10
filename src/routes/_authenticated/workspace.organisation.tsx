@@ -45,6 +45,17 @@ function OrganisationPage() {
     onError: (error: Error) => toast.error(error.message),
   });
 
+  const createMutation = useMutation({
+    mutationFn: () => create({ data: { name, description, website } }),
+    onSuccess: async () => {
+      toast.success("Organisation created");
+      await queryClient.invalidateQueries({ queryKey: ["workspace"] });
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+
+
   if (!data.organisation) {
     return (
       <WorkspaceShell
