@@ -43,9 +43,9 @@ export function WorkspaceShell({
   const { data: coaching } = useQuery(coachingWorkspaceQuery);
   const nav = coaching?.hasEnabledProgramme || coaching?.isCoach
     ? [
-        ...NAV.slice(0, 3),
+        ...NAV.slice(0, 4),
         { to: "/workspace/coaching" as const, label: "Coaching", icon: GraduationCap },
-        ...NAV.slice(3),
+        ...NAV.slice(4),
       ]
     : NAV;
 
