@@ -19,6 +19,7 @@ import { coachingWorkspaceQuery } from "@/lib/coaching-queries";
 
 const NAV = [
   { to: "/workspace", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/workspace/experience", label: "Experience", icon: FlaskConical },
   { to: "/workspace/evidence", label: "Evidence record", icon: FileCheck2 },
   { to: "/workspace/capability", label: "Capability profile", icon: Gauge },
   { to: "/workspace/team", label: "Team", icon: Users },
