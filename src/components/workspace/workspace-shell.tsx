@@ -4,6 +4,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import {
   Building2,
   FileCheck2,
+  FlaskConical,
   Gauge,
   LayoutDashboard,
   Menu,
