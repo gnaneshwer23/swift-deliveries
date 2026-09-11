@@ -37,6 +37,7 @@ import { Route as AuthenticatedWorkspaceOrganisationRouteImport } from './routes
 import { Route as AuthenticatedWorkspaceProfileRouteImport } from './routes/_authenticated/workspace.profile'
 import { Route as AuthenticatedWorkspaceTeamRouteImport } from './routes/_authenticated/workspace.team'
 import { Route as AuthenticatedWorkspaceExperienceIndexRouteImport } from './routes/_authenticated/workspace.experience.index'
+import { Route as AuthenticatedWorkspaceExperienceTaskKeyRouteImport } from './routes/_authenticated/workspace.experience.$taskKey'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -186,6 +187,12 @@ const AuthenticatedWorkspaceExperienceIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedWorkspaceExperienceRoute,
   } as any)
+const AuthenticatedWorkspaceExperienceTaskKeyRoute =
+  AuthenticatedWorkspaceExperienceTaskKeyRouteImport.update({
+    id: '/$taskKey',
+    path: '/$taskKey',
+    getParentRoute: () => AuthenticatedWorkspaceExperienceRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -214,6 +221,7 @@ export interface FileRoutesByFullPath {
   '/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
   '/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
   '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
+  '/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
   '/workspace/experience/': typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
 export interface FileRoutesByTo {
@@ -241,6 +249,7 @@ export interface FileRoutesByTo {
   '/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
   '/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
   '/workspace': typeof AuthenticatedWorkspaceIndexRoute
+  '/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
   '/workspace/experience': typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
 export interface FileRoutesById {
@@ -272,6 +281,7 @@ export interface FileRoutesById {
   '/_authenticated/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
   '/_authenticated/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
   '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
+  '/_authenticated/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
   '/_authenticated/workspace/experience/': typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
 export interface FileRouteTypes {
@@ -303,6 +313,7 @@ export interface FileRouteTypes {
     | '/workspace/profile'
     | '/workspace/team'
     | '/workspace/'
+    | '/workspace/experience/$taskKey'
     | '/workspace/experience/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -330,6 +341,7 @@ export interface FileRouteTypes {
     | '/workspace/profile'
     | '/workspace/team'
     | '/workspace'
+    | '/workspace/experience/$taskKey'
     | '/workspace/experience'
   id:
     | '__root__'
@@ -360,6 +372,7 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace/profile'
     | '/_authenticated/workspace/team'
     | '/_authenticated/workspace/'
+    | '/_authenticated/workspace/experience/$taskKey'
     | '/_authenticated/workspace/experience/'
   fileRoutesById: FileRoutesById
 }
@@ -581,15 +594,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkspaceExperienceIndexRouteImport
       parentRoute: typeof AuthenticatedWorkspaceExperienceRoute
     }
+    '/_authenticated/workspace/experience/$taskKey': {
+      id: '/_authenticated/workspace/experience/$taskKey'
+      path: '/$taskKey'
+      fullPath: '/workspace/experience/$taskKey'
+      preLoaderRoute: typeof AuthenticatedWorkspaceExperienceTaskKeyRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceExperienceRoute
+    }
   }
 }
 
 interface AuthenticatedWorkspaceExperienceRouteChildren {
+  AuthenticatedWorkspaceExperienceTaskKeyRoute: typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
   AuthenticatedWorkspaceExperienceIndexRoute: typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
 
 const AuthenticatedWorkspaceExperienceRouteChildren: AuthenticatedWorkspaceExperienceRouteChildren =
   {
+    AuthenticatedWorkspaceExperienceTaskKeyRoute:
+      AuthenticatedWorkspaceExperienceTaskKeyRoute,
     AuthenticatedWorkspaceExperienceIndexRoute:
       AuthenticatedWorkspaceExperienceIndexRoute,
   }

@@ -4,6 +4,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import {
   Building2,
   FileCheck2,
+  FlaskConical,
   Gauge,
   LayoutDashboard,
   Menu,
@@ -18,6 +19,7 @@ import { coachingWorkspaceQuery } from "@/lib/coaching-queries";
 
 const NAV = [
   { to: "/workspace", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/workspace/experience", label: "Experience", icon: FlaskConical },
   { to: "/workspace/evidence", label: "Evidence record", icon: FileCheck2 },
   { to: "/workspace/capability", label: "Capability profile", icon: Gauge },
   { to: "/workspace/team", label: "Team", icon: Users },
@@ -41,9 +43,9 @@ export function WorkspaceShell({
   const { data: coaching } = useQuery(coachingWorkspaceQuery);
   const nav = coaching?.hasEnabledProgramme || coaching?.isCoach
     ? [
-        ...NAV.slice(0, 3),
+        ...NAV.slice(0, 4),
         { to: "/workspace/coaching" as const, label: "Coaching", icon: GraduationCap },
-        ...NAV.slice(3),
+        ...NAV.slice(4),
       ]
     : NAV;
 
