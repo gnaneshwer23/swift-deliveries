@@ -20,9 +20,14 @@ export function useSession() {
       setLoading(false);
     });
 
+    // Supabase can invoke this listener synchronously during subscribe, before
+    // the component has finished mounting — defer so the update is safe.
     const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
-      setSession(next ?? null);
-      setLoading(false);
+      setTimeout(() => {
+        if (!active) return;
+        setSession(next ?? null);
+        setLoading(false);
+      }, 0);
     });
 
     return () => {

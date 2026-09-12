@@ -113,7 +113,7 @@ export function WorkspaceShell({
 
         <div className="main">
           <div className="main-header">
-            <span className="main-header-title">{title}</span>
+            <h1 className="main-header-title">{title}</h1>
             {subtitle ? <span className="main-header-sub hidden sm:block">{subtitle}</span> : null}
           </div>
           <div className="app-content">{children}</div>
