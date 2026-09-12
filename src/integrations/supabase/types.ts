@@ -896,6 +896,42 @@ export type Database = {
         }
         Relationships: []
       }
+      portfolio_shares: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          include_self_reported: boolean
+          label: string
+          owner_id: string
+          revoked_at: string | null
+          token: string
+          view_count: number
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          include_self_reported?: boolean
+          label: string
+          owner_id: string
+          revoked_at?: string | null
+          token?: string
+          view_count?: number
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          include_self_reported?: boolean
+          label?: string
+          owner_id?: string
+          revoked_at?: string | null
+          token?: string
+          view_count?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
