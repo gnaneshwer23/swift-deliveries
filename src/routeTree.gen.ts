@@ -28,11 +28,13 @@ import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated/workspace'
 import { Route as AttestTokenRouteImport } from './routes/attest.$token'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
+import { Route as PortfolioTokenRouteImport } from './routes/portfolio.$token'
 import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated/workspace.index'
 import { Route as AuthenticatedWorkspaceCapabilityRouteImport } from './routes/_authenticated/workspace.capability'
 import { Route as AuthenticatedWorkspaceCoachingRouteImport } from './routes/_authenticated/workspace.coaching'
 import { Route as AuthenticatedWorkspaceEvidenceRouteImport } from './routes/_authenticated/workspace.evidence'
 import { Route as AuthenticatedWorkspaceExperienceRouteImport } from './routes/_authenticated/workspace.experience'
+import { Route as AuthenticatedWorkspaceLaunchpadRouteImport } from './routes/_authenticated/workspace.launchpad'
 import { Route as AuthenticatedWorkspaceOrganisationRouteImport } from './routes/_authenticated/workspace.organisation'
 import { Route as AuthenticatedWorkspaceProfileRouteImport } from './routes/_authenticated/workspace.profile'
 import { Route as AuthenticatedWorkspaceTeamRouteImport } from './routes/_authenticated/workspace.team'
@@ -133,6 +135,11 @@ const InviteTokenRoute = InviteTokenRouteImport.update({
   path: '/invite/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortfolioTokenRoute = PortfolioTokenRouteImport.update({
+  id: '/portfolio/$token',
+  path: '/portfolio/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedWorkspaceIndexRoute =
   AuthenticatedWorkspaceIndexRouteImport.update({
     id: '/',
@@ -161,6 +168,12 @@ const AuthenticatedWorkspaceExperienceRoute =
   AuthenticatedWorkspaceExperienceRouteImport.update({
     id: '/experience',
     path: '/experience',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
+const AuthenticatedWorkspaceLaunchpadRoute =
+  AuthenticatedWorkspaceLaunchpadRouteImport.update({
+    id: '/launchpad',
+    path: '/launchpad',
     getParentRoute: () => AuthenticatedWorkspaceRoute,
   } as any)
 const AuthenticatedWorkspaceOrganisationRoute =
@@ -213,10 +226,12 @@ export interface FileRoutesByFullPath {
   '/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/attest/$token': typeof AttestTokenRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/portfolio/$token': typeof PortfolioTokenRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
   '/workspace/coaching': typeof AuthenticatedWorkspaceCoachingRoute
   '/workspace/evidence': typeof AuthenticatedWorkspaceEvidenceRoute
   '/workspace/experience': typeof AuthenticatedWorkspaceExperienceRouteWithChildren
+  '/workspace/launchpad': typeof AuthenticatedWorkspaceLaunchpadRoute
   '/workspace/organisation': typeof AuthenticatedWorkspaceOrganisationRoute
   '/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
   '/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
@@ -242,9 +257,11 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/attest/$token': typeof AttestTokenRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/portfolio/$token': typeof PortfolioTokenRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
   '/workspace/coaching': typeof AuthenticatedWorkspaceCoachingRoute
   '/workspace/evidence': typeof AuthenticatedWorkspaceEvidenceRoute
+  '/workspace/launchpad': typeof AuthenticatedWorkspaceLaunchpadRoute
   '/workspace/organisation': typeof AuthenticatedWorkspaceOrganisationRoute
   '/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
   '/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
@@ -273,10 +290,12 @@ export interface FileRoutesById {
   '/_authenticated/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/attest/$token': typeof AttestTokenRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/portfolio/$token': typeof PortfolioTokenRoute
   '/_authenticated/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
   '/_authenticated/workspace/coaching': typeof AuthenticatedWorkspaceCoachingRoute
   '/_authenticated/workspace/evidence': typeof AuthenticatedWorkspaceEvidenceRoute
   '/_authenticated/workspace/experience': typeof AuthenticatedWorkspaceExperienceRouteWithChildren
+  '/_authenticated/workspace/launchpad': typeof AuthenticatedWorkspaceLaunchpadRoute
   '/_authenticated/workspace/organisation': typeof AuthenticatedWorkspaceOrganisationRoute
   '/_authenticated/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
   '/_authenticated/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
@@ -305,10 +324,12 @@ export interface FileRouteTypes {
     | '/workspace'
     | '/attest/$token'
     | '/invite/$token'
+    | '/portfolio/$token'
     | '/workspace/capability'
     | '/workspace/coaching'
     | '/workspace/evidence'
     | '/workspace/experience'
+    | '/workspace/launchpad'
     | '/workspace/organisation'
     | '/workspace/profile'
     | '/workspace/team'
@@ -334,9 +355,11 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/attest/$token'
     | '/invite/$token'
+    | '/portfolio/$token'
     | '/workspace/capability'
     | '/workspace/coaching'
     | '/workspace/evidence'
+    | '/workspace/launchpad'
     | '/workspace/organisation'
     | '/workspace/profile'
     | '/workspace/team'
@@ -364,10 +387,12 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace'
     | '/attest/$token'
     | '/invite/$token'
+    | '/portfolio/$token'
     | '/_authenticated/workspace/capability'
     | '/_authenticated/workspace/coaching'
     | '/_authenticated/workspace/evidence'
     | '/_authenticated/workspace/experience'
+    | '/_authenticated/workspace/launchpad'
     | '/_authenticated/workspace/organisation'
     | '/_authenticated/workspace/profile'
     | '/_authenticated/workspace/team'
@@ -394,6 +419,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   AttestTokenRoute: typeof AttestTokenRoute
   InviteTokenRoute: typeof InviteTokenRoute
+  PortfolioTokenRoute: typeof PortfolioTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -531,6 +557,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InviteTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portfolio/$token': {
+      id: '/portfolio/$token'
+      path: '/portfolio/$token'
+      fullPath: '/portfolio/$token'
+      preLoaderRoute: typeof PortfolioTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/workspace/': {
       id: '/_authenticated/workspace/'
       path: '/'
@@ -564,6 +597,13 @@ declare module '@tanstack/react-router' {
       path: '/experience'
       fullPath: '/workspace/experience'
       preLoaderRoute: typeof AuthenticatedWorkspaceExperienceRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
+    '/_authenticated/workspace/launchpad': {
+      id: '/_authenticated/workspace/launchpad'
+      path: '/launchpad'
+      fullPath: '/workspace/launchpad'
+      preLoaderRoute: typeof AuthenticatedWorkspaceLaunchpadRouteImport
       parentRoute: typeof AuthenticatedWorkspaceRoute
     }
     '/_authenticated/workspace/organisation': {
@@ -627,6 +667,7 @@ interface AuthenticatedWorkspaceRouteChildren {
   AuthenticatedWorkspaceCoachingRoute: typeof AuthenticatedWorkspaceCoachingRoute
   AuthenticatedWorkspaceEvidenceRoute: typeof AuthenticatedWorkspaceEvidenceRoute
   AuthenticatedWorkspaceExperienceRoute: typeof AuthenticatedWorkspaceExperienceRouteWithChildren
+  AuthenticatedWorkspaceLaunchpadRoute: typeof AuthenticatedWorkspaceLaunchpadRoute
   AuthenticatedWorkspaceOrganisationRoute: typeof AuthenticatedWorkspaceOrganisationRoute
   AuthenticatedWorkspaceProfileRoute: typeof AuthenticatedWorkspaceProfileRoute
   AuthenticatedWorkspaceTeamRoute: typeof AuthenticatedWorkspaceTeamRoute
@@ -641,6 +682,7 @@ const AuthenticatedWorkspaceRouteChildren: AuthenticatedWorkspaceRouteChildren =
     AuthenticatedWorkspaceEvidenceRoute: AuthenticatedWorkspaceEvidenceRoute,
     AuthenticatedWorkspaceExperienceRoute:
       AuthenticatedWorkspaceExperienceRouteWithChildren,
+    AuthenticatedWorkspaceLaunchpadRoute: AuthenticatedWorkspaceLaunchpadRoute,
     AuthenticatedWorkspaceOrganisationRoute:
       AuthenticatedWorkspaceOrganisationRoute,
     AuthenticatedWorkspaceProfileRoute: AuthenticatedWorkspaceProfileRoute,
@@ -684,6 +726,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   AttestTokenRoute: AttestTokenRoute,
   InviteTokenRoute: InviteTokenRoute,
+  PortfolioTokenRoute: PortfolioTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
