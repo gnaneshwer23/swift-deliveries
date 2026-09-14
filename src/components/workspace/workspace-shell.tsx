@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   Building2,
@@ -42,7 +42,12 @@ export function WorkspaceShell({
   const signOut = useSignOut();
   const { user } = useSession();
   const [open, setOpen] = useState(false);
-  const { data: coaching } = useQuery(coachingWorkspaceQuery);
+  // Only start this fetch once the shell has actually mounted: resolving it
+  // while a sibling page component is still suspended triggers a React
+  // "state update on a component that hasn't mounted yet" error.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const { data: coaching } = useQuery({ ...coachingWorkspaceQuery, enabled: mounted });
   const nav = coaching?.hasEnabledProgramme || coaching?.isCoach
     ? [
         ...NAV.slice(0, 4),

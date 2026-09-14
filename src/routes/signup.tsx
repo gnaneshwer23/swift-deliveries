@@ -161,6 +161,17 @@ function SignupPage() {
               </button>
             </form>
           )}
+          <p className="mt-4 text-xs" style={{ color: "var(--x-slate-light)" }}>
+            By creating an account you agree to our{" "}
+            <Link to="/terms" style={{ color: "var(--x-slate)" }}>
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link to="/privacy" style={{ color: "var(--x-slate)" }}>
+              Privacy Policy
+            </Link>
+            .
+          </p>
           <div className="form-signin">
             Already have an account? <Link to="/login">Sign in →</Link>
           </div>

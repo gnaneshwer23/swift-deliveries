@@ -137,6 +137,12 @@ function LoginPage() {
             </button>
           </form>
 
+          <div className="mt-4 text-center text-xs">
+            <Link to="/forgot-password" style={{ color: "var(--x-slate)" }}>
+              Forgot your password?
+            </Link>
+          </div>
+
           <div className="form-signin">
             New here? <Link to="/pilot">Join the pilot →</Link>
           </div>
