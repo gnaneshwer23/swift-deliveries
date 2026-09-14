@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as ExperienceRouteImport } from './routes/experience'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as LaunchpadRouteImport } from './routes/launchpad'
 import { Route as LoginRouteImport } from './routes/login'
@@ -21,6 +22,7 @@ import { Route as PilotRouteImport } from './routes/pilot'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProfessionalWorkspaceRouteImport } from './routes/professional-workspace'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as TermsRouteImport } from './routes/terms'
@@ -65,6 +67,11 @@ const ExperienceRoute = ExperienceRouteImport.update({
   path: '/experience',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HowItWorksRoute = HowItWorksRouteImport.update({
   id: '/how-it-works',
   path: '/how-it-works',
@@ -98,6 +105,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const ProfessionalWorkspaceRoute = ProfessionalWorkspaceRouteImport.update({
   id: '/professional-workspace',
   path: '/professional-workspace',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResourcesRoute = ResourcesRouteImport.update({
@@ -212,6 +224,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/cookies': typeof CookiesRoute
   '/experience': typeof ExperienceRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/how-it-works': typeof HowItWorksRoute
   '/launchpad': typeof LaunchpadRoute
   '/login': typeof LoginRoute
@@ -219,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/resources': typeof ResourcesRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
@@ -244,6 +258,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/cookies': typeof CookiesRoute
   '/experience': typeof ExperienceRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/how-it-works': typeof HowItWorksRoute
   '/launchpad': typeof LaunchpadRoute
   '/login': typeof LoginRoute
@@ -251,6 +266,7 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/resources': typeof ResourcesRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
@@ -276,6 +292,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/cookies': typeof CookiesRoute
   '/experience': typeof ExperienceRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/how-it-works': typeof HowItWorksRoute
   '/launchpad': typeof LaunchpadRoute
   '/login': typeof LoginRoute
@@ -283,6 +300,7 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/resources': typeof ResourcesRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
@@ -310,6 +328,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/cookies'
     | '/experience'
+    | '/forgot-password'
     | '/how-it-works'
     | '/launchpad'
     | '/login'
@@ -317,6 +336,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/privacy'
     | '/professional-workspace'
+    | '/reset-password'
     | '/resources'
     | '/signup'
     | '/terms'
@@ -342,6 +362,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/cookies'
     | '/experience'
+    | '/forgot-password'
     | '/how-it-works'
     | '/launchpad'
     | '/login'
@@ -349,6 +370,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/privacy'
     | '/professional-workspace'
+    | '/reset-password'
     | '/resources'
     | '/signup'
     | '/terms'
@@ -373,6 +395,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/cookies'
     | '/experience'
+    | '/forgot-password'
     | '/how-it-works'
     | '/launchpad'
     | '/login'
@@ -380,6 +403,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/privacy'
     | '/professional-workspace'
+    | '/reset-password'
     | '/resources'
     | '/signup'
     | '/terms'
@@ -407,6 +431,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   CookiesRoute: typeof CookiesRoute
   ExperienceRoute: typeof ExperienceRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   HowItWorksRoute: typeof HowItWorksRoute
   LaunchpadRoute: typeof LaunchpadRoute
   LoginRoute: typeof LoginRoute
@@ -414,6 +439,7 @@ export interface RootRouteChildren {
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   ProfessionalWorkspaceRoute: typeof ProfessionalWorkspaceRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ResourcesRoute: typeof ResourcesRoute
   SignupRoute: typeof SignupRoute
   TermsRoute: typeof TermsRoute
@@ -457,6 +483,13 @@ declare module '@tanstack/react-router' {
       path: '/experience'
       fullPath: '/experience'
       preLoaderRoute: typeof ExperienceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/how-it-works': {
@@ -506,6 +539,13 @@ declare module '@tanstack/react-router' {
       path: '/professional-workspace'
       fullPath: '/professional-workspace'
       preLoaderRoute: typeof ProfessionalWorkspaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/resources': {
@@ -714,6 +754,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   CookiesRoute: CookiesRoute,
   ExperienceRoute: ExperienceRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   HowItWorksRoute: HowItWorksRoute,
   LaunchpadRoute: LaunchpadRoute,
   LoginRoute: LoginRoute,
@@ -721,6 +762,7 @@ const rootRouteChildren: RootRouteChildren = {
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   ProfessionalWorkspaceRoute: ProfessionalWorkspaceRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ResourcesRoute: ResourcesRoute,
   SignupRoute: SignupRoute,
   TermsRoute: TermsRoute,
