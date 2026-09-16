@@ -190,3 +190,132 @@ export const reviewCoachingSubmission = createServerFn({ method: "POST" })
     if (error || !reviewId) throw new Error(error?.message ?? "Could not save this review.");
     return { reviewId };
   });
+
+export type CoachQueueItem = CoachingSubmission & { waitingHours: number };
+
+export type CoachReviewWorkspace = {
+  isCoach: boolean;
+  stats: { waiting: number; reviewedThisWeek: number; averageWaitHours: number | null };
+  programmes: { id: string; name: string }[];
+  queue: CoachQueueItem[];
+  history: (CoachingSubmission & { decidedAt: string; decision: string; coachNote: string })[];
+};
+
+/**
+ * The coach's own surface: the queue of work waiting on a decision plus the
+ * coach's past decisions. Reviewing your own work stays impossible, and
+ * decisions stay permanent — this only reads and presents.
+ */
+export const getCoachReviewWorkspace = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<CoachReviewWorkspace> => {
+    const { supabase, userId } = context;
+    const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", userId);
+    const isCoach = (roles ?? []).some((row) => row.role === "moderator" || row.role === "admin");
+    if (!isCoach) {
+      return { isCoach: false, stats: { waiting: 0, reviewedThisWeek: 0, averageWaitHours: null }, programmes: [], queue: [], history: [] };
+    }
+
+    const [{ data: submissions }, { data: myReviews }, { data: programmes }, { data: exercises }] =
+      await Promise.all([
+        supabase
+          .from("coaching_submissions")
+          .select("id, owner_id, exercise_id, artefact_version_id, intake_method, external_url, storage_path, content_hash, self_confidence, state, attempt, submitted_at, reviewed_at")
+          .order("submitted_at", { ascending: true }),
+        supabase
+          .from("coach_reviews")
+          .select("submission_id, decision, coach_note, created_at")
+          .eq("coach_id", userId)
+          .order("created_at", { ascending: false }),
+        supabase.from("coaching_programmes").select("id, name").order("name"),
+        supabase
+          .from("coaching_exercises")
+          .select("id, programme_id, title, framework_capabilities(name)")
+          .order("sort_order"),
+      ]);
+
+    const rows = submissions ?? [];
+    const reviewsBySubmission = new Map((myReviews ?? []).map((row) => [row.submission_id, row]));
+    const relevant = rows.filter(
+      (row) => (row.state === "pending" && row.owner_id !== userId) || reviewsBySubmission.has(row.id),
+    );
+
+    const versionIds = relevant.map((row) => row.artefact_version_id);
+    const ownerIds = [...new Set(relevant.map((row) => row.owner_id))];
+    const [{ data: versions }, { data: profiles }] = await Promise.all([
+      versionIds.length
+        ? supabase.from("artefact_versions").select("id, body, artefacts(title)").in("id", versionIds)
+        : Promise.resolve({ data: [] }),
+      ownerIds.length
+        ? supabase.from("profiles").select("id, full_name, display_name").in("id", ownerIds)
+        : Promise.resolve({ data: [] }),
+    ]);
+
+    const exerciseById = new Map((exercises ?? []).map((row) => [row.id, row]));
+    const programmeById = new Map((programmes ?? []).map((row) => [row.id, row]));
+    const versionById = new Map((versions ?? []).map((row) => [row.id, row]));
+    const profileById = new Map((profiles ?? []).map((row) => [row.id, row]));
+
+    const map = (row: (typeof relevant)[number]): CoachingSubmission => {
+      const exercise = exerciseById.get(row.exercise_id);
+      const programme = exercise ? programmeById.get(exercise.programme_id) : undefined;
+      const version = versionById.get(row.artefact_version_id);
+      const profile = profileById.get(row.owner_id);
+      const review = reviewsBySubmission.get(row.id);
+      return {
+        id: row.id,
+        ownerName: profile?.display_name ?? profile?.full_name ?? "DeliverX member",
+        exerciseTitle: exercise?.title ?? "Coaching exercise",
+        programmeName: programme?.name ?? "Coaching programme",
+        artefactTitle: version?.artefacts?.title ?? "Submitted artefact",
+        body: version?.body ?? "",
+        intakeMethod: row.intake_method,
+        externalUrl: row.external_url,
+        storagePath: row.storage_path,
+        contentHash: row.content_hash,
+        selfConfidence: row.self_confidence,
+        state: row.state,
+        attempt: row.attempt,
+        submittedAt: row.submitted_at,
+        review: review
+          ? { decision: review.decision, coachNote: review.coach_note, createdAt: review.created_at }
+          : null,
+      };
+    };
+
+    const now = Date.now();
+    const queue: CoachQueueItem[] = relevant
+      .filter((row) => row.state === "pending" && row.owner_id !== userId)
+      .map((row) => ({
+        ...map(row),
+        waitingHours: Math.max(0, Math.round((now - new Date(row.submitted_at).getTime()) / 3_600_000)),
+      }));
+
+    const weekAgo = now - 7 * 24 * 3_600_000;
+    const history = relevant
+      .filter((row) => reviewsBySubmission.has(row.id))
+      .map((row) => {
+        const review = reviewsBySubmission.get(row.id)!;
+        return {
+          ...map(row),
+          decidedAt: review.created_at,
+          decision: review.decision,
+          coachNote: review.coach_note,
+        };
+      })
+      .sort((a, b) => (a.decidedAt < b.decidedAt ? 1 : -1));
+
+    return {
+      isCoach: true,
+      stats: {
+        waiting: queue.length,
+        reviewedThisWeek: history.filter((row) => new Date(row.decidedAt).getTime() >= weekAgo).length,
+        averageWaitHours: queue.length
+          ? Math.round(queue.reduce((total, row) => total + row.waitingHours, 0) / queue.length)
+          : null,
+      },
+      programmes: (programmes ?? []).map((row) => ({ id: row.id, name: row.name })),
+      queue,
+      history,
+    };
+  });

@@ -282,104 +282,186 @@ export const recordSelfReport = createServerFn({ method: "POST" })
 
 /**
  * The Capability Engine. Only trusted server code writes score runs,
- * judgements and claims; the level and band come from the ledger, never
- * from anything a person typed about themselves.
+ * judgements and claims. Levels, bands and rationales come from the ledger
+ * evidence, judged by Lovable AI, and every judgement cites the exact ledger
+ * entries behind it. A run never sets Verified — only external attestation
+ * does that.
  */
 export const runCapabilityScoring = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>
-    z.object({ runKind: z.enum(["baseline", "interim", "final", "transfer"]) }).parse(data),
+    z
+      .object({
+        runKind: z.enum(["baseline", "interim", "final", "transfer"]),
+        subjectUserId: z.string().uuid().nullish(),
+      })
+      .parse(data),
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
 
+    // Coaches and admins may run scoring for someone else; everyone else only for themselves.
+    let subjectId = userId;
+    let coachInitiated = false;
+    if (data.subjectUserId && data.subjectUserId !== userId) {
+      const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", userId);
+      const isCoach = (roles ?? []).some((row) => row.role === "moderator" || row.role === "admin");
+      if (!isCoach) throw new Error("Only a coach or admin can score someone else's evidence.");
+      subjectId = data.subjectUserId;
+      coachInitiated = true;
+    }
+
     const { data: framework } = await supabase
       .from("capability_frameworks")
-      .select("id")
+      .select("id, key, version")
       .eq("key", PILOT_FRAMEWORK.key)
       .eq("version", PILOT_FRAMEWORK.version)
       .single();
     if (!framework) throw new Error("The capability framework is unavailable.");
 
-    const { data: evidence } = await supabase
-      .from("evidence_ledger")
-      .select("id, capability_key, strength")
-      .eq("owner_id", userId);
-
-    const grouped = new Map<string, { ids: string[]; observed: number; assessed: number; verified: number }>();
-    for (const e of evidence ?? []) {
-      if (!e.capability_key) continue;
-      const bucket =
-        grouped.get(e.capability_key) ?? { ids: [], observed: 0, assessed: 0, verified: 0 };
-      bucket.ids.push(e.id);
-      if (e.strength === "observed") bucket.observed += 1;
-      if (e.strength === "assessed") bucket.assessed += 1;
-      if (e.strength === "externally_verified") bucket.verified += 1;
-      grouped.set(e.capability_key, bucket);
-    }
-
-    if (grouped.size === 0) {
-      throw new Error("There is no evidence to judge yet. Record some work first.");
-    }
-
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const [{ data: caps }, { data: evidence }] = await Promise.all([
+      supabaseAdmin
+        .from("framework_capabilities")
+        .select("key, name, description, sort_order")
+        .eq("framework_id", framework.id)
+        .order("sort_order", { ascending: true }),
+      supabaseAdmin
+        .from("evidence_ledger")
+        .select(
+          "id, capability_key, strength, source, summary, occurred_at, provenance, artefact_version_id",
+        )
+        .eq("owner_id", subjectId)
+        .order("occurred_at", { ascending: false })
+        .limit(120),
+    ]);
+
+    const usable = (evidence ?? []).filter((row) => row.capability_key);
+    if (usable.length === 0) {
+      throw new Error(
+        "There is no evidence to judge yet. Submit Experience work or coaching work first.",
+      );
+    }
+    const strongEnough = usable.filter((row) => row.strength !== "self_reported");
+    if (strongEnough.length === 0) {
+      throw new Error(
+        "Only self-reported claims are on record. Scoring needs work you actually submitted — an Experience task or a coach-confirmed exercise.",
+      );
+    }
+
+    const versionIds = usable
+      .map((row) => row.artefact_version_id)
+      .filter((id): id is string => Boolean(id));
+    const bodyByVersion = new Map<string, string>();
+    if (versionIds.length > 0) {
+      const { data: versions } = await supabaseAdmin
+        .from("artefact_versions")
+        .select("id, body")
+        .in("id", versionIds);
+      for (const version of versions ?? []) bodyByVersion.set(version.id, version.body);
+    }
+
+    const { judgeCapabilities } = await import("./ai-judge.server");
+    const judgements = await judgeCapabilities(
+      (caps ?? []).map((c) => ({ key: c.key, name: c.name, description: c.description })),
+      usable.map((row) => {
+        const provenance =
+          row.provenance && typeof row.provenance === "object" && !Array.isArray(row.provenance)
+            ? (row.provenance as Record<string, unknown>)
+            : {};
+        const body = row.artefact_version_id ? bodyByVersion.get(row.artefact_version_id) : undefined;
+        return {
+          id: row.id,
+          capabilityKey: row.capability_key as string,
+          strength: row.strength,
+          source: row.source,
+          summary: row.summary,
+          occurredAt: row.occurred_at,
+          coachConfirmed: provenance["coach_confirmed"] === true,
+          excerpt: body ? body.slice(0, 2200) : null,
+        };
+      }),
+    );
+
+    if (judgements.length === 0) {
+      throw new Error(
+        "The evidence on record wasn't clear enough to judge. Add more detail to your submitted work and run this again.",
+      );
+    }
 
     const { data: run, error: runError } = await supabaseAdmin
       .from("score_runs")
       .insert({
-        owner_id: userId,
+        owner_id: subjectId,
         framework_id: framework.id,
         run_kind: data.runKind,
-        notes: "Pilot engine: level from strength-weighted evidence volume.",
+        notes: coachInitiated
+          ? `Coach-initiated run against ${framework.key}@${framework.version}; judged from ledger evidence with written rationales.`
+          : `Self-service run against ${framework.key}@${framework.version}; judged from ledger evidence with written rationales.`,
       })
       .select("id")
       .single();
     if (runError || !run) throw new Error(runError?.message ?? "Could not start the score run.");
 
-    for (const [capabilityKey, bucket] of grouped) {
-      const weighted = bucket.observed * 1 + bucket.assessed * 2 + bucket.verified * 3;
-      const level = Math.min(5, Math.max(1, Math.round(weighted / 2)));
-      const band = weighted >= 6 ? "high" : weighted >= 3 ? "moderate" : "low";
-
+    for (const judgement of judgements) {
       await supabaseAdmin.from("capability_judgements").insert({
         score_run_id: run.id,
-        owner_id: userId,
-        capability_key: capabilityKey,
-        level,
-        band,
-        rationale: `${bucket.ids.length} ledger entries (${bucket.observed} observed, ${bucket.assessed} assessed, ${bucket.verified} externally verified) give a weighted signal of ${weighted}.`,
-        evidence_ids: bucket.ids,
+        owner_id: subjectId,
+        capability_key: judgement.capability_key,
+        level: judgement.level,
+        band: judgement.band,
+        rationale: judgement.rationale,
+        evidence_ids: judgement.evidence_ids,
       });
+
+      const strengths = new Set(
+        usable
+          .filter((row) => judgement.evidence_ids.includes(row.id))
+          .map((row) => row.strength as string),
+      );
+      const citedStrength = strengths.has("externally_verified")
+        ? "externally_verified"
+        : strengths.has("assessed")
+          ? "assessed"
+          : strengths.has("observed")
+            ? "observed"
+            : "self_reported";
 
       const { data: existing } = await supabaseAdmin
         .from("snapshot_claims")
-        .select("id, evidence_strength, attestation_status")
-        .eq("owner_id", userId)
+        .select("id")
+        .eq("owner_id", subjectId)
         .eq("framework_id", framework.id)
-        .eq("capability_key", capabilityKey)
+        .eq("capability_key", judgement.capability_key)
         .maybeSingle();
 
       if (existing) {
-        // Never downgrade or touch attestation state from a score run.
+        // Never touch attestation state or Verified from a score run.
         await supabaseAdmin
           .from("snapshot_claims")
-          .update({ level, band, score_run_id: run.id, readiness_basis: "score_run" })
+          .update({
+            level: judgement.level,
+            band: judgement.band,
+            score_run_id: run.id,
+            readiness_basis: "score_run",
+          })
           .eq("id", existing.id);
       } else {
         await supabaseAdmin.from("snapshot_claims").insert({
-          owner_id: userId,
+          owner_id: subjectId,
           framework_id: framework.id,
-          capability_key: capabilityKey,
-          level,
-          band,
+          capability_key: judgement.capability_key,
+          level: judgement.level,
+          band: judgement.band,
           score_run_id: run.id,
-          evidence_strength: bucket.assessed > 0 ? "assessed" : "observed",
+          evidence_strength: citedStrength,
           readiness_basis: "score_run",
         });
       }
     }
 
-    return { runId: run.id, judged: grouped.size };
+    return { runId: run.id, judged: judgements.length, coachInitiated };
   });
 
 /** Owner asks an external person to confirm a claim. Verified stays off. */
