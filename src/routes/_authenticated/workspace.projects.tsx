@@ -7,6 +7,7 @@ import { WorkspaceCard, WorkspaceShell } from "@/components/workspace/workspace-
 import { Button } from "@/components/ui/button";
 import { professionalWorkspaceQuery } from "@/lib/professional-workspace-queries";
 import { createWorkspaceItem, createWorkspaceProject, generateWorkspaceAiDraft, resolveWorkspaceAiDraft, setWorkspaceObservation, submitWorkspaceDocument, updateWorkspaceItemStatus } from "@/lib/professional-workspace.functions";
+import type { ProfessionalWorkspace } from "@/lib/professional-workspace.functions";
 
 type View = "overview"|"team"|"tasks"|"meetings"|"artefacts"|"decisions"|"risks"|"evidence";
 type CreateType = "task"|"meeting"|"document"|"decision"|"risk";
@@ -51,7 +52,7 @@ function NewProject({pending,onCreate}:{pending:boolean;onCreate:(data:{title:st
   return <WorkspaceCard title="Create your first delivery workspace" description="Start empty. Nothing is observed, generated or submitted until you choose it."><form className="max-w-2xl space-y-4" onSubmit={e=>{e.preventDefault();onCreate({title,purpose})}}><label className="block text-sm">Project name<input className={`${input} mt-1.5`} value={title} onChange={e=>setTitle(e.target.value)} required minLength={2}/></label><label className="block text-sm">Purpose<textarea className={`${input} mt-1.5 min-h-28`} value={purpose} onChange={e=>setPurpose(e.target.value)} required minLength={10}/></label><Button disabled={pending} className="pw-primary">{pending?"Creating…":"Create workspace"}</Button></form></WorkspaceCard>;
 }
 
-function Overview({project,setView}:{project:NonNullable<ReturnType<typeof useSuspenseQuery<ReturnType<typeof professionalWorkspaceQuery>>>["data"]["project"]>;setView:(v:View)=>void}){
+function Overview({project,setView}:{project:ProfessionalProject;setView:(v:View)=>void}){
   const items=[{label:"Open tasks",value:project.tasks.filter(x=>x.status!=="done").length,view:"tasks" as View},{label:"Planned meetings",value:project.meetings.filter(x=>x.status==="planned").length,view:"meetings" as View},{label:"Working artefacts",value:project.documents.filter(x=>x.status==="working").length,view:"artefacts" as View},{label:"Open risks",value:project.risks.filter(x=>x.status==="open").length,view:"risks" as View}];
   return <div className="space-y-4"><section className="pw-brief"><span className="pw-kicker">Project purpose</span><p>{project.purpose}</p></section><div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">{items.map(x=><button type="button" className="pw-stat" key={x.label} onClick={()=>setView(x.view)}><strong>{x.value}</strong><span>{x.label}</span></button>)}</div><AiStudio project={project}/></div>;
 }
@@ -69,7 +70,7 @@ function Meetings({project,onCreate,invalidate}:{project:ProfessionalProject;onC
   return <WorkspaceCard title="Meetings" description="Prepare deliberately; record what people agreed after the conversation." action={<Button onClick={onCreate} className="pw-primary"><Plus/>Add</Button>}>{project.meetings.length===0?<p className="pw-empty">No meetings planned yet.</p>:<div className="pw-list">{project.meetings.map(r=><article key={r.id}><div><strong>{r.title}</strong><span>{r.scheduledAt?new Date(r.scheduledAt).toLocaleString():"Date not scheduled"}</span>{r.agenda?<p>{r.agenda}</p>:null}</div><Button variant="outline" onClick={()=>update.mutate({id:r.id,status:r.status==="planned"?"held":"planned"})}>{humanStatus(r.status)}</Button></article>)}</div>}</WorkspaceCard>;
 }
 
-type ProfessionalProject=NonNullable<Awaited<ReturnType<typeof import("@/lib/professional-workspace.functions").getProfessionalWorkspace>>["project"]>;
+type ProfessionalProject=NonNullable<ProfessionalWorkspace["project"]>;
 function Artefacts({project,onCreate,invalidate}:{project:ProfessionalProject;onCreate:()=>void;invalidate:()=>unknown}){
   const submit=useMutation({mutationFn:(id:string)=>submitWorkspaceDocument({data:{documentId:id}}),onSuccess:()=>{toast.success("Submitted. An immutable version and evidence entry were created.");void invalidate()},onError:(e:Error)=>toast.error(e.message)});
   return <WorkspaceCard title="Artefacts" description="Working documents remain editable. Submission is a separate human action that freezes a SHA-256 fingerprint." action={<Button onClick={onCreate} className="pw-primary"><Plus/>New artefact</Button>}>{project.documents.length===0?<p className="pw-empty">No artefacts created yet.</p>:<div className="pw-list">{project.documents.map(r=><article key={r.id}><div><strong>{r.title}</strong><span>{r.status==="submitted"?"Submitted and immutable":"Working document"}</span><p className="line-clamp-3 whitespace-pre-wrap">{r.body}</p>{r.contentHash?<small className="pw-hash">SHA-256 {r.contentHash}</small>:null}</div>{r.status==="working"?<Button disabled={submit.isPending||r.body.trim().length<20} onClick={()=>submit.mutate(r.id)} className="pw-primary"><ShieldCheck/>Submit</Button>:<span className="pw-confirmed"><Check/>Frozen</span>}</article>)}</div>}</WorkspaceCard>;
