@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { CheckCircle2, Clock3, FileUp, ShieldCheck, XCircle } from "lucide-react";
@@ -7,7 +7,7 @@ import { WorkspaceCard, WorkspaceShell } from "@/components/workspace/workspace-
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { coachingWorkspaceQuery } from "@/lib/coaching-queries";
-import { reviewCoachingSubmission, submitCoachingEvidence } from "@/lib/coaching.functions";
+import { submitCoachingEvidence } from "@/lib/coaching.functions";
 
 export const Route = createFileRoute("/_authenticated/workspace/coaching")({
   head: () => ({ meta: [{ title: "Coaching Evidence — DeliverX" }, { name: "description", content: "Submit structured coaching work and track human coach confirmation." }, { property: "og:title", content: "Coaching Evidence — DeliverX" }, { property: "og:description", content: "Structured coaching work with human confirmation and full provenance." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
@@ -35,7 +35,7 @@ function CoachingPage() {
   const [externalUrl, setExternalUrl] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [confidence, setConfidence] = useState("");
-  const [notes, setNotes] = useState<Record<string, string>>({});
+  const [confidenceNote] = useState("");
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["coaching"] });
 
   const submit = useMutation({
@@ -68,11 +68,9 @@ function CoachingPage() {
     onError: (error: Error) => toast.error(error.message),
   });
 
-  const review = useMutation({
-    mutationFn: (input: { submissionId: string; decision: "confirmed" | "rejected"; coachNote: string }) => reviewCoachingSubmission({ data: input }),
-    onSuccess: (_, input) => { toast.success(input.decision === "confirmed" ? "Confirmed and written to the ledger." : "Rejected with guidance; no ledger entry was created."); void refresh(); void queryClient.invalidateQueries({ queryKey: ["evidence"] }); },
-    onError: (error: Error) => toast.error(error.message),
-  });
+  void confidenceNote;
+
+
 
   return <WorkspaceShell title="Coaching evidence" subtitle="Structured work becomes evidence only after a human coach confirms it. Coach confirmation is not external verification.">
     {enabled.length === 0 ? <WorkspaceCard title="Coaching is not enabled" description="Programme shells are ready, but every programme remains off until the founder approves its exercises." /> : <WorkspaceCard title="Submit an exercise" description="Your artefact is locked when submitted. AI does not approve it and nothing enters your ledger until a coach confirms it.">
