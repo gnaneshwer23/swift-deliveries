@@ -1120,6 +1120,491 @@ export type Database = {
         }
         Relationships: []
       }
+      workspace_ai_suggestions: {
+        Row: {
+          approved_content: Json | null
+          content: Json
+          created_at: string
+          error_message: string | null
+          id: string
+          kind: string
+          owner_id: string
+          project_id: string
+          resolved_at: string | null
+          status: string
+          target_id: string | null
+          title: string
+        }
+        Insert: {
+          approved_content?: Json | null
+          content?: Json
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          kind: string
+          owner_id: string
+          project_id: string
+          resolved_at?: string | null
+          status?: string
+          target_id?: string | null
+          title: string
+        }
+        Update: {
+          approved_content?: Json | null
+          content?: Json
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          kind?: string
+          owner_id?: string
+          project_id?: string
+          resolved_at?: string | null
+          status?: string
+          target_id?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_ai_suggestions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "workspace_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_contribution_events: {
+        Row: {
+          detail: Json
+          entity_id: string | null
+          entity_type: string
+          event_type: string
+          id: string
+          occurred_at: string
+          owner_id: string
+          project_id: string
+        }
+        Insert: {
+          detail?: Json
+          entity_id?: string | null
+          entity_type: string
+          event_type: string
+          id?: string
+          occurred_at?: string
+          owner_id: string
+          project_id: string
+        }
+        Update: {
+          detail?: Json
+          entity_id?: string | null
+          entity_type?: string
+          event_type?: string
+          id?: string
+          occurred_at?: string
+          owner_id?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_contribution_events_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "workspace_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_decisions: {
+        Row: {
+          created_at: string
+          decided_at: string | null
+          id: string
+          options: Json
+          owner_id: string
+          project_id: string
+          rationale: string
+          selected_option: string | null
+          status: string
+          task_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          decided_at?: string | null
+          id?: string
+          options?: Json
+          owner_id: string
+          project_id: string
+          rationale?: string
+          selected_option?: string | null
+          status?: string
+          task_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          decided_at?: string | null
+          id?: string
+          options?: Json
+          owner_id?: string
+          project_id?: string
+          rationale?: string
+          selected_option?: string | null
+          status?: string
+          task_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_decisions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "workspace_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workspace_decisions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "workspace_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_documents: {
+        Row: {
+          body: string
+          content_hash: string | null
+          created_at: string
+          id: string
+          kind: string
+          owner_id: string
+          project_id: string
+          status: string
+          submitted_version_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string
+          content_hash?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          owner_id: string
+          project_id: string
+          status?: string
+          submitted_version_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          content_hash?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          owner_id?: string
+          project_id?: string
+          status?: string
+          submitted_version_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "workspace_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workspace_documents_submitted_version_id_fkey"
+            columns: ["submitted_version_id"]
+            isOneToOne: false
+            referencedRelation: "artefact_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_meetings: {
+        Row: {
+          agenda: string
+          created_at: string
+          id: string
+          notes: string
+          owner_id: string
+          project_id: string
+          scheduled_at: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          agenda?: string
+          created_at?: string
+          id?: string
+          notes?: string
+          owner_id: string
+          project_id: string
+          scheduled_at?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          agenda?: string
+          created_at?: string
+          id?: string
+          notes?: string
+          owner_id?: string
+          project_id?: string
+          scheduled_at?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_meetings_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "workspace_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_observation_preferences: {
+        Row: {
+          changed_at: string
+          enabled: boolean
+          owner_id: string
+          project_id: string
+        }
+        Insert: {
+          changed_at?: string
+          enabled?: boolean
+          owner_id: string
+          project_id: string
+        }
+        Update: {
+          changed_at?: string
+          enabled?: boolean
+          owner_id?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_observation_preferences_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "workspace_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_people: {
+        Row: {
+          accent: string
+          created_at: string
+          id: string
+          kind: string
+          memory: Json
+          name: string
+          owner_id: string
+          project_id: string
+          remit: string
+          role: string
+        }
+        Insert: {
+          accent?: string
+          created_at?: string
+          id?: string
+          kind: string
+          memory?: Json
+          name: string
+          owner_id: string
+          project_id: string
+          remit: string
+          role: string
+        }
+        Update: {
+          accent?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          memory?: Json
+          name?: string
+          owner_id?: string
+          project_id?: string
+          remit?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_people_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "workspace_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_projects: {
+        Row: {
+          context: Json
+          created_at: string
+          experience_enrolment_id: string | null
+          id: string
+          owner_id: string
+          purpose: string
+          source: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          context?: Json
+          created_at?: string
+          experience_enrolment_id?: string | null
+          id?: string
+          owner_id: string
+          purpose: string
+          source?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          context?: Json
+          created_at?: string
+          experience_enrolment_id?: string | null
+          id?: string
+          owner_id?: string
+          purpose?: string
+          source?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_projects_experience_enrolment_id_fkey"
+            columns: ["experience_enrolment_id"]
+            isOneToOne: false
+            referencedRelation: "experience_enrolments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_risks: {
+        Row: {
+          created_at: string
+          detail: string
+          id: string
+          impact: string
+          mitigation: string
+          owner_id: string
+          probability: string
+          project_id: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: string
+          id?: string
+          impact?: string
+          mitigation?: string
+          owner_id: string
+          probability?: string
+          project_id: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          detail?: string
+          id?: string
+          impact?: string
+          mitigation?: string
+          owner_id?: string
+          probability?: string
+          project_id?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_risks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "workspace_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_tasks: {
+        Row: {
+          assignee_id: string | null
+          created_at: string
+          detail: string
+          due_at: string | null
+          id: string
+          owner_id: string
+          priority: string
+          project_id: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assignee_id?: string | null
+          created_at?: string
+          detail?: string
+          due_at?: string | null
+          id?: string
+          owner_id: string
+          priority?: string
+          project_id: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assignee_id?: string | null
+          created_at?: string
+          detail?: string
+          due_at?: string | null
+          id?: string
+          owner_id?: string
+          priority?: string
+          project_id?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "workspace_people"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workspace_tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "workspace_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -1138,12 +1623,26 @@ export type Database = {
         }
         Returns: string
       }
+      record_workspace_contribution: {
+        Args: {
+          _detail?: Json
+          _entity_id?: string
+          _entity_type: string
+          _event_type: string
+          _project_id: string
+        }
+        Returns: string
+      }
       review_coaching_submission: {
         Args: {
           _coach_note: string
           _decision: Database["public"]["Enums"]["coach_review_decision"]
           _submission_id: string
         }
+        Returns: string
+      }
+      submit_workspace_document: {
+        Args: { _document_id: string }
         Returns: string
       }
     }
