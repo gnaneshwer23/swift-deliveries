@@ -48,12 +48,16 @@ export function WorkspaceShell({
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const { data: coaching } = useQuery({ ...coachingWorkspaceQuery, enabled: mounted });
-  const nav = coaching?.hasEnabledProgramme || coaching?.isCoach
-    ? [
-        ...NAV.slice(0, 4),
-        { to: "/workspace/coaching" as const, label: "Coaching", icon: GraduationCap },
-        ...NAV.slice(4),
-      ]
+  const coachingLinks = [
+    ...(coaching?.hasEnabledProgramme || coaching?.isCoach
+      ? [{ to: "/workspace/coaching" as const, label: "Coaching", icon: GraduationCap }]
+      : []),
+    ...(coaching?.isCoach
+      ? [{ to: "/workspace/review" as const, label: "Coach review", icon: GraduationCap }]
+      : []),
+  ];
+  const nav = coachingLinks.length
+    ? [...NAV.slice(0, 4), ...coachingLinks, ...NAV.slice(4)]
     : NAV;
 
   const displayName =
