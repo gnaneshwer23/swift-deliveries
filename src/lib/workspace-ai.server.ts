@@ -45,6 +45,7 @@ export async function generateWorkspaceSuggestion(input: {
         }],
       }],
       reasoning: { effort: "low", summary: "auto" },
+      include: ["reasoning.encrypted_content"],
       store: false,
     }),
   });
