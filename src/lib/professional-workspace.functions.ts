@@ -158,8 +158,10 @@ export const resolveWorkspaceAiDraft = createServerFn({method:"POST"}).middlewar
   const original=typeof row.content==="object"&&row.content&&"text" in row.content?String((row.content as {text?:unknown}).text??""):"";
   const approved=data.editedText.trim()||original;
   const {supabaseAdmin}=await import("@/integrations/supabase/client.server");
-  const {error}=await supabaseAdmin.from("workspace_ai_suggestions").update({status:data.action==="approve"?"approved":"dismissed",approved_content:data.action==="approve"?{text:approved}:null,resolved_at:new Date().toISOString()}).eq("id",data.suggestionId).eq("owner_id",context.userId);
-  if(error) throw new Error(error.message);
+  if (data.action === "dismiss") {
+    const { error } = await supabaseAdmin.from("workspace_ai_suggestions").update({ status:"dismissed", resolved_at:new Date().toISOString() }).eq("id",data.suggestionId).eq("owner_id",context.userId);
+    if (error) throw new Error(error.message);
+  }
   if(data.action==="approve") {
     let workingId: string | null = null;
     if (row.kind === "agenda") {
@@ -175,6 +177,8 @@ export const resolveWorkspaceAiDraft = createServerFn({method:"POST"}).middlewar
       if (documentError || !document) throw new Error(documentError?.message ?? "Could not create the working artefact.");
       workingId = document.id;
     }
+    const { error } = await supabaseAdmin.from("workspace_ai_suggestions").update({ status:"approved", approved_content:{text:approved}, resolved_at:new Date().toISOString() }).eq("id",data.suggestionId).eq("owner_id",context.userId);
+    if (error) throw new Error(error.message);
     if(approved!==original) await context.supabase.rpc("record_workspace_contribution",{_project_id:data.projectId,_event_type:"user_edit",_entity_type:"ai_suggestion",_entity_id:data.suggestionId,_detail:{edited:true}});
     await context.supabase.rpc("record_workspace_contribution",{_project_id:data.projectId,_event_type:"user_approved",_entity_type:"ai_suggestion",_entity_id:data.suggestionId,_detail:{approved:true,working_item_id:workingId}});
   }
