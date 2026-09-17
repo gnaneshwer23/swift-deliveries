@@ -19,3 +19,4 @@ Approved plan: adopt mockup design system + build remaining product (phases 1–
 - [x] Password recovery: /forgot-password + /reset-password
 - [x] Terms and Privacy links on sign-up
 - [ ] Not applicable from the 13 Sep report: Settings, Learning, Opportunities/Applications, Baseline/Final assessments, Help, Journey Map, Reviewer queue — these pages do not exist in this app
+- [ ] Define subscription purchase, cancellation, upgrade, and downgrade access rules with the user
