@@ -110,9 +110,11 @@ export const createWorkspaceItem = createServerFn({method:"POST"}).middleware([r
 export const updateWorkspaceItemStatus = createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).inputValidator((data:unknown)=>z.object({type:z.enum(["task","meeting","decision","risk"]),id:uuid,status:z.string().min(2).max(30),projectId:uuid}).parse(data)).handler(async({data,context})=>{
   const allowed={task:["open","in_progress","blocked","done"],meeting:["planned","held","cancelled"],decision:["open","decided","revisited"],risk:["open","mitigated","closed"]}[data.type];
   if(!allowed.includes(data.status)) throw new Error("That status change is not allowed.");
-  const table={task:"workspace_tasks",meeting:"workspace_meetings",decision:"workspace_decisions",risk:"workspace_risks"}[data.type] as "workspace_tasks";
-  const extra=data.type==="decision"&&data.status==="decided"?{decided_at:new Date().toISOString()} : {};
-  const {error}=await context.supabase.from(table).update({status:data.status,...extra}).eq("id",data.id).eq("owner_id",context.userId);
+  let error: { message: string } | null = null;
+  if (data.type === "task") ({ error } = await context.supabase.from("workspace_tasks").update({ status: data.status }).eq("id", data.id).eq("owner_id", context.userId));
+  if (data.type === "meeting") ({ error } = await context.supabase.from("workspace_meetings").update({ status: data.status }).eq("id", data.id).eq("owner_id", context.userId));
+  if (data.type === "decision") ({ error } = await context.supabase.from("workspace_decisions").update({ status: data.status, decided_at: data.status === "decided" ? new Date().toISOString() : null }).eq("id", data.id).eq("owner_id", context.userId));
+  if (data.type === "risk") ({ error } = await context.supabase.from("workspace_risks").update({ status: data.status }).eq("id", data.id).eq("owner_id", context.userId));
   if(error) throw new Error(error.message);
   await context.supabase.rpc("record_workspace_contribution",{_project_id:data.projectId,_event_type:"outcome",_entity_type:data.type,_entity_id:data.id,_detail:{status:data.status}});
   return {ok:true};
