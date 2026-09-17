@@ -153,7 +153,7 @@ export const generateWorkspaceAiDraft = createServerFn({method:"POST"}).middlewa
 });
 
 export const resolveWorkspaceAiDraft = createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).inputValidator((data:unknown)=>z.object({suggestionId:uuid,projectId:uuid,action:z.enum(["approve","dismiss"]),editedText:z.string().max(20000).default("")}).parse(data)).handler(async({data,context})=>{
-  const {data:row}=await context.supabase.from("workspace_ai_suggestions").select("id,owner_id,status,content").eq("id",data.suggestionId).eq("owner_id",context.userId).maybeSingle();
+  const {data:row}=await context.supabase.from("workspace_ai_suggestions").select("id,owner_id,status,content,kind,title").eq("id",data.suggestionId).eq("owner_id",context.userId).eq("project_id",data.projectId).maybeSingle();
   if(!row||row.status!=="ready") throw new Error("That AI draft is no longer awaiting review.");
   const original=typeof row.content==="object"&&row.content&&"text" in row.content?String((row.content as {text?:unknown}).text??""):"";
   const approved=data.editedText.trim()||original;
@@ -161,8 +161,22 @@ export const resolveWorkspaceAiDraft = createServerFn({method:"POST"}).middlewar
   const {error}=await supabaseAdmin.from("workspace_ai_suggestions").update({status:data.action==="approve"?"approved":"dismissed",approved_content:data.action==="approve"?{text:approved}:null,resolved_at:new Date().toISOString()}).eq("id",data.suggestionId).eq("owner_id",context.userId);
   if(error) throw new Error(error.message);
   if(data.action==="approve") {
+    let workingId: string | null = null;
+    if (row.kind === "agenda") {
+      const { data: meeting, error: meetingError } = await supabaseAdmin.from("workspace_meetings").insert({ project_id:data.projectId, owner_id:context.userId, title:row.title, agenda:approved }).select("id").single();
+      if (meetingError || !meeting) throw new Error(meetingError?.message ?? "Could not create the working agenda.");
+      workingId = meeting.id;
+    } else if (row.kind === "decision_options") {
+      const { data: decision, error: decisionError } = await supabaseAdmin.from("workspace_decisions").insert({ project_id:data.projectId, owner_id:context.userId, title:row.title, rationale:approved }).select("id").single();
+      if (decisionError || !decision) throw new Error(decisionError?.message ?? "Could not create the working decision.");
+      workingId = decision.id;
+    } else {
+      const { data: document, error: documentError } = await supabaseAdmin.from("workspace_documents").insert({ project_id:data.projectId, owner_id:context.userId, title:row.title, kind:row.kind === "risk_flags" ? "risk_review" : "document", body:approved }).select("id").single();
+      if (documentError || !document) throw new Error(documentError?.message ?? "Could not create the working artefact.");
+      workingId = document.id;
+    }
     if(approved!==original) await context.supabase.rpc("record_workspace_contribution",{_project_id:data.projectId,_event_type:"user_edit",_entity_type:"ai_suggestion",_entity_id:data.suggestionId,_detail:{edited:true}});
-    await context.supabase.rpc("record_workspace_contribution",{_project_id:data.projectId,_event_type:"user_approved",_entity_type:"ai_suggestion",_entity_id:data.suggestionId,_detail:{approved:true}});
+    await context.supabase.rpc("record_workspace_contribution",{_project_id:data.projectId,_event_type:"user_approved",_entity_type:"ai_suggestion",_entity_id:data.suggestionId,_detail:{approved:true,working_item_id:workingId}});
   }
   return {ok:true};
 });
