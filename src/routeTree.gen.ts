@@ -39,6 +39,7 @@ import { Route as AuthenticatedWorkspaceExperienceRouteImport } from './routes/_
 import { Route as AuthenticatedWorkspaceLaunchpadRouteImport } from './routes/_authenticated/workspace.launchpad'
 import { Route as AuthenticatedWorkspaceOrganisationRouteImport } from './routes/_authenticated/workspace.organisation'
 import { Route as AuthenticatedWorkspaceProfileRouteImport } from './routes/_authenticated/workspace.profile'
+import { Route as AuthenticatedWorkspaceProjectsRouteImport } from './routes/_authenticated/workspace.projects'
 import { Route as AuthenticatedWorkspaceReviewRouteImport } from './routes/_authenticated/workspace.review'
 import { Route as AuthenticatedWorkspaceTeamRouteImport } from './routes/_authenticated/workspace.team'
 import { Route as AuthenticatedWorkspaceExperienceIndexRouteImport } from './routes/_authenticated/workspace.experience.index'
@@ -201,6 +202,12 @@ const AuthenticatedWorkspaceProfileRoute =
     path: '/profile',
     getParentRoute: () => AuthenticatedWorkspaceRoute,
   } as any)
+const AuthenticatedWorkspaceProjectsRoute =
+  AuthenticatedWorkspaceProjectsRouteImport.update({
+    id: '/projects',
+    path: '/projects',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
 const AuthenticatedWorkspaceReviewRoute =
   AuthenticatedWorkspaceReviewRouteImport.update({
     id: '/review',
@@ -255,6 +262,7 @@ export interface FileRoutesByFullPath {
   '/workspace/launchpad': typeof AuthenticatedWorkspaceLaunchpadRoute
   '/workspace/organisation': typeof AuthenticatedWorkspaceOrganisationRoute
   '/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
+  '/workspace/projects': typeof AuthenticatedWorkspaceProjectsRoute
   '/workspace/review': typeof AuthenticatedWorkspaceReviewRoute
   '/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
   '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
@@ -288,6 +296,7 @@ export interface FileRoutesByTo {
   '/workspace/launchpad': typeof AuthenticatedWorkspaceLaunchpadRoute
   '/workspace/organisation': typeof AuthenticatedWorkspaceOrganisationRoute
   '/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
+  '/workspace/projects': typeof AuthenticatedWorkspaceProjectsRoute
   '/workspace/review': typeof AuthenticatedWorkspaceReviewRoute
   '/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
   '/workspace': typeof AuthenticatedWorkspaceIndexRoute
@@ -325,6 +334,7 @@ export interface FileRoutesById {
   '/_authenticated/workspace/launchpad': typeof AuthenticatedWorkspaceLaunchpadRoute
   '/_authenticated/workspace/organisation': typeof AuthenticatedWorkspaceOrganisationRoute
   '/_authenticated/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
+  '/_authenticated/workspace/projects': typeof AuthenticatedWorkspaceProjectsRoute
   '/_authenticated/workspace/review': typeof AuthenticatedWorkspaceReviewRoute
   '/_authenticated/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
   '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
@@ -362,6 +372,7 @@ export interface FileRouteTypes {
     | '/workspace/launchpad'
     | '/workspace/organisation'
     | '/workspace/profile'
+    | '/workspace/projects'
     | '/workspace/review'
     | '/workspace/team'
     | '/workspace/'
@@ -395,6 +406,7 @@ export interface FileRouteTypes {
     | '/workspace/launchpad'
     | '/workspace/organisation'
     | '/workspace/profile'
+    | '/workspace/projects'
     | '/workspace/review'
     | '/workspace/team'
     | '/workspace'
@@ -431,6 +443,7 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace/launchpad'
     | '/_authenticated/workspace/organisation'
     | '/_authenticated/workspace/profile'
+    | '/_authenticated/workspace/projects'
     | '/_authenticated/workspace/review'
     | '/_authenticated/workspace/team'
     | '/_authenticated/workspace/'
@@ -673,6 +686,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkspaceProfileRouteImport
       parentRoute: typeof AuthenticatedWorkspaceRoute
     }
+    '/_authenticated/workspace/projects': {
+      id: '/_authenticated/workspace/projects'
+      path: '/projects'
+      fullPath: '/workspace/projects'
+      preLoaderRoute: typeof AuthenticatedWorkspaceProjectsRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
     '/_authenticated/workspace/review': {
       id: '/_authenticated/workspace/review'
       path: '/review'
@@ -730,6 +750,7 @@ interface AuthenticatedWorkspaceRouteChildren {
   AuthenticatedWorkspaceLaunchpadRoute: typeof AuthenticatedWorkspaceLaunchpadRoute
   AuthenticatedWorkspaceOrganisationRoute: typeof AuthenticatedWorkspaceOrganisationRoute
   AuthenticatedWorkspaceProfileRoute: typeof AuthenticatedWorkspaceProfileRoute
+  AuthenticatedWorkspaceProjectsRoute: typeof AuthenticatedWorkspaceProjectsRoute
   AuthenticatedWorkspaceReviewRoute: typeof AuthenticatedWorkspaceReviewRoute
   AuthenticatedWorkspaceTeamRoute: typeof AuthenticatedWorkspaceTeamRoute
   AuthenticatedWorkspaceIndexRoute: typeof AuthenticatedWorkspaceIndexRoute
@@ -747,6 +768,7 @@ const AuthenticatedWorkspaceRouteChildren: AuthenticatedWorkspaceRouteChildren =
     AuthenticatedWorkspaceOrganisationRoute:
       AuthenticatedWorkspaceOrganisationRoute,
     AuthenticatedWorkspaceProfileRoute: AuthenticatedWorkspaceProfileRoute,
+    AuthenticatedWorkspaceProjectsRoute: AuthenticatedWorkspaceProjectsRoute,
     AuthenticatedWorkspaceReviewRoute: AuthenticatedWorkspaceReviewRoute,
     AuthenticatedWorkspaceTeamRoute: AuthenticatedWorkspaceTeamRoute,
     AuthenticatedWorkspaceIndexRoute: AuthenticatedWorkspaceIndexRoute,

@@ -7,6 +7,7 @@ import {
   FlaskConical,
   Gauge,
   LayoutDashboard,
+  PanelsTopLeft,
   Menu,
   Rocket,
   User as UserIcon,
@@ -21,6 +22,7 @@ import { coachingWorkspaceQuery } from "@/lib/coaching-queries";
 const NAV = [
   { to: "/workspace", label: "Dashboard", icon: LayoutDashboard },
   { to: "/workspace/experience", label: "Experience", icon: FlaskConical },
+  { to: "/workspace/projects", label: "Professional Workspace", icon: PanelsTopLeft },
   { to: "/workspace/evidence", label: "Evidence record", icon: FileCheck2 },
   { to: "/workspace/capability", label: "Capability profile", icon: Gauge },
   { to: "/workspace/launchpad", label: "Launchpad", icon: Rocket },
