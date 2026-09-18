@@ -42,9 +42,10 @@ export function MarketingNav() {
             <Link to="/login" className="btn-nav hidden sm:inline-flex">
               Sign in
             </Link>
-            <Link to="/pilot" className="btn-nav btn-nav-primary">
-              Start pilot
+            <Link to="/signup" className="btn-nav btn-nav-primary">
+              Get started
             </Link>
+
           </>
         )}
         <button

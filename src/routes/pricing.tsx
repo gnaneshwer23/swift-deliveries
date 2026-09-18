@@ -119,9 +119,10 @@ function PricingPage() {
                     </Button>
                   )
                 ) : (
-                  <Link to="/pilot" className="btn btn-primary mt-8 w-full justify-center">
-                    Join the pilot
+                  <Link to="/signup" className="btn btn-primary mt-8 w-full justify-center">
+                    Create account
                   </Link>
+
                 )}
               </div>
             ))}
