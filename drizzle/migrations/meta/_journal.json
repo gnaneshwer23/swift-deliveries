@@ -29,6 +29,13 @@
       "when": 1789690526165,
       "tag": "0003_fix_has_plan_access_product_keys",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789691517601,
+      "tag": "0004_career_and_review_layer",
+      "breakpoints": true
     }
   ]
 }
