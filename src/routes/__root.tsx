@@ -124,12 +124,20 @@ function RootComponent() {
   const router = useRouter();
 
   useEffect(() => {
+    let active = true;
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
-      router.invalidate();
-      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+      // Supabase can fire this synchronously while React is still rendering.
+      setTimeout(() => {
+        if (!active) return;
+        void router.invalidate();
+        if (event !== "SIGNED_OUT") void queryClient.invalidateQueries();
+      }, 0);
     });
-    return () => data.subscription.unsubscribe();
+    return () => {
+      active = false;
+      data.subscription.unsubscribe();
+    };
   }, [router, queryClient]);
 
   return (
