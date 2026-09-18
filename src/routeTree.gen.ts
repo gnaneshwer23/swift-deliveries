@@ -23,6 +23,7 @@ import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProfessionalWorkspaceRouteImport } from './routes/professional-workspace'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
@@ -121,6 +122,11 @@ const ProfessionalWorkspaceRoute = ProfessionalWorkspaceRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SigninRoute = SigninRouteImport.update({
+  id: '/signin',
+  path: '/signin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignupRoute = SignupRouteImport.update({
@@ -308,6 +314,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -353,6 +360,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -398,6 +406,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
@@ -445,6 +454,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/professional-workspace'
     | '/reset-password'
+    | '/signin'
     | '/signup'
     | '/terms'
     | '/onboarding'
@@ -490,6 +500,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/professional-workspace'
     | '/reset-password'
+    | '/signin'
     | '/signup'
     | '/terms'
     | '/onboarding'
@@ -534,6 +545,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/professional-workspace'
     | '/reset-password'
+    | '/signin'
     | '/signup'
     | '/terms'
     | '/_authenticated/onboarding'
@@ -581,6 +593,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ProfessionalWorkspaceRoute: typeof ProfessionalWorkspaceRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
   TermsRoute: typeof TermsRoute
   AttestTokenRoute: typeof AttestTokenRoute
@@ -691,6 +704,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signin': {
+      id: '/signin'
+      path: '/signin'
+      fullPath: '/signin'
+      preLoaderRoute: typeof SigninRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signup': {
@@ -1000,6 +1020,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ProfessionalWorkspaceRoute: ProfessionalWorkspaceRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
   TermsRoute: TermsRoute,
   AttestTokenRoute: AttestTokenRoute,
