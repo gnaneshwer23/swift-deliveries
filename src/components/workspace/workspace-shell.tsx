@@ -2,8 +2,13 @@ import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
+  Briefcase,
   Building2,
+  ClipboardCheck,
   FileCheck2,
+  History,
+  Inbox,
+  MessagesSquare,
   FlaskConical,
   Gauge,
   LayoutDashboard,
@@ -21,11 +26,16 @@ import { coachingWorkspaceQuery } from "@/lib/coaching-queries";
 
 const NAV = [
   { to: "/workspace", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/workspace/inbox", label: "Inbox", icon: Inbox },
   { to: "/workspace/experience", label: "Experience", icon: FlaskConical },
   { to: "/workspace/projects", label: "Professional Workspace", icon: PanelsTopLeft },
   { to: "/workspace/evidence", label: "Evidence record", icon: FileCheck2 },
+  { to: "/workspace/timeline", label: "Timeline", icon: History },
   { to: "/workspace/capability", label: "Capability profile", icon: Gauge },
+  { to: "/workspace/reviews", label: "Performance review", icon: ClipboardCheck },
   { to: "/workspace/launchpad", label: "Launchpad", icon: Rocket },
+  { to: "/workspace/interview", label: "Interview Lab", icon: MessagesSquare },
+  { to: "/workspace/applications", label: "Applications", icon: Briefcase },
   { to: "/workspace/team", label: "Team", icon: Users },
   { to: "/workspace/profile", label: "Your profile", icon: UserIcon },
   { to: "/workspace/organisation", label: "Organisation", icon: Building2 },
@@ -59,7 +69,7 @@ export function WorkspaceShell({
       : []),
   ];
   const nav = coachingLinks.length
-    ? [...NAV.slice(0, 4), ...coachingLinks, ...NAV.slice(4)]
+    ? [...NAV.slice(0, 11), ...coachingLinks, ...NAV.slice(11)]
     : NAV;
 
   const displayName =

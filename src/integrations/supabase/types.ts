@@ -742,6 +742,125 @@ export type Database = {
           },
         ]
       }
+      interview_answers: {
+        Row: {
+          artefact_version_id: string | null
+          body: string
+          created_at: string
+          id: string
+          owner_id: string
+          question_id: string
+          self_rating: number | null
+          updated_at: string
+        }
+        Insert: {
+          artefact_version_id?: string | null
+          body: string
+          created_at?: string
+          id?: string
+          owner_id: string
+          question_id: string
+          self_rating?: number | null
+          updated_at?: string
+        }
+        Update: {
+          artefact_version_id?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          owner_id?: string
+          question_id?: string
+          self_rating?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_answers_artefact_version_id_fkey"
+            columns: ["artefact_version_id"]
+            isOneToOne: false
+            referencedRelation: "artefact_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interview_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: true
+            referencedRelation: "interview_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interview_questions: {
+        Row: {
+          capability_key: string | null
+          created_at: string
+          id: string
+          origin: string
+          owner_id: string
+          prompt: string
+          session_id: string
+          sort_order: number
+        }
+        Insert: {
+          capability_key?: string | null
+          created_at?: string
+          id?: string
+          origin: string
+          owner_id: string
+          prompt: string
+          session_id: string
+          sort_order?: number
+        }
+        Update: {
+          capability_key?: string | null
+          created_at?: string
+          id?: string
+          origin?: string
+          owner_id?: string
+          prompt?: string
+          session_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_questions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "interview_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interview_sessions: {
+        Row: {
+          created_at: string
+          focus_capability_key: string | null
+          id: string
+          owner_id: string
+          role_target: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          focus_capability_key?: string | null
+          id?: string
+          owner_id: string
+          role_target: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          focus_capability_key?: string | null
+          id?: string
+          owner_id?: string
+          role_target?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       invitations: {
         Row: {
           accepted_at: string | null
@@ -788,6 +907,62 @@ export type Database = {
             columns: ["organisation_id"]
             isOneToOne: false
             referencedRelation: "organisations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_applications: {
+        Row: {
+          applied_at: string | null
+          company: string
+          created_at: string
+          id: string
+          next_step: string
+          next_step_at: string | null
+          notes: string
+          owner_id: string
+          portfolio_share_id: string | null
+          role_title: string
+          source: string
+          stage: string
+          updated_at: string
+        }
+        Insert: {
+          applied_at?: string | null
+          company: string
+          created_at?: string
+          id?: string
+          next_step?: string
+          next_step_at?: string | null
+          notes?: string
+          owner_id: string
+          portfolio_share_id?: string | null
+          role_title: string
+          source?: string
+          stage?: string
+          updated_at?: string
+        }
+        Update: {
+          applied_at?: string | null
+          company?: string
+          created_at?: string
+          id?: string
+          next_step?: string
+          next_step_at?: string | null
+          notes?: string
+          owner_id?: string
+          portfolio_share_id?: string | null
+          role_title?: string
+          source?: string
+          stage?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_applications_portfolio_share_id_fkey"
+            columns: ["portfolio_share_id"]
+            isOneToOne: false
+            referencedRelation: "portfolio_shares"
             referencedColumns: ["id"]
           },
         ]
@@ -863,6 +1038,51 @@ export type Database = {
           slug?: string
           updated_at?: string
           website?: string | null
+        }
+        Relationships: []
+      }
+      performance_reviews: {
+        Row: {
+          created_at: string
+          id: string
+          owner_id: string
+          period_label: string
+          reviewed_at: string | null
+          reviewer_decision: string | null
+          reviewer_id: string | null
+          reviewer_summary: string | null
+          self_summary: string
+          status: string
+          submitted_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          owner_id: string
+          period_label: string
+          reviewed_at?: string | null
+          reviewer_decision?: string | null
+          reviewer_id?: string | null
+          reviewer_summary?: string | null
+          self_summary: string
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          owner_id?: string
+          period_label?: string
+          reviewed_at?: string | null
+          reviewer_decision?: string | null
+          reviewer_id?: string | null
+          reviewer_summary?: string | null
+          self_summary?: string
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1695,6 +1915,10 @@ export type Database = {
           _decision: Database["public"]["Enums"]["coach_review_decision"]
           _submission_id: string
         }
+        Returns: string
+      }
+      review_performance_review: {
+        Args: { _decision: string; _review_id: string; _summary: string }
         Returns: string
       }
       submit_workspace_document: {
