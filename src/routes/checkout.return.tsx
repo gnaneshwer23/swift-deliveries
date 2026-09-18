@@ -4,7 +4,7 @@ import { MarketingLayout } from "@/components/marketing/marketing-layout";
 
 export const Route = createFileRoute("/checkout/return")({
   validateSearch: (search: Record<string, unknown>): { session_id?: string } => ({
-    session_id: typeof search.session_id === "string" ? search.session_id : undefined,
+    ...(typeof search["session_id"] === "string" ? { session_id: search["session_id"] } : {}),
   }),
   head: () => ({
     meta: [

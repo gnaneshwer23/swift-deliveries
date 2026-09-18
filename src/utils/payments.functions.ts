@@ -28,7 +28,7 @@ async function resolveOrCreateCustomer(
     const existing = await stripe.customers.list({ email: options.email, limit: 1 });
     const byEmail = existing.data[0];
     if (byEmail) {
-      if (byEmail.metadata?.userId !== options.userId) {
+      if (byEmail.metadata?.["userId"] !== options.userId) {
         await stripe.customers.update(byEmail.id, {
           metadata: { ...byEmail.metadata, userId: options.userId },
         });
@@ -68,8 +68,9 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
       if (!stripePrice || stripePrice.type !== "recurring") throw new Error("Plan price not found");
 
       const { data: authData } = await context.supabase.auth.getUser();
+      const email = authData.user?.email;
       const customerId = await resolveOrCreateCustomer(stripe, {
-        email: authData.user?.email,
+        ...(email ? { email } : {}),
         userId: context.userId,
       });
 

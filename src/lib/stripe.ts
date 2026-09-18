@@ -1,10 +1,10 @@
 import { loadStripe, type Stripe } from "@stripe/stripe-js";
 
 type StripeEnv = "sandbox" | "live";
-const clientToken = import.meta.env.VITE_PAYMENTS_CLIENT_TOKEN;
+const clientToken = import.meta.env["VITE_PAYMENTS_CLIENT_TOKEN"];
 
 export const isCheckoutEnabled =
-  import.meta.env.VITE_PAYMENTS_CHECKOUT_ENABLED === "true" &&
+  import.meta.env["VITE_PAYMENTS_CHECKOUT_ENABLED"] === "true" &&
   (clientToken?.startsWith("pk_test_") || clientToken?.startsWith("pk_live_"));
 
 function paymentsEnvironment(): StripeEnv {
