@@ -1,27 +1,120 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 
+const TITLE = "DeliverX — Do the work. Keep the proof. Earn the signal.";
+const DESCRIPTION =
+  "DeliverX turns realistic product management work into traceable evidence, versioned capability judgements, and career-ready proof. Verified lights only from external attestation.";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "DeliverX — Do the work. Keep the proof. Earn the signal." },
-      {
-        name: "description",
-        content:
-          "DeliverX turns realistic product work into traceable evidence, versioned capability judgements, and career-ready proof. No shortcuts. No silent promotions.",
-      },
-      { property: "og:title", content: "DeliverX — Professional Intelligence" },
-      {
-        property: "og:description",
-        content:
-          "Realistic work generates provenance-backed evidence; the Capability Engine judges it under a versioned framework; Verified lights only from external attestation.",
-      },
+      { title: TITLE },
+      { name: "description", content: DESCRIPTION },
+      { property: "og:title", content: TITLE },
+      { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
+      { property: "og:url", content: "https://deliverx.dev/" },
+      { property: "og:site_name", content: "DeliverX" },
+      { property: "og:locale", content: "en_GB" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: TITLE },
+      { name: "twitter:description", content: DESCRIPTION },
+    ],
+    links: [{ rel: "canonical", href: "https://deliverx.dev/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://deliverx.dev/#organization",
+              name: "DeliverX",
+              url: "https://deliverx.dev/",
+              description: DESCRIPTION,
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://deliverx.dev/#website",
+              url: "https://deliverx.dev/",
+              name: "DeliverX",
+              description: DESCRIPTION,
+              inLanguage: "en-GB",
+              publisher: { "@id": "https://deliverx.dev/#organization" },
+            },
+            {
+              "@type": "WebPage",
+              "@id": "https://deliverx.dev/#webpage",
+              url: "https://deliverx.dev/",
+              name: TITLE,
+              description: DESCRIPTION,
+              isPartOf: { "@id": "https://deliverx.dev/#website" },
+            },
+            {
+              "@type": "Product",
+              name: "DeliverX Experience",
+              description:
+                "Work as a product manager inside realistic simulated organisations; your decisions create provenance-backed evidence.",
+              url: "https://deliverx.dev/experience",
+              brand: { "@id": "https://deliverx.dev/#organization" },
+              offers: {
+                "@type": "Offer",
+                price: "19",
+                priceCurrency: "GBP",
+                url: "https://deliverx.dev/pricing",
+                availability: "https://schema.org/InStock",
+              },
+            },
+            {
+              "@type": "Product",
+              name: "DeliverX Launchpad",
+              description:
+                "Turn judged evidence into an explainable portfolio, honest readiness story and stronger interview preparation.",
+              url: "https://deliverx.dev/launchpad",
+              brand: { "@id": "https://deliverx.dev/#organization" },
+              offers: {
+                "@type": "Offer",
+                price: "19",
+                priceCurrency: "GBP",
+                url: "https://deliverx.dev/pricing",
+                availability: "https://schema.org/InStock",
+              },
+            },
+            {
+              "@type": "Product",
+              name: "DeliverX Complete Journey",
+              description:
+                "Experience, Launchpad and Professional Workspace together, with the full evidence record and capability profile.",
+              url: "https://deliverx.dev/pricing",
+              brand: { "@id": "https://deliverx.dev/#organization" },
+              offers: {
+                "@type": "Offer",
+                price: "29",
+                priceCurrency: "GBP",
+                url: "https://deliverx.dev/pricing",
+                availability: "https://schema.org/InStock",
+              },
+            },
+            {
+              "@type": "HowTo",
+              name: "How DeliverX builds verifiable capability",
+              description: "The five-step DeliverX method, from realistic work to external verification.",
+              step: STEPS.map((s, i) => ({
+                "@type": "HowToStep",
+                position: i + 1,
+                name: s.name,
+                text: s.desc,
+              })),
+            },
+          ],
+        }),
+      },
     ],
   }),
   component: HomePage,
 });
+
 
 const docIcon = (
   <svg width="14" height="14" fill="none" stroke="var(--x-slate)" strokeWidth="1.5" viewBox="0 0 24 24">
