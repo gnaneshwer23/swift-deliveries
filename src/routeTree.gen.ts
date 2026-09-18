@@ -164,15 +164,15 @@ const ResourcesIndexRoute = ResourcesIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResourcesPmPortfolioRoute = ResourcesPmPortfolioRouteImport.update({
-  id: '/pm-portfolio',
-  path: '/pm-portfolio',
-  getParentRoute: () => ResourcesRoute,
+  id: '/resources/pm-portfolio',
+  path: '/resources/pm-portfolio',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ResourcesStarInterviewStoriesRoute =
   ResourcesStarInterviewStoriesRouteImport.update({
-    id: '/star-interview-stories',
-    path: '/star-interview-stories',
-    getParentRoute: () => ResourcesRoute,
+    id: '/resources/star-interview-stories',
+    path: '/resources/star-interview-stories',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const AuthenticatedWorkspaceIndexRoute =
   AuthenticatedWorkspaceIndexRouteImport.update({
@@ -522,6 +522,8 @@ export interface RootRouteChildren {
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   InviteTokenRoute: typeof InviteTokenRoute
   PortfolioTokenRoute: typeof PortfolioTokenRoute
+  ResourcesPmPortfolioRoute: typeof ResourcesPmPortfolioRoute
+  ResourcesStarInterviewStoriesRoute: typeof ResourcesStarInterviewStoriesRoute
   ResourcesIndexRoute: typeof ResourcesIndexRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
@@ -691,17 +693,17 @@ declare module '@tanstack/react-router' {
     }
     '/resources/pm-portfolio': {
       id: '/resources/pm-portfolio'
-      path: '/pm-portfolio'
+      path: '/resources/pm-portfolio'
       fullPath: '/resources/pm-portfolio'
       preLoaderRoute: typeof ResourcesPmPortfolioRouteImport
-      parentRoute: typeof ResourcesRoute
+      parentRoute: typeof rootRouteImport
     }
     '/resources/star-interview-stories': {
       id: '/resources/star-interview-stories'
-      path: '/star-interview-stories'
+      path: '/resources/star-interview-stories'
       fullPath: '/resources/star-interview-stories'
       preLoaderRoute: typeof ResourcesStarInterviewStoriesRouteImport
-      parentRoute: typeof ResourcesRoute
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/workspace/': {
       id: '/_authenticated/workspace/'
@@ -893,6 +895,8 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutReturnRoute: CheckoutReturnRoute,
   InviteTokenRoute: InviteTokenRoute,
   PortfolioTokenRoute: PortfolioTokenRoute,
+  ResourcesPmPortfolioRoute: ResourcesPmPortfolioRoute,
+  ResourcesStarInterviewStoriesRoute: ResourcesStarInterviewStoriesRoute,
   ResourcesIndexRoute: ResourcesIndexRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
