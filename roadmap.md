@@ -44,3 +44,14 @@ Approved plan: adopt mockup design system + build remaining product (phases 1–
 - [ ] Sending domain for DeliverX email (only trayakshsinghjadav.com is verified; deliverx.dev not added)
 - [ ] Decision: point deliverx.dev at this app instead of the separate Vercel site
 - [ ] Known: high-severity js-yaml advisory inside @tanstack/react-start (no fixed release yet)
+
+## Production smoke test (18 Sep 2026)
+- [x] 19 public pages load (desktop + 375px), /signin redirects, 404 page works
+- [x] 15 signed-in pages load for candidate and coach accounts
+- [x] Account creation works; confirmation email is sent; sign-in errors surface clearly
+- [x] Trust rail verified in DB: evidence blocked without artefact, ledger append-only, artefact versions immutable, 0 Verified claims without confirmed external attestation, 0 activity events without consent
+- [x] Purchase guards: no-subscription user denied; test-mode subscriptions grant test access only, never live
+- [x] Live payment form loads on the plans page
+- [x] Fixed: live settings file had payment key and checkout switch on one line (checkout would have stayed off in production)
+- [ ] Sending domain for deliverx.dev (auth emails currently use the default unbranded sender, rate-limited)
+- [ ] deliverx.dev still points at the separate site, not this app
