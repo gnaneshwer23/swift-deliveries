@@ -33,6 +33,7 @@ import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as PortfolioTokenRouteImport } from './routes/portfolio.$token'
 import { Route as ResourcesPmPortfolioRouteImport } from './routes/resources.pm-portfolio'
+import { Route as ResourcesStarInterviewStoriesRouteImport } from './routes/resources.star-interview-stories'
 import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated/workspace.index'
 import { Route as AuthenticatedWorkspaceCapabilityRouteImport } from './routes/_authenticated/workspace.capability'
 import { Route as AuthenticatedWorkspaceCoachingRouteImport } from './routes/_authenticated/workspace.coaching'
@@ -167,6 +168,12 @@ const ResourcesPmPortfolioRoute = ResourcesPmPortfolioRouteImport.update({
   path: '/pm-portfolio',
   getParentRoute: () => ResourcesRoute,
 } as any)
+const ResourcesStarInterviewStoriesRoute =
+  ResourcesStarInterviewStoriesRouteImport.update({
+    id: '/star-interview-stories',
+    path: '/star-interview-stories',
+    getParentRoute: () => ResourcesRoute,
+  } as any)
 const AuthenticatedWorkspaceIndexRoute =
   AuthenticatedWorkspaceIndexRouteImport.update({
     id: '/',
@@ -276,6 +283,7 @@ export interface FileRoutesByFullPath {
   '/invite/$token': typeof InviteTokenRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
   '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
+  '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
   '/workspace/coaching': typeof AuthenticatedWorkspaceCoachingRoute
   '/workspace/evidence': typeof AuthenticatedWorkspaceEvidenceRoute
@@ -314,6 +322,7 @@ export interface FileRoutesByTo {
   '/invite/$token': typeof InviteTokenRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
   '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
+  '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
   '/workspace/coaching': typeof AuthenticatedWorkspaceCoachingRoute
   '/workspace/evidence': typeof AuthenticatedWorkspaceEvidenceRoute
@@ -354,6 +363,7 @@ export interface FileRoutesById {
   '/invite/$token': typeof InviteTokenRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
   '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
+  '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
   '/_authenticated/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
   '/_authenticated/workspace/coaching': typeof AuthenticatedWorkspaceCoachingRoute
   '/_authenticated/workspace/evidence': typeof AuthenticatedWorkspaceEvidenceRoute
@@ -395,6 +405,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/portfolio/$token'
     | '/resources/pm-portfolio'
+    | '/resources/star-interview-stories'
     | '/workspace/capability'
     | '/workspace/coaching'
     | '/workspace/evidence'
@@ -433,6 +444,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/portfolio/$token'
     | '/resources/pm-portfolio'
+    | '/resources/star-interview-stories'
     | '/workspace/capability'
     | '/workspace/coaching'
     | '/workspace/evidence'
@@ -472,6 +484,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/portfolio/$token'
     | '/resources/pm-portfolio'
+    | '/resources/star-interview-stories'
     | '/_authenticated/workspace/capability'
     | '/_authenticated/workspace/coaching'
     | '/_authenticated/workspace/evidence'
@@ -683,6 +696,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResourcesPmPortfolioRouteImport
       parentRoute: typeof ResourcesRoute
     }
+    '/resources/star-interview-stories': {
+      id: '/resources/star-interview-stories'
+      path: '/star-interview-stories'
+      fullPath: '/resources/star-interview-stories'
+      preLoaderRoute: typeof ResourcesStarInterviewStoriesRouteImport
+      parentRoute: typeof ResourcesRoute
+    }
     '/_authenticated/workspace/': {
       id: '/_authenticated/workspace/'
       path: '/'
@@ -854,10 +874,12 @@ const AuthenticatedRouteRouteWithChildren =
 
 interface ResourcesRouteChildren {
   ResourcesPmPortfolioRoute: typeof ResourcesPmPortfolioRoute
+  ResourcesStarInterviewStoriesRoute: typeof ResourcesStarInterviewStoriesRoute
 }
 
 const ResourcesRouteChildren: ResourcesRouteChildren = {
   ResourcesPmPortfolioRoute: ResourcesPmPortfolioRoute,
+  ResourcesStarInterviewStoriesRoute: ResourcesStarInterviewStoriesRoute,
 }
 
 const ResourcesRouteWithChildren = ResourcesRoute._addFileChildren(
