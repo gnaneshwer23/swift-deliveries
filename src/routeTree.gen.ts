@@ -46,6 +46,7 @@ import { Route as AuthenticatedWorkspaceProfileRouteImport } from './routes/_aut
 import { Route as AuthenticatedWorkspaceProjectsRouteImport } from './routes/_authenticated/workspace.projects'
 import { Route as AuthenticatedWorkspaceReviewRouteImport } from './routes/_authenticated/workspace.review'
 import { Route as AuthenticatedWorkspaceTeamRouteImport } from './routes/_authenticated/workspace.team'
+import { Route as AuthenticatedWorkspaceTimelineRouteImport } from './routes/_authenticated/workspace.timeline'
 import { Route as AuthenticatedWorkspaceExperienceIndexRouteImport } from './routes/_authenticated/workspace.experience.index'
 import { Route as AuthenticatedWorkspaceExperienceTaskKeyRouteImport } from './routes/_authenticated/workspace.experience.$taskKey'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
@@ -247,6 +248,12 @@ const AuthenticatedWorkspaceTeamRoute =
     path: '/team',
     getParentRoute: () => AuthenticatedWorkspaceRoute,
   } as any)
+const AuthenticatedWorkspaceTimelineRoute =
+  AuthenticatedWorkspaceTimelineRouteImport.update({
+    id: '/timeline',
+    path: '/timeline',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
 const AuthenticatedWorkspaceExperienceIndexRoute =
   AuthenticatedWorkspaceExperienceIndexRouteImport.update({
     id: '/',
@@ -302,6 +309,7 @@ export interface FileRoutesByFullPath {
   '/workspace/projects': typeof AuthenticatedWorkspaceProjectsRoute
   '/workspace/review': typeof AuthenticatedWorkspaceReviewRoute
   '/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
+  '/workspace/timeline': typeof AuthenticatedWorkspaceTimelineRoute
   '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -341,6 +349,7 @@ export interface FileRoutesByTo {
   '/workspace/projects': typeof AuthenticatedWorkspaceProjectsRoute
   '/workspace/review': typeof AuthenticatedWorkspaceReviewRoute
   '/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
+  '/workspace/timeline': typeof AuthenticatedWorkspaceTimelineRoute
   '/workspace': typeof AuthenticatedWorkspaceIndexRoute
   '/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -384,6 +393,7 @@ export interface FileRoutesById {
   '/_authenticated/workspace/projects': typeof AuthenticatedWorkspaceProjectsRoute
   '/_authenticated/workspace/review': typeof AuthenticatedWorkspaceReviewRoute
   '/_authenticated/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
+  '/_authenticated/workspace/timeline': typeof AuthenticatedWorkspaceTimelineRoute
   '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/_authenticated/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -427,6 +437,7 @@ export interface FileRouteTypes {
     | '/workspace/projects'
     | '/workspace/review'
     | '/workspace/team'
+    | '/workspace/timeline'
     | '/workspace/'
     | '/workspace/experience/$taskKey'
     | '/api/public/payments/webhook'
@@ -466,6 +477,7 @@ export interface FileRouteTypes {
     | '/workspace/projects'
     | '/workspace/review'
     | '/workspace/team'
+    | '/workspace/timeline'
     | '/workspace'
     | '/workspace/experience/$taskKey'
     | '/api/public/payments/webhook'
@@ -508,6 +520,7 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace/projects'
     | '/_authenticated/workspace/review'
     | '/_authenticated/workspace/team'
+    | '/_authenticated/workspace/timeline'
     | '/_authenticated/workspace/'
     | '/_authenticated/workspace/experience/$taskKey'
     | '/api/public/payments/webhook'
@@ -802,6 +815,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkspaceTeamRouteImport
       parentRoute: typeof AuthenticatedWorkspaceRoute
     }
+    '/_authenticated/workspace/timeline': {
+      id: '/_authenticated/workspace/timeline'
+      path: '/timeline'
+      fullPath: '/workspace/timeline'
+      preLoaderRoute: typeof AuthenticatedWorkspaceTimelineRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
     '/_authenticated/workspace/experience/': {
       id: '/_authenticated/workspace/experience/'
       path: '/'
@@ -856,6 +876,7 @@ interface AuthenticatedWorkspaceRouteChildren {
   AuthenticatedWorkspaceProjectsRoute: typeof AuthenticatedWorkspaceProjectsRoute
   AuthenticatedWorkspaceReviewRoute: typeof AuthenticatedWorkspaceReviewRoute
   AuthenticatedWorkspaceTeamRoute: typeof AuthenticatedWorkspaceTeamRoute
+  AuthenticatedWorkspaceTimelineRoute: typeof AuthenticatedWorkspaceTimelineRoute
   AuthenticatedWorkspaceIndexRoute: typeof AuthenticatedWorkspaceIndexRoute
 }
 
@@ -875,6 +896,7 @@ const AuthenticatedWorkspaceRouteChildren: AuthenticatedWorkspaceRouteChildren =
     AuthenticatedWorkspaceProjectsRoute: AuthenticatedWorkspaceProjectsRoute,
     AuthenticatedWorkspaceReviewRoute: AuthenticatedWorkspaceReviewRoute,
     AuthenticatedWorkspaceTeamRoute: AuthenticatedWorkspaceTeamRoute,
+    AuthenticatedWorkspaceTimelineRoute: AuthenticatedWorkspaceTimelineRoute,
     AuthenticatedWorkspaceIndexRoute: AuthenticatedWorkspaceIndexRoute,
   }
 
