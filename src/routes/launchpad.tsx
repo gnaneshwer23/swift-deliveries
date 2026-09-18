@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
+import { FaqSection, JourneyCrossSell } from "@/components/marketing/faq-section";
 
 export const Route = createFileRoute("/launchpad")({
   head: () => ({
@@ -51,6 +52,13 @@ const SURFACES = [
     desc: "Request independent confirmation of specific evidence from someone outside DeliverX. Verified remains off until the required checks are complete.",
     note: "Verified is never lit by a ScoreRun or coaching confirmation. External attestation is the only gate.",
     cls: "trust",
+  },
+  {
+    n: "05",
+    name: "Application tracking",
+    desc: "Record the roles you apply for, the stage each one is at, and the next step you owe. Attach the portfolio link you shared with them.",
+    note: "Your own record of your search. DeliverX does not submit applications for you and has no employer marketplace.",
+    cls: "honest",
   },
 ];
 
@@ -124,6 +132,29 @@ function LaunchpadPage() {
           </div>
         </div>
       </div>
+
+      <FaqSection
+        items={[
+          {
+            q: "What does the Verified badge actually mean?",
+            a: "It means someone independent of DeliverX reviewed a specific piece of your work and confirmed it reflects capability they witnessed. A coach confirmation is shown separately and never lights Verified, and neither does an AI-assisted score.",
+          },
+          {
+            q: "Does Interview Lab invent scenarios for me to practise?",
+            a: "No. Questions are drafted from the work already on your record, and every drafted question is labelled as a draft you can edit, add to or remove. Your practice answers and self-ratings stay practice — they never become evidence.",
+          },
+          {
+            q: "Who can see my portfolio?",
+            a: "Nobody until you create a share link. Links expire, you can revoke them at any time, and private evidence and attestor details are removed from the shared view.",
+          },
+          {
+            q: "Will DeliverX find me a job?",
+            a: "No. There is no job guarantee and no employer marketplace. Launchpad helps you package and explain what your record supports, and track your own applications.",
+          },
+        ]}
+      />
+
+      <JourneyCrossSell note="Launchpad works from evidence produced in Experience and in the Professional Workspace. The Complete Journey plan covers all three so your record, your portfolio and your delivery work stay in one place." />
     </MarketingLayout>
   );
 }

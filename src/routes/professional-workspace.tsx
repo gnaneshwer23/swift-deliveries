@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
+import { FaqSection, JourneyCrossSell } from "@/components/marketing/faq-section";
 
 export const Route = createFileRoute("/professional-workspace")({
   head: () => ({
@@ -46,6 +47,19 @@ const FEATURES = [
   },
 ];
 
+const EXTRA = [
+  {
+    n: "05",
+    name: "Inbox",
+    desc: "One list of what is genuinely waiting on you: drafts to review, blocked or overdue tasks, planned meetings, returned coaching submissions, unsent reviews. Reading it changes nothing.",
+  },
+  {
+    n: "06",
+    name: "Timeline",
+    desc: "A chronological read of what has been recorded: evidence added, capabilities judged, coach confirmations and external verifications shown as separate events.",
+  },
+];
+
 const CONTROL = ["Context captured", "Draft prepared", "Human reviewed", "Team committed"];
 
 function ProfessionalWorkspacePage() {
@@ -81,7 +95,7 @@ function ProfessionalWorkspacePage() {
           and commitments.
         </p>
         <div className="features-grid">
-          {FEATURES.map((f) => (
+          {[...FEATURES, ...EXTRA].map((f) => (
             <div className="feature-card" key={f.n}>
               <div className="feature-n">{f.n}</div>
               <div className="feature-name">{f.name}</div>
@@ -113,6 +127,29 @@ function ProfessionalWorkspacePage() {
           </div>
         </div>
       </div>
+
+      <FaqSection
+        items={[
+          {
+            q: "Is anything recorded about how I work?",
+            a: "Only if you switch observation on for that project. It is off by default, enforced in the database as well as the interface, and turning it off stops new records immediately.",
+          },
+          {
+            q: "Can an assistant submit work on my behalf?",
+            a: "No. Drafts arrive labelled as drafts. You approve, edit or dismiss them, and approving only creates working content — submitting is always a separate action you take.",
+          },
+          {
+            q: "What happens when I submit an artefact?",
+            a: "The text is frozen with a checksum, stored as an immutable version, and added to your evidence record. It cannot be edited afterwards, which is what makes it worth showing to someone else.",
+          },
+          {
+            q: "Is Team Copilot a separate product?",
+            a: "No. It is another name for the Professional Workspace, not a third thing to buy.",
+          },
+        ]}
+      />
+
+      <JourneyCrossSell note="The Professional Workspace is where delivery work happens; Experience is where you practise it and Launchpad is where you present it. The Complete Journey plan includes all three." />
     </MarketingLayout>
   );
 }
