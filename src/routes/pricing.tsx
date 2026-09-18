@@ -132,8 +132,32 @@ function PricingPage() {
               Checkout is not yet open. Pilot access remains available without a card.
             </p>
           )}
+
+          <div className="card mt-14" style={{ padding: 28 }}>
+            <span className="mono-label">What we do not promise</span>
+            <ul className="mt-5 space-y-3 text-sm">
+              <li>
+                <strong>No money-back guarantee.</strong> Paid subscriptions can be cancelled at any
+                time; cancellation takes effect immediately.
+              </li>
+              <li>
+                <strong>No job guarantee.</strong> We stand behind the quality of the work, the
+                evidence and the tooling — not that any employer will invite you to interview.
+              </li>
+              <li>
+                <strong>No employer marketplace.</strong> We do not sell your record or list you to
+                recruiters. Portfolios are shared only on links you create and can revoke.
+              </li>
+              <li>
+                <strong>No score without a method.</strong> Capability judgements cite the evidence
+                they used and explain the level. A Verified claim needs a named independent
+                attestor.
+              </li>
+            </ul>
+          </div>
         </div>
       </section>
+
 
       <Dialog open={selectedPrice !== null} onOpenChange={(open) => !open && setSelectedPrice(null)}>
         <DialogContent className="max-h-[92vh] max-w-3xl overflow-y-auto p-0">
