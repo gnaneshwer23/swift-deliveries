@@ -21,3 +21,13 @@ Approved plan: adopt mockup design system + build remaining product (phases 1–
 - [x] Terms and Privacy links on sign-up
 - [ ] Not applicable from the 13 Sep report: Settings, Learning, Opportunities/Applications, Baseline/Final assessments, Help, Journey Map, Reviewer queue — these pages do not exist in this app
 - [x] Subscription rules: product-specific access; immediate cancellation and failed-payment suspension; immediate prorated upgrades; renewal-time downgrades
+
+## Content and feature gaps vs deliverx.dev (18 Sep 2026)
+- [x] Resources hub + two long-form guides; "What we do not promise" on plans
+- [x] Interview Lab (`/workspace/interview`) — draft questions from recorded work only, practice answers never become evidence
+- [x] Application tracking (`/workspace/applications`) — stages, next steps, portfolio link
+- [x] Workspace Inbox (`/workspace/inbox`) and Timeline (`/workspace/timeline`) — read-only, coach vs external verification shown separately
+- [x] Performance review (`/workspace/reviews`) — self-assessment, human decision, never lights Verified
+- [x] Product pages: application tracking, Inbox and Timeline described; per-page questions and Complete Journey cross-sell
+- [ ] Decide whether deliverx.dev points at this app instead of the separate Vercel site
+- [ ] Decide the public story: paid plans (£19/£19/£29) or pilot access only
