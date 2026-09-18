@@ -850,3 +850,13 @@ html:has(.marketing-page) {
 @media (min-width: 769px) {
   .dxa .briefing { border-radius: 14px; }
 }
+
+.dxs .faq-list { display: grid; gap: 10px; }
+.dxs .faq-item { border: 1px solid var(--x-border); border-radius: 12px; padding: 18px 20px; background: var(--x-paper-raised); }
+.dxs .faq-q { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 6px; }
+.dxs .faq-a { font-size: 13px; color: var(--x-slate); line-height: 1.6; }
+.dxs .cross-sell { border: 1px solid var(--x-border); border-radius: 12px; padding: 28px; background: var(--x-paper-raised); }
+.dxs .cross-sell-label { font-size: 11px; font-family: var(--font-mono, monospace); letter-spacing: 0.1em; text-transform: uppercase; color: var(--x-slate-light); margin-bottom: 8px; }
+.dxs .cross-sell-title { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
+.dxs .cross-sell-text { font-size: 13px; color: var(--x-slate); line-height: 1.6; margin-bottom: 18px; }
+@media (max-width: 720px) { .dxs .cross-sell { padding: 20px; } }
