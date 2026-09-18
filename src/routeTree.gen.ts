@@ -23,7 +23,6 @@ import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProfessionalWorkspaceRouteImport } from './routes/professional-workspace'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
@@ -32,6 +31,9 @@ import { Route as AttestTokenRouteImport } from './routes/attest.$token'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as PortfolioTokenRouteImport } from './routes/portfolio.$token'
+import { Route as ResourcesIndexRouteImport } from './routes/resources.index'
+import { Route as ResourcesPmPortfolioRouteImport } from './routes/resources.pm-portfolio'
+import { Route as ResourcesStarInterviewStoriesRouteImport } from './routes/resources.star-interview-stories'
 import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated/workspace.index'
 import { Route as AuthenticatedWorkspaceCapabilityRouteImport } from './routes/_authenticated/workspace.capability'
 import { Route as AuthenticatedWorkspaceCoachingRouteImport } from './routes/_authenticated/workspace.coaching'
@@ -116,11 +118,6 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ResourcesRoute = ResourcesRouteImport.update({
-  id: '/resources',
-  path: '/resources',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -161,6 +158,22 @@ const PortfolioTokenRoute = PortfolioTokenRouteImport.update({
   path: '/portfolio/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResourcesIndexRoute = ResourcesIndexRouteImport.update({
+  id: '/resources/',
+  path: '/resources/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResourcesPmPortfolioRoute = ResourcesPmPortfolioRouteImport.update({
+  id: '/resources/pm-portfolio',
+  path: '/resources/pm-portfolio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResourcesStarInterviewStoriesRoute =
+  ResourcesStarInterviewStoriesRouteImport.update({
+    id: '/resources/star-interview-stories',
+    path: '/resources/star-interview-stories',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedWorkspaceIndexRoute =
   AuthenticatedWorkspaceIndexRouteImport.update({
     id: '/',
@@ -260,7 +273,6 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/resources': typeof ResourcesRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -269,6 +281,9 @@ export interface FileRoutesByFullPath {
   '/checkout/return': typeof CheckoutReturnRoute
   '/invite/$token': typeof InviteTokenRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
+  '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
+  '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
+  '/resources/': typeof ResourcesIndexRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
   '/workspace/coaching': typeof AuthenticatedWorkspaceCoachingRoute
   '/workspace/evidence': typeof AuthenticatedWorkspaceEvidenceRoute
@@ -298,7 +313,6 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/resources': typeof ResourcesRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -306,6 +320,9 @@ export interface FileRoutesByTo {
   '/checkout/return': typeof CheckoutReturnRoute
   '/invite/$token': typeof InviteTokenRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
+  '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
+  '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
+  '/resources': typeof ResourcesIndexRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
   '/workspace/coaching': typeof AuthenticatedWorkspaceCoachingRoute
   '/workspace/evidence': typeof AuthenticatedWorkspaceEvidenceRoute
@@ -336,7 +353,6 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/resources': typeof ResourcesRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
@@ -345,6 +361,9 @@ export interface FileRoutesById {
   '/checkout/return': typeof CheckoutReturnRoute
   '/invite/$token': typeof InviteTokenRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
+  '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
+  '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
+  '/resources/': typeof ResourcesIndexRoute
   '/_authenticated/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
   '/_authenticated/workspace/coaching': typeof AuthenticatedWorkspaceCoachingRoute
   '/_authenticated/workspace/evidence': typeof AuthenticatedWorkspaceEvidenceRoute
@@ -376,7 +395,6 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/professional-workspace'
     | '/reset-password'
-    | '/resources'
     | '/signup'
     | '/terms'
     | '/onboarding'
@@ -385,6 +403,9 @@ export interface FileRouteTypes {
     | '/checkout/return'
     | '/invite/$token'
     | '/portfolio/$token'
+    | '/resources/pm-portfolio'
+    | '/resources/star-interview-stories'
+    | '/resources/'
     | '/workspace/capability'
     | '/workspace/coaching'
     | '/workspace/evidence'
@@ -414,7 +435,6 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/professional-workspace'
     | '/reset-password'
-    | '/resources'
     | '/signup'
     | '/terms'
     | '/onboarding'
@@ -422,6 +442,9 @@ export interface FileRouteTypes {
     | '/checkout/return'
     | '/invite/$token'
     | '/portfolio/$token'
+    | '/resources/pm-portfolio'
+    | '/resources/star-interview-stories'
+    | '/resources'
     | '/workspace/capability'
     | '/workspace/coaching'
     | '/workspace/evidence'
@@ -451,7 +474,6 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/professional-workspace'
     | '/reset-password'
-    | '/resources'
     | '/signup'
     | '/terms'
     | '/_authenticated/onboarding'
@@ -460,6 +482,9 @@ export interface FileRouteTypes {
     | '/checkout/return'
     | '/invite/$token'
     | '/portfolio/$token'
+    | '/resources/pm-portfolio'
+    | '/resources/star-interview-stories'
+    | '/resources/'
     | '/_authenticated/workspace/capability'
     | '/_authenticated/workspace/coaching'
     | '/_authenticated/workspace/evidence'
@@ -491,13 +516,15 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ProfessionalWorkspaceRoute: typeof ProfessionalWorkspaceRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
-  ResourcesRoute: typeof ResourcesRoute
   SignupRoute: typeof SignupRoute
   TermsRoute: typeof TermsRoute
   AttestTokenRoute: typeof AttestTokenRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   InviteTokenRoute: typeof InviteTokenRoute
   PortfolioTokenRoute: typeof PortfolioTokenRoute
+  ResourcesPmPortfolioRoute: typeof ResourcesPmPortfolioRoute
+  ResourcesStarInterviewStoriesRoute: typeof ResourcesStarInterviewStoriesRoute
+  ResourcesIndexRoute: typeof ResourcesIndexRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
@@ -601,13 +628,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/resources': {
-      id: '/resources'
-      path: '/resources'
-      fullPath: '/resources'
-      preLoaderRoute: typeof ResourcesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -662,6 +682,27 @@ declare module '@tanstack/react-router' {
       path: '/portfolio/$token'
       fullPath: '/portfolio/$token'
       preLoaderRoute: typeof PortfolioTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resources/': {
+      id: '/resources/'
+      path: '/resources'
+      fullPath: '/resources/'
+      preLoaderRoute: typeof ResourcesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resources/pm-portfolio': {
+      id: '/resources/pm-portfolio'
+      path: '/resources/pm-portfolio'
+      fullPath: '/resources/pm-portfolio'
+      preLoaderRoute: typeof ResourcesPmPortfolioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resources/star-interview-stories': {
+      id: '/resources/star-interview-stories'
+      path: '/resources/star-interview-stories'
+      fullPath: '/resources/star-interview-stories'
+      preLoaderRoute: typeof ResourcesStarInterviewStoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/workspace/': {
@@ -848,13 +889,15 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ProfessionalWorkspaceRoute: ProfessionalWorkspaceRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-  ResourcesRoute: ResourcesRoute,
   SignupRoute: SignupRoute,
   TermsRoute: TermsRoute,
   AttestTokenRoute: AttestTokenRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
   InviteTokenRoute: InviteTokenRoute,
   PortfolioTokenRoute: PortfolioTokenRoute,
+  ResourcesPmPortfolioRoute: ResourcesPmPortfolioRoute,
+  ResourcesStarInterviewStoriesRoute: ResourcesStarInterviewStoriesRoute,
+  ResourcesIndexRoute: ResourcesIndexRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
