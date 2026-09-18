@@ -2,8 +2,13 @@ import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
+  Briefcase,
   Building2,
+  ClipboardCheck,
   FileCheck2,
+  History,
+  Inbox,
+  MessagesSquare,
   FlaskConical,
   Gauge,
   LayoutDashboard,
@@ -64,7 +69,7 @@ export function WorkspaceShell({
       : []),
   ];
   const nav = coachingLinks.length
-    ? [...NAV.slice(0, 4), ...coachingLinks, ...NAV.slice(4)]
+    ? [...NAV.slice(0, 11), ...coachingLinks, ...NAV.slice(11)]
     : NAV;
 
   const displayName =
