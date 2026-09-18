@@ -31,3 +31,16 @@ Approved plan: adopt mockup design system + build remaining product (phases 1–
 - [x] Product pages: application tracking, Inbox and Timeline described; per-page questions and Complete Journey cross-sell
 - [ ] Decide whether deliverx.dev points at this app instead of the separate Vercel site
 - [ ] Decide the public story: paid plans (£19/£19/£29) or pilot access only
+
+## Production readiness pass (18 Sep 2026)
+- [x] Revoked anonymous access to every public table (no policy grants anon; public reads run through token-gated server functions)
+- [x] Revoked anon/PUBLIC execute on all privileged database functions
+- [x] Experience submissions now store a SHA-256 checksum and human_submitted flag
+- [x] Security scan: no active findings
+- [x] Trust rail asserted against live data: no Verified claim without external attestation, no judgement without evidence, no contribution event without consent
+- [x] All 15 public and 15 signed-in pages checked at 1280px and 375px (candidate + coach accounts)
+- [x] /signin redirects to /login for inbound links from older material
+- [x] Live payments approved by Stripe; checkout enabled in preview and production builds
+- [ ] Sending domain for DeliverX email (only trayakshsinghjadav.com is verified; deliverx.dev not added)
+- [ ] Decision: point deliverx.dev at this app instead of the separate Vercel site
+- [ ] Known: high-severity js-yaml advisory inside @tanstack/react-start (no fixed release yet)
