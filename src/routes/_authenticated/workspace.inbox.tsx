@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_authenticated/workspace/inbox")({
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(workspaceFeedQuery),
-  component: InboxPage;
+  component: InboxPage,
 });
 
 function InboxPage() {
