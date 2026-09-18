@@ -35,6 +35,7 @@ import { Route as ResourcesIndexRouteImport } from './routes/resources.index'
 import { Route as ResourcesPmPortfolioRouteImport } from './routes/resources.pm-portfolio'
 import { Route as ResourcesStarInterviewStoriesRouteImport } from './routes/resources.star-interview-stories'
 import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated/workspace.index'
+import { Route as AuthenticatedWorkspaceApplicationsRouteImport } from './routes/_authenticated/workspace.applications'
 import { Route as AuthenticatedWorkspaceCapabilityRouteImport } from './routes/_authenticated/workspace.capability'
 import { Route as AuthenticatedWorkspaceCoachingRouteImport } from './routes/_authenticated/workspace.coaching'
 import { Route as AuthenticatedWorkspaceEvidenceRouteImport } from './routes/_authenticated/workspace.evidence'
@@ -183,6 +184,12 @@ const AuthenticatedWorkspaceIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedWorkspaceRoute,
   } as any)
+const AuthenticatedWorkspaceApplicationsRoute =
+  AuthenticatedWorkspaceApplicationsRouteImport.update({
+    id: '/applications',
+    path: '/applications',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
 const AuthenticatedWorkspaceCapabilityRoute =
   AuthenticatedWorkspaceCapabilityRouteImport.update({
     id: '/capability',
@@ -305,6 +312,7 @@ export interface FileRoutesByFullPath {
   '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
   '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
   '/resources/': typeof ResourcesIndexRoute
+  '/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
   '/workspace/coaching': typeof AuthenticatedWorkspaceCoachingRoute
   '/workspace/evidence': typeof AuthenticatedWorkspaceEvidenceRoute
@@ -347,6 +355,7 @@ export interface FileRoutesByTo {
   '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
   '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
   '/resources': typeof ResourcesIndexRoute
+  '/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
   '/workspace/coaching': typeof AuthenticatedWorkspaceCoachingRoute
   '/workspace/evidence': typeof AuthenticatedWorkspaceEvidenceRoute
@@ -391,6 +400,7 @@ export interface FileRoutesById {
   '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
   '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
   '/resources/': typeof ResourcesIndexRoute
+  '/_authenticated/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
   '/_authenticated/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
   '/_authenticated/workspace/coaching': typeof AuthenticatedWorkspaceCoachingRoute
   '/_authenticated/workspace/evidence': typeof AuthenticatedWorkspaceEvidenceRoute
@@ -436,6 +446,7 @@ export interface FileRouteTypes {
     | '/resources/pm-portfolio'
     | '/resources/star-interview-stories'
     | '/resources/'
+    | '/workspace/applications'
     | '/workspace/capability'
     | '/workspace/coaching'
     | '/workspace/evidence'
@@ -478,6 +489,7 @@ export interface FileRouteTypes {
     | '/resources/pm-portfolio'
     | '/resources/star-interview-stories'
     | '/resources'
+    | '/workspace/applications'
     | '/workspace/capability'
     | '/workspace/coaching'
     | '/workspace/evidence'
@@ -521,6 +533,7 @@ export interface FileRouteTypes {
     | '/resources/pm-portfolio'
     | '/resources/star-interview-stories'
     | '/resources/'
+    | '/_authenticated/workspace/applications'
     | '/_authenticated/workspace/capability'
     | '/_authenticated/workspace/coaching'
     | '/_authenticated/workspace/evidence'
@@ -751,6 +764,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkspaceIndexRouteImport
       parentRoute: typeof AuthenticatedWorkspaceRoute
     }
+    '/_authenticated/workspace/applications': {
+      id: '/_authenticated/workspace/applications'
+      path: '/applications'
+      fullPath: '/workspace/applications'
+      preLoaderRoute: typeof AuthenticatedWorkspaceApplicationsRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
     '/_authenticated/workspace/capability': {
       id: '/_authenticated/workspace/capability'
       path: '/capability'
@@ -885,6 +905,7 @@ const AuthenticatedWorkspaceExperienceRouteWithChildren =
   )
 
 interface AuthenticatedWorkspaceRouteChildren {
+  AuthenticatedWorkspaceApplicationsRoute: typeof AuthenticatedWorkspaceApplicationsRoute
   AuthenticatedWorkspaceCapabilityRoute: typeof AuthenticatedWorkspaceCapabilityRoute
   AuthenticatedWorkspaceCoachingRoute: typeof AuthenticatedWorkspaceCoachingRoute
   AuthenticatedWorkspaceEvidenceRoute: typeof AuthenticatedWorkspaceEvidenceRoute
@@ -903,6 +924,8 @@ interface AuthenticatedWorkspaceRouteChildren {
 
 const AuthenticatedWorkspaceRouteChildren: AuthenticatedWorkspaceRouteChildren =
   {
+    AuthenticatedWorkspaceApplicationsRoute:
+      AuthenticatedWorkspaceApplicationsRoute,
     AuthenticatedWorkspaceCapabilityRoute:
       AuthenticatedWorkspaceCapabilityRoute,
     AuthenticatedWorkspaceCoachingRoute: AuthenticatedWorkspaceCoachingRoute,
