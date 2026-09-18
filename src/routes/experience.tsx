@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
+import { FaqSection, JourneyCrossSell } from "@/components/marketing/faq-section";
 
 export const Route = createFileRoute("/experience")({
   head: () => ({
@@ -188,6 +189,29 @@ function ExperiencePage() {
           Join the pilot →
         </Link>
       </div>
+
+      <FaqSection
+        items={[
+          {
+            q: "Is the company real?",
+            a: "No, and we say so plainly. MediFlow Technologies is a simulated company with a defined product, stakeholders and constraints. The work you produce inside it is real work you wrote, and that is what goes on your record.",
+          },
+          {
+            q: "What do I actually produce?",
+            a: "Written artefacts a product manager produces: a stakeholder alignment brief, requirements, a decision record with the options you rejected, a risk register. Each one is frozen when you submit it.",
+          },
+          {
+            q: "Does a score make me Verified?",
+            a: "No. An AI-assisted judgement gives you a level with a written rationale and the evidence it read. Coach confirmation is shown separately, and only independent external attestation lights Verified.",
+          },
+          {
+            q: "How long does it take?",
+            a: "It depends on you — tasks are released in phases and there is no timer. Most people work through a phase over a week alongside a job.",
+          },
+        ]}
+      />
+
+      <JourneyCrossSell note="Experience produces the evidence; Launchpad presents it and the Professional Workspace is where you run real delivery work. The Complete Journey plan covers all three." />
     </MarketingLayout>
   );
 }
