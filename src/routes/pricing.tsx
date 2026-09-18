@@ -28,8 +28,9 @@ export const Route = createFileRoute("/pricing")({
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://deliverx.dev/pricing" },
       { name: "twitter:card", content: "summary" },
-
     ],
+    links: [{ rel: "canonical", href: "https://deliverx.dev/pricing" }],
+
   }),
   component: PricingPage,
 });
