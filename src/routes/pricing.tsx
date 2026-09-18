@@ -22,9 +22,13 @@ export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
       { title: "Pricing — DeliverX" },
-      { name: "description", content: "Open pilot access for Experience, Launchpad and Professional Workspace." },
+      { name: "description", content: "Experience £19, Launchpad £19 and the Complete Journey £29 per month. Cancel any time." },
       { property: "og:title", content: "Pricing — DeliverX" },
-      { property: "og:description", content: "Open pilot access for Experience, Launchpad and Professional Workspace." },
+      { property: "og:description", content: "Experience £19, Launchpad £19 and the Complete Journey £29 per month. Cancel any time." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://deliverx.dev/pricing" },
+      { name: "twitter:card", content: "summary" },
+
     ],
   }),
   component: PricingPage,
@@ -130,7 +134,9 @@ function PricingPage() {
 
           {!isCheckoutEnabled && (
             <p className="caption mt-10 text-center">
-              Checkout is not yet open. Pilot access remains available without a card.
+              Checkout is temporarily unavailable. Create an account and you can subscribe from your
+              workspace.
+
             </p>
           )}
 
