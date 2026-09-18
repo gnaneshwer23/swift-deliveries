@@ -61,6 +61,9 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
     return data;
   })
   .handler(async ({ data, context }): Promise<CheckoutResult> => {
+    if (process.env["VITE_PAYMENTS_CHECKOUT_ENABLED"] !== "true") {
+      return { error: "Checkout is not open yet" };
+    }
     try {
       const stripe = createStripeClient(data.environment);
       const prices = await stripe.prices.list({ lookup_keys: [data.priceId], limit: 1 });
