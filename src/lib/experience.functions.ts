@@ -249,6 +249,11 @@ export const submitExperienceTask = createServerFn({ method: "POST" })
       .single();
     if (artefactError || !artefact) throw new Error(artefactError?.message ?? "Could not save the work.");
 
+    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(data.body));
+    const sha256 = Array.from(new Uint8Array(digest))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+
     const { data: version, error: versionError } = await supabase
       .from("artefact_versions")
       .insert({
@@ -261,6 +266,8 @@ export const submitExperienceTask = createServerFn({ method: "POST" })
           task_key: task.key,
           sections_completed: data.sections,
           word_count: words,
+          sha256,
+          human_submitted: true,
         },
       })
       .select("id")
@@ -280,6 +287,8 @@ export const submitExperienceTask = createServerFn({ method: "POST" })
         task_key: task.key,
         framework_version: framework ? `${framework.key}@${framework.version}` : null,
         artefact_id: artefact.id,
+        sha256,
+        human_submitted: true,
       },
     });
     if (ledgerError) throw new Error(ledgerError.message);

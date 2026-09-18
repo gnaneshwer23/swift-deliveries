@@ -36,6 +36,20 @@
       "when": 1789691517601,
       "tag": "0004_career_and_review_layer",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789692351914,
+      "tag": "0005_harden_function_execute_grants",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789692421620,
+      "tag": "0006_revoke_anonymous_table_grants",
+      "breakpoints": true
     }
   ]
 }
