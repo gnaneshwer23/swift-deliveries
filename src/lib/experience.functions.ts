@@ -287,6 +287,8 @@ export const submitExperienceTask = createServerFn({ method: "POST" })
         task_key: task.key,
         framework_version: framework ? `${framework.key}@${framework.version}` : null,
         artefact_id: artefact.id,
+        sha256,
+        human_submitted: true,
       },
     });
     if (ledgerError) throw new Error(ledgerError.message);
