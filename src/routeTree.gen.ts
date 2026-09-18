@@ -32,6 +32,7 @@ import { Route as AttestTokenRouteImport } from './routes/attest.$token'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as PortfolioTokenRouteImport } from './routes/portfolio.$token'
+import { Route as ResourcesPmPortfolioRouteImport } from './routes/resources.pm-portfolio'
 import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated/workspace.index'
 import { Route as AuthenticatedWorkspaceCapabilityRouteImport } from './routes/_authenticated/workspace.capability'
 import { Route as AuthenticatedWorkspaceCoachingRouteImport } from './routes/_authenticated/workspace.coaching'
@@ -161,6 +162,11 @@ const PortfolioTokenRoute = PortfolioTokenRouteImport.update({
   path: '/portfolio/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResourcesPmPortfolioRoute = ResourcesPmPortfolioRouteImport.update({
+  id: '/pm-portfolio',
+  path: '/pm-portfolio',
+  getParentRoute: () => ResourcesRoute,
+} as any)
 const AuthenticatedWorkspaceIndexRoute =
   AuthenticatedWorkspaceIndexRouteImport.update({
     id: '/',
@@ -260,7 +266,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/resources': typeof ResourcesRoute
+  '/resources': typeof ResourcesRouteWithChildren
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -269,6 +275,7 @@ export interface FileRoutesByFullPath {
   '/checkout/return': typeof CheckoutReturnRoute
   '/invite/$token': typeof InviteTokenRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
+  '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
   '/workspace/coaching': typeof AuthenticatedWorkspaceCoachingRoute
   '/workspace/evidence': typeof AuthenticatedWorkspaceEvidenceRoute
@@ -298,7 +305,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/resources': typeof ResourcesRoute
+  '/resources': typeof ResourcesRouteWithChildren
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -306,6 +313,7 @@ export interface FileRoutesByTo {
   '/checkout/return': typeof CheckoutReturnRoute
   '/invite/$token': typeof InviteTokenRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
+  '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
   '/workspace/coaching': typeof AuthenticatedWorkspaceCoachingRoute
   '/workspace/evidence': typeof AuthenticatedWorkspaceEvidenceRoute
@@ -336,7 +344,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/resources': typeof ResourcesRoute
+  '/resources': typeof ResourcesRouteWithChildren
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
@@ -345,6 +353,7 @@ export interface FileRoutesById {
   '/checkout/return': typeof CheckoutReturnRoute
   '/invite/$token': typeof InviteTokenRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
+  '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
   '/_authenticated/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
   '/_authenticated/workspace/coaching': typeof AuthenticatedWorkspaceCoachingRoute
   '/_authenticated/workspace/evidence': typeof AuthenticatedWorkspaceEvidenceRoute
@@ -385,6 +394,7 @@ export interface FileRouteTypes {
     | '/checkout/return'
     | '/invite/$token'
     | '/portfolio/$token'
+    | '/resources/pm-portfolio'
     | '/workspace/capability'
     | '/workspace/coaching'
     | '/workspace/evidence'
@@ -422,6 +432,7 @@ export interface FileRouteTypes {
     | '/checkout/return'
     | '/invite/$token'
     | '/portfolio/$token'
+    | '/resources/pm-portfolio'
     | '/workspace/capability'
     | '/workspace/coaching'
     | '/workspace/evidence'
@@ -460,6 +471,7 @@ export interface FileRouteTypes {
     | '/checkout/return'
     | '/invite/$token'
     | '/portfolio/$token'
+    | '/resources/pm-portfolio'
     | '/_authenticated/workspace/capability'
     | '/_authenticated/workspace/coaching'
     | '/_authenticated/workspace/evidence'
@@ -491,7 +503,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ProfessionalWorkspaceRoute: typeof ProfessionalWorkspaceRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
-  ResourcesRoute: typeof ResourcesRoute
+  ResourcesRoute: typeof ResourcesRouteWithChildren
   SignupRoute: typeof SignupRoute
   TermsRoute: typeof TermsRoute
   AttestTokenRoute: typeof AttestTokenRoute
@@ -664,6 +676,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/resources/pm-portfolio': {
+      id: '/resources/pm-portfolio'
+      path: '/pm-portfolio'
+      fullPath: '/resources/pm-portfolio'
+      preLoaderRoute: typeof ResourcesPmPortfolioRouteImport
+      parentRoute: typeof ResourcesRoute
+    }
     '/_authenticated/workspace/': {
       id: '/_authenticated/workspace/'
       path: '/'
@@ -833,6 +852,18 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface ResourcesRouteChildren {
+  ResourcesPmPortfolioRoute: typeof ResourcesPmPortfolioRoute
+}
+
+const ResourcesRouteChildren: ResourcesRouteChildren = {
+  ResourcesPmPortfolioRoute: ResourcesPmPortfolioRoute,
+}
+
+const ResourcesRouteWithChildren = ResourcesRoute._addFileChildren(
+  ResourcesRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
@@ -848,7 +879,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ProfessionalWorkspaceRoute: ProfessionalWorkspaceRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-  ResourcesRoute: ResourcesRoute,
+  ResourcesRoute: ResourcesRouteWithChildren,
   SignupRoute: SignupRoute,
   TermsRoute: TermsRoute,
   AttestTokenRoute: AttestTokenRoute,
