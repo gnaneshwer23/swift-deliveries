@@ -1,6 +1,22 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { PaymentTestModeBanner } from "@/components/payments/payment-test-mode-banner";
+import {
+  StripeEmbeddedCheckout,
+  type CheckoutPriceId,
+} from "@/components/payments/stripe-embedded-checkout";
+import { isCheckoutEnabled } from "@/lib/stripe";
+import { useSession } from "@/hooks/use-session";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
@@ -19,6 +35,8 @@ const TIERS = [
     name: "Experience",
     tag: "BUILD THE EXPERIENCE",
     description: "Work inside simulated organisations. Your actions create the evidence.",
+    price: "£19",
+    priceId: "experience_monthly" as CheckoutPriceId,
     features: [
       "Simulated pilot organisations",
       "Evidence ledger entries per task",
@@ -30,6 +48,8 @@ const TIERS = [
     name: "Launchpad",
     tag: "LAND THE OPPORTUNITY",
     description: "Turn judged evidence into an explainable readiness story.",
+    price: "£19",
+    priceId: "launchpad_monthly" as CheckoutPriceId,
     features: [
       "Readiness surfaces from real evidence",
       "Shareable, tokenised portfolio",
@@ -38,9 +58,11 @@ const TIERS = [
     ],
   },
   {
-    name: "Professional Workspace",
-    tag: "SUCCEED IN THE ROLE",
-    description: "Carry the same evidence discipline into live work with your team.",
+    name: "Complete Journey",
+    tag: "BUILD, LAND, SUCCEED",
+    description: "Experience and Launchpad, plus the Professional Workspace for live delivery.",
+    price: "£29",
+    priceId: "complete_journey_monthly" as CheckoutPriceId,
     features: [
       "Organisation and team invitations",
       "Observed work contributions",
@@ -51,17 +73,17 @@ const TIERS = [
 ];
 
 function PricingPage() {
+  const { user } = useSession();
+  const [selectedPrice, setSelectedPrice] = useState<CheckoutPriceId | null>(null);
+
   return (
     <MarketingLayout>
       <section className="section-sm">
         <div className="container">
           <span className="mono-label">Pricing</span>
-          <h1 className="heading-1" style={{ marginTop: 16, maxWidth: 520 }}>
-            Pilot access is open
-          </h1>
+          <h1 className="heading-1" style={{ marginTop: 16, maxWidth: 520 }}>Choose your route</h1>
           <p className="body-large" style={{ marginTop: 16, maxWidth: 560 }}>
-            All three products are free while in pilot. We'll introduce paid plans as the platform
-            matures, with generous free tiers for individuals.
+            Build practical experience, turn it into career intelligence, or follow the complete journey.
           </p>
 
           <div className="mt-14 grid gap-4 md:grid-cols-3">
@@ -75,8 +97,8 @@ function PricingPage() {
                   {t.description}
                 </p>
                 <div className="mt-6 flex items-baseline gap-2">
-                  <span style={{ fontSize: 32, fontWeight: 800 }}>Free</span>
-                  <span className="caption">during pilot</span>
+                   <span style={{ fontSize: 32, fontWeight: 800 }}>{t.price}</span>
+                   <span className="caption">per month</span>
                 </div>
                 <ul className="mt-6 flex-1 space-y-2.5">
                   {t.features.map((f) => (
@@ -86,18 +108,45 @@ function PricingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link to="/pilot" className="btn btn-primary mt-8 w-full justify-center">
-                  Join the pilot
-                </Link>
+                {isCheckoutEnabled ? (
+                  user ? (
+                    <Button className="mt-8 w-full" onClick={() => setSelectedPrice(t.priceId)}>
+                      Choose {t.name}
+                    </Button>
+                  ) : (
+                    <Button asChild className="mt-8 w-full">
+                      <Link to="/login" search={{ redirect: "/pricing" }}>Sign in to choose</Link>
+                    </Button>
+                  )
+                ) : (
+                  <Link to="/pilot" className="btn btn-primary mt-8 w-full justify-center">
+                    Join the pilot
+                  </Link>
+                )}
               </div>
             ))}
           </div>
 
-          <p className="caption mt-10 text-center">
-            No card required. No payment gate during pilot. Your evidence stays yours.
-          </p>
+          {!isCheckoutEnabled && (
+            <p className="caption mt-10 text-center">
+              Checkout is not yet open. Pilot access remains available without a card.
+            </p>
+          )}
         </div>
       </section>
+
+      <Dialog open={selectedPrice !== null} onOpenChange={(open) => !open && setSelectedPrice(null)}>
+        <DialogContent className="max-h-[92vh] max-w-3xl overflow-y-auto p-0">
+          <PaymentTestModeBanner />
+          <DialogHeader className="px-6 pt-2">
+            <DialogTitle>Complete your subscription</DialogTitle>
+            <DialogDescription>Payment details are handled securely.</DialogDescription>
+          </DialogHeader>
+          <div className="px-2 pb-4 sm:px-6">
+            {selectedPrice && <StripeEmbeddedCheckout priceId={selectedPrice} />}
+          </div>
+        </DialogContent>
+      </Dialog>
     </MarketingLayout>
   );
 }
