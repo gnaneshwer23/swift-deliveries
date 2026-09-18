@@ -47,6 +47,7 @@ import { Route as AuthenticatedWorkspaceOrganisationRouteImport } from './routes
 import { Route as AuthenticatedWorkspaceProfileRouteImport } from './routes/_authenticated/workspace.profile'
 import { Route as AuthenticatedWorkspaceProjectsRouteImport } from './routes/_authenticated/workspace.projects'
 import { Route as AuthenticatedWorkspaceReviewRouteImport } from './routes/_authenticated/workspace.review'
+import { Route as AuthenticatedWorkspaceReviewsRouteImport } from './routes/_authenticated/workspace.reviews'
 import { Route as AuthenticatedWorkspaceTeamRouteImport } from './routes/_authenticated/workspace.team'
 import { Route as AuthenticatedWorkspaceTimelineRouteImport } from './routes/_authenticated/workspace.timeline'
 import { Route as AuthenticatedWorkspaceExperienceIndexRouteImport } from './routes/_authenticated/workspace.experience.index'
@@ -256,6 +257,12 @@ const AuthenticatedWorkspaceReviewRoute =
     path: '/review',
     getParentRoute: () => AuthenticatedWorkspaceRoute,
   } as any)
+const AuthenticatedWorkspaceReviewsRoute =
+  AuthenticatedWorkspaceReviewsRouteImport.update({
+    id: '/reviews',
+    path: '/reviews',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
 const AuthenticatedWorkspaceTeamRoute =
   AuthenticatedWorkspaceTeamRouteImport.update({
     id: '/team',
@@ -324,6 +331,7 @@ export interface FileRoutesByFullPath {
   '/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
   '/workspace/projects': typeof AuthenticatedWorkspaceProjectsRoute
   '/workspace/review': typeof AuthenticatedWorkspaceReviewRoute
+  '/workspace/reviews': typeof AuthenticatedWorkspaceReviewsRoute
   '/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
   '/workspace/timeline': typeof AuthenticatedWorkspaceTimelineRoute
   '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
@@ -366,6 +374,7 @@ export interface FileRoutesByTo {
   '/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
   '/workspace/projects': typeof AuthenticatedWorkspaceProjectsRoute
   '/workspace/review': typeof AuthenticatedWorkspaceReviewRoute
+  '/workspace/reviews': typeof AuthenticatedWorkspaceReviewsRoute
   '/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
   '/workspace/timeline': typeof AuthenticatedWorkspaceTimelineRoute
   '/workspace': typeof AuthenticatedWorkspaceIndexRoute
@@ -412,6 +421,7 @@ export interface FileRoutesById {
   '/_authenticated/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
   '/_authenticated/workspace/projects': typeof AuthenticatedWorkspaceProjectsRoute
   '/_authenticated/workspace/review': typeof AuthenticatedWorkspaceReviewRoute
+  '/_authenticated/workspace/reviews': typeof AuthenticatedWorkspaceReviewsRoute
   '/_authenticated/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
   '/_authenticated/workspace/timeline': typeof AuthenticatedWorkspaceTimelineRoute
   '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
@@ -458,6 +468,7 @@ export interface FileRouteTypes {
     | '/workspace/profile'
     | '/workspace/projects'
     | '/workspace/review'
+    | '/workspace/reviews'
     | '/workspace/team'
     | '/workspace/timeline'
     | '/workspace/'
@@ -500,6 +511,7 @@ export interface FileRouteTypes {
     | '/workspace/profile'
     | '/workspace/projects'
     | '/workspace/review'
+    | '/workspace/reviews'
     | '/workspace/team'
     | '/workspace/timeline'
     | '/workspace'
@@ -545,6 +557,7 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace/profile'
     | '/_authenticated/workspace/projects'
     | '/_authenticated/workspace/review'
+    | '/_authenticated/workspace/reviews'
     | '/_authenticated/workspace/team'
     | '/_authenticated/workspace/timeline'
     | '/_authenticated/workspace/'
@@ -848,6 +861,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkspaceReviewRouteImport
       parentRoute: typeof AuthenticatedWorkspaceRoute
     }
+    '/_authenticated/workspace/reviews': {
+      id: '/_authenticated/workspace/reviews'
+      path: '/reviews'
+      fullPath: '/workspace/reviews'
+      preLoaderRoute: typeof AuthenticatedWorkspaceReviewsRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
     '/_authenticated/workspace/team': {
       id: '/_authenticated/workspace/team'
       path: '/team'
@@ -917,6 +937,7 @@ interface AuthenticatedWorkspaceRouteChildren {
   AuthenticatedWorkspaceProfileRoute: typeof AuthenticatedWorkspaceProfileRoute
   AuthenticatedWorkspaceProjectsRoute: typeof AuthenticatedWorkspaceProjectsRoute
   AuthenticatedWorkspaceReviewRoute: typeof AuthenticatedWorkspaceReviewRoute
+  AuthenticatedWorkspaceReviewsRoute: typeof AuthenticatedWorkspaceReviewsRoute
   AuthenticatedWorkspaceTeamRoute: typeof AuthenticatedWorkspaceTeamRoute
   AuthenticatedWorkspaceTimelineRoute: typeof AuthenticatedWorkspaceTimelineRoute
   AuthenticatedWorkspaceIndexRoute: typeof AuthenticatedWorkspaceIndexRoute
@@ -940,6 +961,7 @@ const AuthenticatedWorkspaceRouteChildren: AuthenticatedWorkspaceRouteChildren =
     AuthenticatedWorkspaceProfileRoute: AuthenticatedWorkspaceProfileRoute,
     AuthenticatedWorkspaceProjectsRoute: AuthenticatedWorkspaceProjectsRoute,
     AuthenticatedWorkspaceReviewRoute: AuthenticatedWorkspaceReviewRoute,
+    AuthenticatedWorkspaceReviewsRoute: AuthenticatedWorkspaceReviewsRoute,
     AuthenticatedWorkspaceTeamRoute: AuthenticatedWorkspaceTeamRoute,
     AuthenticatedWorkspaceTimelineRoute: AuthenticatedWorkspaceTimelineRoute,
     AuthenticatedWorkspaceIndexRoute: AuthenticatedWorkspaceIndexRoute,
