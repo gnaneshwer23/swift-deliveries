@@ -224,8 +224,8 @@ function HomePage() {
             See plans
           </Link>
           <Link to="/how-it-works" className="btn btn-secondary">
-
             How it works
+
           </Link>
         </div>
         <div className="hero-trust">
@@ -372,8 +372,10 @@ function HomePage() {
               See plans
             </Link>
 
+            <Link to="/how-it-works" className="btn btn-secondary">
               How it works
             </Link>
+
           </div>
         </div>
       </div>
