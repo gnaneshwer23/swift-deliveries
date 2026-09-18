@@ -351,14 +351,20 @@ export const updateApplication = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    const patch: Record<string, unknown> = {};
+    const patch: {
+      stage?: string;
+      applied_at?: string;
+      next_step?: string;
+      notes?: string;
+      portfolio_share_id?: string | null;
+    } = {};
     if (data.stage) {
-      patch["stage"] = data.stage;
-      if (data.stage === "applied") patch["applied_at"] = new Date().toISOString();
+      patch.stage = data.stage;
+      if (data.stage === "applied") patch.applied_at = new Date().toISOString();
     }
-    if (data.nextStep !== undefined) patch["next_step"] = data.nextStep;
-    if (data.notes !== undefined) patch["notes"] = data.notes;
-    if (data.portfolioShareId !== undefined) patch["portfolio_share_id"] = data.portfolioShareId;
+    if (data.nextStep !== undefined) patch.next_step = data.nextStep;
+    if (data.notes !== undefined) patch.notes = data.notes;
+    if (data.portfolioShareId !== undefined) patch.portfolio_share_id = data.portfolioShareId;
     if (!Object.keys(patch).length) return { ok: true };
     const { error } = await supabase
       .from("job_applications")
