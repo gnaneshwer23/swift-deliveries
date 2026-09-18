@@ -28,6 +28,42 @@ export const Route = createFileRoute("/_authenticated/workspace/review")({
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(coachReviewQuery),
   component: ReviewPage,
+  pendingMs: 200,
+  pendingMinMs: 200,
+  pendingComponent: () => (
+    <WorkspaceShell title="Coach review" subtitle="Loading the queue…">
+      <div className="grid gap-4 sm:grid-cols-3">
+        {[0, 1, 2].map((key) => (
+          <div key={key} className="h-24 animate-pulse border border-[var(--mkt-border)]" />
+        ))}
+      </div>
+      <div className="h-64 animate-pulse border border-[var(--mkt-border)]" />
+    </WorkspaceShell>
+  ),
+  errorComponent: ({ error }) => (
+    <WorkspaceShell title="Coach review" subtitle="The queue could not be loaded.">
+      <WorkspaceCard
+        title="Something went wrong"
+        description="No decision was recorded. Nothing in the record has changed."
+      >
+        <p role="alert" className="text-sm text-[var(--mkt-text2)]">
+          {error.message}
+        </p>
+        <Link to="/workspace/review" reloadDocument className="mt-4 inline-block text-sm underline">
+          Try again
+        </Link>
+      </WorkspaceCard>
+    </WorkspaceShell>
+  ),
+  notFoundComponent: () => (
+    <WorkspaceShell title="Coach review" subtitle="Nothing to review here.">
+      <WorkspaceCard title="Queue unavailable" description="This review queue does not exist.">
+        <Link to="/workspace/coaching" className="text-sm underline">
+          Go to Coaching
+        </Link>
+      </WorkspaceCard>
+    </WorkspaceShell>
+  ),
 });
 
 const inputCls =
