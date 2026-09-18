@@ -202,7 +202,7 @@ function HomePage() {
         <div className="hero-eyebrow">
           <span className="hero-dot" />
           <span className="caption" style={{ color: "var(--x-teal-text)", fontWeight: 500 }}>
-            Professional Intelligence · Pilot open
+            Professional Intelligence · Now open
           </span>
         </div>
         <h1 className="hero-h1">
@@ -217,10 +217,14 @@ function HomePage() {
           judgements, and career-ready proof. No shortcuts. No silent promotions.
         </p>
         <div className="hero-actions">
-          <Link to="/pilot" className="btn btn-primary">
+          <Link to="/signup" className="btn btn-primary">
             Start with Experience
           </Link>
+          <Link to="/pricing" className="btn btn-secondary">
+            See plans
+          </Link>
           <Link to="/how-it-works" className="btn btn-secondary">
+
             How it works
           </Link>
         </div>
@@ -361,10 +365,13 @@ function HomePage() {
             Start with realistic product work and build an evidence record you control.
           </p>
           <div className="cta-btns">
-            <Link to="/pilot" className="btn btn-primary">
+            <Link to="/signup" className="btn btn-primary">
               Create account
             </Link>
-            <Link to="/how-it-works" className="btn btn-secondary">
+            <Link to="/pricing" className="btn btn-secondary">
+              See plans
+            </Link>
+
               How it works
             </Link>
           </div>
