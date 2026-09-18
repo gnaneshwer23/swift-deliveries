@@ -50,7 +50,14 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
     if (!PRICE_IDS.includes(data.priceId)) throw new Error("Unknown plan");
     if (data.environment !== "sandbox" && data.environment !== "live") throw new Error("Invalid environment");
     const url = new URL(data.returnUrl);
-    if (url.protocol !== "https:" && url.hostname !== "localhost") throw new Error("Invalid return URL");
+    const isAllowedHost =
+      url.hostname === "localhost" ||
+      url.hostname === "deliverx.dev" ||
+      url.hostname.endsWith(".deliverx.dev") ||
+      url.hostname.endsWith(".lovable.app");
+    if ((url.protocol !== "https:" && url.hostname !== "localhost") || !isAllowedHost) {
+      throw new Error("Invalid return URL");
+    }
     return data;
   })
   .handler(async ({ data, context }): Promise<CheckoutResult> => {

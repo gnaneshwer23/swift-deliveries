@@ -29,6 +29,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated/workspace'
 import { Route as AttestTokenRouteImport } from './routes/attest.$token'
+import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as PortfolioTokenRouteImport } from './routes/portfolio.$token'
 import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated/workspace.index'
@@ -44,6 +45,7 @@ import { Route as AuthenticatedWorkspaceReviewRouteImport } from './routes/_auth
 import { Route as AuthenticatedWorkspaceTeamRouteImport } from './routes/_authenticated/workspace.team'
 import { Route as AuthenticatedWorkspaceExperienceIndexRouteImport } from './routes/_authenticated/workspace.experience.index'
 import { Route as AuthenticatedWorkspaceExperienceTaskKeyRouteImport } from './routes/_authenticated/workspace.experience.$taskKey'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -144,6 +146,11 @@ const AttestTokenRoute = AttestTokenRouteImport.update({
   path: '/attest/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
+  id: '/checkout/return',
+  path: '/checkout/return',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InviteTokenRoute = InviteTokenRouteImport.update({
   id: '/invite/$token',
   path: '/invite/$token',
@@ -232,6 +239,12 @@ const AuthenticatedWorkspaceExperienceTaskKeyRoute =
     path: '/$taskKey',
     getParentRoute: () => AuthenticatedWorkspaceExperienceRoute,
   } as any)
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -253,6 +266,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/attest/$token': typeof AttestTokenRoute
+  '/checkout/return': typeof CheckoutReturnRoute
   '/invite/$token': typeof InviteTokenRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
@@ -267,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
   '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/workspace/experience/': typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
 export interface FileRoutesByTo {
@@ -288,6 +303,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/attest/$token': typeof AttestTokenRoute
+  '/checkout/return': typeof CheckoutReturnRoute
   '/invite/$token': typeof InviteTokenRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
@@ -301,6 +317,7 @@ export interface FileRoutesByTo {
   '/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
   '/workspace': typeof AuthenticatedWorkspaceIndexRoute
   '/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/workspace/experience': typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
 export interface FileRoutesById {
@@ -325,6 +342,7 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/attest/$token': typeof AttestTokenRoute
+  '/checkout/return': typeof CheckoutReturnRoute
   '/invite/$token': typeof InviteTokenRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
   '/_authenticated/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
@@ -339,6 +357,7 @@ export interface FileRoutesById {
   '/_authenticated/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
   '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/_authenticated/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/_authenticated/workspace/experience/': typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
 export interface FileRouteTypes {
@@ -363,6 +382,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/workspace'
     | '/attest/$token'
+    | '/checkout/return'
     | '/invite/$token'
     | '/portfolio/$token'
     | '/workspace/capability'
@@ -377,6 +397,7 @@ export interface FileRouteTypes {
     | '/workspace/team'
     | '/workspace/'
     | '/workspace/experience/$taskKey'
+    | '/api/public/payments/webhook'
     | '/workspace/experience/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -398,6 +419,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/onboarding'
     | '/attest/$token'
+    | '/checkout/return'
     | '/invite/$token'
     | '/portfolio/$token'
     | '/workspace/capability'
@@ -411,6 +433,7 @@ export interface FileRouteTypes {
     | '/workspace/team'
     | '/workspace'
     | '/workspace/experience/$taskKey'
+    | '/api/public/payments/webhook'
     | '/workspace/experience'
   id:
     | '__root__'
@@ -434,6 +457,7 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/_authenticated/workspace'
     | '/attest/$token'
+    | '/checkout/return'
     | '/invite/$token'
     | '/portfolio/$token'
     | '/_authenticated/workspace/capability'
@@ -448,6 +472,7 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace/team'
     | '/_authenticated/workspace/'
     | '/_authenticated/workspace/experience/$taskKey'
+    | '/api/public/payments/webhook'
     | '/_authenticated/workspace/experience/'
   fileRoutesById: FileRoutesById
 }
@@ -470,8 +495,10 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   TermsRoute: typeof TermsRoute
   AttestTokenRoute: typeof AttestTokenRoute
+  CheckoutReturnRoute: typeof CheckoutReturnRoute
   InviteTokenRoute: typeof InviteTokenRoute
   PortfolioTokenRoute: typeof PortfolioTokenRoute
+  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -616,6 +643,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AttestTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/checkout/return': {
+      id: '/checkout/return'
+      path: '/checkout/return'
+      fullPath: '/checkout/return'
+      preLoaderRoute: typeof CheckoutReturnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/invite/$token': {
       id: '/invite/$token'
       path: '/invite/$token'
@@ -721,6 +755,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkspaceExperienceTaskKeyRouteImport
       parentRoute: typeof AuthenticatedWorkspaceExperienceRoute
     }
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -811,8 +852,10 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   TermsRoute: TermsRoute,
   AttestTokenRoute: AttestTokenRoute,
+  CheckoutReturnRoute: CheckoutReturnRoute,
   InviteTokenRoute: InviteTokenRoute,
   PortfolioTokenRoute: PortfolioTokenRoute,
+  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
