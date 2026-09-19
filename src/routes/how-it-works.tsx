@@ -33,10 +33,13 @@ function HowItWorksPage() {
           Proof compounds.
         </h1>
         <p>
-          Five steps connect realistic product work to a career-ready, externally verifiable
-          professional intelligence record.
+          Five stages connect realistic product work to a career-ready record an outsider can
+          verify.
         </p>
       </div>
+
+      <JourneyLadder active="learn" />
+
 
       <div className="quote-rule">
         <div className="blockquote">
