@@ -30,7 +30,37 @@ export const Route = createFileRoute("/pricing")({
       { name: "twitter:card", content: "summary" },
     ],
     links: [{ rel: "canonical", href: "https://deliverx.dev/pricing" }],
-
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          name: "DeliverX plans",
+          itemListElement: [
+            { name: "Experience", price: "19.00" },
+            { name: "Launchpad", price: "19.00" },
+            { name: "Complete Journey", price: "29.00" },
+          ].map((plan, index) => ({
+            "@type": "ListItem",
+            position: index + 1,
+            item: {
+              "@type": "Product",
+              name: `DeliverX ${plan.name}`,
+              url: "https://deliverx.dev/pricing",
+              brand: { "@type": "Brand", name: "DeliverX" },
+              offers: {
+                "@type": "Offer",
+                price: plan.price,
+                priceCurrency: "GBP",
+                url: "https://deliverx.dev/pricing",
+                availability: "https://schema.org/InStock",
+              },
+            },
+          })),
+        }),
+      },
+    ],
   }),
   component: PricingPage,
 });
