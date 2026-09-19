@@ -21,6 +21,24 @@ export const Route = createFileRoute("/resources/pm-portfolio")({
       },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
+      { property: "og:url", content: "https://deliverx.dev/resources/pm-portfolio" },
+    ],
+    links: [{ rel: "canonical", href: "https://deliverx.dev/resources/pm-portfolio" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: "How to build a PM portfolio employers can evaluate",
+          description:
+            "A practical guide to assembling a Product Management portfolio hiring managers can inspect: problems framed, decisions taken, artefacts produced, outcomes stated without theatre.",
+          inLanguage: "en",
+          mainEntityOfPage: "https://deliverx.dev/resources/pm-portfolio",
+          author: { "@type": "Organization", name: "DeliverX", url: "https://deliverx.dev" },
+          publisher: { "@type": "Organization", name: "DeliverX", url: "https://deliverx.dev" },
+        }),
+      },
     ],
   }),
   component: PmPortfolioGuide,
