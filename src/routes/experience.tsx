@@ -188,7 +188,7 @@ function ExperiencePage() {
         <p className="body-lg" style={{ marginBottom: 28 }}>
           Your first evidence entry is one task away.
         </p>
-        <Link to="/pilot" className="btn btn-primary" style={{ fontSize: 15, padding: "12px 28px" }}>
+        <Link to="/signup" className="btn btn-amber" style={{ fontSize: 15, padding: "12px 28px" }}>
           Join the pilot →
         </Link>
       </div>
