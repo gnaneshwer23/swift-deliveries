@@ -86,10 +86,12 @@ function ExperiencePage() {
           Work as a product manager inside realistic organisations. Your actions — not the setup —
           create the evidence.
         </p>
-        <Link to="/pilot" className="btn btn-primary">
-          Join the pilot →
+        <Link to="/signup" className="btn btn-amber">
+          Get started
         </Link>
       </div>
+
+      <JourneyLadder active="work" />
 
       <div className="principle-bar">
         A role you act in. Not content you consume. &nbsp;·&nbsp; <em>No evidence before you act.</em>
