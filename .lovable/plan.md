@@ -2,7 +2,7 @@
 
 Borrowing the real lesson from leadjourney.io — not its colours or illustrations, but its ability to make a complicated system feel obvious. Start with the outcome, introduce the machinery gradually, keep the spacing calm and the tone direct.
 
-New look: near-black surfaces with a warm amber accent, bento-grid sections, applied across every public page and the signed-in area.
+New look: the white background stays. Everything else gets sharper — light, calm surfaces with one warm accent, bento-grid sections, applied across every public page and the signed-in area.
 
 ## 1. The story spine (the most important change)
 
