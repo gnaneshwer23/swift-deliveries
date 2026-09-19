@@ -18,6 +18,26 @@ export const Route = createFileRoute("/resources/star-interview-stories")({
       },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
+      { property: "og:url", content: "https://deliverx.dev/resources/star-interview-stories" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://deliverx.dev/resources/star-interview-stories" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: "STAR interview stories grounded in real artefacts",
+          description:
+            "Build STAR interview answers that hold up under follow-up questions by grounding Situation, Task, Action and Result in artefacts and decisions you can show.",
+          inLanguage: "en",
+          mainEntityOfPage: "https://deliverx.dev/resources/star-interview-stories",
+          author: { "@type": "Organization", name: "DeliverX", url: "https://deliverx.dev" },
+          publisher: { "@type": "Organization", name: "DeliverX", url: "https://deliverx.dev" },
+        }),
+      },
     ],
   }),
   component: StarStoriesGuide,
