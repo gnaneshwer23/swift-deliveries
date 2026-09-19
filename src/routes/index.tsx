@@ -1,5 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
+import { JourneyLadder } from "@/components/marketing/journey-ladder";
+import { Bento, BentoTile } from "@/components/marketing/bento";
+import { ProductView } from "@/components/marketing/product-view";
+import { FaqSection } from "@/components/marketing/faq-section";
 
 const TITLE = "DeliverX — Do the work. Keep the proof. Earn the signal.";
 const DESCRIPTION =
