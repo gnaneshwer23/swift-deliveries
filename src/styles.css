@@ -945,3 +945,112 @@ html:has(.marketing-page) {
 }
 .dxs .pv-frame { font-size: 11px; color: var(--x-slate-light); font-family: var(--font-mono, monospace); }
 .dxs .pv-body { padding: 4px 0; }
+
+/* ============================================================
+   Motion layer: quiet entrances, restrained hover feedback.
+   Scroll reveal uses scroll-driven animations behind @supports so
+   browsers without them simply show static content.
+   ============================================================ */
+@keyframes x-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes x-rise-sm {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes x-bar {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Hero entrance */
+.dxs .hero-eyebrow, .dxs .hero-h1, .dxs .hero-sub, .dxs .hero-actions {
+  animation: x-rise .62s cubic-bezier(.22,.61,.36,1) both;
+}
+.dxs .hero-h1 { animation-delay: .06s; }
+.dxs .hero-sub { animation-delay: .12s; }
+.dxs .hero-actions { animation-delay: .18s; }
+
+/* Hover feedback */
+.dxs .bento-tile, .dxs .card, .dxs .surface-card, .dxs .feature-card,
+.dxs .product-card, .dxs .cross-sell, .dxs .step-cell, .dxs .pv {
+  transition: transform .22s cubic-bezier(.22,.61,.36,1),
+              border-color .22s ease, background-color .22s ease, box-shadow .22s ease;
+}
+.dxs .bento-tile:hover, .dxs .card:hover, .dxs .surface-card:hover,
+.dxs .feature-card:hover, .dxs .product-card:hover, .dxs .cross-sell:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -16px rgba(21, 21, 26, .28);
+}
+.dxs .btn-primary, .dxs .btn-amber, .dxs .btn-ghost, .dxs .btn-secondary {
+  transition: background-color .18s ease, color .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+.dxs .btn-amber:hover, .dxs .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -14px rgba(21, 21, 26, .55);
+}
+.dxs .btn-amber:active, .dxs .btn-primary:active { transform: translateY(0); }
+.dxs a { transition: color .16s ease, opacity .16s ease; }
+
+/* Ladder steps */
+.dxs .ladder-step { position: relative; transition: background-color .22s ease; }
+.dxs .ladder-step::after {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 2px;
+  background: var(--x-amber); transform: scaleX(0); transform-origin: left center;
+  transition: transform .28s cubic-bezier(.22,.61,.36,1);
+}
+.dxs .ladder-step:hover { background: var(--x-paper-raised); }
+.dxs .ladder-step:hover::after { transform: scaleX(1); }
+.dxs .ladder-step.is-active { box-shadow: none; }
+.dxs .ladder-step.is-active::after { transform: scaleX(1); }
+.dxs .ladder-step.is-active .ladder-n { transition: color .22s ease; }
+
+/* Scroll reveal */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .dxs .section > .section-head,
+    .dxs .bento-tile,
+    .dxs .ladder-rail,
+    .dxs .pv,
+    .dxs .step-cell,
+    .dxs .faq-item,
+    .dxs .product-card,
+    .dxs .surface-card,
+    .dxs .feature-card,
+    .dxs .uc-card,
+    .dxs .cross-sell,
+    .dxs .cta-box {
+      animation: x-rise-sm .7s cubic-bezier(.22,.61,.36,1) both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 22%;
+    }
+    .dxs .ladder-step.is-active::after {
+      animation: x-bar .5s cubic-bezier(.22,.61,.36,1) both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 26%;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dxs *, .dxa * { animation: none !important; transition: none !important; }
+  .dxs .hero-eyebrow, .dxs .hero-h1, .dxs .hero-sub, .dxs .hero-actions { opacity: 1; transform: none; }
+}
+
+/* Signed-in area: same restraint, no entrance motion on data */
+.dxa .pw-card, .dxa .card, .dxa .tile {
+  transition: border-color .2s ease, background-color .2s ease, box-shadow .2s ease;
+}
+.dxa button, .dxa a { transition: background-color .16s ease, color .16s ease, border-color .16s ease; }
+
+/* Product-page hero entrances */
+.dxs .hero-xp > *, .dxs .hero-lp > *, .dxs .hero-ws > *, .dxs .hero-hiw > * {
+  animation: x-rise .62s cubic-bezier(.22,.61,.36,1) both;
+}
+.dxs .hero-xp > :nth-child(2), .dxs .hero-lp > :nth-child(2),
+.dxs .hero-ws > :nth-child(2), .dxs .hero-hiw > :nth-child(2) { animation-delay: .06s; }
+.dxs .hero-xp > :nth-child(3), .dxs .hero-lp > :nth-child(3),
+.dxs .hero-ws > :nth-child(3), .dxs .hero-hiw > :nth-child(3) { animation-delay: .12s; }
+.dxs .hero-xp > :nth-child(4), .dxs .hero-lp > :nth-child(4),
+.dxs .hero-ws > :nth-child(4), .dxs .hero-hiw > :nth-child(4) { animation-delay: .18s; }
