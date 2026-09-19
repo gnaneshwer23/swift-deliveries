@@ -20,7 +20,7 @@ Learn  →  Work  →  Build  →  Prove  →  Advance
 
 ## 2. The new visual language
 
-- **Palette:** near-black base `#0A0A0B`, raised surface `#17171A`, border/elevated `#2A2A2E`, warm amber accent `#F5B544`. Amber is reserved for the one action that matters per section; confirmed/verified states keep a distinct colour so the two never get confused.
+- **Palette (light, unchanged background):** white page base `#FFFFFF`, a barely-there tinted surface `#F7F7F5` for raised tiles, hairline borders `#E4E4E1`, near-black ink `#15151A` for text, warm amber accent `#C98A12` at a contrast that reads on white. The accent is reserved for the one action that matters per section; confirmed/verified states keep a distinct colour so the two never get confused. Occasional dark tiles are used sparingly for emphasis inside a light page, never as the page background.
 - **Type:** large, tight display headings; generous line height in body copy; monospace only for small labels and stage numbers.
 - **Space:** considerably more room between sections than today — the calm that makes the information feel manageable.
 - **Bento grid:** each section is a set of tiles of differing size rather than a wall of equal cards. Big tile carries the claim, smaller tiles carry the supporting facts.
