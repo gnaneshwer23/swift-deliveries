@@ -449,27 +449,27 @@ html:has(.marketing-page) {
    Palette: ink navy, off-white paper, teal live, amber signal.
    ============================================================ */
 :root {
-  --x-ink: #0D1117;
-  --x-ink-soft: #1C2333;
-  --x-paper: #F5F4F0;
-  --x-paper-raised: #FAFAF8;
-  --x-amber: #C9922A;
-  --x-amber-light: #F5E6C8;
-  --x-amber-text: #7A5A18;
-  --x-slate: #4A5568;
-  --x-slate-light: #718096;
-  --x-border: rgba(13,17,23,0.10);
-  --x-border-strong: rgba(13,17,23,0.18);
-  --x-teal: #1D9E75;
-  --x-teal-light: #E1F5EE;
-  --x-teal-text: #085041;
-  --x-purple: #534AB7;
-  --x-purple-light: #EEEDFE;
-  --x-purple-text: #3C3489;
-  --x-radius-sm: 6px;
-  --x-radius: 10px;
-  --x-radius-lg: 16px;
-  --x-bg-alt: #F0EFE9;
+  --x-ink: #15151A;
+  --x-ink-soft: #24242B;
+  --x-paper: #FFFFFF;
+  --x-paper-raised: #F7F7F5;
+  --x-amber: #C98A12;
+  --x-amber-light: #FAF1DE;
+  --x-amber-text: #6E4A05;
+  --x-slate: #4B4F58;
+  --x-slate-light: #767B85;
+  --x-border: #E4E4E1;
+  --x-border-strong: #CFCFCA;
+  --x-teal: #0F8C68;
+  --x-teal-light: #E6F4EF;
+  --x-teal-text: #0A5240;
+  --x-purple: #4B43A8;
+  --x-purple-light: #EEEDFA;
+  --x-purple-text: #342D80;
+  --x-radius-sm: 4px;
+  --x-radius: 8px;
+  --x-radius-lg: 8px;
+  --x-bg-alt: #FFFFFF;
 }
 
 .dxs {
