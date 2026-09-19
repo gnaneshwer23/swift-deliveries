@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
+import { JourneyLadder } from "@/components/marketing/journey-ladder";
 import { FaqSection, JourneyCrossSell } from "@/components/marketing/faq-section";
 
 export const Route = createFileRoute("/professional-workspace")({
@@ -76,10 +77,12 @@ function ProfessionalWorkspacePage() {
           One controlled space for meetings, artefacts, decisions and evidence — built around human
           ownership.
         </p>
-        <Link to="/pilot" className="btn btn-primary">
-          Open Workspace →
+        <Link to="/signup" className="btn btn-amber">
+          Get started
         </Link>
       </div>
+
+      <JourneyLadder active="advance" />
 
       <div className="consent-bar">
         <strong>Observation starts off.</strong> Privacy starts on. You decide when observation is

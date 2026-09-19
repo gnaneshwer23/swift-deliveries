@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
+import { JourneyLadder } from "@/components/marketing/journey-ladder";
 import { FaqSection, JourneyCrossSell } from "@/components/marketing/faq-section";
 
 export const Route = createFileRoute("/launchpad")({
@@ -81,10 +82,12 @@ function LaunchpadPage() {
           Turn demonstrated work into a portfolio, interview narrative, and trust signal that can be
           explained.
         </p>
-        <Link to="/pilot" className="btn btn-primary">
-          Open Launchpad →
+        <Link to="/signup" className="btn btn-amber">
+          Get started
         </Link>
       </div>
+
+      <JourneyLadder active="build" />
 
       <div className="rule-box">
         <span className="rule-box-mark">◆</span>

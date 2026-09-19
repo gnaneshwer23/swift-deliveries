@@ -75,8 +75,8 @@ function LoginPage() {
           DeliverX
         </Link>
         <div className="nav-right">
-          <Link to="/pilot" className="btn-nav btn-nav-primary">
-            Start pilot
+          <Link to="/signup" className="btn-nav btn-nav-primary">
+            Get started
           </Link>
         </div>
       </header>
@@ -144,7 +144,7 @@ function LoginPage() {
           </div>
 
           <div className="form-signin">
-            New here? <Link to="/pilot">Join the pilot →</Link>
+            New here? <Link to="/signup">Create an account →</Link>
           </div>
         </div>
       </main>

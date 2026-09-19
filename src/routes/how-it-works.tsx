@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
+import { JourneyLadder } from "@/components/marketing/journey-ladder";
 
 export const Route = createFileRoute("/how-it-works")({
   head: () => ({
@@ -33,10 +34,13 @@ function HowItWorksPage() {
           Proof compounds.
         </h1>
         <p>
-          Five steps connect realistic product work to a career-ready, externally verifiable
-          professional intelligence record.
+          Five stages connect realistic product work to a career-ready record an outsider can
+          verify.
         </p>
       </div>
+
+      <JourneyLadder active="learn" />
+
 
       <div className="quote-rule">
         <div className="blockquote">

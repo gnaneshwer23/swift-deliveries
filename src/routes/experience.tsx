@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
+import { JourneyLadder } from "@/components/marketing/journey-ladder";
 import { FaqSection, JourneyCrossSell } from "@/components/marketing/faq-section";
 
 export const Route = createFileRoute("/experience")({
@@ -50,7 +51,7 @@ const COMPANIES = [
     cls: "slate",
     name: "More companies in build",
     type: "FinTech · HealthTech · SaaS · B2B",
-    desc: "Covering a broad range of domains, stakeholder types, and product maturity stages. Added scenario by scenario as the pilot expands.",
+    desc: "Covering a broad range of domains, stakeholder types, and product maturity stages. New scenarios are added over time.",
     tags: ["Pilot expanding"],
   },
 ];
@@ -86,10 +87,12 @@ function ExperiencePage() {
           Work as a product manager inside realistic organisations. Your actions — not the setup —
           create the evidence.
         </p>
-        <Link to="/pilot" className="btn btn-primary">
-          Join the pilot →
+        <Link to="/signup" className="btn btn-amber">
+          Get started
         </Link>
       </div>
+
+      <JourneyLadder active="work" />
 
       <div className="principle-bar">
         A role you act in. Not content you consume. &nbsp;·&nbsp; <em>No evidence before you act.</em>
@@ -185,8 +188,8 @@ function ExperiencePage() {
         <p className="body-lg" style={{ marginBottom: 28 }}>
           Your first evidence entry is one task away.
         </p>
-        <Link to="/pilot" className="btn btn-primary" style={{ fontSize: 15, padding: "12px 28px" }}>
-          Join the pilot →
+        <Link to="/signup" className="btn btn-amber" style={{ fontSize: 15, padding: "12px 28px" }}>
+          Get started
         </Link>
       </div>
 

@@ -449,27 +449,27 @@ html:has(.marketing-page) {
    Palette: ink navy, off-white paper, teal live, amber signal.
    ============================================================ */
 :root {
-  --x-ink: #0D1117;
-  --x-ink-soft: #1C2333;
-  --x-paper: #F5F4F0;
-  --x-paper-raised: #FAFAF8;
-  --x-amber: #C9922A;
-  --x-amber-light: #F5E6C8;
-  --x-amber-text: #7A5A18;
-  --x-slate: #4A5568;
-  --x-slate-light: #718096;
-  --x-border: rgba(13,17,23,0.10);
-  --x-border-strong: rgba(13,17,23,0.18);
-  --x-teal: #1D9E75;
-  --x-teal-light: #E1F5EE;
-  --x-teal-text: #085041;
-  --x-purple: #534AB7;
-  --x-purple-light: #EEEDFE;
-  --x-purple-text: #3C3489;
-  --x-radius-sm: 6px;
-  --x-radius: 10px;
-  --x-radius-lg: 16px;
-  --x-bg-alt: #F0EFE9;
+  --x-ink: #15151A;
+  --x-ink-soft: #24242B;
+  --x-paper: #FFFFFF;
+  --x-paper-raised: #F7F7F5;
+  --x-amber: #C98A12;
+  --x-amber-light: #FAF1DE;
+  --x-amber-text: #6E4A05;
+  --x-slate: #4B4F58;
+  --x-slate-light: #767B85;
+  --x-border: #E4E4E1;
+  --x-border-strong: #CFCFCA;
+  --x-teal: #0F8C68;
+  --x-teal-light: #E6F4EF;
+  --x-teal-text: #0A5240;
+  --x-purple: #4B43A8;
+  --x-purple-light: #EEEDFA;
+  --x-purple-text: #342D80;
+  --x-radius-sm: 4px;
+  --x-radius: 8px;
+  --x-radius-lg: 8px;
+  --x-bg-alt: #FFFFFF;
 }
 
 .dxs {
@@ -860,3 +860,88 @@ html:has(.marketing-page) {
 .dxs .cross-sell-title { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
 .dxs .cross-sell-text { font-size: 13px; color: var(--x-slate); line-height: 1.6; margin-bottom: 18px; }
 @media (max-width: 720px) { .dxs .cross-sell { padding: 20px; } }
+
+/* ============================================================
+   Enhancement layer: white canvas, amber accent, calmer rhythm.
+   Story spine (ladder), bento tiles, framed product views.
+   ============================================================ */
+.dxs { background: var(--x-paper); }
+.dxs .hero { padding: 104px 32px 72px; max-width: 1120px; }
+.dxs .hero-h1 { font-size: clamp(40px, 6.4vw, 68px); letter-spacing: -0.045em; max-width: 780px; }
+.dxs .hero-sub { font-size: 18px; max-width: 560px; }
+.dxs .section, .dxs .section-sm, .dxs .steps-section, .dxs .products-section,
+.dxs .uc-section, .dxs .cta-section, .dxs .record-strip, .dxs .surfaces-section,
+.dxs .features-section, .dxs .companies-section, .dxs .entry-seq { max-width: 1120px; }
+.dxs .steps-section, .dxs .uc-section { padding-top: 96px; padding-bottom: 96px; }
+.dxs .btn-primary { background: var(--x-ink); color: #fff; }
+.dxs .btn-amber { background: var(--x-amber); color: #fff; font-weight: 600; }
+.dxs .btn-amber:hover { background: #B2790C; }
+.dxs .card, .dxs .faq-item, .dxs .cross-sell, .dxs .surface-card,
+.dxs .feature-card, .dxs .company-card, .dxs .cta-box, .dxs .step-cell { background: var(--x-paper-raised); }
+
+/* Eyebrow / small labels */
+.dxs .x-label {
+  font-family: var(--font-mono, ui-monospace, 'SF Mono', Menlo, monospace);
+  font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--x-slate-light);
+}
+
+/* Story spine — the ladder */
+.dxs .ladder { max-width: 1120px; margin: 0 auto; padding: 0 32px 24px; }
+.dxs .ladder-rail {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  border: 1px solid var(--x-border); border-radius: var(--x-radius); overflow: hidden;
+  background: var(--x-paper);
+}
+.dxs .ladder-step { padding: 18px 18px 20px; border-right: 1px solid var(--x-border); background: var(--x-paper); }
+.dxs .ladder-step:last-child { border-right: none; }
+.dxs .ladder-n {
+  font-family: var(--font-mono, monospace); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.1em; color: var(--x-slate-light); margin-bottom: 10px;
+}
+.dxs .ladder-name { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; color: var(--x-ink); margin-bottom: 4px; }
+.dxs .ladder-desc { font-size: 12.5px; color: var(--x-slate); line-height: 1.55; }
+.dxs .ladder-step.is-active { background: var(--x-amber-light); box-shadow: inset 0 2px 0 var(--x-amber); }
+.dxs .ladder-step.is-active .ladder-n { color: var(--x-amber-text); }
+@media (max-width: 900px) {
+  .dxs .ladder-rail { grid-template-columns: repeat(2, 1fr); }
+  .dxs .ladder-step:nth-child(2n) { border-right: none; }
+  .dxs .ladder-step { border-bottom: 1px solid var(--x-border); }
+}
+@media (max-width: 520px) {
+  .dxs .ladder-rail { grid-template-columns: 1fr; }
+  .dxs .ladder-step { border-right: none; }
+  .dxs .ladder { padding-left: 16px; padding-right: 16px; }
+}
+
+/* Bento tiles */
+.dxs .bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-top: 32px; }
+.dxs .bento-tile {
+  grid-column: span 2; padding: 24px; border: 1px solid var(--x-border);
+  border-radius: var(--x-radius); background: var(--x-paper-raised);
+  transition: border-color .15s ease, background .15s ease;
+}
+.dxs .bento-tile:hover { border-color: var(--x-border-strong); background: var(--x-paper); }
+.dxs .bento-tile.span-3 { grid-column: span 3; }
+.dxs .bento-tile.span-4 { grid-column: span 4; }
+.dxs .bento-tile.span-6 { grid-column: span 6; }
+.dxs .bento-tile.on-ink { background: var(--x-ink); border-color: var(--x-ink); color: #fff; }
+.dxs .bento-tile.on-ink .bento-title { color: #fff; }
+.dxs .bento-tile.on-ink .bento-body { color: rgba(255,255,255,.62); }
+.dxs .bento-tile.on-ink .x-label { color: var(--x-amber); }
+.dxs .bento-title { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; color: var(--x-ink); margin: 12px 0 8px; }
+.dxs .bento-body { font-size: 13.5px; line-height: 1.65; color: var(--x-slate); }
+.dxs .bento-foot { margin-top: 16px; font-size: 12px; font-weight: 600; color: var(--x-ink); }
+@media (max-width: 900px) {
+  .dxs .bento { grid-template-columns: repeat(2, 1fr); }
+  .dxs .bento-tile, .dxs .bento-tile.span-3, .dxs .bento-tile.span-4, .dxs .bento-tile.span-6 { grid-column: span 2; }
+}
+
+/* Framed product views */
+.dxs .pv { border: 1px solid var(--x-border); border-radius: var(--x-radius); overflow: hidden; background: var(--x-paper); }
+.dxs .pv-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 11px 16px; border-bottom: 1px solid var(--x-border); background: var(--x-paper-raised);
+}
+.dxs .pv-frame { font-size: 11px; color: var(--x-slate-light); font-family: var(--font-mono, monospace); }
+.dxs .pv-body { padding: 4px 0; }
