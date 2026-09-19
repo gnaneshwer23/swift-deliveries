@@ -76,10 +76,12 @@ function ProfessionalWorkspacePage() {
           One controlled space for meetings, artefacts, decisions and evidence — built around human
           ownership.
         </p>
-        <Link to="/pilot" className="btn btn-primary">
-          Open Workspace →
+        <Link to="/signup" className="btn btn-amber">
+          Get started
         </Link>
       </div>
+
+      <JourneyLadder active="advance" />
 
       <div className="consent-bar">
         <strong>Observation starts off.</strong> Privacy starts on. You decide when observation is
