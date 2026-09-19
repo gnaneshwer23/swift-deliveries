@@ -114,7 +114,7 @@ function PilotPage() {
                 <Check className="size-4" style={{ color: "var(--x-teal)" }} />
               </div>
               <div className="pilot-point-body">
-                <h4>Start in Experience</h4>
+                <h3>Start in Experience</h3>
                 <p>
                   Join a simulated company as PM. Evidence builds from Day 1 — before you apply for
                   anything.
@@ -126,7 +126,7 @@ function PilotPage() {
                 <Check className="size-4" style={{ color: "var(--x-amber)" }} />
               </div>
               <div className="pilot-point-body">
-                <h4>Earn Verified externally</h4>
+                <h3>Earn Verified externally</h3>
                 <p>
                   When your evidence is strong enough, request attestation from someone who knows
                   your work. That's what lights the Verified signal.
@@ -138,7 +138,7 @@ function PilotPage() {
                 <Check className="size-4" style={{ color: "var(--x-purple)" }} />
               </div>
               <div className="pilot-point-body">
-                <h4>No payment gate during pilot</h4>
+                <h3>No payment gate during pilot</h3>
                 <p>Full access to all three products from account creation.</p>
               </div>
             </div>

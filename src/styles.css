@@ -634,7 +634,7 @@ html:has(.marketing-page) {
 .dxs .step-num-circle { width: 48px; height: 48px; border-radius: 50%; background: var(--x-ink); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: white; flex-shrink: 0; position: relative; z-index: 1; }
 .dxs .step-num-circle.amber { background: var(--x-amber); color: var(--x-ink); }
 .dxs .step-content { padding-bottom: 48px; }
-.dxs .step-content h3 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 10px; padding-top: 10px; }
+.dxs .step-content h3, .dxs .step-content h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 10px; padding-top: 10px; }
 .dxs .step-content p { font-size: 14px; color: var(--x-slate); line-height: 1.65; margin-bottom: 14px; }
 .dxs .step-trust-note { padding: 12px 14px; background: #EDF0F3; border-radius: 7px; font-size: 12px; color: var(--x-slate); line-height: 1.5; }
 .dxs .step-trust-note strong { color: var(--x-ink); }
@@ -747,7 +747,7 @@ html:has(.marketing-page) {
 .dxs .pp-teal { background: rgba(29,158,117,.15); }
 .dxs .pp-amber { background: rgba(201,146,42,.15); }
 .dxs .pp-purple { background: rgba(83,74,183,.15); }
-.dxs .pilot-point-body h4 { font-size: 14px; font-weight: 600; color: white; margin-bottom: 3px; }
+.dxs .pilot-point-body h4, .dxs .pilot-point-body h3 { font-size: 14px; font-weight: 600; color: white; margin-bottom: 3px; }
 .dxs .pilot-point-body p { font-size: 13px; color: rgba(255,255,255,.4); line-height: 1.55; }
 .dxs .pilot-testimonial { margin-top: auto; padding: 20px; background: rgba(255,255,255,.04); border-radius: 10px; border: 1px solid rgba(255,255,255,.07); }
 .dxs .pilot-quote { font-size: 14px; color: rgba(255,255,255,.65); line-height: 1.6; margin-bottom: 12px; font-style: italic; }

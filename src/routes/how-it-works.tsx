@@ -53,7 +53,7 @@ function HowItWorksPage() {
         <div className="step-detail">
           <div className="step-num-circle">1</div>
           <div className="step-content">
-            <h3>Do realistic work</h3>
+            <h2>Do realistic work</h2>
             <p>
               Work through product situations with real constraints, stakeholders, and consequences.
               In Experience, this means joining a simulated company — MediFlow, GreenGrid, or
@@ -75,7 +75,7 @@ function HowItWorksPage() {
         <div className="step-detail">
           <div className="step-num-circle">2</div>
           <div className="step-content">
-            <h3>Capture the artefact</h3>
+            <h2>Capture the artefact</h2>
             <p>
               When you complete and submit work, an immutable artefact version is created. An
               artefact_version_id is assigned at the moment of submission — this version is locked.
@@ -92,7 +92,7 @@ function HowItWorksPage() {
         <div className="step-detail">
           <div className="step-num-circle amber">3</div>
           <div className="step-content">
-            <h3>Judge capability</h3>
+            <h2>Judge capability</h2>
             <p>
               Evidence is assessed against pm-core@2026.1, the versioned capability framework for
               the pilot. A two-pass AI scoring system runs: a primary grader assesses each
@@ -120,7 +120,7 @@ function HowItWorksPage() {
         <div className="step-detail">
           <div className="step-num-circle">4</div>
           <div className="step-content">
-            <h3>Package readiness</h3>
+            <h2>Package readiness</h2>
             <p>
               Strong evidence becomes an explainable portfolio and a career readiness narrative.
               Launchpad surfaces which claims are evidence-backed, which are still heuristic
@@ -137,7 +137,7 @@ function HowItWorksPage() {
         <div className="step-detail">
           <div className="step-num-circle">5</div>
           <div className="step-content">
-            <h3>Verify externally</h3>
+            <h2>Verify externally</h2>
             <p>
               Only an independent person outside DeliverX can activate the Verified signal. You
               request attestation via Launchpad. Your attestor receives a secure token, reviews the
