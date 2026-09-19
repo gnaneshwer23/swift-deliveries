@@ -99,7 +99,7 @@ export const Route = createFileRoute("/")({
             {
               "@type": "HowTo",
               name: "How DeliverX builds verifiable capability",
-              description: "The five-step DeliverX method, from realistic work to external verification.",
+              description: "The six-step DeliverX method, from realistic work to external verification.",
               step: STEPS.map((s, i) => ({
                 "@type": "HowToStep",
                 position: i + 1,
@@ -138,6 +138,7 @@ const STEPS = [
   { n: "03", name: "Judge capability", desc: "Evidence assessed against a pinned, versioned framework." },
   { n: "04", name: "Package readiness", desc: "Strong evidence becomes an explainable portfolio and readiness story." },
   { n: "05", name: "Verify externally", desc: "Only external attestation activates Verified. Nothing inside the platform lights it." },
+  { n: "06", name: "Carry it into live work", desc: "The same evidence discipline continues into your day-to-day product role." },
 ];
 
 const PRODUCTS = [
@@ -285,7 +286,7 @@ function HomePage() {
         </div>
       </div>
 
-      {/* FIVE STEPS */}
+      {/* SIX STEPS */}
       <div className="steps-section">
         <div className="steps-label">The method — no shortcuts</div>
         <div className="steps-grid">
