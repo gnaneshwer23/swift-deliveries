@@ -81,10 +81,12 @@ function LaunchpadPage() {
           Turn demonstrated work into a portfolio, interview narrative, and trust signal that can be
           explained.
         </p>
-        <Link to="/pilot" className="btn btn-primary">
-          Open Launchpad →
+        <Link to="/signup" className="btn btn-amber">
+          Get started
         </Link>
       </div>
+
+      <JourneyLadder active="build" />
 
       <div className="rule-box">
         <span className="rule-box-mark">◆</span>
