@@ -39,7 +39,7 @@ No change to what anything does: evidence rules, coach confirmation, attestation
 
 ## Technical notes
 
-- Replace the current `.dxs` / `.dxa` / `.pw-*` token sets in `src/styles.css` with one token layer (near-black + amber) mapped through `@theme inline`, so the public site and the workspace stop drifting apart. Existing class names are kept as aliases where a page depends on them, to avoid touching page logic.
+- Replace the current `.dxs` / `.dxa` / `.pw-*` token sets in `src/styles.css` with one light token layer (white base + amber accent) mapped through `@theme inline`, so the public site and the workspace stop drifting apart. Existing class names are kept as aliases where a page depends on them, to avoid touching page logic. Contrast is checked against WCAG AA for body and label sizes.
 - New shared marketing components: `journey-ladder` (the five-stage strip, with active stage), `bento` grid primitives, `product-view` frame for real UI tiles. `faq-section` and `guide-article` are reused as-is.
 - `src/routes/index.tsx` restructured: hero → ladder → bento "what you get" → product views → six-step method → plans teaser → honesty card → FAQ. Its `head()` metadata, canonical URL, Open Graph tags and JSON-LD are preserved, with the HowTo step list kept in sync with the six-step section.
 - Workspace restyle lands in `workspace-shell.tsx` plus the shared token layer; individual `_authenticated/*` routes are only touched where a hardcoded colour utility blocks theming.
