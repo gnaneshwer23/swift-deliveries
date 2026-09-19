@@ -1043,3 +1043,14 @@ html:has(.marketing-page) {
   transition: border-color .2s ease, background-color .2s ease, box-shadow .2s ease;
 }
 .dxa button, .dxa a { transition: background-color .16s ease, color .16s ease, border-color .16s ease; }
+
+/* Product-page hero entrances */
+.dxs .hero-xp > *, .dxs .hero-lp > *, .dxs .hero-ws > *, .dxs .hero-hiw > * {
+  animation: x-rise .62s cubic-bezier(.22,.61,.36,1) both;
+}
+.dxs .hero-xp > :nth-child(2), .dxs .hero-lp > :nth-child(2),
+.dxs .hero-ws > :nth-child(2), .dxs .hero-hiw > :nth-child(2) { animation-delay: .06s; }
+.dxs .hero-xp > :nth-child(3), .dxs .hero-lp > :nth-child(3),
+.dxs .hero-ws > :nth-child(3), .dxs .hero-hiw > :nth-child(3) { animation-delay: .12s; }
+.dxs .hero-xp > :nth-child(4), .dxs .hero-lp > :nth-child(4),
+.dxs .hero-ws > :nth-child(4), .dxs .hero-hiw > :nth-child(4) { animation-delay: .18s; }
