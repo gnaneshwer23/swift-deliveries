@@ -1,3 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemap s.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://deliverx.dev/</loc><priority>1.0</priority></url>
+  <url><loc>https://deliverx.dev/how-it-works</loc><priority>0.9</priority></url>
+  <url><loc>https://deliverx.dev/experience</loc><priority>0.9</priority></url>
+  <url><loc>https://deliverx.dev/launchpad</loc><priority>0.9</priority></url>
+  <url><loc>https://deliverx.dev/professional-workspace</loc><priority>0.9</priority></url>
+  <url><loc>https://deliverx.dev/pricing</loc><priority>0.9</priority></url>
+  <url><loc>https://deliverx.dev/about</loc><priority>0.7</priority></url>
+  <url><loc>https://deliverx.dev/resources</loc><priority>0.7</priority></url>
+  <url><loc>https://deliverx.dev/resources/pm-portfolio</loc><priority>0.7</priority></url>
+  <url><loc>https://deliverx.dev/resources/star-interview-stories</loc><priority>0.7</priority></url>
+  <url><loc>https://deliverx.dev/signup</loc><priority>0.6</priority></url>
+  <url><loc>https://deliverx.dev/login</loc><priority>0.4</priority></url>
+  <url><loc>https://deliverx.dev/terms</loc><priority>0.3</priority></url>
+  <url><loc>https://deliverx.dev/privacy</loc><priority>0.3</priority></url>
+  <url><loc>https://deliverx.dev/cookies</loc><priority>0.3</priority></url>
 </urlset>
