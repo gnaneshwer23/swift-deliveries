@@ -51,7 +51,7 @@ const COMPANIES = [
     cls: "slate",
     name: "More companies in build",
     type: "FinTech · HealthTech · SaaS · B2B",
-    desc: "Covering a broad range of domains, stakeholder types, and product maturity stages. Added scenario by scenario as the pilot expands.",
+    desc: "Covering a broad range of domains, stakeholder types, and product maturity stages. New scenarios are added over time.",
     tags: ["Pilot expanding"],
   },
 ];
@@ -189,7 +189,7 @@ function ExperiencePage() {
           Your first evidence entry is one task away.
         </p>
         <Link to="/signup" className="btn btn-amber" style={{ fontSize: 15, padding: "12px 28px" }}>
-          Join the pilot →
+          Get started
         </Link>
       </div>
 

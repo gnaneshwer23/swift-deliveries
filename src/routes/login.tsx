@@ -76,7 +76,7 @@ function LoginPage() {
         </Link>
         <div className="nav-right">
           <Link to="/signup" className="btn-nav btn-nav-primary">
-            Start pilot
+            Get started
           </Link>
         </div>
       </header>
