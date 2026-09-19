@@ -2,7 +2,7 @@
 
 Borrowing the real lesson from leadjourney.io — not its colours or illustrations, but its ability to make a complicated system feel obvious. Start with the outcome, introduce the machinery gradually, keep the spacing calm and the tone direct.
 
-New look: near-black surfaces with a warm amber accent, bento-grid sections, applied across every public page and the signed-in area.
+New look: the white background stays. Everything else gets sharper — light, calm surfaces with one warm accent, bento-grid sections, applied across every public page and the signed-in area.
 
 ## 1. The story spine (the most important change)
 
@@ -20,7 +20,7 @@ Learn  →  Work  →  Build  →  Prove  →  Advance
 
 ## 2. The new visual language
 
-- **Palette:** near-black base `#0A0A0B`, raised surface `#17171A`, border/elevated `#2A2A2E`, warm amber accent `#F5B544`. Amber is reserved for the one action that matters per section; confirmed/verified states keep a distinct colour so the two never get confused.
+- **Palette (light, unchanged background):** white page base `#FFFFFF`, a barely-there tinted surface `#F7F7F5` for raised tiles, hairline borders `#E4E4E1`, near-black ink `#15151A` for text, warm amber accent `#C98A12` at a contrast that reads on white. The accent is reserved for the one action that matters per section; confirmed/verified states keep a distinct colour so the two never get confused. Occasional dark tiles are used sparingly for emphasis inside a light page, never as the page background.
 - **Type:** large, tight display headings; generous line height in body copy; monospace only for small labels and stage numbers.
 - **Space:** considerably more room between sections than today — the calm that makes the information feel manageable.
 - **Bento grid:** each section is a set of tiles of differing size rather than a wall of equal cards. Big tile carries the claim, smaller tiles carry the supporting facts.
@@ -39,7 +39,7 @@ No change to what anything does: evidence rules, coach confirmation, attestation
 
 ## Technical notes
 
-- Replace the current `.dxs` / `.dxa` / `.pw-*` token sets in `src/styles.css` with one token layer (near-black + amber) mapped through `@theme inline`, so the public site and the workspace stop drifting apart. Existing class names are kept as aliases where a page depends on them, to avoid touching page logic.
+- Replace the current `.dxs` / `.dxa` / `.pw-*` token sets in `src/styles.css` with one light token layer (white base + amber accent) mapped through `@theme inline`, so the public site and the workspace stop drifting apart. Existing class names are kept as aliases where a page depends on them, to avoid touching page logic. Contrast is checked against WCAG AA for body and label sizes.
 - New shared marketing components: `journey-ladder` (the five-stage strip, with active stage), `bento` grid primitives, `product-view` frame for real UI tiles. `faq-section` and `guide-article` are reused as-is.
 - `src/routes/index.tsx` restructured: hero → ladder → bento "what you get" → product views → six-step method → plans teaser → honesty card → FAQ. Its `head()` metadata, canonical URL, Open Graph tags and JSON-LD are preserved, with the HowTo step list kept in sync with the six-step section.
 - Workspace restyle lands in `workspace-shell.tsx` plus the shared token layer; individual `_authenticated/*` routes are only touched where a hardcoded colour utility blocks theming.
