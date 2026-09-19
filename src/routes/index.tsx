@@ -195,6 +195,25 @@ const USE_CASES = [
   { tag: "Trust", text: "Hiring managers ask for a work sample. You don't have one you can defend." },
 ];
 
+const HOME_FAQ = [
+  {
+    q: "Is this a course?",
+    a: "No. You do product work inside realistic organisations, and what you produce is kept as a record you can defend. Learning happens through the work, not through lectures.",
+  },
+  {
+    q: "What does Verified actually mean here?",
+    a: "Only that a person outside DeliverX looked at a specific piece of your work and attested to it. A score, a coach confirmation or anything the platform calculates never lights Verified on its own.",
+  },
+  {
+    q: "Is the work in Experience real client work?",
+    a: "No. The organisations are simulated, with real constraints and consequences. We never present simulated work as paid client delivery.",
+  },
+  {
+    q: "Can AI write my portfolio for me?",
+    a: "No. AI can draft a starting point, always labelled as a draft, and nothing is saved until you read it, edit it and approve it. The record has to be yours to be worth anything.",
+  },
+];
+
 function HomePage() {
   return (
     <MarketingLayout>
@@ -202,46 +221,86 @@ function HomePage() {
       <div className="hero">
         <div className="hero-eyebrow">
           <span className="hero-dot" />
-          <span className="caption" style={{ color: "var(--x-teal-text)", fontWeight: 500 }}>
-            Professional Intelligence · Now open
-          </span>
+          <span className="x-label">Learn · Work · Build · Prove · Advance</span>
         </div>
         <h1 className="hero-h1">
-          Do the work.
+          Don't just learn the job.
           <br />
-          Keep the proof.
-          <br />
-          Earn the signal.
+          Do the job — and keep the proof.
         </h1>
         <p className="hero-sub">
-          DeliverX turns realistic product work into traceable evidence, versioned capability
-          judgements, and career-ready proof. No shortcuts. No silent promotions.
+          You do real product work, we keep a record of it, and the parts that hold up get confirmed
+          by someone outside DeliverX. That record is yours to show.
         </p>
         <div className="hero-actions">
-          <Link to="/signup" className="btn btn-primary">
-            Start with Experience
+          <Link to="/signup" className="btn btn-amber">
+            Get started
           </Link>
           <Link to="/pricing" className="btn btn-secondary">
             See plans
           </Link>
-          <Link to="/how-it-works" className="btn btn-secondary">
-            How it works
-
-          </Link>
         </div>
         <div className="hero-trust">
           <span className="hero-trust-mark">◆</span>
-          Verified means verified — only external attestation lights the signal
+          Verified means verified — only an outside attestation lights the signal
         </div>
       </div>
 
-      {/* LIVE EVIDENCE RECORD (illustrative sample) */}
-      <div className="record-strip">
-        <div className="strip-wrap">
-          <div className="strip-head">
-            <span className="strip-head-label">Evidence record · Maya R · Private by default</span>
-            <span className="strip-head-live">3 entries this session</span>
-          </div>
+      {/* THE LADDER */}
+      <JourneyLadder />
+
+      {/* WHAT YOU GET */}
+      <div className="steps-section">
+        <div className="x-label">What you get</div>
+        <h2 className="heading-1" style={{ margin: "14px 0 0", maxWidth: 640 }}>
+          Five stages, one record that follows you through all of them.
+        </h2>
+        <Bento>
+          <BentoTile
+            span={4}
+            onInk
+            label="Work · Experience"
+            title="Realistic product work, with consequences"
+            body="You join a simulated organisation, meet its constraints and its awkward stakeholders, and make calls you have to defend. Every decision you make becomes an entry in your own record."
+            foot="Experience →"
+          />
+          <BentoTile
+            span={2}
+            label="Build · Launchpad"
+            title="A portfolio you can defend"
+            body="Your strongest evidence becomes an explainable portfolio and an honest readiness story — no invented achievements."
+          />
+          <BentoTile
+            span={2}
+            label="Prove · Evidence record"
+            title="Nothing edited after the fact"
+            body="Each piece of work is frozen with a checksum the moment it is submitted, so what a coach confirms is exactly what you wrote."
+          />
+          <BentoTile
+            span={2}
+            label="Prove · Attestation"
+            title="Confirmed by an outsider"
+            body="A coach can confirm your work. Verified takes more: a person outside DeliverX has to attest to it directly."
+          />
+          <BentoTile
+            span={2}
+            label="Advance"
+            title="Interviews and applications"
+            body="Practise answers against your own evidence, and track applications in one place instead of a spreadsheet."
+          />
+        </Bento>
+      </div>
+
+      {/* PRODUCT VIEWS */}
+      <div className="products-section">
+        <div className="x-label">Inside the product</div>
+        <h2 className="heading-1" style={{ margin: "14px 0 28px", maxWidth: 640 }}>
+          This is what your record looks like.
+        </h2>
+        <ProductView
+          frameLabel="Evidence record · sample entries"
+          note="A sample record, shown to explain the format. It is not anyone's real results."
+        >
           <div className="record-row">
             <span className="record-index">01</span>
             <div className="record-icon-wrap">{docIcon}</div>
@@ -283,21 +342,7 @@ function HomePage() {
             </div>
             <span className="pill pill-amber">Verified</span>
           </div>
-        </div>
-      </div>
-
-      {/* SIX STEPS */}
-      <div className="steps-section">
-        <div className="steps-label">The method — no shortcuts</div>
-        <div className="steps-grid">
-          {STEPS.map((s) => (
-            <div className="step-cell" key={s.n}>
-              <div className="step-num">{s.n}</div>
-              <div className="step-name">{s.name}</div>
-              <div className="step-desc">{s.desc}</div>
-            </div>
-          ))}
-        </div>
+        </ProductView>
       </div>
 
       {/* THREE PRODUCTS */}
@@ -340,6 +385,23 @@ function HomePage() {
         </div>
       </div>
 
+      {/* SIX STEPS — the detail behind the ladder */}
+      <div className="steps-section">
+        <div className="x-label">How it actually works</div>
+        <h2 className="heading-1" style={{ margin: "14px 0 0", maxWidth: 640 }}>
+          Six steps, no shortcuts.
+        </h2>
+        <div className="steps-grid" style={{ marginTop: 32 }}>
+          {STEPS.map((s) => (
+            <div className="step-cell" key={s.n}>
+              <div className="step-num">{s.n}</div>
+              <div className="step-name">{s.name}</div>
+              <div className="step-desc">{s.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* USE CASES */}
       <div className="uc-section">
         <h2 className="heading-2" style={{ marginBottom: 8 }}>
@@ -358,6 +420,54 @@ function HomePage() {
         </div>
       </div>
 
+      {/* PLANS TEASER */}
+      <div className="products-section">
+        <Bento>
+          <BentoTile
+            span={2}
+            label="Experience"
+            title="£19 / month"
+            body="Realistic product work and the evidence record that comes out of it."
+          />
+          <BentoTile
+            span={2}
+            label="Launchpad"
+            title="£19 / month"
+            body="Portfolio, readiness story, interview practice and application tracking."
+          />
+          <BentoTile
+            span={2}
+            onInk
+            label="Complete Journey"
+            title="£29 / month"
+            body="Everything above plus the Professional Workspace for live product work."
+          />
+        </Bento>
+        <div style={{ marginTop: 20 }}>
+          <Link to="/pricing" className="btn btn-amber">
+            See plans
+          </Link>
+        </div>
+      </div>
+
+      {/* HONESTY */}
+      <div className="uc-section" style={{ paddingTop: 0 }}>
+        <div className="card">
+          <div className="x-label">What we do not promise</div>
+          <ul
+            className="body"
+            style={{ marginTop: 14, display: "grid", gap: 8, listStyle: "disc", paddingLeft: 20 }}
+          >
+            <li>No job guarantee, and no money-back guarantee.</li>
+            <li>No employer marketplace — we do not place you with companies.</li>
+            <li>No score without a stated method you can read.</li>
+            <li>No Verified signal from anything that happens inside the platform.</li>
+          </ul>
+        </div>
+      </div>
+
+      <FaqSection items={HOME_FAQ} />
+
       {/* CTA */}
       <div className="cta-section">
         <div className="cta-box">
@@ -366,17 +476,15 @@ function HomePage() {
             Start with realistic product work and build an evidence record you control.
           </p>
           <div className="cta-btns">
-            <Link to="/signup" className="btn btn-primary">
-              Create account
+            <Link to="/signup" className="btn btn-amber">
+              Get started
             </Link>
             <Link to="/pricing" className="btn btn-secondary">
               See plans
             </Link>
-
             <Link to="/how-it-works" className="btn btn-secondary">
               How it works
             </Link>
-
           </div>
         </div>
       </div>
