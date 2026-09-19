@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
+import { JourneyLadder } from "@/components/marketing/journey-ladder";
 import { FaqSection, JourneyCrossSell } from "@/components/marketing/faq-section";
 
 export const Route = createFileRoute("/professional-workspace")({

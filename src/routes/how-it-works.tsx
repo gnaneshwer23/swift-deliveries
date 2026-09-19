@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
+import { JourneyLadder } from "@/components/marketing/journey-ladder";
 
 export const Route = createFileRoute("/how-it-works")({
   head: () => ({
