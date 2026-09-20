@@ -8,9 +8,9 @@ Approved plan: adopt mockup design system + build remaining product (phases 1–
 - [x] Phase 4: Launchpad readiness pack + tokenised public portfolio (`/portfolio/$token`, expiring + revocable)
 - [x] Phase 5: Coach dashboard rebuild (queue depth, submission detail, decision history)
 - [x] Phase 6: Pilot join follow-through + Professional Workspace depth (eight operational areas, AI drafts, immutable submissions, consent-led contribution trail)
-- [ ] Emails (blocked: needs a sending domain)
+- [ ] Branded emails (blocked: deliverx.dev has not been configured as a sending domain)
 - [x] Built-in payments test environment + Experience, Launchpad, and Complete Journey catalog
-- [ ] Enable the checkout feature flag only after live payment readiness passes
+- [x] Live payment readiness passed and checkout is enabled
 - [x] Explainable AI judgement run with evidence citations and immutable score records
 - [x] Verify: typecheck, build, linter, security scan, candidate + coach signed-in walkthroughs, semantic page headings
 
@@ -29,8 +29,8 @@ Approved plan: adopt mockup design system + build remaining product (phases 1–
 - [x] Workspace Inbox (`/workspace/inbox`) and Timeline (`/workspace/timeline`) — read-only, coach vs external verification shown separately
 - [x] Performance review (`/workspace/reviews`) — self-assessment, human decision, never lights Verified
 - [x] Product pages: application tracking, Inbox and Timeline described; per-page questions and Complete Journey cross-sell
-- [ ] Decide whether deliverx.dev points at this app instead of the separate Vercel site
-- [ ] Decide the public story: paid plans (£19/£19/£29) or pilot access only
+- [x] deliverx.dev points at this app and www redirects to it
+- [x] Public story uses the production paid plans (£19/£19/£29)
 
 ## Production readiness pass (18 Sep 2026)
 - [x] Revoked anonymous access to every public table (no policy grants anon; public reads run through token-gated server functions)
@@ -42,7 +42,7 @@ Approved plan: adopt mockup design system + build remaining product (phases 1–
 - [x] /signin redirects to /login for inbound links from older material
 - [x] Live payments approved by Stripe; checkout enabled in preview and production builds
 - [ ] Sending domain for DeliverX email (only trayakshsinghjadav.com is verified; deliverx.dev not added)
-- [ ] Decision: point deliverx.dev at this app instead of the separate Vercel site
+- [x] deliverx.dev and www.deliverx.dev are connected to this published app
 - [ ] Known: high-severity js-yaml advisory inside @tanstack/react-start (no fixed release yet)
 
 ## Production smoke test (18 Sep 2026)
@@ -54,10 +54,12 @@ Approved plan: adopt mockup design system + build remaining product (phases 1–
 - [x] Live payment form loads on the plans page
 - [x] Fixed: live settings file had payment key and checkout switch on one line (checkout would have stayed off in production)
 - [ ] Sending domain for deliverx.dev (auth emails currently use the default unbranded sender, rate-limited)
-- [ ] deliverx.dev still points at the separate site, not this app
+- [x] deliverx.dev is the primary connected domain for this app
 
 ## Brand and launch audit (20 Sep 2026)
 - [x] Create and apply a distinctive DeliverX logo and matching favicon
-- [ ] Re-audit public, authenticated, coach, trust, payment, and recovery journeys
+- [x] Re-audit public, authenticated, coach, trust, payment, and recovery journeys
 - [x] Re-run SEO, security, dependency, accessibility, and mobile checks
-- [ ] Fix launch-blocking findings and verify deliverx.dev after publication
+- [x] Fix code-level launch findings; updated sitemap and metadata are ready for the next publish
+- [ ] Configure and verify deliverx.dev as the branded email sending domain
+- [ ] Publish this audited build, then verify the updated live sitemap and metadata
