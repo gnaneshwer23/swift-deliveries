@@ -1,0 +1,25 @@
+# DeliverX
+
+> DeliverX turns realistic product management work into traceable evidence, explainable capability judgements, and career-ready proof.
+
+DeliverX keeps self-report, coach confirmation, AI-assisted scoring, and external verification distinct. Only an outside attestation activates Verified.
+
+## Products
+
+- [How DeliverX works](/how-it-works): The evidence, judgement, readiness, and verification method.
+- [Experience](/experience): Realistic simulated product work that produces inspectable artefacts.
+- [Launchpad](/launchpad): Evidence-backed portfolios, interview preparation, and application tracking.
+- [Professional Workspace](/professional-workspace): Human-led product delivery with consent-controlled AI assistance.
+- [Plans](/pricing): Current monthly products and prices.
+
+## Guides
+
+- [Resources](/resources): DeliverX guides and product orientation.
+- [Build an evaluable PM portfolio](/resources/pm-portfolio): How to connect claims to work an employer can inspect.
+- [Ground STAR stories in evidence](/resources/star-interview-stories): How to prepare interview stories from real artefacts.
+
+## Company
+
+- [About DeliverX](/about): Mission, method, and intended users.
+- [Privacy](/privacy): How personal information and evidence are handled.
+- [Terms](/terms): Account, subscription, content, and acceptable-use terms.

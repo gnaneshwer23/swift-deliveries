@@ -486,10 +486,8 @@ html:has(.marketing-page) {
 .brand-logo-word { color: var(--x-ink); font-size: 16px; font-weight: 800; line-height: 1; letter-spacing: 0; }
 .brand-logo-word span { color: var(--x-amber); }
 .brand-logo-word-inverse { color: #fff; }
-.brand-logo-inverse .brand-logo-mark, .sidebar-logo .brand-logo-mark, .mobile-topbar .brand-logo-mark { color: #fff; }
+.brand-logo-inverse .brand-logo-mark { color: #fff; --brand-mark-stroke: var(--x-ink); }
 .sidebar-logo.brand-logo { padding: 0 20px 24px; }
-.mobile-topbar .brand-logo { --brand-mark-stroke: var(--x-ink); }
-.mobile-topbar .brand-logo-mark { color: #fff; }
 .dxs .footer .brand-logo-mark { width: 25px; height: 25px; }
 .dxs .footer .brand-logo-word { font-size: 14px; }
 
