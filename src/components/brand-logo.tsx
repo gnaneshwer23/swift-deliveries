@@ -20,7 +20,7 @@ export function BrandLogo({
   className?: string;
 }) {
   return (
-    <Link to={to} className={className} aria-label="DeliverX home">
+    <Link to={to} className={`${className}${inverse ? " brand-logo-inverse" : ""}`} aria-label="DeliverX home">
       <BrandMark className="brand-logo-mark" />
       <span className={inverse ? "brand-logo-word brand-logo-word-inverse" : "brand-logo-word"}>
         Deliver<span>X</span>
