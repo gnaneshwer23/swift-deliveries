@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { AccountMenu } from "./account-menu";
 import { useSession } from "@/hooks/use-session";
+import { BrandLogo } from "@/components/brand-logo";
 
 const NAV_LINKS = [
   { to: "/how-it-works", label: "How it works" },
@@ -17,9 +18,7 @@ export function MarketingNav() {
 
   return (
     <header className="nav">
-      <Link to="/" className="nav-logo">
-        DeliverX
-      </Link>
+      <BrandLogo />
 
       <nav className="nav-links" aria-label="Primary navigation">
         {NAV_LINKS.map((item) => (

@@ -19,8 +19,10 @@ export const Route = createFileRoute("/professional-workspace")({
           "Assistance without loss of control. Nothing becomes a commitment by accident.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://deliverx.dev/professional-workspace" },
       { name: "twitter:card", content: "summary" },
     ],
+    links: [{ rel: "canonical", href: "https://deliverx.dev/professional-workspace" }],
   }),
   component: ProfessionalWorkspacePage,
 });

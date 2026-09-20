@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
+import { BrandLogo } from "@/components/brand-logo";
 
 export const Route = createFileRoute("/forgot-password")({
   head: () => ({
@@ -47,9 +48,7 @@ function ForgotPasswordPage() {
   return (
     <div className="dxs flex min-h-screen flex-col">
       <header className="nav">
-        <Link to="/" className="nav-logo">
-          DeliverX
-        </Link>
+        <BrandLogo />
         <div className="nav-right">
           <Link to="/login" className="btn-nav">
             Sign in

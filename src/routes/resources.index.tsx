@@ -17,8 +17,10 @@ export const Route = createFileRoute("/resources/")({
           "Guides on building an evaluable PM portfolio and grounding STAR stories in real artefacts, plus how DeliverX separates learning, evidence and capability.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://deliverx.dev/resources" },
       { name: "twitter:card", content: "summary" },
     ],
+    links: [{ rel: "canonical", href: "https://deliverx.dev/resources" }],
   }),
   component: ResourcesPage,
 });

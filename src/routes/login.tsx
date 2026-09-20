@@ -3,6 +3,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { Loader2 } from "lucide-react";
+import { BrandLogo } from "@/components/brand-logo";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -11,6 +12,9 @@ export const Route = createFileRoute("/login")({
       { name: "description", content: "Sign in to DeliverX." },
       { property: "og:title", content: "Sign in — DeliverX" },
       { property: "og:description", content: "Sign in to DeliverX." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: LoginPage,
@@ -71,9 +75,7 @@ function LoginPage() {
   return (
     <div className="dxs flex min-h-screen flex-col">
       <header className="nav">
-        <Link to="/" className="nav-logo">
-          DeliverX
-        </Link>
+        <BrandLogo />
         <div className="nav-right">
           <Link to="/signup" className="btn-nav btn-nav-primary">
             Get started

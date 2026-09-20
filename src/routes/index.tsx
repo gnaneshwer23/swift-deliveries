@@ -36,6 +36,7 @@ export const Route = createFileRoute("/")({
               "@id": "https://deliverx.dev/#organization",
               name: "DeliverX",
               url: "https://deliverx.dev/",
+              logo: "https://deliverx.dev/favicon.svg",
               description: DESCRIPTION,
             },
             {

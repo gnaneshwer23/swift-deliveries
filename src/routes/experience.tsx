@@ -19,8 +19,10 @@ export const Route = createFileRoute("/experience")({
           "A role you act in, not content you consume. Evidence only exists once you act.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://deliverx.dev/experience" },
       { name: "twitter:card", content: "summary" },
     ],
+    links: [{ rel: "canonical", href: "https://deliverx.dev/experience" }],
   }),
   component: ExperiencePage,
 });

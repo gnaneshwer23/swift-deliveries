@@ -388,7 +388,7 @@ function OnboardingPage() {
             {step === 4 ? (
               <>
                 <p className="text-sm leading-relaxed text-[var(--mkt-text2)]">
-                  Rate yourself against the pilot framework. This is a self-report and stays labelled
+                  Rate yourself against the current framework. This is a self-report and stays labelled
                   as one — it never contributes capability.
                 </p>
                 {data.capabilities.length === 0 ? (

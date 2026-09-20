@@ -14,6 +14,10 @@ export const Route = createFileRoute("/invite/$token")({
     meta: [
       { title: "Join an organisation — DeliverX" },
       { name: "description", content: "Accept your invitation to a DeliverX organisation." },
+      { property: "og:title", content: "Join an organisation — DeliverX" },
+      { property: "og:description", content: "Accept your invitation to a DeliverX organisation." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),
