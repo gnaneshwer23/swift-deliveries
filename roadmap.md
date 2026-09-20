@@ -55,3 +55,9 @@ Approved plan: adopt mockup design system + build remaining product (phases 1–
 - [x] Fixed: live settings file had payment key and checkout switch on one line (checkout would have stayed off in production)
 - [ ] Sending domain for deliverx.dev (auth emails currently use the default unbranded sender, rate-limited)
 - [ ] deliverx.dev still points at the separate site, not this app
+
+## Brand and launch audit (20 Sep 2026)
+- [ ] Create and apply a distinctive DeliverX logo and matching favicon
+- [ ] Re-audit public, authenticated, coach, trust, payment, and recovery journeys
+- [ ] Re-run SEO, security, dependency, accessibility, and mobile checks
+- [ ] Fix launch-blocking findings and verify deliverx.dev after publication
