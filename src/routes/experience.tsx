@@ -54,7 +54,7 @@ const COMPANIES = [
     name: "More companies in build",
     type: "FinTech · HealthTech · SaaS · B2B",
     desc: "Covering a broad range of domains, stakeholder types, and product maturity stages. New scenarios are added over time.",
-    tags: ["Pilot expanding"],
+    tags: ["More scenarios planned"],
   },
 ];
 

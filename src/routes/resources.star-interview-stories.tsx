@@ -48,7 +48,7 @@ function StarStoriesGuide() {
     <GuideArticle
       eyebrow="Guide · Interviews"
       title="STAR interview stories grounded in real artefacts"
-      meta="Updated September 2026 · Pilot orientation"
+      meta="Updated September 2026 · Practical guide"
       standfirst="STAR works when Situation, Task, Action and Result point to something you actually produced. Vague stories collapse under follow-up. This guide shows how to ground each letter in artefacts and decisions, then rehearse honestly."
     >
       <h2>Why polished STAR answers still fail</h2>

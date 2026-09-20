@@ -49,7 +49,7 @@ function PmPortfolioGuide() {
     <GuideArticle
       eyebrow="Guide · Portfolio"
       title="How to build a PM portfolio employers can evaluate"
-      meta="Updated September 2026 · Pilot orientation"
+      meta="Updated September 2026 · Practical guide"
       standfirst="Hiring managers do not need another gallery of course logos. They need a trail of work they can inspect: problems framed, decisions taken, artefacts produced, and outcomes stated without theatre."
     >
       <h2>Why most PM portfolios fail a serious review</h2>
