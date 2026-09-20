@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
+import { BrandLogo } from "@/components/brand-logo";
 
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
@@ -62,9 +63,7 @@ function ResetPasswordPage() {
   return (
     <div className="dxs flex min-h-screen flex-col">
       <header className="nav">
-        <Link to="/" className="nav-logo">
-          DeliverX
-        </Link>
+        <BrandLogo />
       </header>
       <main className="flex flex-1 items-center justify-center px-4 py-16">
         <div className="card w-full max-w-sm" style={{ padding: 32 }}>

@@ -1,9 +1,12 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Check, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/pilot")({
+  beforeLoad: () => {
+    throw redirect({ to: "/signup", replace: true });
+  },
   head: () => ({
     meta: [
       { title: "Join the pilot — DeliverX" },
@@ -20,6 +23,7 @@ export const Route = createFileRoute("/pilot")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: PilotPage,

@@ -8,7 +8,11 @@ export const Route = createFileRoute("/about")({
       { name: "description", content: "Learn why DeliverX exists and how Professional Intelligence helps product people build, prove and deliver." },
       { property: "og:title", content: "About — DeliverX" },
       { property: "og:description", content: "Learn why DeliverX exists and how Professional Intelligence helps product people build, prove and deliver." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://deliverx.dev/about" },
+      { name: "twitter:card", content: "summary" },
     ],
+    links: [{ rel: "canonical", href: "https://deliverx.dev/about" }],
   }),
   component: AboutPage,
 });

@@ -1,9 +1,10 @@
 import { Link } from "@tanstack/react-router";
+import { BrandLogo } from "@/components/brand-logo";
 
 export function MarketingFooter() {
   return (
     <footer className="footer">
-      <span className="footer-logo">DeliverX</span>
+      <BrandLogo />
       <div className="footer-links">
         <Link to="/how-it-works">How it works</Link>
         <Link to="/experience">Experience</Link>

@@ -481,6 +481,18 @@ html:has(.marketing-page) {
   min-height: 100vh;
 }
 
+.brand-logo { display: inline-flex; align-items: center; gap: 10px; color: var(--x-ink); text-decoration: none; flex-shrink: 0; }
+.brand-logo-mark { width: 30px; height: 30px; color: var(--x-ink); flex-shrink: 0; }
+.brand-logo-word { color: var(--x-ink); font-size: 16px; font-weight: 800; line-height: 1; letter-spacing: 0; }
+.brand-logo-word span { color: var(--x-amber); }
+.brand-logo-word-inverse { color: #fff; }
+.brand-logo-inverse .brand-logo-mark, .sidebar-logo .brand-logo-mark, .mobile-topbar .brand-logo-mark { color: #fff; }
+.sidebar-logo.brand-logo { padding: 0 20px 24px; }
+.mobile-topbar .brand-logo { --brand-mark-stroke: var(--x-ink); }
+.mobile-topbar .brand-logo-mark { color: #fff; }
+.dxs .footer .brand-logo-mark { width: 25px; height: 25px; }
+.dxs .footer .brand-logo-word { font-size: 14px; }
+
 /* Typography */
 .dxs .display { font-size: clamp(32px, 5vw, 52px); font-weight: 600; line-height: 1.1; letter-spacing: -0.03em; }
 .dxs .heading-1 { font-size: clamp(24px, 4vw, 36px); font-weight: 600; line-height: 1.2; letter-spacing: -0.02em; }

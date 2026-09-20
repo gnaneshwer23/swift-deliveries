@@ -73,7 +73,7 @@ const TIERS = [
     price: "£19",
     priceId: "experience_monthly" as CheckoutPriceId,
     features: [
-      "Simulated pilot organisations",
+      "Realistic simulated organisations",
       "Evidence ledger entries per task",
       "Immutable artefact versions",
       "Judged against a versioned framework",

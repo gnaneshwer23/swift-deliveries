@@ -18,8 +18,10 @@ export const Route = createFileRoute("/how-it-works")({
           "Do realistic work, capture the artefact, judge against a versioned framework, package readiness honestly, verify externally.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://deliverx.dev/how-it-works" },
       { name: "twitter:card", content: "summary" },
     ],
+    links: [{ rel: "canonical", href: "https://deliverx.dev/how-it-works" }],
   }),
   component: HowItWorksPage,
 });
@@ -95,7 +97,7 @@ function HowItWorksPage() {
             <h2>Judge capability</h2>
             <p>
               Evidence is assessed against pm-core@2026.1, the versioned capability framework for
-              the pilot. A two-pass AI scoring system runs: a primary grader assesses each
+              this framework. A two-pass AI scoring system runs: a primary grader assesses each
               dimension, and an adversarial verifier challenges the assessment. The result is a
               confidence band — explainable, never decorative.
             </p>

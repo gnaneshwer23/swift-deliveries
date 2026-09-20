@@ -8,7 +8,11 @@ export const Route = createFileRoute("/privacy")({
       { name: "description", content: "DeliverX privacy policy." },
       { property: "og:title", content: "Privacy — DeliverX" },
       { property: "og:description", content: "DeliverX privacy policy." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://deliverx.dev/privacy" },
+      { name: "twitter:card", content: "summary" },
     ],
+    links: [{ rel: "canonical", href: "https://deliverx.dev/privacy" }],
   }),
   component: PrivacyPage,
 });
@@ -22,8 +26,7 @@ function PrivacyPage() {
             <span className="mkt-label">Legal</span>
             <h1 className="mkt-section-title mt-3">Privacy Policy</h1>
             <p className="mkt-section-sub">
-              This is a placeholder privacy policy for the DeliverX pilot. A final policy will be
-              published before public launch.
+              This policy explains what DeliverX stores, why it is used, and the choices you have.
             </p>
             <div className="mt-10 space-y-6 text-sm leading-relaxed text-[var(--mkt-text2)]">
               <p>

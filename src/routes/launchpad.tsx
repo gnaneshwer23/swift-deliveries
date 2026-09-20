@@ -19,8 +19,10 @@ export const Route = createFileRoute("/launchpad")({
           "Package the truth, not the theatre: evidence-backed claims, labelled heuristics, and an external attestation pathway.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://deliverx.dev/launchpad" },
       { name: "twitter:card", content: "summary" },
     ],
+    links: [{ rel: "canonical", href: "https://deliverx.dev/launchpad" }],
   }),
   component: LaunchpadPage,
 });

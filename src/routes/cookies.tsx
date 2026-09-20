@@ -8,7 +8,11 @@ export const Route = createFileRoute("/cookies")({
       { name: "description", content: "DeliverX cookie policy." },
       { property: "og:title", content: "Cookies — DeliverX" },
       { property: "og:description", content: "DeliverX cookie policy." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://deliverx.dev/cookies" },
+      { name: "twitter:card", content: "summary" },
     ],
+    links: [{ rel: "canonical", href: "https://deliverx.dev/cookies" }],
   }),
   component: CookiesPage,
 });

@@ -23,6 +23,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useSignOut } from "@/hooks/use-sign-out";
 import { useSession } from "@/hooks/use-session";
 import { coachingWorkspaceQuery } from "@/lib/coaching-queries";
+import { BrandLogo } from "@/components/brand-logo";
 
 const NAV = [
   { to: "/workspace", label: "Dashboard", icon: LayoutDashboard },
@@ -84,9 +85,7 @@ export function WorkspaceShell({
   return (
     <div className="dxa min-h-screen">
       <div className="mobile-topbar">
-        <Link to="/workspace" className="text-[15px] font-bold text-white no-underline">
-          DeliverX
-        </Link>
+        <BrandLogo to="/workspace" inverse />
         <button
           type="button"
           aria-label="Toggle menu"
@@ -98,9 +97,7 @@ export function WorkspaceShell({
       </div>
       <div className="app-wrap">
         <aside className={`sidebar${open ? " open" : ""}`}>
-          <Link to="/workspace" className="sidebar-logo" onClick={() => setOpen(false)}>
-            DeliverX
-          </Link>
+          <div onClick={() => setOpen(false)}><BrandLogo to="/workspace" inverse className="brand-logo sidebar-logo" /></div>
           <div className="sidebar-section">
             <div className="sidebar-label">Workspace</div>
             {nav.map((item) => {
