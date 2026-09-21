@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { JsonValue } from "@/lib/monitoring.server";
 
 export type MonitoringEventRow = {
   id: string;
@@ -10,7 +11,7 @@ export type MonitoringEventRow = {
   source: string;
   route: string | null;
   message: string;
-  detail: Record<string, unknown> | null;
+  detail: JsonValue;
 };
 
 export type MonitoringOverview = {
@@ -38,7 +39,7 @@ export const getMonitoringOverview = createServerFn({ method: "GET" })
       .limit(200);
     if (error) throw new Error(error.message);
 
-    const events = (data ?? []) as MonitoringEventRow[];
+    const events = (data ?? []) as unknown as MonitoringEventRow[];
     const tally = new Map<string, number>();
     for (const event of events) tally.set(event.kind, (tally.get(event.kind) ?? 0) + 1);
 

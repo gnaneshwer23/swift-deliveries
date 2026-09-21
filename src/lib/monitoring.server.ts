@@ -33,11 +33,13 @@ function truncate(value: string, limit: number): string {
   return value.length > limit ? `${value.slice(0, limit)}…` : value;
 }
 
-function safeDetail(detail: Record<string, unknown> | undefined): Record<string, unknown> {
+export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+
+function safeDetail(detail: Record<string, unknown> | undefined): JsonValue {
   if (!detail) return {};
   try {
     const serialized = JSON.stringify(detail);
-    if (serialized.length <= DETAIL_LIMIT) return detail;
+    if (serialized.length <= DETAIL_LIMIT) return JSON.parse(serialized) as JsonValue;
     return { truncated: true, preview: serialized.slice(0, DETAIL_LIMIT) };
   } catch {
     return { unserializable: true };
