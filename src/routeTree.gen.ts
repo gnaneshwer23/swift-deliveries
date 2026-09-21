@@ -44,6 +44,7 @@ import { Route as AuthenticatedWorkspaceExperienceRouteImport } from './routes/_
 import { Route as AuthenticatedWorkspaceInboxRouteImport } from './routes/_authenticated/workspace.inbox'
 import { Route as AuthenticatedWorkspaceInterviewRouteImport } from './routes/_authenticated/workspace.interview'
 import { Route as AuthenticatedWorkspaceLaunchpadRouteImport } from './routes/_authenticated/workspace.launchpad'
+import { Route as AuthenticatedWorkspaceMonitoringRouteImport } from './routes/_authenticated/workspace.monitoring'
 import { Route as AuthenticatedWorkspaceOrganisationRouteImport } from './routes/_authenticated/workspace.organisation'
 import { Route as AuthenticatedWorkspaceProfileRouteImport } from './routes/_authenticated/workspace.profile'
 import { Route as AuthenticatedWorkspaceProjectsRouteImport } from './routes/_authenticated/workspace.projects'
@@ -53,6 +54,9 @@ import { Route as AuthenticatedWorkspaceTeamRouteImport } from './routes/_authen
 import { Route as AuthenticatedWorkspaceTimelineRouteImport } from './routes/_authenticated/workspace.timeline'
 import { Route as AuthenticatedWorkspaceExperienceIndexRouteImport } from './routes/_authenticated/workspace.experience.index'
 import { Route as AuthenticatedWorkspaceExperienceTaskKeyRouteImport } from './routes/_authenticated/workspace.experience.$taskKey'
+import { Route as ApiPublicMonitoringClientErrorRouteImport } from './routes/api/public/monitoring/client-error'
+import { Route as ApiPublicMonitoringHealthRouteImport } from './routes/api/public/monitoring/health'
+import { Route as ApiPublicMonitoringUptimeRouteImport } from './routes/api/public/monitoring/uptime'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const IndexRoute = IndexRouteImport.update({
@@ -239,6 +243,12 @@ const AuthenticatedWorkspaceLaunchpadRoute =
     path: '/launchpad',
     getParentRoute: () => AuthenticatedWorkspaceRoute,
   } as any)
+const AuthenticatedWorkspaceMonitoringRoute =
+  AuthenticatedWorkspaceMonitoringRouteImport.update({
+    id: '/monitoring',
+    path: '/monitoring',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
 const AuthenticatedWorkspaceOrganisationRoute =
   AuthenticatedWorkspaceOrganisationRouteImport.update({
     id: '/organisation',
@@ -293,6 +303,24 @@ const AuthenticatedWorkspaceExperienceTaskKeyRoute =
     path: '/$taskKey',
     getParentRoute: () => AuthenticatedWorkspaceExperienceRoute,
   } as any)
+const ApiPublicMonitoringClientErrorRoute =
+  ApiPublicMonitoringClientErrorRouteImport.update({
+    id: '/api/public/monitoring/client-error',
+    path: '/api/public/monitoring/client-error',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicMonitoringHealthRoute =
+  ApiPublicMonitoringHealthRouteImport.update({
+    id: '/api/public/monitoring/health',
+    path: '/api/public/monitoring/health',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicMonitoringUptimeRoute =
+  ApiPublicMonitoringUptimeRouteImport.update({
+    id: '/api/public/monitoring/uptime',
+    path: '/api/public/monitoring/uptime',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
@@ -334,6 +362,7 @@ export interface FileRoutesByFullPath {
   '/workspace/inbox': typeof AuthenticatedWorkspaceInboxRoute
   '/workspace/interview': typeof AuthenticatedWorkspaceInterviewRoute
   '/workspace/launchpad': typeof AuthenticatedWorkspaceLaunchpadRoute
+  '/workspace/monitoring': typeof AuthenticatedWorkspaceMonitoringRoute
   '/workspace/organisation': typeof AuthenticatedWorkspaceOrganisationRoute
   '/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
   '/workspace/projects': typeof AuthenticatedWorkspaceProjectsRoute
@@ -343,6 +372,9 @@ export interface FileRoutesByFullPath {
   '/workspace/timeline': typeof AuthenticatedWorkspaceTimelineRoute
   '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
+  '/api/public/monitoring/client-error': typeof ApiPublicMonitoringClientErrorRoute
+  '/api/public/monitoring/health': typeof ApiPublicMonitoringHealthRoute
+  '/api/public/monitoring/uptime': typeof ApiPublicMonitoringUptimeRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/workspace/experience/': typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
@@ -378,6 +410,7 @@ export interface FileRoutesByTo {
   '/workspace/inbox': typeof AuthenticatedWorkspaceInboxRoute
   '/workspace/interview': typeof AuthenticatedWorkspaceInterviewRoute
   '/workspace/launchpad': typeof AuthenticatedWorkspaceLaunchpadRoute
+  '/workspace/monitoring': typeof AuthenticatedWorkspaceMonitoringRoute
   '/workspace/organisation': typeof AuthenticatedWorkspaceOrganisationRoute
   '/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
   '/workspace/projects': typeof AuthenticatedWorkspaceProjectsRoute
@@ -387,6 +420,9 @@ export interface FileRoutesByTo {
   '/workspace/timeline': typeof AuthenticatedWorkspaceTimelineRoute
   '/workspace': typeof AuthenticatedWorkspaceIndexRoute
   '/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
+  '/api/public/monitoring/client-error': typeof ApiPublicMonitoringClientErrorRoute
+  '/api/public/monitoring/health': typeof ApiPublicMonitoringHealthRoute
+  '/api/public/monitoring/uptime': typeof ApiPublicMonitoringUptimeRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/workspace/experience': typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
@@ -426,6 +462,7 @@ export interface FileRoutesById {
   '/_authenticated/workspace/inbox': typeof AuthenticatedWorkspaceInboxRoute
   '/_authenticated/workspace/interview': typeof AuthenticatedWorkspaceInterviewRoute
   '/_authenticated/workspace/launchpad': typeof AuthenticatedWorkspaceLaunchpadRoute
+  '/_authenticated/workspace/monitoring': typeof AuthenticatedWorkspaceMonitoringRoute
   '/_authenticated/workspace/organisation': typeof AuthenticatedWorkspaceOrganisationRoute
   '/_authenticated/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
   '/_authenticated/workspace/projects': typeof AuthenticatedWorkspaceProjectsRoute
@@ -435,6 +472,9 @@ export interface FileRoutesById {
   '/_authenticated/workspace/timeline': typeof AuthenticatedWorkspaceTimelineRoute
   '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/_authenticated/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
+  '/api/public/monitoring/client-error': typeof ApiPublicMonitoringClientErrorRoute
+  '/api/public/monitoring/health': typeof ApiPublicMonitoringHealthRoute
+  '/api/public/monitoring/uptime': typeof ApiPublicMonitoringUptimeRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/_authenticated/workspace/experience/': typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
@@ -474,6 +514,7 @@ export interface FileRouteTypes {
     | '/workspace/inbox'
     | '/workspace/interview'
     | '/workspace/launchpad'
+    | '/workspace/monitoring'
     | '/workspace/organisation'
     | '/workspace/profile'
     | '/workspace/projects'
@@ -483,6 +524,9 @@ export interface FileRouteTypes {
     | '/workspace/timeline'
     | '/workspace/'
     | '/workspace/experience/$taskKey'
+    | '/api/public/monitoring/client-error'
+    | '/api/public/monitoring/health'
+    | '/api/public/monitoring/uptime'
     | '/api/public/payments/webhook'
     | '/workspace/experience/'
   fileRoutesByTo: FileRoutesByTo
@@ -518,6 +562,7 @@ export interface FileRouteTypes {
     | '/workspace/inbox'
     | '/workspace/interview'
     | '/workspace/launchpad'
+    | '/workspace/monitoring'
     | '/workspace/organisation'
     | '/workspace/profile'
     | '/workspace/projects'
@@ -527,6 +572,9 @@ export interface FileRouteTypes {
     | '/workspace/timeline'
     | '/workspace'
     | '/workspace/experience/$taskKey'
+    | '/api/public/monitoring/client-error'
+    | '/api/public/monitoring/health'
+    | '/api/public/monitoring/uptime'
     | '/api/public/payments/webhook'
     | '/workspace/experience'
   id:
@@ -565,6 +613,7 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace/inbox'
     | '/_authenticated/workspace/interview'
     | '/_authenticated/workspace/launchpad'
+    | '/_authenticated/workspace/monitoring'
     | '/_authenticated/workspace/organisation'
     | '/_authenticated/workspace/profile'
     | '/_authenticated/workspace/projects'
@@ -574,6 +623,9 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace/timeline'
     | '/_authenticated/workspace/'
     | '/_authenticated/workspace/experience/$taskKey'
+    | '/api/public/monitoring/client-error'
+    | '/api/public/monitoring/health'
+    | '/api/public/monitoring/uptime'
     | '/api/public/payments/webhook'
     | '/_authenticated/workspace/experience/'
   fileRoutesById: FileRoutesById
@@ -603,6 +655,9 @@ export interface RootRouteChildren {
   ResourcesPmPortfolioRoute: typeof ResourcesPmPortfolioRoute
   ResourcesStarInterviewStoriesRoute: typeof ResourcesStarInterviewStoriesRoute
   ResourcesIndexRoute: typeof ResourcesIndexRoute
+  ApiPublicMonitoringClientErrorRoute: typeof ApiPublicMonitoringClientErrorRoute
+  ApiPublicMonitoringHealthRoute: typeof ApiPublicMonitoringHealthRoute
+  ApiPublicMonitoringUptimeRoute: typeof ApiPublicMonitoringUptimeRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
@@ -853,6 +908,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkspaceLaunchpadRouteImport
       parentRoute: typeof AuthenticatedWorkspaceRoute
     }
+    '/_authenticated/workspace/monitoring': {
+      id: '/_authenticated/workspace/monitoring'
+      path: '/monitoring'
+      fullPath: '/workspace/monitoring'
+      preLoaderRoute: typeof AuthenticatedWorkspaceMonitoringRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
     '/_authenticated/workspace/organisation': {
       id: '/_authenticated/workspace/organisation'
       path: '/organisation'
@@ -916,6 +978,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkspaceExperienceTaskKeyRouteImport
       parentRoute: typeof AuthenticatedWorkspaceExperienceRoute
     }
+    '/api/public/monitoring/client-error': {
+      id: '/api/public/monitoring/client-error'
+      path: '/api/public/monitoring/client-error'
+      fullPath: '/api/public/monitoring/client-error'
+      preLoaderRoute: typeof ApiPublicMonitoringClientErrorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/monitoring/health': {
+      id: '/api/public/monitoring/health'
+      path: '/api/public/monitoring/health'
+      fullPath: '/api/public/monitoring/health'
+      preLoaderRoute: typeof ApiPublicMonitoringHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/monitoring/uptime': {
+      id: '/api/public/monitoring/uptime'
+      path: '/api/public/monitoring/uptime'
+      fullPath: '/api/public/monitoring/uptime'
+      preLoaderRoute: typeof ApiPublicMonitoringUptimeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
@@ -953,6 +1036,7 @@ interface AuthenticatedWorkspaceRouteChildren {
   AuthenticatedWorkspaceInboxRoute: typeof AuthenticatedWorkspaceInboxRoute
   AuthenticatedWorkspaceInterviewRoute: typeof AuthenticatedWorkspaceInterviewRoute
   AuthenticatedWorkspaceLaunchpadRoute: typeof AuthenticatedWorkspaceLaunchpadRoute
+  AuthenticatedWorkspaceMonitoringRoute: typeof AuthenticatedWorkspaceMonitoringRoute
   AuthenticatedWorkspaceOrganisationRoute: typeof AuthenticatedWorkspaceOrganisationRoute
   AuthenticatedWorkspaceProfileRoute: typeof AuthenticatedWorkspaceProfileRoute
   AuthenticatedWorkspaceProjectsRoute: typeof AuthenticatedWorkspaceProjectsRoute
@@ -976,6 +1060,8 @@ const AuthenticatedWorkspaceRouteChildren: AuthenticatedWorkspaceRouteChildren =
     AuthenticatedWorkspaceInboxRoute: AuthenticatedWorkspaceInboxRoute,
     AuthenticatedWorkspaceInterviewRoute: AuthenticatedWorkspaceInterviewRoute,
     AuthenticatedWorkspaceLaunchpadRoute: AuthenticatedWorkspaceLaunchpadRoute,
+    AuthenticatedWorkspaceMonitoringRoute:
+      AuthenticatedWorkspaceMonitoringRoute,
     AuthenticatedWorkspaceOrganisationRoute:
       AuthenticatedWorkspaceOrganisationRoute,
     AuthenticatedWorkspaceProfileRoute: AuthenticatedWorkspaceProfileRoute,
@@ -1030,6 +1116,9 @@ const rootRouteChildren: RootRouteChildren = {
   ResourcesPmPortfolioRoute: ResourcesPmPortfolioRoute,
   ResourcesStarInterviewStoriesRoute: ResourcesStarInterviewStoriesRoute,
   ResourcesIndexRoute: ResourcesIndexRoute,
+  ApiPublicMonitoringClientErrorRoute: ApiPublicMonitoringClientErrorRoute,
+  ApiPublicMonitoringHealthRoute: ApiPublicMonitoringHealthRoute,
+  ApiPublicMonitoringUptimeRoute: ApiPublicMonitoringUptimeRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport

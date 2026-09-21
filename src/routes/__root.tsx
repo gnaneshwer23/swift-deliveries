@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { installClientMonitoring, reportClientIssue } from "../lib/client-monitoring";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -41,6 +42,14 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
+    // A rendered error boundary means the visitor's journey is broken here.
+    reportClientIssue({
+      kind: "journey_error",
+      message: error instanceof Error ? `${error.name}: ${error.message}` : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      route: typeof window === "undefined" ? "unknown" : window.location.pathname,
+      detail: { boundary: "tanstack_root_error_component" },
+    });
   }, [error]);
 
   return (
@@ -123,6 +132,8 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+
+  useEffect(() => installClientMonitoring(), []);
 
   useEffect(() => {
     let active = true;

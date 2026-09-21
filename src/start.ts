@@ -11,6 +11,17 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
       throw error;
     }
     console.error(error);
+    const [{ recordMonitoringEvent, describeUnknownError }] = await Promise.all([
+      import("./lib/monitoring.server"),
+    ]);
+    const described = describeUnknownError(error);
+    await recordMonitoringEvent({
+      kind: "server_error",
+      severity: "critical",
+      source: "request_middleware",
+      message: described.message,
+      detail: described.detail,
+    });
     return new Response(renderErrorPage(), {
       status: 500,
       headers: { "content-type": "text/html; charset=utf-8" },

@@ -63,3 +63,14 @@ Approved plan: adopt mockup design system + build remaining product (phases 1–
 - [x] Fix code-level launch findings; updated sitemap and metadata are ready for the next publish
 - [ ] Configure and verify deliverx.dev as the branded email sending domain
 - [ ] Publish this audited build, then verify the updated live sitemap and metadata
+
+## Production monitoring (21 Sep 2026)
+- [x] Append-only `monitoring_events` table (admin/coach read only, no updates or deletes)
+- [x] `/api/public/monitoring/health` uptime probe (200 ok / 503 degraded, records failures)
+- [x] Scheduled health check every 5 minutes via pg_cron + pg_net against the production URL
+- [x] `/api/public/monitoring/uptime` cron-authenticated journey probe (home, pricing, experience, launchpad, login, health)
+- [x] Broken-journey + critical browser error capture (error boundary, window errors, unhandled rejections; deduped and capped)
+- [x] Server error capture in the request middleware
+- [x] Payment failure capture: webhook failures, failed invoices, checkout session errors
+- [x] `/workspace/monitoring` admin view: last uptime check, volume by type, event log
+- [ ] Optional: external third-party uptime alerting (email/SMS) pointed at /api/public/monitoring/health

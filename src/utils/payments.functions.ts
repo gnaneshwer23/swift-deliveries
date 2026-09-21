@@ -90,6 +90,16 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
 
       return { clientSecret: session.client_secret ?? "" };
     } catch (error) {
-      return { error: getStripeErrorMessage(error) };
+      const message = getStripeErrorMessage(error);
+      const { recordMonitoringEvent } = await import("@/lib/monitoring.server");
+      await recordMonitoringEvent({
+        kind: "payment_failure",
+        severity: "critical",
+        source: "checkout_session",
+        message: `Checkout could not be opened: ${message}`,
+        userId: context.userId,
+        detail: { priceId: data.priceId, environment: data.environment },
+      });
+      return { error: message };
     }
   });
