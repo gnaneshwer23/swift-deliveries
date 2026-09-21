@@ -967,6 +967,48 @@ export type Database = {
           },
         ]
       }
+      monitoring_events: {
+        Row: {
+          detail: Json
+          environment: string
+          fingerprint: string | null
+          id: string
+          kind: string
+          message: string
+          occurred_at: string
+          route: string | null
+          severity: string
+          source: string
+          user_id: string | null
+        }
+        Insert: {
+          detail?: Json
+          environment?: string
+          fingerprint?: string | null
+          id?: string
+          kind: string
+          message: string
+          occurred_at?: string
+          route?: string | null
+          severity: string
+          source: string
+          user_id?: string | null
+        }
+        Update: {
+          detail?: Json
+          environment?: string
+          fingerprint?: string | null
+          id?: string
+          kind?: string
+          message?: string
+          occurred_at?: string
+          route?: string | null
+          severity?: string
+          source?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       organisation_memberships: {
         Row: {
           created_at: string
