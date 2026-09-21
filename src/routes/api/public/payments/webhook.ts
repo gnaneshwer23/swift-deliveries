@@ -55,6 +55,21 @@ async function handleWebhook(request: Request, environment: StripeEnv) {
   if (["invoice.payment_failed", "transaction.payment_failed"].includes(event.type)) {
     const subscriptionId = typeof object.subscription === "string" ? object.subscription : object.subscription?.id;
     if (subscriptionId) await setSubscriptionStatus({ id: subscriptionId }, environment, "past_due");
+    const { recordMonitoringEvent } = await import("@/lib/monitoring.server");
+    await recordMonitoringEvent({
+      kind: "payment_failure",
+      severity: "critical",
+      source: "payments_webhook",
+      message: `Payment failed (${event.type})`,
+      userId: object.metadata?.userId ?? undefined,
+      detail: {
+        environment,
+        subscriptionId: subscriptionId ?? null,
+        customer: typeof object.customer === "string" ? object.customer : (object.customer?.id ?? null),
+        amountDue: object.amount_due ?? null,
+        currency: object.currency ?? null,
+      },
+    });
   }
 }
 
@@ -71,6 +86,15 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
           return Response.json({ received: true });
         } catch (error) {
           console.error("Payment webhook error", error);
+          const { recordMonitoringEvent, describeUnknownError } = await import("@/lib/monitoring.server");
+          const described = describeUnknownError(error);
+          await recordMonitoringEvent({
+            kind: "payment_failure",
+            severity: "critical",
+            source: "payments_webhook",
+            message: `Webhook could not be processed: ${described.message}`,
+            detail: { ...described.detail, environment: rawEnvironment },
+          });
           return new Response("Webhook error", { status: 400 });
         }
       },
