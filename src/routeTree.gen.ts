@@ -55,6 +55,7 @@ import { Route as AuthenticatedWorkspaceExperienceIndexRouteImport } from './rou
 import { Route as AuthenticatedWorkspaceExperienceTaskKeyRouteImport } from './routes/_authenticated/workspace.experience.$taskKey'
 import { Route as ApiPublicMonitoringClientErrorRouteImport } from './routes/api/public/monitoring/client-error'
 import { Route as ApiPublicMonitoringHealthRouteImport } from './routes/api/public/monitoring/health'
+import { Route as ApiPublicMonitoringUptimeRouteImport } from './routes/api/public/monitoring/uptime'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const IndexRoute = IndexRouteImport.update({
@@ -307,6 +308,12 @@ const ApiPublicMonitoringHealthRoute =
     path: '/api/public/monitoring/health',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicMonitoringUptimeRoute =
+  ApiPublicMonitoringUptimeRouteImport.update({
+    id: '/api/public/monitoring/uptime',
+    path: '/api/public/monitoring/uptime',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
@@ -359,6 +366,7 @@ export interface FileRoutesByFullPath {
   '/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
   '/api/public/monitoring/client-error': typeof ApiPublicMonitoringClientErrorRoute
   '/api/public/monitoring/health': typeof ApiPublicMonitoringHealthRoute
+  '/api/public/monitoring/uptime': typeof ApiPublicMonitoringUptimeRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/workspace/experience/': typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
@@ -405,6 +413,7 @@ export interface FileRoutesByTo {
   '/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
   '/api/public/monitoring/client-error': typeof ApiPublicMonitoringClientErrorRoute
   '/api/public/monitoring/health': typeof ApiPublicMonitoringHealthRoute
+  '/api/public/monitoring/uptime': typeof ApiPublicMonitoringUptimeRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/workspace/experience': typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
@@ -455,6 +464,7 @@ export interface FileRoutesById {
   '/_authenticated/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
   '/api/public/monitoring/client-error': typeof ApiPublicMonitoringClientErrorRoute
   '/api/public/monitoring/health': typeof ApiPublicMonitoringHealthRoute
+  '/api/public/monitoring/uptime': typeof ApiPublicMonitoringUptimeRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/_authenticated/workspace/experience/': typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
@@ -505,6 +515,7 @@ export interface FileRouteTypes {
     | '/workspace/experience/$taskKey'
     | '/api/public/monitoring/client-error'
     | '/api/public/monitoring/health'
+    | '/api/public/monitoring/uptime'
     | '/api/public/payments/webhook'
     | '/workspace/experience/'
   fileRoutesByTo: FileRoutesByTo
@@ -551,6 +562,7 @@ export interface FileRouteTypes {
     | '/workspace/experience/$taskKey'
     | '/api/public/monitoring/client-error'
     | '/api/public/monitoring/health'
+    | '/api/public/monitoring/uptime'
     | '/api/public/payments/webhook'
     | '/workspace/experience'
   id:
@@ -600,6 +612,7 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace/experience/$taskKey'
     | '/api/public/monitoring/client-error'
     | '/api/public/monitoring/health'
+    | '/api/public/monitoring/uptime'
     | '/api/public/payments/webhook'
     | '/_authenticated/workspace/experience/'
   fileRoutesById: FileRoutesById
@@ -631,6 +644,7 @@ export interface RootRouteChildren {
   ResourcesIndexRoute: typeof ResourcesIndexRoute
   ApiPublicMonitoringClientErrorRoute: typeof ApiPublicMonitoringClientErrorRoute
   ApiPublicMonitoringHealthRoute: typeof ApiPublicMonitoringHealthRoute
+  ApiPublicMonitoringUptimeRoute: typeof ApiPublicMonitoringUptimeRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
@@ -958,6 +972,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicMonitoringHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/monitoring/uptime': {
+      id: '/api/public/monitoring/uptime'
+      path: '/api/public/monitoring/uptime'
+      fullPath: '/api/public/monitoring/uptime'
+      preLoaderRoute: typeof ApiPublicMonitoringUptimeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
@@ -1074,6 +1095,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResourcesIndexRoute: ResourcesIndexRoute,
   ApiPublicMonitoringClientErrorRoute: ApiPublicMonitoringClientErrorRoute,
   ApiPublicMonitoringHealthRoute: ApiPublicMonitoringHealthRoute,
+  ApiPublicMonitoringUptimeRoute: ApiPublicMonitoringUptimeRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
