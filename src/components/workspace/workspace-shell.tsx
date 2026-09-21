@@ -18,6 +18,7 @@ import {
   User as UserIcon,
   Users,
   GraduationCap,
+  Activity,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useSignOut } from "@/hooks/use-sign-out";
@@ -66,7 +67,10 @@ export function WorkspaceShell({
       ? [{ to: "/workspace/coaching" as const, label: "Coaching", icon: GraduationCap }]
       : []),
     ...(coaching?.isCoach
-      ? [{ to: "/workspace/review" as const, label: "Coach review", icon: GraduationCap }]
+      ? [
+          { to: "/workspace/review" as const, label: "Coach review", icon: GraduationCap },
+          { to: "/workspace/monitoring" as const, label: "Monitoring", icon: Activity },
+        ]
       : []),
   ];
   const nav = coachingLinks.length
