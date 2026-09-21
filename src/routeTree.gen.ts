@@ -44,6 +44,7 @@ import { Route as AuthenticatedWorkspaceExperienceRouteImport } from './routes/_
 import { Route as AuthenticatedWorkspaceInboxRouteImport } from './routes/_authenticated/workspace.inbox'
 import { Route as AuthenticatedWorkspaceInterviewRouteImport } from './routes/_authenticated/workspace.interview'
 import { Route as AuthenticatedWorkspaceLaunchpadRouteImport } from './routes/_authenticated/workspace.launchpad'
+import { Route as AuthenticatedWorkspaceMonitoringRouteImport } from './routes/_authenticated/workspace.monitoring'
 import { Route as AuthenticatedWorkspaceOrganisationRouteImport } from './routes/_authenticated/workspace.organisation'
 import { Route as AuthenticatedWorkspaceProfileRouteImport } from './routes/_authenticated/workspace.profile'
 import { Route as AuthenticatedWorkspaceProjectsRouteImport } from './routes/_authenticated/workspace.projects'
@@ -242,6 +243,12 @@ const AuthenticatedWorkspaceLaunchpadRoute =
     path: '/launchpad',
     getParentRoute: () => AuthenticatedWorkspaceRoute,
   } as any)
+const AuthenticatedWorkspaceMonitoringRoute =
+  AuthenticatedWorkspaceMonitoringRouteImport.update({
+    id: '/monitoring',
+    path: '/monitoring',
+    getParentRoute: () => AuthenticatedWorkspaceRoute,
+  } as any)
 const AuthenticatedWorkspaceOrganisationRoute =
   AuthenticatedWorkspaceOrganisationRouteImport.update({
     id: '/organisation',
@@ -355,6 +362,7 @@ export interface FileRoutesByFullPath {
   '/workspace/inbox': typeof AuthenticatedWorkspaceInboxRoute
   '/workspace/interview': typeof AuthenticatedWorkspaceInterviewRoute
   '/workspace/launchpad': typeof AuthenticatedWorkspaceLaunchpadRoute
+  '/workspace/monitoring': typeof AuthenticatedWorkspaceMonitoringRoute
   '/workspace/organisation': typeof AuthenticatedWorkspaceOrganisationRoute
   '/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
   '/workspace/projects': typeof AuthenticatedWorkspaceProjectsRoute
@@ -402,6 +410,7 @@ export interface FileRoutesByTo {
   '/workspace/inbox': typeof AuthenticatedWorkspaceInboxRoute
   '/workspace/interview': typeof AuthenticatedWorkspaceInterviewRoute
   '/workspace/launchpad': typeof AuthenticatedWorkspaceLaunchpadRoute
+  '/workspace/monitoring': typeof AuthenticatedWorkspaceMonitoringRoute
   '/workspace/organisation': typeof AuthenticatedWorkspaceOrganisationRoute
   '/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
   '/workspace/projects': typeof AuthenticatedWorkspaceProjectsRoute
@@ -453,6 +462,7 @@ export interface FileRoutesById {
   '/_authenticated/workspace/inbox': typeof AuthenticatedWorkspaceInboxRoute
   '/_authenticated/workspace/interview': typeof AuthenticatedWorkspaceInterviewRoute
   '/_authenticated/workspace/launchpad': typeof AuthenticatedWorkspaceLaunchpadRoute
+  '/_authenticated/workspace/monitoring': typeof AuthenticatedWorkspaceMonitoringRoute
   '/_authenticated/workspace/organisation': typeof AuthenticatedWorkspaceOrganisationRoute
   '/_authenticated/workspace/profile': typeof AuthenticatedWorkspaceProfileRoute
   '/_authenticated/workspace/projects': typeof AuthenticatedWorkspaceProjectsRoute
@@ -504,6 +514,7 @@ export interface FileRouteTypes {
     | '/workspace/inbox'
     | '/workspace/interview'
     | '/workspace/launchpad'
+    | '/workspace/monitoring'
     | '/workspace/organisation'
     | '/workspace/profile'
     | '/workspace/projects'
@@ -551,6 +562,7 @@ export interface FileRouteTypes {
     | '/workspace/inbox'
     | '/workspace/interview'
     | '/workspace/launchpad'
+    | '/workspace/monitoring'
     | '/workspace/organisation'
     | '/workspace/profile'
     | '/workspace/projects'
@@ -601,6 +613,7 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace/inbox'
     | '/_authenticated/workspace/interview'
     | '/_authenticated/workspace/launchpad'
+    | '/_authenticated/workspace/monitoring'
     | '/_authenticated/workspace/organisation'
     | '/_authenticated/workspace/profile'
     | '/_authenticated/workspace/projects'
@@ -895,6 +908,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkspaceLaunchpadRouteImport
       parentRoute: typeof AuthenticatedWorkspaceRoute
     }
+    '/_authenticated/workspace/monitoring': {
+      id: '/_authenticated/workspace/monitoring'
+      path: '/monitoring'
+      fullPath: '/workspace/monitoring'
+      preLoaderRoute: typeof AuthenticatedWorkspaceMonitoringRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceRoute
+    }
     '/_authenticated/workspace/organisation': {
       id: '/_authenticated/workspace/organisation'
       path: '/organisation'
@@ -1016,6 +1036,7 @@ interface AuthenticatedWorkspaceRouteChildren {
   AuthenticatedWorkspaceInboxRoute: typeof AuthenticatedWorkspaceInboxRoute
   AuthenticatedWorkspaceInterviewRoute: typeof AuthenticatedWorkspaceInterviewRoute
   AuthenticatedWorkspaceLaunchpadRoute: typeof AuthenticatedWorkspaceLaunchpadRoute
+  AuthenticatedWorkspaceMonitoringRoute: typeof AuthenticatedWorkspaceMonitoringRoute
   AuthenticatedWorkspaceOrganisationRoute: typeof AuthenticatedWorkspaceOrganisationRoute
   AuthenticatedWorkspaceProfileRoute: typeof AuthenticatedWorkspaceProfileRoute
   AuthenticatedWorkspaceProjectsRoute: typeof AuthenticatedWorkspaceProjectsRoute
@@ -1039,6 +1060,8 @@ const AuthenticatedWorkspaceRouteChildren: AuthenticatedWorkspaceRouteChildren =
     AuthenticatedWorkspaceInboxRoute: AuthenticatedWorkspaceInboxRoute,
     AuthenticatedWorkspaceInterviewRoute: AuthenticatedWorkspaceInterviewRoute,
     AuthenticatedWorkspaceLaunchpadRoute: AuthenticatedWorkspaceLaunchpadRoute,
+    AuthenticatedWorkspaceMonitoringRoute:
+      AuthenticatedWorkspaceMonitoringRoute,
     AuthenticatedWorkspaceOrganisationRoute:
       AuthenticatedWorkspaceOrganisationRoute,
     AuthenticatedWorkspaceProfileRoute: AuthenticatedWorkspaceProfileRoute,
