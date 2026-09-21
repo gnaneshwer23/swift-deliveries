@@ -53,6 +53,8 @@ import { Route as AuthenticatedWorkspaceTeamRouteImport } from './routes/_authen
 import { Route as AuthenticatedWorkspaceTimelineRouteImport } from './routes/_authenticated/workspace.timeline'
 import { Route as AuthenticatedWorkspaceExperienceIndexRouteImport } from './routes/_authenticated/workspace.experience.index'
 import { Route as AuthenticatedWorkspaceExperienceTaskKeyRouteImport } from './routes/_authenticated/workspace.experience.$taskKey'
+import { Route as ApiPublicMonitoringClientErrorRouteImport } from './routes/api/public/monitoring/client-error'
+import { Route as ApiPublicMonitoringHealthRouteImport } from './routes/api/public/monitoring/health'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const IndexRoute = IndexRouteImport.update({
@@ -293,6 +295,18 @@ const AuthenticatedWorkspaceExperienceTaskKeyRoute =
     path: '/$taskKey',
     getParentRoute: () => AuthenticatedWorkspaceExperienceRoute,
   } as any)
+const ApiPublicMonitoringClientErrorRoute =
+  ApiPublicMonitoringClientErrorRouteImport.update({
+    id: '/api/public/monitoring/client-error',
+    path: '/api/public/monitoring/client-error',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicMonitoringHealthRoute =
+  ApiPublicMonitoringHealthRouteImport.update({
+    id: '/api/public/monitoring/health',
+    path: '/api/public/monitoring/health',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
@@ -343,6 +357,8 @@ export interface FileRoutesByFullPath {
   '/workspace/timeline': typeof AuthenticatedWorkspaceTimelineRoute
   '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
+  '/api/public/monitoring/client-error': typeof ApiPublicMonitoringClientErrorRoute
+  '/api/public/monitoring/health': typeof ApiPublicMonitoringHealthRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/workspace/experience/': typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
@@ -387,6 +403,8 @@ export interface FileRoutesByTo {
   '/workspace/timeline': typeof AuthenticatedWorkspaceTimelineRoute
   '/workspace': typeof AuthenticatedWorkspaceIndexRoute
   '/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
+  '/api/public/monitoring/client-error': typeof ApiPublicMonitoringClientErrorRoute
+  '/api/public/monitoring/health': typeof ApiPublicMonitoringHealthRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/workspace/experience': typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
@@ -435,6 +453,8 @@ export interface FileRoutesById {
   '/_authenticated/workspace/timeline': typeof AuthenticatedWorkspaceTimelineRoute
   '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/_authenticated/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
+  '/api/public/monitoring/client-error': typeof ApiPublicMonitoringClientErrorRoute
+  '/api/public/monitoring/health': typeof ApiPublicMonitoringHealthRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/_authenticated/workspace/experience/': typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
@@ -483,6 +503,8 @@ export interface FileRouteTypes {
     | '/workspace/timeline'
     | '/workspace/'
     | '/workspace/experience/$taskKey'
+    | '/api/public/monitoring/client-error'
+    | '/api/public/monitoring/health'
     | '/api/public/payments/webhook'
     | '/workspace/experience/'
   fileRoutesByTo: FileRoutesByTo
@@ -527,6 +549,8 @@ export interface FileRouteTypes {
     | '/workspace/timeline'
     | '/workspace'
     | '/workspace/experience/$taskKey'
+    | '/api/public/monitoring/client-error'
+    | '/api/public/monitoring/health'
     | '/api/public/payments/webhook'
     | '/workspace/experience'
   id:
@@ -574,6 +598,8 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace/timeline'
     | '/_authenticated/workspace/'
     | '/_authenticated/workspace/experience/$taskKey'
+    | '/api/public/monitoring/client-error'
+    | '/api/public/monitoring/health'
     | '/api/public/payments/webhook'
     | '/_authenticated/workspace/experience/'
   fileRoutesById: FileRoutesById
@@ -603,6 +629,8 @@ export interface RootRouteChildren {
   ResourcesPmPortfolioRoute: typeof ResourcesPmPortfolioRoute
   ResourcesStarInterviewStoriesRoute: typeof ResourcesStarInterviewStoriesRoute
   ResourcesIndexRoute: typeof ResourcesIndexRoute
+  ApiPublicMonitoringClientErrorRoute: typeof ApiPublicMonitoringClientErrorRoute
+  ApiPublicMonitoringHealthRoute: typeof ApiPublicMonitoringHealthRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
@@ -916,6 +944,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkspaceExperienceTaskKeyRouteImport
       parentRoute: typeof AuthenticatedWorkspaceExperienceRoute
     }
+    '/api/public/monitoring/client-error': {
+      id: '/api/public/monitoring/client-error'
+      path: '/api/public/monitoring/client-error'
+      fullPath: '/api/public/monitoring/client-error'
+      preLoaderRoute: typeof ApiPublicMonitoringClientErrorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/monitoring/health': {
+      id: '/api/public/monitoring/health'
+      path: '/api/public/monitoring/health'
+      fullPath: '/api/public/monitoring/health'
+      preLoaderRoute: typeof ApiPublicMonitoringHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
@@ -1030,6 +1072,8 @@ const rootRouteChildren: RootRouteChildren = {
   ResourcesPmPortfolioRoute: ResourcesPmPortfolioRoute,
   ResourcesStarInterviewStoriesRoute: ResourcesStarInterviewStoriesRoute,
   ResourcesIndexRoute: ResourcesIndexRoute,
+  ApiPublicMonitoringClientErrorRoute: ApiPublicMonitoringClientErrorRoute,
+  ApiPublicMonitoringHealthRoute: ApiPublicMonitoringHealthRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
