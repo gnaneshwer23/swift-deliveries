@@ -5,6 +5,7 @@ import { WorkspaceShell, WorkspaceCard } from "@/components/workspace/workspace-
 import { workspaceBootstrapQuery } from "@/lib/workspace-queries";
 import { dailyBriefingQuery } from "@/lib/onboarding-queries";
 import type { DailyBriefing, JourneyState } from "@/lib/onboarding.functions";
+import { pacePlan, personalGoal, starterSteps } from "@/lib/personal-plan";
 
 export const Route = createFileRoute("/_authenticated/workspace/")({
   head: () => ({
@@ -68,10 +69,15 @@ function ContextualHome() {
 
   const journey = JOURNEY[briefing.journeyState];
   const firstName = bootstrap.profile?.full_name?.split(" ")[0] ?? "there";
-  const target = briefing.targets.find((c) => c.key === "target_role")?.value;
+  const goal = personalGoal(briefing);
+  const target = goal.role;
   const next = nextAction(briefing);
   const stageOrder: JourneyState[] = ["A", "B", "C", "D"];
   const currentIdx = stageOrder.indexOf(briefing.journeyState);
+  const steps = starterSteps(briefing);
+  const doneCount = steps.filter((s) => s.done).length;
+  const plan = pacePlan(briefing);
+  const showWelcome = briefing.evidenceTotal === 0 && briefing.judgedCapabilities === 0;
 
   return (
     <WorkspaceShell title="Daily briefing" subtitle={target ? `Target: ${target}` : undefined}>
@@ -82,7 +88,18 @@ function ContextualHome() {
         <div className="briefing-greeting">
           Good to see you, <em>{firstName}</em>.
         </div>
-        <div className="briefing-sub">{journey.description}</div>
+        <div className="briefing-sub">
+          {goal.role ? (
+            <>
+              You are aiming at <strong>{goal.role}</strong>
+              {goal.level ? ` at ${goal.level.toLowerCase()}` : ""}
+              {goal.timeframe ? `, ${goal.timeframe.toLowerCase()}` : ""}
+              {goal.currentRole ? `, from ${goal.currentRole}` : ""}. {journey.description}
+            </>
+          ) : (
+            journey.description
+          )}
+        </div>
         <div className="briefing-cards">
           <div className="briefing-card">
             <div className="briefing-card-label">Evidence entries</div>
@@ -112,6 +129,76 @@ function ContextualHome() {
           </div>
         </div>
       </div>
+
+      {showWelcome ? (
+        <div className="app-section">
+          <WorkspaceCard
+            title={`Welcome, ${firstName}`}
+            description="This panel disappears once your first piece of work is on record."
+          >
+            <div className="px-5 py-4 text-[13px]" style={{ color: "var(--x-slate)" }}>
+              <p>
+                Your record starts empty on purpose. Nothing here is assumed about you: the only
+                things that count are work you do and proof that comes with it.
+              </p>
+              <p className="mt-3">
+                {goal.role
+                  ? `The steps below are ordered for ${goal.role}${goal.domains ? ` in ${goal.domains}` : ""}.`
+                  : "Add a target role in your profile and the steps below reorder around it."}
+              </p>
+            </div>
+          </WorkspaceCard>
+        </div>
+      ) : null}
+
+      <div className="app-section">
+        <div className="section-title">
+          Your plan{goal.role ? ` for ${goal.role}` : ""} · {doneCount} of {steps.length} done
+        </div>
+        <WorkspaceCard
+          title="Tailored first steps"
+          description="Built from what you told us at setup. Self-reported answers shape the order, never the result."
+        >
+          {steps.map((step, i) => (
+            <div key={step.key} className="ev-row">
+              <span className="ev-num">{String(i + 1).padStart(2, "0")}</span>
+              <div className="ev-body">
+                <div className="ev-name" style={step.done ? { opacity: 0.6 } : undefined}>
+                  {step.title}
+                </div>
+                <div className="ev-meta">{step.reason}</div>
+              </div>
+              {step.done ? (
+                <span
+                  className="text-[10px] font-semibold"
+                  style={{ color: "var(--x-teal-text)" }}
+                >
+                  Done
+                </span>
+              ) : (
+                <Link to={step.to} className="btn btn-secondary btn-sm" style={{ flexShrink: 0 }}>
+                  Open
+                </Link>
+              )}
+            </div>
+          ))}
+        </WorkspaceCard>
+      </div>
+
+      {plan ? (
+        <div className="app-section">
+          <div className="section-title">Your pace</div>
+          <WorkspaceCard
+            title={`${plan.label} · ${plan.hoursPerWeek} a week`}
+            description={`${plan.cadence} You chose this pace at setup — change it any time in your profile.`}
+            action={
+              <Link to="/workspace/profile" className="btn btn-secondary btn-sm">
+                Change
+              </Link>
+            }
+          />
+        </div>
+      ) : null}
 
       <div className="app-section">
         <div className="section-title">Recommended next action</div>
