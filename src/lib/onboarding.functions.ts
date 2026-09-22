@@ -200,6 +200,7 @@ export type DailyBriefing = {
   capabilityTotal: number;
   attestationsRequested: number;
   verifiedClaims: number;
+  identity: SelfReportClaim[];
   targets: SelfReportClaim[];
   strengths: SelfReportClaim[];
   workingStyle: SelfReportClaim[];
@@ -287,6 +288,7 @@ export const getDailyBriefing = createServerFn({ method: "GET" })
       capabilityTotal,
       attestationsRequested,
       verifiedClaims,
+      identity: pick("identity"),
       targets: pick("target"),
       strengths: pick("strength"),
       workingStyle: pick("working_style"),
