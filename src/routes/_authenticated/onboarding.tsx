@@ -578,9 +578,21 @@ function OnboardingPage() {
                     {recommended.reason}
                   </p>
                 </div>
+                {answers.pace ? (
+                  <div className="border border-[var(--mkt-border-l)] p-5">
+                    <p className="font-mono text-[0.625rem] font-bold uppercase text-[var(--mkt-green-m)]">
+                      Your pace
+                    </p>
+                    <p className="mt-3 text-sm leading-relaxed text-[var(--mkt-text2)]">
+                      You chose “{answers.pace.toLowerCase()}”, so your dashboard will plan around
+                      that. You can change it any time.
+                    </p>
+                  </div>
+                ) : null}
                 <p className="text-sm leading-relaxed text-[var(--mkt-text2)]">
                   Nothing you entered has created evidence, a score, or a badge. Your record starts
-                  empty and grows only from work you do.
+                  empty and grows only from work you do. Your dashboard opens next, ordered around
+                  {answers.targetRole.trim() ? ` ${answers.targetRole.trim()}` : " your target"}.
                 </p>
               </div>
             ) : null}
