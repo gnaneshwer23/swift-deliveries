@@ -68,10 +68,15 @@ function ContextualHome() {
 
   const journey = JOURNEY[briefing.journeyState];
   const firstName = bootstrap.profile?.full_name?.split(" ")[0] ?? "there";
-  const target = briefing.targets.find((c) => c.key === "target_role")?.value;
+  const goal = personalGoal(briefing);
+  const target = goal.role;
   const next = nextAction(briefing);
   const stageOrder: JourneyState[] = ["A", "B", "C", "D"];
   const currentIdx = stageOrder.indexOf(briefing.journeyState);
+  const steps = starterSteps(briefing);
+  const doneCount = steps.filter((s) => s.done).length;
+  const plan = pacePlan(briefing);
+  const showWelcome = briefing.evidenceTotal === 0 && briefing.judgedCapabilities === 0;
 
   return (
     <WorkspaceShell title="Daily briefing" subtitle={target ? `Target: ${target}` : undefined}>
