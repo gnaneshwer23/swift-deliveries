@@ -129,6 +129,76 @@ function ContextualHome() {
         </div>
       </div>
 
+      {showWelcome ? (
+        <div className="app-section">
+          <WorkspaceCard
+            title={`Welcome, ${firstName}`}
+            description="This panel disappears once your first piece of work is on record."
+          >
+            <div className="px-5 py-4 text-[13px]" style={{ color: "var(--x-slate)" }}>
+              <p>
+                Your record starts empty on purpose. Nothing here is assumed about you: the only
+                things that count are work you do and proof that comes with it.
+              </p>
+              <p className="mt-3">
+                {goal.role
+                  ? `The steps below are ordered for ${goal.role}${goal.domains ? ` in ${goal.domains}` : ""}.`
+                  : "Add a target role in your profile and the steps below reorder around it."}
+              </p>
+            </div>
+          </WorkspaceCard>
+        </div>
+      ) : null}
+
+      <div className="app-section">
+        <div className="section-title">
+          Your plan{goal.role ? ` for ${goal.role}` : ""} · {doneCount} of {steps.length} done
+        </div>
+        <WorkspaceCard
+          title="Tailored first steps"
+          description="Built from what you told us at setup. Self-reported answers shape the order, never the result."
+        >
+          {steps.map((step, i) => (
+            <div key={step.key} className="ev-row">
+              <span className="ev-num">{String(i + 1).padStart(2, "0")}</span>
+              <div className="ev-body">
+                <div className="ev-name" style={step.done ? { opacity: 0.6 } : undefined}>
+                  {step.title}
+                </div>
+                <div className="ev-meta">{step.reason}</div>
+              </div>
+              {step.done ? (
+                <span
+                  className="text-[10px] font-semibold"
+                  style={{ color: "var(--x-teal-text)" }}
+                >
+                  Done
+                </span>
+              ) : (
+                <Link to={step.to} className="btn btn-secondary btn-sm" style={{ flexShrink: 0 }}>
+                  Open
+                </Link>
+              )}
+            </div>
+          ))}
+        </WorkspaceCard>
+      </div>
+
+      {plan ? (
+        <div className="app-section">
+          <div className="section-title">Your pace</div>
+          <WorkspaceCard
+            title={`${plan.label} · ${plan.hoursPerWeek} a week`}
+            description={`${plan.cadence} You chose this pace at setup — change it any time in your profile.`}
+            action={
+              <Link to="/workspace/profile" className="btn btn-secondary btn-sm">
+                Change
+              </Link>
+            }
+          />
+        </div>
+      ) : null}
+
       <div className="app-section">
         <div className="section-title">Recommended next action</div>
         <div className="action-card">
