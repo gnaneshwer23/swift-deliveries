@@ -5,6 +5,7 @@ import { WorkspaceShell, WorkspaceCard } from "@/components/workspace/workspace-
 import { workspaceBootstrapQuery } from "@/lib/workspace-queries";
 import { dailyBriefingQuery } from "@/lib/onboarding-queries";
 import type { DailyBriefing, JourneyState } from "@/lib/onboarding.functions";
+import { pacePlan, personalGoal, starterSteps } from "@/lib/personal-plan";
 
 export const Route = createFileRoute("/_authenticated/workspace/")({
   head: () => ({
