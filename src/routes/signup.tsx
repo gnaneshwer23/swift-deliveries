@@ -36,7 +36,10 @@ function SignupPage() {
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName }, emailRedirectTo: window.location.origin },
+      options: {
+        data: { full_name: fullName },
+        emailRedirectTo: `${window.location.origin}/onboarding`,
+      },
     });
     setLoading(false);
     if (signUpError) {
