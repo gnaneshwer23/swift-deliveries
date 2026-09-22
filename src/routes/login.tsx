@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { waitForSession } from "@/lib/auth-session";
 import { lovable } from "@/integrations/lovable";
 import { Loader2 } from "lucide-react";
 import { BrandLogo } from "@/components/brand-logo";
@@ -44,6 +45,16 @@ export function GoogleButton({
 
 function LoginPage() {
   const navigate = useNavigate();
+  // Someone who already has a session should be routed forward, not asked again.
+  useEffect(() => {
+    let active = true;
+    void waitForSession().then((session) => {
+      if (active && session) navigate({ to: "/workspace", replace: true });
+    });
+    return () => {
+      active = false;
+    };
+  }, [navigate]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -66,7 +77,7 @@ function LoginPage() {
     setLoading(true);
     setError(null);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: `${window.location.origin}/auth/callback`,
     });
     setLoading(false);
     if (result.error) setError(result.error.message || "Google sign-in failed");
