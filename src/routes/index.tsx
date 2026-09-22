@@ -4,6 +4,7 @@ import { JourneyLadder } from "@/components/marketing/journey-ladder";
 import { Bento, BentoTile } from "@/components/marketing/bento";
 import { ProductView } from "@/components/marketing/product-view";
 import { FaqSection } from "@/components/marketing/faq-section";
+import { OnboardingGate } from "@/components/onboarding-gate";
 
 const TITLE = "DeliverX — Do the work. Keep the proof. Earn the signal.";
 const DESCRIPTION =
@@ -222,6 +223,7 @@ const HOME_FAQ = [
 function HomePage() {
   return (
     <MarketingLayout>
+      <OnboardingGate />
       {/* HERO */}
       <div className="hero">
         <div className="hero-eyebrow">
