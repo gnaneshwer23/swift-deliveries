@@ -38,7 +38,7 @@ function SignupPage() {
       password,
       options: {
         data: { full_name: fullName },
-        emailRedirectTo: `${window.location.origin}/onboarding`,
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
     setLoading(false);
@@ -57,7 +57,7 @@ function SignupPage() {
     setLoading(true);
     setError(null);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: `${window.location.origin}/auth/callback`,
     });
     setLoading(false);
     if (result.error) setError(result.error.message || "Google sign-up failed");

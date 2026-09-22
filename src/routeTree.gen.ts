@@ -29,6 +29,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated/workspace'
 import { Route as AttestTokenRouteImport } from './routes/attest.$token'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as PortfolioTokenRouteImport } from './routes/portfolio.$token'
@@ -156,6 +157,11 @@ const AuthenticatedWorkspaceRoute = AuthenticatedWorkspaceRouteImport.update({
 const AttestTokenRoute = AttestTokenRouteImport.update({
   id: '/attest/$token',
   path: '/attest/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
@@ -348,6 +354,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/attest/$token': typeof AttestTokenRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/invite/$token': typeof InviteTokenRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
@@ -397,6 +404,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/attest/$token': typeof AttestTokenRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/invite/$token': typeof InviteTokenRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
@@ -448,6 +456,7 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/attest/$token': typeof AttestTokenRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/invite/$token': typeof InviteTokenRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
@@ -500,6 +509,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/workspace'
     | '/attest/$token'
+    | '/auth/callback'
     | '/checkout/return'
     | '/invite/$token'
     | '/portfolio/$token'
@@ -549,6 +559,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/onboarding'
     | '/attest/$token'
+    | '/auth/callback'
     | '/checkout/return'
     | '/invite/$token'
     | '/portfolio/$token'
@@ -599,6 +610,7 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/_authenticated/workspace'
     | '/attest/$token'
+    | '/auth/callback'
     | '/checkout/return'
     | '/invite/$token'
     | '/portfolio/$token'
@@ -649,6 +661,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   TermsRoute: typeof TermsRoute
   AttestTokenRoute: typeof AttestTokenRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   InviteTokenRoute: typeof InviteTokenRoute
   PortfolioTokenRoute: typeof PortfolioTokenRoute
@@ -801,6 +814,13 @@ declare module '@tanstack/react-router' {
       path: '/attest/$token'
       fullPath: '/attest/$token'
       preLoaderRoute: typeof AttestTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout/return': {
@@ -1110,6 +1130,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   TermsRoute: TermsRoute,
   AttestTokenRoute: AttestTokenRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
   InviteTokenRoute: InviteTokenRoute,
   PortfolioTokenRoute: PortfolioTokenRoute,
