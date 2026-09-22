@@ -87,7 +87,18 @@ function ContextualHome() {
         <div className="briefing-greeting">
           Good to see you, <em>{firstName}</em>.
         </div>
-        <div className="briefing-sub">{journey.description}</div>
+        <div className="briefing-sub">
+          {goal.role ? (
+            <>
+              You are aiming at <strong>{goal.role}</strong>
+              {goal.level ? ` at ${goal.level.toLowerCase()}` : ""}
+              {goal.timeframe ? `, ${goal.timeframe.toLowerCase()}` : ""}
+              {goal.currentRole ? `, from ${goal.currentRole}` : ""}. {journey.description}
+            </>
+          ) : (
+            journey.description
+          )}
+        </div>
         <div className="briefing-cards">
           <div className="briefing-card">
             <div className="briefing-card-label">Evidence entries</div>
