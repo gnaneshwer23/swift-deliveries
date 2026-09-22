@@ -246,6 +246,12 @@ function OnboardingPage() {
           <h1 className="mt-8 max-w-2xl font-serif text-5xl font-black uppercase leading-[0.92] sm:text-6xl">
             {STEPS[step - 1]}
           </h1>
+          {answers.fullName.trim() ? (
+            <p className="mt-6 font-mono text-[0.6875rem] font-bold uppercase text-[var(--mkt-green-m)]">
+              {answers.fullName.trim().split(" ")[0]}
+              {answers.targetRole.trim() ? ` → ${answers.targetRole.trim()}` : ""}
+            </p>
+          ) : null}
           <p className="mt-8 max-w-md text-base leading-relaxed text-[var(--mkt-text2)]">
             Everything you enter here is stored as a self-reported claim. It creates no evidence, no
             score and no verified status. Only work you do inside the platform, judged against a
