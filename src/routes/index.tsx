@@ -240,9 +240,7 @@ function HomePage() {
           by someone outside DeliverX. That record is yours to show.
         </p>
         <div className="hero-actions">
-          <Link to="/signup" className="btn btn-amber">
-            Get started
-          </Link>
+          <CtaLink signedInTo="/workspace" signedInLabel="Go to workspace" />
           <Link to="/pricing" className="btn btn-secondary">
             See plans
           </Link>
@@ -483,9 +481,7 @@ function HomePage() {
             Start with realistic product work and build an evidence record you control.
           </p>
           <div className="cta-btns">
-            <Link to="/signup" className="btn btn-amber">
-              Get started
-            </Link>
+            <CtaLink signedInTo="/workspace" signedInLabel="Go to workspace" />
             <Link to="/pricing" className="btn btn-secondary">
               See plans
             </Link>

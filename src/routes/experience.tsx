@@ -89,9 +89,7 @@ function ExperiencePage() {
           Work as a product manager inside realistic organisations. Your actions — not the setup —
           create the evidence.
         </p>
-        <Link to="/signup" className="btn btn-amber">
-          Get started
-        </Link>
+        <CtaLink signedInTo="/workspace/experience" signedInLabel="Open Experience →" />
       </div>
 
       <JourneyLadder active="work" />
@@ -190,9 +188,11 @@ function ExperiencePage() {
         <p className="body-lg" style={{ marginBottom: 28 }}>
           Your first evidence entry is one task away.
         </p>
-        <Link to="/signup" className="btn btn-amber" style={{ fontSize: 15, padding: "12px 28px" }}>
-          Get started
-        </Link>
+        <CtaLink
+          signedInTo="/workspace/experience"
+          signedInLabel="Open Experience →"
+          style={{ fontSize: 15, padding: "12px 28px" }}
+        />
       </div>
 
       <FaqSection
