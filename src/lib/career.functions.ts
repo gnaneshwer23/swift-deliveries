@@ -324,6 +324,20 @@ export const createApplication = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
+
+    // One row per open pursuit: re-adding the same company and role is a
+    // duplicate, not a second application.
+    const existing = await supabase
+      .from("job_applications")
+      .select("id")
+      .eq("owner_id", userId)
+      .neq("stage", "closed")
+      .ilike("company", data.company)
+      .ilike("role_title", data.roleTitle)
+      .limit(1);
+    if (existing.error) throw new Error(existing.error.message);
+    if (existing.data?.length) return { ok: true, duplicate: true as const };
+
     const { error } = await supabase.from("job_applications").insert({
       owner_id: userId,
       company: data.company,
@@ -333,7 +347,7 @@ export const createApplication = createServerFn({ method: "POST" })
       portfolio_share_id: data.portfolioShareId,
     });
     if (error) throw new Error(error.message);
-    return { ok: true };
+    return { ok: true, duplicate: false as const };
   });
 
 export const updateApplication = createServerFn({ method: "POST" })

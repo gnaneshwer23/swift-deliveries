@@ -5,6 +5,7 @@ import { Bento, BentoTile } from "@/components/marketing/bento";
 import { ProductView } from "@/components/marketing/product-view";
 import { FaqSection } from "@/components/marketing/faq-section";
 import { OnboardingGate } from "@/components/onboarding-gate";
+import { CtaLink } from "@/components/marketing/cta-link";
 
 const TITLE = "DeliverX — Do the work. Keep the proof. Earn the signal.";
 const DESCRIPTION =
@@ -240,9 +241,7 @@ function HomePage() {
           by someone outside DeliverX. That record is yours to show.
         </p>
         <div className="hero-actions">
-          <Link to="/signup" className="btn btn-amber">
-            Get started
-          </Link>
+          <CtaLink signedInTo="/workspace" signedInLabel="Go to workspace" />
           <Link to="/pricing" className="btn btn-secondary">
             See plans
           </Link>
@@ -483,9 +482,7 @@ function HomePage() {
             Start with realistic product work and build an evidence record you control.
           </p>
           <div className="cta-btns">
-            <Link to="/signup" className="btn btn-amber">
-              Get started
-            </Link>
+            <CtaLink signedInTo="/workspace" signedInLabel="Go to workspace" />
             <Link to="/pricing" className="btn btn-secondary">
               See plans
             </Link>

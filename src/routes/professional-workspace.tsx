@@ -1,7 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { JourneyLadder } from "@/components/marketing/journey-ladder";
 import { FaqSection, JourneyCrossSell } from "@/components/marketing/faq-section";
+import { CtaLink } from "@/components/marketing/cta-link";
 
 export const Route = createFileRoute("/professional-workspace")({
   head: () => ({
@@ -79,9 +80,7 @@ function ProfessionalWorkspacePage() {
           One controlled space for meetings, artefacts, decisions and evidence — built around human
           ownership.
         </p>
-        <Link to="/signup" className="btn btn-amber">
-          Get started
-        </Link>
+        <CtaLink signedInTo="/workspace/projects" signedInLabel="Open Workspace →" />
       </div>
 
       <JourneyLadder active="advance" />
