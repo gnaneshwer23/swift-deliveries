@@ -51,11 +51,15 @@ function ApplicationsPage() {
       createApplication({
         data: { company, roleTitle, source, notes: "", portfolioShareId: shareId || null },
       }),
-    onSuccess: () => {
+    onSuccess: (result) => {
       setCompany("");
       setRoleTitle("");
       setShareId("");
-      toast.success("Application added.");
+      if (result.duplicate) {
+        toast.info("You are already tracking that role at that company.");
+      } else {
+        toast.success("Application added.");
+      }
       void invalidate();
     },
     onError: (e: Error) => toast.error(e.message),

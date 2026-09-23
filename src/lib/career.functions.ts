@@ -347,7 +347,7 @@ export const createApplication = createServerFn({ method: "POST" })
       portfolio_share_id: data.portfolioShareId,
     });
     if (error) throw new Error(error.message);
-    return { ok: true };
+    return { ok: true, duplicate: false as const };
   });
 
 export const updateApplication = createServerFn({ method: "POST" })
