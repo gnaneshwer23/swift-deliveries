@@ -32,6 +32,7 @@ import { Route as AttestTokenRouteImport } from './routes/attest.$token'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
+import { Route as LoginSplatRouteImport } from './routes/login.$'
 import { Route as PortfolioTokenRouteImport } from './routes/portfolio.$token'
 import { Route as ResourcesIndexRouteImport } from './routes/resources.index'
 import { Route as ResourcesPmPortfolioRouteImport } from './routes/resources.pm-portfolio'
@@ -173,6 +174,11 @@ const InviteTokenRoute = InviteTokenRouteImport.update({
   id: '/invite/$token',
   path: '/invite/$token',
   getParentRoute: () => rootRouteImport,
+} as any)
+const LoginSplatRoute = LoginSplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => LoginRoute,
 } as any)
 const PortfolioTokenRoute = PortfolioTokenRouteImport.update({
   id: '/portfolio/$token',
@@ -342,7 +348,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/how-it-works': typeof HowItWorksRoute
   '/launchpad': typeof LaunchpadRoute
-  '/login': typeof LoginRoute
+  '/login': typeof LoginRouteWithChildren
   '/pilot': typeof PilotRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -357,6 +363,7 @@ export interface FileRoutesByFullPath {
   '/auth/callback': typeof AuthCallbackRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/login/$': typeof LoginSplatRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
   '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
   '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
@@ -393,7 +400,7 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/how-it-works': typeof HowItWorksRoute
   '/launchpad': typeof LaunchpadRoute
-  '/login': typeof LoginRoute
+  '/login': typeof LoginRouteWithChildren
   '/pilot': typeof PilotRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -407,6 +414,7 @@ export interface FileRoutesByTo {
   '/auth/callback': typeof AuthCallbackRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/login/$': typeof LoginSplatRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
   '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
   '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
@@ -444,7 +452,7 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/how-it-works': typeof HowItWorksRoute
   '/launchpad': typeof LaunchpadRoute
-  '/login': typeof LoginRoute
+  '/login': typeof LoginRouteWithChildren
   '/pilot': typeof PilotRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -459,6 +467,7 @@ export interface FileRoutesById {
   '/auth/callback': typeof AuthCallbackRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/login/$': typeof LoginSplatRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
   '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
   '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
@@ -512,6 +521,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/checkout/return'
     | '/invite/$token'
+    | '/login/$'
     | '/portfolio/$token'
     | '/resources/pm-portfolio'
     | '/resources/star-interview-stories'
@@ -562,6 +572,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/checkout/return'
     | '/invite/$token'
+    | '/login/$'
     | '/portfolio/$token'
     | '/resources/pm-portfolio'
     | '/resources/star-interview-stories'
@@ -613,6 +624,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/checkout/return'
     | '/invite/$token'
+    | '/login/$'
     | '/portfolio/$token'
     | '/resources/pm-portfolio'
     | '/resources/star-interview-stories'
@@ -651,7 +663,7 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   HowItWorksRoute: typeof HowItWorksRoute
   LaunchpadRoute: typeof LaunchpadRoute
-  LoginRoute: typeof LoginRoute
+  LoginRoute: typeof LoginRouteWithChildren
   PilotRoute: typeof PilotRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -836,6 +848,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/invite/$token'
       preLoaderRoute: typeof InviteTokenRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/login/$': {
+      id: '/login/$'
+      path: '/$'
+      fullPath: '/login/$'
+      preLoaderRoute: typeof LoginSplatRouteImport
+      parentRoute: typeof LoginRoute
     }
     '/portfolio/$token': {
       id: '/portfolio/$token'
@@ -1111,6 +1130,16 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface LoginRouteChildren {
+  LoginSplatRoute: typeof LoginSplatRoute
+}
+
+const LoginRouteChildren: LoginRouteChildren = {
+  LoginSplatRoute: LoginSplatRoute,
+}
+
+const LoginRouteWithChildren = LoginRoute._addFileChildren(LoginRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
@@ -1120,7 +1149,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   HowItWorksRoute: HowItWorksRoute,
   LaunchpadRoute: LaunchpadRoute,
-  LoginRoute: LoginRoute,
+  LoginRoute: LoginRouteWithChildren,
   PilotRoute: PilotRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,

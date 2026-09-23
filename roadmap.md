@@ -78,5 +78,5 @@ Approved plan: adopt mockup design system + build remaining product (phases 1–
 ## QA report follow-up (23 Sep 2026)
 - [x] DX-023: public page buttons now open the workspace for signed-in people instead of asking them to create an account
 - [x] DX-007: adding the same company and role twice no longer creates a duplicate tracked application
-- [x] RG-04: password recovery pages confirmed present (/forgot-password, /reset-password)
+- [x] RG-04: password recovery pages confirmed present (/forgot-password, /reset-password); legacy /login/forgot (and any /login/* path) now redirects to /forgot-password via src/routes/login.$.tsx
 - [x] DX-017: interview practice forms already clear after saving
