@@ -221,7 +221,7 @@ export const getLaunchpadPack = createServerFn({ method: "GET" })
 /** Creates a private, expiring, revocable portfolio link. Nothing is public by default. */
 export const createPortfolioShare = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) =>
+  .validator((data: unknown) =>
     z
       .object({
         label: z.string().trim().min(2, "Name this link (e.g. the company)").max(120),
@@ -245,7 +245,7 @@ export const createPortfolioShare = createServerFn({ method: "POST" })
 
 export const revokePortfolioShare = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .validator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("portfolio_shares")
@@ -282,7 +282,7 @@ export type PublicPortfolio =
  * never returns artefact bodies, emails or private notes.
  */
 export const getPublicPortfolio = createServerFn({ method: "GET" })
-  .inputValidator((data: unknown) => z.object({ token: z.string().min(10).max(200) }).parse(data))
+  .validator((data: unknown) => z.object({ token: z.string().min(10).max(200) }).parse(data))
   .handler(async ({ data }): Promise<PublicPortfolio> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 

@@ -160,7 +160,7 @@ const submitSchema = z.object({
 
 export const submitCoachingEvidence = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => submitSchema.parse(data))
+  .validator((data: unknown) => submitSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { data: submissionId, error } = await context.supabase.rpc("create_coaching_submission", {
       _exercise_id: data.exerciseId,
@@ -178,7 +178,7 @@ export const submitCoachingEvidence = createServerFn({ method: "POST" })
 
 export const reviewCoachingSubmission = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) =>
+  .validator((data: unknown) =>
     z.object({ submissionId: z.string().uuid(), decision: z.enum(["confirmed", "rejected"]), coachNote: z.string().trim().min(3).max(2000) }).parse(data),
   )
   .handler(async ({ data, context }) => {

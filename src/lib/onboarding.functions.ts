@@ -124,7 +124,7 @@ const stepSchema = z.object({
  */
 export const savePiOnboardingStep = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => stepSchema.parse(data))
+  .validator((data: unknown) => stepSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
 

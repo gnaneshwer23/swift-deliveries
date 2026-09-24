@@ -46,7 +46,7 @@ async function resolveOrCreateCustomer(
 
 export const createCheckoutSession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { priceId: PriceId; returnUrl: string; environment: StripeEnv }) => {
+  .validator((data: { priceId: PriceId; returnUrl: string; environment: StripeEnv }) => {
     if (!PRICE_IDS.includes(data.priceId)) throw new Error("Unknown plan");
     if (data.environment !== "sandbox" && data.environment !== "live") throw new Error("Invalid environment");
     const url = new URL(data.returnUrl);

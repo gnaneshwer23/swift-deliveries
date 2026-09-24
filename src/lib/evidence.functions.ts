@@ -226,7 +226,7 @@ const artefactSchema = z.object({
  */
 export const recordWorkEvidence = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => artefactSchema.parse(data))
+  .validator((data: unknown) => artefactSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
 
@@ -266,7 +266,7 @@ const selfReportSchema = z.object({
 /** A labelled self-reported claim. Always stored at the weakest strength. */
 export const recordSelfReport = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => selfReportSchema.parse(data))
+  .validator((data: unknown) => selfReportSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase.from("evidence_ledger").insert({
       owner_id: context.userId,
@@ -289,7 +289,7 @@ export const recordSelfReport = createServerFn({ method: "POST" })
  */
 export const runCapabilityScoring = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) =>
+  .validator((data: unknown) =>
     z
       .object({
         runKind: z.enum(["baseline", "interim", "final", "transfer"]),
@@ -467,7 +467,7 @@ export const runCapabilityScoring = createServerFn({ method: "POST" })
 /** Owner asks an external person to confirm a claim. Verified stays off. */
 export const requestAttestation = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) =>
+  .validator((data: unknown) =>
     z
       .object({
         claimId: z.string().uuid(),
@@ -505,7 +505,7 @@ export const requestAttestation = createServerFn({ method: "POST" })
 
 /** Public: what the external attestor sees. No owner PII beyond their name. */
 export const getAttestationRequest = createServerFn({ method: "GET" })
-  .inputValidator((data: unknown) => z.object({ token: z.string().min(10).max(200) }).parse(data))
+  .validator((data: unknown) => z.object({ token: z.string().min(10).max(200) }).parse(data))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
@@ -543,7 +543,7 @@ export const getAttestationRequest = createServerFn({ method: "GET" })
  * external_verification evidence and lets the database compute Verified.
  */
 export const respondToAttestation = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) =>
+  .validator((data: unknown) =>
     z
       .object({
         token: z.string().min(10).max(200),

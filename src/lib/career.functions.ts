@@ -103,7 +103,7 @@ export const getInterviewLab = createServerFn({ method: "GET" })
 
 export const createInterviewSession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) =>
+  .validator((data: unknown) =>
     z
       .object({
         roleTarget: z.string().trim().min(2).max(120),
@@ -188,7 +188,7 @@ export const createInterviewSession = createServerFn({ method: "POST" })
 
 export const addInterviewQuestion = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) =>
+  .validator((data: unknown) =>
     z.object({ sessionId: uuid, prompt: z.string().trim().min(10).max(600) }).parse(data),
   )
   .handler(async ({ data, context }) => {
@@ -210,7 +210,7 @@ export const addInterviewQuestion = createServerFn({ method: "POST" })
 
 export const saveInterviewAnswer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) =>
+  .validator((data: unknown) =>
     z
       .object({
         questionId: uuid,
@@ -238,7 +238,7 @@ export const saveInterviewAnswer = createServerFn({ method: "POST" })
 
 export const closeInterviewSession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => z.object({ sessionId: uuid }).parse(data))
+  .validator((data: unknown) => z.object({ sessionId: uuid }).parse(data))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const { error } = await supabase
@@ -311,7 +311,7 @@ const STAGES = ["saved", "applied", "interviewing", "offer", "closed"] as const;
 
 export const createApplication = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) =>
+  .validator((data: unknown) =>
     z
       .object({
         company: z.string().trim().min(2).max(120),
@@ -352,7 +352,7 @@ export const createApplication = createServerFn({ method: "POST" })
 
 export const updateApplication = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) =>
+  .validator((data: unknown) =>
     z
       .object({
         id: uuid,
@@ -391,7 +391,7 @@ export const updateApplication = createServerFn({ method: "POST" })
 
 export const deleteApplication = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => z.object({ id: uuid }).parse(data))
+  .validator((data: unknown) => z.object({ id: uuid }).parse(data))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const { error } = await supabase
@@ -469,7 +469,7 @@ export const getPerformanceReviewBoard = createServerFn({ method: "GET" })
 
 export const createPerformanceReview = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) =>
+  .validator((data: unknown) =>
     z
       .object({
         periodLabel: z.string().trim().min(2).max(80),
@@ -491,7 +491,7 @@ export const createPerformanceReview = createServerFn({ method: "POST" })
 
 export const updatePerformanceReview = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) =>
+  .validator((data: unknown) =>
     z.object({ id: uuid, selfSummary: z.string().trim().min(40).max(6000) }).parse(data),
   )
   .handler(async ({ data, context }) => {
@@ -508,7 +508,7 @@ export const updatePerformanceReview = createServerFn({ method: "POST" })
 
 export const submitPerformanceReview = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => z.object({ id: uuid }).parse(data))
+  .validator((data: unknown) => z.object({ id: uuid }).parse(data))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const { error } = await supabase
@@ -523,7 +523,7 @@ export const submitPerformanceReview = createServerFn({ method: "POST" })
 
 export const decidePerformanceReview = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) =>
+  .validator((data: unknown) =>
     z
       .object({
         id: uuid,

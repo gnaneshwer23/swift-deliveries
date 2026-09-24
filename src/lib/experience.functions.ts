@@ -143,7 +143,7 @@ export const getExperienceWorkspace = createServerFn({ method: "GET" })
 /** Join a scenario. Creates nothing else — no evidence until work is submitted. */
 export const joinExperienceScenario = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => z.object({ scenarioId: z.string().uuid() }).parse(data))
+  .validator((data: unknown) => z.object({ scenarioId: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("experience_enrolments")
@@ -161,7 +161,7 @@ const draftSchema = z.object({
 /** Private working draft. Never evidence — drafts are editable and unjudged. */
 export const saveExperienceDraft = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => draftSchema.parse(data))
+  .validator((data: unknown) => draftSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase.from("experience_task_drafts").upsert(
       {
@@ -184,7 +184,7 @@ export const saveExperienceDraft = createServerFn({ method: "POST" })
  */
 export const submitExperienceTask = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) =>
+  .validator((data: unknown) =>
     z
       .object({
         taskId: z.string().uuid(),

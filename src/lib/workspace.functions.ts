@@ -129,7 +129,7 @@ const onboardingSchema = z.object({
 /** Creates the profile details and the first organisation for a new user. */
 export const completeOnboarding = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => onboardingSchema.parse(data))
+  .validator((data: unknown) => onboardingSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
 
@@ -206,7 +206,7 @@ const profileSchema = z.object({
 
 export const updateProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => profileSchema.parse(data))
+  .validator((data: unknown) => profileSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase.from("profiles").upsert({
       id: context.userId,
@@ -227,7 +227,7 @@ const orgSchema = z.object({
 
 export const updateOrganisation = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => orgSchema.parse(data))
+  .validator((data: unknown) => orgSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("organisations")
@@ -250,7 +250,7 @@ const createOrgSchema = z.object({
 /** Optional step: a candidate can create an organisation any time after onboarding. */
 export const createOrganisation = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => createOrgSchema.parse(data))
+  .validator((data: unknown) => createOrgSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const base = slugify(data.name);
@@ -317,7 +317,7 @@ export type TeamData = {
 
 export const getTeam = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => z.object({ organisationId: z.string().uuid() }).parse(data))
+  .validator((data: unknown) => z.object({ organisationId: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }): Promise<TeamData> => {
     const { supabase, userId } = context;
 
@@ -387,7 +387,7 @@ export const getTeam = createServerFn({ method: "GET" })
 
 export const inviteMember = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) =>
+  .validator((data: unknown) =>
     z
       .object({
         organisationId: z.string().uuid(),
@@ -413,7 +413,7 @@ export const inviteMember = createServerFn({ method: "POST" })
 
 export const revokeInvitation = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => z.object({ invitationId: z.string().uuid() }).parse(data))
+  .validator((data: unknown) => z.object({ invitationId: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("invitations")
@@ -425,7 +425,7 @@ export const revokeInvitation = createServerFn({ method: "POST" })
 
 export const renewInvitation = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => z.object({ invitationId: z.string().uuid() }).parse(data))
+  .validator((data: unknown) => z.object({ invitationId: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const expires = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
     const { error } = await context.supabase
@@ -438,7 +438,7 @@ export const renewInvitation = createServerFn({ method: "POST" })
 
 export const updateMemberRole = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) =>
+  .validator((data: unknown) =>
     z
       .object({ membershipId: z.string().uuid(), role: z.enum(["admin", "member"]) })
       .parse(data),
@@ -455,7 +455,7 @@ export const updateMemberRole = createServerFn({ method: "POST" })
 
 export const removeMember = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => z.object({ membershipId: z.string().uuid() }).parse(data))
+  .validator((data: unknown) => z.object({ membershipId: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     await assertNotOwnerMembership(context.supabase, data.membershipId);
     const { error } = await context.supabase
@@ -468,7 +468,7 @@ export const removeMember = createServerFn({ method: "POST" })
 
 /** Public: shows who invited you and to which organisation, nothing else. */
 export const getInvitationPreview = createServerFn({ method: "GET" })
-  .inputValidator((data: unknown) => z.object({ token: z.string().min(10).max(200) }).parse(data))
+  .validator((data: unknown) => z.object({ token: z.string().min(10).max(200) }).parse(data))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: invite } = await supabaseAdmin
@@ -499,7 +499,7 @@ export const getInvitationPreview = createServerFn({ method: "GET" })
 /** Joins the signed-in user to the organisation the invitation belongs to. */
 export const acceptInvitation = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => z.object({ token: z.string().min(10).max(200) }).parse(data))
+  .validator((data: unknown) => z.object({ token: z.string().min(10).max(200) }).parse(data))
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { userId, claims } = context;
