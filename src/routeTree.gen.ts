@@ -32,7 +32,7 @@ import { Route as AttestTokenRouteImport } from './routes/attest.$token'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
-import { Route as LoginSplatRouteImport } from './routes/login.$'
+import { Route as LoginForgotRouteImport } from './routes/login.forgot'
 import { Route as PortfolioTokenRouteImport } from './routes/portfolio.$token'
 import { Route as ResourcesIndexRouteImport } from './routes/resources.index'
 import { Route as ResourcesPmPortfolioRouteImport } from './routes/resources.pm-portfolio'
@@ -175,9 +175,9 @@ const InviteTokenRoute = InviteTokenRouteImport.update({
   path: '/invite/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginSplatRoute = LoginSplatRouteImport.update({
-  id: '/$',
-  path: '/$',
+const LoginForgotRoute = LoginForgotRouteImport.update({
+  id: '/forgot',
+  path: '/forgot',
   getParentRoute: () => LoginRoute,
 } as any)
 const PortfolioTokenRoute = PortfolioTokenRouteImport.update({
@@ -363,7 +363,7 @@ export interface FileRoutesByFullPath {
   '/auth/callback': typeof AuthCallbackRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/invite/$token': typeof InviteTokenRoute
-  '/login/$': typeof LoginSplatRoute
+  '/login/forgot': typeof LoginForgotRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
   '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
   '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
@@ -414,7 +414,7 @@ export interface FileRoutesByTo {
   '/auth/callback': typeof AuthCallbackRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/invite/$token': typeof InviteTokenRoute
-  '/login/$': typeof LoginSplatRoute
+  '/login/forgot': typeof LoginForgotRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
   '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
   '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
@@ -467,7 +467,7 @@ export interface FileRoutesById {
   '/auth/callback': typeof AuthCallbackRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/invite/$token': typeof InviteTokenRoute
-  '/login/$': typeof LoginSplatRoute
+  '/login/forgot': typeof LoginForgotRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
   '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
   '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
@@ -521,7 +521,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/checkout/return'
     | '/invite/$token'
-    | '/login/$'
+    | '/login/forgot'
     | '/portfolio/$token'
     | '/resources/pm-portfolio'
     | '/resources/star-interview-stories'
@@ -572,7 +572,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/checkout/return'
     | '/invite/$token'
-    | '/login/$'
+    | '/login/forgot'
     | '/portfolio/$token'
     | '/resources/pm-portfolio'
     | '/resources/star-interview-stories'
@@ -624,7 +624,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/checkout/return'
     | '/invite/$token'
-    | '/login/$'
+    | '/login/forgot'
     | '/portfolio/$token'
     | '/resources/pm-portfolio'
     | '/resources/star-interview-stories'
@@ -849,11 +849,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InviteTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/login/$': {
-      id: '/login/$'
-      path: '/$'
-      fullPath: '/login/$'
-      preLoaderRoute: typeof LoginSplatRouteImport
+    '/login/forgot': {
+      id: '/login/forgot'
+      path: '/forgot'
+      fullPath: '/login/forgot'
+      preLoaderRoute: typeof LoginForgotRouteImport
       parentRoute: typeof LoginRoute
     }
     '/portfolio/$token': {
@@ -1131,11 +1131,11 @@ const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface LoginRouteChildren {
-  LoginSplatRoute: typeof LoginSplatRoute
+  LoginForgotRoute: typeof LoginForgotRoute
 }
 
 const LoginRouteChildren: LoginRouteChildren = {
-  LoginSplatRoute: LoginSplatRoute,
+  LoginForgotRoute: LoginForgotRoute,
 }
 
 const LoginRouteWithChildren = LoginRoute._addFileChildren(LoginRouteChildren)
