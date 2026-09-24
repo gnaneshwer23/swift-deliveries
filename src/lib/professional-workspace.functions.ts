@@ -23,7 +23,7 @@ export type ProfessionalWorkspace = {
 
 export const getProfessionalWorkspace = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => z.object({ projectId: uuid.nullable().default(null) }).parse(data))
+  .validator((data: unknown) => z.object({ projectId: uuid.nullable().default(null) }).parse(data))
   .handler(async ({ data, context }): Promise<ProfessionalWorkspace> => {
     const { supabase, userId } = context;
     const { data: projects, error } = await supabase.from("workspace_projects").select("id,title,purpose,source,created_at").eq("owner_id", userId).order("updated_at", { ascending: false });
@@ -62,7 +62,7 @@ export const getProfessionalWorkspace = createServerFn({ method: "GET" })
     };
   });
 
-export const createWorkspaceProject = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).inputValidator((data: unknown) => projectInput.parse(data)).handler(async ({ data, context }) => {
+export const createWorkspaceProject = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).validator((data: unknown) => projectInput.parse(data)).handler(async ({ data, context }) => {
   const { supabase, userId } = context;
   if (data.enrolmentId) {
     const { data: enrolment } = await supabase.from("experience_enrolments").select("id,experience_scenarios(company_name,name,summary)").eq("id", data.enrolmentId).eq("owner_id", userId).maybeSingle();
@@ -84,12 +84,12 @@ export const createWorkspaceProject = createServerFn({ method: "POST" }).middlew
   return { projectId: project.id };
 });
 
-export const setWorkspaceObservation = createServerFn({ method:"POST" }).middleware([requireSupabaseAuth]).inputValidator((data:unknown)=>z.object({projectId:uuid,enabled:z.boolean()}).parse(data)).handler(async({data,context})=>{
+export const setWorkspaceObservation = createServerFn({ method:"POST" }).middleware([requireSupabaseAuth]).validator((data:unknown)=>z.object({projectId:uuid,enabled:z.boolean()}).parse(data)).handler(async({data,context})=>{
   const { error }=await context.supabase.from("workspace_observation_preferences").upsert({project_id:data.projectId,owner_id:context.userId,enabled:data.enabled,changed_at:new Date().toISOString()},{onConflict:"project_id"});
   if(error) throw new Error(error.message); return {ok:true};
 });
 
-export const createWorkspaceItem = createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).inputValidator((data:unknown)=>z.discriminatedUnion("type",[
+export const createWorkspaceItem = createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).validator((data:unknown)=>z.discriminatedUnion("type",[
   z.object({type:z.literal("task"),projectId:uuid,title:z.string().trim().min(2).max(180),detail:z.string().trim().max(4000).default(""),priority:z.enum(["low","medium","high","critical"]).default("medium")}),
   z.object({type:z.literal("meeting"),projectId:uuid,title:z.string().trim().min(2).max(180),detail:z.string().trim().max(8000).default("")}),
   z.object({type:z.literal("decision"),projectId:uuid,title:z.string().trim().min(2).max(180),detail:z.string().trim().max(4000).default("")}),
@@ -107,7 +107,7 @@ export const createWorkspaceItem = createServerFn({method:"POST"}).middleware([r
   return {id:result.id};
 });
 
-export const updateWorkspaceItemStatus = createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).inputValidator((data:unknown)=>z.object({type:z.enum(["task","meeting","decision","risk"]),id:uuid,status:z.string().min(2).max(30),projectId:uuid}).parse(data)).handler(async({data,context})=>{
+export const updateWorkspaceItemStatus = createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).validator((data:unknown)=>z.object({type:z.enum(["task","meeting","decision","risk"]),id:uuid,status:z.string().min(2).max(30),projectId:uuid}).parse(data)).handler(async({data,context})=>{
   const allowed={task:["open","in_progress","blocked","done"],meeting:["planned","held","cancelled"],decision:["open","decided","revisited"],risk:["open","mitigated","closed"]}[data.type];
   if(!allowed.includes(data.status)) throw new Error("That status change is not allowed.");
   let error: { message: string } | null = null;
@@ -120,12 +120,12 @@ export const updateWorkspaceItemStatus = createServerFn({method:"POST"}).middlew
   return {ok:true};
 });
 
-export const submitWorkspaceDocument = createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).inputValidator((data:unknown)=>z.object({documentId:uuid}).parse(data)).handler(async({data,context})=>{
+export const submitWorkspaceDocument = createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).validator((data:unknown)=>z.object({documentId:uuid}).parse(data)).handler(async({data,context})=>{
   const {data:versionId,error}=await context.supabase.rpc("submit_workspace_document",{_document_id:data.documentId});
   if(error) throw new Error(error.message); return {versionId};
 });
 
-export const generateWorkspaceAiDraft = createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).inputValidator((data:unknown)=>z.object({projectId:uuid,kind:z.enum(["agenda","artefact","decision_options","risk_flags"])}).parse(data)).handler(async({data,context})=>{
+export const generateWorkspaceAiDraft = createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).validator((data:unknown)=>z.object({projectId:uuid,kind:z.enum(["agenda","artefact","decision_options","risk_flags"])}).parse(data)).handler(async({data,context})=>{
   const {data:project}=await context.supabase.from("workspace_projects").select("id,title,purpose").eq("id",data.projectId).eq("owner_id",context.userId).maybeSingle();
   if(!project) throw new Error("Workspace not found.");
   const [docs,decisions,tasks,risks]=await Promise.all([
@@ -152,7 +152,7 @@ export const generateWorkspaceAiDraft = createServerFn({method:"POST"}).middlewa
   }
 });
 
-export const resolveWorkspaceAiDraft = createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).inputValidator((data:unknown)=>z.object({suggestionId:uuid,projectId:uuid,action:z.enum(["approve","dismiss"]),editedText:z.string().max(20000).default("")}).parse(data)).handler(async({data,context})=>{
+export const resolveWorkspaceAiDraft = createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).validator((data:unknown)=>z.object({suggestionId:uuid,projectId:uuid,action:z.enum(["approve","dismiss"]),editedText:z.string().max(20000).default("")}).parse(data)).handler(async({data,context})=>{
   const {data:row}=await context.supabase.from("workspace_ai_suggestions").select("id,owner_id,status,content,kind,title").eq("id",data.suggestionId).eq("owner_id",context.userId).eq("project_id",data.projectId).maybeSingle();
   if(!row||row.status!=="ready") throw new Error("That AI draft is no longer awaiting review.");
   const original=typeof row.content==="object"&&row.content&&"text" in row.content?String((row.content as {text?:unknown}).text??""):"";
