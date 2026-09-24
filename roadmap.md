@@ -80,3 +80,12 @@ Approved plan: adopt mockup design system + build remaining product (phases 1–
 - [x] DX-007: adding the same company and role twice no longer creates a duplicate tracked application
 - [x] RG-04: password recovery pages confirmed present (/forgot-password, /reset-password); legacy /login/forgot (and any /login/* path) now redirects to /forgot-password via src/routes/login.$.tsx
 - [x] DX-017: interview practice forms already clear after saving
+
+## Publication readiness pass (24 Sep 2026)
+- [x] Replaced the deprecated server-function validator API across all 9 function modules (`inputValidator` -> `validator`); server log is now warning-free
+- [x] Fixed a launch blocker: the `/login/$` splat route also matched a bare `/login`, so the sign-in page redirected to `/forgot-password` and every protected-route bounce landed on password recovery. Replaced with an explicit `src/routes/login.forgot.tsx`
+- [x] Verified 16 public and guarded routes return 200 and land on the right URL, with zero browser console errors
+- [x] Head metadata (title, description, canonical, OG, Twitter) present on every content route
+- [x] Typecheck clean; build OK; security scan shows no critical or warning findings (2 info notes are the intentionally shared capability rubric tables)
+- [x] Published the audited build to deliverx.dev
+- [ ] Still open: branded email sending domain for deliverx.dev (auth emails use the default sender until DNS is configured)
