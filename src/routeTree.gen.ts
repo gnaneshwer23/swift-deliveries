@@ -60,6 +60,8 @@ import { Route as ApiPublicMonitoringClientErrorRouteImport } from './routes/api
 import { Route as ApiPublicMonitoringHealthRouteImport } from './routes/api/public/monitoring/health'
 import { Route as ApiPublicMonitoringUptimeRouteImport } from './routes/api/public/monitoring/uptime'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
+import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -339,6 +341,16 @@ const ApiPublicPaymentsWebhookRoute =
     path: '/api/public/payments/webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
+  id: '/lovable/email/auth/preview',
+  path: '/lovable/email/auth/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
+  id: '/lovable/email/auth/webhook',
+  path: '/lovable/email/auth/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -390,6 +402,8 @@ export interface FileRoutesByFullPath {
   '/api/public/monitoring/health': typeof ApiPublicMonitoringHealthRoute
   '/api/public/monitoring/uptime': typeof ApiPublicMonitoringUptimeRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/workspace/experience/': typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
 export interface FileRoutesByTo {
@@ -440,6 +454,8 @@ export interface FileRoutesByTo {
   '/api/public/monitoring/health': typeof ApiPublicMonitoringHealthRoute
   '/api/public/monitoring/uptime': typeof ApiPublicMonitoringUptimeRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/workspace/experience': typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
 export interface FileRoutesById {
@@ -494,6 +510,8 @@ export interface FileRoutesById {
   '/api/public/monitoring/health': typeof ApiPublicMonitoringHealthRoute
   '/api/public/monitoring/uptime': typeof ApiPublicMonitoringUptimeRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/_authenticated/workspace/experience/': typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
 export interface FileRouteTypes {
@@ -548,6 +566,8 @@ export interface FileRouteTypes {
     | '/api/public/monitoring/health'
     | '/api/public/monitoring/uptime'
     | '/api/public/payments/webhook'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/workspace/experience/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -598,6 +618,8 @@ export interface FileRouteTypes {
     | '/api/public/monitoring/health'
     | '/api/public/monitoring/uptime'
     | '/api/public/payments/webhook'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/workspace/experience'
   id:
     | '__root__'
@@ -651,6 +673,8 @@ export interface FileRouteTypes {
     | '/api/public/monitoring/health'
     | '/api/public/monitoring/uptime'
     | '/api/public/payments/webhook'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/_authenticated/workspace/experience/'
   fileRoutesById: FileRoutesById
 }
@@ -684,6 +708,8 @@ export interface RootRouteChildren {
   ApiPublicMonitoringHealthRoute: typeof ApiPublicMonitoringHealthRoute
   ApiPublicMonitoringUptimeRoute: typeof ApiPublicMonitoringUptimeRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
+  LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
+  LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1045,6 +1071,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/auth/preview': {
+      id: '/lovable/email/auth/preview'
+      path: '/lovable/email/auth/preview'
+      fullPath: '/lovable/email/auth/preview'
+      preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/auth/webhook': {
+      id: '/lovable/email/auth/webhook'
+      path: '/lovable/email/auth/webhook'
+      fullPath: '/lovable/email/auth/webhook'
+      preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1170,6 +1210,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicMonitoringHealthRoute: ApiPublicMonitoringHealthRoute,
   ApiPublicMonitoringUptimeRoute: ApiPublicMonitoringUptimeRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
+  LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
+  LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
