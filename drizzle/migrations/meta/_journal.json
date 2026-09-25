@@ -64,6 +64,13 @@
       "when": 1789982085973,
       "tag": "0008_schedule_uptime_health_check",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1790329608299,
+      "tag": "0009_grant_admin_role_owner",
+      "breakpoints": true
     }
   ]
 }
