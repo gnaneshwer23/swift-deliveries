@@ -93,7 +93,7 @@ Approved plan: adopt mockup design system + build remaining product (phases 1–
 ## DeliverX Workspace (B2B) track (2 Oct 2026)
 Spec: docs/workspace-one-page-spec.md. Rules: AGENTS.md "DeliverX Workspace (B2B) product rules".
 - [x] Phase 1: spec stored, product rules recorded, unfreeze criteria tracked
-- [ ] Phase 2: reposition /professional-workspace (sponsor buyer, four v1 roles, case-to-backlog story)
+- [x] Phase 2: reposition /professional-workspace (sponsor buyer, four v1 roles, case-to-backlog story)
 - [ ] Phase 3: Workspace app — six-stage loop (blocked: unfreeze criteria below)
 
 Unfreeze criteria (all must be true before Phase 3 starts):
