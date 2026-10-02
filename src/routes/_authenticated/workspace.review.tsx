@@ -47,7 +47,7 @@ export const Route = createFileRoute("/_authenticated/workspace/review")({
         description="No decision was recorded. Nothing in the record has changed."
       >
         <p role="alert" className="text-sm text-[var(--mkt-text2)]">
-          {error.message}
+          {error instanceof Error ? error.message : String(error)}
         </p>
         <Link to="/workspace/review" reloadDocument className="mt-4 inline-block text-sm underline">
           Try again
