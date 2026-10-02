@@ -89,3 +89,15 @@ Approved plan: adopt mockup design system + build remaining product (phases 1–
 - [x] Typecheck clean; build OK; security scan shows no critical or warning findings (2 info notes are the intentionally shared capability rubric tables)
 - [x] Published the audited build to deliverx.dev
 - [ ] Still open: branded email sending domain for deliverx.dev (auth emails use the default sender until DNS is configured)
+
+## DeliverX Workspace (B2B) track (2 Oct 2026)
+Spec: docs/workspace-one-page-spec.md. Rules: AGENTS.md "DeliverX Workspace (B2B) product rules".
+- [x] Phase 1: spec stored, product rules recorded, unfreeze criteria tracked
+- [ ] Phase 2: reposition /professional-workspace (sponsor buyer, four v1 roles, case-to-backlog story)
+- [ ] Phase 3: Workspace app — six-stage loop (blocked: unfreeze criteria below)
+
+Unfreeze criteria (all must be true before Phase 3 starts):
+- [ ] Candidate pilot: at least 5 of 10 users complete the core loop and at least 3 external attestations
+- [ ] One design partner committed (real team, real business case, named sponsor, 8 weeks; Fluent Institute first ask)
+- [ ] Candidate product in maintenance mode with no open P0/P1 issues
+- [ ] Decision-log entry amending the Build Charter to make Workspace a product, not an alias
