@@ -6,7 +6,9 @@ import { createCheckoutSession } from "@/utils/payments.functions";
 export type CheckoutPriceId =
   | "experience_monthly"
   | "launchpad_monthly"
-  | "complete_journey_monthly";
+  | "complete_journey_monthly"
+  | "complete_journey_yearly"
+  | "career_sprint_pass";
 
 export function StripeEmbeddedCheckout({ priceId }: { priceId: CheckoutPriceId }) {
   const fetchClientSecret = useCallback(async () => {

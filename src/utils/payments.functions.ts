@@ -7,7 +7,13 @@ import {
   type StripeEnv,
 } from "@/lib/stripe.server";
 
-const PRICE_IDS = ["experience_monthly", "launchpad_monthly", "complete_journey_monthly"] as const;
+const PRICE_IDS = [
+  "experience_monthly",
+  "launchpad_monthly",
+  "complete_journey_monthly",
+  "complete_journey_yearly",
+  "career_sprint_pass",
+] as const;
 type PriceId = (typeof PRICE_IDS)[number];
 
 type CheckoutResult = { clientSecret: string } | { error: string };
@@ -68,7 +74,8 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
       const stripe = createStripeClient(data.environment);
       const prices = await stripe.prices.list({ lookup_keys: [data.priceId], limit: 1 });
       const stripePrice = prices.data[0];
-      if (!stripePrice || stripePrice.type !== "recurring") throw new Error("Plan price not found");
+      if (!stripePrice) throw new Error("Plan price not found");
+      const isRecurring = stripePrice.type === "recurring";
 
       const { data: authData } = await context.supabase.auth.getUser();
       const email = authData.user?.email;
@@ -77,15 +84,36 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
         userId: context.userId,
       });
 
+      // One-off purchases: describe the PaymentIntent with the product name so
+      // the payments dashboard renders the product, not a lookup-key slug.
+      let productDescription: string | undefined;
+      let productId: string | undefined;
+      if (!isRecurring) {
+        const resolvedProductId =
+          typeof stripePrice.product === "string" ? stripePrice.product : stripePrice.product?.id;
+        if (resolvedProductId) {
+          const product = await stripe.products.retrieve(resolvedProductId);
+          productDescription = product.name;
+          productId = resolvedProductId;
+        }
+      }
+
       const session = await stripe.checkout.sessions.create({
         line_items: [{ price: stripePrice.id, quantity: 1 }],
-        mode: "subscription",
+        mode: isRecurring ? "subscription" : "payment",
         ui_mode: "embedded_page",
         return_url: data.returnUrl,
         customer: customerId,
         managed_payments: { enabled: true },
-        metadata: { userId: context.userId, priceId: data.priceId, managed_payments: "true" },
-        subscription_data: { metadata: { userId: context.userId, priceId: data.priceId } },
+        metadata: {
+          userId: context.userId,
+          priceId: data.priceId,
+          ...(productId ? { productId } : {}),
+          managed_payments: "true",
+        },
+        ...(isRecurring
+          ? { subscription_data: { metadata: { userId: context.userId, priceId: data.priceId } } }
+          : { payment_intent_data: { description: productDescription ?? data.priceId } }),
       } as Stripe.Checkout.SessionCreateParams);
 
       return { clientSecret: session.client_secret ?? "" };
