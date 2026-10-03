@@ -121,6 +121,14 @@ function PricingPage() {
             Build practical experience, turn it into career intelligence, or follow the complete journey.
           </p>
 
+          <div className="card mt-8 flex items-start gap-3" style={{ padding: "18px 22px" }}>
+            <Check className="mt-1 size-4 shrink-0" style={{ color: "var(--x-teal)" }} />
+            <p className="text-sm">
+              <strong>Start free.</strong> Create an account and begin your first scenario in
+              Experience today — no card needed. Pay only when you want the full journey.
+            </p>
+          </div>
+
           <div className="mt-14 grid gap-4 md:grid-cols-3">
             {TIERS.map((t) => (
               <div key={t.name} className="card flex flex-col" style={{ padding: 28 }}>
@@ -161,6 +169,75 @@ function PricingPage() {
                 )}
               </div>
             ))}
+          </div>
+
+          <h2 className="heading-2 mt-16">Prefer not to subscribe?</h2>
+          <p className="body mt-3" style={{ maxWidth: 560 }}>
+            One-off ways to take the Complete Journey. No renewal you did not choose.
+          </p>
+          <div className="mt-8 grid gap-4 md:grid-cols-2">
+            <div className="card flex flex-col" style={{ padding: 28 }}>
+              <span className="mono-label">ONE-OFF · NO RENEWAL</span>
+              <h3 className="heading-2" style={{ marginTop: 10 }}>Career Sprint</h3>
+              <p className="body" style={{ marginTop: 6 }}>
+                Three months of the Complete Journey, paid once. Built around an active job search.
+              </p>
+              <div className="mt-6 flex items-baseline gap-2">
+                <span style={{ fontSize: 32, fontWeight: 800 }}>£69</span>
+                <span className="caption">one payment · 3 months</span>
+              </div>
+              <ul className="mt-6 flex-1 space-y-2.5 text-sm">
+                <li>Everything in Complete Journey for 3 months</li>
+                <li>No renewal and nothing to cancel</li>
+                <li>Save £18 versus three monthly payments</li>
+              </ul>
+              {isCheckoutEnabled ? (
+                user ? (
+                  <Button className="mt-8 w-full" onClick={() => setSelectedPrice("career_sprint_pass")}>
+                    Buy the Career Sprint
+                  </Button>
+                ) : (
+                  <Button asChild className="mt-8 w-full">
+                    <Link to="/login" search={{ redirect: "/pricing" }}>Sign in to buy</Link>
+                  </Button>
+                )
+              ) : (
+                <Link to="/signup" className="btn btn-primary mt-8 w-full justify-center">
+                  Create account
+                </Link>
+              )}
+            </div>
+            <div className="card flex flex-col" style={{ padding: 28 }}>
+              <span className="mono-label">ANNUAL · COMPLETE JOURNEY</span>
+              <h3 className="heading-2" style={{ marginTop: 10 }}>Journey Annual</h3>
+              <p className="body" style={{ marginTop: 6 }}>
+                Twelve months of the Complete Journey for the price of ten.
+              </p>
+              <div className="mt-6 flex items-baseline gap-2">
+                <span style={{ fontSize: 32, fontWeight: 800 }}>£290</span>
+                <span className="caption">per year</span>
+              </div>
+              <ul className="mt-6 flex-1 space-y-2.5 text-sm">
+                <li>Everything in Complete Journey for a full year</li>
+                <li>Two months free versus paying monthly</li>
+                <li>Renews yearly; cancel any time</li>
+              </ul>
+              {isCheckoutEnabled ? (
+                user ? (
+                  <Button className="mt-8 w-full" onClick={() => setSelectedPrice("complete_journey_yearly")}>
+                    Choose the annual plan
+                  </Button>
+                ) : (
+                  <Button asChild className="mt-8 w-full">
+                    <Link to="/login" search={{ redirect: "/pricing" }}>Sign in to choose</Link>
+                  </Button>
+                )
+              ) : (
+                <Link to="/signup" className="btn btn-primary mt-8 w-full justify-center">
+                  Create account
+                </Link>
+              )}
+            </div>
           </div>
 
           {!isCheckoutEnabled && (
