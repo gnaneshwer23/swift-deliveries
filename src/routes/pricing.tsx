@@ -278,7 +278,7 @@ function PricingPage() {
         <DialogContent className="max-h-[92vh] max-w-3xl overflow-y-auto p-0">
           <PaymentTestModeBanner />
           <DialogHeader className="px-6 pt-2">
-            <DialogTitle>Complete your subscription</DialogTitle>
+            <DialogTitle>Complete your purchase</DialogTitle>
             <DialogDescription>Payment details are handled securely.</DialogDescription>
           </DialogHeader>
           <div className="px-2 pb-4 sm:px-6">
