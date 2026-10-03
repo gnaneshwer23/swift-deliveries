@@ -98,7 +98,11 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
         }
       }
 
-      const session = await stripe.checkout.sessions.create({
+      // `managed_payments` is not yet in the pinned SDK's session params type;
+      // intersect it so the literal stays typechecked without a blind cast.
+      const sessionParams: Stripe.Checkout.SessionCreateParams & {
+        managed_payments?: { enabled: boolean };
+      } = {
         line_items: [{ price: stripePrice.id, quantity: 1 }],
         mode: isRecurring ? "subscription" : "payment",
         ui_mode: "embedded_page",
@@ -114,7 +118,8 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
         ...(isRecurring
           ? { subscription_data: { metadata: { userId: context.userId, priceId: data.priceId } } }
           : { payment_intent_data: { description: productDescription ?? data.priceId } }),
-      } as Stripe.Checkout.SessionCreateParams);
+      };
+      const session = await stripe.checkout.sessions.create(sessionParams);
 
       return { clientSecret: session.client_secret ?? "" };
     } catch (error) {
