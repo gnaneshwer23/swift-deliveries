@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type { StripeEnv } from "@/lib/stripe.server";
 import { verifyWebhook } from "@/lib/stripe.server";
+import { buildPassRow } from "@/lib/pass-purchase";
 
 function getPriceId(subscription: any): string | undefined {
   const price = subscription.items?.data?.[0]?.price;
@@ -31,36 +32,15 @@ async function upsertSubscription(subscription: any, environment: StripeEnv) {
   if (error) throw error;
 }
 
-const PASS_PRICE_IDS = new Set(["career_sprint_pass"]);
-const PASS_DURATION_MS = 90 * 24 * 60 * 60 * 1000;
-
 // One-off passes (e.g. the Career Sprint) never fire subscription webhooks,
 // so the completed checkout session is the fulfilment record.
 async function upsertPassPurchase(session: any, environment: StripeEnv) {
-  if (session.mode !== "payment") return;
-  const userId = session.metadata?.userId;
-  const priceId = session.metadata?.priceId;
-  if (!userId || !priceId || !PASS_PRICE_IDS.has(priceId)) return;
-  const customer =
-    typeof session.customer === "string" ? session.customer : (session.customer?.id ?? "");
-  const now = new Date();
+  const row = buildPassRow(session, environment);
+  if (!row) return;
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { error } = await supabaseAdmin.from("subscriptions").upsert(
-    {
-      user_id: userId,
-      stripe_subscription_id: session.id,
-      stripe_customer_id: customer,
-      product_id: session.metadata?.productId ?? "complete_journey_plan",
-      price_id: priceId,
-      status: "active",
-      current_period_start: now.toISOString(),
-      current_period_end: new Date(now.getTime() + PASS_DURATION_MS).toISOString(),
-      cancel_at_period_end: false,
-      environment,
-      updated_at: now.toISOString(),
-    },
-    { onConflict: "stripe_subscription_id,environment" },
-  );
+  const { error } = await supabaseAdmin
+    .from("subscriptions")
+    .upsert(row, { onConflict: "stripe_subscription_id,environment" });
   if (error) throw error;
 }
 
