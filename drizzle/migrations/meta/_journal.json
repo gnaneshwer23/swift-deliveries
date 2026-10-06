@@ -78,6 +78,13 @@
       "when": 1791031113173,
       "tag": "0010_extend_has_plan_access_for_yearly_and_sprint",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791285106428,
+      "tag": "0011_fix_pass_price_check_and_expiry",
+      "breakpoints": true
     }
   ]
 }
