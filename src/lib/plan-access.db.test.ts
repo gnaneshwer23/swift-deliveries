@@ -31,9 +31,9 @@ beforeAll(() => {
       RETURNS boolean LANGUAGE sql AS $fn$ ${body} $fn$;`;
 });
 
-function purchase(price: string, end: string) {
+function purchase(price: string, end: string, status = "active") {
   return `INSERT INTO pg_temp.s (user_id, stripe_subscription_id, stripe_customer_id, product_id, price_id, status, current_period_start, current_period_end, cancel_at_period_end, environment)
-    VALUES ('${USER}', 'cs_test', 'cus_test', 'prod_test', '${price}', 'active', now(), ${end}, false, 'live');`;
+    VALUES ('${USER}', 'cs_test', 'cus_test', 'prod_test', '${price}', '${status}', now(), ${end}, false, 'live');`;
 }
 
 function run(body: string): string {
@@ -61,4 +61,16 @@ describe.skipIf(!hasDb)("purchase rules in the database", () => {
   it("still rejects unknown plans", () => {
     expect(() => run(purchase("made_up_plan", "now()"))).toThrow();
   });
+
+  it("grants no access when nothing was purchased", () => {
+    expect(run("")).toBe("f");
+  });
+
+  for (const status of ["incomplete", "incomplete_expired", "past_due", "unpaid", "canceled", "paused"]) {
+    it(`grants no access for a failed or incomplete payment (${status})`, () => {
+      expect(run(purchase("complete_journey_yearly", "now() + interval '1 year'", status))).toBe("f");
+      expect(run(purchase("complete_journey_monthly", "now() + interval '1 month'", status))).toBe("f");
+      expect(run(purchase("career_sprint_pass", "now() + interval '90 days'", status))).toBe("f");
+    });
+  }
 });

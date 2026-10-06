@@ -4,6 +4,8 @@ import { buildPassRow, PASS_DURATION_MS } from "./pass-purchase";
 const session = {
   id: "cs_test_1",
   mode: "payment",
+  status: "complete",
+  payment_status: "paid",
   customer: "cus_1",
   metadata: { userId: "u1", priceId: "career_sprint_pass", productId: "prod_cj" },
 };
@@ -32,5 +34,15 @@ describe("buildPassRow", () => {
   it("ignores unknown prices and missing users", () => {
     expect(buildPassRow({ ...session, metadata: { userId: "u1", priceId: "other" } }, "live")).toBeNull();
     expect(buildPassRow({ ...session, metadata: { priceId: "career_sprint_pass" } }, "live")).toBeNull();
+  });
+
+  it("does not save a pass when the payment has not gone through", () => {
+    expect(buildPassRow({ ...session, payment_status: "unpaid" }, "live")).toBeNull();
+    expect(buildPassRow({ ...session, payment_status: undefined }, "live")).toBeNull();
+  });
+
+  it("does not save a pass for abandoned or expired checkouts", () => {
+    expect(buildPassRow({ ...session, status: "open", payment_status: "unpaid" }, "live")).toBeNull();
+    expect(buildPassRow({ ...session, status: "expired", payment_status: "unpaid" }, "live")).toBeNull();
   });
 });

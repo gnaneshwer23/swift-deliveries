@@ -19,6 +19,9 @@ export type PassRow = {
 /** Returns the subscriptions row for a paid pass checkout, or null when the session is not a pass. */
 export function buildPassRow(session: any, environment: string, now = new Date()): PassRow | null {
   if (session?.mode !== "payment") return null;
+  // Only paid (or zero-total) checkouts fulfil; unpaid, open or expired sessions never save a pass.
+  if (session.payment_status !== "paid" && session.payment_status !== "no_payment_required") return null;
+  if (session.status && session.status !== "complete") return null;
   const userId = session.metadata?.userId;
   const priceId = session.metadata?.priceId;
   if (!userId || !priceId || !PASS_PRICE_IDS.has(priceId)) return null;
