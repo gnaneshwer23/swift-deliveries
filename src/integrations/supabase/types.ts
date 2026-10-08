@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      answer_claims: {
+        Row: {
+          answer_id: string
+          claim_text: string
+          claim_type: string
+          created_at: string
+          id: string
+          matched_evidence_id: string | null
+          owner_id: string
+          record_excerpt: string | null
+          signal_level: string
+          support_status: string
+        }
+        Insert: {
+          answer_id: string
+          claim_text: string
+          claim_type: string
+          created_at?: string
+          id?: string
+          matched_evidence_id?: string | null
+          owner_id: string
+          record_excerpt?: string | null
+          signal_level?: string
+          support_status: string
+        }
+        Update: {
+          answer_id?: string
+          claim_text?: string
+          claim_type?: string
+          created_at?: string
+          id?: string
+          matched_evidence_id?: string | null
+          owner_id?: string
+          record_excerpt?: string | null
+          signal_level?: string
+          support_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "answer_claims_answer_id_fkey"
+            columns: ["answer_id"]
+            isOneToOne: false
+            referencedRelation: "interview_answers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "answer_claims_matched_evidence_id_fkey"
+            columns: ["matched_evidence_id"]
+            isOneToOne: false
+            referencedRelation: "evidence_ledger"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       artefact_versions: {
         Row: {
           artefact_id: string
@@ -746,31 +800,37 @@ export type Database = {
         Row: {
           artefact_version_id: string | null
           body: string
+          checksum: string | null
           created_at: string
           id: string
           owner_id: string
           question_id: string
           self_rating: number | null
+          signal_level: string
           updated_at: string
         }
         Insert: {
           artefact_version_id?: string | null
           body: string
+          checksum?: string | null
           created_at?: string
           id?: string
           owner_id: string
           question_id: string
           self_rating?: number | null
+          signal_level?: string
           updated_at?: string
         }
         Update: {
           artefact_version_id?: string | null
           body?: string
+          checksum?: string | null
           created_at?: string
           id?: string
           owner_id?: string
           question_id?: string
           self_rating?: number | null
+          signal_level?: string
           updated_at?: string
         }
         Relationships: [
@@ -790,43 +850,119 @@ export type Database = {
           },
         ]
       }
+      interview_feedback: {
+        Row: {
+          created_at: string
+          id: string
+          owner_id: string
+          rationale: string
+          reviewer_id: string | null
+          rubric_dimension: string
+          score: number
+          session_id: string
+          signal_level: string
+          source: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          owner_id: string
+          rationale: string
+          reviewer_id?: string | null
+          rubric_dimension: string
+          score: number
+          session_id: string
+          signal_level?: string
+          source?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          owner_id?: string
+          rationale?: string
+          reviewer_id?: string | null
+          rubric_dimension?: string
+          score?: number
+          session_id?: string
+          signal_level?: string
+          source?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_feedback_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "interview_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       interview_questions: {
         Row: {
           capability_key: string | null
           created_at: string
+          depth: number
           id: string
           origin: string
           owner_id: string
+          parent_question_id: string | null
           prompt: string
+          question_type: string
           session_id: string
+          signal_level: string
           sort_order: number
+          source_evidence_id: string | null
         }
         Insert: {
           capability_key?: string | null
           created_at?: string
+          depth?: number
           id?: string
           origin: string
           owner_id: string
+          parent_question_id?: string | null
           prompt: string
+          question_type?: string
           session_id: string
+          signal_level?: string
           sort_order?: number
+          source_evidence_id?: string | null
         }
         Update: {
           capability_key?: string | null
           created_at?: string
+          depth?: number
           id?: string
           origin?: string
           owner_id?: string
+          parent_question_id?: string | null
           prompt?: string
+          question_type?: string
           session_id?: string
+          signal_level?: string
           sort_order?: number
+          source_evidence_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "interview_questions_parent_question_id_fkey"
+            columns: ["parent_question_id"]
+            isOneToOne: false
+            referencedRelation: "interview_questions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "interview_questions_session_id_fkey"
             columns: ["session_id"]
             isOneToOne: false
             referencedRelation: "interview_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interview_questions_source_evidence_id_fkey"
+            columns: ["source_evidence_id"]
+            isOneToOne: false
+            referencedRelation: "evidence_ledger"
             referencedColumns: ["id"]
           },
         ]
@@ -838,6 +974,7 @@ export type Database = {
           id: string
           owner_id: string
           role_target: string
+          signal_level: string
           status: string
           updated_at: string
         }
@@ -847,6 +984,7 @@ export type Database = {
           id?: string
           owner_id: string
           role_target: string
+          signal_level?: string
           status?: string
           updated_at?: string
         }
@@ -856,6 +994,7 @@ export type Database = {
           id?: string
           owner_id?: string
           role_target?: string
+          signal_level?: string
           status?: string
           updated_at?: string
         }

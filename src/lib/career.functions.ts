@@ -12,12 +12,29 @@ export type InterviewLab = {
     focusCapabilityKey: string | null;
     status: string;
     createdAt: string;
+    feedback: Array<{ dimension: string; score: number; rationale: string }>;
     questions: Array<{
       id: string;
       prompt: string;
       origin: string;
       capabilityKey: string | null;
-      answer: { id: string; body: string; selfRating: number | null } | null;
+      questionType: string;
+      depth: number;
+      parentQuestionId: string | null;
+      sourceEvidence: { id: string; summary: string } | null;
+      answer: {
+        id: string;
+        body: string;
+        selfRating: number | null;
+        checksum: string | null;
+        claims: Array<{
+          id: string;
+          claimText: string;
+          claimType: string;
+          supportStatus: string;
+          recordExcerpt: string | null;
+        }>;
+      } | null;
     }>;
   }>;
 };
@@ -58,21 +75,71 @@ export const getInterviewLab = createServerFn({ method: "GET" })
       origin: string;
       capability_key: string | null;
       sort_order: number;
+      question_type: string;
+      depth: number;
+      parent_question_id: string | null;
+      source_evidence_id: string | null;
     }> = [];
-    let answers: Array<{ id: string; question_id: string; body: string; self_rating: number | null }> = [];
+    let answers: Array<{
+      id: string;
+      question_id: string;
+      body: string;
+      self_rating: number | null;
+      checksum: string | null;
+    }> = [];
+    let claims: Array<{
+      id: string;
+      answer_id: string;
+      claim_text: string;
+      claim_type: string;
+      support_status: string;
+      record_excerpt: string | null;
+    }> = [];
+    let feedbackRows: Array<{
+      session_id: string;
+      rubric_dimension: string;
+      score: number;
+      rationale: string;
+    }> = [];
+    let evidenceRows: Array<{ id: string; summary: string }> = [];
     if (sessionIds.length) {
-      const [q, a] = await Promise.all([
+      const [q, a, f] = await Promise.all([
         supabase
           .from("interview_questions")
-          .select("id,session_id,prompt,origin,capability_key,sort_order")
+          .select("id,session_id,prompt,origin,capability_key,sort_order,question_type,depth,parent_question_id,source_evidence_id")
           .in("session_id", sessionIds)
           .order("sort_order"),
-        supabase.from("interview_answers").select("id,question_id,body,self_rating").eq("owner_id", userId),
+        supabase.from("interview_answers").select("id,question_id,body,self_rating,checksum").eq("owner_id", userId),
+        supabase
+          .from("interview_feedback")
+          .select("session_id,rubric_dimension,score,rationale")
+          .in("session_id", sessionIds),
       ]);
       if (q.error) throw new Error(q.error.message);
       if (a.error) throw new Error(a.error.message);
+      if (f.error) throw new Error(f.error.message);
       questions = q.data ?? [];
       answers = a.data ?? [];
+      feedbackRows = f.data ?? [];
+
+      const answerIds = answers.map((a) => a.id);
+      if (answerIds.length) {
+        const c = await supabase
+          .from("answer_claims")
+          .select("id,answer_id,claim_text,claim_type,support_status,record_excerpt")
+          .in("answer_id", answerIds);
+        if (c.error) throw new Error(c.error.message);
+        claims = c.data ?? [];
+      }
+
+      const evidenceIds = Array.from(
+        new Set(questions.map((q2) => q2.source_evidence_id).filter((id): id is string => Boolean(id))),
+      );
+      if (evidenceIds.length) {
+        const e = await supabase.from("evidence_ledger").select("id,summary").in("id", evidenceIds);
+        if (e.error) throw new Error(e.error.message);
+        evidenceRows = e.data ?? [];
+      }
     }
 
     return {
@@ -83,17 +150,41 @@ export const getInterviewLab = createServerFn({ method: "GET" })
         focusCapabilityKey: s.focus_capability_key,
         status: s.status,
         createdAt: s.created_at,
+        feedback: feedbackRows
+          .filter((f) => f.session_id === s.id)
+          .map((f) => ({ dimension: f.rubric_dimension, score: f.score, rationale: f.rationale })),
         questions: questions
           .filter((q) => q.session_id === s.id)
           .map((q) => {
             const answer = answers.find((a) => a.question_id === q.id);
+            const source = q.source_evidence_id
+              ? evidenceRows.find((e) => e.id === q.source_evidence_id)
+              : undefined;
             return {
               id: q.id,
               prompt: q.prompt,
               origin: q.origin,
               capabilityKey: q.capability_key,
+              questionType: q.question_type,
+              depth: q.depth,
+              parentQuestionId: q.parent_question_id,
+              sourceEvidence: source ? { id: source.id, summary: source.summary } : null,
               answer: answer
-                ? { id: answer.id, body: answer.body, selfRating: answer.self_rating }
+                ? {
+                    id: answer.id,
+                    body: answer.body,
+                    selfRating: answer.self_rating,
+                    checksum: answer.checksum,
+                    claims: claims
+                      .filter((c) => c.answer_id === answer.id)
+                      .map((c) => ({
+                        id: c.id,
+                        claimText: c.claim_text,
+                        claimType: c.claim_type,
+                        supportStatus: c.support_status,
+                        recordExcerpt: c.record_excerpt,
+                      })),
+                  }
                 : null,
             };
           }),
@@ -123,7 +214,7 @@ export const createInterviewSession = createServerFn({ method: "POST" })
         .limit(20),
       supabase
         .from("evidence_ledger")
-        .select("summary,strength,capability_key,occurred_at")
+        .select("id,summary,strength,capability_key,occurred_at")
         .eq("owner_id", userId)
         .neq("strength", "self_reported")
         .order("occurred_at", { ascending: false })
@@ -143,20 +234,30 @@ export const createInterviewSession = createServerFn({ method: "POST" })
         ...(evidence.data ?? []).map((e) => e.capability_key).filter((k): k is string => Boolean(k)),
       ]),
     );
-    const evidenceContext = [
-      ...(judgements.data ?? []).map(
-        (j) => `Judged capability ${j.capability_key}: level ${j.level} (${j.band} confidence). ${j.rationale}`,
-      ),
-      ...(evidence.data ?? []).map(
-        (e) => `Evidence (${e.strength}${e.capability_key ? `, ${e.capability_key}` : ""}): ${e.summary}`,
-      ),
-    ].join("\n");
+
+    // Pick 3-5 strongest and 1-2 weakest record entries by judged capability level.
+    // Weak entries matter most: interviewers probe them.
+    const levelByCapability = new Map<string, number>();
+    for (const j of judgements.data ?? []) {
+      if (!levelByCapability.has(j.capability_key)) levelByCapability.set(j.capability_key, j.level);
+    }
+    const levelOf = (e: { capability_key: string | null }): number =>
+      e.capability_key ? (levelByCapability.get(e.capability_key) ?? 0) : 0;
+    const sorted = [...(evidence.data ?? [])].sort((a, b) => levelOf(b) - levelOf(a));
+    const strongest = sorted.slice(0, 5);
+    const weakest = sorted.slice(5).sort((a, b) => levelOf(a) - levelOf(b)).slice(0, 2);
+    const entries = [...strongest, ...weakest].map((e) => ({
+      id: e.id,
+      summary: e.summary,
+      strength: e.strength,
+      capabilityKey: e.capability_key,
+    }));
 
     const { generateInterviewQuestions } = await import("./interview-ai.server");
     const drafts = await generateInterviewQuestions({
       roleTarget: data.roleTarget,
       focusCapabilityKey: data.focusCapabilityKey,
-      evidenceContext,
+      entries,
       capabilityKeys,
     });
 
@@ -178,6 +279,9 @@ export const createInterviewSession = createServerFn({ method: "POST" })
         prompt: d.prompt,
         origin: "ai_draft",
         capability_key: d.capabilityKey,
+        question_type: d.questionType,
+        source_evidence_id: d.evidenceId,
+        depth: 0,
         sort_order: index,
       })),
     );
@@ -219,35 +323,183 @@ export const saveInterviewAnswer = createServerFn({ method: "POST" })
       })
       .parse(data),
   )
-  .handler(async ({ data, context }) => {
+  .handler(async ({ data, context }): Promise<{ answerId: string; claimCount: number; followUpAdded: boolean }> => {
     const { supabase, userId } = context;
-    const { error } = await supabase
+
+    const { data: question, error: questionError } = await supabase
+      .from("interview_questions")
+      .select("id,session_id,prompt,capability_key,depth,sort_order")
+      .eq("id", data.questionId)
+      .eq("owner_id", userId)
+      .single();
+    if (questionError || !question) throw new Error("Question not found.");
+
+    // Answers freeze at submit: an answered question can never be edited.
+    const { data: existing } = await supabase
       .from("interview_answers")
-      .upsert(
-        {
-          question_id: data.questionId,
+      .select("id")
+      .eq("question_id", data.questionId)
+      .eq("owner_id", userId)
+      .maybeSingle();
+    if (existing) throw new Error("This answer is already saved and frozen. Answers cannot be edited after submit.");
+
+    const { answerChecksum } = await import("./interview-practice");
+    const checksum = await answerChecksum(data.body);
+    const { data: answer, error } = await supabase
+      .from("interview_answers")
+      .insert({
+        question_id: data.questionId,
+        owner_id: userId,
+        body: data.body,
+        self_rating: data.selfRating,
+        checksum,
+      })
+      .select("id")
+      .single();
+    if (error || !answer) throw new Error(error?.message ?? "Could not save the answer.");
+
+    // Record check + scoring against the candidate's record entries.
+    const { data: evidence } = await supabase
+      .from("evidence_ledger")
+      .select("id,summary,strength,capability_key")
+      .eq("owner_id", userId)
+      .neq("strength", "self_reported")
+      .order("occurred_at", { ascending: false })
+      .limit(25);
+    const entries = (evidence ?? []).map((e) => ({
+      id: e.id,
+      summary: e.summary,
+      strength: e.strength,
+      capabilityKey: e.capability_key,
+    }));
+
+    let claimCount = 0;
+    let followUpAdded = false;
+    if (entries.length) {
+      const { assessInterviewAnswer } = await import("./interview-ai.server");
+      const assessment = await assessInterviewAnswer({
+        questionPrompt: question.prompt,
+        answerBody: data.body,
+        entries,
+        capabilityKeys: question.capability_key ? [question.capability_key] : [],
+        currentDepth: question.depth,
+      });
+
+      if (assessment.claims.length) {
+        const { error: claimsError } = await supabase.from("answer_claims").insert(
+          assessment.claims.map((c) => ({
+            answer_id: answer.id,
+            owner_id: userId,
+            claim_text: c.claimText,
+            claim_type: c.claimType,
+            support_status: c.supportStatus,
+            matched_evidence_id: c.matchedEvidenceId,
+            record_excerpt: c.recordExcerpt,
+          })),
+        );
+        if (claimsError) throw new Error(claimsError.message);
+        claimCount = assessment.claims.length;
+      }
+
+      if (assessment.followUp) {
+        const { count } = await supabase
+          .from("interview_questions")
+          .select("id", { count: "exact", head: true })
+          .eq("session_id", question.session_id);
+        const { error: followUpError } = await supabase.from("interview_questions").insert({
+          session_id: question.session_id,
           owner_id: userId,
-          body: data.body,
-          self_rating: data.selfRating,
-        },
-        { onConflict: "question_id" },
-      );
-    if (error) throw new Error(error.message);
-    return { ok: true };
+          prompt: assessment.followUp.prompt,
+          origin: "ai_followup",
+          capability_key: question.capability_key,
+          question_type: assessment.followUp.questionType,
+          parent_question_id: question.id,
+          depth: question.depth + 1,
+          sort_order: count ?? 0,
+        });
+        if (followUpError) throw new Error(followUpError.message);
+        followUpAdded = true;
+      }
+    }
+
+    return { answerId: answer.id, claimCount, followUpAdded };
   });
 
 export const closeInterviewSession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((data: unknown) => z.object({ sessionId: uuid }).parse(data))
-  .handler(async ({ data, context }) => {
+  .handler(async ({ data, context }): Promise<{ ok: true; feedbackCount: number }> => {
     const { supabase, userId } = context;
+
+    const { data: session, error: sessionError } = await supabase
+      .from("interview_sessions")
+      .select("id,role_target,status")
+      .eq("id", data.sessionId)
+      .eq("owner_id", userId)
+      .single();
+    if (sessionError || !session) throw new Error("Session not found.");
+    if (session.status === "closed") return { ok: true, feedbackCount: 0 };
+
+    const { data: questions, error: questionsError } = await supabase
+      .from("interview_questions")
+      .select("id,prompt,sort_order")
+      .eq("session_id", data.sessionId)
+      .order("sort_order");
+    if (questionsError) throw new Error(questionsError.message);
+    const questionIds = (questions ?? []).map((q) => q.id);
+    const { data: answers, error: answersError } = await supabase
+      .from("interview_answers")
+      .select("question_id,body")
+      .in("question_id", questionIds.length ? questionIds : ["00000000-0000-0000-0000-000000000000"]);
+    if (answersError) throw new Error(answersError.message);
+
+    const transcript = (questions ?? [])
+      .map((q) => ({ question: q.prompt, answer: (answers ?? []).find((a) => a.question_id === q.id)?.body ?? "" }))
+      .filter((t) => t.answer.length > 0);
+
+    let feedbackCount = 0;
+    if (transcript.length) {
+      const { data: evidence } = await supabase
+        .from("evidence_ledger")
+        .select("id,summary,strength,capability_key")
+        .eq("owner_id", userId)
+        .neq("strength", "self_reported")
+        .order("occurred_at", { ascending: false })
+        .limit(25);
+      const entries = (evidence ?? []).map((e) => ({
+        id: e.id,
+        summary: e.summary,
+        strength: e.strength,
+        capabilityKey: e.capability_key,
+      }));
+
+      const { generateSessionFeedback } = await import("./interview-ai.server");
+      const feedback = await generateSessionFeedback({
+        roleTarget: session.role_target,
+        transcript,
+        entries,
+      });
+      const { error: feedbackError } = await supabase.from("interview_feedback").insert(
+        feedback.map((f) => ({
+          session_id: data.sessionId,
+          owner_id: userId,
+          rubric_dimension: f.dimension,
+          score: f.score,
+          rationale: f.rationale,
+          source: "ai",
+        })),
+      );
+      if (feedbackError) throw new Error(feedbackError.message);
+      feedbackCount = feedback.length;
+    }
+
     const { error } = await supabase
       .from("interview_sessions")
       .update({ status: "closed" })
       .eq("id", data.sessionId)
       .eq("owner_id", userId);
     if (error) throw new Error(error.message);
-    return { ok: true };
+    return { ok: true, feedbackCount };
   });
 
 export type ApplicationBoard = {
