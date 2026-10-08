@@ -1,0 +1,65 @@
+# DeliverX organisation authoring template — Repairline example.
+# One file per organisation. A content author should need no developer.
+# Rules for authors:
+# - Every stakeholder must be right about something. No villains.
+# - Every phase produces exactly one artefact, mapped to named rubric dimensions.
+# - Phase 4 must reference earlier artefacts, so later work is judged against
+#   the candidate's own earlier predictions.
+
+organisation:
+  id: repairline
+  name: Repairline (Southbridge Borough Council)
+  sector: UK local government, housing
+  stage: alpha_to_beta
+  entry_level: product_manager  # associate_pm | product_manager | senior_pm | lead_pm
+  simulated: true  # always true; shown on every screen
+  brief: >
+    Southbridge Borough Council must move housing repairs reporting online
+    before a statutory deadline. The alpha proved residents will use a digital
+    channel; beta must survive contact with the repairs back office, legal
+    obligations and a cabinet member who has already announced a launch date.
+
+stakeholders:
+  - name: Head of Housing
+    wants: Fewer missed appointments and a defensible audit trail
+    starting_trust: medium
+  - name: Legal compliance lead
+    wants: Statutory repair deadlines met; sceptical of digital
+    starting_trust: low
+  - name: Cabinet member for housing
+    wants: A launch announced before the local elections
+    starting_trust: high
+  - name: Service assessment panel lead
+    wants: Research evidence, including users who need help online
+    starting_trust: neutral
+
+phases:
+  - phase: 1
+    title: Discovery under a deadline
+    artefact_type: discovery_report
+    rubric_dimensions: [discovery, stakeholder_alignment]
+    unlock_after: null
+  - phase: 2
+    title: Service design trade-offs
+    artefact_type: options_paper
+    rubric_dimensions: [prioritisation, regulation]
+    unlock_after: 1
+  - phase: 3
+    title: Beta readiness
+    artefact_type: readiness_assessment
+    rubric_dimensions: [experiments_and_data, stakeholder_alignment]
+    unlock_after: 2
+  - phase: 4
+    title: The launch decision
+    artefact_type: decision_memo
+    rubric_dimensions: [prioritisation, product_leadership]
+    unlock_after: 3
+
+signature_dilemma: >
+  The cabinet member's announced date and the legal team's compliance bar
+  cannot both be met in full. The candidate writes the decision memo that
+  reconciles them, referencing the evidence their earlier phases produced.
+
+event_cards: [regulator_letter, budget_cut, engineer_resigns]
+
+framework_version: pm-core@2026.1
