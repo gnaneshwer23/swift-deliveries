@@ -16,15 +16,29 @@ async function upsertSubscription(subscription: any, environment: StripeEnv) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const periodStart = item.current_period_start ?? subscription.current_period_start;
   const periodEnd = item.current_period_end ?? subscription.current_period_end;
+  const incoming = {
+    status: subscription.status,
+    current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
+  };
+  // Stripe does not guarantee event ordering: skip stale events whose period end
+  // is older than the stored one, so a late "active" event cannot resurrect a
+  // canceled subscription or overwrite a newer state.
+  const { data: existing } = await supabaseAdmin
+    .from("subscriptions")
+    .select("status, current_period_end")
+    .eq("stripe_subscription_id", subscription.id)
+    .eq("environment", environment)
+    .maybeSingle();
+  if (!shouldApplySubscriptionUpdate(existing, incoming)) return;
   const { error } = await supabaseAdmin.from("subscriptions").upsert({
     user_id: userId,
     stripe_subscription_id: subscription.id,
     stripe_customer_id: typeof subscription.customer === "string" ? subscription.customer : subscription.customer?.id,
     product_id: typeof item.price.product === "string" ? item.price.product : item.price.product?.id,
     price_id: priceId,
-    status: subscription.status,
+    status: incoming.status,
     current_period_start: periodStart ? new Date(periodStart * 1000).toISOString() : null,
-    current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
+    current_period_end: incoming.current_period_end,
     cancel_at_period_end: subscription.cancel_at_period_end ?? false,
     environment,
     updated_at: new Date().toISOString(),
