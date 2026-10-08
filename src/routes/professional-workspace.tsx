@@ -105,6 +105,20 @@ function ProfessionalWorkspacePage() {
 
       <div className="features-section">
         <h2 className="heading-2" style={{ marginBottom: 6 }}>
+          Working solo? The individual Workspace is included in Complete Journey.
+        </h2>
+        <p className="body">
+          If you are one person doing live product work — not a sponsor running a portfolio — the
+          £29 Complete Journey plan includes your own individual Workspace: a place to run real
+          delivery work with the same evidence discipline, so what you do at work feeds the same
+          record as what you practise in Experience. The organisation product below is for sponsors
+          and delivery leads running projects with a team, priced separately from £750 per active
+          project per month.
+        </p>
+      </div>
+
+      <div className="features-section">
+        <h2 className="heading-2" style={{ marginBottom: 6 }}>
           Own the case, not the tickets.
         </h2>
         <p className="body">
@@ -209,7 +223,7 @@ function ProfessionalWorkspacePage() {
         ]}
       />
 
-      <JourneyCrossSell note="The Professional Workspace is where delivery work happens; Experience is where you practise it and Launchpad is where you present it. The Complete Journey plan includes all three." />
+      <JourneyCrossSell note="The Professional Workspace is where delivery work happens; Experience is where you practise it and Launchpad is where you present it. The Complete Journey plan includes Experience, Launchpad and your individual Workspace — the sponsor and team workspace described on this page is a separate product for organisations, from £750 per active project per month." />
     </MarketingLayout>
   );
 }
