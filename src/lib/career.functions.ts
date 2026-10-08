@@ -12,6 +12,7 @@ export type InterviewLab = {
     focusCapabilityKey: string | null;
     status: string;
     createdAt: string;
+    closedAt: string | null;
     feedback: Array<{ dimension: string; score: number; rationale: string }>;
     questions: Array<{
       id: string;
