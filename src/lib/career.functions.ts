@@ -241,8 +241,8 @@ export const createInterviewSession = createServerFn({ method: "POST" })
     for (const j of judgements.data ?? []) {
       if (!levelByCapability.has(j.capability_key)) levelByCapability.set(j.capability_key, j.level);
     }
-    const levelOf = (e: { capability_key: string | null }) =>
-      (e.capability_key && levelByCapability.get(e.capability_key)) ?? 0;
+    const levelOf = (e: { capability_key: string | null }): number =>
+      e.capability_key ? (levelByCapability.get(e.capability_key) ?? 0) : 0;
     const sorted = [...(evidence.data ?? [])].sort((a, b) => levelOf(b) - levelOf(a));
     const strongest = sorted.slice(0, 5);
     const weakest = sorted.slice(5).sort((a, b) => levelOf(a) - levelOf(b)).slice(0, 2);
