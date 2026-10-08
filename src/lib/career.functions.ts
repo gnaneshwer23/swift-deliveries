@@ -75,21 +75,71 @@ export const getInterviewLab = createServerFn({ method: "GET" })
       origin: string;
       capability_key: string | null;
       sort_order: number;
+      question_type: string;
+      depth: number;
+      parent_question_id: string | null;
+      source_evidence_id: string | null;
     }> = [];
-    let answers: Array<{ id: string; question_id: string; body: string; self_rating: number | null }> = [];
+    let answers: Array<{
+      id: string;
+      question_id: string;
+      body: string;
+      self_rating: number | null;
+      checksum: string | null;
+    }> = [];
+    let claims: Array<{
+      id: string;
+      answer_id: string;
+      claim_text: string;
+      claim_type: string;
+      support_status: string;
+      record_excerpt: string | null;
+    }> = [];
+    let feedbackRows: Array<{
+      session_id: string;
+      rubric_dimension: string;
+      score: number;
+      rationale: string;
+    }> = [];
+    let evidenceRows: Array<{ id: string; summary: string }> = [];
     if (sessionIds.length) {
-      const [q, a] = await Promise.all([
+      const [q, a, f] = await Promise.all([
         supabase
           .from("interview_questions")
-          .select("id,session_id,prompt,origin,capability_key,sort_order")
+          .select("id,session_id,prompt,origin,capability_key,sort_order,question_type,depth,parent_question_id,source_evidence_id")
           .in("session_id", sessionIds)
           .order("sort_order"),
-        supabase.from("interview_answers").select("id,question_id,body,self_rating").eq("owner_id", userId),
+        supabase.from("interview_answers").select("id,question_id,body,self_rating,checksum").eq("owner_id", userId),
+        supabase
+          .from("interview_feedback")
+          .select("session_id,rubric_dimension,score,rationale")
+          .in("session_id", sessionIds),
       ]);
       if (q.error) throw new Error(q.error.message);
       if (a.error) throw new Error(a.error.message);
+      if (f.error) throw new Error(f.error.message);
       questions = q.data ?? [];
       answers = a.data ?? [];
+      feedbackRows = f.data ?? [];
+
+      const answerIds = answers.map((a) => a.id);
+      if (answerIds.length) {
+        const c = await supabase
+          .from("answer_claims")
+          .select("id,answer_id,claim_text,claim_type,support_status,record_excerpt")
+          .in("answer_id", answerIds);
+        if (c.error) throw new Error(c.error.message);
+        claims = c.data ?? [];
+      }
+
+      const evidenceIds = Array.from(
+        new Set(questions.map((q2) => q2.source_evidence_id).filter((id): id is string => Boolean(id))),
+      );
+      if (evidenceIds.length) {
+        const e = await supabase.from("evidence_ledger").select("id,summary").in("id", evidenceIds);
+        if (e.error) throw new Error(e.error.message);
+        evidenceRows = e.data ?? [];
+      }
     }
 
     return {
@@ -100,17 +150,41 @@ export const getInterviewLab = createServerFn({ method: "GET" })
         focusCapabilityKey: s.focus_capability_key,
         status: s.status,
         createdAt: s.created_at,
+        feedback: feedbackRows
+          .filter((f) => f.session_id === s.id)
+          .map((f) => ({ dimension: f.rubric_dimension, score: f.score, rationale: f.rationale })),
         questions: questions
           .filter((q) => q.session_id === s.id)
           .map((q) => {
             const answer = answers.find((a) => a.question_id === q.id);
+            const source = q.source_evidence_id
+              ? evidenceRows.find((e) => e.id === q.source_evidence_id)
+              : undefined;
             return {
               id: q.id,
               prompt: q.prompt,
               origin: q.origin,
               capabilityKey: q.capability_key,
+              questionType: q.question_type,
+              depth: q.depth,
+              parentQuestionId: q.parent_question_id,
+              sourceEvidence: source ? { id: source.id, summary: source.summary } : null,
               answer: answer
-                ? { id: answer.id, body: answer.body, selfRating: answer.self_rating }
+                ? {
+                    id: answer.id,
+                    body: answer.body,
+                    selfRating: answer.self_rating,
+                    checksum: answer.checksum,
+                    claims: claims
+                      .filter((c) => c.answer_id === answer.id)
+                      .map((c) => ({
+                        id: c.id,
+                        claimText: c.claim_text,
+                        claimType: c.claim_type,
+                        supportStatus: c.support_status,
+                        recordExcerpt: c.record_excerpt,
+                      })),
+                  }
                 : null,
             };
           }),
