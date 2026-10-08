@@ -38,9 +38,11 @@ async function upsertPassPurchase(session: any, environment: StripeEnv) {
   const row = buildPassRow(session, environment);
   if (!row) return;
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  // Replayed webhooks must not extend the pass: keep the original row on conflict
+  // so the first payment's 90-day window stands.
   const { error } = await supabaseAdmin
     .from("subscriptions")
-    .upsert(row, { onConflict: "stripe_subscription_id,environment" });
+    .upsert(row, { onConflict: "stripe_subscription_id,environment", ignoreDuplicates: true });
   if (error) throw error;
 }
 

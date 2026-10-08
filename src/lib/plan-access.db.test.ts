@@ -21,12 +21,16 @@ beforeAll(() => {
   const check = sql(
     "SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conname = 'subscriptions_price_id_check'",
   );
+  const unique = sql(
+    "SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conname = 'subscriptions_stripe_subscription_id_environment_key'",
+  );
   const body = sql(
     "SELECT prosrc FROM pg_proc WHERE proname = 'has_plan_access' AND pronamespace = 'public'::regnamespace",
   ).replace(/public\.subscriptions/g, "pg_temp.s");
   setup = `
     CREATE TEMP TABLE s (LIKE public.subscriptions INCLUDING DEFAULTS);
     ALTER TABLE pg_temp.s ADD CONSTRAINT price_check ${check};
+    ALTER TABLE pg_temp.s ADD CONSTRAINT unique_purchase ${unique};
     CREATE FUNCTION pg_temp.access(requested_user_id uuid, requested_product text, requested_environment text)
       RETURNS boolean LANGUAGE sql AS $fn$ ${body} $fn$;`;
 });
@@ -73,4 +77,20 @@ describe.skipIf(!hasDb)("purchase rules in the database", () => {
       expect(run(purchase("career_sprint_pass", "now() + interval '90 days'", status))).toBe("f");
     });
   }
+
+  it("stores one purchase and never extends access when the same webhook is replayed", () => {
+    // Mirrors the webhook's upsert: same stripe_subscription_id replayed later must
+    // keep a single row with its original 90-day end, not a fresh period.
+    const result = sql(`BEGIN; ${setup}
+      INSERT INTO pg_temp.s (user_id, stripe_subscription_id, stripe_customer_id, product_id, price_id, status, current_period_start, current_period_end, cancel_at_period_end, environment)
+        VALUES ('${USER}', 'cs_test', 'cus_test', 'prod_test', 'career_sprint_pass', 'active', '2026-10-06T12:00:00Z', '2027-01-04T12:00:00Z', false, 'live');
+      INSERT INTO pg_temp.s (user_id, stripe_subscription_id, stripe_customer_id, product_id, price_id, status, current_period_start, current_period_end, cancel_at_period_end, environment)
+        VALUES ('${USER}', 'cs_test', 'cus_test', 'prod_test', 'career_sprint_pass', 'active', now(), now() + interval '90 days', false, 'live')
+        ON CONFLICT (stripe_subscription_id, environment) DO NOTHING;
+      SELECT count(*)::text FROM pg_temp.s;
+      SELECT current_period_end::text FROM pg_temp.s;
+      ROLLBACK;`);
+    expect(result).toContain("1");
+    expect(result).toContain("2027-01-04 12:00:00+00");
+  });
 });
