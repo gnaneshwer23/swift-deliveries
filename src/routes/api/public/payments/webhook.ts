@@ -38,11 +38,11 @@ async function upsertPassPurchase(session: any, environment: StripeEnv) {
   const row = buildPassRow(session, environment);
   if (!row) return;
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  // Replayed webhooks must not extend the pass: only refresh status flags on conflict,
-  // never the period dates, so the original 90-day window stands.
-  const { error } = await supabaseAdmin.rpc("upsert_pass_purchase", {
-    _row: row,
-  } as never);
+  // Replayed webhooks must not extend the pass: keep the original row on conflict
+  // so the first payment's 90-day window stands.
+  const { error } = await supabaseAdmin
+    .from("subscriptions")
+    .upsert(row, { onConflict: "stripe_subscription_id,environment", ignoreDuplicates: true });
   if (error) throw error;
 }
 
