@@ -32,7 +32,7 @@ export function GuideArticle({ eyebrow, title, meta, standfirst, children }: Gui
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-[var(--mkt-text3)]">
               Experience gives you the work to cite, Launchpad packages it, and only an independent
-              attestor can light a Verified claim.
+              attester can light a Verified claim.
             </p>
             <div className="mt-6 flex flex-wrap gap-4 text-sm">
               <Link to="/signup" className="font-medium text-[var(--mkt-accent)] hover:underline">
