@@ -480,6 +480,37 @@ export const requestAttestation = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
 
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Eligibility: block DeliverX staff/coaches and the candidate's own domain.
+    const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(userId);
+    const candidateEmail = authUser.user?.email ?? null;
+
+    const { data: roleRows } = await supabaseAdmin
+      .from("user_roles")
+      .select("user_id")
+      .in("role", ["admin", "moderator"]);
+    const staffOrCoachEmails: string[] = [];
+    for (const r of roleRows ?? []) {
+      const { data: staffUser } = await supabaseAdmin.auth.admin.getUserById(r.user_id);
+      if (staffUser.user?.email) staffOrCoachEmails.push(staffUser.user.email);
+    }
+
+    const eligibility = checkAttesterEligibility({
+      attesterEmail: data.attestorEmail,
+      candidateEmail,
+      staffOrCoachEmails,
+    });
+    if (!eligibility.eligible) {
+      const messages: Record<string, string> = {
+        invalid_email: "Enter a valid email address.",
+        own_domain: "Your attestor must be outside your own organisation's email domain.",
+        staff_domain: "DeliverX staff cannot attest. Choose someone independent.",
+        staff_or_coach: "DeliverX staff and coaches cannot attest. Choose someone independent.",
+      };
+      throw new Error(messages[eligibility.reason]);
+    }
+
     const { data: row, error } = await supabase
       .from("attestations")
       .insert({
