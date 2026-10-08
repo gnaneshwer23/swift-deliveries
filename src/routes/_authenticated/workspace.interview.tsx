@@ -13,7 +13,13 @@ import {
   createInterviewSession,
   saveInterviewAnswer,
 } from "@/lib/career.functions";
-import { CLAIM_STATUS_HINTS, CLAIM_STATUS_LABELS, type ClaimStatus } from "@/lib/interview-practice";
+import {
+  CLAIM_STATUS_HINTS,
+  CLAIM_STATUS_LABELS,
+  recurringStrengths,
+  summarisePracticeHistory,
+  type ClaimStatus,
+} from "@/lib/interview-practice";
 
 type Lab = Awaited<ReturnType<typeof import("@/lib/career.functions").getInterviewLab>>;
 type Session = Lab["sessions"][number];
@@ -119,6 +125,8 @@ function InterviewLabPage() {
             Questions are AI-written drafts grounded in your record. Every answer is written by you and freezes at submit.
           </p>
         </WorkspaceCard>
+
+        <PracticeHistory sessions={data.sessions} />
 
         {data.sessions.length ? (
           data.sessions.map((session) => (
