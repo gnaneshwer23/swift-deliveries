@@ -149,6 +149,60 @@ function InterviewLabPage() {
   );
 }
 
+function PracticeHistory({ sessions }: { sessions: Session[] }) {
+  const closed = sessions.filter((s) => s.status === "closed");
+  const history = summarisePracticeHistory(
+    closed.map((s) => ({
+      id: s.id,
+      roleTarget: s.roleTarget,
+      closedAt: s.closedAt,
+      feedback: s.feedback.map((f) => ({ dimension: f.dimension, score: f.score })),
+    })),
+  );
+  if (!history.length) return null;
+  const strengths = recurringStrengths(history);
+
+  return (
+    <WorkspaceCard
+      title="Practice history"
+      description={`Your rubric scores across ${closed.length} closed session${closed.length === 1 ? "" : "s"}. Practice-level only — this never touches your capability profile.`}
+    >
+      <div className="grid gap-3">
+        {history.map((d) => (
+          <div key={d.dimension}>
+            <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span className="font-semibold capitalize">{d.dimension.replace(/_/g, " ")}</span>
+              <span style={{ color: "var(--x-slate-light)" }}>
+                avg {d.average.toFixed(1)} of 5 · {d.sessions} session{d.sessions === 1 ? "" : "s"} ·{" "}
+                {d.trend === "improving" ? "↑ improving" : d.trend === "declining" ? "↓ declining" : "steady"}
+              </span>
+            </div>
+            <div className="mt-1 h-1.5 rounded-full" style={{ background: "var(--x-surface)" }}>
+              <div
+                className="h-1.5 rounded-full"
+                style={{ width: `${(d.average / 5) * 100}%`, background: "var(--x-amber, #b97a1a)" }}
+              />
+            </div>
+          </div>
+        ))}
+        {strengths.length ? (
+          <p className="text-xs" style={{ color: "var(--x-slate)" }}>
+            Recurring strengths:{" "}
+            <span className="font-semibold">
+              {strengths.map((s) => s.dimension.replace(/_/g, " ")).join(", ")}
+            </span>{" "}
+            — these hold up session after session. Lead with them.
+          </p>
+        ) : (
+          <p className="text-xs" style={{ color: "var(--x-slate-light)" }}>
+            No recurring strengths yet — a dimension counts once it averages 4+ across at least two closed sessions.
+          </p>
+        )}
+      </div>
+    </WorkspaceCard>
+  );
+}
+
 function SessionCard({
   session,
   onClose,
