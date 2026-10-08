@@ -8,7 +8,9 @@ import {
   normaliseClaimStatus,
   normaliseClaimType,
   normaliseQuestionType,
+  recurringStrengths,
   shouldOfferFollowUp,
+  summarisePracticeHistory,
 } from "./interview-practice";
 
 describe("record check statuses", () => {
