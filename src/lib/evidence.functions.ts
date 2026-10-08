@@ -1,6 +1,16 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import {
+  buildOpenBadgeCredential,
+  checkAttesterEligibility,
+  isValidAttestationLevel,
+  isValidStatementKey,
+  renewalDueAt,
+  statementTextFor,
+  type AttestationLevel,
+  type AttestationStatementKey,
+} from "@/lib/attestation";
 
 const PILOT_FRAMEWORK = { key: "pm-core", version: "2026.1" } as const;
 
