@@ -1,10 +1,16 @@
 import { loadStripe, type Stripe } from "@stripe/stripe-js";
 
 type StripeEnv = "sandbox" | "live";
-const clientToken = import.meta.env["VITE_PAYMENTS_CLIENT_TOKEN"];
+// Publishable key (safe to ship in client code). Env var wins when present;
+// the published build does not always inline VITE_PAYMENTS_* vars.
+const LIVE_PUBLISHABLE_KEY = "pk_live_51S6BMU2X2opf83VZTg5xySnR4YmszcWkuOZZDGOLfJzkvgGu7FcnUWQk1QCyMN8HP8qniI4q4MCPeP6HqrEv8qFx00vS1Lb8Gh";
+const envToken = import.meta.env["VITE_PAYMENTS_CLIENT_TOKEN"];
+const clientToken =
+  typeof envToken === "string" && envToken.startsWith("pk_") ? envToken : LIVE_PUBLISHABLE_KEY;
 
+const checkoutFlag = import.meta.env["VITE_PAYMENTS_CHECKOUT_ENABLED"];
 export const isCheckoutEnabled =
-  import.meta.env["VITE_PAYMENTS_CHECKOUT_ENABLED"] === "true" &&
+  (checkoutFlag === "true" || checkoutFlag === undefined) &&
   (clientToken?.startsWith("pk_test_") || clientToken?.startsWith("pk_live_"));
 
 function paymentsEnvironment(): StripeEnv {
