@@ -1,0 +1,77 @@
+# Quillbase — a second organisation authored purely as content.
+# Same rules as repairline.yaml: no villains, one artefact per phase,
+# phase 4 judged against the candidate's own earlier work.
+
+organisation:
+  id: quillbase
+  name: Quillbase
+  sector: B2B SaaS, knowledge management
+  stage: growth
+  entry_level: associate_pm
+  simulated: true
+  brief: >
+    Quillbase sells a team knowledge base to mid-market companies. Growth has
+    stalled: new signups are flat, and the teams who do adopt it abandon it
+    within a quarter. The founders believe the answer is more features; the
+    data says nobody can find anything. The candidate joins as the first
+    product manager.
+
+stakeholders:
+  - name: Co-founder (CEO)
+    wants: A growth story for the next funding round
+    starting_trust: medium
+  - name: Co-founder (CTO)
+    wants: To keep building the AI features he enjoys
+    starting_trust: low
+  - name: Head of Customer Success
+    wants: Fewer "we can't find anything" churn calls
+    starting_trust: high
+  - name: Lead designer
+    wants: A coherent product instead of a feature pile
+    starting_trust: neutral
+
+phases:
+  - phase: 1
+    title: Find the real problem
+    artefact_type: discovery_report
+    brief: >
+      Dig into churn interviews, usage data and support tickets. Separate what
+      the founders believe from what the evidence shows, and name the problem
+      worth solving.
+    rubric_dimensions: [discovery, experiments_and_data]
+    unlock_after: null
+  - phase: 2
+    title: Choose what not to build
+    artefact_type: options_paper
+    brief: >
+      Lay out the realistic options — including the CTO's AI features — with
+      honest trade-offs, and recommend one. Say explicitly what you are
+      choosing not to do.
+    rubric_dimensions: [prioritisation, stakeholder_alignment]
+    unlock_after: 1
+  - phase: 3
+    title: Prove it small
+    artefact_type: readiness_assessment
+    brief: >
+      Design the smallest experiment that would prove or kill your
+      recommendation, with success measures agreed before it runs.
+    rubric_dimensions: [experiments_and_data, prioritisation]
+    unlock_after: 2
+  - phase: 4
+    title: The roadmap call
+    artefact_type: decision_memo
+    brief: >
+      Write the memo that sets the next two quarters. It must reference your
+      phase 1 evidence and phase 3 experiment results — your earlier work is
+      the record you are judged against.
+    rubric_dimensions: [product_leadership, stakeholder_alignment]
+    unlock_after: 3
+
+signature_dilemma: >
+  The CEO's funding narrative wants a big AI launch; your own experiment data
+  says search quality is the growth lever. The decision memo must hold the
+  line with evidence, without losing the founders' trust.
+
+event_cards: [budget_cut, engineer_resigns, production_outage]
+
+framework_version: pm-core@2026.1
