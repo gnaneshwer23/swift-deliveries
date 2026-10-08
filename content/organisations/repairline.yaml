@@ -49,7 +49,7 @@ phases:
     brief: >
       Set out the realistic routes to beta — including the uncomfortable ones —
       with the legal and operational trade-offs of each, and recommend one.
-    rubric_dimensions: [prioritisation, regulation]
+    rubric_dimensions: [prioritisation, delivery]
     unlock_after: 1
   - phase: 3
     title: Beta readiness
