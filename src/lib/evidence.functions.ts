@@ -1,6 +1,16 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import {
+  buildOpenBadgeCredential,
+  checkAttesterEligibility,
+  isValidAttestationLevel,
+  isValidStatementKey,
+  renewalDueAt,
+  statementTextFor,
+  type AttestationLevel,
+  type AttestationStatementKey,
+} from "@/lib/attestation";
 
 const PILOT_FRAMEWORK = { key: "pm-core", version: "2026.1" } as const;
 
@@ -480,6 +490,37 @@ export const requestAttestation = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
 
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Eligibility: block DeliverX staff/coaches and the candidate's own domain.
+    const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(userId);
+    const candidateEmail = authUser.user?.email ?? null;
+
+    const { data: roleRows } = await supabaseAdmin
+      .from("user_roles")
+      .select("user_id")
+      .in("role", ["admin", "moderator"]);
+    const staffOrCoachEmails: string[] = [];
+    for (const r of roleRows ?? []) {
+      const { data: staffUser } = await supabaseAdmin.auth.admin.getUserById(r.user_id);
+      if (staffUser.user?.email) staffOrCoachEmails.push(staffUser.user.email);
+    }
+
+    const eligibility = checkAttesterEligibility({
+      attesterEmail: data.attestorEmail,
+      candidateEmail,
+      staffOrCoachEmails,
+    });
+    if (!eligibility.eligible) {
+      const messages: Record<string, string> = {
+        invalid_email: "Enter a valid email address.",
+        own_domain: "Your attestor must be outside your own organisation's email domain.",
+        staff_domain: "DeliverX staff cannot attest. Choose someone independent.",
+        staff_or_coach: "DeliverX staff and coaches cannot attest. Choose someone independent.",
+      };
+      throw new Error(messages[eligibility.reason]);
+    }
+
     const { data: row, error } = await supabase
       .from("attestations")
       .insert({
@@ -493,7 +534,6 @@ export const requestAttestation = createServerFn({ method: "POST" })
       .single();
     if (error || !row) throw new Error(error?.message ?? "Could not create the request.");
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await supabaseAdmin
       .from("snapshot_claims")
       .update({ attestation_status: "attestation_requested" })
@@ -548,6 +588,8 @@ export const respondToAttestation = createServerFn({ method: "POST" })
       .object({
         token: z.string().min(10).max(200),
         decision: z.enum(["confirmed", "declined", "disputed"]),
+        statementKey: z.string().trim().max(60).optional().default(""),
+        level: z.string().trim().max(40).optional().default(""),
         statement: z.string().trim().max(1000).optional().default(""),
       })
       .parse(data),
@@ -557,17 +599,30 @@ export const respondToAttestation = createServerFn({ method: "POST" })
 
     const { data: att } = await supabaseAdmin
       .from("attestations")
-      .select("id, claim_id, owner_id, state, attestor_name")
+      .select("id, claim_id, owner_id, state, attestor_name, relationship")
       .eq("token", data.token)
       .maybeSingle();
     if (!att || att.state !== "pending") throw new Error("This request is no longer open.");
 
+    if (data.decision === "confirmed") {
+      if (!isValidStatementKey(data.statementKey)) {
+        throw new Error("Choose one of the fixed statements.");
+      }
+      if (!isValidAttestationLevel(data.level)) {
+        throw new Error("Choose a level for this attestation.");
+      }
+    }
+
+    const now = new Date();
     const { error: attError } = await supabaseAdmin
       .from("attestations")
       .update({
         state: data.decision,
-        statement: data.statement || null,
-        responded_at: new Date().toISOString(),
+        statement: data.decision === "confirmed" ? statementTextFor(data.statementKey) : data.statement || null,
+        statement_key: data.decision === "confirmed" ? data.statementKey : null,
+        attestation_level: data.decision === "confirmed" ? data.level : null,
+        renewal_due_at: data.decision === "confirmed" ? renewalDueAt(now).toISOString() : null,
+        responded_at: now.toISOString(),
       })
       .eq("id", att.id);
     if (attError) throw new Error(attError.message);
@@ -595,6 +650,31 @@ export const respondToAttestation = createServerFn({ method: "POST" })
           evidence_strength: "externally_verified",
         })
         .eq("id", att.claim_id);
+
+      // Issue the Open Badges 3.0 credential for this attestation.
+      const { data: ownerProfile } = await supabaseAdmin
+        .from("profiles")
+        .select("full_name, display_name")
+        .eq("id", att.owner_id)
+        .maybeSingle();
+      const credentialId = crypto.randomUUID();
+      const credentialJson = buildOpenBadgeCredential({
+        credentialId: `https://deliverx.dev/credentials/${credentialId}`,
+        issuerDid: "did:web:deliverx.dev",
+        ownerName: ownerProfile?.full_name ?? ownerProfile?.display_name ?? "DeliverX member",
+        attesterName: att.attestor_name,
+        relationship: att.relationship ?? null,
+        statementKey: data.statementKey as AttestationStatementKey,
+        level: data.level as AttestationLevel,
+        artefactChecksum: null,
+        issuedAt: now,
+      });
+      await supabaseAdmin.from("credentials").insert({
+        id: credentialId,
+        attestation_id: att.id,
+        owner_id: att.owner_id,
+        credential_json: credentialJson as never,
+      });
     } else if (data.decision === "disputed") {
       await supabaseAdmin
         .from("snapshot_claims")
@@ -606,6 +686,55 @@ export const respondToAttestation = createServerFn({ method: "POST" })
         .update({ attestation_status: "unattested" })
         .eq("id", att.claim_id);
     }
+
+    return { ok: true };
+  });
+
+/**
+ * Revocation: the attester (via their token) or the owner can withdraw.
+ * Marks the attestation revoked, revokes the credential and removes Verified
+ * in one flow — the only path out of Verified.
+ */
+export const revokeAttestation = createServerFn({ method: "POST" })
+  .validator((data: unknown) =>
+    z
+      .object({
+        token: z.string().min(10).max(200),
+        reason: z.string().trim().max(500).optional().default(""),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: att } = await supabaseAdmin
+      .from("attestations")
+      .select("id, claim_id, owner_id, state")
+      .eq("token", data.token)
+      .maybeSingle();
+    if (!att || att.state !== "confirmed") {
+      throw new Error("This attestation is not active.");
+    }
+
+    const now = new Date().toISOString();
+
+    const { error: attError } = await supabaseAdmin
+      .from("attestations")
+      .update({ state: "revoked", responded_at: now })
+      .eq("id", att.id);
+    if (attError) throw new Error(attError.message);
+
+    // Revoke the credential and remove Verified in the same flow.
+    await supabaseAdmin
+      .from("credentials")
+      .update({ status: "revoked", revoked_at: now })
+      .eq("attestation_id", att.id)
+      .eq("status", "active");
+
+    await supabaseAdmin
+      .from("snapshot_claims")
+      .update({ attestation_status: "unattested", verified: false })
+      .eq("id", att.claim_id);
 
     return { ok: true };
   });

@@ -22,6 +22,7 @@ import { Route as PilotRouteImport } from './routes/pilot'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProfessionalWorkspaceRouteImport } from './routes/professional-workspace'
+import { Route as ProveRouteImport } from './routes/prove'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SignupRouteImport } from './routes/signup'
@@ -125,6 +126,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const ProfessionalWorkspaceRoute = ProfessionalWorkspaceRouteImport.update({
   id: '/professional-workspace',
   path: '/professional-workspace',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProveRoute = ProveRouteImport.update({
+  id: '/prove',
+  path: '/prove',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -365,6 +371,7 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
+  '/prove': typeof ProveRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
@@ -419,6 +426,7 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
+  '/prove': typeof ProveRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
@@ -473,6 +481,7 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
+  '/prove': typeof ProveRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
@@ -529,6 +538,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/privacy'
     | '/professional-workspace'
+    | '/prove'
     | '/reset-password'
     | '/signin'
     | '/signup'
@@ -583,6 +593,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/privacy'
     | '/professional-workspace'
+    | '/prove'
     | '/reset-password'
     | '/signin'
     | '/signup'
@@ -636,6 +647,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/privacy'
     | '/professional-workspace'
+    | '/prove'
     | '/reset-password'
     | '/signin'
     | '/signup'
@@ -692,6 +704,7 @@ export interface RootRouteChildren {
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   ProfessionalWorkspaceRoute: typeof ProfessionalWorkspaceRoute
+  ProveRoute: typeof ProveRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
@@ -803,6 +816,13 @@ declare module '@tanstack/react-router' {
       path: '/professional-workspace'
       fullPath: '/professional-workspace'
       preLoaderRoute: typeof ProfessionalWorkspaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/prove': {
+      id: '/prove'
+      path: '/prove'
+      fullPath: '/prove'
+      preLoaderRoute: typeof ProveRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -1194,6 +1214,7 @@ const rootRouteChildren: RootRouteChildren = {
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   ProfessionalWorkspaceRoute: ProfessionalWorkspaceRoute,
+  ProveRoute: ProveRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,

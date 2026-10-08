@@ -149,6 +149,8 @@ export type Database = {
       }
       attestations: {
         Row: {
+          artefact_version_id: string | null
+          attestation_level: string | null
           attestor_email: string
           attestor_name: string
           claim_id: string
@@ -156,14 +158,18 @@ export type Database = {
           id: string
           owner_id: string
           relationship: string | null
+          renewal_due_at: string | null
           requested_at: string
           responded_at: string | null
           state: Database["public"]["Enums"]["attestation_state"]
           statement: string | null
+          statement_key: string | null
           token: string
           updated_at: string
         }
         Insert: {
+          artefact_version_id?: string | null
+          attestation_level?: string | null
           attestor_email: string
           attestor_name: string
           claim_id: string
@@ -171,14 +177,18 @@ export type Database = {
           id?: string
           owner_id: string
           relationship?: string | null
+          renewal_due_at?: string | null
           requested_at?: string
           responded_at?: string | null
           state?: Database["public"]["Enums"]["attestation_state"]
           statement?: string | null
+          statement_key?: string | null
           token?: string
           updated_at?: string
         }
         Update: {
+          artefact_version_id?: string | null
+          attestation_level?: string | null
           attestor_email?: string
           attestor_name?: string
           claim_id?: string
@@ -186,14 +196,23 @@ export type Database = {
           id?: string
           owner_id?: string
           relationship?: string | null
+          renewal_due_at?: string | null
           requested_at?: string
           responded_at?: string | null
           state?: Database["public"]["Enums"]["attestation_state"]
           statement?: string | null
+          statement_key?: string | null
           token?: string
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "attestations_artefact_version_id_fkey"
+            columns: ["artefact_version_id"]
+            isOneToOne: false
+            referencedRelation: "artefact_versions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "attestations_claim_id_fkey"
             columns: ["claim_id"]
@@ -464,6 +483,74 @@ export type Database = {
           },
         ]
       }
+      credentials: {
+        Row: {
+          attestation_id: string
+          credential_json: Json
+          id: string
+          issued_at: string
+          owner_id: string
+          revoked_at: string | null
+          status: string
+        }
+        Insert: {
+          attestation_id: string
+          credential_json: Json
+          id?: string
+          issued_at?: string
+          owner_id: string
+          revoked_at?: string | null
+          status?: string
+        }
+        Update: {
+          attestation_id?: string
+          credential_json?: Json
+          id?: string
+          issued_at?: string
+          owner_id?: string
+          revoked_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credentials_attestation_id_fkey"
+            columns: ["attestation_id"]
+            isOneToOne: false
+            referencedRelation: "attestations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_cards: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          required_artefact: string
+          tests: string
+          title: string
+          trigger_description: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          required_artefact: string
+          tests: string
+          title: string
+          trigger_description: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          required_artefact?: string
+          tests?: string
+          title?: string
+          trigger_description?: string
+        }
+        Relationships: []
+      }
       evidence_ledger: {
         Row: {
           artefact_version_id: string | null
@@ -564,11 +651,15 @@ export type Database = {
           created_at: string
           duration_label: string
           enabled: boolean
+          entry_level: string | null
           framework_id: string
+          framework_version: string
           id: string
           key: string
           name: string
           role_title: string
+          sector: string | null
+          signature_dilemma: string | null
           summary: string
         }
         Insert: {
@@ -578,11 +669,15 @@ export type Database = {
           created_at?: string
           duration_label: string
           enabled?: boolean
+          entry_level?: string | null
           framework_id: string
+          framework_version?: string
           id?: string
           key: string
           name: string
           role_title: string
+          sector?: string | null
+          signature_dilemma?: string | null
           summary: string
         }
         Update: {
@@ -592,11 +687,15 @@ export type Database = {
           created_at?: string
           duration_label?: string
           enabled?: boolean
+          entry_level?: string | null
           framework_id?: string
+          framework_version?: string
           id?: string
           key?: string
           name?: string
           role_title?: string
+          sector?: string | null
+          signature_dilemma?: string | null
           summary?: string
         }
         Relationships: [
@@ -1363,6 +1462,118 @@ export type Database = {
         }
         Relationships: []
       }
+      scenario_event_cards: {
+        Row: {
+          event_card_id: string
+          scenario_id: string
+        }
+        Insert: {
+          event_card_id: string
+          scenario_id: string
+        }
+        Update: {
+          event_card_id?: string
+          scenario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scenario_event_cards_event_card_id_fkey"
+            columns: ["event_card_id"]
+            isOneToOne: false
+            referencedRelation: "event_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scenario_event_cards_scenario_id_fkey"
+            columns: ["scenario_id"]
+            isOneToOne: false
+            referencedRelation: "experience_scenarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scenario_phases: {
+        Row: {
+          artefact_type: string
+          brief: string
+          created_at: string
+          id: string
+          phase_number: number
+          rubric_dimensions: string[]
+          scenario_id: string
+          title: string
+          unlock_after: number | null
+        }
+        Insert: {
+          artefact_type: string
+          brief: string
+          created_at?: string
+          id?: string
+          phase_number: number
+          rubric_dimensions?: string[]
+          scenario_id: string
+          title: string
+          unlock_after?: number | null
+        }
+        Update: {
+          artefact_type?: string
+          brief?: string
+          created_at?: string
+          id?: string
+          phase_number?: number
+          rubric_dimensions?: string[]
+          scenario_id?: string
+          title?: string
+          unlock_after?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scenario_phases_scenario_id_fkey"
+            columns: ["scenario_id"]
+            isOneToOne: false
+            referencedRelation: "experience_scenarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scenario_stakeholders: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          scenario_id: string
+          sort_order: number
+          starting_trust: string
+          wants: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          scenario_id: string
+          sort_order?: number
+          starting_trust: string
+          wants: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          scenario_id?: string
+          sort_order?: number
+          starting_trust?: string
+          wants?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scenario_stakeholders_scenario_id_fkey"
+            columns: ["scenario_id"]
+            isOneToOne: false
+            referencedRelation: "experience_scenarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       score_runs: {
         Row: {
           created_at: string
@@ -1547,6 +1758,48 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_event_draws: {
+        Row: {
+          drawn_at: string
+          enrolment_id: string
+          event_card_id: string
+          id: string
+          owner_id: string
+          status: string
+        }
+        Insert: {
+          drawn_at?: string
+          enrolment_id: string
+          event_card_id: string
+          id?: string
+          owner_id: string
+          status?: string
+        }
+        Update: {
+          drawn_at?: string
+          enrolment_id?: string
+          event_card_id?: string
+          id?: string
+          owner_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_event_draws_enrolment_id_fkey"
+            columns: ["enrolment_id"]
+            isOneToOne: false
+            referencedRelation: "experience_enrolments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_event_draws_event_card_id_fkey"
+            columns: ["event_card_id"]
+            isOneToOne: false
+            referencedRelation: "event_cards"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -2109,7 +2362,12 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
-      attestation_state: "pending" | "confirmed" | "declined" | "disputed"
+      attestation_state:
+        | "pending"
+        | "confirmed"
+        | "declined"
+        | "disputed"
+        | "revoked"
       attestation_status:
         | "unattested"
         | "attestation_requested"
@@ -2268,7 +2526,13 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
-      attestation_state: ["pending", "confirmed", "declined", "disputed"],
+      attestation_state: [
+        "pending",
+        "confirmed",
+        "declined",
+        "disputed",
+        "revoked",
+      ],
       attestation_status: [
         "unattested",
         "attestation_requested",
