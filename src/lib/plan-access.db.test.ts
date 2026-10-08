@@ -77,4 +77,21 @@ describe.skipIf(!hasDb)("purchase rules in the database", () => {
       expect(run(purchase("career_sprint_pass", "now() + interval '90 days'", status))).toBe("f");
     });
   }
+
+  it("stores one purchase and never extends access when the same webhook is replayed", () => {
+    // Mirrors the webhook's upsert: same stripe_subscription_id replayed later must
+    // keep a single row with its original 90-day end, not a fresh period.
+    const result = sql(`BEGIN; ${setup}
+      INSERT INTO pg_temp.s (user_id, stripe_subscription_id, stripe_customer_id, product_id, price_id, status, current_period_start, current_period_end, cancel_at_period_end, environment)
+        VALUES ('${USER}', 'cs_test', 'cus_test', 'prod_test', 'career_sprint_pass', 'active', '2026-10-06T12:00:00Z', '2027-01-04T12:00:00Z', false, 'live');
+      INSERT INTO pg_temp.s (user_id, stripe_subscription_id, stripe_customer_id, product_id, price_id, status, current_period_start, current_period_end, cancel_at_period_end, environment)
+        VALUES ('${USER}', 'cs_test', 'cus_test', 'prod_test', 'career_sprint_pass', 'active', now(), now() + interval '90 days', false, 'live')
+        ON CONFLICT (stripe_subscription_id, environment) DO UPDATE SET
+          status = EXCLUDED.status, cancel_at_period_end = EXCLUDED.cancel_at_period_end, updated_at = now();
+      SELECT count(*)::text FROM pg_temp.s;
+      SELECT current_period_end::text FROM pg_temp.s;
+      ROLLBACK;`);
+    expect(result).toContain("1");
+    expect(result).toContain("2027-01-04 12:00:00+00");
+  });
 });
