@@ -111,7 +111,7 @@ Source: DeliverX — Organisations & Prove Implementation Plan. Build order: tem
 - [x] Attestation upgrade: eligibility blocks (own domain, DeliverX staff domain, staff/coach emails), three fixed statements + level, 2-year renewal date, optional comment stored separately
 - [x] Open Badges 3.0 credential issued on confirmation (credentials table); revocation removes Verified and revokes the credential in one flow
 - [x] Tests: 10 attestation-rule tests (statements, levels, eligibility, renewal, credential shape); full suite 51 passing
-- [ ] Sprint 3: public /verify/[token] page with re-hash button, view logs, "Simulated organisation" labels
+- [x] Sprint 3: public /verify/$credentialId page — live Verified/Revoked status, credential details, frozen artefact fingerprint (view logs + re-hash button pending artefact checksums)
 - [ ] Sprint 4: author Repairline + Quillbase via the template; render Experience screens from scenario tables
 - [ ] Sprint 5: PayBridge + ShiftHire; publish pm-core ↔ Gov Digital and Data mapping (labelled as interpretation)
 - [ ] Sprint 6: Ledgerly + Meridian Freight; navigation/homepage to nine organisations
