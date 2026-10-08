@@ -40,7 +40,7 @@ const SURFACES = [
     n: "02",
     name: "Evidence Portfolio",
     desc: "Package selected artefacts into a clear portfolio without separating claims from their source. Private by default — share on your terms.",
-    note: "Private evidence and attestor details are stripped from any shared view automatically.",
+    note: "Private evidence and attester details are stripped from any shared view automatically.",
     cls: "trust",
   },
   {
@@ -68,7 +68,7 @@ const SURFACES = [
 
 const PATHWAY = [
   { h: "Select evidence", p: "In Launchpad, choose the specific artefact and framework dimension you want attested." },
-  { h: "Name your attestor", p: "Identify an independent expert — former manager, senior peer, domain specialist. A secure link is created for them." },
+  { h: "Name your attester", p: "Identify an independent expert — former manager, senior peer, domain specialist. A secure link is created for them." },
   { h: "Attestor reviews", p: "They see the artefact, the provenance chain, and the framework dimension — nothing else from your profile." },
   { h: "Attestor confirms", p: "They confirm the evidence reflects capability they have personally witnessed. Their professional judgement, not a platform score." },
   { h: "Ledger updated", p: "An external verification record is added to the ledger entry. Attestor identity is held under privacy controls. Dispute mechanism available." },
@@ -149,7 +149,7 @@ function LaunchpadPage() {
           },
           {
             q: "Who can see my portfolio?",
-            a: "Nobody until you create a share link. Links expire, you can revoke them at any time, and private evidence and attestor details are removed from the shared view.",
+            a: "Nobody until you create a share link. Links expire, you can revoke them at any time, and private evidence and attester details are removed from the shared view.",
           },
           {
             q: "Will DeliverX find me a job?",

@@ -9,7 +9,7 @@ export const Route = createFileRoute("/how-it-works")({
       {
         name: "description",
         content:
-          "Five steps connect realistic product work to a career-ready, externally verifiable professional intelligence record. No silent promotion from self-report, AI draft or score to Verified.",
+          "Six steps connect realistic product work to a career-ready, externally verifiable professional intelligence record. No silent promotion from self-report, AI draft or score to Verified.",
       },
       { property: "og:title", content: "How DeliverX works — evidence to Verified" },
       {
@@ -36,7 +36,7 @@ function HowItWorksPage() {
           Proof compounds.
         </h1>
         <p>
-          Five stages connect realistic product work to a career-ready record an outsider can
+          Six steps connect realistic product work to a career-ready record an outsider can
           verify.
         </p>
       </div>
@@ -96,8 +96,8 @@ function HowItWorksPage() {
           <div className="step-content">
             <h2>Judge capability</h2>
             <p>
-              Evidence is assessed against pm-core@2026.1, the versioned capability framework for
-              this framework. A two-pass AI scoring system runs: a primary grader assesses each
+              Evidence is assessed against pm-core@2026.1, the pinned, versioned capability
+              framework. A two-pass AI scoring system runs: a primary grader assesses each
               dimension, and an adversarial verifier challenges the assessment. The result is a
               confidence band — explainable, never decorative.
             </p>
@@ -142,15 +142,34 @@ function HowItWorksPage() {
             <h2>Verify externally</h2>
             <p>
               Only an independent person outside DeliverX can activate the Verified signal. You
-              request attestation via Launchpad. Your attestor receives a secure token, reviews the
-              specific evidence you've selected, and confirms it reflects demonstrated capability
-              they've witnessed. On confirmation, the ledger entry receives an
-              external_verification record and Verified lights.
+              request attestation via Launchpad. Your attester receives a secure link and reviews
+              the frozen artefact, its brief and the rubric it was judged against — never your
+              score. They confirm three fixed statements about the work. On confirmation, a
+              credential is issued and Verified lights.
             </p>
             <div className="step-trust-note">
               <strong>Trust note:</strong> Verified is never lit by a ScoreRun, by coach
               confirmation, by Experience completion, or by any action inside the platform.
               External attestation is the only gate — enforced at the architecture level.
+            </div>
+          </div>
+        </div>
+
+        <div className="step-detail">
+          <div className="step-num-circle">6</div>
+          <div className="step-content">
+            <h2>Carry it into live work</h2>
+            <p>
+              The same evidence discipline continues into your day-to-day product role. In the
+              Workspace, live delivery work produces the same provenance-backed records — so the
+              record you built while learning keeps growing once you're hired.
+            </p>
+            <div className="step-tags">
+              <span className="pill pill-neutral">Workspace</span>
+            </div>
+            <div className="step-trust-note">
+              <strong>Trust note:</strong> Live-work records follow the same rules: private by
+              default, shared only by your explicit decision.
             </div>
           </div>
         </div>

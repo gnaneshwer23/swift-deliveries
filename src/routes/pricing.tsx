@@ -87,7 +87,7 @@ const TIERS = [
     priceId: "launchpad_monthly" as CheckoutPriceId,
     features: [
       "Readiness surfaces from real evidence",
-      "Shareable, tokenised portfolio",
+      "Shareable portfolio on links you create and revoke",
       "Honest labelling — heuristic or judged",
       "Attestation pathway to Verified",
     ],
@@ -95,13 +95,13 @@ const TIERS = [
   {
     name: "Complete Journey",
     tag: "BUILD, LAND, SUCCEED",
-    description: "Experience and Launchpad, plus the Professional Workspace for live delivery.",
+    description: "Experience and Launchpad, plus the individual Workspace for live delivery.",
     price: "£29",
     priceId: "complete_journey_monthly" as CheckoutPriceId,
     features: [
-      "Organisation and team invitations",
-      "Observed work contributions",
-      "Consent-off observation by default",
+      "Everything in Experience and Launchpad",
+      "Individual Workspace for live product work",
+      "Observation off by default — you consent first",
       "Private-by-default evidence",
     ],
   },
@@ -248,12 +248,21 @@ function PricingPage() {
             </p>
           )}
 
+          <p className="caption mt-10 text-center" style={{ maxWidth: 560, marginLeft: "auto", marginRight: "auto" }}>
+            Running a team or sponsoring delivery? The Professional Workspace for organisations is
+            separate — from £750 per active project per month.{" "}
+            <Link to="/professional-workspace" className="underline">
+              See the Workspace
+            </Link>
+            .
+          </p>
+
           <div className="card mt-14" style={{ padding: 28 }}>
             <span className="mono-label">What we do not promise</span>
             <ul className="mt-5 space-y-3 text-sm">
               <li>
                 <strong>No money-back guarantee.</strong> Paid subscriptions can be cancelled at any
-                time; cancellation takes effect immediately.
+                time; access runs to the end of the period you've paid for.
               </li>
               <li>
                 <strong>No job guarantee.</strong> We stand behind the quality of the work, the
@@ -266,7 +275,7 @@ function PricingPage() {
               <li>
                 <strong>No score without a method.</strong> Capability judgements cite the evidence
                 they used and explain the level. A Verified claim needs a named independent
-                attestor.
+                attester.
               </li>
             </ul>
           </div>

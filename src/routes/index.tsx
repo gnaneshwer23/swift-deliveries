@@ -259,7 +259,7 @@ function HomePage() {
       <div className="steps-section">
         <div className="x-label">What you get</div>
         <h2 className="heading-1" style={{ margin: "14px 0 0", maxWidth: 640 }}>
-          Five stages, one record that follows you through all of them.
+          Six steps, one record that follows you through all of them.
         </h2>
         <Bento>
           <BentoTile
@@ -446,7 +446,7 @@ function HomePage() {
             onInk
             label="Complete Journey"
             title="£29 / month"
-            body="Everything above plus the Professional Workspace for live product work."
+            body="Everything above plus the individual Workspace for live product work. Sponsor and team workspaces are separate, from £750 per project."
           />
         </Bento>
         <div style={{ marginTop: 20 }}>
