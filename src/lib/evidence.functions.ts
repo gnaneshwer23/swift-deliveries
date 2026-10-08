@@ -641,6 +641,31 @@ export const respondToAttestation = createServerFn({ method: "POST" })
           evidence_strength: "externally_verified",
         })
         .eq("id", att.claim_id);
+
+      // Issue the Open Badges 3.0 credential for this attestation.
+      const { data: ownerProfile } = await supabaseAdmin
+        .from("profiles")
+        .select("full_name, display_name")
+        .eq("id", att.owner_id)
+        .maybeSingle();
+      const credentialId = crypto.randomUUID();
+      const credentialJson = buildOpenBadgeCredential({
+        credentialId: `https://deliverx.dev/credentials/${credentialId}`,
+        issuerDid: "did:web:deliverx.dev",
+        ownerName: ownerProfile?.full_name ?? ownerProfile?.display_name ?? "DeliverX member",
+        attesterName: att.attestor_name,
+        relationship: att.relationship ?? null,
+        statementKey: data.statementKey as AttestationStatementKey,
+        level: data.level as AttestationLevel,
+        artefactChecksum: null,
+        issuedAt: now,
+      });
+      await supabaseAdmin.from("credentials").insert({
+        id: credentialId,
+        attestation_id: att.id,
+        owner_id: att.owner_id,
+        credential_json: credentialJson,
+      });
     } else if (data.decision === "disputed") {
       await supabaseAdmin
         .from("snapshot_claims")
