@@ -214,7 +214,7 @@ function ExperiencePage() {
         items={[
           {
             q: "Is the company real?",
-            a: "No, and we say so plainly. MediFlow Technologies is a simulated company with a defined product, stakeholders and constraints. The work you produce inside it is real work you wrote, and that is what goes on your record.",
+            a: "No, and we say so plainly. Every organisation — Repairline, Quillbase, PayBridge, ShiftHire, Ledgerly, Meridian Freight — is simulated, with a defined product, stakeholders and constraints. The work you produce inside it is real work you wrote, and that is what goes on your record.",
           },
           {
             q: "What do I actually produce?",
