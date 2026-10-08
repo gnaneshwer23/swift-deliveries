@@ -214,7 +214,7 @@ export const createInterviewSession = createServerFn({ method: "POST" })
         .limit(20),
       supabase
         .from("evidence_ledger")
-        .select("summary,strength,capability_key,occurred_at")
+        .select("id,summary,strength,capability_key,occurred_at")
         .eq("owner_id", userId)
         .neq("strength", "self_reported")
         .order("occurred_at", { ascending: false })
@@ -234,20 +234,30 @@ export const createInterviewSession = createServerFn({ method: "POST" })
         ...(evidence.data ?? []).map((e) => e.capability_key).filter((k): k is string => Boolean(k)),
       ]),
     );
-    const evidenceContext = [
-      ...(judgements.data ?? []).map(
-        (j) => `Judged capability ${j.capability_key}: level ${j.level} (${j.band} confidence). ${j.rationale}`,
-      ),
-      ...(evidence.data ?? []).map(
-        (e) => `Evidence (${e.strength}${e.capability_key ? `, ${e.capability_key}` : ""}): ${e.summary}`,
-      ),
-    ].join("\n");
+
+    // Pick 3-5 strongest and 1-2 weakest record entries by judged capability level.
+    // Weak entries matter most: interviewers probe them.
+    const levelByCapability = new Map<string, number>();
+    for (const j of judgements.data ?? []) {
+      if (!levelByCapability.has(j.capability_key)) levelByCapability.set(j.capability_key, j.level);
+    }
+    const levelOf = (e: { capability_key: string | null }) =>
+      (e.capability_key && levelByCapability.get(e.capability_key)) ?? 0;
+    const sorted = [...(evidence.data ?? [])].sort((a, b) => levelOf(b) - levelOf(a));
+    const strongest = sorted.slice(0, 5);
+    const weakest = sorted.slice(5).sort((a, b) => levelOf(a) - levelOf(b)).slice(0, 2);
+    const entries = [...strongest, ...weakest].map((e) => ({
+      id: e.id,
+      summary: e.summary,
+      strength: e.strength,
+      capabilityKey: e.capability_key,
+    }));
 
     const { generateInterviewQuestions } = await import("./interview-ai.server");
     const drafts = await generateInterviewQuestions({
       roleTarget: data.roleTarget,
       focusCapabilityKey: data.focusCapabilityKey,
-      evidenceContext,
+      entries,
       capabilityKeys,
     });
 
@@ -269,6 +279,9 @@ export const createInterviewSession = createServerFn({ method: "POST" })
         prompt: d.prompt,
         origin: "ai_draft",
         capability_key: d.capabilityKey,
+        question_type: d.questionType,
+        source_evidence_id: d.evidenceId,
+        depth: 0,
         sort_order: index,
       })),
     );
