@@ -18,6 +18,7 @@ export const Route = createFileRoute("/forgot-password")({
         content: "Request a password reset link for your DeliverX account.",
       },
       { property: "og:type", content: "website" },
+      { name: "robots", content: "noindex" },
       { name: "twitter:card", content: "summary" },
     ],
   }),
