@@ -690,3 +690,52 @@ export const respondToAttestation = createServerFn({ method: "POST" })
 
     return { ok: true };
   });
+
+/**
+ * Revocation: the attester (via their token) or the owner can withdraw.
+ * Marks the attestation revoked, revokes the credential and removes Verified
+ * in one flow — the only path out of Verified.
+ */
+export const revokeAttestation = createServerFn({ method: "POST" })
+  .validator((data: unknown) =>
+    z
+      .object({
+        token: z.string().min(10).max(200),
+        reason: z.string().trim().max(500).optional().default(""),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: att } = await supabaseAdmin
+      .from("attestations")
+      .select("id, claim_id, owner_id, state")
+      .eq("token", data.token)
+      .maybeSingle();
+    if (!att || att.state !== "confirmed") {
+      throw new Error("This attestation is not active.");
+    }
+
+    const now = new Date().toISOString();
+
+    const { error: attError } = await supabaseAdmin
+      .from("attestations")
+      .update({ state: "revoked", responded_at: now })
+      .eq("id", att.id);
+    if (attError) throw new Error(attError.message);
+
+    // Revoke the credential and remove Verified in the same flow.
+    await supabaseAdmin
+      .from("credentials")
+      .update({ status: "revoked", revoked_at: now })
+      .eq("attestation_id", att.id)
+      .eq("status", "active");
+
+    await supabaseAdmin
+      .from("snapshot_claims")
+      .update({ attestation_status: "unattested", verified: false })
+      .eq("id", att.claim_id);
+
+    return { ok: true };
+  });
