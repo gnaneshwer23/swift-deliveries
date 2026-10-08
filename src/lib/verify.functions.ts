@@ -54,9 +54,9 @@ export const getPublicCredential = createServerFn({ method: "GET" })
 
     return {
       found: true as const,
-      id: row.id,
-      status: row.status,
-      issuedAt: row.issued_at,
+      id: record.id,
+      status: record.status,
+      issuedAt: record.issued_at,
       ownerName: typeof subject["name"] === "string" ? subject["name"] : "the holder",
       achievementName: typeof achievement["name"] === "string" ? achievement["name"] : "",
       achievementDescription:
