@@ -38,7 +38,7 @@ phases:
       Read the regulator letter, the audit history and the current payout
       flow. Separate what is legally required from what is habit, and name
       the gap that actually puts certification at risk.
-    rubric_dimensions: [discovery, delivery_under_pressure]
+    rubric_dimensions: [discovery, delivery]
     unlock_after: null
   - phase: 2
     title: Sequence compliance against revenue
@@ -47,7 +47,7 @@ phases:
       Lay out the realistic sequencing options — including the sales team's
       preferred dates — with honest trade-offs, and recommend one. Say
       explicitly which deals slip and why.
-    rubric_dimensions: [prioritisation, stakeholder_alignment]
+    rubric_dimensions: [prioritisation, stakeholders]
     unlock_after: 1
   - phase: 3
     title: De-risk the certification
@@ -56,7 +56,7 @@ phases:
       Design the smallest rehearsal that would prove the payout flow passes
       before the real audit, with pass/fail criteria agreed with compliance
       up front.
-    rubric_dimensions: [experiments_and_data, delivery_under_pressure]
+    rubric_dimensions: [data, delivery]
     unlock_after: 2
   - phase: 4
     title: The launch-or-wait call
@@ -65,7 +65,7 @@ phases:
       Write the memo that decides whether the enterprise launch proceeds. It
       must reference your phase 1 gap analysis and phase 3 rehearsal results —
       your earlier work is the record you are judged against.
-    rubric_dimensions: [product_leadership, stakeholder_alignment]
+    rubric_dimensions: [communication, stakeholders]
     unlock_after: 3
 
 signature_dilemma: >
