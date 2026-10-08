@@ -275,7 +275,7 @@ function PricingPage() {
               <li>
                 <strong>No score without a method.</strong> Capability judgements cite the evidence
                 they used and explain the level. A Verified claim needs a named independent
-                attestor.
+                attester.
               </li>
             </ul>
           </div>
