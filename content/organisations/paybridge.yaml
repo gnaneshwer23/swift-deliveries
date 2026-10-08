@@ -1,0 +1,78 @@
+# PayBridge — a third organisation authored purely as content.
+# Same rules as repairline.yaml: no villains, one artefact per phase,
+# phase 4 judged against the candidate's own earlier work.
+
+organisation:
+  id: paybridge
+  name: PayBridge
+  sector: Fintech, B2B payments
+  stage: scale-up
+  entry_level: product_manager
+  simulated: true
+  brief: >
+    PayBridge moves money between marketplaces and their sellers across
+    fourteen countries. A new regulator letter means the payout flow must be
+    re-certified within two quarters, while the sales team keeps promising
+    launch dates to enterprise prospects. The candidate joins as the product
+    manager owning the payouts platform.
+
+stakeholders:
+  - name: Chief Operating Officer
+    wants: Zero regulatory findings at the next audit
+    starting_trust: low
+  - name: Head of Sales
+    wants: Signed enterprise deals with committed dates
+    starting_trust: medium
+  - name: Lead platform engineer
+    wants: Time to fix the payout ledger properly
+    starting_trust: neutral
+  - name: Compliance director
+    wants: Every change traceable to a control
+    starting_trust: low
+
+phases:
+  - phase: 1
+    title: Map the regulator's letter to the product
+    artefact_type: discovery_report
+    brief: >
+      Read the regulator letter, the audit history and the current payout
+      flow. Separate what is legally required from what is habit, and name
+      the gap that actually puts certification at risk.
+    rubric_dimensions: [discovery, delivery_under_pressure]
+    unlock_after: null
+  - phase: 2
+    title: Sequence compliance against revenue
+    artefact_type: options_paper
+    brief: >
+      Lay out the realistic sequencing options — including the sales team's
+      preferred dates — with honest trade-offs, and recommend one. Say
+      explicitly which deals slip and why.
+    rubric_dimensions: [prioritisation, stakeholder_alignment]
+    unlock_after: 1
+  - phase: 3
+    title: De-risk the certification
+    artefact_type: readiness_assessment
+    brief: >
+      Design the smallest rehearsal that would prove the payout flow passes
+      before the real audit, with pass/fail criteria agreed with compliance
+      up front.
+    rubric_dimensions: [experiments_and_data, delivery_under_pressure]
+    unlock_after: 2
+  - phase: 4
+    title: The launch-or-wait call
+    artefact_type: decision_memo
+    brief: >
+      Write the memo that decides whether the enterprise launch proceeds. It
+      must reference your phase 1 gap analysis and phase 3 rehearsal results —
+      your earlier work is the record you are judged against.
+    rubric_dimensions: [product_leadership, stakeholder_alignment]
+    unlock_after: 3
+
+signature_dilemma: >
+  Sales has signed a flagship deal whose launch date lands before the
+  earliest safe certification window. The memo must hold the regulatory line
+  with evidence, without burning the relationship with sales.
+
+event_cards: [regulator_letter, budget_cut, engineer_resigns]
+
+framework_version: pm-core@2026.1

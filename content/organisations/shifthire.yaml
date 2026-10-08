@@ -1,0 +1,77 @@
+# ShiftHire — a fourth organisation authored purely as content.
+# Same rules as repairline.yaml: no villains, one artefact per phase,
+# phase 4 judged against the candidate's own earlier work.
+
+organisation:
+  id: shifthire
+  name: ShiftHire
+  sector: Marketplace, hospitality staffing
+  stage: early
+  entry_level: associate_pm
+  simulated: true
+  brief: >
+    ShiftHire matches hospitality venues with vetted shift workers. Venues
+    love it; workers quietly churn after three shifts because pay arrives
+    late and shifts get cancelled without notice. The founder wants to spend
+    the new funding on venue acquisition. The candidate joins as the first
+    product hire.
+
+stakeholders:
+  - name: Founder (CEO)
+    wants: Venue growth numbers for the board
+    starting_trust: medium
+  - name: Head of Operations
+    wants: Fewer 6am panicked phone calls
+    starting_trust: high
+  - name: Worker community lead
+    wants: Workers treated as customers, not supply
+    starting_trust: low
+  - name: Finance lead
+    wants: The funding to last eighteen months
+    starting_trust: neutral
+
+phases:
+  - phase: 1
+    title: Follow the worker, not the venue
+    artefact_type: discovery_report
+    brief: >
+      Dig into worker churn interviews, shift data and cancellation logs.
+      Separate what the founder believes from what the evidence shows, and
+      name the problem worth solving.
+    rubric_dimensions: [discovery, experiments_and_data]
+    unlock_after: null
+  - phase: 2
+    title: Choose the side of the market to fix first
+    artefact_type: options_paper
+    brief: >
+      Lay out the realistic options — including the founder's venue
+      acquisition push — with honest trade-offs, and recommend one. Say
+      explicitly what you are choosing not to do.
+    rubric_dimensions: [prioritisation, stakeholder_alignment]
+    unlock_after: 1
+  - phase: 3
+    title: Prove retention moves
+    artefact_type: readiness_assessment
+    brief: >
+      Design the smallest experiment that would prove or kill your
+      recommendation, with success measures agreed before it runs.
+    rubric_dimensions: [experiments_and_data, prioritisation]
+    unlock_after: 2
+  - phase: 4
+    title: The funding allocation call
+    artefact_type: decision_memo
+    brief: >
+      Write the memo that sets how the next tranche of funding is spent. It
+      must reference your phase 1 evidence and phase 3 experiment results —
+      your earlier work is the record you are judged against.
+    rubric_dimensions: [product_leadership, stakeholder_alignment]
+    unlock_after: 3
+
+signature_dilemma: >
+  The board wants venue growth; your own data says worker churn caps the
+  whole marketplace. The funding memo must hold the line with evidence,
+  without losing the founder's backing.
+
+event_cards: [budget_cut, dependency_deprecation, production_outage]
+
+framework_version: pm-core@2026.1
