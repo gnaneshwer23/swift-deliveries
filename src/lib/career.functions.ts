@@ -323,35 +323,183 @@ export const saveInterviewAnswer = createServerFn({ method: "POST" })
       })
       .parse(data),
   )
-  .handler(async ({ data, context }) => {
+  .handler(async ({ data, context }): Promise<{ answerId: string; claimCount: number; followUpAdded: boolean }> => {
     const { supabase, userId } = context;
-    const { error } = await supabase
+
+    const { data: question, error: questionError } = await supabase
+      .from("interview_questions")
+      .select("id,session_id,prompt,capability_key,depth,sort_order")
+      .eq("id", data.questionId)
+      .eq("owner_id", userId)
+      .single();
+    if (questionError || !question) throw new Error("Question not found.");
+
+    // Answers freeze at submit: an answered question can never be edited.
+    const { data: existing } = await supabase
       .from("interview_answers")
-      .upsert(
-        {
-          question_id: data.questionId,
+      .select("id")
+      .eq("question_id", data.questionId)
+      .eq("owner_id", userId)
+      .maybeSingle();
+    if (existing) throw new Error("This answer is already saved and frozen. Answers cannot be edited after submit.");
+
+    const { answerChecksum } = await import("./interview-practice");
+    const checksum = await answerChecksum(data.body);
+    const { data: answer, error } = await supabase
+      .from("interview_answers")
+      .insert({
+        question_id: data.questionId,
+        owner_id: userId,
+        body: data.body,
+        self_rating: data.selfRating,
+        checksum,
+      })
+      .select("id")
+      .single();
+    if (error || !answer) throw new Error(error?.message ?? "Could not save the answer.");
+
+    // Record check + scoring against the candidate's record entries.
+    const { data: evidence } = await supabase
+      .from("evidence_ledger")
+      .select("id,summary,strength,capability_key")
+      .eq("owner_id", userId)
+      .neq("strength", "self_reported")
+      .order("occurred_at", { ascending: false })
+      .limit(25);
+    const entries = (evidence ?? []).map((e) => ({
+      id: e.id,
+      summary: e.summary,
+      strength: e.strength,
+      capabilityKey: e.capability_key,
+    }));
+
+    let claimCount = 0;
+    let followUpAdded = false;
+    if (entries.length) {
+      const { assessInterviewAnswer } = await import("./interview-ai.server");
+      const assessment = await assessInterviewAnswer({
+        questionPrompt: question.prompt,
+        answerBody: data.body,
+        entries,
+        capabilityKeys: question.capability_key ? [question.capability_key] : [],
+        currentDepth: question.depth,
+      });
+
+      if (assessment.claims.length) {
+        const { error: claimsError } = await supabase.from("answer_claims").insert(
+          assessment.claims.map((c) => ({
+            answer_id: answer.id,
+            owner_id: userId,
+            claim_text: c.claimText,
+            claim_type: c.claimType,
+            support_status: c.supportStatus,
+            matched_evidence_id: c.matchedEvidenceId,
+            record_excerpt: c.recordExcerpt,
+          })),
+        );
+        if (claimsError) throw new Error(claimsError.message);
+        claimCount = assessment.claims.length;
+      }
+
+      if (assessment.followUp) {
+        const { count } = await supabase
+          .from("interview_questions")
+          .select("id", { count: "exact", head: true })
+          .eq("session_id", question.session_id);
+        const { error: followUpError } = await supabase.from("interview_questions").insert({
+          session_id: question.session_id,
           owner_id: userId,
-          body: data.body,
-          self_rating: data.selfRating,
-        },
-        { onConflict: "question_id" },
-      );
-    if (error) throw new Error(error.message);
-    return { ok: true };
+          prompt: assessment.followUp.prompt,
+          origin: "ai_followup",
+          capability_key: question.capability_key,
+          question_type: assessment.followUp.questionType,
+          parent_question_id: question.id,
+          depth: question.depth + 1,
+          sort_order: count ?? 0,
+        });
+        if (followUpError) throw new Error(followUpError.message);
+        followUpAdded = true;
+      }
+    }
+
+    return { answerId: answer.id, claimCount, followUpAdded };
   });
 
 export const closeInterviewSession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((data: unknown) => z.object({ sessionId: uuid }).parse(data))
-  .handler(async ({ data, context }) => {
+  .handler(async ({ data, context }): Promise<{ ok: true; feedbackCount: number }> => {
     const { supabase, userId } = context;
+
+    const { data: session, error: sessionError } = await supabase
+      .from("interview_sessions")
+      .select("id,role_target,status")
+      .eq("id", data.sessionId)
+      .eq("owner_id", userId)
+      .single();
+    if (sessionError || !session) throw new Error("Session not found.");
+    if (session.status === "closed") return { ok: true, feedbackCount: 0 };
+
+    const { data: questions, error: questionsError } = await supabase
+      .from("interview_questions")
+      .select("id,prompt,sort_order")
+      .eq("session_id", data.sessionId)
+      .order("sort_order");
+    if (questionsError) throw new Error(questionsError.message);
+    const questionIds = (questions ?? []).map((q) => q.id);
+    const { data: answers, error: answersError } = await supabase
+      .from("interview_answers")
+      .select("question_id,body")
+      .in("question_id", questionIds.length ? questionIds : ["00000000-0000-0000-0000-000000000000"]);
+    if (answersError) throw new Error(answersError.message);
+
+    const transcript = (questions ?? [])
+      .map((q) => ({ question: q.prompt, answer: (answers ?? []).find((a) => a.question_id === q.id)?.body ?? "" }))
+      .filter((t) => t.answer.length > 0);
+
+    let feedbackCount = 0;
+    if (transcript.length) {
+      const { data: evidence } = await supabase
+        .from("evidence_ledger")
+        .select("id,summary,strength,capability_key")
+        .eq("owner_id", userId)
+        .neq("strength", "self_reported")
+        .order("occurred_at", { ascending: false })
+        .limit(25);
+      const entries = (evidence ?? []).map((e) => ({
+        id: e.id,
+        summary: e.summary,
+        strength: e.strength,
+        capabilityKey: e.capability_key,
+      }));
+
+      const { generateSessionFeedback } = await import("./interview-ai.server");
+      const feedback = await generateSessionFeedback({
+        roleTarget: session.role_target,
+        transcript,
+        entries,
+      });
+      const { error: feedbackError } = await supabase.from("interview_feedback").insert(
+        feedback.map((f) => ({
+          session_id: data.sessionId,
+          owner_id: userId,
+          rubric_dimension: f.dimension,
+          score: f.score,
+          rationale: f.rationale,
+          source: "ai",
+        })),
+      );
+      if (feedbackError) throw new Error(feedbackError.message);
+      feedbackCount = feedback.length;
+    }
+
     const { error } = await supabase
       .from("interview_sessions")
       .update({ status: "closed" })
       .eq("id", data.sessionId)
       .eq("owner_id", userId);
     if (error) throw new Error(error.message);
-    return { ok: true };
+    return { ok: true, feedbackCount };
   });
 
 export type ApplicationBoard = {
