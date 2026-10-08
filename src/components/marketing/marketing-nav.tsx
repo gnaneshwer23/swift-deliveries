@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { to: "/how-it-works", label: "How it works" },
   { to: "/experience", label: "Experience" },
   { to: "/launchpad", label: "Launchpad" },
+  { to: "/prove", label: "Prove" },
   { to: "/professional-workspace", label: "Workspace" },
 ] as const;
 
