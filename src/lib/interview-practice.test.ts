@@ -8,7 +8,9 @@ import {
   normaliseClaimStatus,
   normaliseClaimType,
   normaliseQuestionType,
+  recurringStrengths,
   shouldOfferFollowUp,
+  summarisePracticeHistory,
 } from "./interview-practice";
 
 describe("record check statuses", () => {
@@ -79,5 +81,52 @@ describe("question and claim type normalisation", () => {
     expect(normaliseClaimType("outcome")).toBe("outcome");
     expect(normaliseClaimType("role")).toBe("role");
     expect(normaliseClaimType("other")).toBe("action");
+  });
+});
+
+describe("practice history", () => {
+  const session = (id: string, closedAt: string, feedback: Array<[string, number]>) => ({
+    id,
+    roleTarget: "PM",
+    closedAt,
+    feedback: feedback.map(([dimension, score]) => ({ dimension, score })),
+  });
+
+  it("averages rubric scores per dimension across closed sessions", () => {
+    const history = summarisePracticeHistory([
+      session("a", "2026-10-01", [["structure", 3], ["metrics", 5]]),
+      session("b", "2026-10-05", [["structure", 5], ["metrics", 3]]),
+    ]);
+    const structure = history.find((d) => d.dimension === "structure")!;
+    expect(structure.average).toBe(4);
+    expect(structure.sessions).toBe(2);
+    expect(structure.latest).toBe(5);
+    expect(structure.trend).toBe("improving");
+  });
+
+  it("ignores sessions without feedback", () => {
+    const history = summarisePracticeHistory([
+      session("open", "2026-10-01", []),
+      session("closed", "2026-10-02", [["structure", 4]]),
+    ]);
+    expect(history).toHaveLength(1);
+    expect(history[0]!.sessions).toBe(1);
+  });
+
+  it("marks declining when the latest score drops below the average", () => {
+    const history = summarisePracticeHistory([
+      session("a", "2026-10-01", [["structure", 5]]),
+      session("b", "2026-10-05", [["structure", 2]]),
+    ]);
+    expect(history[0]!.trend).toBe("declining");
+  });
+
+  it("counts a strength only when it averages 4+ across at least two sessions", () => {
+    const history = summarisePracticeHistory([
+      session("a", "2026-10-01", [["structure", 5], ["metrics", 5], ["stakeholders", 2]]),
+      session("b", "2026-10-05", [["structure", 4], ["stakeholders", 2]]),
+    ]);
+    const strengths = recurringStrengths(history).map((d) => d.dimension);
+    expect(strengths).toEqual(["structure"]);
   });
 });

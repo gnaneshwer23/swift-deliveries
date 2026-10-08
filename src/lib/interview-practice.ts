@@ -62,3 +62,68 @@ export function normaliseClaimType(value: unknown): ClaimType {
 export function normaliseQuestionType(value: unknown): QuestionType {
   return QUESTION_TYPES.includes(value as QuestionType) ? (value as QuestionType) : "defend";
 }
+
+// ---- Practice history ----
+
+export interface PracticeFeedbackEntry {
+  dimension: string;
+  score: number;
+}
+
+export interface PracticeHistorySession {
+  id: string;
+  roleTarget: string;
+  closedAt: string | null;
+  feedback: PracticeFeedbackEntry[];
+}
+
+export interface DimensionHistory {
+  dimension: string;
+  /** Average score across closed sessions that scored this dimension. */
+  average: number;
+  /** How many closed sessions scored this dimension. */
+  sessions: number;
+  /** Score in the most recent closed session, if any. */
+  latest: number | null;
+  /** "improving" when the latest score beats the average, "declining" when below, else "steady". */
+  trend: "improving" | "steady" | "declining";
+}
+
+/** A dimension counts as a recurring strength at or above this average (of 5). */
+export const STRENGTH_AVERAGE = 4;
+/** A dimension must appear in at least this many closed sessions to be "recurring". */
+export const STRENGTH_MIN_SESSIONS = 2;
+
+/**
+ * Aggregate rubric scores across closed practice sessions, oldest first.
+ * Sessions without feedback are ignored. Practice-level only: this never
+ * feeds evidence, capability judgements or Verified state.
+ */
+export function summarisePracticeHistory(sessions: PracticeHistorySession[]): DimensionHistory[] {
+  const closed = sessions
+    .filter((s) => s.feedback.length > 0)
+    .slice()
+    .sort((a, b) => (a.closedAt ?? "").localeCompare(b.closedAt ?? ""));
+  const byDimension = new Map<string, number[]>();
+  for (const session of closed) {
+    for (const f of session.feedback) {
+      const list = byDimension.get(f.dimension) ?? [];
+      list.push(f.score);
+      byDimension.set(f.dimension, list);
+    }
+  }
+  return [...byDimension.entries()]
+    .map(([dimension, scores]) => {
+      const average = scores.reduce((sum, s) => sum + s, 0) / scores.length;
+      const latest = scores[scores.length - 1] ?? null;
+      const trend: DimensionHistory["trend"] =
+        latest === null || latest === average ? "steady" : latest > average ? "improving" : "declining";
+      return { dimension, average, sessions: scores.length, latest, trend };
+    })
+    .sort((a, b) => b.average - a.average);
+}
+
+/** Dimensions that score strongly again and again — the user's reliable interview ground. */
+export function recurringStrengths(history: DimensionHistory[]): DimensionHistory[] {
+  return history.filter((d) => d.average >= STRENGTH_AVERAGE && d.sessions >= STRENGTH_MIN_SESSIONS);
+}
