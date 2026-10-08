@@ -19,3 +19,9 @@ Source: docs/workspace-one-page-spec.md. These rules govern every Workspace feat
 - Resource risk: an empty role slot automatically creates a risk log entry — why: capability gaps are delivery risks.
 - Verifiable attribution: every metric and copilot answer cites its source record — why: no uncited claims.
 - Build freeze: no Workspace app code is built until all four unfreeze criteria in roadmap.md are met — why: candidate product comes first.
+
+## Scenario engine and Prove
+- Scenario organisations are content, not code: each is one YAML file under `content/organisations/` loaded into `experience_scenarios` + `scenario_stakeholders` + `scenario_phases` + `scenario_event_cards` — why: a content author ships a new organisation in about a week with no developer.
+- Shared event cards live in `event_cards` and attach to organisations via `scenario_event_cards`; candidate draws are owner-scoped in `user_event_draws` — why: events like "budget cut" are reusable across every organisation.
+- Prove credentials are Open Badges 3.0 JSON in `credentials`, issued only from a confirmed `attestations` row and revoked in the same transaction as the attestation — why: Verified must have exactly one path in and one path out.
+- The Open Badges issuer key lives only in server-side secrets with a documented rotation plan — why: a leaked key lets anyone forge DeliverX credentials.
