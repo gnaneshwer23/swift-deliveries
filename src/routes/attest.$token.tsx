@@ -4,6 +4,14 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { getAttestationRequest, respondToAttestation } from "@/lib/evidence.functions";
+import { ATTESTATION_LEVELS, ATTESTATION_STATEMENTS } from "@/lib/attestation";
+
+const LEVEL_LABELS: Record<string, string> = {
+  associate_pm: "Associate PM",
+  product_manager: "Product manager",
+  senior_pm: "Senior PM",
+  lead_pm: "Lead PM",
+};
 
 export const Route = createFileRoute("/attest/$token")({
   head: () => ({
@@ -31,6 +39,8 @@ function AttestPage() {
   const { token } = Route.useParams();
   const [done, setDone] = useState<string | null>(null);
   const [statement, setStatement] = useState("");
+  const [statementKey, setStatementKey] = useState("");
+  const [level, setLevel] = useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: ["attestation", token],
@@ -39,7 +49,7 @@ function AttestPage() {
 
   const respond = useMutation({
     mutationFn: (decision: "confirmed" | "declined" | "disputed") =>
-      respondToAttestation({ data: { token, decision, statement } }),
+      respondToAttestation({ data: { token, decision, statement, statementKey, level } }),
     onSuccess: (_r, decision) => setDone(decision),
     onError: (e: Error) => toast.error(e.message),
   });
@@ -74,9 +84,45 @@ function AttestPage() {
               {data.capabilityKey ? ` about their ${data.capabilityKey.replace(/_/g, " ")}` : ""}.
               Only confirm if you genuinely observed the work.
             </p>
+            <fieldset className="mt-5">
+              <legend className="text-sm font-medium">Pick the statement you can stand behind</legend>
+              <div className="mt-2 space-y-2">
+                {ATTESTATION_STATEMENTS.map((s) => (
+                  <label
+                    key={s.key}
+                    className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-[var(--mkt-border)] bg-[var(--mkt-s2)] px-3 py-2.5 text-sm"
+                  >
+                    <input
+                      type="radio"
+                      name="statement"
+                      value={s.key}
+                      checked={statementKey === s.key}
+                      onChange={() => setStatementKey(s.key)}
+                      className="mt-0.5"
+                    />
+                    <span>{s.text}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+            <label className="mt-4 block text-sm font-medium">
+              The level this work demonstrates
+              <select
+                className="mt-1.5 w-full rounded-xl border border-[var(--mkt-border)] bg-[var(--mkt-s2)] px-3 py-2.5 text-sm outline-none focus:border-[var(--mkt-green)]"
+                value={level}
+                onChange={(e) => setLevel(e.target.value)}
+              >
+                <option value="">Choose a level…</option>
+                {ATTESTATION_LEVELS.map((l) => (
+                  <option key={l} value={l}>
+                    {LEVEL_LABELS[l]}
+                  </option>
+                ))}
+              </select>
+            </label>
             <textarea
-              className="mt-5 min-h-28 w-full rounded-xl border border-[var(--mkt-border)] bg-[var(--mkt-s2)] px-3 py-2.5 text-sm outline-none focus:border-[var(--mkt-green)]"
-              placeholder="Optional: what you saw them do"
+              className="mt-4 min-h-24 w-full rounded-xl border border-[var(--mkt-border)] bg-[var(--mkt-s2)] px-3 py-2.5 text-sm outline-none focus:border-[var(--mkt-green)]"
+              placeholder="Optional comment (stored separately, never shown as the attestation itself)"
               value={statement}
               onChange={(e) => setStatement(e.target.value)}
               maxLength={1000}
@@ -84,7 +130,7 @@ function AttestPage() {
             <div className="mt-5 flex flex-wrap gap-3">
               <button
                 type="button"
-                disabled={respond.isPending}
+                disabled={respond.isPending || !statementKey || !level}
                 onClick={() => respond.mutate("confirmed")}
                 className="rounded-full bg-[var(--mkt-green)] px-5 py-2.5 text-sm font-medium text-white disabled:opacity-60"
               >
