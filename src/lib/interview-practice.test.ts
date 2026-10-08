@@ -110,7 +110,7 @@ describe("practice history", () => {
       session("closed", "2026-10-02", [["structure", 4]]),
     ]);
     expect(history).toHaveLength(1);
-    expect(history[0].sessions).toBe(1);
+    expect(history[0]!.sessions).toBe(1);
   });
 
   it("marks declining when the latest score drops below the average", () => {
@@ -118,7 +118,7 @@ describe("practice history", () => {
       session("a", "2026-10-01", [["structure", 5]]),
       session("b", "2026-10-05", [["structure", 2]]),
     ]);
-    expect(history[0].trend).toBe("declining");
+    expect(history[0]!.trend).toBe("declining");
   });
 
   it("counts a strength only when it averages 4+ across at least two sessions", () => {
