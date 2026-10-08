@@ -101,3 +101,18 @@ Unfreeze criteria (all must be true before Phase 3 starts):
 - [ ] One design partner committed (real team, real business case, named sponsor, 8 weeks; Fluent Institute first ask)
 - [ ] Candidate product in maintenance mode with no open P0/P1 issues
 - [ ] Decision-log entry amending the Build Charter to make Workspace a product, not an alias
+
+## Organisations & Prove implementation (8 Oct 2026)
+Source: DeliverX — Organisations & Prove Implementation Plan. Build order: template + Prove first, then organisations two at a time.
+- [x] Scenario engine schema: scenario_stakeholders, scenario_phases, event_cards, scenario_event_cards, user_event_draws; experience_scenarios gained sector/entry_level/signature_dilemma/framework_version
+- [x] Authoring template: content/organisations/repairline.yaml (one YAML per organisation, no developer needed)
+- [x] Prove page (/prove) + nav/footer: four-step ladder, three external references, never-counted-as-proof list
+- [x] Event card library v1 seeded: production outage, budget cut, key engineer resigns, dependency deprecation, regulator letter
+- [x] Attestation upgrade: eligibility blocks (own domain, DeliverX staff domain, staff/coach emails), three fixed statements + level, 2-year renewal date, optional comment stored separately
+- [x] Open Badges 3.0 credential issued on confirmation (credentials table); revocation removes Verified and revokes the credential in one flow
+- [x] Tests: 10 attestation-rule tests (statements, levels, eligibility, renewal, credential shape); full suite 51 passing
+- [ ] Sprint 3: public /verify/[token] page with re-hash button, view logs, "Simulated organisation" labels
+- [ ] Sprint 4: author Repairline + Quillbase via the template; render Experience screens from scenario tables
+- [ ] Sprint 5: PayBridge + ShiftHire; publish pm-core ↔ Gov Digital and Data mapping (labelled as interpretation)
+- [ ] Sprint 6: Ledgerly + Meridian Freight; navigation/homepage to nine organisations
+- [ ] Product decisions parked: no payment per attestation (default); one attestation for Senior/Lead (default)
