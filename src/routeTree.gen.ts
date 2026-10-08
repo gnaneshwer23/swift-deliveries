@@ -38,6 +38,7 @@ import { Route as PortfolioTokenRouteImport } from './routes/portfolio.$token'
 import { Route as ResourcesIndexRouteImport } from './routes/resources.index'
 import { Route as ResourcesPmPortfolioRouteImport } from './routes/resources.pm-portfolio'
 import { Route as ResourcesStarInterviewStoriesRouteImport } from './routes/resources.star-interview-stories'
+import { Route as VerifyCredentialIdRouteImport } from './routes/verify.$credentialId'
 import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated/workspace.index'
 import { Route as AuthenticatedWorkspaceApplicationsRouteImport } from './routes/_authenticated/workspace.applications'
 import { Route as AuthenticatedWorkspaceCapabilityRouteImport } from './routes/_authenticated/workspace.capability'
@@ -209,6 +210,11 @@ const ResourcesStarInterviewStoriesRoute =
     path: '/resources/star-interview-stories',
     getParentRoute: () => rootRouteImport,
   } as any)
+const VerifyCredentialIdRoute = VerifyCredentialIdRouteImport.update({
+  id: '/verify/$credentialId',
+  path: '/verify/$credentialId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedWorkspaceIndexRoute =
   AuthenticatedWorkspaceIndexRouteImport.update({
     id: '/',
@@ -386,6 +392,7 @@ export interface FileRoutesByFullPath {
   '/portfolio/$token': typeof PortfolioTokenRoute
   '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
   '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
+  '/verify/$credentialId': typeof VerifyCredentialIdRoute
   '/resources/': typeof ResourcesIndexRoute
   '/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
@@ -440,6 +447,7 @@ export interface FileRoutesByTo {
   '/portfolio/$token': typeof PortfolioTokenRoute
   '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
   '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
+  '/verify/$credentialId': typeof VerifyCredentialIdRoute
   '/resources': typeof ResourcesIndexRoute
   '/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
@@ -496,6 +504,7 @@ export interface FileRoutesById {
   '/portfolio/$token': typeof PortfolioTokenRoute
   '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
   '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
+  '/verify/$credentialId': typeof VerifyCredentialIdRoute
   '/resources/': typeof ResourcesIndexRoute
   '/_authenticated/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
   '/_authenticated/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
@@ -553,6 +562,7 @@ export interface FileRouteTypes {
     | '/portfolio/$token'
     | '/resources/pm-portfolio'
     | '/resources/star-interview-stories'
+    | '/verify/$credentialId'
     | '/resources/'
     | '/workspace/applications'
     | '/workspace/capability'
@@ -607,6 +617,7 @@ export interface FileRouteTypes {
     | '/portfolio/$token'
     | '/resources/pm-portfolio'
     | '/resources/star-interview-stories'
+    | '/verify/$credentialId'
     | '/resources'
     | '/workspace/applications'
     | '/workspace/capability'
@@ -662,6 +673,7 @@ export interface FileRouteTypes {
     | '/portfolio/$token'
     | '/resources/pm-portfolio'
     | '/resources/star-interview-stories'
+    | '/verify/$credentialId'
     | '/resources/'
     | '/_authenticated/workspace/applications'
     | '/_authenticated/workspace/capability'
@@ -716,6 +728,7 @@ export interface RootRouteChildren {
   PortfolioTokenRoute: typeof PortfolioTokenRoute
   ResourcesPmPortfolioRoute: typeof ResourcesPmPortfolioRoute
   ResourcesStarInterviewStoriesRoute: typeof ResourcesStarInterviewStoriesRoute
+  VerifyCredentialIdRoute: typeof VerifyCredentialIdRoute
   ResourcesIndexRoute: typeof ResourcesIndexRoute
   ApiPublicMonitoringClientErrorRoute: typeof ApiPublicMonitoringClientErrorRoute
   ApiPublicMonitoringHealthRoute: typeof ApiPublicMonitoringHealthRoute
@@ -928,6 +941,13 @@ declare module '@tanstack/react-router' {
       path: '/resources/star-interview-stories'
       fullPath: '/resources/star-interview-stories'
       preLoaderRoute: typeof ResourcesStarInterviewStoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verify/$credentialId': {
+      id: '/verify/$credentialId'
+      path: '/verify/$credentialId'
+      fullPath: '/verify/$credentialId'
+      preLoaderRoute: typeof VerifyCredentialIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/workspace/': {
@@ -1226,6 +1246,7 @@ const rootRouteChildren: RootRouteChildren = {
   PortfolioTokenRoute: PortfolioTokenRoute,
   ResourcesPmPortfolioRoute: ResourcesPmPortfolioRoute,
   ResourcesStarInterviewStoriesRoute: ResourcesStarInterviewStoriesRoute,
+  VerifyCredentialIdRoute: VerifyCredentialIdRoute,
   ResourcesIndexRoute: ResourcesIndexRoute,
   ApiPublicMonitoringClientErrorRoute: ApiPublicMonitoringClientErrorRoute,
   ApiPublicMonitoringHealthRoute: ApiPublicMonitoringHealthRoute,
