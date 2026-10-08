@@ -31,9 +31,7 @@ function HowItWorksPage() {
     <MarketingLayout>
       <div className="hero-hiw">
         <h1>
-          Work becomes proof.
-          <br />
-          Proof compounds.
+          The DeliverX method: six steps from realistic work to verified proof
         </h1>
         <p>
           Six steps connect realistic product work to a career-ready record an outsider can

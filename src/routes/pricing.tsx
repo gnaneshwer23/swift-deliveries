@@ -116,7 +116,7 @@ function PricingPage() {
       <section className="section-sm">
         <div className="container">
           <span className="mono-label">Pricing</span>
-          <h1 className="heading-1" style={{ marginTop: 16, maxWidth: 520 }}>Choose your route</h1>
+          <h1 className="heading-1" style={{ marginTop: 16, maxWidth: 520 }}>DeliverX plans and pricing</h1>
           <p className="body-large" style={{ marginTop: 16, maxWidth: 560 }}>
             Build practical experience, turn it into career intelligence, or follow the complete journey.
           </p>
