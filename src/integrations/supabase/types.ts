@@ -2362,7 +2362,12 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
-      attestation_state: "pending" | "confirmed" | "declined" | "disputed"
+      attestation_state:
+        | "pending"
+        | "confirmed"
+        | "declined"
+        | "disputed"
+        | "revoked"
       attestation_status:
         | "unattested"
         | "attestation_requested"
@@ -2521,7 +2526,13 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
-      attestation_state: ["pending", "confirmed", "declined", "disputed"],
+      attestation_state: [
+        "pending",
+        "confirmed",
+        "declined",
+        "disputed",
+        "revoked",
+      ],
       attestation_status: [
         "unattested",
         "attestation_requested",
