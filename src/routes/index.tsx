@@ -92,7 +92,7 @@ export const Route = createFileRoute("/")({
               "@type": "Product",
               name: "DeliverX Complete Journey",
               description:
-                "Experience, Launchpad and Professional Workspace together, with the full evidence record and capability profile.",
+                "Experience, Launchpad and the individual Workspace together, with the full evidence record and capability profile.",
               url: "https://deliverx.dev/pricing",
               brand: { "@id": "https://deliverx.dev/#organization" },
               offers: {

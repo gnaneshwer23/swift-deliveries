@@ -22,9 +22,9 @@ export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
       { title: "Pricing — DeliverX" },
-      { name: "description", content: "Experience £19, Launchpad £19 and the Complete Journey £29 per month. Cancel any time." },
+      { name: "description", content: "Start free with your first scenario. Experience £19, Launchpad £19 or the Complete Journey £29 per month; Career Sprint £69 one-off; Journey Annual £290 a year. Cancel any time." },
       { property: "og:title", content: "Pricing — DeliverX" },
-      { property: "og:description", content: "Experience £19, Launchpad £19 and the Complete Journey £29 per month. Cancel any time." },
+      { property: "og:description", content: "Start free with your first scenario. Experience £19, Launchpad £19 or the Complete Journey £29 per month; Career Sprint £69 one-off; Journey Annual £290 a year. Cancel any time." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://deliverx.dev/pricing" },
       { name: "twitter:card", content: "summary" },
@@ -124,8 +124,9 @@ function PricingPage() {
           <div className="card mt-8 flex items-start gap-3" style={{ padding: "18px 22px" }}>
             <Check className="mt-1 size-4 shrink-0" style={{ color: "var(--x-teal)" }} />
             <p className="text-sm">
-              <strong>Start free.</strong> Create an account and begin your first scenario in
-              Experience today — no card needed. Pay only when you want the full journey.
+              <strong>Start free.</strong> Create an account and work through the first phase of
+              your first scenario in Experience — no card needed. Assessed feedback, later phases
+              and attestation requests need a paid plan.
             </p>
           </div>
 
