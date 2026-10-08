@@ -96,9 +96,7 @@ function ExperiencePage() {
       <div className="hero-xp">
         <div className="hero-xp-tag">01 · Experience · Build the experience</div>
         <h1>
-          Stop describing potential.
-          <br />
-          Demonstrate it.
+          Product management experience in realistic simulated organisations
         </h1>
         <p>
           Work as a product manager inside realistic organisations. Your actions — not the setup —
