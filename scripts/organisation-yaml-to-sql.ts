@@ -151,7 +151,7 @@ for (const p of doc.phases) {
   lines.push(
     `INSERT INTO experience_tasks (scenario_id, key, week, sort_order, title, phase_label, brief, context, stakeholders, sections, guidance, capability_key, min_words)`,
     `SELECT id, ${q(taskKey)}, ${p.phase}, ${p.phase}, ${q(p.title)}, ${q(`Phase ${p.phase} of ${total}`)}, ${q(p.brief.trim())}, ${q(context)}, ${json(stakeholdersJson)}::jsonb, ${json(sectionsJson)}::jsonb, ${json(guidanceJson)}::jsonb, ${q(p.rubric_dimensions[0])}, 250 FROM experience_scenarios WHERE key = ${q(org.id)}`,
-    `ON CONFLICT (key) DO UPDATE SET title = EXCLUDED.title, phase_label = EXCLUDED.phase_label, brief = EXCLUDED.brief, context = EXCLUDED.context, stakeholders = EXCLUDED.stakeholders, sections = EXCLUDED.sections, guidance = EXCLUDED.guidance, capability_key = EXCLUDED.capability_key;`,
+    `ON CONFLICT (scenario_id, key) DO UPDATE SET title = EXCLUDED.title, phase_label = EXCLUDED.phase_label, brief = EXCLUDED.brief, context = EXCLUDED.context, stakeholders = EXCLUDED.stakeholders, sections = EXCLUDED.sections, guidance = EXCLUDED.guidance, capability_key = EXCLUDED.capability_key;`,
   );
 }
 
