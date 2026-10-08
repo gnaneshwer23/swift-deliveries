@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { StripeEnv } from "@/lib/stripe.server";
 import { verifyWebhook } from "@/lib/stripe.server";
 import { buildPassRow } from "@/lib/pass-purchase";
+import { shouldApplySubscriptionUpdate } from "@/lib/subscription-update";
 
 function getPriceId(subscription: any): string | undefined {
   const price = subscription.items?.data?.[0]?.price;

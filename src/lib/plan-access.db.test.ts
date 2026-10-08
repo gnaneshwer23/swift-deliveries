@@ -78,6 +78,35 @@ describe.skipIf(!hasDb)("purchase rules in the database", () => {
     });
   }
 
+  it("keeps access refused when a late active event arrives after cancellation with an older period end", () => {
+    // Mirrors the webhook guard: the stale "active" event (older period end) is
+    // skipped, so the canceled row stands and access stays refused.
+    const result = sql(`BEGIN; ${setup}
+      INSERT INTO pg_temp.s (user_id, stripe_subscription_id, stripe_customer_id, product_id, price_id, status, current_period_start, current_period_end, cancel_at_period_end, environment)
+        VALUES ('${USER}', 'sub_1', 'cus_test', 'prod_test', 'complete_journey_monthly', 'canceled', now() - interval '2 months', now() - interval '1 day', false, 'live');
+      -- Stale replay with an older period end: the webhook skips it (shouldApplySubscriptionUpdate),
+      -- so this UPDATE never runs. Assert the stored state still grants nothing.
+      SELECT pg_temp.access('${USER}', 'complete_journey', 'live');
+      ROLLBACK;`);
+    expect(result).toBe("f");
+  });
+
+  it("keeps an expired Career Sprint expired even if its checkout confirmation is replayed after expiry", () => {
+    // The pass row's 90-day window has ended; a replayed webhook hits
+    // ignoreDuplicates and cannot revive it.
+    const result = sql(`BEGIN; ${setup}
+      INSERT INTO pg_temp.s (user_id, stripe_subscription_id, stripe_customer_id, product_id, price_id, status, current_period_start, current_period_end, cancel_at_period_end, environment)
+        VALUES ('${USER}', 'cs_expired', 'cus_test', 'prod_test', 'career_sprint_pass', 'active', now() - interval '100 days', now() - interval '10 days', false, 'live');
+      INSERT INTO pg_temp.s (user_id, stripe_subscription_id, stripe_customer_id, product_id, price_id, status, current_period_start, current_period_end, cancel_at_period_end, environment)
+        VALUES ('${USER}', 'cs_expired', 'cus_test', 'prod_test', 'career_sprint_pass', 'active', now(), now() + interval '90 days', false, 'live')
+        ON CONFLICT (stripe_subscription_id, environment) DO NOTHING;
+      SELECT count(*)::text FROM pg_temp.s;
+      SELECT pg_temp.access('${USER}', 'complete_journey', 'live');
+      ROLLBACK;`);
+    expect(result).toContain("1");
+    expect(result).toContain("f");
+  });
+
   it("stores one purchase and never extends access when the same webhook is replayed", () => {
     // Mirrors the webhook's upsert: same stripe_subscription_id replayed later must
     // keep a single row with its original 90-day end, not a fresh period.
