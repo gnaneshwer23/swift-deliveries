@@ -95,10 +95,10 @@ describe("Open Badges credential", () => {
       issuedAt: new Date("2026-10-08T00:00:00Z"),
     }) as Record<string, any>;
 
-    expect(cred.type).toContain("OpenBadgeCredential");
-    expect(cred.issuer.id).toBe("did:web:deliverx.dev");
-    expect(cred.credentialSubject.achievement.name).toContain("senior pm");
-    expect(cred.evidence[0].description).toContain("Jane Attester");
-    expect(cred.evidence[0].digestSRI).toBe("sha256-deadbeef");
+    expect(cred["type"]).toContain("OpenBadgeCredential");
+    expect(cred["issuer"].id).toBe("did:web:deliverx.dev");
+    expect(cred["credentialSubject"].achievement.name).toContain("senior pm");
+    expect(cred["evidence"][0].description).toContain("Jane Attester");
+    expect(cred["evidence"][0].digestSRI).toBe("sha256-deadbeef");
   });
 });
