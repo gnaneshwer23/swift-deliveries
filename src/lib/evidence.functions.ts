@@ -579,6 +579,8 @@ export const respondToAttestation = createServerFn({ method: "POST" })
       .object({
         token: z.string().min(10).max(200),
         decision: z.enum(["confirmed", "declined", "disputed"]),
+        statementKey: z.string().trim().max(60).optional().default(""),
+        level: z.string().trim().max(40).optional().default(""),
         statement: z.string().trim().max(1000).optional().default(""),
       })
       .parse(data),
@@ -588,17 +590,30 @@ export const respondToAttestation = createServerFn({ method: "POST" })
 
     const { data: att } = await supabaseAdmin
       .from("attestations")
-      .select("id, claim_id, owner_id, state, attestor_name")
+      .select("id, claim_id, owner_id, state, attestor_name, relationship")
       .eq("token", data.token)
       .maybeSingle();
     if (!att || att.state !== "pending") throw new Error("This request is no longer open.");
 
+    if (data.decision === "confirmed") {
+      if (!isValidStatementKey(data.statementKey)) {
+        throw new Error("Choose one of the fixed statements.");
+      }
+      if (!isValidAttestationLevel(data.level)) {
+        throw new Error("Choose a level for this attestation.");
+      }
+    }
+
+    const now = new Date();
     const { error: attError } = await supabaseAdmin
       .from("attestations")
       .update({
         state: data.decision,
-        statement: data.statement || null,
-        responded_at: new Date().toISOString(),
+        statement: data.decision === "confirmed" ? statementTextFor(data.statementKey) : data.statement || null,
+        statement_key: data.decision === "confirmed" ? data.statementKey : null,
+        attestation_level: data.decision === "confirmed" ? data.level : null,
+        renewal_due_at: data.decision === "confirmed" ? renewalDueAt(now).toISOString() : null,
+        responded_at: now.toISOString(),
       })
       .eq("id", att.id);
     if (attError) throw new Error(attError.message);
