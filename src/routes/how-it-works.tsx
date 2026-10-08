@@ -96,8 +96,8 @@ function HowItWorksPage() {
           <div className="step-content">
             <h2>Judge capability</h2>
             <p>
-              Evidence is assessed against pm-core@2026.1, the versioned capability framework for
-              this framework. A two-pass AI scoring system runs: a primary grader assesses each
+              Evidence is assessed against pm-core@2026.1, the pinned, versioned capability
+              framework. A two-pass AI scoring system runs: a primary grader assesses each
               dimension, and an adversarial verifier challenges the assessment. The result is a
               confidence band — explainable, never decorative.
             </p>
@@ -142,7 +142,7 @@ function HowItWorksPage() {
             <h2>Verify externally</h2>
             <p>
               Only an independent person outside DeliverX can activate the Verified signal. You
-              request attestation via Launchpad. Your attestor receives a secure link and reviews
+              request attestation via Launchpad. Your attester receives a secure link and reviews
               the frozen artefact, its brief and the rubric it was judged against — never your
               score. They confirm three fixed statements about the work. On confirmation, a
               credential is issued and Verified lights.

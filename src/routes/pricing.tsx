@@ -87,7 +87,7 @@ const TIERS = [
     priceId: "launchpad_monthly" as CheckoutPriceId,
     features: [
       "Readiness surfaces from real evidence",
-      "Shareable, tokenised portfolio",
+      "Shareable portfolio on links you create and revoke",
       "Honest labelling — heuristic or judged",
       "Attestation pathway to Verified",
     ],

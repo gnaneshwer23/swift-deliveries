@@ -79,9 +79,9 @@ const notes = [
   {
     index: "03",
     title: "What Verified means here",
-    body: "Verified is an attestation signal, not a badge you earn by finishing work. A named independent attestor must confirm a specific claim. A scoring run alone never lights it, and coach confirmation is recorded as a separate, distinctly labelled tier.",
-    to: "/about",
-    cta: "About DeliverX",
+    body: "Verified is an attestation signal, not a badge you earn by finishing work. A named independent attester must confirm a specific claim. A scoring run alone never lights it, and coach confirmation is recorded as a separate, distinctly labelled tier.",
+    to: "/prove",
+    cta: "How Prove works",
   },
 ] as const;
 
