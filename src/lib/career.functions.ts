@@ -12,12 +12,29 @@ export type InterviewLab = {
     focusCapabilityKey: string | null;
     status: string;
     createdAt: string;
+    feedback: Array<{ dimension: string; score: number; rationale: string }>;
     questions: Array<{
       id: string;
       prompt: string;
       origin: string;
       capabilityKey: string | null;
-      answer: { id: string; body: string; selfRating: number | null } | null;
+      questionType: string;
+      depth: number;
+      parentQuestionId: string | null;
+      sourceEvidence: { id: string; summary: string } | null;
+      answer: {
+        id: string;
+        body: string;
+        selfRating: number | null;
+        checksum: string | null;
+        claims: Array<{
+          id: string;
+          claimText: string;
+          claimType: string;
+          supportStatus: string;
+          recordExcerpt: string | null;
+        }>;
+      } | null;
     }>;
   }>;
 };
