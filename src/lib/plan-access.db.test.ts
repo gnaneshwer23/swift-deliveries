@@ -21,12 +21,16 @@ beforeAll(() => {
   const check = sql(
     "SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conname = 'subscriptions_price_id_check'",
   );
+  const unique = sql(
+    "SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conname = 'subscriptions_stripe_subscription_id_environment_key'",
+  );
   const body = sql(
     "SELECT prosrc FROM pg_proc WHERE proname = 'has_plan_access' AND pronamespace = 'public'::regnamespace",
   ).replace(/public\.subscriptions/g, "pg_temp.s");
   setup = `
     CREATE TEMP TABLE s (LIKE public.subscriptions INCLUDING DEFAULTS);
     ALTER TABLE pg_temp.s ADD CONSTRAINT price_check ${check};
+    ALTER TABLE pg_temp.s ADD CONSTRAINT unique_purchase ${unique};
     CREATE FUNCTION pg_temp.access(requested_user_id uuid, requested_product text, requested_environment text)
       RETURNS boolean LANGUAGE sql AS $fn$ ${body} $fn$;`;
 });

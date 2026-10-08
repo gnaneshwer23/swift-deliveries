@@ -45,4 +45,10 @@ describe("buildPassRow", () => {
     expect(buildPassRow({ ...session, status: "open", payment_status: "unpaid" }, "live")).toBeNull();
     expect(buildPassRow({ ...session, status: "expired", payment_status: "unpaid" }, "live")).toBeNull();
   });
+
+  it("produces the identical row when the same webhook is replayed, so a retry cannot extend access", () => {
+    const first = buildPassRow(session, "live", new Date("2026-10-06T12:00:00Z"));
+    const replayed = buildPassRow(session, "live", new Date("2026-10-20T09:30:00Z"));
+    expect(replayed).toEqual(first);
+  });
 });
