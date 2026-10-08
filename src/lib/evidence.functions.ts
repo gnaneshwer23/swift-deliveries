@@ -514,7 +514,7 @@ export const requestAttestation = createServerFn({ method: "POST" })
     if (!eligibility.eligible) {
       const messages: Record<string, string> = {
         invalid_email: "Enter a valid email address.",
-        own_domain: "Your attestor must be outside your own organisation's email domain.",
+        own_domain: "Your attester must be outside your own organisation's email domain.",
         staff_domain: "DeliverX staff cannot attest. Choose someone independent.",
         staff_or_coach: "DeliverX staff and coaches cannot attest. Choose someone independent.",
       };

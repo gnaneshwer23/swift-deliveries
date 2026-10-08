@@ -106,13 +106,13 @@ function StarStoriesGuide() {
       <p>
         Work you submit in Experience becomes an immutable artefact version with its provenance
         retained, so each story has something concrete behind it. Launchpad packages those artefacts
-        into a portfolio you can share on a private expiring link, and readiness signals state
+        into a portfolio you can share on a private, revocable link, and readiness signals state
         whether they came from a judged capability run or a labelled heuristic.
       </p>
       <p>
         Where AI helps you draft, the draft is labelled as a suggestion and stays out of your record
         until you edit and approve it. Verified claims are separate again: only a named independent
-        attestor can confirm one, and coach confirmation is shown as its own distinct tier.
+        attester can confirm one, and coach confirmation is shown as its own distinct tier.
       </p>
       <p>
         The point of all this is narrow and practical — when an interviewer digs, you have a document
