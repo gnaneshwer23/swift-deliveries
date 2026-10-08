@@ -41,7 +41,7 @@ phases:
       Map how repairs reporting really works today — call handlers, contractors,
       residents who never go online. Find where the statutory deadlines are
       actually at risk, not where the alpha assumed they were.
-    rubric_dimensions: [discovery, stakeholder_alignment]
+    rubric_dimensions: [discovery, stakeholders]
     unlock_after: null
   - phase: 2
     title: Service design trade-offs
@@ -49,7 +49,7 @@ phases:
     brief: >
       Set out the realistic routes to beta — including the uncomfortable ones —
       with the legal and operational trade-offs of each, and recommend one.
-    rubric_dimensions: [prioritisation, regulation]
+    rubric_dimensions: [prioritisation, delivery]
     unlock_after: 1
   - phase: 3
     title: Beta readiness
@@ -58,7 +58,7 @@ phases:
       Assess whether the service is genuinely ready: assisted digital support,
       back-office capacity, audit trail. Name what is not ready and what you
       would do about it.
-    rubric_dimensions: [experiments_and_data, stakeholder_alignment]
+    rubric_dimensions: [data, stakeholders]
     unlock_after: 2
   - phase: 4
     title: The launch decision
@@ -67,7 +67,7 @@ phases:
       Write the memo the cabinet member and the legal lead will both read. It
       must reference your phase 1 findings and phase 3 readiness evidence —
       your earlier work is the record you are judged against.
-    rubric_dimensions: [prioritisation, product_leadership]
+    rubric_dimensions: [prioritisation, communication]
     unlock_after: 3
 
 signature_dilemma: >

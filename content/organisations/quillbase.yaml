@@ -38,7 +38,7 @@ phases:
       Dig into churn interviews, usage data and support tickets. Separate what
       the founders believe from what the evidence shows, and name the problem
       worth solving.
-    rubric_dimensions: [discovery, experiments_and_data]
+    rubric_dimensions: [discovery, data]
     unlock_after: null
   - phase: 2
     title: Choose what not to build
@@ -47,7 +47,7 @@ phases:
       Lay out the realistic options — including the CTO's AI features — with
       honest trade-offs, and recommend one. Say explicitly what you are
       choosing not to do.
-    rubric_dimensions: [prioritisation, stakeholder_alignment]
+    rubric_dimensions: [prioritisation, stakeholders]
     unlock_after: 1
   - phase: 3
     title: Prove it small
@@ -55,7 +55,7 @@ phases:
     brief: >
       Design the smallest experiment that would prove or kill your
       recommendation, with success measures agreed before it runs.
-    rubric_dimensions: [experiments_and_data, prioritisation]
+    rubric_dimensions: [data, prioritisation]
     unlock_after: 2
   - phase: 4
     title: The roadmap call
@@ -64,7 +64,7 @@ phases:
       Write the memo that sets the next two quarters. It must reference your
       phase 1 evidence and phase 3 experiment results — your earlier work is
       the record you are judged against.
-    rubric_dimensions: [product_leadership, stakeholder_alignment]
+    rubric_dimensions: [communication, stakeholders]
     unlock_after: 3
 
 signature_dilemma: >
