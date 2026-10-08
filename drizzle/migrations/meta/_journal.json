@@ -113,6 +113,13 @@
       "when": 1791498038162,
       "tag": "0015_public_verify_credentials",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1791499161582,
+      "tag": "0016_credentials_owner_read_and_verify_function",
+      "breakpoints": true
     }
   ]
 }
