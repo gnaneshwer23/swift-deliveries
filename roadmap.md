@@ -112,7 +112,8 @@ Source: DeliverX — Organisations & Prove Implementation Plan. Build order: tem
 - [x] Open Badges 3.0 credential issued on confirmation (credentials table); revocation removes Verified and revokes the credential in one flow
 - [x] Tests: 10 attestation-rule tests (statements, levels, eligibility, renewal, credential shape); full suite 51 passing
 - [x] Sprint 3: public /verify/$credentialId page — live Verified/Revoked status, credential details, frozen artefact fingerprint (view logs + re-hash button pending artefact checksums)
-- [x] Sprint 4: Repairline + Quillbase authored as YAML and loaded into the scenario engine (4 stakeholders, 4 phases, 3 event cards each); generator script at scripts/organisation-yaml-to-sql.ts. Experience screens still render legacy task rows — data-driven rendering pending
+- [x] Sprint 4: Repairline + Quillbase authored as YAML and loaded into the scenario engine (4 stakeholders, 4 phases, 3 event cards each); generator script at scripts/organisation-yaml-to-sql.ts
+- [x] Data-driven Experience rendering: generator now derives one experience_tasks row per phase for all six YAML organisations; workspace Experience screen verified rendering real phases (no hard-coded content)
 - [x] Sprint 5: PayBridge + ShiftHire authored and loaded; rubric dimensions aligned to real pm-core keys across all four organisations; mapping published at docs/pm-core-gov-digital-data-mapping.md (labelled as interpretation, not endorsement)
 - [x] Sprint 6: Ledgerly + Meridian Freight authored and loaded (six YAML organisations live); /experience page now lists all six real organisations instead of placeholders
 - [ ] Product decisions parked: no payment per attestation (default); one attestation for Senior/Lead (default)
