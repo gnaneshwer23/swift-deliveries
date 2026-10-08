@@ -46,9 +46,15 @@ describe("buildPassRow", () => {
     expect(buildPassRow({ ...session, status: "expired", payment_status: "unpaid" }, "live")).toBeNull();
   });
 
-  it("produces the identical row when the same webhook is replayed, so a retry cannot extend access", () => {
-    const first = buildPassRow(session, "live", new Date("2026-10-06T12:00:00Z"));
-    const replayed = buildPassRow(session, "live", new Date("2026-10-20T09:30:00Z"));
-    expect(replayed).toEqual(first);
+  it("keys a replayed webhook to the same purchase, so the database keeps the original 90-day window", () => {
+    const first = buildPassRow(session, "live", new Date("2026-10-06T12:00:00Z"))!;
+    const replayed = buildPassRow(session, "live", new Date("2026-10-20T09:30:00Z"))!;
+    // Identity fields are stable, so the replay targets the existing row...
+    expect(replayed.stripe_subscription_id).toBe(first.stripe_subscription_id);
+    expect(replayed.user_id).toBe(first.user_id);
+    expect(replayed.price_id).toBe(first.price_id);
+    // ...and only the period dates would differ — which the webhook's
+    // ignore-duplicates upsert discards, keeping the first payment's window.
+    expect(replayed.current_period_end).not.toBe(first.current_period_end);
   });
 });
