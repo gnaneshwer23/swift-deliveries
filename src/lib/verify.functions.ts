@@ -30,15 +30,22 @@ export const getPublicCredential = createServerFn({ method: "GET" })
       global: { fetch: fetchShim },
     });
 
-    const { data: row } = await supabase
-      .from("credentials")
-      .select("id, status, credential_json, issued_at")
-      .eq("id", data.credentialId)
-      .maybeSingle();
+    // Credentials are owner-scoped; public verification goes through the
+    // security-definer verify_credential function, which returns one record
+    // only to a caller who already holds its unguessable id.
+    const { data: row } = await supabase.rpc("verify_credential", {
+      _credential_id: data.credentialId,
+    });
 
     if (!row) return { found: false as const };
 
-    const json = row.credential_json as Record<string, unknown>;
+    const record = row as {
+      id: string;
+      status: string;
+      issued_at: string;
+      credential_json: unknown;
+    };
+    const json = record.credential_json as Record<string, unknown>;
     const subject = (json["credentialSubject"] ?? {}) as Record<string, unknown>;
     const achievement = (subject["achievement"] ?? {}) as Record<string, unknown>;
     const evidence = Array.isArray(json["evidence"])
