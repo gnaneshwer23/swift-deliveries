@@ -9,7 +9,7 @@ export const Route = createFileRoute("/how-it-works")({
       {
         name: "description",
         content:
-          "Five steps connect realistic product work to a career-ready, externally verifiable professional intelligence record. No silent promotion from self-report, AI draft or score to Verified.",
+          "Six steps connect realistic product work to a career-ready, externally verifiable professional intelligence record. No silent promotion from self-report, AI draft or score to Verified.",
       },
       { property: "og:title", content: "How DeliverX works — evidence to Verified" },
       {
@@ -36,7 +36,7 @@ function HowItWorksPage() {
           Proof compounds.
         </h1>
         <p>
-          Five stages connect realistic product work to a career-ready record an outsider can
+          Six steps connect realistic product work to a career-ready record an outsider can
           verify.
         </p>
       </div>
