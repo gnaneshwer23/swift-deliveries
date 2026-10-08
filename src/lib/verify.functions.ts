@@ -32,7 +32,7 @@ export const getPublicCredential = createServerFn({ method: "GET" })
 
     const { data: row } = await supabase
       .from("credentials")
-      .select("id, status, credential_json, created_at")
+      .select("id, status, credential_json, issued_at")
       .eq("id", data.credentialId)
       .maybeSingle();
 
@@ -49,7 +49,7 @@ export const getPublicCredential = createServerFn({ method: "GET" })
       found: true as const,
       id: row.id,
       status: row.status,
-      issuedAt: row.created_at,
+      issuedAt: row.issued_at,
       ownerName: typeof subject["name"] === "string" ? subject["name"] : "the holder",
       achievementName: typeof achievement["name"] === "string" ? achievement["name"] : "",
       achievementDescription:
