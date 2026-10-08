@@ -534,7 +534,6 @@ export const requestAttestation = createServerFn({ method: "POST" })
       .single();
     if (error || !row) throw new Error(error?.message ?? "Could not create the request.");
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await supabaseAdmin
       .from("snapshot_claims")
       .update({ attestation_status: "attestation_requested" })
@@ -674,7 +673,7 @@ export const respondToAttestation = createServerFn({ method: "POST" })
         id: credentialId,
         attestation_id: att.id,
         owner_id: att.owner_id,
-        credential_json: credentialJson,
+        credential_json: credentialJson as never,
       });
     } else if (data.decision === "disputed") {
       await supabaseAdmin
