@@ -2359,6 +2359,7 @@ export type Database = {
         Args: { _document_id: string }
         Returns: string
       }
+      verify_credential: { Args: { _credential_id: string }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
