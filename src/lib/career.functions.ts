@@ -51,7 +51,7 @@ export const getInterviewLab = createServerFn({ method: "GET" })
         .order("created_at", { ascending: false }),
       supabase
         .from("interview_sessions")
-        .select("id,role_target,focus_capability_key,status,created_at")
+        .select("id,role_target,focus_capability_key,status,created_at,updated_at")
         .eq("owner_id", userId)
         .order("created_at", { ascending: false })
         .limit(20),
@@ -150,6 +150,7 @@ export const getInterviewLab = createServerFn({ method: "GET" })
         focusCapabilityKey: s.focus_capability_key,
         status: s.status,
         createdAt: s.created_at,
+        closedAt: s.status === "closed" ? s.updated_at : null,
         feedback: feedbackRows
           .filter((f) => f.session_id === s.id)
           .map((f) => ({ dimension: f.rubric_dimension, score: f.score, rationale: f.rationale })),
