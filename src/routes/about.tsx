@@ -47,6 +47,10 @@ function AboutPage() {
                   title: "Who it's for",
                   body: "Aspiring and practising product managers, delivery leads, and the teams that hire and grow them.",
                 },
+                {
+                  title: "Who's behind it",
+                  body: "DeliverX is an independent product built and run by its founder, reachable at gnaneshwer.jadav@gmail.com. A registered company entity is being established — we think a product built on accountability should say so plainly.",
+                },
               ].map((item) => (
                 <div key={item.title}>
                   <h2 className="font-serif text-xl tracking-[-0.01em] text-[var(--mkt-text1)]">
