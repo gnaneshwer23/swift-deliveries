@@ -86,8 +86,7 @@ describe.skipIf(!hasDb)("purchase rules in the database", () => {
         VALUES ('${USER}', 'cs_test', 'cus_test', 'prod_test', 'career_sprint_pass', 'active', '2026-10-06T12:00:00Z', '2027-01-04T12:00:00Z', false, 'live');
       INSERT INTO pg_temp.s (user_id, stripe_subscription_id, stripe_customer_id, product_id, price_id, status, current_period_start, current_period_end, cancel_at_period_end, environment)
         VALUES ('${USER}', 'cs_test', 'cus_test', 'prod_test', 'career_sprint_pass', 'active', now(), now() + interval '90 days', false, 'live')
-        ON CONFLICT (stripe_subscription_id, environment) DO UPDATE SET
-          status = EXCLUDED.status, cancel_at_period_end = EXCLUDED.cancel_at_period_end, updated_at = now();
+        ON CONFLICT (stripe_subscription_id, environment) DO NOTHING;
       SELECT count(*)::text FROM pg_temp.s;
       SELECT current_period_end::text FROM pg_temp.s;
       ROLLBACK;`);
