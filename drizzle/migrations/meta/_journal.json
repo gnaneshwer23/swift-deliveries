@@ -120,6 +120,13 @@
       "when": 1791499161582,
       "tag": "0016_credentials_owner_read_and_verify_function",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1791561472026,
+      "tag": "0017_scope_content_read_policies",
+      "breakpoints": true
     }
   ]
 }
