@@ -33,7 +33,13 @@ describe("shouldApplySubscriptionUpdate", () => {
   });
 
   it("applies updates when either side has no period end to compare", () => {
-    expect(shouldApplySubscriptionUpdate({ status: "canceled", current_period_end: null }, { status: "active", current_period_end: "2026-11-08T00:00:00Z" })).toBe(true);
-    expect(shouldApplySubscriptionUpdate({ status: "canceled", current_period_end: "2026-11-08T00:00:00Z" }, { status: "active", current_period_end: null })).toBe(true);
+    expect(shouldApplySubscriptionUpdate({ status: "active", current_period_end: null }, { status: "active", current_period_end: "2026-11-08T00:00:00Z" })).toBe(true);
+    expect(shouldApplySubscriptionUpdate({ status: "past_due", current_period_end: "2026-11-08T00:00:00Z" }, { status: "active", current_period_end: null })).toBe(true);
+  });
+
+  it("rejects a late same-period active event after a cancellation", () => {
+    const existing = { status: "canceled", current_period_end: "2026-11-08T00:00:00Z" };
+    const lateActive = { status: "active", current_period_end: "2026-11-08T00:00:00Z" };
+    expect(shouldApplySubscriptionUpdate(existing, lateActive)).toBe(false);
   });
 });

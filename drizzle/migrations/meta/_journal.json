@@ -127,6 +127,13 @@
       "when": 1791561472026,
       "tag": "0017_scope_content_read_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1791561522647,
+      "tag": "0018_allow_ai_followup_origin",
+      "breakpoints": true
     }
   ]
 }
