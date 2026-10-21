@@ -9,6 +9,14 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
+## DeliverX Supervised AI Workforce (Stage 1)
+Source: docs/prd-deliverx-supervised-ai-workforce.md. Gap analysis: docs/prd-gap-analysis.md.
+- Signed-in primary surface is `/command` (Command Centre), not the career agent-directory workspace.
+- AI drafts; humans approve plans. Act externally never runs without an explicit approval.
+- Quality labels are Agent-reviewed / Automatically tested / Human-reviewed / Externally attested — never a generic “Verified”.
+- Usage ceilings hard-stop further billable steps. Stage 1 uses deterministic planner/executor stubs unless model keys exist.
+- New persistence uses additive `wf_*` tables with RLS workspace isolation; do not mutate legacy Delivery-OS `projects`/`tasks`/`artefacts`.
+
 ## DeliverX Workspace (B2B) product rules
 Source: docs/workspace-one-page-spec.md. These rules govern every Workspace feature.
 - Objective linkage: every work item links to a business-case objective; unlinked items are flagged — why: reporting is against the case, not ticket counts.

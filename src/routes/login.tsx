@@ -49,7 +49,7 @@ function LoginPage() {
   useEffect(() => {
     let active = true;
     void waitForSession().then((session) => {
-      if (active && session) navigate({ to: "/workspace", replace: true });
+      if (active && session) navigate({ to: "/command", replace: true });
     });
     return () => {
       active = false;
@@ -70,7 +70,7 @@ function LoginPage() {
       setError(signInError.message);
       return;
     }
-    navigate({ to: "/workspace" });
+    navigate({ to: "/command" });
   };
 
   const handleGoogle = async () => {

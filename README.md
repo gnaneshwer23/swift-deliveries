@@ -1,18 +1,27 @@
-# Swift Deliveries
+# DeliverX
 
-DeliverX, the product in this repository, turns realistic product-management work into a record you can defend. Candidates do the work inside simulated organisations, keep provenance-backed evidence, and earn a Verified signal only when someone outside the platform attests to a specific piece of work.
+**Supervised AI Workforce Platform** (Stage 1) — commission Investigate / Prototype / Improve missions from a Command Centre, with plans, human approval, a permission ladder, usage ceilings, and labelled artefacts.
 
 Public product name: **DeliverX**. Repository name: **swift-deliveries**.
 
+The legacy career / Experience / Prove product remains available under `/workspace`. Product direction and Stage 1 decisions: [`docs/prd-deliverx-supervised-ai-workforce.md`](docs/prd-deliverx-supervised-ai-workforce.md). Gap analysis vs the prior product: [`docs/prd-gap-analysis.md`](docs/prd-gap-analysis.md).
+
 ## What you can open
 
-- `/` — product story, the six-step record, and plans
-- `/experience` — six simulated organisations (Repairline, Quillbase, PayBridge, ShiftHire, Ledgerly, Meridian Freight)
-- `/launchpad` — readiness pack and public portfolio
-- `/prove` — how external attestation works
-- `/pricing` — Experience, Launchpad, and Complete Journey
-- `/login` and `/signup` — account access against the connected Supabase project
-- `/workspace` — signed-in candidate and coach workspace (requires an account)
+### Command Centre (Stage 1 slice)
+
+- `/command` — mission intake (Investigate / Prototype / Improve)
+- `/command/projects` — create and list projects
+- `/command/missions/$missionId` — clarify → plan → approve → run → delivery report
+
+Signed-in users land on `/command` after login.
+
+### Legacy career surfaces
+
+- `/` — marketing story
+- `/experience`, `/launchpad`, `/prove`, `/pricing`
+- `/login` and `/signup`
+- `/workspace` — candidate / coach Professional Intelligence workspace
 
 ## Run locally
 
@@ -23,7 +32,7 @@ bun install
 bun run dev
 ```
 
-The dev server listens on port 43123. Open [http://127.0.0.1:43123](http://127.0.0.1:43123).
+The dev server listens on port **43123**. Open [http://127.0.0.1:43123](http://127.0.0.1:43123).
 
 With npm:
 
@@ -32,22 +41,38 @@ npm install
 npm run dev
 ```
 
-The app reads Supabase connection values from `.env` (project `jibmyxaldetyycmtlxet`). Publishable URL and key are set for local/dev. See `docs/supabase-connection.md` for the live schema bridge and remaining gaps.
+### Exercise the Stage 1 flow
 
-Server-only secrets are **not** in this repository and must be supplied in the host environment when you need them:
+1. Sign in at `/login` (or create an account at `/signup`).
+2. Open `/command`.
+3. Create a project (or use the first-project prompt).
+4. Choose **Investigate**, **Prototype**, or **Improve**, describe the outcome, and start the mission.
+5. Answer clarification questions if prompted.
+6. Review the plan (usage estimate + permission ladder), approve, and watch tasks run.
+7. Open artefacts (brief / HTML prototype / memo) and the delivery report.
 
-- `SUPABASE_SERVICE_ROLE_KEY` — admin/service paths
-- `STRIPE_SANDBOX_API_KEY` or `STRIPE_LIVE_API_KEY`, plus `LOVABLE_API_KEY` — checkout
-- `PAYMENTS_*_WEBHOOK_SECRET` — Stripe webhook fulfilment
+AI providers are optional. Without model keys, a deterministic planner/executor stub still produces tangible artefacts. Stripe and service-role keys are **not** required for this slice.
 
-Until those are present, public pages, signup/login, and workspace bootstrap against the publishable key still work. Checkout stays disabled (`VITE_PAYMENTS_CHECKOUT_ENABLED=false` in `.env.development`).
+## Data
 
-`.env.production` is for published builds and is not loaded by `bun run dev`.
+Supabase project `jibmyxaldetyycmtlxet` (publishable URL/key in `.env`).
+
+Stage 1 tables (additive, RLS workspace-isolated):
+
+`wf_workspaces`, `wf_workspace_members`, `wf_projects`, `wf_missions`, `wf_mission_plans`, `wf_mission_tasks`, `wf_artefacts`, `wf_approvals`, `wf_usage_records`, `wf_audit_events`
+
+Migration: `supabase/migrations/20261021200000_workforce_command_centre.sql` (also applied via Supabase MCP as `workforce_command_centre`). Legacy Delivery-OS tables (`projects`, `tasks`, `artefacts`, …) are untouched.
+
+Server-only secrets (not required for Command Centre Stage 1):
+
+- `SUPABASE_SERVICE_ROLE_KEY`
+- Stripe / Lovable payment keys
 
 ## Checks
 
 ```sh
 bun run test
 bun run lint
-bun run build
 ```
+
+Workforce unit tests cover planner, permissions, usage ceiling, and executor behaviour under `src/lib/workforce/`.

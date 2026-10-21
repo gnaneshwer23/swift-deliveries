@@ -36,7 +36,7 @@ function AuthCallbackPage() {
         setFailed(true);
         return;
       }
-      navigate({ to: "/workspace", replace: true });
+      navigate({ to: "/command", replace: true });
     });
     return () => {
       active = false;

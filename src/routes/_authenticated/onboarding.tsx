@@ -120,7 +120,7 @@ function OnboardingPage() {
   }));
 
   useEffect(() => {
-    if (data.state.completed) navigate({ to: "/workspace", replace: true });
+    if (data.state.completed) navigate({ to: "/command", replace: true });
   }, [data.state.completed, navigate]);
 
   const set = <K extends keyof Answers>(key: K, value: Answers[K]) =>
@@ -195,7 +195,7 @@ function OnboardingPage() {
       await finishOnboarding({});
       await queryClient.invalidateQueries({ queryKey: ["pi"] });
       toast.success("Your record is set up");
-      navigate({ to: "/workspace", replace: true });
+      navigate({ to: "/command", replace: true });
     } catch (error) {
       toast.error((error as Error).message);
     } finally {

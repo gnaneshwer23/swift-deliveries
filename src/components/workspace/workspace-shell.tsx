@@ -27,6 +27,7 @@ import { coachingWorkspaceQuery } from "@/lib/coaching-queries";
 import { BrandLogo } from "@/components/brand-logo";
 
 const NAV = [
+  { to: "/command", label: "Command Centre", icon: LayoutDashboard },
   { to: "/workspace", label: "Dashboard", icon: LayoutDashboard },
   { to: "/workspace/inbox", label: "Inbox", icon: Inbox },
   { to: "/workspace/experience", label: "Experience", icon: FlaskConical },

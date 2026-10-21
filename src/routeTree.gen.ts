@@ -27,6 +27,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as AuthenticatedCommandRouteImport } from './routes/_authenticated/command'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated/workspace'
 import { Route as AttestTokenRouteImport } from './routes/attest.$token'
@@ -39,6 +40,8 @@ import { Route as ResourcesIndexRouteImport } from './routes/resources.index'
 import { Route as ResourcesPmPortfolioRouteImport } from './routes/resources.pm-portfolio'
 import { Route as ResourcesStarInterviewStoriesRouteImport } from './routes/resources.star-interview-stories'
 import { Route as VerifyCredentialIdRouteImport } from './routes/verify.$credentialId'
+import { Route as AuthenticatedCommandIndexRouteImport } from './routes/_authenticated/command.index'
+import { Route as AuthenticatedCommandProjectsRouteImport } from './routes/_authenticated/command.projects'
 import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated/workspace.index'
 import { Route as AuthenticatedWorkspaceApplicationsRouteImport } from './routes/_authenticated/workspace.applications'
 import { Route as AuthenticatedWorkspaceCapabilityRouteImport } from './routes/_authenticated/workspace.capability'
@@ -56,6 +59,7 @@ import { Route as AuthenticatedWorkspaceReviewRouteImport } from './routes/_auth
 import { Route as AuthenticatedWorkspaceReviewsRouteImport } from './routes/_authenticated/workspace.reviews'
 import { Route as AuthenticatedWorkspaceTeamRouteImport } from './routes/_authenticated/workspace.team'
 import { Route as AuthenticatedWorkspaceTimelineRouteImport } from './routes/_authenticated/workspace.timeline'
+import { Route as AuthenticatedCommandMissionsMissionIdRouteImport } from './routes/_authenticated/command.missions.$missionId'
 import { Route as AuthenticatedWorkspaceExperienceIndexRouteImport } from './routes/_authenticated/workspace.experience.index'
 import { Route as AuthenticatedWorkspaceExperienceTaskKeyRouteImport } from './routes/_authenticated/workspace.experience.$taskKey'
 import { Route as ApiPublicMonitoringClientErrorRouteImport } from './routes/api/public/monitoring/client-error'
@@ -154,6 +158,11 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedCommandRoute = AuthenticatedCommandRouteImport.update({
+  id: '/command',
+  path: '/command',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
@@ -215,6 +224,18 @@ const VerifyCredentialIdRoute = VerifyCredentialIdRouteImport.update({
   path: '/verify/$credentialId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedCommandIndexRoute =
+  AuthenticatedCommandIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedCommandRoute,
+  } as any)
+const AuthenticatedCommandProjectsRoute =
+  AuthenticatedCommandProjectsRouteImport.update({
+    id: '/projects',
+    path: '/projects',
+    getParentRoute: () => AuthenticatedCommandRoute,
+  } as any)
 const AuthenticatedWorkspaceIndexRoute =
   AuthenticatedWorkspaceIndexRouteImport.update({
     id: '/',
@@ -317,6 +338,12 @@ const AuthenticatedWorkspaceTimelineRoute =
     path: '/timeline',
     getParentRoute: () => AuthenticatedWorkspaceRoute,
   } as any)
+const AuthenticatedCommandMissionsMissionIdRoute =
+  AuthenticatedCommandMissionsMissionIdRouteImport.update({
+    id: '/missions/$missionId',
+    path: '/missions/$missionId',
+    getParentRoute: () => AuthenticatedCommandRoute,
+  } as any)
 const AuthenticatedWorkspaceExperienceIndexRoute =
   AuthenticatedWorkspaceExperienceIndexRouteImport.update({
     id: '/',
@@ -382,6 +409,7 @@ export interface FileRoutesByFullPath {
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/command': typeof AuthenticatedCommandRouteWithChildren
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/attest/$token': typeof AttestTokenRoute
@@ -394,6 +422,7 @@ export interface FileRoutesByFullPath {
   '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
   '/verify/$credentialId': typeof VerifyCredentialIdRoute
   '/resources/': typeof ResourcesIndexRoute
+  '/command/projects': typeof AuthenticatedCommandProjectsRoute
   '/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
   '/workspace/coaching': typeof AuthenticatedWorkspaceCoachingRoute
@@ -410,7 +439,9 @@ export interface FileRoutesByFullPath {
   '/workspace/reviews': typeof AuthenticatedWorkspaceReviewsRoute
   '/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
   '/workspace/timeline': typeof AuthenticatedWorkspaceTimelineRoute
+  '/command/': typeof AuthenticatedCommandIndexRoute
   '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
+  '/command/missions/$missionId': typeof AuthenticatedCommandMissionsMissionIdRoute
   '/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
   '/api/public/monitoring/client-error': typeof ApiPublicMonitoringClientErrorRoute
   '/api/public/monitoring/health': typeof ApiPublicMonitoringHealthRoute
@@ -449,6 +480,7 @@ export interface FileRoutesByTo {
   '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
   '/verify/$credentialId': typeof VerifyCredentialIdRoute
   '/resources': typeof ResourcesIndexRoute
+  '/command/projects': typeof AuthenticatedCommandProjectsRoute
   '/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
   '/workspace/coaching': typeof AuthenticatedWorkspaceCoachingRoute
@@ -464,7 +496,9 @@ export interface FileRoutesByTo {
   '/workspace/reviews': typeof AuthenticatedWorkspaceReviewsRoute
   '/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
   '/workspace/timeline': typeof AuthenticatedWorkspaceTimelineRoute
+  '/command': typeof AuthenticatedCommandIndexRoute
   '/workspace': typeof AuthenticatedWorkspaceIndexRoute
+  '/command/missions/$missionId': typeof AuthenticatedCommandMissionsMissionIdRoute
   '/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
   '/api/public/monitoring/client-error': typeof ApiPublicMonitoringClientErrorRoute
   '/api/public/monitoring/health': typeof ApiPublicMonitoringHealthRoute
@@ -494,6 +528,7 @@ export interface FileRoutesById {
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/_authenticated/command': typeof AuthenticatedCommandRouteWithChildren
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/attest/$token': typeof AttestTokenRoute
@@ -506,6 +541,7 @@ export interface FileRoutesById {
   '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
   '/verify/$credentialId': typeof VerifyCredentialIdRoute
   '/resources/': typeof ResourcesIndexRoute
+  '/_authenticated/command/projects': typeof AuthenticatedCommandProjectsRoute
   '/_authenticated/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
   '/_authenticated/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
   '/_authenticated/workspace/coaching': typeof AuthenticatedWorkspaceCoachingRoute
@@ -522,7 +558,9 @@ export interface FileRoutesById {
   '/_authenticated/workspace/reviews': typeof AuthenticatedWorkspaceReviewsRoute
   '/_authenticated/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
   '/_authenticated/workspace/timeline': typeof AuthenticatedWorkspaceTimelineRoute
+  '/_authenticated/command/': typeof AuthenticatedCommandIndexRoute
   '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
+  '/_authenticated/command/missions/$missionId': typeof AuthenticatedCommandMissionsMissionIdRoute
   '/_authenticated/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
   '/api/public/monitoring/client-error': typeof ApiPublicMonitoringClientErrorRoute
   '/api/public/monitoring/health': typeof ApiPublicMonitoringHealthRoute
@@ -552,6 +590,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/signup'
     | '/terms'
+    | '/command'
     | '/onboarding'
     | '/workspace'
     | '/attest/$token'
@@ -564,6 +603,7 @@ export interface FileRouteTypes {
     | '/resources/star-interview-stories'
     | '/verify/$credentialId'
     | '/resources/'
+    | '/command/projects'
     | '/workspace/applications'
     | '/workspace/capability'
     | '/workspace/coaching'
@@ -580,7 +620,9 @@ export interface FileRouteTypes {
     | '/workspace/reviews'
     | '/workspace/team'
     | '/workspace/timeline'
+    | '/command/'
     | '/workspace/'
+    | '/command/missions/$missionId'
     | '/workspace/experience/$taskKey'
     | '/api/public/monitoring/client-error'
     | '/api/public/monitoring/health'
@@ -619,6 +661,7 @@ export interface FileRouteTypes {
     | '/resources/star-interview-stories'
     | '/verify/$credentialId'
     | '/resources'
+    | '/command/projects'
     | '/workspace/applications'
     | '/workspace/capability'
     | '/workspace/coaching'
@@ -634,7 +677,9 @@ export interface FileRouteTypes {
     | '/workspace/reviews'
     | '/workspace/team'
     | '/workspace/timeline'
+    | '/command'
     | '/workspace'
+    | '/command/missions/$missionId'
     | '/workspace/experience/$taskKey'
     | '/api/public/monitoring/client-error'
     | '/api/public/monitoring/health'
@@ -663,6 +708,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/signup'
     | '/terms'
+    | '/_authenticated/command'
     | '/_authenticated/onboarding'
     | '/_authenticated/workspace'
     | '/attest/$token'
@@ -675,6 +721,7 @@ export interface FileRouteTypes {
     | '/resources/star-interview-stories'
     | '/verify/$credentialId'
     | '/resources/'
+    | '/_authenticated/command/projects'
     | '/_authenticated/workspace/applications'
     | '/_authenticated/workspace/capability'
     | '/_authenticated/workspace/coaching'
@@ -691,7 +738,9 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace/reviews'
     | '/_authenticated/workspace/team'
     | '/_authenticated/workspace/timeline'
+    | '/_authenticated/command/'
     | '/_authenticated/workspace/'
+    | '/_authenticated/command/missions/$missionId'
     | '/_authenticated/workspace/experience/$taskKey'
     | '/api/public/monitoring/client-error'
     | '/api/public/monitoring/health'
@@ -866,6 +915,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/command': {
+      id: '/_authenticated/command'
+      path: '/command'
+      fullPath: '/command'
+      preLoaderRoute: typeof AuthenticatedCommandRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/onboarding': {
       id: '/_authenticated/onboarding'
       path: '/onboarding'
@@ -949,6 +1005,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/verify/$credentialId'
       preLoaderRoute: typeof VerifyCredentialIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/command/': {
+      id: '/_authenticated/command/'
+      path: '/'
+      fullPath: '/command/'
+      preLoaderRoute: typeof AuthenticatedCommandIndexRouteImport
+      parentRoute: typeof AuthenticatedCommandRoute
+    }
+    '/_authenticated/command/projects': {
+      id: '/_authenticated/command/projects'
+      path: '/projects'
+      fullPath: '/command/projects'
+      preLoaderRoute: typeof AuthenticatedCommandProjectsRouteImport
+      parentRoute: typeof AuthenticatedCommandRoute
     }
     '/_authenticated/workspace/': {
       id: '/_authenticated/workspace/'
@@ -1069,6 +1139,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkspaceTimelineRouteImport
       parentRoute: typeof AuthenticatedWorkspaceRoute
     }
+    '/_authenticated/command/missions/$missionId': {
+      id: '/_authenticated/command/missions/$missionId'
+      path: '/missions/$missionId'
+      fullPath: '/command/missions/$missionId'
+      preLoaderRoute: typeof AuthenticatedCommandMissionsMissionIdRouteImport
+      parentRoute: typeof AuthenticatedCommandRoute
+    }
     '/_authenticated/workspace/experience/': {
       id: '/_authenticated/workspace/experience/'
       path: '/'
@@ -1127,6 +1204,22 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AuthenticatedCommandRouteChildren {
+  AuthenticatedCommandProjectsRoute: typeof AuthenticatedCommandProjectsRoute
+  AuthenticatedCommandIndexRoute: typeof AuthenticatedCommandIndexRoute
+  AuthenticatedCommandMissionsMissionIdRoute: typeof AuthenticatedCommandMissionsMissionIdRoute
+}
+
+const AuthenticatedCommandRouteChildren: AuthenticatedCommandRouteChildren = {
+  AuthenticatedCommandProjectsRoute: AuthenticatedCommandProjectsRoute,
+  AuthenticatedCommandIndexRoute: AuthenticatedCommandIndexRoute,
+  AuthenticatedCommandMissionsMissionIdRoute:
+    AuthenticatedCommandMissionsMissionIdRoute,
+}
+
+const AuthenticatedCommandRouteWithChildren =
+  AuthenticatedCommandRoute._addFileChildren(AuthenticatedCommandRouteChildren)
 
 interface AuthenticatedWorkspaceExperienceRouteChildren {
   AuthenticatedWorkspaceExperienceTaskKeyRoute: typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
@@ -1198,11 +1291,13 @@ const AuthenticatedWorkspaceRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedCommandRoute: typeof AuthenticatedCommandRouteWithChildren
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedWorkspaceRoute: typeof AuthenticatedWorkspaceRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedCommandRoute: AuthenticatedCommandRouteWithChildren,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedWorkspaceRoute: AuthenticatedWorkspaceRouteWithChildren,
 }
