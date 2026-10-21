@@ -1,0 +1,80 @@
+# Meridian Freight — a sixth organisation authored purely as content.
+# Same rules as repairline.yaml: no villains, one artefact per phase,
+# phase 4 judged against the candidate's own earlier work.
+
+organisation:
+  id: meridian-freight
+  name: Meridian Freight
+  sector: Logistics, freight forwarding
+  stage: established
+  entry_level: associate_pm
+  simulated: true
+  brief: >
+    Meridian Freight moves containers for mid-size importers. The business
+    runs on phone calls, spreadsheets and a portal customers describe as
+    "from 2009". A digital-native competitor is taking the younger
+    customers. The board has funded a modernisation programme and the
+    candidate joins as the first PM it has ever had.
+
+stakeholders:
+  - name: Managing Director
+    wants: Modernisation without upsetting the big accounts
+    starting_trust: medium
+  - name: Head of Operations
+    wants: The phones to stop ringing with "where is my container"
+    starting_trust: high
+  - name: Senior account manager
+    wants: Nothing that changes how his clients book
+    starting_trust: low
+  - name: IT manager
+    wants: One system instead of fourteen spreadsheets
+    starting_trust: neutral
+
+phases:
+  - phase: 1
+    title: Follow a booking end to end
+    artefact_type: discovery_report
+    brief: >
+      Trace real bookings from first call to invoice. Map where time,
+      errors and goodwill are lost, and name the problem worth solving
+      first — with evidence, not anecdote.
+    rubric_dimensions: [discovery, stakeholders]
+    unlock_after: null
+  - phase: 2
+    title: Portal rebuild or workflow first
+    artefact_type: options_paper
+    brief: >
+      Lay out the realistic options — rebuild the customer portal, digitise
+      the internal workflow first, or both in sequence — with honest
+      trade-offs and a recommendation. Say explicitly what you are choosing
+      not to do.
+    rubric_dimensions: [prioritisation, communication]
+    unlock_after: 1
+  - phase: 3
+    title: Win over the account managers
+    artefact_type: readiness_assessment
+    brief: >
+      Design the smallest release that proves value to the sceptical account
+      managers, with success measures agreed before it ships and a rollout
+      that does not strand their clients.
+    rubric_dimensions: [delivery, stakeholders]
+    unlock_after: 2
+  - phase: 4
+    title: The modernisation roadmap call
+    artefact_type: decision_memo
+    brief: >
+      Write the memo that sets the next two quarters of the modernisation
+      programme. It must reference your phase 1 evidence and phase 3
+      rollout results — your earlier work is the record you are judged
+      against.
+    rubric_dimensions: [communication, prioritisation]
+    unlock_after: 3
+
+signature_dilemma: >
+  The board wants visible digital progress; the people who bring in the
+  revenue want nothing to change. The roadmap must modernise the business
+  without breaking the relationships that fund it.
+
+event_cards: [budget_cut, dependency_deprecation, engineer_resigns]
+
+framework_version: pm-core@2026.1

@@ -1,0 +1,1 @@
+ALTER TYPE public.attestation_state ADD VALUE IF NOT EXISTS 'revoked';

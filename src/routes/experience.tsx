@@ -1,0 +1,235 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { MarketingLayout } from "@/components/marketing/marketing-layout";
+import { JourneyLadder } from "@/components/marketing/journey-ladder";
+import { FaqSection, JourneyCrossSell } from "@/components/marketing/faq-section";
+import { CtaLink } from "@/components/marketing/cta-link";
+
+export const Route = createFileRoute("/experience")({
+  head: () => ({
+    meta: [
+      { title: "Experience — Stop describing potential. Demonstrate it. | DeliverX" },
+      {
+        name: "description",
+        content:
+          "Work as a product manager inside realistic simulated organisations. Your actions — not the setup — create the evidence.",
+      },
+      { property: "og:title", content: "DeliverX Experience — build the experience" },
+      {
+        property: "og:description",
+        content:
+          "A role you act in, not content you consume. Evidence only exists once you act.",
+      },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://deliverx.dev/experience" },
+      { name: "twitter:card", content: "summary" },
+    ],
+    links: [{ rel: "canonical", href: "https://deliverx.dev/experience" }],
+  }),
+  component: ExperiencePage,
+});
+
+const COMPANIES = [
+  {
+    cls: "teal",
+    name: "Repairline",
+    type: "UK local government · Housing repairs",
+    desc: "A borough council's repairs service drowning in repeat calls and missed appointments. You join as the product manager for the repairs platform.",
+    tags: ["Product manager", "Discovery", "Stakeholders"],
+  },
+  {
+    cls: "amber",
+    name: "Quillbase",
+    type: "B2B SaaS · Knowledge management",
+    desc: "A knowledge-base tool growing fast, with a CEO who wants big bets and experiment data that says otherwise. You join as an associate PM.",
+    tags: ["Associate PM", "Data", "Prioritisation"],
+  },
+  {
+    cls: "purple",
+    name: "PayBridge",
+    type: "FinTech · B2B payments",
+    desc: "A scale-up payments platform where a regulator letter forces payout re-certification while sales keeps promising launch dates.",
+    tags: ["Product manager", "Delivery", "Communication"],
+  },
+  {
+    cls: "slate",
+    name: "ShiftHire",
+    type: "Marketplace · Hospitality staffing",
+    desc: "Venues love it; workers churn after three shifts over late pay. The founder wants to spend new funding on venue acquisition.",
+    tags: ["Associate PM", "Discovery", "Data"],
+  },
+  {
+    cls: "teal",
+    name: "Ledgerly",
+    type: "FinTech · Accounting automation",
+    desc: "The flagship AI categorisation feature mis-files transactions and accountants spend Fridays correcting it — while sales keeps selling the AI story.",
+    tags: ["Product manager", "Data", "Stakeholders"],
+  },
+  {
+    cls: "amber",
+    name: "Meridian Freight",
+    type: "Logistics · Freight forwarding",
+    desc: "An established forwarder running on phone calls and spreadsheets, funded to modernise without upsetting the accounts that fund it.",
+    tags: ["Associate PM", "Prioritisation", "Delivery"],
+  },
+];
+
+const LOOP = [
+  { l: "A", n: "Work happens", d: "You complete a task — a brief, a decision, an artefact. You submit." },
+  { l: "B", n: "Artefact locked", d: "Immutable artefact version assigned. Private by default." },
+  { l: "C", n: "Scoring", d: "Your submission is assessed against pm-core@2026.1." },
+  { l: "D", n: "Ledger entry", d: "An append-only entry is created with full provenance." },
+  {
+    l: "E",
+    n: "ScoreRun",
+    d: "When sufficient evidence accumulates for a dimension, the Capability Engine runs. This is the only mechanism that writes capability.",
+  },
+  {
+    l: "F",
+    n: "Reflection",
+    d: "Add reflections to any artefact. Reflections that meet the provenance threshold can become additional ledger entries.",
+  },
+];
+
+function ExperiencePage() {
+  return (
+    <MarketingLayout>
+      <div className="hero-xp">
+        <div className="hero-xp-tag">01 · Experience · Build the experience</div>
+        <h1>
+          Product management experience in realistic simulated organisations
+        </h1>
+        <p>
+          Work as a product manager inside realistic organisations. Your actions — not the setup —
+          create the evidence.
+        </p>
+        <CtaLink signedInTo="/workspace/experience" signedInLabel="Open Experience →" />
+      </div>
+
+      <JourneyLadder active="work" />
+
+      <div className="principle-bar">
+        A role you act in. Not content you consume. &nbsp;·&nbsp; <em>No evidence before you act.</em>
+      </div>
+
+      <div className="entry-seq">
+        <h2 className="heading-2" style={{ marginBottom: 20 }}>
+          Joining Experience
+        </h2>
+        <div className="entry-steps">
+          <div className="entry-step">
+            <div className="entry-step-n">01</div>
+            <div className="entry-step-name">Offer</div>
+            <div className="entry-step-desc">
+              Browse the available companies. Select your scenario and accept. Your simulation state
+              is generated.
+            </div>
+          </div>
+          <div className="entry-step narrative">
+            <div className="entry-step-n">02</div>
+            <div className="entry-step-name">Hiring interview</div>
+            <div className="entry-step-desc">
+              Practice panel with two stakeholders — high trust and low trust. Skippable.
+            </div>
+            <div className="narrative-tag">Narrative only · creates no evidence</div>
+          </div>
+          <div className="entry-step narrative">
+            <div className="entry-step-n">03</div>
+            <div className="entry-step-name">Entry ceremony</div>
+            <div className="entry-step-desc">
+              Company → role → team → project → first task. Every step is skippable.
+            </div>
+            <div className="narrative-tag">Narrative only · creates no capability</div>
+          </div>
+          <div className="entry-step" style={{ background: "var(--x-amber-light)", border: "none" }}>
+            <div className="entry-step-n" style={{ color: "var(--x-amber-text)" }}>
+              04
+            </div>
+            <div className="entry-step-name" style={{ color: "var(--x-amber-text)" }}>
+              Day 1 — work begins
+            </div>
+            <div className="entry-step-desc" style={{ color: "var(--x-amber-text)", opacity: 0.8 }}>
+              Evidence only exists from here. Your first task is ready.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="companies-section">
+        <h2 className="heading-2" style={{ marginBottom: 6 }}>
+          Living organisations
+        </h2>
+        <p className="body" style={{ marginBottom: 0 }}>
+          Real constraints, real stakeholders, real product context.
+        </p>
+        <div className="companies-grid">
+          {COMPANIES.map((c) => (
+            <div className={`company-card ${c.cls}`} key={c.name}>
+              <div className="company-name">{c.name}</div>
+              <div className="company-type">{c.type}</div>
+              <div className="company-desc">{c.desc}</div>
+              <div className="company-tags">
+                {c.tags.map((t) => (
+                  <span className="company-tag" key={t}>
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="loop-section">
+        <div className="loop-inner">
+          <h2 className="loop-title">The Day-1 work loop</h2>
+          <div className="loop-steps">
+            {LOOP.map((s) => (
+              <div className="loop-step" key={s.l}>
+                <div className="loop-step-l">{s.l}</div>
+                <div className="loop-step-n">{s.n}</div>
+                <div className="loop-step-d">{s.d}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ padding: "56px 32px", maxWidth: 960, margin: "0 auto", textAlign: "center" }}>
+        <h2 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 12 }}>
+          Ready to start?
+        </h2>
+        <p className="body-lg" style={{ marginBottom: 28 }}>
+          Your first evidence entry is one task away.
+        </p>
+        <CtaLink
+          signedInTo="/workspace/experience"
+          signedInLabel="Open Experience →"
+          style={{ fontSize: 15, padding: "12px 28px" }}
+        />
+      </div>
+
+      <FaqSection
+        items={[
+          {
+            q: "Is the company real?",
+            a: "No, and we say so plainly. Every organisation — Repairline, Quillbase, PayBridge, ShiftHire, Ledgerly, Meridian Freight — is simulated, with a defined product, stakeholders and constraints. The work you produce inside it is real work you wrote, and that is what goes on your record.",
+          },
+          {
+            q: "What do I actually produce?",
+            a: "Written artefacts a product manager produces: a stakeholder alignment brief, requirements, a decision record with the options you rejected, a risk register. Each one is frozen when you submit it.",
+          },
+          {
+            q: "Does a score make me Verified?",
+            a: "No. An AI-assisted judgement gives you a level with a written rationale and the evidence it read. Coach confirmation is shown separately, and only independent external attestation lights Verified.",
+          },
+          {
+            q: "How long does it take?",
+            a: "It depends on you — tasks are released in phases and there is no timer. Most people work through a phase over a week alongside a job.",
+          },
+        ]}
+      />
+
+      <JourneyCrossSell note="Experience produces the evidence; Launchpad presents it and the Professional Workspace is where you run real delivery work. The Complete Journey plan covers all three." />
+    </MarketingLayout>
+  );
+}

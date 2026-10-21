@@ -1,0 +1,2 @@
+ALTER TABLE public.interview_questions DROP CONSTRAINT IF EXISTS interview_questions_origin_check;
+ALTER TABLE public.interview_questions ADD CONSTRAINT interview_questions_origin_check CHECK (origin IN ('ai_draft','user_added','ai_followup'));

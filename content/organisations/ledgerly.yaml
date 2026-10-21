@@ -1,0 +1,78 @@
+# Ledgerly — a fifth organisation authored purely as content.
+# Same rules as repairline.yaml: no villains, one artefact per phase,
+# phase 4 judged against the candidate's own earlier work.
+
+organisation:
+  id: ledgerly
+  name: Ledgerly
+  sector: FinTech, accounting automation
+  stage: growth
+  entry_level: product_manager
+  simulated: true
+  brief: >
+    Ledgerly automates bookkeeping for small accounting practices. Growth is
+    strong, but the flagship AI categorisation feature mis-files transactions
+    often enough that accountants spend their Fridays correcting it. The
+    sales team keeps selling the AI story; the support queue tells a
+    different one. The candidate joins as the PM for the core ledger.
+
+stakeholders:
+  - name: CEO
+    wants: The AI story to stay credible for the Series C
+    starting_trust: medium
+  - name: Head of Customer Success
+    wants: Churn risk accounts stopped from walking
+    starting_trust: high
+  - name: Lead ML engineer
+    wants: Time to fix the model properly, not patch it
+    starting_trust: neutral
+  - name: Top accountancy partner
+    wants: Their clients' books right, every time
+    starting_trust: low
+
+phases:
+  - phase: 1
+    title: Measure what the AI actually costs
+    artefact_type: discovery_report
+    brief: >
+      Quantify the real cost of mis-categorisation: correction hours, churn
+      signals, support load. Separate the sales narrative from the
+      operational truth and name the problem worth solving.
+    rubric_dimensions: [discovery, data]
+    unlock_after: null
+  - phase: 2
+    title: Fix, hide, or rebuild
+    artefact_type: options_paper
+    brief: >
+      Lay out the realistic options — patch the model, scope the feature
+      back, or rebuild the pipeline — with honest trade-offs and a
+      recommendation. Say explicitly what you are choosing not to do.
+    rubric_dimensions: [prioritisation, communication]
+    unlock_after: 1
+  - phase: 3
+    title: A correction loop accountants trust
+    artefact_type: readiness_assessment
+    brief: >
+      Design the smallest change that measurably cuts correction time, with
+      success measures agreed with Customer Success before it ships.
+    rubric_dimensions: [delivery, data]
+    unlock_after: 2
+  - phase: 4
+    title: The Series C narrative call
+    artefact_type: decision_memo
+    brief: >
+      Write the memo that sets what the company tells investors and customers
+      about the AI feature. It must reference your phase 1 evidence and
+      phase 3 results — your earlier work is the record you are judged
+      against.
+    rubric_dimensions: [stakeholders, communication]
+    unlock_after: 3
+
+signature_dilemma: >
+  The CEO needs the AI story intact for fundraising; your own data says the
+  feature erodes trust every week it overpromises. The memo must be honest
+  without torching the raise.
+
+event_cards: [budget_cut, engineer_resigns, regulator_letter]
+
+framework_version: pm-core@2026.1

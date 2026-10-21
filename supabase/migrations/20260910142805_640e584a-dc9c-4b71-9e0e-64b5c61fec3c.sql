@@ -1,0 +1,1 @@
+ALTER TYPE public.evidence_source ADD VALUE IF NOT EXISTS 'coaching_submission';
