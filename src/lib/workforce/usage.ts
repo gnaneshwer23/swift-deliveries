@@ -1,3 +1,7 @@
+/**
+ * Deterministic Budget Enforcement Service (non-agent).
+ * DX-149 may advise on cost; this module alone applies the hard ceiling.
+ */
 export type UsageBudget = {
   ceiling: number;
   consumed: number;

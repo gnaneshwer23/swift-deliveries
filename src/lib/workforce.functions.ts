@@ -8,6 +8,12 @@ import {
   executeTaskStep,
   nextMissionStatusAfterRun,
 } from "@/lib/workforce/executor";
+import {
+  decodePlanCapabilityMeta,
+  decodeTaskCapabilityIds,
+  encodePlanAcceptanceCriteria,
+  encodeTaskDescription,
+} from "@/lib/workforce/capability-persistence";
 import type {
   ClarificationQuestion,
   DeliveryReport,
@@ -73,6 +79,12 @@ function mapMission(row: any): WfMission {
 }
 
 function mapPlan(row: any): WfMissionPlan {
+  const rawCriteria = (row.acceptance_criteria ?? []) as string[];
+  const fromColumns = {
+    assigned: (row.assigned_capabilities ?? null) as WfMissionPlan["assignedCapabilities"] | null,
+    limitations: (row.capability_limitations ?? null) as WfMissionPlan["capabilityLimitations"] | null,
+  };
+  const decoded = decodePlanCapabilityMeta(rawCriteria);
   return {
     id: row.id,
     missionId: row.mission_id,
@@ -82,13 +94,18 @@ function mapPlan(row: any): WfMissionPlan {
     requiredPermission: row.required_permission,
     includesExternalActions: Boolean(row.includes_external_actions),
     clarificationQuestions: (row.clarification_questions ?? []) as ClarificationQuestion[],
-    acceptanceCriteria: (row.acceptance_criteria ?? []) as string[],
+    acceptanceCriteria: decoded.criteria,
+    assignedCapabilities: fromColumns.assigned ?? decoded.assignedCapabilities,
+    capabilityLimitations: fromColumns.limitations ?? decoded.capabilityLimitations,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
 }
 
 function mapTask(row: any): WfMissionTask {
+  const rawDescription = row.description ?? "";
+  const fromColumn = (row.capability_ids ?? null) as string[] | null;
+  const decoded = decodeTaskCapabilityIds(rawDescription);
   return {
     id: row.id,
     missionId: row.mission_id,
@@ -96,7 +113,7 @@ function mapTask(row: any): WfMissionTask {
     planId: row.plan_id ?? null,
     sortOrder: row.sort_order,
     title: row.title,
-    description: row.description ?? "",
+    description: decoded.description,
     acceptanceCriteria: row.acceptance_criteria ?? "",
     status: row.status,
     permissionRequired: row.permission_required,
@@ -104,6 +121,7 @@ function mapTask(row: any): WfMissionTask {
     estimatedUsage: row.estimated_usage,
     actualUsage: row.actual_usage,
     evidenceNotes: (row.evidence_notes ?? []) as EvidenceItem[],
+    capabilityIds: fromColumn ?? decoded.capabilityIds,
     startedAt: row.started_at ?? null,
     completedAt: row.completed_at ?? null,
     createdAt: row.created_at,
@@ -408,7 +426,7 @@ export const createMission = createServerFn({ method: "POST" })
         required_permission: draftPlan.requiredPermission,
         includes_external_actions: draftPlan.includesExternalActions,
         clarification_questions: draftPlan.clarificationQuestions,
-        acceptance_criteria: draftPlan.acceptanceCriteria,
+        acceptance_criteria: encodePlanAcceptanceCriteria(draftPlan),
       })
       .select("*")
       .single();
@@ -422,7 +440,7 @@ export const createMission = createServerFn({ method: "POST" })
         plan_id: plan!.id,
         sort_order: index,
         title: t.title,
-        description: t.description,
+        description: encodeTaskDescription(t.description, t.capabilityIds),
         acceptance_criteria: t.acceptanceCriteria,
         status: "pending",
         permission_required: t.permissionRequired,
@@ -530,7 +548,7 @@ export const answerClarifications = createServerFn({ method: "POST" })
           required_permission: "plan",
           includes_external_actions: draftPlan.includesExternalActions,
           clarification_questions: draftPlan.clarificationQuestions,
-          acceptance_criteria: [],
+          acceptance_criteria: encodePlanAcceptanceCriteria(draftPlan),
           updated_at: new Date().toISOString(),
         },
         { onConflict: "mission_id" },
@@ -559,7 +577,7 @@ export const answerClarifications = createServerFn({ method: "POST" })
           required_permission: draftPlan.requiredPermission,
           includes_external_actions: draftPlan.includesExternalActions,
           clarification_questions: draftPlan.clarificationQuestions,
-          acceptance_criteria: draftPlan.acceptanceCriteria,
+          acceptance_criteria: encodePlanAcceptanceCriteria(draftPlan),
           updated_at: new Date().toISOString(),
         },
         { onConflict: "mission_id" },
@@ -578,7 +596,7 @@ export const answerClarifications = createServerFn({ method: "POST" })
           plan_id: planUpsert.data.id,
           sort_order: index,
           title: t.title,
-          description: t.description,
+          description: encodeTaskDescription(t.description, t.capabilityIds),
           acceptance_criteria: t.acceptanceCriteria,
           status: "pending",
           permission_required: t.permissionRequired,

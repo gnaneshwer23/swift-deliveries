@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   Menu,
   Shield,
+  UsersRound,
 } from "lucide-react";
 import { useSignOut } from "@/hooks/use-sign-out";
 import { useSession } from "@/hooks/use-session";
@@ -15,6 +16,7 @@ import { BrandLogo } from "@/components/brand-logo";
 const NAV = [
   { to: "/command", label: "Command Centre", icon: LayoutDashboard },
   { to: "/command/projects", label: "Projects", icon: FolderKanban },
+  { to: "/command/capabilities", label: "Capabilities", icon: UsersRound },
   { to: "/workspace", label: "Career workspace", icon: Compass },
 ] as const;
 

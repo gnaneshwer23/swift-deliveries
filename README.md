@@ -13,6 +13,9 @@ The legacy career / Experience / Prove product remains available under `/workspa
 - `/command` — mission intake (Investigate / Prototype / Improve)
 - `/command/projects` — create and list projects
 - `/command/missions/$missionId` — clarify → plan → approve → run → delivery report
+- `/command/capabilities` — 150-role capability registry (15 departments; Wave 1 Available only)
+
+Workforce architecture spec: [`docs/workforce-architecture-and-agent-catalogue.md`](docs/workforce-architecture-and-agent-catalogue.md). Machine-readable registry: `content/capabilities/registry.{json,yaml}` (+ `src/lib/workforce/registry/`).
 
 Signed-in users land on `/command` after login.
 
@@ -75,4 +78,6 @@ bun run test
 bun run lint
 ```
 
-Workforce unit tests cover planner, permissions, usage ceiling, and executor behaviour under `src/lib/workforce/`.
+Workforce unit tests cover planner, permissions, usage ceiling, executor, and the 150-role capability registry / matching rules under `src/lib/workforce/`.
+
+**Wave 1 Available capabilities (only these may be assigned to missions):** DX-001, DX-002, DX-011, DX-012, DX-018, DX-020, DX-021, DX-023, DX-035, DX-041, DX-049, DX-071. All other catalogue roles remain Planned — not operational. Budget, permissions, and audit are deterministic infrastructure services (not agents).

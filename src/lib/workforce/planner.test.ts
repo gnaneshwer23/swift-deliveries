@@ -16,7 +16,7 @@ describe("generateMissionPlan", () => {
     const plan = generateMissionPlan({
       intent: "investigate",
       requestText:
-        "Investigate whether we should add a sponsor dashboard for healthcare delivery leads, for the COO audience",
+        "Investigate whether we should add a sponsor dashboard for delivery leads, for the COO audience",
       clarificationAnswers: { success: "COO can decide go/no-go in one sitting" },
     });
     expect(plan.tasks.length).toBeGreaterThanOrEqual(3);
@@ -24,6 +24,21 @@ describe("generateMissionPlan", () => {
     expect(plan.acceptanceCriteria.length).toBeGreaterThan(0);
     expect(plan.includesExternalActions).toBe(false);
     expect(plan.requiredPermission).not.toBe("act_externally");
+    expect(plan.assignedCapabilities.length).toBeGreaterThan(0);
+    expect(plan.assignedCapabilities.every((c) => c.lifecycle_status === "available")).toBe(true);
+    expect(plan.tasks.every((t) => t.capabilityIds.every((id) => id.startsWith("DX-")))).toBe(true);
+  });
+
+  it("discloses healthcare limitation and still only assigns Available roles", () => {
+    const plan = generateMissionPlan({
+      intent: "investigate",
+      requestText:
+        "Investigate clinical literature for healthcare delivery pathways, for the COO audience",
+      clarificationAnswers: { success: "Decision-ready brief" },
+    });
+    expect(plan.capabilityLimitations.length).toBeGreaterThan(0);
+    expect(plan.assignedCapabilities.every((c) => c.lifecycle_status === "available")).toBe(true);
+    expect(plan.assignedCapabilities.some((c) => c.capability_id.startsWith("DX-09"))).toBe(false);
   });
 
   it("flags external actions when the request asks to email or deploy", () => {

@@ -251,6 +251,9 @@ function CommandHome() {
           <Link to="/command/projects" className="cc-btn cc-btn-secondary">
             Manage projects
           </Link>
+          <Link to="/command/capabilities" className="cc-btn cc-btn-secondary">
+            Capability registry
+          </Link>
         </div>
       </section>
 

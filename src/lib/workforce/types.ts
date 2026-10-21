@@ -73,6 +73,27 @@ export type PlannedTask = {
   estimatedUsage: number;
   permissionRequired: PermissionLevel;
   isExternal: boolean;
+  /** Wave 1 Available capability IDs assigned to this task (never Planned). */
+  capabilityIds: string[];
+};
+
+export type PlanAssignedCapability = {
+  capability_id: string;
+  name: string;
+  department: string;
+  lifecycle_status: string;
+  role_in_plan: string;
+};
+
+export type PlanCapabilityLimitation = {
+  code: string;
+  message: string;
+  requested_department?: string;
+  requested_capability_ids?: string[];
+  alternative?: {
+    summary: string;
+    capability_ids: string[];
+  };
 };
 
 export type GeneratedPlan = {
@@ -83,6 +104,9 @@ export type GeneratedPlan = {
   clarificationQuestions: ClarificationQuestion[];
   acceptanceCriteria: string[];
   tasks: PlannedTask[];
+  /** Only Available Wave 1 capabilities — never Planned presented as operational. */
+  assignedCapabilities: PlanAssignedCapability[];
+  capabilityLimitations: PlanCapabilityLimitation[];
 };
 
 export type WfWorkspace = {
@@ -115,6 +139,8 @@ export type WfMissionPlan = {
   includesExternalActions: boolean;
   clarificationQuestions: ClarificationQuestion[];
   acceptanceCriteria: string[];
+  assignedCapabilities: PlanAssignedCapability[];
+  capabilityLimitations: PlanCapabilityLimitation[];
   createdAt: string;
   updatedAt: string;
 };
@@ -134,6 +160,7 @@ export type WfMissionTask = {
   estimatedUsage: number;
   actualUsage: number;
   evidenceNotes: EvidenceItem[];
+  capabilityIds: string[];
   startedAt: string | null;
   completedAt: string | null;
   createdAt: string;

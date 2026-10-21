@@ -1,4 +1,5 @@
 import { maxPermission } from "./permissions";
+import { matchCapabilitiesForMission } from "./registry/matching";
 import type {
   ClarificationQuestion,
   GeneratedPlan,
@@ -87,6 +88,7 @@ function investigateTasks(request: string, external: boolean): PlannedTask[] {
       estimatedUsage: 4,
       permissionRequired: "plan",
       isExternal: false,
+      capabilityIds: ["DX-001", "DX-002"],
     },
     {
       key: "collect",
@@ -96,6 +98,7 @@ function investigateTasks(request: string, external: boolean): PlannedTask[] {
       estimatedUsage: 8,
       permissionRequired: "execute_internally",
       isExternal: false,
+      capabilityIds: ["DX-011", "DX-012", "DX-018"],
     },
     {
       key: "brief",
@@ -105,6 +108,7 @@ function investigateTasks(request: string, external: boolean): PlannedTask[] {
       estimatedUsage: 10,
       permissionRequired: "create",
       isExternal: false,
+      capabilityIds: ["DX-020", "DX-001"],
     },
     {
       key: "agent_pass",
@@ -114,6 +118,7 @@ function investigateTasks(request: string, external: boolean): PlannedTask[] {
       estimatedUsage: 4,
       permissionRequired: "execute_internally",
       isExternal: false,
+      capabilityIds: ["DX-018", "DX-020"],
     },
   ];
   if (external) {
@@ -125,6 +130,7 @@ function investigateTasks(request: string, external: boolean): PlannedTask[] {
       estimatedUsage: 6,
       permissionRequired: "act_externally",
       isExternal: true,
+      capabilityIds: ["DX-001"],
     });
   }
   return tasks;
@@ -140,6 +146,7 @@ function prototypeTasks(request: string, external: boolean): PlannedTask[] {
       estimatedUsage: 6,
       permissionRequired: "create",
       isExternal: false,
+      capabilityIds: ["DX-002", "DX-021", "DX-023"],
     },
     {
       key: "structure",
@@ -149,6 +156,7 @@ function prototypeTasks(request: string, external: boolean): PlannedTask[] {
       estimatedUsage: 6,
       permissionRequired: "execute_internally",
       isExternal: false,
+      capabilityIds: ["DX-035", "DX-041"],
     },
     {
       key: "html",
@@ -158,6 +166,7 @@ function prototypeTasks(request: string, external: boolean): PlannedTask[] {
       estimatedUsage: 14,
       permissionRequired: "create",
       isExternal: false,
+      capabilityIds: ["DX-035", "DX-041"],
     },
     {
       key: "auto_test",
@@ -167,6 +176,7 @@ function prototypeTasks(request: string, external: boolean): PlannedTask[] {
       estimatedUsage: 4,
       permissionRequired: "execute_internally",
       isExternal: false,
+      capabilityIds: ["DX-071"],
     },
   ];
   if (external) {
@@ -178,6 +188,7 @@ function prototypeTasks(request: string, external: boolean): PlannedTask[] {
       estimatedUsage: 8,
       permissionRequired: "act_externally",
       isExternal: true,
+      capabilityIds: ["DX-001"],
     });
   }
   return tasks;
@@ -193,6 +204,7 @@ function improveTasks(request: string, external: boolean): PlannedTask[] {
       estimatedUsage: 8,
       permissionRequired: "execute_internally",
       isExternal: false,
+      capabilityIds: ["DX-002", "DX-021"],
     },
     {
       key: "options",
@@ -202,6 +214,7 @@ function improveTasks(request: string, external: boolean): PlannedTask[] {
       estimatedUsage: 8,
       permissionRequired: "create",
       isExternal: false,
+      capabilityIds: ["DX-041", "DX-001"],
     },
     {
       key: "patch_proto",
@@ -211,6 +224,7 @@ function improveTasks(request: string, external: boolean): PlannedTask[] {
       estimatedUsage: 10,
       permissionRequired: "create",
       isExternal: false,
+      capabilityIds: ["DX-035", "DX-041"],
     },
     {
       key: "agent_pass",
@@ -220,6 +234,7 @@ function improveTasks(request: string, external: boolean): PlannedTask[] {
       estimatedUsage: 4,
       permissionRequired: "execute_internally",
       isExternal: false,
+      capabilityIds: ["DX-049", "DX-071"],
     },
   ];
   if (external) {
@@ -231,9 +246,21 @@ function improveTasks(request: string, external: boolean): PlannedTask[] {
       estimatedUsage: 5,
       permissionRequired: "act_externally",
       isExternal: true,
+      capabilityIds: ["DX-001"],
     });
   }
   return tasks;
+}
+
+/**
+ * Keep only Available capability IDs on tasks.
+ * Planned catalogue roles must never be scheduled.
+ */
+function filterTaskCapabilities(tasks: PlannedTask[], allowed: Set<string>): PlannedTask[] {
+  return tasks.map((t) => ({
+    ...t,
+    capabilityIds: t.capabilityIds.filter((id) => allowed.has(id)),
+  }));
 }
 
 export function deriveMissionTitle(intent: MissionIntent, request: string): string {
@@ -241,9 +268,13 @@ export function deriveMissionTitle(intent: MissionIntent, request: string): stri
 }
 
 /**
- * Deterministic planner for Stage 1.
+ * Deterministic planner for Stage 1 + Wave 1 capability assignment.
  * Returns clarification questions when the request is incomplete;
- * otherwise a full plan with tasks, acceptance criteria, and usage estimates.
+ * otherwise a full plan with tasks, acceptance criteria, usage estimates,
+ * and only Available Wave 1 capabilities.
+ *
+ * Governance: DX-148/DX-149 may advise in later waves; budget and permission
+ * ceilings remain deterministic infrastructure services (see registry).
  */
 export function generateMissionPlan(input: {
   intent: MissionIntent;
@@ -253,6 +284,13 @@ export function generateMissionPlan(input: {
   const answers = input.clarificationAnswers ?? {};
   const questions = clarificationFor(input.intent, input.requestText, answers);
   const external = wantsExternal(input.requestText, answers);
+  const match = matchCapabilitiesForMission({
+    intent: input.intent,
+    requestText: input.requestText,
+  });
+  const allowed = new Set(match.assigned.map((a) => a.capability_id));
+  const assignedCapabilities = match.assigned;
+  const capabilityLimitations = match.limitations;
 
   if (questions.some((q) => q.required)) {
     return {
@@ -263,15 +301,19 @@ export function generateMissionPlan(input: {
       clarificationQuestions: questions,
       acceptanceCriteria: [],
       tasks: [],
+      assignedCapabilities,
+      capabilityLimitations,
     };
   }
 
-  const tasks =
+  const rawTasks =
     input.intent === "investigate"
       ? investigateTasks(input.requestText, external)
       : input.intent === "prototype"
         ? prototypeTasks(input.requestText, external)
         : improveTasks(input.requestText, external);
+
+  const tasks = filterTaskCapabilities(rawTasks, allowed);
 
   const estimatedUsage = tasks.reduce((sum, t) => sum + t.estimatedUsage, 0);
   const requiredPermission = maxPermission(tasks.map((t) => t.permissionRequired));
@@ -280,14 +322,25 @@ export function generateMissionPlan(input: {
     ...tasks.map((t) => t.acceptanceCriteria),
     "Delivery report lists artefacts with quality and evidence labels (no generic Verified).",
     "Usage stays within the workspace ceiling; billable steps hard-stop if the ceiling is reached.",
+    `Assigned Available capabilities only: ${assignedCapabilities.map((c) => c.capability_id).join(", ") || "none"}.`,
   ];
 
-  const summary =
+  if (capabilityLimitations.length > 0) {
+    acceptanceCriteria.push(
+      "Capability limitations disclosed to the operator (no silent substitution of Planned roles).",
+    );
+  }
+
+  let summary =
     input.intent === "investigate"
       ? "Produce a reviewable investigation brief with classified evidence and a clear recommendation."
       : input.intent === "prototype"
         ? "Produce a product brief plus a lightweight interactive HTML prototype (not a production deploy)."
         : "Diagnose friction, recommend improvements, and sketch an improved flow.";
+
+  if (capabilityLimitations.length > 0) {
+    summary += ` Limitation: ${capabilityLimitations[0]!.message}`;
+  }
 
   return {
     summary,
@@ -297,5 +350,7 @@ export function generateMissionPlan(input: {
     clarificationQuestions: questions.filter((q) => !q.required),
     acceptanceCriteria,
     tasks,
+    assignedCapabilities,
+    capabilityLimitations,
   };
 }

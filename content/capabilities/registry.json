@@ -1,0 +1,5007 @@
+{
+  "version": "1.0.0",
+  "spec": "docs/workforce-architecture-and-agent-catalogue.md",
+  "wave1_available_ids": [
+    "DX-001",
+    "DX-002",
+    "DX-011",
+    "DX-012",
+    "DX-018",
+    "DX-020",
+    "DX-021",
+    "DX-023",
+    "DX-035",
+    "DX-041",
+    "DX-049",
+    "DX-071"
+  ],
+  "intent_capability_map": {
+    "investigate": [
+      "DX-001",
+      "DX-002",
+      "DX-011",
+      "DX-012",
+      "DX-018",
+      "DX-020"
+    ],
+    "prototype": [
+      "DX-001",
+      "DX-002",
+      "DX-021",
+      "DX-023",
+      "DX-035",
+      "DX-041",
+      "DX-071"
+    ],
+    "improve": [
+      "DX-001",
+      "DX-002",
+      "DX-021",
+      "DX-035",
+      "DX-041",
+      "DX-049",
+      "DX-071"
+    ]
+  },
+  "departments": [
+    {
+      "number": 1,
+      "name": "Executive Intelligence",
+      "slug": "executive-intelligence",
+      "capability_ids": [
+        "DX-001",
+        "DX-002",
+        "DX-003",
+        "DX-004",
+        "DX-005",
+        "DX-006",
+        "DX-007",
+        "DX-008",
+        "DX-009",
+        "DX-010"
+      ]
+    },
+    {
+      "number": 2,
+      "name": "Research and Intelligence",
+      "slug": "research-and-intelligence",
+      "capability_ids": [
+        "DX-011",
+        "DX-012",
+        "DX-013",
+        "DX-014",
+        "DX-015",
+        "DX-016",
+        "DX-017",
+        "DX-018",
+        "DX-019",
+        "DX-020"
+      ]
+    },
+    {
+      "number": 3,
+      "name": "Product Management",
+      "slug": "product-management",
+      "capability_ids": [
+        "DX-021",
+        "DX-022",
+        "DX-023",
+        "DX-024",
+        "DX-025",
+        "DX-026",
+        "DX-027",
+        "DX-028",
+        "DX-029",
+        "DX-030"
+      ]
+    },
+    {
+      "number": 4,
+      "name": "Design and UX",
+      "slug": "design-and-ux",
+      "capability_ids": [
+        "DX-031",
+        "DX-032",
+        "DX-033",
+        "DX-034",
+        "DX-035",
+        "DX-036",
+        "DX-037",
+        "DX-038",
+        "DX-039",
+        "DX-040"
+      ]
+    },
+    {
+      "number": 5,
+      "name": "Software Engineering",
+      "slug": "software-engineering",
+      "capability_ids": [
+        "DX-041",
+        "DX-042",
+        "DX-043",
+        "DX-044",
+        "DX-045",
+        "DX-046",
+        "DX-047",
+        "DX-048",
+        "DX-049",
+        "DX-050"
+      ]
+    },
+    {
+      "number": 6,
+      "name": "AI and Data Engineering",
+      "slug": "ai-and-data-engineering",
+      "capability_ids": [
+        "DX-051",
+        "DX-052",
+        "DX-053",
+        "DX-054",
+        "DX-055",
+        "DX-056",
+        "DX-057",
+        "DX-058",
+        "DX-059",
+        "DX-060"
+      ]
+    },
+    {
+      "number": 7,
+      "name": "Security, Privacy and Governance",
+      "slug": "security-privacy-and-governance",
+      "capability_ids": [
+        "DX-061",
+        "DX-062",
+        "DX-063",
+        "DX-064",
+        "DX-065",
+        "DX-066",
+        "DX-067",
+        "DX-068",
+        "DX-069",
+        "DX-070"
+      ]
+    },
+    {
+      "number": 8,
+      "name": "QA and Reliability",
+      "slug": "qa-and-reliability",
+      "capability_ids": [
+        "DX-071",
+        "DX-072",
+        "DX-073",
+        "DX-074",
+        "DX-075",
+        "DX-076",
+        "DX-077",
+        "DX-078",
+        "DX-079",
+        "DX-080"
+      ]
+    },
+    {
+      "number": 9,
+      "name": "Infrastructure and Delivery",
+      "slug": "infrastructure-and-delivery",
+      "capability_ids": [
+        "DX-081",
+        "DX-082",
+        "DX-083",
+        "DX-084",
+        "DX-085",
+        "DX-086",
+        "DX-087",
+        "DX-088",
+        "DX-089",
+        "DX-090"
+      ]
+    },
+    {
+      "number": 10,
+      "name": "Healthcare and Life Sciences",
+      "slug": "healthcare-and-life-sciences",
+      "capability_ids": [
+        "DX-091",
+        "DX-092",
+        "DX-093",
+        "DX-094",
+        "DX-095",
+        "DX-096",
+        "DX-097",
+        "DX-098",
+        "DX-099",
+        "DX-100"
+      ]
+    },
+    {
+      "number": 11,
+      "name": "Growth and Marketing",
+      "slug": "growth-and-marketing",
+      "capability_ids": [
+        "DX-101",
+        "DX-102",
+        "DX-103",
+        "DX-104",
+        "DX-105",
+        "DX-106",
+        "DX-107",
+        "DX-108",
+        "DX-109",
+        "DX-110"
+      ]
+    },
+    {
+      "number": 12,
+      "name": "Sales and Commercial Operations",
+      "slug": "sales-and-commercial-operations",
+      "capability_ids": [
+        "DX-111",
+        "DX-112",
+        "DX-113",
+        "DX-114",
+        "DX-115",
+        "DX-116",
+        "DX-117",
+        "DX-118",
+        "DX-119",
+        "DX-120"
+      ]
+    },
+    {
+      "number": 13,
+      "name": "Books, Education and Publishing",
+      "slug": "books-education-and-publishing",
+      "capability_ids": [
+        "DX-121",
+        "DX-122",
+        "DX-123",
+        "DX-124",
+        "DX-125",
+        "DX-126",
+        "DX-127",
+        "DX-128",
+        "DX-129",
+        "DX-130"
+      ]
+    },
+    {
+      "number": 14,
+      "name": "Finance, Legal and Governance",
+      "slug": "finance-legal-and-governance",
+      "capability_ids": [
+        "DX-131",
+        "DX-132",
+        "DX-133",
+        "DX-134",
+        "DX-135",
+        "DX-136",
+        "DX-137",
+        "DX-138",
+        "DX-139",
+        "DX-140"
+      ]
+    },
+    {
+      "number": 15,
+      "name": "Agent Operations and Orchestration",
+      "slug": "agent-operations-and-orchestration",
+      "capability_ids": [
+        "DX-141",
+        "DX-142",
+        "DX-143",
+        "DX-144",
+        "DX-145",
+        "DX-146",
+        "DX-147",
+        "DX-148",
+        "DX-149",
+        "DX-150"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "capability_id": "DX-001",
+      "name": "Chief of Staff Agent",
+      "department": "Executive Intelligence",
+      "department_number": 1,
+      "description": "Coordinates the mission, maintains the executive summary and surfaces blockers and decisions requiring user attention.",
+      "implementation_type": "coordinated_agent_workflow",
+      "lifecycle_status": "available",
+      "version": "1.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 120,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 20
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
+      "known_limitations": [
+        "Deterministic stub behaviour; no live model tools yet."
+      ],
+      "activation_wave": 1,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-002",
+      "name": "Problem-Framing Agent",
+      "department": "Executive Intelligence",
+      "department_number": 1,
+      "description": "Converts vague requests into a problem statement, desired outcome, constraints and unresolved questions.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "available",
+      "version": "1.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 120,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 20
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
+      "known_limitations": [
+        "Deterministic stub behaviour; no live model tools yet."
+      ],
+      "activation_wave": 1,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-003",
+      "name": "Strategic Planning Agent",
+      "department": "Executive Intelligence",
+      "department_number": 1,
+      "description": "Develops strategic options, trade-offs, assumptions and recommended direction.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-004",
+      "name": "Decision Intelligence Agent",
+      "department": "Executive Intelligence",
+      "department_number": 1,
+      "description": "Structures alternatives, evaluation criteria and decision rationale into a decision record.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-005",
+      "name": "Project Portfolio Agent",
+      "department": "Executive Intelligence",
+      "department_number": 1,
+      "description": "Organises multiple projects, dependencies, priorities and portfolio-level status.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-006",
+      "name": "Prioritisation Agent",
+      "department": "Executive Intelligence",
+      "department_number": 1,
+      "description": "Ranks work against agreed value, effort, risk and urgency criteria.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-007",
+      "name": "Risk Assessment Agent",
+      "department": "Executive Intelligence",
+      "department_number": 1,
+      "description": "Identifies material delivery, commercial, operational and technical risks with proposed mitigations.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-008",
+      "name": "Resource Allocation Agent",
+      "department": "Executive Intelligence",
+      "department_number": 1,
+      "description": "Recommends appropriate capabilities, budgets and execution capacity for planned work.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-009",
+      "name": "Stakeholder Alignment Agent",
+      "department": "Executive Intelligence",
+      "department_number": 1,
+      "description": "Identifies stakeholder interests, conflicting requirements and decisions needing alignment.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-010",
+      "name": "Executive Reporting Agent",
+      "department": "Executive Intelligence",
+      "department_number": 1,
+      "description": "Produces concise status reports, decisions, risks, milestones and outstanding actions.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-011",
+      "name": "Research Planning Agent",
+      "department": "Research and Intelligence",
+      "department_number": 2,
+      "description": "Defines research questions, methods, scope, source requirements and completion criteria.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "available",
+      "version": "1.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 120,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 20
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
+      "known_limitations": [
+        "Deterministic stub behaviour; no live model tools yet."
+      ],
+      "activation_wave": 1,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-012",
+      "name": "Web Research Agent",
+      "department": "Research and Intelligence",
+      "department_number": 2,
+      "description": "Collects relevant online material and returns source-linked findings.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "available",
+      "version": "1.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 120,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 20
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
+      "known_limitations": [
+        "Deterministic stub behaviour; no live model tools yet."
+      ],
+      "activation_wave": 1,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-013",
+      "name": "Literature Review Agent",
+      "department": "Research and Intelligence",
+      "department_number": 2,
+      "description": "Synthesises academic and technical literature with citations and identified evidence gaps.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-014",
+      "name": "Competitive Intelligence Agent",
+      "department": "Research and Intelligence",
+      "department_number": 2,
+      "description": "Compares competitors' documented offerings, positioning, features and publicly available evidence.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-015",
+      "name": "Market Research Agent",
+      "department": "Research and Intelligence",
+      "department_number": 2,
+      "description": "Investigates market segments, trends, demand indicators and available market evidence.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-016",
+      "name": "Customer Insights Agent",
+      "department": "Research and Intelligence",
+      "department_number": 2,
+      "description": "Synthesises supplied interviews, surveys, feedback and behavioural evidence without inventing customer input.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-017",
+      "name": "Data Collection Agent",
+      "department": "Research and Intelligence",
+      "department_number": 2,
+      "description": "Collects authorised data, validates its structure and documents provenance and missing values.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-018",
+      "name": "Evidence Verification Agent",
+      "department": "Research and Intelligence",
+      "department_number": 2,
+      "description": "Checks whether evidence is authentic, relevant, sufficiently current and suitable for the intended claim.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "available",
+      "version": "1.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 120,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 20
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
+      "known_limitations": [
+        "Deterministic stub behaviour; no live model tools yet."
+      ],
+      "activation_wave": 1,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-019",
+      "name": "Fact-Checking Agent",
+      "department": "Research and Intelligence",
+      "department_number": 2,
+      "description": "Identifies material factual claims and checks them against available reliable sources.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-020",
+      "name": "Research Synthesis Agent",
+      "department": "Research and Intelligence",
+      "department_number": 2,
+      "description": "Combines findings into a structured report, separating facts, interpretations and assumptions.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "available",
+      "version": "1.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 120,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 20
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
+      "known_limitations": [
+        "Deterministic stub behaviour; no live model tools yet."
+      ],
+      "activation_wave": 1,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-021",
+      "name": "Product Discovery Agent",
+      "department": "Product Management",
+      "department_number": 3,
+      "description": "Identifies user problems, hypotheses, discovery questions and validation opportunities.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "available",
+      "version": "1.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 120,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 20
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
+      "known_limitations": [
+        "Deterministic stub behaviour; no live model tools yet."
+      ],
+      "activation_wave": 1,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-022",
+      "name": "Product Strategy Agent",
+      "department": "Product Management",
+      "department_number": 3,
+      "description": "Develops product positioning, target users, value propositions and strategic choices.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-023",
+      "name": "PRD Agent",
+      "department": "Product Management",
+      "department_number": 3,
+      "description": "Produces structured product requirements, scope, constraints and release criteria.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "available",
+      "version": "1.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 120,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 20
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
+      "known_limitations": [
+        "Deterministic stub behaviour; no live model tools yet."
+      ],
+      "activation_wave": 1,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-024",
+      "name": "Requirements Engineering Agent",
+      "department": "Product Management",
+      "department_number": 3,
+      "description": "Converts stakeholder needs into traceable functional and non-functional requirements.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-025",
+      "name": "Roadmap Planning Agent",
+      "department": "Product Management",
+      "department_number": 3,
+      "description": "Creates dependency-aware product roadmaps with milestones and assumptions.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-026",
+      "name": "Product Prioritisation Agent",
+      "department": "Product Management",
+      "department_number": 3,
+      "description": "Compares feature opportunities using explicit prioritisation criteria.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-027",
+      "name": "User Story Agent",
+      "department": "Product Management",
+      "department_number": 3,
+      "description": "Writes user stories with actors, objectives, context and expected outcomes.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 2,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-028",
+      "name": "Acceptance Criteria Agent",
+      "department": "Product Management",
+      "department_number": 3,
+      "description": "Defines observable conditions for determining whether requirements are satisfied.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 2,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-029",
+      "name": "Product Analytics Agent",
+      "department": "Product Management",
+      "department_number": 3,
+      "description": "Defines product metrics and analyses supplied product usage data.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-030",
+      "name": "Product Launch Planning Agent",
+      "department": "Product Management",
+      "department_number": 3,
+      "description": "Produces launch plans, readiness criteria, stakeholder responsibilities and follow-up metrics.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-031",
+      "name": "UX Research Agent",
+      "department": "Design and UX",
+      "department_number": 4,
+      "description": "Plans and synthesises user research based on genuine observations and supplied evidence.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-032",
+      "name": "User Journey Agent",
+      "department": "Design and UX",
+      "department_number": 4,
+      "description": "Maps user goals, actions, touchpoints, friction and potential improvements.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-033",
+      "name": "Information Architecture Agent",
+      "department": "Design and UX",
+      "department_number": 4,
+      "description": "Structures navigation, content hierarchy and information relationships.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-034",
+      "name": "UX Writing Agent",
+      "department": "Design and UX",
+      "department_number": 4,
+      "description": "Produces interface copy, instructions, labels, errors and onboarding text.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-035",
+      "name": "Wireframing Agent",
+      "department": "Design and UX",
+      "department_number": 4,
+      "description": "Creates wireframes or implementation-ready layout specifications.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "available",
+      "version": "1.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 120,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 20
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
+      "known_limitations": [
+        "Deterministic stub behaviour; no live model tools yet."
+      ],
+      "activation_wave": 1,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-036",
+      "name": "UI Design Agent",
+      "department": "Design and UX",
+      "department_number": 4,
+      "description": "Defines screen layouts, visual hierarchy, components and interaction states.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 2,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-037",
+      "name": "Design System Agent",
+      "department": "Design and UX",
+      "department_number": 4,
+      "description": "Defines reusable design tokens, components, variants and usage rules.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-038",
+      "name": "Accessibility Agent",
+      "department": "Design and UX",
+      "department_number": 4,
+      "description": "Identifies accessibility barriers and recommends improvements against defined standards.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-039",
+      "name": "Usability Evaluation Agent",
+      "department": "Design and UX",
+      "department_number": 4,
+      "description": "Evaluates observed usability evidence or performs clearly labelled heuristic reviews.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-040",
+      "name": "Design QA Agent",
+      "department": "Design and UX",
+      "department_number": 4,
+      "description": "Checks visual and interaction consistency against approved designs and requirements.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-041",
+      "name": "Software Architect Agent",
+      "department": "Software Engineering",
+      "department_number": 5,
+      "description": "Produces architecture decisions, component boundaries, dependencies and trade-offs.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "available",
+      "version": "1.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 120,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 20
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
+      "known_limitations": [
+        "Deterministic stub behaviour; no live model tools yet."
+      ],
+      "activation_wave": 1,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-042",
+      "name": "Frontend Engineering Agent",
+      "department": "Software Engineering",
+      "department_number": 5,
+      "description": "Implements client-side interfaces and interaction behaviour.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "create",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 2,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-043",
+      "name": "Backend Engineering Agent",
+      "department": "Software Engineering",
+      "department_number": 5,
+      "description": "Implements server-side business logic, APIs and application services.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "create",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 2,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-044",
+      "name": "Full-Stack Engineering Agent",
+      "department": "Software Engineering",
+      "department_number": 5,
+      "description": "Implements coordinated frontend and backend changes for bounded features.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "create",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-045",
+      "name": "API Engineering Agent",
+      "department": "Software Engineering",
+      "department_number": 5,
+      "description": "Designs and implements API contracts, validation, errors and compatibility behaviour.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "create",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 2,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-046",
+      "name": "Database Engineering Agent",
+      "department": "Software Engineering",
+      "department_number": 5,
+      "description": "Designs schemas, queries, indexes, migrations and integrity constraints.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "create",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 2,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-047",
+      "name": "Integration Engineering Agent",
+      "department": "Software Engineering",
+      "department_number": 5,
+      "description": "Connects approved external services and validates integration behaviour.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "create",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-048",
+      "name": "Code Refactoring Agent",
+      "department": "Software Engineering",
+      "department_number": 5,
+      "description": "Improves code structure while preserving required behaviour and passing regression checks.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "create",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 2,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-049",
+      "name": "Code Review Agent",
+      "department": "Software Engineering",
+      "department_number": 5,
+      "description": "Reviews changes for correctness, maintainability, security concerns and requirement coverage.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "available",
+      "version": "1.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 120,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 20
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
+      "known_limitations": [
+        "Deterministic stub behaviour; no live model tools yet."
+      ],
+      "activation_wave": 1,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-050",
+      "name": "Technical Documentation Agent",
+      "department": "Software Engineering",
+      "department_number": 5,
+      "description": "Documents architecture, APIs, setup, operational procedures and implementation decisions.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "create",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 3,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-051",
+      "name": "AI Solution Architect Agent",
+      "department": "AI and Data Engineering",
+      "department_number": 6,
+      "description": "Defines AI system architecture, model choices, dependencies and evaluation strategy.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 5,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-052",
+      "name": "LLM Engineering Agent",
+      "department": "AI and Data Engineering",
+      "department_number": 6,
+      "description": "Implements bounded LLM workflows, structured generation and model integrations.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 5,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-053",
+      "name": "RAG Engineering Agent",
+      "department": "AI and Data Engineering",
+      "department_number": 6,
+      "description": "Implements retrieval-augmented generation with source retrieval and citation traceability.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 5,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-054",
+      "name": "AI Agent Engineering Agent",
+      "department": "AI and Data Engineering",
+      "department_number": 6,
+      "description": "Implements tool-using agent workflows, state handling and bounded delegation.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 5,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-055",
+      "name": "Data Engineering Agent",
+      "department": "AI and Data Engineering",
+      "department_number": 6,
+      "description": "Designs data pipelines, transformations, validation and lineage.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 5,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-056",
+      "name": "Data Analytics Agent",
+      "department": "AI and Data Engineering",
+      "department_number": 6,
+      "description": "Analyses authorised datasets and produces reproducible summaries or visualisations.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 5,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-057",
+      "name": "Machine Learning Agent",
+      "department": "AI and Data Engineering",
+      "department_number": 6,
+      "description": "Develops and evaluates suitable predictive or classification models when justified by data.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 5,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-058",
+      "name": "Model Evaluation Agent",
+      "department": "AI and Data Engineering",
+      "department_number": 6,
+      "description": "Runs defined model evaluations and reports performance, limitations and regressions.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 5,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-059",
+      "name": "Knowledge Graph Agent",
+      "department": "AI and Data Engineering",
+      "department_number": 6,
+      "description": "Structures entities and relationships with provenance and schema validation.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 5,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-060",
+      "name": "AI Optimisation Agent",
+      "department": "AI and Data Engineering",
+      "department_number": 6,
+      "description": "Investigates latency, quality and cost trade-offs using measured results.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 5,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-061",
+      "name": "Security Architecture Agent",
+      "department": "Security, Privacy and Governance",
+      "department_number": 7,
+      "description": "Reviews trust boundaries, security architecture and defence-in-depth requirements.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 3,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-062",
+      "name": "Threat Modelling Agent",
+      "department": "Security, Privacy and Governance",
+      "department_number": 7,
+      "description": "Produces threat models, attack scenarios and proposed mitigations.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 3,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-063",
+      "name": "Application Security Agent",
+      "department": "Security, Privacy and Governance",
+      "department_number": 7,
+      "description": "Reviews application code and configuration for security weaknesses.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-064",
+      "name": "Vulnerability Assessment Agent",
+      "department": "Security, Privacy and Governance",
+      "department_number": 7,
+      "description": "Performs authorised vulnerability checks and reports reproducible findings.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-065",
+      "name": "Privacy Engineering Agent",
+      "department": "Security, Privacy and Governance",
+      "department_number": 7,
+      "description": "Reviews data flows, minimisation, retention and privacy control requirements.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-066",
+      "name": "Identity and Access Agent",
+      "department": "Security, Privacy and Governance",
+      "department_number": 7,
+      "description": "Reviews authentication, authorisation, roles and permission boundaries.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 3,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-067",
+      "name": "AI Safety Agent",
+      "department": "Security, Privacy and Governance",
+      "department_number": 7,
+      "description": "Assesses model behaviour, misuse risks, prompt injection and failure modes.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 3,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-068",
+      "name": "Compliance Mapping Agent",
+      "department": "Security, Privacy and Governance",
+      "department_number": 7,
+      "description": "Maps supplied requirements to relevant controls and identifies gaps requiring expert review.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-069",
+      "name": "Incident Response Agent",
+      "department": "Security, Privacy and Governance",
+      "department_number": 7,
+      "description": "Organises incident evidence, containment steps and recovery actions under authorised procedures.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-070",
+      "name": "Security Review Agent",
+      "department": "Security, Privacy and Governance",
+      "department_number": 7,
+      "description": "Consolidates security findings and determines whether release criteria have been met.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-071",
+      "name": "Test Strategy Agent",
+      "department": "QA and Reliability",
+      "department_number": 8,
+      "description": "Defines test scope, risk coverage, test levels and exit criteria.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "available",
+      "version": "1.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 120,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 20
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
+      "known_limitations": [
+        "Deterministic stub behaviour; no live model tools yet."
+      ],
+      "activation_wave": 1,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-072",
+      "name": "Unit Testing Agent",
+      "department": "QA and Reliability",
+      "department_number": 8,
+      "description": "Creates or executes unit tests for defined software behaviour.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 2,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-073",
+      "name": "Integration Testing Agent",
+      "department": "QA and Reliability",
+      "department_number": 8,
+      "description": "Tests interactions between services, databases and integrations.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 2,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-074",
+      "name": "End-to-End Testing Agent",
+      "department": "QA and Reliability",
+      "department_number": 8,
+      "description": "Validates complete user journeys against agreed expected outcomes.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 2,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-075",
+      "name": "Regression Testing Agent",
+      "department": "QA and Reliability",
+      "department_number": 8,
+      "description": "Detects unintended changes to previously supported behaviour.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 3,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-076",
+      "name": "Performance Testing Agent",
+      "department": "QA and Reliability",
+      "department_number": 8,
+      "description": "Measures performance against defined workloads and thresholds.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-077",
+      "name": "Accessibility Testing Agent",
+      "department": "QA and Reliability",
+      "department_number": 8,
+      "description": "Executes available automated and manual accessibility checks.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-078",
+      "name": "AI Evaluation Agent",
+      "department": "QA and Reliability",
+      "department_number": 8,
+      "description": "Evaluates AI outputs against labelled datasets, rubrics and task-specific acceptance tests.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 2,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-079",
+      "name": "Defect Triage Agent",
+      "department": "QA and Reliability",
+      "department_number": 8,
+      "description": "Groups failures, assesses severity and proposes reproducible defect records.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 3,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-080",
+      "name": "Release Readiness Agent",
+      "department": "QA and Reliability",
+      "department_number": 8,
+      "description": "Consolidates test evidence, unresolved defects, risks and release-gate status.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 3,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-081",
+      "name": "Cloud Architecture Agent",
+      "department": "Infrastructure and Delivery",
+      "department_number": 9,
+      "description": "Designs cloud resources, trust boundaries and deployment topology.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "create",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-082",
+      "name": "DevOps Agent",
+      "department": "Infrastructure and Delivery",
+      "department_number": 9,
+      "description": "Defines development-to-operations workflows and automation.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "create",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-083",
+      "name": "CI/CD Agent",
+      "department": "Infrastructure and Delivery",
+      "department_number": 9,
+      "description": "Implements and maintains build, test and deployment pipelines.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "create",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-084",
+      "name": "Infrastructure-as-Code Agent",
+      "department": "Infrastructure and Delivery",
+      "department_number": 9,
+      "description": "Produces reviewable infrastructure definitions and configuration changes.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "create",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-085",
+      "name": "Database Operations Agent",
+      "department": "Infrastructure and Delivery",
+      "department_number": 9,
+      "description": "Supports database operations, migration execution and recovery procedures.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "create",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-086",
+      "name": "Observability Agent",
+      "department": "Infrastructure and Delivery",
+      "department_number": 9,
+      "description": "Defines logs, metrics, traces, dashboards and alerts.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "create",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 3,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-087",
+      "name": "Reliability Engineering Agent",
+      "department": "Infrastructure and Delivery",
+      "department_number": 9,
+      "description": "Assesses service reliability, failure handling and operational readiness.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "create",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 3,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-088",
+      "name": "Deployment Agent",
+      "department": "Infrastructure and Delivery",
+      "department_number": 9,
+      "description": "Prepares and executes authorised deployments with explicit release gates.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "create",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-089",
+      "name": "Disaster Recovery Agent",
+      "department": "Infrastructure and Delivery",
+      "department_number": 9,
+      "description": "Defines recovery procedures and evaluates backup and restoration readiness.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "create",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-090",
+      "name": "Cost Optimisation Agent",
+      "department": "Infrastructure and Delivery",
+      "department_number": 9,
+      "description": "Identifies infrastructure cost drivers and proposes measured optimisations.",
+      "implementation_type": "model_workflow",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "create",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-091",
+      "name": "Clinical Literature Agent",
+      "department": "Healthcare and Life Sciences",
+      "department_number": 10,
+      "description": "Retrieves and summarises relevant clinical literature with source references.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 5,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-092",
+      "name": "Biomedical Research Agent",
+      "department": "Healthcare and Life Sciences",
+      "department_number": 10,
+      "description": "Supports biomedical research questions, experimental rationale and evidence synthesis.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 5,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-093",
+      "name": "Clinical Data Analysis Agent",
+      "department": "Healthcare and Life Sciences",
+      "department_number": 10,
+      "description": "Analyses authorised clinical or research datasets with appropriate statistical caveats.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 5,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-094",
+      "name": "Healthcare Workflow Agent",
+      "department": "Healthcare and Life Sciences",
+      "department_number": 10,
+      "description": "Maps healthcare processes, operational bottlenecks and workflow requirements.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 5,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-095",
+      "name": "Clinical Documentation Agent",
+      "department": "Healthcare and Life Sciences",
+      "department_number": 10,
+      "description": "Drafts or structures clinical documentation from authorised inputs for human review.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 5,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-096",
+      "name": "Health Informatics Agent",
+      "department": "Healthcare and Life Sciences",
+      "department_number": 10,
+      "description": "Supports health data models, interoperability and health information workflows.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 5,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-097",
+      "name": "Biomedical Knowledge Graph Agent",
+      "department": "Healthcare and Life Sciences",
+      "department_number": 10,
+      "description": "Represents biomedical entities and relationships with evidence provenance.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 5,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-098",
+      "name": "Scientific Evidence Appraisal Agent",
+      "department": "Healthcare and Life Sciences",
+      "department_number": 10,
+      "description": "Evaluates study design, evidence strength, limitations and potential bias.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 5,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-099",
+      "name": "Healthcare Privacy Agent",
+      "department": "Healthcare and Life Sciences",
+      "department_number": 10,
+      "description": "Reviews healthcare data flows and privacy safeguards against specified requirements.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 5,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-100",
+      "name": "Clinical Safety Review Agent",
+      "department": "Healthcare and Life Sciences",
+      "department_number": 10,
+      "description": "Identifies potential clinical safety hazards and required escalation or review.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 5,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-101",
+      "name": "Positioning Agent",
+      "department": "Growth and Marketing",
+      "department_number": 11,
+      "description": "Defines target audiences, value propositions, differentiation and messaging hypotheses.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-102",
+      "name": "Brand Strategy Agent",
+      "department": "Growth and Marketing",
+      "department_number": 11,
+      "description": "Develops brand architecture, identity principles and communication guidelines.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-103",
+      "name": "Content Strategy Agent",
+      "department": "Growth and Marketing",
+      "department_number": 11,
+      "description": "Creates content themes, editorial plans and distribution priorities.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-104",
+      "name": "SEO Agent",
+      "department": "Growth and Marketing",
+      "department_number": 11,
+      "description": "Audits discoverability and proposes search optimisation improvements.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-105",
+      "name": "Social Media Agent",
+      "department": "Growth and Marketing",
+      "department_number": 11,
+      "description": "Produces channel-specific content and publishing recommendations.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-106",
+      "name": "Campaign Planning Agent",
+      "department": "Growth and Marketing",
+      "department_number": 11,
+      "description": "Defines campaign objectives, audiences, assets, schedules and measures.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-107",
+      "name": "Conversion Optimisation Agent",
+      "department": "Growth and Marketing",
+      "department_number": 11,
+      "description": "Identifies and prioritises conversion improvements using available evidence.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-108",
+      "name": "Growth Experimentation Agent",
+      "department": "Growth and Marketing",
+      "department_number": 11,
+      "description": "Designs experiments with hypotheses, success metrics and stopping rules.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-109",
+      "name": "Marketing Analytics Agent",
+      "department": "Growth and Marketing",
+      "department_number": 11,
+      "description": "Analyses authorised campaign and funnel data.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-110",
+      "name": "Marketing Automation Agent",
+      "department": "Growth and Marketing",
+      "department_number": 11,
+      "description": "Designs and configures approved marketing automation workflows.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-111",
+      "name": "Lead Research Agent",
+      "department": "Sales and Commercial Operations",
+      "department_number": 12,
+      "description": "Identifies potential prospects from permitted sources and records provenance.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-112",
+      "name": "Lead Qualification Agent",
+      "department": "Sales and Commercial Operations",
+      "department_number": 12,
+      "description": "Evaluates prospects against explicit qualification criteria.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-113",
+      "name": "Account Intelligence Agent",
+      "department": "Sales and Commercial Operations",
+      "department_number": 12,
+      "description": "Summarises relevant, appropriately sourced account information.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-114",
+      "name": "Sales Strategy Agent",
+      "department": "Sales and Commercial Operations",
+      "department_number": 12,
+      "description": "Develops sales approaches, qualification plans and opportunity strategies.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-115",
+      "name": "Proposal Writing Agent",
+      "department": "Sales and Commercial Operations",
+      "department_number": 12,
+      "description": "Drafts proposals from approved scope, pricing and customer requirements.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-116",
+      "name": "RFP Response Agent",
+      "department": "Sales and Commercial Operations",
+      "department_number": 12,
+      "description": "Maps requests for proposal to documented capabilities, evidence and gaps.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-117",
+      "name": "CRM Operations Agent",
+      "department": "Sales and Commercial Operations",
+      "department_number": 12,
+      "description": "Updates authorised CRM records and validates data quality.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-118",
+      "name": "Sales Forecasting Agent",
+      "department": "Sales and Commercial Operations",
+      "department_number": 12,
+      "description": "Analyses supplied pipeline data and documents forecasting assumptions.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-119",
+      "name": "Customer Success Agent",
+      "department": "Sales and Commercial Operations",
+      "department_number": 12,
+      "description": "Organises onboarding, adoption, feedback and renewal support.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-120",
+      "name": "Partnership Development Agent",
+      "department": "Sales and Commercial Operations",
+      "department_number": 12,
+      "description": "Researches partnership opportunities and drafts proposals or outreach for approval.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-121",
+      "name": "Book Research Agent",
+      "department": "Books, Education and Publishing",
+      "department_number": 13,
+      "description": "Collects source material and creates a traceable research pack.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-122",
+      "name": "Book Architecture Agent",
+      "department": "Books, Education and Publishing",
+      "department_number": 13,
+      "description": "Designs book structure, chapter sequence, audience and learning objectives.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-123",
+      "name": "Long-Form Writing Agent",
+      "department": "Books, Education and Publishing",
+      "department_number": 13,
+      "description": "Drafts chapters or long-form content against a defined brief.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-124",
+      "name": "Editorial Review Agent",
+      "department": "Books, Education and Publishing",
+      "department_number": 13,
+      "description": "Reviews structure, consistency, clarity, tone and repetition.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-125",
+      "name": "Citation and Reference Agent",
+      "department": "Books, Education and Publishing",
+      "department_number": 13,
+      "description": "Validates bibliographic details and citation consistency against available sources.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-126",
+      "name": "Curriculum Design Agent",
+      "department": "Books, Education and Publishing",
+      "department_number": 13,
+      "description": "Structures learning programmes, modules, objectives and progression.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-127",
+      "name": "Instructional Design Agent",
+      "department": "Books, Education and Publishing",
+      "department_number": 13,
+      "description": "Designs learning experiences, practice activities and assessment alignment.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-128",
+      "name": "Assessment Creation Agent",
+      "department": "Books, Education and Publishing",
+      "department_number": 13,
+      "description": "Creates questions, rubrics and answer criteria for a specified learning objective.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-129",
+      "name": "Course Production Agent",
+      "department": "Books, Education and Publishing",
+      "department_number": 13,
+      "description": "Organises scripts, lesson assets, production instructions and course materials.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-130",
+      "name": "Publishing Operations Agent",
+      "department": "Books, Education and Publishing",
+      "department_number": 13,
+      "description": "Prepares publishing checklists, metadata and production files for review.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-131",
+      "name": "Financial Modelling Agent",
+      "department": "Finance, Legal and Governance",
+      "department_number": 14,
+      "description": "Builds transparent financial models from specified assumptions and supplied data.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-132",
+      "name": "Budget Planning Agent",
+      "department": "Finance, Legal and Governance",
+      "department_number": 14,
+      "description": "Creates budgets, scenarios, allocations and variance reports.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-133",
+      "name": "Unit Economics Agent",
+      "department": "Finance, Legal and Governance",
+      "department_number": 14,
+      "description": "Calculates unit economics and identifies key drivers of contribution margin.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-134",
+      "name": "Pricing Strategy Agent",
+      "department": "Finance, Legal and Governance",
+      "department_number": 14,
+      "description": "Evaluates pricing options and produces testable pricing hypotheses.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-135",
+      "name": "Business Model Agent",
+      "department": "Finance, Legal and Governance",
+      "department_number": 14,
+      "description": "Structures customer value, revenue streams, costs and business model assumptions.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-136",
+      "name": "Contract Review Support Agent",
+      "department": "Finance, Legal and Governance",
+      "department_number": 14,
+      "description": "Summarises contract clauses, obligations and questions for qualified legal review.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-137",
+      "name": "Regulatory Research Agent",
+      "department": "Finance, Legal and Governance",
+      "department_number": 14,
+      "description": "Researches relevant regulatory requirements and records authoritative sources and uncertainty.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-138",
+      "name": "Risk and Controls Agent",
+      "department": "Finance, Legal and Governance",
+      "department_number": 14,
+      "description": "Maps risks to proposed controls, owners and evidence requirements.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-139",
+      "name": "Procurement Support Agent",
+      "department": "Finance, Legal and Governance",
+      "department_number": 14,
+      "description": "Compares supplied vendor information and prepares procurement assessments.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-140",
+      "name": "Governance Documentation Agent",
+      "department": "Finance, Legal and Governance",
+      "department_number": 14,
+      "description": "Drafts policies, decision records, control descriptions and governance documentation.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 4,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-141",
+      "name": "Intent Routing Agent",
+      "department": "Agent Operations and Orchestration",
+      "department_number": 15,
+      "description": "Classifies the request and routes it to a supported mission workflow.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-142",
+      "name": "Mission Planning Agent",
+      "department": "Agent Operations and Orchestration",
+      "department_number": 15,
+      "description": "Produces the execution plan, deliverables, task dependencies and proposed team.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-143",
+      "name": "Task Decomposition Agent",
+      "department": "Agent Operations and Orchestration",
+      "department_number": 15,
+      "description": "Breaks approved work into bounded, testable tasks.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-144",
+      "name": "Capability Matching Agent",
+      "department": "Agent Operations and Orchestration",
+      "department_number": 15,
+      "description": "Matches tasks to registered capabilities, tools and evaluation history.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-145",
+      "name": "Context Management Agent",
+      "department": "Agent Operations and Orchestration",
+      "department_number": 15,
+      "description": "Selects relevant project context and prepares task-specific context packages.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-146",
+      "name": "Dependency Coordination Agent",
+      "department": "Agent Operations and Orchestration",
+      "department_number": 15,
+      "description": "Identifies prerequisites and coordinates execution order and parallel work.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-147",
+      "name": "Conflict Resolution Agent",
+      "department": "Agent Operations and Orchestration",
+      "department_number": 15,
+      "description": "Detects incompatible outputs or decisions and presents options for resolution.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-148",
+      "name": "Execution Monitoring Agent",
+      "department": "Agent Operations and Orchestration",
+      "department_number": 15,
+      "description": "Detects stalled tasks, repeated failures and unexpected status transitions.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 3,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-149",
+      "name": "Cost and Budget Control Agent",
+      "department": "Agent Operations and Orchestration",
+      "department_number": 15,
+      "description": "Forecasts usage and recommends cost-aware execution plans within enforced limits.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": null,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    },
+    {
+      "capability_id": "DX-150",
+      "name": "Workforce Evaluation Agent",
+      "department": "Agent Operations and Orchestration",
+      "department_number": 15,
+      "description": "Analyses capability performance using measured outcomes, evaluations and customer feedback.",
+      "implementation_type": "tool_using_specialist",
+      "lifecycle_status": "planned",
+      "version": "0.0.0",
+      "tool_allowlist": [],
+      "permission_profile": "execute_internally",
+      "limits": {
+        "max_runtime_seconds": 60,
+        "max_retries": 1,
+        "max_concurrency": 1,
+        "max_usage_credits": 10
+      },
+      "owner": "DeliverX Platform",
+      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
+      "known_limitations": [
+        "Not implemented. Planned catalogue role only."
+      ],
+      "activation_wave": 3,
+      "input_schema": {
+        "type": "object"
+      },
+      "output_schema": {
+        "type": "object"
+      },
+      "dependencies": []
+    }
+  ],
+  "infrastructure_services": [
+    {
+      "service_id": "svc-budget",
+      "name": "Budget Enforcement Service",
+      "description": "Hard-stops billable steps when the workspace usage ceiling is reached.",
+      "implementation_type": "deterministic_service",
+      "is_agent": false,
+      "enforces": "usage_ceiling",
+      "owner": "DeliverX Platform",
+      "notes": "Governance rule: DX-149 may advise on cost, but ceilings are enforced here \u2014 never by an agent."
+    },
+    {
+      "service_id": "svc-permissions",
+      "name": "Permission Ladder Service",
+      "description": "Enforces Plan \u2192 Create \u2192 Execute internally \u2192 Act externally ceilings and external-action gates.",
+      "implementation_type": "deterministic_service",
+      "is_agent": false,
+      "enforces": "permission_ladder",
+      "owner": "DeliverX Platform",
+      "notes": "Governance rule: monitoring agents (e.g. DX-148) may advise; permission ceilings remain deterministic."
+    },
+    {
+      "service_id": "svc-audit",
+      "name": "Audit Logging Service",
+      "description": "Append-only audit trail for mission status, approvals, and usage events.",
+      "implementation_type": "deterministic_service",
+      "is_agent": false,
+      "enforces": "audit_integrity",
+      "owner": "DeliverX Platform",
+      "notes": "Non-agent infrastructure. Agents cannot mute or rewrite audit events."
+    },
+    {
+      "service_id": "svc-orchestrator",
+      "name": "Mission Orchestrator",
+      "description": "Owns mission state transitions, task scheduling, and dependency order.",
+      "implementation_type": "deterministic_service",
+      "is_agent": false,
+      "enforces": "mission_state_machine",
+      "owner": "DeliverX Platform",
+      "notes": "The orchestrator owns mission state; agents do not."
+    },
+    {
+      "service_id": "svc-tool-gateway",
+      "name": "Tool Gateway",
+      "description": "Validates tool allowlists, arguments, approvals, and budget before any tool call.",
+      "implementation_type": "deterministic_service",
+      "is_agent": false,
+      "enforces": "tool_policy",
+      "owner": "DeliverX Platform",
+      "notes": "Agents must never bypass this gateway with unrestricted credentials."
+    }
+  ]
+}

@@ -229,6 +229,45 @@ function MissionDetail() {
                   <strong>{plan.includesExternalActions ? "Included (gated)" : "None"}</strong>
                 </div>
               </div>
+
+              {plan.assignedCapabilities.length > 0 ? (
+                <>
+                  <h3 className="cc-subhead">Assigned Available capabilities</h3>
+                  <ul className="cc-cap-assign-list">
+                    {plan.assignedCapabilities.map((c) => (
+                      <li key={c.capability_id}>
+                        <code>{c.capability_id}</code>
+                        <span>
+                          {c.name}
+                          <small className="cc-muted"> — {c.role_in_plan}</small>
+                        </span>
+                        <span className="cc-chip cc-chip-available">Available</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="cc-muted text-xs mt-2">
+                    Only Wave 1 Available roles are assigned.{" "}
+                    <Link to="/command/capabilities" className="underline">
+                      Browse registry
+                    </Link>
+                  </p>
+                </>
+              ) : null}
+
+              {plan.capabilityLimitations.length > 0 ? (
+                <div className="cc-limitation mt-4">
+                  <h3 className="cc-subhead mt-0">Capability limitations</h3>
+                  {plan.capabilityLimitations.map((lim) => (
+                    <div key={lim.code + (lim.requested_department ?? lim.message.slice(0, 24))}>
+                      <p className="text-sm leading-relaxed">{lim.message}</p>
+                      {lim.alternative ? (
+                        <p className="cc-muted mt-1 text-xs">{lim.alternative.summary}</p>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+
               <h3 className="cc-subhead">Acceptance criteria</h3>
               <ul className="cc-bullets">
                 {plan.acceptanceCriteria.map((c) => (
@@ -324,6 +363,9 @@ function MissionDetail() {
                       {PERMISSION_LABELS[t.permissionRequired]}
                       {t.isExternal ? " · external" : ""} · est. {t.estimatedUsage}
                       {t.actualUsage ? ` · used ${t.actualUsage}` : ""}
+                      {t.capabilityIds.length
+                        ? ` · ${t.capabilityIds.join(", ")}`
+                        : ""}
                     </p>
                     <p className="text-xs mt-1">
                       <em>Acceptance:</em> {t.acceptanceCriteria}

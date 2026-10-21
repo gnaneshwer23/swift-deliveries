@@ -1,5 +1,12 @@
 import { PERMISSION_LEVELS, type PermissionLevel } from "./types";
 
+/**
+ * Deterministic permission ladder (infrastructure service — not an agent).
+ *
+ * Governance (Workforce Architecture Spec §7): DX-148 Execution Monitoring and
+ * DX-149 Cost and Budget Control may advise, but permission ceilings and budget
+ * hard-stops remain enforced here / in usage.ts — never by agent recommendation alone.
+ */
 const RANK: Record<PermissionLevel, number> = {
   plan: 0,
   create: 1,
