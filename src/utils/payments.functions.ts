@@ -70,6 +70,16 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
     if (process.env["VITE_PAYMENTS_CHECKOUT_ENABLED"] !== "true") {
       return { error: "Checkout is not open yet" };
     }
+    const stripeKey =
+      data.environment === "sandbox"
+        ? process.env["STRIPE_SANDBOX_API_KEY"]
+        : process.env["STRIPE_LIVE_API_KEY"];
+    if (!stripeKey || !process.env["LOVABLE_API_KEY"]) {
+      return {
+        error:
+          "Checkout needs STRIPE_SANDBOX_API_KEY (or STRIPE_LIVE_API_KEY) and LOVABLE_API_KEY in the server environment.",
+      };
+    }
     try {
       const stripe = createStripeClient(data.environment);
       const prices = await stripe.prices.list({ lookup_keys: [data.priceId], limit: 1 });

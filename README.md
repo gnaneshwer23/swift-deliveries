@@ -32,9 +32,17 @@ npm install
 npm run dev
 ```
 
-The app reads Supabase connection values from `.env`. Those values are the publishable project URL and key, which the browser is expected to hold. Server-only secrets (the Supabase service role and Stripe secret keys) are not in this repository. Checkout, webhooks, and admin database writes stay unavailable until those secrets are supplied in the host environment.
+The app reads Supabase connection values from `.env` (project `jibmyxaldetyycmtlxet`). Publishable URL and key are set for local/dev. See `docs/supabase-connection.md` for the live schema bridge and remaining gaps.
 
-`.env.development` turns on the Stripe test checkout client. `.env.production` is for published builds and is not loaded by `bun run dev`.
+Server-only secrets are **not** in this repository and must be supplied in the host environment when you need them:
+
+- `SUPABASE_SERVICE_ROLE_KEY` — admin/service paths
+- `STRIPE_SANDBOX_API_KEY` or `STRIPE_LIVE_API_KEY`, plus `LOVABLE_API_KEY` — checkout
+- `PAYMENTS_*_WEBHOOK_SECRET` — Stripe webhook fulfilment
+
+Until those are present, public pages, signup/login, and workspace bootstrap against the publishable key still work. Checkout stays disabled (`VITE_PAYMENTS_CHECKOUT_ENABLED=false` in `.env.development`).
+
+`.env.production` is for published builds and is not loaded by `bun run dev`.
 
 ## Checks
 
