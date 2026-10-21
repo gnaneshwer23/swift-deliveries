@@ -18,7 +18,10 @@ export function MarketingFooter() {
           <Link to="/terms">Terms</Link>
         </div>
         <div className="border-t pt-4" style={{ borderColor: "var(--x-border)" }}>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--x-slate-light)" }}>
+          <p
+            className="mb-2 text-xs font-semibold uppercase tracking-wider"
+            style={{ color: "var(--x-slate-light)" }}
+          >
             Existing career products
           </p>
           <div className="footer-links">

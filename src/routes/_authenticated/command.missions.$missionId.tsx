@@ -381,6 +381,16 @@ function MissionDetail() {
                   <li key={o}>{o}</li>
                 ))}
               </ul>
+              {mission.deliveryReport.openRisks.length > 0 ? (
+                <>
+                  <h3 className="cc-subhead">Limitations &amp; open risks</h3>
+                  <ul className="cc-bullets">
+                    {mission.deliveryReport.openRisks.map((r) => (
+                      <li key={r}>{r}</li>
+                    ))}
+                  </ul>
+                </>
+              ) : null}
               <h3 className="cc-subhead">Quality labels</h3>
               <div className="flex flex-wrap gap-2">
                 {mission.deliveryReport.qualitySummary.map((q) => (
@@ -486,7 +496,7 @@ function MissionDetail() {
                     title={selectedArtefact.title}
                     className="cc-proto-frame"
                     srcDoc={selectedArtefact.content}
-                    sandbox=""
+                    sandbox="allow-scripts"
                   />
                 ) : (
                   <pre className="cc-artefact-pre">{selectedArtefact.content}</pre>

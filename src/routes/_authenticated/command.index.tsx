@@ -167,6 +167,7 @@ function CommandHome() {
             <button
               key={item.intent}
               type="button"
+              aria-pressed={active}
               className={`cc-intent${active ? " active" : ""}`}
               onClick={() => setIntent(item.intent)}
             >

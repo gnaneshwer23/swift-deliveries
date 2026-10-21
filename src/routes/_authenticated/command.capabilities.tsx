@@ -155,6 +155,24 @@ function CapabilitiesBrowser() {
             </select>
           </div>
         </div>
+        {(status !== "all" || deptNumber !== "all" || query.trim() !== "") && (
+          <div className="mt-3 flex items-center justify-between gap-2">
+            <span className="cc-muted text-xs">
+              Showing {filtered.length} of {capabilities.length} roles
+            </span>
+            <button
+              type="button"
+              className="cc-btn cc-btn-secondary"
+              onClick={() => {
+                setStatus("all");
+                setDeptNumber("all");
+                setQuery("");
+              }}
+            >
+              Reset filters
+            </button>
+          </div>
+        )}
       </section>
 
       <div className="cc-dept-grid">
