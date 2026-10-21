@@ -301,8 +301,8 @@ function HomePage() {
             You stay in control.
           </h1>
           <p className="hero-sub">
-            State a mission. Approve the plan. Wave 1 ships {WAVE1_COUNT} Available capabilities —
-            the rest of the catalogue stay Planned.
+            Turn a clear objective into a reviewable brief, prototype or improvement. You approve
+            the plan before work runs — and stay in control of permissions, usage and delivery.
           </p>
           <div className="hero-actions">
             <CtaLink
@@ -324,7 +324,7 @@ function HomePage() {
       </section>
 
       {/* 2. Three mission types */}
-      <section className="steps-section">
+      <section className="steps-section" id="mission-types">
         <div className="x-label">Mission types</div>
         <h2 className="heading-1" style={{ margin: "14px 0 0", maxWidth: 640 }}>
           Investigate. Prototype. Improve.
@@ -344,7 +344,7 @@ function HomePage() {
       </section>
 
       {/* 3. How it works */}
-      <section className="products-section">
+      <section className="products-section" id="how-it-works">
         <div className="x-label">How it works</div>
         <h2 className="heading-1" style={{ margin: "14px 0 28px", maxWidth: 640 }}>
           Mission → Plan → Approve → Execute → Deliver
@@ -367,7 +367,7 @@ function HomePage() {
       <WorkforcePreview maxAvailable={8} />
 
       {/* 5. Control and governance */}
-      <section className="trust-section">
+      <section className="trust-section" id="governance">
         <div className="trust-inner">
           <div className="trust-eyebrow">CONTROL AND GOVERNANCE</div>
           <h2 className="trust-heading">
