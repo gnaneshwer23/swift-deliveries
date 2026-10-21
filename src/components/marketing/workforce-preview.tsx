@@ -30,7 +30,7 @@ export function WorkforcePreview({
   const totalCatalogue = listCapabilities().length;
 
   return (
-    <div className="workforce-section">
+    <div className="workforce-section" id="capabilities">
       <div className="x-label">Meet the workforce</div>
       <h2 className="heading-1" style={{ margin: "14px 0 0", maxWidth: 640 }}>
         Specialist capabilities under human authority.
