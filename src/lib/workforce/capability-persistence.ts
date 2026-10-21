@@ -1,7 +1,7 @@
 import type { GeneratedPlan, PlanAssignedCapability, PlanCapabilityLimitation } from "./types";
 
 const PLAN_META_PREFIX = "__dx_capability_meta__:";
-const TASK_CAP_SUFFIX = /\n\n<!-- dx-capabilities: ([A-Z0-9,\-]+) -->\s*$/;
+const TASK_CAP_SUFFIX = /\n\n<!-- dx-capabilities: ([A-Z0-9,-]+) -->\s*$/;
 
 export function encodePlanAcceptanceCriteria(plan: GeneratedPlan): string[] {
   const meta =

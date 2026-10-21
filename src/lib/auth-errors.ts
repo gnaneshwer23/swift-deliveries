@@ -2,9 +2,9 @@
 export function formatAuthError(
   error:
     | {
-        message?: string;
-        code?: string;
-        status?: number;
+        message?: string | undefined;
+        code?: string | undefined;
+        status?: number | undefined;
       }
     | null
     | undefined,

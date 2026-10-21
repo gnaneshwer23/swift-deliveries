@@ -14,7 +14,7 @@ import type {
 } from "./types";
 
 /** Department keyword hints used to detect requests for unavailable specialist capacity. */
-const DEPARTMENT_HINTS: Array<{ department: string; patterns: RegExp }> = [
+const DEPARTMENT_HINTS: Array<{ department: string; patterns: RegExp[] }> = [
   {
     department: "Healthcare and Life Sciences",
     patterns: [/\b(healthcare|clinical|biomedical|patient|pharma|life sciences?|HIPAA|NHS)\b/i],
@@ -41,7 +41,7 @@ const DEPARTMENT_HINTS: Array<{ department: string; patterns: RegExp }> = [
   },
 ];
 
-const ROLE_HINTS: Array<{ id: string; patterns: RegExp }> = [
+const ROLE_HINTS: Array<{ id: string; patterns: RegExp[] }> = [
   { id: "DX-091", patterns: [/\bclinical literature\b/i] },
   { id: "DX-092", patterns: [/\bbiomedical research\b/i] },
   { id: "DX-100", patterns: [/\bclinical safety\b/i] },

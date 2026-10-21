@@ -12,6 +12,7 @@ function baseTask(overrides: Partial<WfMissionTask> = {}): WfMissionTask {
     title: "Draft product investigation brief",
     description: "Write brief",
     acceptanceCriteria: "Brief exists",
+    capabilityIds: [],
     status: "pending",
     permissionRequired: "create",
     isExternal: false,
