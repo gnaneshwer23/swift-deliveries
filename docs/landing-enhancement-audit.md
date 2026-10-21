@@ -12,7 +12,7 @@
 | Command Centre Stage 1 (`/command`) | **Shipped (early product / preview)** | Authenticated; Investigate / Prototype / Improve; deterministic planner/executor |
 | Wave 1 capabilities (12 of 150) | **Available (preview)** | DX-001, 002, 011, 012, 018, 020, 021, 023, 035, 041, 049, 071 — assignable only |
 | Full 150-role AI workforce | **Vision / Planned** | Catalogue in registry; must never be presented as live |
-| Supervised-workforce public positioning | **Incomplete** | Live homepage does not mention Command Centre or Wave 1 honesty |
+| Supervised-workforce public positioning | **In PR #1 (unmerged / undeployed)** | Live https://deliverx.dev/ still career-first; workforce homepage lives on `cursor/landing-positioning-929d` only until merge + host republish |
 | Dual-product CTA / nav coherence | **Proposed (this brief)** | Primary workforce → `/command` (or signup→command); career CTAs stay on plans |
 
 ## 2. Route inventory (public marketing)
