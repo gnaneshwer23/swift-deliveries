@@ -7,10 +7,10 @@ import { BrandLogo } from "@/components/brand-logo";
 
 const NAV_LINKS = [
   { to: "/how-it-works", label: "How it works" },
+  { to: "/pricing", label: "Pricing" },
   { to: "/experience", label: "Experience" },
   { to: "/launchpad", label: "Launchpad" },
   { to: "/prove", label: "Prove" },
-  { to: "/pricing", label: "Pricing" },
 ] as const;
 
 export function MarketingNav() {

@@ -66,8 +66,8 @@ function HowItWorksPage() {
       <div className="hero-hiw">
         <h1>How DeliverX works</h1>
         <p>
-          Two product paths share one brand: a Stage 1 Command Centre for supervised AI labour, and
-          a career evidence journey for people who need a record they can defend.
+          Primary path: supervised AI labour in Command Centre — Mission → Plan → Approve → Execute
+          → Deliver. Career Experience / Launchpad / Prove remain a separate evidence product.
         </p>
         <div
           className="hero-actions"

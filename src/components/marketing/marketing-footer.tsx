@@ -7,11 +7,12 @@ export function MarketingFooter() {
       <BrandLogo />
       <div className="footer-links">
         <Link to="/how-it-works">How it works</Link>
+        <Link to="/signup">Command Centre</Link>
+        <Link to="/pricing">Pricing</Link>
         <Link to="/experience">Experience</Link>
         <Link to="/launchpad">Launchpad</Link>
         <Link to="/prove">Prove</Link>
         <Link to="/professional-workspace">Workspace</Link>
-        <Link to="/pricing">Pricing</Link>
         <Link to="/resources">Resources</Link>
         <Link to="/privacy">Privacy</Link>
         <Link to="/terms">Terms</Link>

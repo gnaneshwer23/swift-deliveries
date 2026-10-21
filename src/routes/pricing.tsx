@@ -25,13 +25,13 @@ export const Route = createFileRoute("/pricing")({
       {
         name: "description",
         content:
-          "Start free with your first scenario. Experience £19, Launchpad £19 or the Complete Journey £29 per month; Career Sprint £69 one-off; Journey Annual £290 a year. Cancel any time.",
+          "Command Centre Stage 1 is early-access preview (local usage ceiling). Career plans: Experience £19, Launchpad £19, Complete Journey £29 per month. Cancel any time.",
       },
       { property: "og:title", content: "Pricing — DeliverX" },
       {
         property: "og:description",
         content:
-          "Start free with your first scenario. Experience £19, Launchpad £19 or the Complete Journey £29 per month; Career Sprint £69 one-off; Journey Annual £290 a year. Cancel any time.",
+          "Command Centre Stage 1 is early-access preview. Career Evidence plans: Experience £19, Launchpad £19, Complete Journey £29 per month.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://deliverx.dev/pricing" },
@@ -125,12 +125,12 @@ function PricingPage() {
         <div className="container">
           <span className="mono-label">Pricing</span>
           <h1 className="heading-1" style={{ marginTop: 16, maxWidth: 520 }}>
-            DeliverX plans and pricing
+            Access and career plans
           </h1>
           <p className="body-large" style={{ marginTop: 16, maxWidth: 560 }}>
-            Career evidence plans below. Command Centre Stage 1 is an early-access preview — sign up
-            to open it; Wave 1 Available capabilities run under a local usage ceiling (not metered
-            Stripe billing yet).
+            Command Centre Stage 1 is an early-access preview — sign up to open it; Wave 1 Available
+            capabilities run under a local usage ceiling (not metered Stripe billing yet). Paid
+            plans below are the separate career evidence path.
           </p>
 
           <div className="card mt-8 flex items-start gap-3" style={{ padding: "18px 22px" }}>
