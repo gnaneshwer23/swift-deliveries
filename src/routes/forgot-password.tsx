@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { formatAuthError } from "@/lib/auth-errors";
 import { Loader2 } from "lucide-react";
 import { BrandLogo } from "@/components/brand-logo";
 
@@ -40,7 +41,7 @@ function ForgotPasswordPage() {
     });
     setLoading(false);
     if (resetError) {
-      setError(resetError.message);
+      setError(formatAuthError(resetError));
       return;
     }
     setSent(true);

@@ -57,7 +57,7 @@ function ResetPasswordPage() {
       setError(updateError.message);
       return;
     }
-    navigate({ to: "/workspace", replace: true });
+    navigate({ to: "/command", replace: true });
   };
 
   return (

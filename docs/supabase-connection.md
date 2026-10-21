@@ -9,6 +9,17 @@ API URL: `https://jibmyxaldetyycmtlxet.supabase.co`
 - Auth email signup/login works against this project (`mailer_autoconfirm` is on in this project).
 - Additive compatibility migrations were applied on the live project so the DeliverX app tables exist alongside the older Delivery-OS schema.
 
+## Auth redirect URLs (required)
+
+In Supabase Dashboard → Authentication → URL configuration, set:
+
+| Setting | Value |
+| --- | --- |
+| Site URL | `http://localhost:43123` (local) or `https://deliverx.dev` (production) |
+| Redirect allow list | `http://localhost:43123/auth/callback`, `http://127.0.0.1:43123/auth/callback`, `http://localhost:43123/reset-password`, `http://127.0.0.1:43123/reset-password`, `https://deliverx.dev/auth/callback`, `https://deliverx.dev/reset-password` |
+
+Email confirm and password-reset links use `emailRedirectTo` / `redirectTo` pointing at those paths. Google OAuth uses native Supabase Auth (`signInWithOAuth`) — enable the Google provider in the dashboard before the button appears on `/login` and `/signup`. Do not rely on Lovable’s `/~oauth/*` proxy for local or deliverx.dev hosts.
+
 ## Schema note
 
 This Supabase project already contained a large legacy schema (`users`, `projects`, PI tables, etc.). The DeliverX app expects a different shape (`profiles`, `organisation_memberships`, `capability_frameworks`, …).
