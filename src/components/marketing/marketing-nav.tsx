@@ -33,7 +33,7 @@ export function MarketingNav() {
       </nav>
 
       <div className="nav-right">
-        {loading ? null : user ? (
+        {!loading && user ? (
           <>
             <Link to="/command" className="btn-nav btn-nav-primary hidden sm:inline-flex">
               Command Centre

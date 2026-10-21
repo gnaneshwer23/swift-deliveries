@@ -595,8 +595,6 @@ html:has(.marketing-page) {
   background: var(--x-paper);
   overflow: hidden;
   box-shadow: 0 18px 40px -28px rgba(21, 21, 26, 0.35);
-  animation: x-rise .7s cubic-bezier(.22,.61,.36,1) both;
-  animation-delay: .12s;
 }
 .dxs .cc-compose-chrome {
   display: flex;
@@ -1151,31 +1149,9 @@ html:has(.marketing-page) {
 .dxs .pv-body { padding: 4px 0; }
 
 /* ============================================================
-   Motion layer: quiet entrances, restrained hover feedback.
-   Scroll reveal uses scroll-driven animations behind @supports so
-   browsers without them simply show static content.
+   Motion layer: restrained hover feedback only (no opacity:0
+   keyframe entrances that leave SSR/headless/scroll views faded).
    ============================================================ */
-@keyframes x-rise {
-  from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: none; }
-}
-@keyframes x-rise-sm {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: none; }
-}
-@keyframes x-bar {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
-}
-
-/* Hero entrance */
-.dxs .hero-eyebrow, .dxs .hero-h1, .dxs .hero-sub, .dxs .hero-actions {
-  animation: x-rise .62s cubic-bezier(.22,.61,.36,1) both;
-}
-.dxs .hero-h1 { animation-delay: .06s; }
-.dxs .hero-sub { animation-delay: .12s; }
-.dxs .hero-actions { animation-delay: .18s; }
-
 /* Hover feedback */
 .dxs .bento-tile, .dxs .card, .dxs .surface-card, .dxs .feature-card,
 .dxs .product-card, .dxs .cross-sell, .dxs .step-cell, .dxs .pv {
@@ -1210,36 +1186,8 @@ html:has(.marketing-page) {
 .dxs .ladder-step.is-active::after { transform: scaleX(1); }
 .dxs .ladder-step.is-active .ladder-n { transition: color .22s ease; }
 
-/* Scroll reveal */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .dxs .section > .section-head,
-    .dxs .bento-tile,
-    .dxs .ladder-rail,
-    .dxs .pv,
-    .dxs .step-cell,
-    .dxs .faq-item,
-    .dxs .product-card,
-    .dxs .surface-card,
-    .dxs .feature-card,
-    .dxs .uc-card,
-    .dxs .cross-sell,
-    .dxs .cta-box {
-      animation: x-rise-sm .7s cubic-bezier(.22,.61,.36,1) both;
-      animation-timeline: view();
-      animation-range: entry 8% cover 22%;
-    }
-    .dxs .ladder-step.is-active::after {
-      animation: x-bar .5s cubic-bezier(.22,.61,.36,1) both;
-      animation-timeline: view();
-      animation-range: entry 10% cover 26%;
-    }
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .dxs *, .dxa * { animation: none !important; transition: none !important; }
-  .dxs .hero-eyebrow, .dxs .hero-h1, .dxs .hero-sub, .dxs .hero-actions { opacity: 1; transform: none; }
 }
 
 /* Signed-in area: same restraint, no entrance motion on data */
@@ -1247,17 +1195,6 @@ html:has(.marketing-page) {
   transition: border-color .2s ease, background-color .2s ease, box-shadow .2s ease;
 }
 .dxa button, .dxa a { transition: background-color .16s ease, color .16s ease, border-color .16s ease; }
-
-/* Product-page hero entrances */
-.dxs .hero-xp > *, .dxs .hero-lp > *, .dxs .hero-ws > *, .dxs .hero-hiw > * {
-  animation: x-rise .62s cubic-bezier(.22,.61,.36,1) both;
-}
-.dxs .hero-xp > :nth-child(2), .dxs .hero-lp > :nth-child(2),
-.dxs .hero-ws > :nth-child(2), .dxs .hero-hiw > :nth-child(2) { animation-delay: .06s; }
-.dxs .hero-xp > :nth-child(3), .dxs .hero-lp > :nth-child(3),
-.dxs .hero-ws > :nth-child(3), .dxs .hero-hiw > :nth-child(3) { animation-delay: .12s; }
-.dxs .hero-xp > :nth-child(4), .dxs .hero-lp > :nth-child(4),
-.dxs .hero-ws > :nth-child(4), .dxs .hero-hiw > :nth-child(4) { animation-delay: .18s; }
 
 /* ===== Command Centre (Supervised AI Workforce Stage 1) ===== */
 .cc-shell {
@@ -1622,17 +1559,31 @@ html:has(.marketing-page) {
 .dxs .btn-nav-primary:hover { background: #263329; }
 
 /* --- Marketing Hero & Executive Trust Strip --- */
+.dxs {
+  overflow-x: hidden;
+}
 .dxs .hero.hero-workforce {
-  max-width: 1280px;
+  max-width: none;
+  width: 100%;
   padding-top: clamp(48px, 6vw, 84px);
   padding-bottom: clamp(52px, 6vw, 84px);
-  gap: clamp(32px, 4vw, 56px);
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.18fr);
+  padding-inline: max(24px, calc((100vw - 1240px) / 2));
+  gap: clamp(32px, 3.5vw, 52px);
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.25fr);
   background:
     radial-gradient(ellipse 65% 55% at 82% 18%, rgba(197, 138, 36, 0.11), transparent 68%),
     radial-gradient(ellipse 50% 50% at 12% 85%, rgba(15, 118, 110, 0.06), transparent 65%),
     linear-gradient(180deg, #ffffff 0%, #f7f9f6 100%);
   border-bottom: 1px solid var(--dx-console-line);
+}
+.dxs .hero-workforce .hero-copy {
+  padding: 0;
+  max-width: 560px;
+  min-width: 0;
+}
+.dxs .hero-workforce .hero-visual {
+  padding: 0;
+  min-width: 0;
 }
 .dxs .hero-workforce .hero-h1 {
   max-width: 640px;
@@ -1767,20 +1718,20 @@ html:has(.marketing-page) {
 
 .dxs .cc-compose-shell {
   display: grid;
-  grid-template-columns: 148px minmax(0, 1fr);
+  grid-template-columns: 132px minmax(0, 1fr);
 }
 .dxs .cc-compose-rail {
   background: #18201a;
   color: #b5c0b7;
-  padding: 16px 12px;
+  padding: 14px 10px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 16px;
+  gap: 14px;
   border-right: 1px solid rgba(255, 255, 255, 0.06);
 }
 .dxs .cc-compose-rail-brand {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 800;
   letter-spacing: -0.03em;
   color: #fff;
@@ -1792,13 +1743,14 @@ html:has(.marketing-page) {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 500;
 }
 .dxs .cc-compose-rail-nav span {
-  padding: 7px 8px;
+  padding: 6px 7px;
   border-radius: 6px;
   color: #9ca89e;
+  white-space: nowrap;
 }
 .dxs .cc-compose-rail-nav span.is-active {
   background: rgba(255, 255, 255, 0.1);
@@ -1808,17 +1760,17 @@ html:has(.marketing-page) {
 }
 .dxs .cc-compose-rail-meter {
   margin-top: auto;
-  padding: 10px;
+  padding: 9px;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.09);
-  font-size: 10.5px;
+  font-size: 10px;
 }
 .dxs .cc-compose-rail-meter-top {
   display: flex;
   justify-content: space-between;
   color: #e2e8f0;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 .dxs .cc-compose-rail-bar {
   height: 5px;
@@ -1834,21 +1786,22 @@ html:has(.marketing-page) {
 }
 .dxs .cc-compose-rail-meter small {
   color: #94a3b8;
-  font-size: 9.5px;
+  font-size: 9px;
 }
 
 .dxs .cc-compose-body {
-  padding: 18px 20px;
+  padding: 16px 18px;
   background: #f9fbf9;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 0;
 }
 .dxs .cc-compose-stepper {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 4px;
-  padding: 6px;
+  padding: 5px;
   border-radius: 9px;
   background: #eef2ee;
   border: 1px solid #dfe5df;
@@ -1856,12 +1809,14 @@ html:has(.marketing-page) {
 .dxs .cc-compose-step {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 5px;
-  padding: 4px 6px;
+  padding: 5px 6px;
   border-radius: 6px;
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 600;
   color: #647067;
+  white-space: nowrap;
 }
 .dxs .cc-compose-step-num {
   width: 15px;
@@ -2700,9 +2655,8 @@ html:has(.marketing-page) {
 .dxa .cc-shell .cc-panel a { text-underline-offset: 3px; }
 
 @media (max-width: 1100px) {
-  .dxs .hero.hero-workforce { grid-template-columns: minmax(0, 1fr); gap: 32px; }
-  .dxs .hero-workforce .hero-copy { max-width: 780px; padding-inline: 24px; }
-  .dxs .hero-workforce .hero-visual { padding-inline: 24px; }
+  .dxs .hero.hero-workforce { grid-template-columns: minmax(0, 1fr); gap: 32px; padding-inline: 24px; }
+  .dxs .hero-workforce .hero-copy { max-width: 780px; }
   .dxs .mission-cards-grid { grid-template-columns: 1fr; }
   .dxs .workforce-head-grid { grid-template-columns: 1fr; }
   .dxs .evidence-cards-grid, .dxs .roadmap-grid { grid-template-columns: repeat(2, 1fr); }
@@ -2713,19 +2667,23 @@ html:has(.marketing-page) {
 @media (max-width: 767px) {
   .dxs .nav { min-height: 60px; padding-inline: 16px; }
   .dxs .nav-links { display: none; }
-  .dxs .hero.hero-workforce { padding-top: 36px; padding-bottom: 36px; }
-  .dxs .hero-workforce .hero-copy, .dxs .hero-workforce .hero-visual { padding-inline: 16px; }
-  .dxs .hero-workforce .hero-h1 { font-size: clamp(34px, 9.5vw, 48px); }
+  .dxs .hero.hero-workforce { padding: 32px 16px 36px; }
+  .dxs .hero-eyebrow { max-width: 100%; flex-wrap: wrap; border-radius: 12px; }
+  .dxs .hero-workforce .hero-h1 { font-size: clamp(32px, 8.8vw, 44px); }
   .dxs .hero-trust-strip { grid-template-columns: 1fr; }
-  .dxs .cc-compose-chrome { flex-wrap: wrap; }
+  .dxs .cc-compose-chrome { flex-wrap: wrap; padding: 10px 12px; gap: 8px; }
+  .dxs .cc-compose-chrome-tag { display: none; }
   .dxs .cc-compose-shell { grid-template-columns: 1fr; }
   .dxs .cc-compose-rail { display: none; }
+  .dxs .cc-compose-body { padding: 14px; }
   .dxs .cc-compose-stepper { grid-template-columns: repeat(3, 1fr); }
+  .dxs .cc-compose-header-row { flex-direction: column; align-items: flex-start; }
   .dxs .cc-compose-intents { grid-template-columns: 1fr; }
   .dxs .workforce-kpi-strip { grid-template-columns: 1fr; }
   .dxs .evidence-cards-grid, .dxs .roadmap-grid { grid-template-columns: 1fr; }
   .dxs .steps-grid { grid-template-columns: 1fr; }
   .dxs .trust-pillars { grid-template-columns: 1fr; }
+  .dxs .record-row { flex-wrap: wrap; }
   .dxs .footer { padding-inline: 16px; }
   .dxa .sidebar { z-index: 50; }
   .dxa .main-header { min-height: 70px; padding: 14px 16px; }

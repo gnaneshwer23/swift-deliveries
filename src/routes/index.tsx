@@ -335,8 +335,9 @@ function HomePage() {
           <div className="hero-actions">
             <CtaLink
               signedInTo="/command"
-              signedInLabel="Open Command Centre"
-              signedOutLabel="Open Command Centre"
+              signedInLabel="Open Command Centre →"
+              signedOutLabel="Open Command Centre →"
+              className="btn btn-primary"
             />
             <Link to="/how-it-works" className="btn btn-secondary">
               Explore architecture &amp; governance
@@ -434,7 +435,7 @@ function HomePage() {
           {HOW_IT_WORKS.map((s) => (
             <BentoTile
               key={s.n}
-              span={s.n === "03" ? 4 : 2}
+              span={s.n === "01" || s.n === "02" ? 3 : 2}
               label={`${s.n} · ${s.gate}`}
               title={s.name}
               body={s.desc}

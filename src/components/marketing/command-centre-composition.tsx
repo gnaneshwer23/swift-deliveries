@@ -99,7 +99,7 @@ const SCENARIOS: Record<
   },
 };
 
-const LIFECYCLE_STEPS = ["Mission", "Clarify", "Plan", "Approve", "Execute", "Deliver"] as const;
+const LIFECYCLE_STEPS = ["Mission", "Plan", "Approve", "Execute", "Deliver"] as const;
 
 /**
  * Interactive Command Centre concept showcase for marketing.
