@@ -6,10 +6,11 @@ import { useSession } from "@/hooks/use-session";
 import { BrandLogo } from "@/components/brand-logo";
 
 const NAV_LINKS = [
-  { href: "/how-it-works", label: "How it works" },
   { href: "/#mission-types", label: "Mission types" },
+  { href: "/#how-it-works", label: "Lifecycle" },
   { href: "/#capabilities", label: "Capabilities" },
-  { href: "/#governance", label: "Control & safety" },
+  { href: "/#governance", label: "Governance" },
+  { href: "/how-it-works", label: "Architecture" },
 ] as const;
 
 export function MarketingNav() {
@@ -18,7 +19,10 @@ export function MarketingNav() {
 
   return (
     <header className="nav">
-      <BrandLogo />
+      <div className="flex items-center gap-3">
+        <BrandLogo />
+        <span className="nav-stage-badge hidden lg:inline-flex">Stage 1 · 12 Available</span>
+      </div>
 
       <nav className="nav-links" aria-label="Primary navigation">
         {NAV_LINKS.map((item) => (
@@ -30,7 +34,12 @@ export function MarketingNav() {
 
       <div className="nav-right">
         {loading ? null : user ? (
-          <AccountMenu user={user} />
+          <>
+            <Link to="/command" className="btn-nav btn-nav-primary hidden sm:inline-flex">
+              Command Centre
+            </Link>
+            <AccountMenu user={user} />
+          </>
         ) : (
           <>
             <Link to="/login" className="btn-nav hidden sm:inline-flex">

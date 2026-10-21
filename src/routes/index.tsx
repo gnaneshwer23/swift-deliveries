@@ -93,18 +93,30 @@ export const Route = createFileRoute("/")({
 const MISSION_TYPES = [
   {
     n: "01",
+    tag: "Decision Research",
     title: "Investigate",
-    body: "Research a decision and return a brief with sourced facts labelled apart from assumptions.",
+    body: "Research a strategic or product decision and return a structured brief with sourced facts explicitly separated from assumptions and inferences.",
+    capabilities: ["DX-001", "DX-011", "DX-012", "DX-020"],
+    permission: "Plan → Create",
+    deliverable: "Decision Brief + Evidence Matrix",
   },
   {
     n: "02",
+    tag: "Product & UI Specification",
     title: "Prototype",
-    body: "Produce a reviewable product brief plus a lightweight interactive HTML or structured UI pack — not a production deploy.",
+    body: "Produce a reviewable PRD and a lightweight, sandboxed interactive HTML or structured UI pack — never an unapproved production deploy.",
+    capabilities: ["DX-021", "DX-023", "DX-035", "DX-049"],
+    permission: "Create (Sandboxed)",
+    deliverable: "Product Spec + Interactive HTML Pack",
   },
   {
     n: "03",
+    tag: "Flow & Funnel Diagnostics",
     title: "Improve",
-    body: "Diagnose friction in an existing flow and propose changes that stop at your budget ceiling.",
+    body: "Diagnose friction in an existing workflow, isolate root causes, and propose bounded remediation steps that hard-stop at your budget ceiling.",
+    capabilities: ["DX-018", "DX-041", "DX-049", "DX-071"],
+    permission: "Execute internally",
+    deliverable: "Friction Diagnosis + Remediation Diff",
   },
 ];
 
@@ -112,96 +124,113 @@ const HOW_IT_WORKS = [
   {
     n: "01",
     name: "Mission",
-    desc: "State Investigate, Prototype or Improve in natural language. Incomplete requests get clarification first.",
+    gate: "Intent + Clarification",
+    desc: "Select Investigate, Prototype or Improve and state your objective in plain English. Ambiguous requests trigger structured clarification before any plan is drafted.",
   },
   {
     n: "02",
     name: "Plan",
-    desc: "Tasks, acceptance criteria, Wave 1 capability assignment and usage estimate — before any labour runs.",
+    gate: "Wave 1 Assignment",
+    desc: "Receive a task graph, acceptance criteria, credit estimate and capability assignment drawn strictly from the 12 Available Wave 1 roles.",
   },
   {
     n: "03",
     name: "Approve",
-    desc: "Nothing executes until you accept the plan within the permission ladder and budget ceiling.",
+    gate: "Mandatory Human Gate",
+    desc: "Nothing executes until you explicitly approve the plan within the permission ladder and workspace credit ceiling. External actions require separate authorisation.",
   },
   {
     n: "04",
     name: "Execute",
-    desc: "Available capabilities run with visible progress. Usage hard-stops at the workspace ceiling.",
+    gate: "Deterministic Ceiling",
+    desc: "Approved tasks execute step-by-step with live status visibility. Billable work hard-stops automatically if the workspace usage ceiling is reached.",
   },
   {
     n: "05",
     name: "Deliver",
-    desc: "Artefacts and a delivery report with evidence and quality labels — never a bare Verified badge.",
+    gate: "Evidence & Quality Labels",
+    desc: "Inspect artefacts and a delivery report with classified evidence (Sourced facts, Assumptions, Inferences, Speculative) and discrete quality labels.",
   },
 ];
 
 const GOVERNANCE = [
   {
-    n: "01",
-    title: "Permission ladder",
-    body: "Plan → Create → Execute internally → Act externally. External actions stay blocked until you approve.",
+    n: "01 · AUTHORITY",
+    title: "Four-tier permission ladder",
+    body: "Plan → Create → Execute internally → Act externally. External actions (email, deploy, webhook, share) remain locked behind an explicit second approval.",
+    service: "svc-permissions · Deterministic service",
   },
   {
-    n: "02",
-    title: "Usage ceilings",
-    body: "Each workspace has a credit ceiling. Billable steps hard-stop when it is reached — no silent overspend.",
+    n: "02 · COST CONTROL",
+    title: "Hard-stop usage ceilings",
+    body: "Every workspace enforces a deterministic credit ceiling (default 100 credits). Tasks check remaining budget before running — zero silent overspend.",
+    service: "svc-budget · Deterministic service",
   },
   {
-    n: "03",
-    title: "Approvals",
-    body: "The plan is a human gate. Revising or rejecting is first-class; autonomy without a gate is not the product.",
+    n: "03 · SUPERVISION",
+    title: "Plan-first human approval gate",
+    body: "No free-form autonomous loop. You inspect assigned capabilities, acceptance criteria, and limitations before queuing a single task.",
+    service: "Stage 1 Human-in-the-loop Gate",
   },
   {
-    n: "04",
-    title: "Audit trail",
-    body: "Mission status, plan acceptance and task outcomes are recorded so you can inspect what ran and why.",
+    n: "04 · PROVENANCE",
+    title: "Immutable audit & quality trail",
+    body: "Every state transition, approval decision, and credit charge is logged. Workforce outputs carry specific quality labels — never a bare 'Verified' claim.",
+    service: "svc-audit · Deterministic service",
   },
 ];
 
 const DELIVERABLES = [
   {
     n: "01",
+    badge: "pill-teal",
     title: "Sourced facts",
-    body: "Traceable to an input or cited source.",
+    body: "Directly traceable to your mission brief, workspace context, or a cited reference.",
   },
   {
     n: "02",
+    badge: "pill-neutral",
     title: "Assumptions",
-    body: "Explicitly assumed for the mission — never disguised as fact.",
+    body: "Working premises stated openly so stakeholders can challenge or validate them before acting.",
   },
   {
     n: "03",
+    badge: "pill-purple",
     title: "Inferences",
-    body: "Derived from facts plus assumptions, labelled as such.",
+    body: "Conclusions reasoned from sourced facts and stated assumptions — labelled clearly as analytical synthesis.",
   },
   {
     n: "04",
+    badge: "pill-amber",
     title: "Speculative",
-    body: "Weakly grounded suggestion — visible, not smuggled into certainty.",
+    body: "Directional hypotheses or low-confidence options surfaced for exploration, never smuggled into certainty.",
   },
 ];
 
 const ROADMAP = [
   {
     n: "Now · Stage 1",
-    title: "Supervised preview",
-    body: `${WAVE1_COUNT} Wave 1 Available capabilities, deterministic planner/executor, plan approval, local usage ceiling, artefacts and delivery reports.`,
+    status: "Live in preview",
+    title: "Supervised Command Centre",
+    body: `${WAVE1_COUNT} Wave 1 Available capabilities, deterministic planner/executor, mandatory plan approval, hard-stop usage ceiling, artefacts and delivery reports.`,
   },
   {
-    n: "Next",
-    title: "Deeper review loops",
-    body: "Richer human-review workflows and stronger artefact inspection — still under your authority.",
+    n: "Next · Stage 2",
+    status: "In development",
+    title: "Deeper review & diff loops",
+    body: "Task-level revision comments, side-by-side artefact diffing, and multi-reviewer sign-off — still under human authority.",
   },
   {
-    n: "Later",
-    title: "Connectors & metering",
-    body: "Live model routing, external connectors (email, deploy, Slack, GitHub write) and commercial metering. Not claimed as live today.",
+    n: "Later · Stage 3",
+    status: "Planned",
+    title: "Live model routing & connectors",
+    body: "Multi-model execution, gated external connectors (GitHub PRs, Slack, email, deploy) and commercial credit metering. Not claimed as live today.",
   },
   {
-    n: "Not promised",
+    n: "Never promised",
+    status: "Explicit non-goal",
     title: "Unbounded autonomy",
-    body: "No marketplace of 150 live agents, no silent external actions, no job guarantee from the career path.",
+    body: "No unverified marketplace of 150 autonomous agents, no silent external actions, and no job placement guarantee on the career path.",
   },
 ];
 
@@ -285,24 +314,23 @@ function HomePage() {
     <MarketingLayout>
       <OnboardingGate />
 
-      {/* 1. HERO — brand + plan-first outcome + Command Centre composition */}
+      {/* 1. HERO — Plan-first executive headline + interactive Command Centre showcase */}
       <section className="hero hero-workforce">
         <div className="hero-copy">
           <div className="hero-eyebrow">
             <span className="hero-dot" />
-            <span className="x-label">Supervised AI workforce · Stage 1</span>
+            <span className="x-label">Supervised AI Workforce · Stage 1 Command Centre</span>
           </div>
-          <p className="hero-brand">
-            Deliver<span>X</span>
-          </p>
           <h1 className="hero-h1">
             AI work that follows a plan.
             <br />
-            You stay in control.
+            <em>You stay in control.</em>
           </h1>
           <p className="hero-sub">
-            Turn a clear objective into a reviewable brief, prototype or improvement. You approve
-            the plan before work runs — and stay in control of permissions, usage and delivery.
+            Commission structured <strong>Investigate</strong>, <strong>Prototype</strong> or{" "}
+            <strong>Improve</strong> missions. Review the task breakdown and assigned Wave 1
+            capabilities first — nothing executes without your approval, and usage hard-stops at
+            your workspace ceiling.
           </p>
           <div className="hero-actions">
             <CtaLink
@@ -311,50 +339,103 @@ function HomePage() {
               signedOutLabel="Open Command Centre"
             />
             <Link to="/how-it-works" className="btn btn-secondary">
-              How it works
+              Explore architecture &amp; governance
             </Link>
           </div>
+
+          {/* Executive Trust & Guardrail Strip */}
+          <dl className="hero-trust-strip" aria-label="Platform guardrails">
+            <div>
+              <dt>{WAVE1_COUNT} Available Roles</dt>
+              <dd>Wave 1 operational · 150-role catalogue</dd>
+            </div>
+            <div>
+              <dt>Human Approval Gate</dt>
+              <dd>Plan → Approve → Execute → Deliver</dd>
+            </div>
+            <div>
+              <dt>Hard-Stop Budget</dt>
+              <dd>Deterministic ceiling · zero silent spend</dd>
+            </div>
+          </dl>
         </div>
         <div className="hero-visual">
           <CommandCentreComposition />
           <p className="hero-visual-note">
-            Labelled product concept — mirrors Command Centre Stage 1 chrome
+            Interactive Stage 1 Command Centre preview — switch between Investigate, Prototype and
+            Improve above to inspect the proposed plan and capability assignment.
           </p>
         </div>
       </section>
 
       {/* 2. Three mission types */}
       <section className="steps-section" id="mission-types">
-        <div className="x-label">Mission types</div>
-        <h2 className="heading-1" style={{ margin: "14px 0 0", maxWidth: 640 }}>
-          Investigate. Prototype. Improve.
-        </h2>
-        <p className="body" style={{ marginTop: 14, maxWidth: 560 }}>
-          Three intents. Same supervision loop. No free-form autonomous agent.
-        </p>
-        <div className="steps-grid" style={{ marginTop: 32 }}>
+        <div className="section-header-split">
+          <div>
+            <div className="x-label">Bounded Mission Intents</div>
+            <h2 className="heading-1" style={{ margin: "12px 0 0", maxWidth: 640 }}>
+              Investigate. Prototype. Improve.
+            </h2>
+          </div>
+          <p className="body" style={{ margin: 0, maxWidth: 460 }}>
+            Every mission enters through one of three structured intents. Each routes to a dedicated
+            planner template, Wave 1 capability set, and permission boundary — never an unbounded
+            chat loop.
+          </p>
+        </div>
+
+        <div className="mission-cards-grid">
           {MISSION_TYPES.map((m) => (
-            <div className="step-cell" key={m.n}>
-              <div className="step-num">{m.n}</div>
-              <div className="step-name">{m.title}</div>
-              <div className="step-desc">{m.body}</div>
-            </div>
+            <article className="mission-arch-card" key={m.n}>
+              <div className="mission-arch-top">
+                <span className="mission-arch-num">{m.n}</span>
+                <span className="mission-arch-tag">{m.tag}</span>
+              </div>
+              <h3 className="mission-arch-title">{m.title}</h3>
+              <p className="mission-arch-body">{m.body}</p>
+              <div className="mission-arch-caps" aria-label="Typical Wave 1 capabilities">
+                {m.capabilities.map((capId) => (
+                  <code key={capId} className="mission-arch-cap">
+                    {capId}
+                  </code>
+                ))}
+              </div>
+              <div className="mission-arch-foot">
+                <div>
+                  <span>Permission ceiling</span>
+                  <strong>{m.permission}</strong>
+                </div>
+                <div>
+                  <span>Primary output</span>
+                  <strong>{m.deliverable}</strong>
+                </div>
+              </div>
+            </article>
           ))}
         </div>
       </section>
 
       {/* 3. How it works */}
       <section className="products-section" id="how-it-works">
-        <div className="x-label">How it works</div>
-        <h2 className="heading-1" style={{ margin: "14px 0 28px", maxWidth: 640 }}>
-          Mission → Plan → Approve → Execute → Deliver
-        </h2>
+        <div className="section-header-split">
+          <div>
+            <div className="x-label">Supervised Execution Lifecycle</div>
+            <h2 className="heading-1" style={{ margin: "12px 0 0", maxWidth: 680 }}>
+              Mission → Plan → Approve → Execute → Deliver
+            </h2>
+          </div>
+          <p className="body" style={{ margin: 0, maxWidth: 460 }}>
+            Five explicit stages backed by deterministic permission and budget services. Step 03 is
+            a mandatory human gate before any task runs.
+          </p>
+        </div>
+
         <Bento>
           {HOW_IT_WORKS.map((s) => (
             <BentoTile
               key={s.n}
               span={s.n === "03" ? 4 : 2}
-              label={s.n}
+              label={`${s.n} · ${s.gate}`}
               title={s.name}
               body={s.desc}
               onInk={s.n === "03"}
@@ -364,23 +445,29 @@ function HomePage() {
       </section>
 
       {/* 4. Meet the workforce */}
-      <WorkforcePreview maxAvailable={8} />
+      <WorkforcePreview maxAvailable={12} />
 
       {/* 5. Control and governance */}
       <section className="trust-section" id="governance">
         <div className="trust-inner">
-          <div className="trust-eyebrow">CONTROL AND GOVERNANCE</div>
+          <div className="trust-eyebrow">DETERMINISTIC CONTROL &amp; GOVERNANCE</div>
           <h2 className="trust-heading">
             Permissions, ceilings, approvals.
             <br />
-            <em>Supervision is the product.</em>
+            <em>Supervision is the architecture.</em>
           </h2>
+          <p className="trust-lead">
+            Budget enforcement, permission gates, and audit logging are deterministic platform
+            services (`svc-budget`, `svc-permissions`, `svc-audit`) — never delegated to an AI
+            agent.
+          </p>
           <div className="trust-pillars">
             {GOVERNANCE.map((p) => (
               <div className="trust-pillar" key={p.n}>
                 <div className="trust-pillar-n">{p.n}</div>
                 <div className="trust-pillar-title">{p.title}</div>
                 <div className="trust-pillar-body">{p.body}</div>
+                <div className="trust-pillar-service">{p.service}</div>
               </div>
             ))}
           </div>
@@ -389,79 +476,84 @@ function HomePage() {
 
       {/* 6. Inspect deliverables */}
       <section className="products-section">
-        <div className="x-label">Inspect deliverables</div>
-        <h2 className="heading-1" style={{ margin: "14px 0 14px", maxWidth: 640 }}>
-          Stage 1 artefacts with evidence labels.
-        </h2>
-        <p className="body" style={{ marginBottom: 28, maxWidth: 560 }}>
-          Facts, assumptions and speculation stay separate. Quality labels are discrete —
-          Agent-reviewed, Automatically tested, Human-reviewed, Externally attested.
-        </p>
-        <ProductView
-          frameLabel="Delivery report · sample labels"
-          note="Illustrative sample format — not a live customer result."
-        >
-          <div className="record-row">
-            <span className="record-index">01</span>
-            <div className="record-icon-wrap">{docIcon}</div>
-            <div className="record-body">
-              <div className="record-title">Investigate — competitor pricing brief</div>
-              <div className="record-sub">
-                intent:investigate · DX-011 · DX-012 · DX-020 · usage:12/100
-              </div>
-            </div>
-            <div className="record-stat">
-              <div className="record-band">Plan</div>
-              <div className="record-band-label">Approved</div>
-            </div>
-            <span className="pill pill-teal">Sourced facts</span>
+        <div className="section-header-split">
+          <div>
+            <div className="x-label">Inspectable Deliverables &amp; Epistemic Honesty</div>
+            <h2 className="heading-1" style={{ margin: "12px 0 0", maxWidth: 640 }}>
+              Stage 1 artefacts with explicit evidence labels.
+            </h2>
           </div>
-          <div className="record-row">
-            <span className="record-index">02</span>
-            <div className="record-icon-wrap">{clipIcon}</div>
-            <div className="record-body">
-              <div className="record-title">Prototype — onboarding wireframe pack</div>
-              <div className="record-sub">
-                intent:prototype · DX-035 · DX-023 · permission:create
+          <p className="body" style={{ margin: 0, maxWidth: 460 }}>
+            Facts, assumptions, inferences and speculation are classified separately. Quality labels
+            are discrete — <strong>Agent-reviewed</strong>, <strong>Automatically tested</strong>,{" "}
+            <strong>Human-reviewed</strong>, or <strong>Externally attested</strong>.
+          </p>
+        </div>
+
+        <div style={{ marginTop: 32 }}>
+          <ProductView
+            frameLabel="Command Centre · Delivery ledger & evidence classification preview"
+            note="Illustrative Stage 1 format — demonstrates separated evidence and discrete quality labels."
+          >
+            <div className="record-row">
+              <span className="record-index">01</span>
+              <div className="record-icon-wrap">{docIcon}</div>
+              <div className="record-body">
+                <div className="record-title">Investigate — sponsor reporting decision brief</div>
+                <div className="record-sub">
+                  intent:investigate · DX-011 · DX-012 · DX-020 · usage:18/100 credits
+                </div>
               </div>
-            </div>
-            <div className="record-stat">
-              <div className="record-band">Running</div>
-              <div className="record-band-label">Tasks 3/5</div>
-            </div>
-            <span className="pill pill-neutral">Assumptions</span>
-          </div>
-          <div className="record-row">
-            <span className="record-index">03</span>
-            <div className="record-icon-wrap">{badgeIcon}</div>
-            <div className="record-body">
-              <div className="record-title">Improve — checkout drop-off diagnosis</div>
-              <div className="record-sub">
-                intent:improve · DX-049 · DX-071 · quality:agent-reviewed
+              <div className="record-stat">
+                <div className="record-band">Plan</div>
+                <div className="record-band-label">Approved</div>
               </div>
+              <span className="pill pill-teal">Sourced facts</span>
             </div>
-            <div className="record-stat">
-              <div className="record-band" style={{ color: "var(--x-amber)" }}>
-                Done
+            <div className="record-row">
+              <span className="record-index">02</span>
+              <div className="record-icon-wrap">{clipIcon}</div>
+              <div className="record-body">
+                <div className="record-title">Prototype — usage ceiling notification wireframe</div>
+                <div className="record-sub">
+                  intent:prototype · DX-021 · DX-023 · DX-035 · permission:create
+                </div>
               </div>
-              <div className="record-band-label">Report ready</div>
+              <div className="record-stat">
+                <div className="record-band">Running</div>
+                <div className="record-band-label">Tasks 2/3</div>
+              </div>
+              <span className="pill pill-neutral">Assumptions</span>
             </div>
-            <span className="pill pill-amber">Agent-reviewed</span>
-          </div>
-        </ProductView>
-        <div
-          className="products-grid"
-          style={{ gridTemplateColumns: "repeat(2, 1fr)", marginTop: 28 }}
-        >
+            <div className="record-row">
+              <span className="record-index">03</span>
+              <div className="record-icon-wrap">{badgeIcon}</div>
+              <div className="record-body">
+                <div className="record-title">Improve — checkout drop-off remediation plan</div>
+                <div className="record-sub">
+                  intent:improve · DX-018 · DX-041 · DX-071 · quality:agent-reviewed
+                </div>
+              </div>
+              <div className="record-stat">
+                <div className="record-band" style={{ color: "var(--x-amber)" }}>
+                  Delivered
+                </div>
+                <div className="record-band-label">Report ready</div>
+              </div>
+              <span className="pill pill-amber">Agent-reviewed</span>
+            </div>
+          </ProductView>
+        </div>
+
+        <div className="evidence-cards-grid">
           {DELIVERABLES.map((e) => (
-            <div className="product-card" key={e.n} style={{ cursor: "default" }}>
-              <div className="product-card-head">
-                <div className="product-card-num">{e.n}</div>
-                <div className="product-card-name">{e.title}</div>
+            <div className="evidence-card" key={e.n}>
+              <div className="evidence-card-top">
+                <span className="evidence-card-num">{e.n}</span>
+                <span className={`pill ${e.badge}`}>{e.title}</span>
               </div>
-              <div className="product-card-body">
-                <div className="product-card-desc">{e.body}</div>
-              </div>
+              <div className="evidence-card-title">{e.title}</div>
+              <p className="evidence-card-desc">{e.body}</p>
             </div>
           ))}
         </div>
@@ -469,21 +561,28 @@ function HomePage() {
 
       {/* 7. What happens next — honest roadmap */}
       <section className="steps-section">
-        <div className="x-label">What happens next</div>
-        <h2 className="heading-1" style={{ margin: "14px 0 0", maxWidth: 640 }}>
-          An honest roadmap. No false connectors.
-        </h2>
-        <p className="body" style={{ marginTop: 14, maxWidth: 560 }}>
-          Stage 1 is a supervised preview. Later stages add depth — they are not shipping claims.
-        </p>
-        <div className="steps-grid" style={{ marginTop: 32 }}>
-          {ROADMAP.map((r) => (
-            <div className="step-cell" key={r.n}>
-              <div className="step-num" style={{ letterSpacing: "0.02em" }}>
-                {r.n}
+        <div className="section-header-split">
+          <div>
+            <div className="x-label">Release &amp; Capability Roadmap</div>
+            <h2 className="heading-1" style={{ margin: "12px 0 0", maxWidth: 640 }}>
+              An honest roadmap. Zero false connectors.
+            </h2>
+          </div>
+          <p className="body" style={{ margin: 0, maxWidth: 460 }}>
+            Stage 1 is a supervised operational preview. Future waves expand review depth and model
+            routing — never disguised as live today.
+          </p>
+        </div>
+
+        <div className="roadmap-grid">
+          {ROADMAP.map((r, idx) => (
+            <div className={`roadmap-card${idx === 0 ? " is-current" : ""}`} key={r.n}>
+              <div className="roadmap-card-top">
+                <span className="roadmap-stage">{r.n}</span>
+                <span className="roadmap-status">{r.status}</span>
               </div>
-              <div className="step-name">{r.title}</div>
-              <div className="step-desc">{r.body}</div>
+              <div className="roadmap-title">{r.title}</div>
+              <div className="roadmap-desc">{r.body}</div>
             </div>
           ))}
         </div>

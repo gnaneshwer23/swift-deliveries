@@ -150,15 +150,75 @@ function MissionDetail() {
   const pendingQuestions = plan?.clarificationQuestions ?? [];
   const ladder: PermissionLevel[] = ["plan", "create", "execute_internally", "act_externally"];
 
+  const lifecycleStages = [
+    { id: "intake", label: "Mission", desc: INTENT_LABELS[mission.intent] },
+    {
+      id: "clarify",
+      label: "Clarify",
+      desc: mission.status === "needs_clarification" ? "Action required" : "Resolved",
+    },
+    { id: "plan", label: "Plan", desc: plan ? `${tasks.length} tasks` : "Drafting" },
+    {
+      id: "approve",
+      label: "Approve",
+      desc:
+        mission.status === "awaiting_approval" || mission.status === "planned"
+          ? "Human gate"
+          : approvals.some((a) => a.kind === "plan" && a.status === "approved")
+            ? "Approved"
+            : "Pending",
+    },
+    {
+      id: "execute",
+      label: "Execute",
+      desc: `${tasks.filter((t) => t.status === "completed").length}/${tasks.length} complete`,
+    },
+    {
+      id: "deliver",
+      label: "Deliver",
+      desc: mission.deliveryReport ? "Report ready" : `${artefacts.length} artefacts`,
+    },
+  ] as const;
+
+  const activeStageIndex =
+    mission.status === "draft"
+      ? 0
+      : mission.status === "needs_clarification"
+        ? 1
+        : mission.status === "planned" || mission.status === "awaiting_approval"
+          ? 3
+          : mission.status === "queued" ||
+              mission.status === "running" ||
+              mission.status === "blocked"
+            ? 4
+            : 5;
+
   return (
     <CommandShell
       title={mission.title}
-      subtitle={`${INTENT_LABELS[mission.intent]} · ${STATUS_LABELS[mission.status]}`}
+      subtitle={`${INTENT_LABELS[mission.intent]} · ${STATUS_LABELS[mission.status]} · ${workspace.usageConsumed}/${workspace.usageCeiling} workspace credits`}
       usage={{
         consumed: workspace.usageConsumed,
         ceiling: workspace.usageCeiling,
       }}
     >
+      {/* 6-Stage Supervised Mission Lifecycle Stepper */}
+      <nav className="cc-mission-stepper" aria-label="Mission lifecycle progress">
+        {lifecycleStages.map((stage, idx) => {
+          const state =
+            idx < activeStageIndex ? "done" : idx === activeStageIndex ? "active" : "upcoming";
+          return (
+            <div key={stage.id} className={`cc-mission-step is-${state}`}>
+              <span className="cc-mission-step-num">{idx + 1}</span>
+              <div>
+                <strong>{stage.label}</strong>
+                <small>{stage.desc}</small>
+              </div>
+            </div>
+          );
+        })}
+      </nav>
+
       <div className="cc-mission-layout">
         <div className="cc-mission-main">
           <section className="cc-panel">
