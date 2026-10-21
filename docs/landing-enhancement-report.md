@@ -71,7 +71,8 @@ Homepage and supporting marketing pages now lead with **Command Centre Stage 1**
 
 ## 10. Review artefacts
 
-- Feature branch + draft PR into `main`
+- Feature branch: `cursor/landing-positioning-929d` (pushed to Origin remote)
+- Draft PR: **blocked in this environment** — Origin `pr create` rejects `repoKind=agent_temp`; GitHub remote has no authenticated credentials (no token invented). Open a draft PR from this branch into `main` on https://github.com/gnaneshwer23/swift-deliveries once GitHub auth is available, or promote via the Cursor agents UI if it mirrors the branch.
 - Audit: `docs/landing-enhancement-audit.md`
 - This report: `docs/landing-enhancement-report.md`
-- Dev server: port **43123** (tmux `deliverx-dev`)
+- Dev server: port **43123** (tmux `deliverx-dev`) — left running
