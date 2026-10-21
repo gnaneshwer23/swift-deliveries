@@ -50,9 +50,7 @@ export function WorkforcePreview({
             <article className="workforce-card" key={cap.capability_id} role="listitem">
               <div className="workforce-card-top">
                 <span className="workforce-id">{cap.capability_id}</span>
-                <span
-                  className={`pill ${label === "Available" ? "pill-teal" : "pill-neutral"}`}
-                >
+                <span className={`pill ${label === "Available" ? "pill-teal" : "pill-neutral"}`}>
                   {label}
                 </span>
               </div>

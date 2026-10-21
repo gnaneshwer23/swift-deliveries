@@ -118,8 +118,7 @@ export const Route = createFileRoute("/")({
             {
               "@type": "HowTo",
               name: "How DeliverX Command Centre runs a supervised mission",
-              description:
-                "Mission intake through plan, approval, execution and delivery report.",
+              description: "Mission intake through plan, approval, execution and delivery report.",
               step: EXECUTION_STEPS.map((s, i) => ({
                 "@type": "HowToStep",
                 position: i + 1,
@@ -360,8 +359,8 @@ function HomePage() {
         </h1>
         <p className="hero-sub">
           State a mission. Approve the plan. Watch Available capabilities execute with budgets,
-          permissions and evidence labels. Wave 1 ships {WAVE1_COUNT} of 150 catalogue roles —
-          the rest remain Planned.
+          permissions and evidence labels. Wave 1 ships {WAVE1_COUNT} of 150 catalogue roles — the
+          rest remain Planned.
         </p>
         <div className="hero-actions">
           <CtaLink

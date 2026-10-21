@@ -9,9 +9,17 @@ export const Route = createFileRoute("/signup")({
   head: () => ({
     meta: [
       { title: "Create your account — DeliverX" },
-      { name: "description", content: "Create your DeliverX account and start building your evidence record." },
+      {
+        name: "description",
+        content:
+          "Create your DeliverX account to open Command Centre (Stage 1 workforce preview). Career Experience and Launchpad remain available from your account.",
+      },
       { property: "og:title", content: "Create your account — DeliverX" },
-      { property: "og:description", content: "Create your DeliverX account and start building your evidence record." },
+      {
+        property: "og:description",
+        content:
+          "Create your DeliverX account to open Command Centre (Stage 1 workforce preview). Career Experience and Launchpad remain available from your account.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex, nofollow" },

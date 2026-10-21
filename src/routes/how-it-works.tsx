@@ -14,7 +14,10 @@ export const Route = createFileRoute("/how-it-works")({
         name: "description",
         content: `DeliverX Command Centre runs supervised missions: intake, plan, approve, execute, deliver. Wave 1 ships ${WAVE1_COUNT} Available capabilities. The career evidence method (Experience → Prove) remains available separately.`,
       },
-      { property: "og:title", content: "How DeliverX works — supervised missions and career evidence" },
+      {
+        property: "og:title",
+        content: "How DeliverX works — supervised missions and career evidence",
+      },
       {
         property: "og:description",
         content:
@@ -208,9 +211,9 @@ function HowItWorksPage() {
             <h2>Package readiness</h2>
             <p>
               Strong evidence becomes an explainable portfolio and a career readiness narrative.
-              Launchpad surfaces which claims are evidence-backed, which are still heuristic
-              (always labelled), and where evidence is thin. Interview Lab connects your STAR
-              stories to real artefacts you can defend.
+              Launchpad surfaces which claims are evidence-backed, which are still heuristic (always
+              labelled), and where evidence is thin. Interview Lab connects your STAR stories to
+              real artefacts you can defend.
             </p>
             <div className="step-trust-note">
               <strong>Trust note:</strong> Readiness uses labelled heuristics where ScoreRun data is
@@ -260,7 +263,8 @@ function HowItWorksPage() {
         <div className="cta-box">
           <h2 className="cta-h">Choose the path that matches the job.</h2>
           <p className="cta-sub">
-            Supervised AI missions in Command Centre, or a career evidence record through Experience.
+            Supervised AI missions in Command Centre, or a career evidence record through
+            Experience.
           </p>
           <div className="cta-btns">
             <CtaLink
