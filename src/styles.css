@@ -1562,3 +1562,268 @@ html:has(.marketing-page) {
     animation: none;
   }
 }
+
+
+/* ============================================================
+   DeliverX UX refresh — editorial marketing + operational console
+   Scoped overrides: preserve existing components and behaviour.
+   ============================================================ */
+:root {
+  --dx-amber: #c58a24;
+  --dx-amber-soft: #fbf4e7;
+  --dx-console-ink: #141914;
+  --dx-console-muted: #68736d;
+  --dx-console-line: #e4e9e4;
+  --dx-console-canvas: #f5f7f4;
+}
+.dxs .nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  min-height: 68px;
+  padding-inline: max(24px, calc((100vw - 1240px) / 2));
+  border-bottom: 1px solid rgba(20,25,20,.08);
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(16px);
+}
+.dxs .nav-links { gap: clamp(14px, 2.1vw, 30px); }
+.dxs .nav-links a {
+  color: #555f59;
+  font-size: 13px;
+  font-weight: 550;
+  text-decoration: none;
+}
+.dxs .nav-links a:hover { color: var(--dx-console-ink); }
+.dxs .btn-nav-primary {
+  background: var(--dx-console-ink);
+  border-color: var(--dx-console-ink);
+  color: #fff;
+  border-radius: 9px;
+  min-height: 42px;
+  padding-inline: 16px;
+}
+.dxs .btn-nav-primary:hover { background: #303a32; }
+.dxs .hero.hero-workforce {
+  padding-top: clamp(52px, 7vw, 94px);
+  padding-bottom: clamp(48px, 6vw, 76px);
+  background:
+    radial-gradient(ellipse 60% 60% at 85% 15%, rgba(197,138,36,.10), transparent 65%),
+    linear-gradient(180deg,#fff 0%,#f8f9f7 100%);
+}
+.dxs .hero-workforce .hero-h1 {
+  max-width: 680px;
+  font-size: clamp(42px, 5.4vw, 72px);
+  line-height: 1.04;
+  letter-spacing: -.055em;
+  text-wrap: balance;
+}
+.dxs .hero-workforce .hero-sub {
+  color: #58635c;
+  font-size: clamp(16px, 1.35vw, 18px);
+  line-height: 1.7;
+}
+.dxs .hero-eyebrow { display: flex; align-items: center; gap: 10px; }
+.dxs .hero-dot { box-shadow: 0 0 0 4px rgba(29,158,117,.12); }
+.dxs .hero-actions .btn { min-height: 48px; border-radius: 10px; padding: 0 18px; }
+.dxs .cc-compose {
+  border-radius: 16px;
+  border-color: #e2e6e1;
+  box-shadow: 0 26px 70px -36px rgba(18,30,20,.32), 0 3px 10px rgba(18,30,20,.04);
+}
+.dxs .cc-compose-chrome { background: #fbfcfa; padding: 13px 16px; }
+.dxs .cc-compose-body { padding: clamp(18px, 2.4vw, 28px); }
+.dxs .cc-compose-panel { border-radius: 12px; }
+.dxs .cc-compose-btn.primary { background: #18231b; border-radius: 8px; }
+.dxs .steps-section, .dxs .products-section, .dxs .workforce-section,
+.dxs .surfaces-section, .dxs .features-section, .dxs .uc-section {
+  scroll-margin-top: 92px;
+}
+.dxs .steps-section, .dxs .products-section { padding-top: clamp(60px, 7vw, 100px); padding-bottom: clamp(60px, 7vw, 100px); }
+.dxs .heading-1 { font-size: clamp(30px, 3.5vw, 46px); line-height: 1.12; letter-spacing: -.045em; text-wrap: balance; }
+.dxs .step-cell, .dxs .bento-tile, .dxs .workforce-card, .dxs .pv, .dxs .product-card {
+  border-radius: 14px;
+}
+.dxs .step-cell { padding: 24px; }
+.dxs .step-cell:hover, .dxs .workforce-card:hover, .dxs .product-card:hover {
+  border-color: #d3d9d1;
+}
+.dxs .trust-section { background: #151b16; }
+.dxs .trust-inner { max-width: 1180px; }
+.dxs .trust-heading { text-wrap: balance; letter-spacing: -.04em; }
+.dxs .trust-pillar { border-color: rgba(255,255,255,.14); }
+.dxs .trust-pillar-n { color: #d7aa59; }
+.dxs .career-secondary { background: #f4f5f2; }
+.dxs .footer {
+  max-width: none;
+  padding-inline: max(24px, calc((100vw - 1180px) / 2));
+}
+.dxs a:focus-visible, .dxs button:focus-visible, .dxa a:focus-visible, .dxa button:focus-visible,
+.dxa input:focus-visible, .dxa textarea:focus-visible, .dxa select:focus-visible {
+  outline: 3px solid rgba(197,138,36,.78);
+  outline-offset: 3px;
+}
+
+/* Operational app: PeopleFlow-inspired information hierarchy */
+.dxa { background: var(--dx-console-canvas); }
+.dxa .app-wrap { min-height: 100vh; }
+.dxa .sidebar {
+  width: 248px;
+  background: #171d18;
+  border-right: 1px solid rgba(255,255,255,.06);
+}
+.dxa .sidebar-logo { padding-top: 4px; padding-bottom: 30px; }
+.dxa .sidebar-label { color: #9ca79e; letter-spacing: .13em; }
+.dxa .sidebar-link {
+  margin: 2px 12px;
+  padding: 11px 12px;
+  border-radius: 9px;
+  color: #b4beb6;
+}
+.dxa .sidebar-link:hover { color: #fff; background: rgba(255,255,255,.07); }
+.dxa .sidebar-link.active {
+  color: #fff;
+  background: rgba(255,255,255,.105);
+  box-shadow: inset 3px 0 #d6a448;
+}
+.dxa .cc-usage-rail {
+  margin: auto 12px 12px;
+  padding: 14px 12px;
+  border: 1px solid rgba(255,255,255,.11);
+  border-radius: 12px;
+  background: rgba(255,255,255,.035);
+}
+.dxa .cc-usage-rail .sidebar-label { padding-inline: 0; }
+.dxa .cc-usage-meter { height: 7px; background: rgba(255,255,255,.14); }
+.dxa .cc-usage-fill { background: #d6a448; border-radius: 999px; }
+.dxa .cc-usage-copy { color: #b5c0b6; }
+.dxa .sidebar-bottom { padding-inline: 16px; }
+.dxa .sidebar-user { padding-top: 14px; border-top: 1px solid rgba(255,255,255,.10); }
+.dxa .sidebar-avatar { background: #344238; color: #f8faf7; border-radius: 10px; }
+.dxa .sidebar-signout { border-radius: 8px; }
+.dxa .main-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  min-height: 78px;
+  padding: 17px clamp(20px, 3vw, 42px);
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(14px);
+  border-bottom-color: #e5e9e4;
+}
+.dxa .main-header-title { font-size: 19px; font-weight: 700; letter-spacing: -.035em; }
+.dxa .main-header .text-xs { font-size: 12px; }
+.dxa .cc-permission-chip {
+  border-color: #e3e8e2;
+  background: #f8faf7;
+  border-radius: 999px;
+  padding: 8px 12px;
+  color: #5c685f;
+}
+.dxa .app-content {
+  max-width: 1500px;
+  margin-inline: auto;
+  padding: clamp(18px, 2.7vw, 36px) clamp(16px, 3vw, 42px) 72px;
+  gap: 18px;
+}
+.dxa .cc-shell { color: var(--dx-console-ink); }
+.dxa .cc-hero-band {
+  padding: clamp(22px, 3vw, 34px);
+  border-color: #e4e9e3;
+  border-radius: 16px;
+  background:
+    radial-gradient(ellipse at 92% 10%, rgba(197,138,36,.10), transparent 48%),
+    linear-gradient(120deg,#fff 0%,#fbfcf9 100%);
+  box-shadow: 0 3px 16px rgba(19,32,21,.025);
+}
+.dxa .cc-kicker { color: #986717; letter-spacing: .09em; }
+.dxa .cc-hero-title {
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(27px, 3vw, 36px);
+  line-height: 1.12;
+  letter-spacing: -.045em;
+  margin-bottom: 10px;
+}
+.dxa .cc-muted { color: #69756c; }
+.dxa .cc-panel {
+  border-color: #e4e9e3;
+  border-radius: 14px;
+  padding: clamp(18px, 2.2vw, 26px);
+  box-shadow: 0 2px 8px rgba(19,32,21,.025);
+}
+.dxa .cc-panel-title { font-size: 16px; letter-spacing: -.02em; margin-bottom: 12px; }
+.dxa .cc-intent-grid { gap: 12px; }
+.dxa .cc-intent {
+  min-height: 142px;
+  padding: 19px;
+  border-color: #e3e8e2;
+  border-radius: 14px;
+  background: #fff;
+}
+.dxa .cc-intent svg { color: #986717; }
+.dxa .cc-intent strong { font-size: 15px; letter-spacing: -.02em; }
+.dxa .cc-intent span { color: #6b766e; line-height: 1.6; }
+.dxa .cc-intent.active {
+  border-color: #d5b16c;
+  background: #fcf8ef;
+  box-shadow: inset 0 0 0 1px rgba(197,138,36,.13);
+  transform: none;
+}
+.dxa .cc-input {
+  min-height: 44px;
+  border-color: #dce3dc;
+  border-radius: 9px;
+  background: #fff;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.dxa .cc-input:focus {
+  border-color: #c58a24;
+  box-shadow: 0 0 0 3px rgba(197,138,36,.12);
+  outline: none;
+}
+.dxa .cc-textarea { min-height: 148px; line-height: 1.65; }
+.dxa .cc-btn { min-height: 42px; border-radius: 9px; padding: 10px 15px; }
+.dxa .cc-btn-primary { background: #18231b; color: #fff; }
+.dxa .cc-btn-primary:hover:not(:disabled) { background: #303d32; filter: none; }
+.dxa .cc-btn-secondary { border-color: #dce3dc; background: #fff; }
+.dxa .cc-btn-secondary:hover:not(:disabled) { border-color: #bfc9bf; background: #f8faf7; }
+.dxa .cc-mission-row { border-color: #e5e9e4; border-radius: 11px; padding: 14px 16px; }
+.dxa .cc-mission-row:not(.static):hover { border-color: #d5b16c; background: #fffdf8; }
+.dxa .cc-status { font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 10px; letter-spacing: .035em; }
+.dxa .cc-status-running, .dxa .cc-status-queued { background: #e4f4ed; color: #176b4a; }
+.dxa .cc-status-awaiting_approval, .dxa .cc-status-needs_clarification { background: #fbf0d9; color: #875b13; }
+.dxa .cc-cap-banner { background: linear-gradient(125deg,#fbf7ee 0%,#fff 58%,#f7faf6 100%); }
+.dxa .cc-task, .dxa .cc-artefact-list button { border-radius: 10px; border-color: #e2e8e1; }
+.dxa .cc-task-running { background: #f5faf6; }
+.dxa .cc-limitation { border-radius: 10px; }
+.dxa .cc-proto-frame { border-radius: 12px; }
+.dxa .cc-artefact-pre { border-radius: 10px; }
+.dxa .cc-shell .cc-panel a { text-underline-offset: 3px; }
+
+@media (max-width: 1100px) {
+  .dxs .hero.hero-workforce { grid-template-columns: minmax(0,1fr); gap: 26px; }
+  .dxs .hero-workforce .hero-copy { max-width: 780px; padding-inline: 24px; }
+  .dxs .hero-workforce .hero-visual { padding-inline: 24px; }
+  .dxa .cc-permission-chip { display: none; }
+}
+@media (max-width: 767px) {
+  .dxs .nav { min-height: 60px; padding-inline: 16px; }
+  .dxs .nav-links { display: none; }
+  .dxs .hero.hero-workforce { padding-top: 42px; padding-bottom: 32px; }
+  .dxs .hero-workforce .hero-copy, .dxs .hero-workforce .hero-visual { padding-inline: 16px; }
+  .dxs .hero-workforce .hero-h1 { font-size: clamp(38px, 10vw, 54px); }
+  .dxs .cc-compose-chrome { flex-wrap: wrap; }
+  .dxs .steps-grid { grid-template-columns: 1fr; }
+  .dxs .trust-pillars { grid-template-columns: 1fr; }
+  .dxs .footer { padding-inline: 16px; }
+  .dxa .sidebar { z-index: 50; }
+  .dxa .main-header { min-height: 70px; padding: 14px 16px; }
+  .dxa .main-header-title { font-size: 17px; }
+  .dxa .app-content { padding: 16px 14px 44px; gap: 14px; }
+  .dxa .cc-intent-grid { grid-template-columns: 1fr; }
+  .dxa .cc-intent { min-height: 0; }
+  .dxa .cc-plan-meta { grid-template-columns: 1fr; }
+  .dxa .cc-cap-filters { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dxs .cc-compose, .dxs .hero-workforce *, .dxa .cc-intent { animation: none !important; transition: none !important; }
+}
