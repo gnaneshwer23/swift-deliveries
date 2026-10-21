@@ -3,6 +3,7 @@ import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { JourneyLadder } from "@/components/marketing/journey-ladder";
 import { FaqSection, JourneyCrossSell } from "@/components/marketing/faq-section";
 import { CtaLink } from "@/components/marketing/cta-link";
+import { PositioningBanner } from "@/components/marketing/positioning-banner";
 
 export const Route = createFileRoute("/experience")({
   head: () => ({
@@ -93,8 +94,9 @@ const LOOP = [
 function ExperiencePage() {
   return (
     <MarketingLayout>
+      <PositioningBanner variant="career" />
       <div className="hero-xp">
-        <div className="hero-xp-tag">01 · Experience · Build the experience</div>
+        <div className="hero-xp-tag">01 · Experience · Career product</div>
         <h1>
           Product management experience in realistic simulated organisations
         </h1>

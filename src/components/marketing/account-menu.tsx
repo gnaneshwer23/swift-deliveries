@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { LayoutDashboard, LogOut, User as UserIcon } from "lucide-react";
+import { LayoutDashboard, LogOut, Radar, User as UserIcon } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import {
   DropdownMenu,
@@ -48,8 +48,13 @@ export function AccountMenu({ user }: { user: User }) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
+          <Link to="/command" className="flex items-center gap-2">
+            <Radar className="size-4" /> Command Centre
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link to="/workspace" className="flex items-center gap-2">
-            <LayoutDashboard className="size-4" /> Workspace
+            <LayoutDashboard className="size-4" /> Career workspace
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>

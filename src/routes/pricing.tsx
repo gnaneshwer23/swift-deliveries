@@ -22,9 +22,17 @@ export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
       { title: "Pricing — DeliverX" },
-      { name: "description", content: "Start free with your first scenario. Experience £19, Launchpad £19 or the Complete Journey £29 per month; Career Sprint £69 one-off; Journey Annual £290 a year. Cancel any time." },
+      {
+        name: "description",
+        content:
+          "Command Centre Stage 1 is early-access preview (local usage ceiling). Career plans: Experience £19, Launchpad £19, Complete Journey £29 per month. Cancel any time.",
+      },
       { property: "og:title", content: "Pricing — DeliverX" },
-      { property: "og:description", content: "Start free with your first scenario. Experience £19, Launchpad £19 or the Complete Journey £29 per month; Career Sprint £69 one-off; Journey Annual £290 a year. Cancel any time." },
+      {
+        property: "og:description",
+        content:
+          "Command Centre Stage 1 is early-access preview. Career Evidence plans: Experience £19, Launchpad £19, Complete Journey £29 per month.",
+      },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://deliverx.dev/pricing" },
       { name: "twitter:card", content: "summary" },
@@ -116,17 +124,32 @@ function PricingPage() {
       <section className="section-sm">
         <div className="container">
           <span className="mono-label">Pricing</span>
-          <h1 className="heading-1" style={{ marginTop: 16, maxWidth: 520 }}>DeliverX plans and pricing</h1>
+          <h1 className="heading-1" style={{ marginTop: 16, maxWidth: 520 }}>
+            Access and career plans
+          </h1>
           <p className="body-large" style={{ marginTop: 16, maxWidth: 560 }}>
-            Build practical experience, turn it into career intelligence, or follow the complete journey.
+            Command Centre Stage 1 is an early-access preview — sign up to open it; Wave 1 Available
+            capabilities run under a local usage ceiling (not metered Stripe billing yet). Paid
+            plans below are the separate career evidence path.
           </p>
 
           <div className="card mt-8 flex items-start gap-3" style={{ padding: "18px 22px" }}>
             <Check className="mt-1 size-4 shrink-0" style={{ color: "var(--x-teal)" }} />
             <p className="text-sm">
-              <strong>Start free.</strong> Create an account and work through the first phase of
-              your first scenario in Experience — no card needed. Assessed feedback, later phases
-              and attestation requests need a paid plan.
+              <strong>Command Centre early access.</strong> Create an account to open the supervised
+              workforce preview. Separate from the paid career plans on this page.{" "}
+              <Link to="/signup" className="font-semibold underline underline-offset-2">
+                Open Command Centre →
+              </Link>
+            </p>
+          </div>
+
+          <div className="card mt-4 flex items-start gap-3" style={{ padding: "18px 22px" }}>
+            <Check className="mt-1 size-4 shrink-0" style={{ color: "var(--x-teal)" }} />
+            <p className="text-sm">
+              <strong>Career path — start free.</strong> Work through the first phase of your first
+              Experience scenario without a card. Assessed feedback, later phases and attestation
+              requests need a paid plan.
             </p>
           </div>
 
@@ -141,13 +164,16 @@ function PricingPage() {
                   {t.description}
                 </p>
                 <div className="mt-6 flex items-baseline gap-2">
-                   <span style={{ fontSize: 32, fontWeight: 800 }}>{t.price}</span>
-                   <span className="caption">per month</span>
+                  <span style={{ fontSize: 32, fontWeight: 800 }}>{t.price}</span>
+                  <span className="caption">per month</span>
                 </div>
                 <ul className="mt-6 flex-1 space-y-2.5">
                   {t.features.map((f) => (
                     <li key={f} className="flex items-start gap-2 text-sm">
-                      <Check className="mt-0.5 size-4 shrink-0" style={{ color: "var(--x-teal)" }} />
+                      <Check
+                        className="mt-0.5 size-4 shrink-0"
+                        style={{ color: "var(--x-teal)" }}
+                      />
                       {f}
                     </li>
                   ))}
@@ -159,14 +185,15 @@ function PricingPage() {
                     </Button>
                   ) : (
                     <Button asChild className="mt-8 w-full">
-                      <Link to="/login" search={{ redirect: "/pricing" }}>Sign in to choose</Link>
+                      <Link to="/login" search={{ redirect: "/pricing" }}>
+                        Sign in to choose
+                      </Link>
                     </Button>
                   )
                 ) : (
                   <Link to="/signup" className="btn btn-primary mt-8 w-full justify-center">
                     Create account
                   </Link>
-
                 )}
               </div>
             ))}
@@ -179,7 +206,9 @@ function PricingPage() {
           <div className="mt-8 grid gap-4 md:grid-cols-2">
             <div className="card flex flex-col" style={{ padding: 28 }}>
               <span className="mono-label">ONE-OFF · NO RENEWAL</span>
-              <h3 className="heading-2" style={{ marginTop: 10 }}>Career Sprint</h3>
+              <h3 className="heading-2" style={{ marginTop: 10 }}>
+                Career Sprint
+              </h3>
               <p className="body" style={{ marginTop: 6 }}>
                 Three months of the Complete Journey, paid once. Built around an active job search.
               </p>
@@ -194,12 +223,17 @@ function PricingPage() {
               </ul>
               {isCheckoutEnabled ? (
                 user ? (
-                  <Button className="mt-8 w-full" onClick={() => setSelectedPrice("career_sprint_pass")}>
+                  <Button
+                    className="mt-8 w-full"
+                    onClick={() => setSelectedPrice("career_sprint_pass")}
+                  >
                     Buy the Career Sprint
                   </Button>
                 ) : (
                   <Button asChild className="mt-8 w-full">
-                    <Link to="/login" search={{ redirect: "/pricing" }}>Sign in to buy</Link>
+                    <Link to="/login" search={{ redirect: "/pricing" }}>
+                      Sign in to buy
+                    </Link>
                   </Button>
                 )
               ) : (
@@ -210,7 +244,9 @@ function PricingPage() {
             </div>
             <div className="card flex flex-col" style={{ padding: 28 }}>
               <span className="mono-label">ANNUAL · COMPLETE JOURNEY</span>
-              <h3 className="heading-2" style={{ marginTop: 10 }}>Journey Annual</h3>
+              <h3 className="heading-2" style={{ marginTop: 10 }}>
+                Journey Annual
+              </h3>
               <p className="body" style={{ marginTop: 6 }}>
                 Twelve months of the Complete Journey for the price of ten.
               </p>
@@ -225,12 +261,17 @@ function PricingPage() {
               </ul>
               {isCheckoutEnabled ? (
                 user ? (
-                  <Button className="mt-8 w-full" onClick={() => setSelectedPrice("complete_journey_yearly")}>
+                  <Button
+                    className="mt-8 w-full"
+                    onClick={() => setSelectedPrice("complete_journey_yearly")}
+                  >
                     Choose the annual plan
                   </Button>
                 ) : (
                   <Button asChild className="mt-8 w-full">
-                    <Link to="/login" search={{ redirect: "/pricing" }}>Sign in to choose</Link>
+                    <Link to="/login" search={{ redirect: "/pricing" }}>
+                      Sign in to choose
+                    </Link>
                   </Button>
                 )
               ) : (
@@ -245,11 +286,13 @@ function PricingPage() {
             <p className="caption mt-10 text-center">
               Checkout is temporarily unavailable. Create an account and you can subscribe from your
               workspace.
-
             </p>
           )}
 
-          <p className="caption mt-10 text-center" style={{ maxWidth: 560, marginLeft: "auto", marginRight: "auto" }}>
+          <p
+            className="caption mt-10 text-center"
+            style={{ maxWidth: 560, marginLeft: "auto", marginRight: "auto" }}
+          >
             Running a team or sponsoring delivery? The Professional Workspace for organisations is
             separate — from £750 per active project per month.{" "}
             <Link to="/professional-workspace" className="underline">
@@ -283,8 +326,10 @@ function PricingPage() {
         </div>
       </section>
 
-
-      <Dialog open={selectedPrice !== null} onOpenChange={(open) => !open && setSelectedPrice(null)}>
+      <Dialog
+        open={selectedPrice !== null}
+        onOpenChange={(open) => !open && setSelectedPrice(null)}
+      >
         <DialogContent className="max-h-[92vh] max-w-3xl overflow-y-auto p-0">
           <PaymentTestModeBanner />
           <DialogHeader className="px-6 pt-2">

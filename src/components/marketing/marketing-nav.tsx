@@ -7,10 +7,10 @@ import { BrandLogo } from "@/components/brand-logo";
 
 const NAV_LINKS = [
   { to: "/how-it-works", label: "How it works" },
+  { to: "/pricing", label: "Pricing" },
   { to: "/experience", label: "Experience" },
   { to: "/launchpad", label: "Launchpad" },
   { to: "/prove", label: "Prove" },
-  { to: "/professional-workspace", label: "Workspace" },
 ] as const;
 
 export function MarketingNav() {
@@ -43,9 +43,8 @@ export function MarketingNav() {
               Sign in
             </Link>
             <Link to="/signup" className="btn-nav btn-nav-primary">
-              Get started
+              Open Command Centre
             </Link>
-
           </>
         )}
         <button
@@ -64,7 +63,7 @@ export function MarketingNav() {
           className="absolute inset-x-0 top-14 border-b bg-[var(--x-paper)] px-4 pb-4 pt-2 md:hidden"
           style={{ borderColor: "var(--x-border)" }}
         >
-          <nav className="flex flex-col">
+          <nav className="flex flex-col" aria-label="Mobile navigation">
             {NAV_LINKS.map((item) => (
               <Link
                 key={item.to}
@@ -77,14 +76,33 @@ export function MarketingNav() {
               </Link>
             ))}
             {!user && (
-              <Link
-                to="/login"
-                onClick={() => setOpen(false)}
-                className="py-3 text-sm font-medium text-[var(--x-slate)]"
-              >
-                Sign in
-              </Link>
+              <>
+                <Link
+                  to="/login"
+                  onClick={() => setOpen(false)}
+                  className="border-b py-3 text-sm font-medium text-[var(--x-slate)]"
+                  style={{ borderColor: "var(--x-border)" }}
+                >
+                  Sign in
+                </Link>
+                <Link
+                  to="/signup"
+                  onClick={() => setOpen(false)}
+                  className="py-3 text-sm font-medium text-[var(--x-ink)]"
+                >
+                  Open Command Centre
+                </Link>
+              </>
             )}
+            {user ? (
+              <Link
+                to="/command"
+                onClick={() => setOpen(false)}
+                className="py-3 text-sm font-medium text-[var(--x-ink)]"
+              >
+                Command Centre
+              </Link>
+            ) : null}
           </nav>
         </div>
       )}

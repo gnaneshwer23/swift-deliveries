@@ -3,6 +3,7 @@ import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { JourneyLadder } from "@/components/marketing/journey-ladder";
 import { FaqSection, JourneyCrossSell } from "@/components/marketing/faq-section";
 import { CtaLink } from "@/components/marketing/cta-link";
+import { PositioningBanner } from "@/components/marketing/positioning-banner";
 
 export const Route = createFileRoute("/professional-workspace")({
   head: () => ({
@@ -82,8 +83,9 @@ const CONTROL = ["Draft prepared", "Human reviewed", "Approved or returned", "Co
 function ProfessionalWorkspacePage() {
   return (
     <MarketingLayout>
+      <PositioningBanner variant="workspace" />
       <div className="hero-ws">
-        <div className="hero-ws-tag">03 · Professional Workspace · For sponsors and delivery leads</div>
+        <div className="hero-ws-tag">03 · Professional Workspace · Live delivery</div>
         <h1>
           The layer between the business case
           <br />

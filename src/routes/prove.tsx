@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { FaqSection, JourneyCrossSell } from "@/components/marketing/faq-section";
 import { CtaLink } from "@/components/marketing/cta-link";
+import { PositioningBanner } from "@/components/marketing/positioning-banner";
 
 export const Route = createFileRoute("/prove")({
   head: () => ({
@@ -85,8 +86,9 @@ const REFERENCES = [
 function ProvePage() {
   return (
     <MarketingLayout>
+      <PositioningBanner variant="career" />
       <div className="hero-lp">
-        <div className="hero-lp-tag">Prove · Proof of skill, verified from outside</div>
+        <div className="hero-lp-tag">Prove · Career attestation</div>
         <h1>Proof that cites more than itself.</h1>
         <p className="hero-sub" style={{ marginBottom: 32 }}>
           Every claim on your record climbs a visible four-step ladder, and the top step is lit by

@@ -27,20 +27,26 @@ export const Route = createFileRoute("/resources/")({
 
 const productPaths = [
   {
+    title: "Open Command Centre",
+    body: "Stage 1 supervised AI workforce preview: Investigate, Prototype and Improve missions with Wave 1 Available capabilities under plan approval and a usage ceiling.",
+    to: "/signup",
+    cta: "Open Command Centre",
+  },
+  {
     title: "Start with Experience",
-    body: "Build practical Product Management experience inside seeded AI companies before you apply. Work produces artefacts; you decide what becomes evidence.",
+    body: "Career product: build practical Product Management experience inside simulated organisations. Work produces artefacts; you decide what becomes evidence.",
     to: "/experience",
     cta: "Explore Experience",
   },
   {
     title: "Prepare with Launchpad",
-    body: "Turn experience into interviews with readiness that cites its source, evidence-backed CV and portfolio packaging, and interview stories tied to real artefacts.",
+    body: "Career product: turn experience into interviews with readiness that cites its source, portfolio packaging, and interview stories tied to real artefacts.",
     to: "/launchpad",
     cta: "Explore Launchpad",
   },
   {
     title: "Deliver with Professional Workspace",
-    body: "Work with role-based AI teammates on tasks, meetings, decisions, risks and artefacts. AI drafts; you edit, approve and submit.",
+    body: "Live delivery for sponsors and teams — distinct from Command Centre missions and from Experience simulation.",
     to: "/professional-workspace",
     cta: "Explore Professional Workspace",
   },
@@ -94,9 +100,10 @@ function ResourcesPage() {
             <span className="mkt-label">Resources</span>
             <h1 className="mkt-section-title mt-3">Evidence-backed starting points</h1>
             <p className="mkt-section-sub mx-auto">
-              Short paths into the DeliverX products, plus full guides on PM portfolios and STAR
-              stories grounded in evidence. No job-board listings, no unexplained readiness
-              percentages, and no claim that finishing a course equals capability.
+              Paths into Command Centre (supervised AI workforce preview) and the career evidence
+              products, plus guides on PM portfolios and STAR stories. No job-board listings, no
+              unexplained readiness percentages, and no claim that finishing a course equals
+              capability.
             </p>
           </div>
 
@@ -105,10 +112,10 @@ function ResourcesPage() {
               Product paths
             </h2>
             <p className="mt-2 max-w-2xl text-sm text-[var(--mkt-text3)]">
-              Build the experience, land the opportunity, succeed in the role. Pick the stage that
-              matches where you are.
+              Supervised missions in Command Centre, or the career ladder through Experience and
+              Launchpad. Pick the path that matches the job you need done.
             </p>
-            <div className="mt-8 grid gap-6 md:grid-cols-3">
+            <div className="mt-8 grid gap-6 md:grid-cols-2">
               {productPaths.map((item) => (
                 <div key={item.title} className="mkt-card flex flex-col p-6">
                   <h3 className="font-serif text-lg tracking-[-0.01em] text-[var(--mkt-text1)]">
