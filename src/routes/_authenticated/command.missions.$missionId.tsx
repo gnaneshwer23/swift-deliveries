@@ -8,6 +8,9 @@ import {
   approveExternalActions,
   approveMissionPlan,
   cancelMission,
+  markArtefactHumanReviewed,
+  rejectMissionPlan,
+  reviseMissionScope,
   runMissionStep,
 } from "@/lib/workforce.functions";
 import {
@@ -19,6 +22,7 @@ import {
   type PermissionLevel,
   type QualityLabel,
 } from "@/lib/workforce/types";
+import { CheckCircle2, Edit3, History, ShieldCheck, XCircle } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/command/missions/$missionId")({
   head: () => ({
@@ -26,7 +30,7 @@ export const Route = createFileRoute("/_authenticated/command/missions/$missionI
       { title: "Mission — Command Centre — DeliverX" },
       {
         name: "description",
-        content: "Clarify, approve, run, and review a supervised AI mission.",
+        content: "Clarify, approve, revise, run, and review a supervised AI mission.",
       },
     ],
   }),
@@ -45,6 +49,10 @@ function MissionDetail() {
   const [selectedArtefactId, setSelectedArtefactId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [autoRunning, setAutoRunning] = useState(false);
+  const [isEditingScope, setIsEditingScope] = useState(false);
+  const [revisedText, setRevisedText] = useState("");
+  const [rejectReason, setRejectReason] = useState("");
+  const [showRejectBox, setShowRejectBox] = useState(false);
 
   const invalidate = async () => {
     await queryClient.invalidateQueries({ queryKey: ["command", "mission", missionId] });
@@ -60,6 +68,19 @@ function MissionDetail() {
     onError: (e) => setActionError(e instanceof Error ? e.message : "Clarification failed"),
   });
 
+  const revise = useMutation({
+    mutationFn: () =>
+      reviseMissionScope({
+        data: { missionId, requestText: revisedText.trim() },
+      }),
+    onSuccess: async () => {
+      setActionError(null);
+      setIsEditingScope(false);
+      await invalidate();
+    },
+    onError: (e) => setActionError(e instanceof Error ? e.message : "Scope revision failed"),
+  });
+
   const approve = useMutation({
     mutationFn: () =>
       approveMissionPlan({
@@ -71,6 +92,23 @@ function MissionDetail() {
       setAutoRunning(true);
     },
     onError: (e) => setActionError(e instanceof Error ? e.message : "Approval failed"),
+  });
+
+  const rejectPlan = useMutation({
+    mutationFn: () =>
+      rejectMissionPlan({
+        data: {
+          missionId,
+          reason: rejectReason.trim() || "Plan rejected by operator for scope revision",
+        },
+      }),
+    onSuccess: async () => {
+      setActionError(null);
+      setShowRejectBox(false);
+      setRejectReason("");
+      await invalidate();
+    },
+    onError: (e) => setActionError(e instanceof Error ? e.message : "Plan rejection failed"),
   });
 
   const approveExt = useMutation({
@@ -94,6 +132,18 @@ function MissionDetail() {
       setAutoRunning(false);
       setActionError(e instanceof Error ? e.message : "Execution failed");
     },
+  });
+
+  const markReviewed = useMutation({
+    mutationFn: (artefactId: string) =>
+      markArtefactHumanReviewed({
+        data: { missionId, artefactId },
+      }),
+    onSuccess: async () => {
+      setActionError(null);
+      await invalidate();
+    },
+    onError: (e) => setActionError(e instanceof Error ? e.message : "Human review sign-off failed"),
   });
 
   const cancel = useMutation({
@@ -146,9 +196,16 @@ function MissionDetail() {
     );
   }
 
-  const { mission, plan, tasks, artefacts, approvals, workspace } = data;
+  const { mission, plan, tasks, artefacts, approvals, workspace, auditEvents = [] } = data;
   const pendingQuestions = plan?.clarificationQuestions ?? [];
   const ladder: PermissionLevel[] = ["plan", "create", "execute_internally", "act_externally"];
+  const canEditScope = [
+    "draft",
+    "needs_clarification",
+    "planned",
+    "awaiting_approval",
+    "blocked",
+  ].includes(mission.status);
 
   const lifecycleStages = [
     { id: "intake", label: "Mission", desc: INTENT_LABELS[mission.intent] },
@@ -166,7 +223,9 @@ function MissionDetail() {
           ? "Human gate"
           : approvals.some((a) => a.kind === "plan" && a.status === "approved")
             ? "Approved"
-            : "Pending",
+            : approvals.some((a) => a.kind === "plan" && a.status === "rejected")
+              ? "Rejected"
+              : "Pending",
     },
     {
       id: "execute",
@@ -221,23 +280,71 @@ function MissionDetail() {
 
       <div className="cc-mission-layout">
         <div className="cc-mission-main">
+          {/* Request + Scope Revision Panel */}
           <section className="cc-panel">
             <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <p className="cc-kicker">Request</p>
-                <p className="whitespace-pre-wrap text-sm leading-relaxed">{mission.requestText}</p>
+              <div className="flex-1">
+                <p className="cc-kicker">Mission Brief · {INTENT_LABELS[mission.intent]}</p>
+                {!isEditingScope ? (
+                  <p className="whitespace-pre-wrap text-sm leading-relaxed">
+                    {mission.requestText}
+                  </p>
+                ) : (
+                  <div className="mt-2">
+                    <textarea
+                      className="cc-input cc-textarea"
+                      rows={3}
+                      value={revisedText}
+                      onChange={(e) => setRevisedText(e.target.value)}
+                    />
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        className="cc-btn cc-btn-primary"
+                        disabled={revise.isPending || revisedText.trim().length < 3}
+                        onClick={() => revise.mutate()}
+                      >
+                        {revise.isPending ? "Re-planning…" : "Save scope & regenerate plan"}
+                      </button>
+                      <button
+                        type="button"
+                        className="cc-btn cc-btn-ghost"
+                        onClick={() => setIsEditingScope(false)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
-              <span className={`cc-status cc-status-${mission.status}`}>
-                {STATUS_LABELS[mission.status]}
-              </span>
+              <div className="flex items-center gap-2">
+                {canEditScope && !isEditingScope ? (
+                  <button
+                    type="button"
+                    className="cc-btn cc-btn-secondary text-xs"
+                    onClick={() => {
+                      setRevisedText(mission.requestText);
+                      setIsEditingScope(true);
+                    }}
+                  >
+                    <Edit3 className="size-3.5" />
+                    Revise scope
+                  </button>
+                ) : null}
+                <span className={`cc-status cc-status-${mission.status}`}>
+                  {STATUS_LABELS[mission.status]}
+                </span>
+              </div>
             </div>
           </section>
 
+          {/* 1. Clarification Stage */}
           {mission.status === "needs_clarification" ? (
-            <section className="cc-panel">
-              <h2 className="cc-panel-title">Clarification needed</h2>
+            <section className="cc-panel cc-panel-active-gate">
+              <h2 className="cc-panel-title">Clarification needed before planning</h2>
               <p className="cc-muted mb-4">
-                Answer the required questions so we can produce a plan worth approving.
+                Answer the required questions (or click <strong>Revise scope</strong> above) so the
+                planner can draft a concrete task graph.
               </p>
               {pendingQuestions.map((q) => (
                 <div key={q.id} className="mb-3">
@@ -259,14 +366,26 @@ function MissionDetail() {
                 disabled={clarify.isPending}
                 onClick={() => clarify.mutate()}
               >
-                {clarify.isPending ? "Updating plan…" : "Submit answers & generate plan"}
+                {clarify.isPending ? "Updating plan…" : "Submit answers & generate plan →"}
               </button>
             </section>
           ) : null}
 
+          {/* 2. Plan & Mandatory Human Approval Gate */}
           {plan && mission.status !== "needs_clarification" ? (
-            <section className="cc-panel">
-              <h2 className="cc-panel-title">Plan</h2>
+            <section
+              className={`cc-panel${
+                mission.status === "awaiting_approval" || mission.status === "planned"
+                  ? " cc-panel-active-gate"
+                  : ""
+              }`}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <h2 className="cc-panel-title mb-0">Proposed Plan &amp; Capability Assignment</h2>
+                <span className="cc-chip">
+                  Est. {plan.estimatedUsage} credits · {PERMISSION_LABELS[plan.requiredPermission]}
+                </span>
+              </div>
               <p className="text-sm leading-relaxed">{plan.summary}</p>
               <div className="cc-plan-meta mt-4">
                 <div>
@@ -285,7 +404,7 @@ function MissionDetail() {
 
               {plan.assignedCapabilities.length > 0 ? (
                 <>
-                  <h3 className="cc-subhead">Assigned Available capabilities</h3>
+                  <h3 className="cc-subhead">Assigned Wave 1 Available capabilities</h3>
                   <ul className="cc-cap-assign-list">
                     {plan.assignedCapabilities.map((c) => (
                       <li key={c.capability_id}>
@@ -298,12 +417,6 @@ function MissionDetail() {
                       </li>
                     ))}
                   </ul>
-                  <p className="cc-muted text-xs mt-2">
-                    Only Wave 1 Available roles are assigned.{" "}
-                    <Link to="/command/capabilities" className="underline">
-                      Browse registry
-                    </Link>
-                  </p>
                 </>
               ) : null}
 
@@ -329,10 +442,11 @@ function MissionDetail() {
               </ul>
 
               {mission.status === "awaiting_approval" || mission.status === "planned" ? (
-                <div
-                  className="mt-4 rounded-md border p-4"
-                  style={{ borderColor: "var(--x-border)" }}
-                >
+                <div className="cc-approval-gate-box mt-4">
+                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-amber-800 mb-2">
+                    <ShieldCheck className="size-4" />
+                    Stage 03 · Mandatory Human Approval Gate (`svc-permissions`)
+                  </div>
                   <label className="flex items-start gap-2 text-sm">
                     <input
                       type="checkbox"
@@ -348,22 +462,69 @@ function MissionDetail() {
                       .
                     </span>
                   </label>
-                  <button
-                    type="button"
-                    className="cc-btn cc-btn-primary mt-3"
-                    disabled={approve.isPending}
-                    onClick={() => approve.mutate()}
-                  >
-                    {approve.isPending ? "Approving…" : "Approve plan & queue"}
-                  </button>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      className="cc-btn cc-btn-primary"
+                      disabled={approve.isPending}
+                      onClick={() => approve.mutate()}
+                    >
+                      {approve.isPending ? "Approving…" : "Approve plan & queue execution →"}
+                    </button>
+                    <button
+                      type="button"
+                      className="cc-btn cc-btn-secondary"
+                      onClick={() => {
+                        setRevisedText(mission.requestText);
+                        setIsEditingScope(true);
+                      }}
+                    >
+                      <Edit3 className="size-3.5" />
+                      Revise scope
+                    </button>
+                    <button
+                      type="button"
+                      className="cc-btn cc-btn-ghost text-red-700"
+                      onClick={() => setShowRejectBox((prev) => !prev)}
+                    >
+                      <XCircle className="size-3.5" />
+                      Reject plan
+                    </button>
+                  </div>
+
+                  {showRejectBox ? (
+                    <div className="mt-3 border-t pt-3" style={{ borderColor: "var(--x-border)" }}>
+                      <label className="cc-label" htmlFor="reject-reason">
+                        Rejection reason (recorded in `wf_approvals` &amp; `wf_audit_events`)
+                      </label>
+                      <div className="flex flex-col gap-2 sm:flex-row">
+                        <input
+                          id="reject-reason"
+                          className="cc-input"
+                          placeholder="e.g. Scope too broad — restrict to internal prototype only"
+                          value={rejectReason}
+                          onChange={(e) => setRejectReason(e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          className="cc-btn cc-btn-secondary text-red-700"
+                          disabled={rejectPlan.isPending}
+                          onClick={() => rejectPlan.mutate()}
+                        >
+                          {rejectPlan.isPending ? "Rejecting…" : "Confirm rejection"}
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               ) : null}
             </section>
           ) : null}
 
+          {/* 3. Task Graph & Step Execution */}
           <section className="cc-panel">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2 className="cc-panel-title mb-0">Task graph</h2>
+              <h2 className="cc-panel-title mb-0">Task graph ({tasks.length})</h2>
               <div className="flex flex-wrap gap-2">
                 {(mission.status === "queued" ||
                   mission.status === "running" ||
@@ -377,7 +538,7 @@ function MissionDetail() {
                       step.mutate();
                     }}
                   >
-                    {autoRunning || step.isPending ? "Running…" : "Run next step"}
+                    {autoRunning || step.isPending ? "Running…" : "Run next step →"}
                   </button>
                 )}
                 {mission.status === "blocked" && !mission.externalActionsApproved ? (
@@ -397,7 +558,7 @@ function MissionDetail() {
                     disabled={cancel.isPending}
                     onClick={() => cancel.mutate()}
                   >
-                    Cancel
+                    Cancel mission
                   </button>
                 ) : null}
               </div>
@@ -430,9 +591,13 @@ function MissionDetail() {
             )}
           </section>
 
+          {/* 4. Delivery Report */}
           {mission.deliveryReport ? (
-            <section className="cc-panel">
-              <h2 className="cc-panel-title">Delivery report</h2>
+            <section className="cc-panel cc-panel-active-gate">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <h2 className="cc-panel-title mb-0">Delivery Report</h2>
+                <span className="cc-chip">Spent: {mission.deliveryReport.usageSpent} credits</span>
+              </div>
               <h3 className="text-base font-semibold">{mission.deliveryReport.headline}</h3>
               <p className="mt-2 text-sm leading-relaxed">{mission.deliveryReport.summary}</p>
               <h3 className="cc-subhead">Outcomes</h3>
@@ -451,7 +616,7 @@ function MissionDetail() {
                   </ul>
                 </>
               ) : null}
-              <h3 className="cc-subhead">Quality labels</h3>
+              <h3 className="cc-subhead">Discrete quality labels</h3>
               <div className="flex flex-wrap gap-2">
                 {mission.deliveryReport.qualitySummary.map((q) => (
                   <span key={q} className="cc-chip">
@@ -459,9 +624,6 @@ function MissionDetail() {
                   </span>
                 ))}
               </div>
-              <p className="cc-muted mt-3">
-                Usage spent on this delivery: {mission.deliveryReport.usageSpent} credits
-              </p>
             </section>
           ) : null}
 
@@ -469,8 +631,77 @@ function MissionDetail() {
         </div>
 
         <aside className="cc-mission-side">
+          {/* Artefacts & Operator Sign-off */}
           <section className="cc-panel">
-            <h2 className="cc-panel-title">Permission ladder</h2>
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="cc-panel-title mb-0">Artefacts ({artefacts.length})</h2>
+            </div>
+            {!artefacts.length ? (
+              <p className="cc-muted mt-2">Artefacts appear as tasks complete.</p>
+            ) : (
+              <ul className="cc-artefact-list mt-3">
+                {artefacts.map((a) => (
+                  <li key={a.id}>
+                    <button
+                      type="button"
+                      className={selectedArtefact?.id === a.id ? "active" : ""}
+                      onClick={() => setSelectedArtefactId(a.id)}
+                    >
+                      {a.title}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {selectedArtefact ? (
+              <div className="cc-artefact-view mt-3">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                  <div className="flex flex-wrap gap-1.5">
+                    {selectedArtefact.qualityLabels.map((q) => (
+                      <span key={q} className="cc-chip">
+                        {QUALITY_LABEL_DISPLAY[q]}
+                      </span>
+                    ))}
+                  </div>
+                  {!selectedArtefact.qualityLabels.includes("human_reviewed") ? (
+                    <button
+                      type="button"
+                      className="cc-btn cc-btn-secondary text-xs py-1 px-2.5"
+                      disabled={markReviewed.isPending}
+                      onClick={() => markReviewed.mutate(selectedArtefact.id)}
+                    >
+                      <CheckCircle2 className="size-3.5 text-emerald-700" />
+                      {markReviewed.isPending ? "Recording…" : "Mark Human-reviewed"}
+                    </button>
+                  ) : null}
+                </div>
+                {selectedArtefact.evidenceItems.length ? (
+                  <ul className="cc-evidence mb-3">
+                    {selectedArtefact.evidenceItems.map((e, i) => (
+                      <li key={`${e.classification}-${i}`}>
+                        <strong>{EVIDENCE_LABEL_DISPLAY[e.classification]}</strong>
+                        <span>{e.statement}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+                {selectedArtefact.contentFormat === "html" ? (
+                  <iframe
+                    title={selectedArtefact.title}
+                    className="cc-proto-frame"
+                    srcDoc={selectedArtefact.content}
+                    sandbox="allow-scripts"
+                  />
+                ) : (
+                  <pre className="cc-artefact-pre">{selectedArtefact.content}</pre>
+                )}
+              </div>
+            ) : null}
+          </section>
+
+          {/* Permission Ladder */}
+          <section className="cc-panel">
+            <h2 className="cc-panel-title">Permission ladder (`svc-permissions`)</h2>
             <ul className="cc-ladder">
               {ladder.map((level, idx) => {
                 const active =
@@ -497,76 +728,48 @@ function MissionDetail() {
             </ul>
           </section>
 
+          {/* Approvals & Immutable Audit Trail */}
           <section className="cc-panel">
-            <h2 className="cc-panel-title">Approvals</h2>
-            {!approvals.length ? (
-              <p className="cc-muted">No approval records yet.</p>
-            ) : (
-              <ul className="cc-bullets">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <h2 className="cc-panel-title mb-0">Approvals &amp; Audit (`svc-audit`)</h2>
+              <History className="size-4 text-slate-500" />
+            </div>
+            {approvals.length > 0 ? (
+              <ul className="cc-bullets mb-3">
                 {approvals.map((a) => (
                   <li key={a.id}>
-                    {a.kind === "plan" ? "Plan" : "Act externally"} — {a.status}
-                    {a.decidedAt ? ` · ${new Date(a.decidedAt).toLocaleString()}` : ""}
+                    <strong>{a.kind === "plan" ? "Plan gate" : "Act externally"}</strong> —{" "}
+                    <span className=" uppercase text-xs font-semibold">{a.status}</span>
+                    {a.note ? ` (${a.note})` : ""}
                   </li>
                 ))}
               </ul>
-            )}
-          </section>
-
-          <section className="cc-panel">
-            <h2 className="cc-panel-title">Artefacts</h2>
-            {!artefacts.length ? (
-              <p className="cc-muted">Artefacts appear as tasks complete.</p>
-            ) : (
-              <ul className="cc-artefact-list">
-                {artefacts.map((a) => (
-                  <li key={a.id}>
-                    <button
-                      type="button"
-                      className={selectedArtefact?.id === a.id ? "active" : ""}
-                      onClick={() => setSelectedArtefactId(a.id)}
-                    >
-                      {a.title}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-            {selectedArtefact ? (
-              <div className="cc-artefact-view mt-3">
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {selectedArtefact.qualityLabels.map((q) => (
-                    <span key={q} className="cc-chip">
-                      {QUALITY_LABEL_DISPLAY[q]}
-                    </span>
-                  ))}
-                </div>
-                {selectedArtefact.evidenceItems.length ? (
-                  <ul className="cc-evidence mb-3">
-                    {selectedArtefact.evidenceItems.map((e, i) => (
-                      <li key={`${e.classification}-${i}`}>
-                        <strong>{EVIDENCE_LABEL_DISPLAY[e.classification]}</strong>
-                        <span>{e.statement}</span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
-                {selectedArtefact.contentFormat === "html" ? (
-                  <iframe
-                    title={selectedArtefact.title}
-                    className="cc-proto-frame"
-                    srcDoc={selectedArtefact.content}
-                    sandbox="allow-scripts"
-                  />
-                ) : (
-                  <pre className="cc-artefact-pre">{selectedArtefact.content}</pre>
-                )}
-              </div>
             ) : null}
+
+            {auditEvents.length === 0 ? (
+              <p className="cc-muted text-xs">No audit events recorded yet.</p>
+            ) : (
+              <ul className="cc-audit-list" aria-label="Mission audit log">
+                {auditEvents.map((ev) => (
+                  <li key={ev.id} className="cc-audit-item">
+                    <div className="flex items-center justify-between gap-2">
+                      <code>{ev.eventType}</code>
+                      <small>
+                        {new Date(ev.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </small>
+                    </div>
+                    <span className="cc-muted text-xs">Entity: {ev.entityType}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
 
           <Link to="/command" className="cc-btn cc-btn-secondary w-full justify-center">
-            Back to Command Centre
+            ← Back to Command Centre
           </Link>
         </aside>
       </div>

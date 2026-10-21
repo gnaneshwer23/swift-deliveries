@@ -8,7 +8,18 @@ import { Loader2 } from "lucide-react";
 import { BrandLogo } from "@/components/brand-logo";
 import { GoogleButton } from "@/components/auth/google-button";
 
+function sanitizeRedirect(raw: unknown): string {
+  if (typeof raw === "string" && raw.startsWith("/") && !raw.startsWith("//")) {
+    return raw;
+  }
+  return "/command";
+}
+
 export const Route = createFileRoute("/login")({
+  validateSearch: (search: Record<string, unknown>): { redirect?: string | undefined } => ({
+    redirect:
+      typeof search["redirect"] === "string" ? sanitizeRedirect(search["redirect"]) : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Sign in — DeliverX" },
@@ -25,16 +36,18 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const search = Route.useSearch();
+  const targetPath = sanitizeRedirect(search.redirect);
   // Someone who already has a session should be routed forward, not asked again.
   useEffect(() => {
     let active = true;
     void waitForSession().then((session) => {
-      if (active && session) navigate({ to: "/command", replace: true });
+      if (active && session) navigate({ to: targetPath, replace: true });
     });
     return () => {
       active = false;
     };
-  }, [navigate]);
+  }, [navigate, targetPath]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -71,7 +84,7 @@ function LoginPage() {
       );
       return;
     }
-    navigate({ to: "/command" });
+    navigate({ to: targetPath });
   };
 
   const handleGoogle = async () => {

@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { Bento, BentoTile } from "@/components/marketing/bento";
-import { ProductView } from "@/components/marketing/product-view";
 import { FaqSection } from "@/components/marketing/faq-section";
 import { OnboardingGate } from "@/components/onboarding-gate";
 import { CtaLink } from "@/components/marketing/cta-link";
@@ -95,6 +94,8 @@ const MISSION_TYPES = [
     n: "01",
     tag: "Decision Research",
     title: "Investigate",
+    image: "/assets/3d/intent-investigate.jpg",
+    imageAlt: "3D frosted-glass optical prism separating evidence layers",
     body: "Research a strategic or product decision and return a structured brief with sourced facts explicitly separated from assumptions and inferences.",
     capabilities: ["DX-001", "DX-011", "DX-012", "DX-020"],
     permission: "Plan → Create",
@@ -104,6 +105,8 @@ const MISSION_TYPES = [
     n: "02",
     tag: "Product & UI Specification",
     title: "Prototype",
+    image: "/assets/3d/intent-prototype.jpg",
+    imageAlt: "3D translucent glass UI planes and brushed-gold wireframe cube in a sandbox tray",
     body: "Produce a reviewable PRD and a lightweight, sandboxed interactive HTML or structured UI pack — never an unapproved production deploy.",
     capabilities: ["DX-021", "DX-023", "DX-035", "DX-049"],
     permission: "Create (Sandboxed)",
@@ -113,6 +116,8 @@ const MISSION_TYPES = [
     n: "03",
     tag: "Flow & Funnel Diagnostics",
     title: "Improve",
+    image: "/assets/3d/intent-improve.jpg",
+    imageAlt: "3D ascending emerald stepped pathway and precision gold tuning dial",
     body: "Diagnose friction in an existing workflow, isolate root causes, and propose bounded remediation steps that hard-stop at your budget ceiling.",
     capabilities: ["DX-018", "DX-041", "DX-049", "DX-071"],
     permission: "Execute internally",
@@ -175,62 +180,8 @@ const GOVERNANCE = [
   {
     n: "04 · PROVENANCE",
     title: "Immutable audit & quality trail",
-    body: "Every state transition, approval decision, and credit charge is logged. Workforce outputs carry specific quality labels — never a bare 'Verified' claim.",
+    body: "Every state transition, approval decision, and credit charge is logged. Workforce outputs carry discrete quality labels — never a bare 'Verified' claim.",
     service: "svc-audit · Deterministic service",
-  },
-];
-
-const DELIVERABLES = [
-  {
-    n: "01",
-    badge: "pill-teal",
-    title: "Sourced facts",
-    body: "Directly traceable to your mission brief, workspace context, or a cited reference.",
-  },
-  {
-    n: "02",
-    badge: "pill-neutral",
-    title: "Assumptions",
-    body: "Working premises stated openly so stakeholders can challenge or validate them before acting.",
-  },
-  {
-    n: "03",
-    badge: "pill-purple",
-    title: "Inferences",
-    body: "Conclusions reasoned from sourced facts and stated assumptions — labelled clearly as analytical synthesis.",
-  },
-  {
-    n: "04",
-    badge: "pill-amber",
-    title: "Speculative",
-    body: "Directional hypotheses or low-confidence options surfaced for exploration, never smuggled into certainty.",
-  },
-];
-
-const ROADMAP = [
-  {
-    n: "Now · Stage 1",
-    status: "Live in preview",
-    title: "Supervised Command Centre",
-    body: `${WAVE1_COUNT} Wave 1 Available capabilities, deterministic planner/executor, mandatory plan approval, hard-stop usage ceiling, artefacts and delivery reports.`,
-  },
-  {
-    n: "Next · Stage 2",
-    status: "In development",
-    title: "Deeper review & diff loops",
-    body: "Task-level revision comments, side-by-side artefact diffing, and multi-reviewer sign-off — still under human authority.",
-  },
-  {
-    n: "Later · Stage 3",
-    status: "Planned",
-    title: "Live model routing & connectors",
-    body: "Multi-model execution, gated external connectors (GitHub PRs, Slack, email, deploy) and commercial credit metering. Not claimed as live today.",
-  },
-  {
-    n: "Never promised",
-    status: "Explicit non-goal",
-    title: "Unbounded autonomy",
-    body: "No unverified marketplace of 150 autonomous agents, no silent external actions, and no job placement guarantee on the career path.",
   },
 ];
 
@@ -257,64 +208,12 @@ const HOME_FAQ = [
   },
 ];
 
-const docIcon = (
-  <svg
-    aria-hidden="true"
-    width="14"
-    height="14"
-    fill="none"
-    stroke="var(--x-slate)"
-    strokeWidth="1.5"
-    viewBox="0 0 24 24"
-  >
-    <path
-      d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-const clipIcon = (
-  <svg
-    aria-hidden="true"
-    width="14"
-    height="14"
-    fill="none"
-    stroke="var(--x-slate)"
-    strokeWidth="1.5"
-    viewBox="0 0 24 24"
-  >
-    <path
-      d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-const badgeIcon = (
-  <svg
-    aria-hidden="true"
-    width="14"
-    height="14"
-    fill="none"
-    stroke="var(--x-amber)"
-    strokeWidth="1.5"
-    viewBox="0 0 24 24"
-  >
-    <path
-      d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
 function HomePage() {
   return (
     <MarketingLayout>
       <OnboardingGate />
 
-      {/* 1. HERO — Plan-first executive headline + interactive Command Centre showcase */}
+      {/* 1. HERO — Editorial headline + 3D Finsage-inspired Command Centre showcase */}
       <section className="hero hero-workforce">
         <div className="hero-copy">
           <div className="hero-eyebrow">
@@ -362,14 +261,10 @@ function HomePage() {
         </div>
         <div className="hero-visual">
           <CommandCentreComposition />
-          <p className="hero-visual-note">
-            Interactive Stage 1 Command Centre preview — switch between Investigate, Prototype and
-            Improve above to inspect the proposed plan and capability assignment.
-          </p>
         </div>
       </section>
 
-      {/* 2. Three mission types */}
+      {/* 2. Three Bounded Mission Intents with 3D Sculptural Visuals */}
       <section className="steps-section" id="mission-types">
         <div className="section-header-split">
           <div>
@@ -388,9 +283,11 @@ function HomePage() {
         <div className="mission-cards-grid">
           {MISSION_TYPES.map((m) => (
             <article className="mission-arch-card" key={m.n}>
-              <div className="mission-arch-top">
-                <span className="mission-arch-num">{m.n}</span>
-                <span className="mission-arch-tag">{m.tag}</span>
+              <div className="mission-arch-visual">
+                <img src={m.image} alt={m.imageAlt} loading="lazy" />
+                <span className="mission-arch-badge">
+                  {m.n} · {m.tag}
+                </span>
               </div>
               <h3 className="mission-arch-title">{m.title}</h3>
               <p className="mission-arch-body">{m.body}</p>
@@ -416,7 +313,7 @@ function HomePage() {
         </div>
       </section>
 
-      {/* 3. How it works */}
+      {/* 3. Five-Stage Supervised Lifecycle + Compact Epistemic Evidence Strip */}
       <section className="products-section" id="how-it-works">
         <div className="section-header-split">
           <div>
@@ -443,12 +340,40 @@ function HomePage() {
             />
           ))}
         </Bento>
+
+        {/* Compact Epistemic Evidence & Quality Strip (Replaces bulky 8-card ledger wall) */}
+        <div className="epistemic-strip" aria-label="Evidence classification and quality labels">
+          <div className="epistemic-strip-copy">
+            <span className="x-label">Epistemic Honesty in Every Report</span>
+            <p>
+              Every delivered artefact separates claims into four explicit classes and uses discrete
+              quality labels (<strong>Agent-reviewed</strong>, <strong>Automatically tested</strong>
+              , <strong>Human-reviewed</strong>, <strong>Externally attested</strong>) — never an
+              unqualified <code>Verified</code> badge.
+            </p>
+          </div>
+          <div className="epistemic-strip-pills">
+            <div className="epistemic-chip">
+              <span className="pill pill-teal">01 · Sourced facts</span>
+              <small>Traceable to your brief or cited sources</small>
+            </div>
+            <div className="epistemic-chip">
+              <span className="pill pill-neutral">02 · Assumptions</span>
+              <small>Working premises stated openly for review</small>
+            </div>
+            <div className="epistemic-chip">
+              <span className="pill pill-purple">03 · Inferences</span>
+              <small>Analytical conclusions reasoned from facts</small>
+            </div>
+            <div className="epistemic-chip">
+              <span className="pill pill-amber">04 · Speculative</span>
+              <small>Directional options flagged as low-confidence</small>
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* 4. Meet the workforce */}
-      <WorkforcePreview maxAvailable={12} />
-
-      {/* 5. Control and governance */}
+      {/* 4. Deterministic Governance & Wave 1 Capability Spotlight */}
       <section className="trust-section" id="governance">
         <div className="trust-inner">
           <div className="trust-eyebrow">DETERMINISTIC CONTROL &amp; GOVERNANCE</div>
@@ -475,197 +400,52 @@ function HomePage() {
         </div>
       </section>
 
-      {/* 6. Inspect deliverables */}
-      <section className="products-section">
-        <div className="section-header-split">
+      <WorkforcePreview maxAvailable={12} />
+
+      {/* 5. Compact Career Path Banner + FAQs + Final CTA */}
+      <section className="career-compact-section">
+        <div className="career-compact-banner">
           <div>
-            <div className="x-label">Inspectable Deliverables &amp; Epistemic Honesty</div>
-            <h2 className="heading-1" style={{ margin: "12px 0 0", maxWidth: 640 }}>
-              Stage 1 artefacts with explicit evidence labels.
+            <div className="x-label">Coexisting Product Line · Career Evidence</div>
+            <h2 className="heading-2" style={{ marginTop: 8 }}>
+              Looking for the PM Career Evidence path?
             </h2>
+            <p className="body" style={{ marginTop: 6, maxWidth: 620 }}>
+              <strong>Experience</strong>, <strong>Launchpad</strong>, and <strong>Prove</strong>{" "}
+              remain available as our dedicated career product (£19/month). Build a
+              provenance-backed PM portfolio where <em>Verified</em> lights only after independent
+              external attestation.
+            </p>
           </div>
-          <p className="body" style={{ margin: 0, maxWidth: 460 }}>
-            Facts, assumptions, inferences and speculation are classified separately. Quality labels
-            are discrete — <strong>Agent-reviewed</strong>, <strong>Automatically tested</strong>,{" "}
-            <strong>Human-reviewed</strong>, or <strong>Externally attested</strong>.
-          </p>
-        </div>
-
-        <div style={{ marginTop: 32 }}>
-          <ProductView
-            frameLabel="Command Centre · Delivery ledger & evidence classification preview"
-            note="Illustrative Stage 1 format — demonstrates separated evidence and discrete quality labels."
-          >
-            <div className="record-row">
-              <span className="record-index">01</span>
-              <div className="record-icon-wrap">{docIcon}</div>
-              <div className="record-body">
-                <div className="record-title">Investigate — sponsor reporting decision brief</div>
-                <div className="record-sub">
-                  intent:investigate · DX-011 · DX-012 · DX-020 · usage:18/100 credits
-                </div>
-              </div>
-              <div className="record-stat">
-                <div className="record-band">Plan</div>
-                <div className="record-band-label">Approved</div>
-              </div>
-              <span className="pill pill-teal">Sourced facts</span>
-            </div>
-            <div className="record-row">
-              <span className="record-index">02</span>
-              <div className="record-icon-wrap">{clipIcon}</div>
-              <div className="record-body">
-                <div className="record-title">Prototype — usage ceiling notification wireframe</div>
-                <div className="record-sub">
-                  intent:prototype · DX-021 · DX-023 · DX-035 · permission:create
-                </div>
-              </div>
-              <div className="record-stat">
-                <div className="record-band">Running</div>
-                <div className="record-band-label">Tasks 2/3</div>
-              </div>
-              <span className="pill pill-neutral">Assumptions</span>
-            </div>
-            <div className="record-row">
-              <span className="record-index">03</span>
-              <div className="record-icon-wrap">{badgeIcon}</div>
-              <div className="record-body">
-                <div className="record-title">Improve — checkout drop-off remediation plan</div>
-                <div className="record-sub">
-                  intent:improve · DX-018 · DX-041 · DX-071 · quality:agent-reviewed
-                </div>
-              </div>
-              <div className="record-stat">
-                <div className="record-band" style={{ color: "var(--x-amber)" }}>
-                  Delivered
-                </div>
-                <div className="record-band-label">Report ready</div>
-              </div>
-              <span className="pill pill-amber">Agent-reviewed</span>
-            </div>
-          </ProductView>
-        </div>
-
-        <div className="evidence-cards-grid">
-          {DELIVERABLES.map((e) => (
-            <div className="evidence-card" key={e.n}>
-              <div className="evidence-card-top">
-                <span className="evidence-card-num">{e.n}</span>
-                <span className={`pill ${e.badge}`}>{e.title}</span>
-              </div>
-              <div className="evidence-card-title">{e.title}</div>
-              <p className="evidence-card-desc">{e.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 7. What happens next — honest roadmap */}
-      <section className="steps-section">
-        <div className="section-header-split">
-          <div>
-            <div className="x-label">Release &amp; Capability Roadmap</div>
-            <h2 className="heading-1" style={{ margin: "12px 0 0", maxWidth: 640 }}>
-              An honest roadmap. Zero false connectors.
-            </h2>
+          <div className="career-compact-actions">
+            <Link to="/experience" className="btn btn-secondary">
+              Explore Experience →
+            </Link>
+            <Link to="/launchpad" className="btn btn-secondary">
+              Launchpad →
+            </Link>
+            <Link to="/pricing" className="btn btn-secondary">
+              Career pricing
+            </Link>
           </div>
-          <p className="body" style={{ margin: 0, maxWidth: 460 }}>
-            Stage 1 is a supervised operational preview. Future waves expand review depth and model
-            routing — never disguised as live today.
-          </p>
-        </div>
-
-        <div className="roadmap-grid">
-          {ROADMAP.map((r, idx) => (
-            <div className={`roadmap-card${idx === 0 ? " is-current" : ""}`} key={r.n}>
-              <div className="roadmap-card-top">
-                <span className="roadmap-stage">{r.n}</span>
-                <span className="roadmap-status">{r.status}</span>
-              </div>
-              <div className="roadmap-title">{r.title}</div>
-              <div className="roadmap-desc">{r.body}</div>
-            </div>
-          ))}
         </div>
       </section>
 
-      {/* 8. Existing DeliverX products — secondary */}
-      <section className="products-section career-secondary">
-        <div className="x-label">Existing DeliverX products</div>
-        <h2 className="heading-1" style={{ margin: "14px 0 0", maxWidth: 640 }}>
-          Career evidence — a separate path.
-        </h2>
-        <p className="body" style={{ marginTop: 14, maxWidth: 560 }}>
-          Experience, Launchpad and Prove remain available if you need a defendable PM record.
-          Verified still requires external attestation. Career Stripe pricing is unchanged.
-        </p>
-        <div className="products-grid" style={{ marginTop: 32 }}>
-          <Link to="/experience" className="product-card">
-            <div className="product-card-head">
-              <div className="product-card-num">01</div>
-              <div className="product-card-name">Experience</div>
-              <div className="product-card-tag">£19 / month</div>
-            </div>
-            <div className="product-card-body">
-              <div className="product-card-desc">
-                Simulated organisations. Your actions create the evidence ledger.
-              </div>
-              <div className="product-card-link">Experience →</div>
-            </div>
-          </Link>
-          <Link to="/launchpad" className="product-card">
-            <div className="product-card-head">
-              <div className="product-card-num">02</div>
-              <div className="product-card-name">Launchpad</div>
-              <div className="product-card-tag">£19 / month</div>
-            </div>
-            <div className="product-card-body">
-              <div className="product-card-desc">
-                Portfolio, readiness story and interview practice from real evidence.
-              </div>
-              <div className="product-card-link">Launchpad →</div>
-            </div>
-          </Link>
-          <Link to="/prove" className="product-card">
-            <div className="product-card-head">
-              <div className="product-card-num">03</div>
-              <div className="product-card-name">Prove</div>
-              <div className="product-card-tag">External attestation</div>
-            </div>
-            <div className="product-card-body">
-              <div className="product-card-desc">
-                Verified lights only when someone outside DeliverX attests.
-              </div>
-              <div className="product-card-link">Prove →</div>
-            </div>
-          </Link>
-        </div>
-        <div style={{ marginTop: 20 }}>
-          <Link to="/pricing" className="btn btn-secondary">
-            See career plans
-          </Link>
-        </div>
-      </section>
-
-      {/* 9. Final CTA + FAQs */}
       <FaqSection items={HOME_FAQ} />
 
       <section className="cta-section">
         <div className="cta-box">
           <h2 className="cta-h">Put AI labour under a plan you approve.</h2>
           <p className="cta-sub">
-            Open Command Centre for the Stage 1 workforce preview — or start the career evidence
-            path if that is what you need.
+            Open Command Centre for the Stage 1 workforce preview — or explore the architecture and
+            governance model first.
           </p>
           <div className="cta-btns">
             <CtaLink
               signedInTo="/command"
-              signedInLabel="Open Command Centre"
-              signedOutLabel="Open Command Centre"
+              signedInLabel="Open Command Centre →"
+              signedOutLabel="Open Command Centre →"
             />
-            <Link to="/signup" className="btn btn-secondary">
-              Create account
-            </Link>
             <Link to="/how-it-works" className="btn btn-secondary">
               How it works
             </Link>

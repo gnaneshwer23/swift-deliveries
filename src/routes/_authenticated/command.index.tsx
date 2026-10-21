@@ -3,7 +3,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
 import { commandCentreBootstrapQuery } from "@/lib/workforce-queries";
-import { createMission, createWfProject } from "@/lib/workforce.functions";
+import {
+  createMission,
+  createWfProject,
+  resetWorkspacePreviewCredits,
+} from "@/lib/workforce.functions";
 import {
   INTENT_LABELS,
   PERMISSION_LABELS,
@@ -11,7 +15,7 @@ import {
   type MissionIntent,
 } from "@/lib/workforce/types";
 import { WAVE1_AVAILABLE_IDS } from "@/lib/workforce/registry";
-import { FlaskConical, Search, Sparkles, Wrench } from "lucide-react";
+import { FlaskConical, RotateCcw, Search, ShieldCheck, Wrench } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/command/")({
   head: () => ({
@@ -33,6 +37,7 @@ export const Route = createFileRoute("/_authenticated/command/")({
 const INTENTS: Array<{
   intent: MissionIntent;
   icon: typeof Search;
+  image: string;
   tag: string;
   blurb: string;
   deliverable: string;
@@ -42,6 +47,7 @@ const INTENTS: Array<{
   {
     intent: "investigate",
     icon: Search,
+    image: "/assets/3d/intent-investigate.jpg",
     tag: "Decision Research",
     blurb:
       "Research a strategic or product decision and return a brief with sourced facts separated from assumptions.",
@@ -56,6 +62,7 @@ const INTENTS: Array<{
   {
     intent: "prototype",
     icon: FlaskConical,
+    image: "/assets/3d/intent-prototype.jpg",
     tag: "Product & UI Spec",
     blurb:
       "Produce a reviewable product specification plus a lightweight sandboxed HTML prototype.",
@@ -70,6 +77,7 @@ const INTENTS: Array<{
   {
     intent: "improve",
     icon: Wrench,
+    image: "/assets/3d/intent-improve.jpg",
     tag: "Flow Diagnostics",
     blurb:
       "Diagnose friction in an existing workflow and propose bounded changes — never an unapproved deploy.",
@@ -108,6 +116,14 @@ function CommandHome() {
       await queryClient.invalidateQueries({ queryKey: ["command"] });
     },
     onError: (err) => setFormError(err instanceof Error ? err.message : "Could not create project"),
+  });
+
+  const resetCredits = useMutation({
+    mutationFn: () => resetWorkspacePreviewCredits(),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["command"] });
+    },
+    onError: (err) => setFormError(err instanceof Error ? err.message : "Could not reset credits"),
   });
 
   const startMission = useMutation({
@@ -184,170 +200,179 @@ function CommandHome() {
         ceiling: data.workspace.usageCeiling,
       }}
     >
-      {/* PeopleFlow-style Operational KPI Strip */}
+      {/* Clean 4-Metric Operational Summary Strip */}
       <section className="cc-kpi-strip" aria-label="Workspace operational summary">
         <div className="cc-kpi-card">
-          <span className="cc-kpi-label">Credits Remaining</span>
+          <div className="flex items-center justify-between gap-2">
+            <span className="cc-kpi-label">Credits Remaining</span>
+            {data.workspace.usageConsumed > 0 ? (
+              <button
+                type="button"
+                onClick={() => resetCredits.mutate()}
+                disabled={resetCredits.isPending}
+                className="cc-reset-credits-btn"
+                title="Reset Stage 1 preview allowance back to 100 credits"
+              >
+                <RotateCcw className="size-3" />
+                {resetCredits.isPending ? "Resetting…" : "Reset preview credits"}
+              </button>
+            ) : null}
+          </div>
           <strong className="cc-kpi-value">
             {remainingCredits} <small>/ {data.workspace.usageCeiling}</small>
           </strong>
           <span className="cc-kpi-sub">
-            {data.workspace.usageConsumed} consumed · deterministic hard-stop
+            {data.workspace.usageConsumed} consumed · deterministic hard-stop (`svc-budget`)
           </span>
         </div>
         <div className="cc-kpi-card">
-          <span className="cc-kpi-label">Recent Missions</span>
+          <span className="cc-kpi-label">Active Supervision</span>
           <strong className="cc-kpi-value">{data.recentMissions.length}</strong>
           <span className="cc-kpi-sub">
             {awaitingCount > 0
-              ? `${awaitingCount} awaiting operator action`
-              : "All active missions up to date"}
+              ? `${awaitingCount} awaiting your review or approval`
+              : "All missions up to date"}
           </span>
         </div>
         <div className="cc-kpi-card">
-          <span className="cc-kpi-label">Workforce Projects</span>
+          <span className="cc-kpi-label">Project Containers</span>
           <strong className="cc-kpi-value">{data.projects.length}</strong>
           <span className="cc-kpi-sub">
             <Link to="/command/projects" className="underline">
-              Manage project containers
+              Manage projects
             </Link>
           </span>
         </div>
         <div className="cc-kpi-card">
-          <span className="cc-kpi-label">Assignable Workforce</span>
+          <span className="cc-kpi-label">Wave 1 Workforce</span>
           <strong className="cc-kpi-value">
-            {WAVE1_AVAILABLE_IDS.length} <small>Wave 1</small>
+            {WAVE1_AVAILABLE_IDS.length} <small>Available</small>
           </strong>
           <span className="cc-kpi-sub">
-            of 150 catalogue roles ·{" "}
+            of 150 registry roles ·{" "}
             <Link to="/command/capabilities" className="underline">
-              Browse registry
+              Inspect catalogue
             </Link>
           </span>
         </div>
       </section>
 
-      <section className="cc-hero-band">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+      {/* Unified Mission Composer Card (Replaces 3 separate stacked intake sections) */}
+      <section className="cc-composer-card" aria-label="Commission a supervised mission">
+        <div className="cc-composer-head">
           <div>
             <p className="cc-kicker">
-              <Sparkles className="size-3.5" /> Supervised Mission Intake · Stage 1
+              <ShieldCheck className="size-3.5" /> Stage 1 Supervised Mission Composer
             </p>
             <h2 className="cc-hero-title">Commission a bounded AI mission</h2>
-            <p className="cc-muted max-w-2xl">
-              Select an intent below, describe the outcome you need, and inspect the generated task
-              graph before approving. External actions remain locked behind a separate gate.
-            </p>
           </div>
-          <div className="cc-lifecycle-mini" aria-label="Supervision sequence">
-            <span>1. Mission</span>
-            <span>→</span>
-            <span>2. Clarify</span>
-            <span>→</span>
-            <span className="is-gate">3. Approve Plan</span>
-            <span>→</span>
-            <span>4. Execute</span>
-            <span>→</span>
-            <span>5. Deliver</span>
-          </div>
-        </div>
-      </section>
 
-      <section className="cc-intent-grid" aria-label="Select mission intent">
-        {INTENTS.map((item) => {
-          const Icon = item.icon;
-          const active = intent === item.intent;
-          return (
-            <button
-              key={item.intent}
-              type="button"
-              aria-pressed={active}
-              className={`cc-intent${active ? " active" : ""}`}
-              onClick={() => setIntent(item.intent)}
-            >
-              <div className="flex w-full items-center justify-between gap-2">
-                <Icon className="size-4" />
-                <span className="cc-intent-badge">{item.tag}</span>
+          {/* Inline Project Container Selector */}
+          <div className="cc-composer-project">
+            <label className="cc-label mb-1" htmlFor="project">
+              Project container
+            </label>
+            {data.projects.length ? (
+              <select
+                id="project"
+                className="cc-input"
+                value={selectedProjectId}
+                onChange={(e) => setProjectId(e.target.value)}
+              >
+                {data.projects.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <div className="flex gap-2">
+                <input
+                  className="cc-input"
+                  placeholder="First project name…"
+                  value={newProjectName}
+                  onChange={(e) => setNewProjectName(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="cc-btn cc-btn-secondary"
+                  disabled={createProject.isPending}
+                  onClick={() => createProject.mutate()}
+                >
+                  Create
+                </button>
               </div>
-              <strong>{INTENT_LABELS[item.intent]}</strong>
-              <span>{item.blurb}</span>
-              <small className="cc-intent-deliverable">Output: {item.deliverable}</small>
-            </button>
-          );
-        })}
-      </section>
-
-      <section className="cc-panel">
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-          <div>
-            <h2 className="cc-panel-title mb-0.5">
-              Mission brief · {INTENT_LABELS[activeIntent.intent]}
-            </h2>
-            <p className="cc-muted text-xs">{activeIntent.blurb}</p>
+            )}
           </div>
-          <span className="cc-chip">Expected deliverable: {activeIntent.deliverable}</span>
         </div>
 
-        <label className="cc-label" htmlFor="project">
-          Project container
-        </label>
-        {data.projects.length ? (
-          <select
-            id="project"
-            className="cc-input"
-            value={selectedProjectId}
-            onChange={(e) => setProjectId(e.target.value)}
-          >
-            {data.projects.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <div className="mb-3 flex flex-col gap-2 sm:flex-row">
-            <input
-              className="cc-input"
-              placeholder="Name your first project (e.g. Q4 Product Operations)"
-              value={newProjectName}
-              onChange={(e) => setNewProjectName(e.target.value)}
-            />
-            <button
-              type="button"
-              className="cc-btn cc-btn-secondary"
-              disabled={createProject.isPending}
-              onClick={() => createProject.mutate()}
-            >
-              Create project
-            </button>
+        {/* 3 Sculptural Intent Tabs */}
+        <div className="cc-intent-grid" role="tablist" aria-label="Select mission intent">
+          {INTENTS.map((item) => {
+            const Icon = item.icon;
+            const active = intent === item.intent;
+            return (
+              <button
+                key={item.intent}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                className={`cc-intent${active ? " active" : ""}`}
+                onClick={() => setIntent(item.intent)}
+              >
+                <div className="cc-intent-top-row">
+                  <img
+                    src={item.image}
+                    alt=""
+                    aria-hidden="true"
+                    className="cc-intent-thumb"
+                    loading="lazy"
+                  />
+                  <div className="cc-intent-meta">
+                    <span className="cc-intent-badge">
+                      <Icon className="size-3" /> {item.tag}
+                    </span>
+                    <strong>{INTENT_LABELS[item.intent]}</strong>
+                  </div>
+                </div>
+                <span>{item.blurb}</span>
+                <small className="cc-intent-deliverable">Deliverable: {item.deliverable}</small>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Brief Input */}
+        <div className="mt-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+            <label className="cc-label mb-0" htmlFor="mission-request">
+              Mission brief ({INTENT_LABELS[activeIntent.intent]})
+            </label>
+            <span className="cc-chip">Output: {activeIntent.deliverable}</span>
           </div>
-        )}
+          <textarea
+            id="mission-request"
+            className="cc-input cc-textarea"
+            rows={4}
+            placeholder={activeIntent.placeholder}
+            value={requestText}
+            onChange={(e) => setRequestText(e.target.value)}
+          />
 
-        <label className="cc-label mt-4" htmlFor="mission-request">
-          What would you like to get done?
-        </label>
-        <textarea
-          id="mission-request"
-          className="cc-input cc-textarea"
-          rows={5}
-          placeholder={activeIntent.placeholder}
-          value={requestText}
-          onChange={(e) => setRequestText(e.target.value)}
-        />
-
-        {/* Quick-fill guided templates */}
-        <div className="cc-sample-row">
-          <span className="cc-sample-label">Try a guided brief:</span>
-          {activeIntent.samples.map((sample, idx) => (
-            <button
-              key={sample}
-              type="button"
-              className="cc-sample-chip"
-              onClick={() => setRequestText(sample)}
-            >
-              Sample {idx + 1}: {sample.slice(0, 58)}…
-            </button>
-          ))}
+          {/* Compact Guided Templates */}
+          <div className="cc-sample-row">
+            <span className="cc-sample-label">Quick-fill sample:</span>
+            {activeIntent.samples.map((sample, idx) => (
+              <button
+                key={sample}
+                type="button"
+                className="cc-sample-chip"
+                onClick={() => setRequestText(sample)}
+              >
+                Sample {idx + 1}: {sample.slice(0, 62)}…
+              </button>
+            ))}
+          </div>
         </div>
 
         {formError ? <p className="cc-error mt-3">{formError}</p> : null}
@@ -356,7 +381,7 @@ function CommandHome() {
           className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t pt-4"
           style={{ borderColor: "var(--x-border)" }}
         >
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               className="cc-btn cc-btn-primary"
@@ -368,28 +393,35 @@ function CommandHome() {
             >
               {startMission.isPending ? "Generating plan…" : "Draft mission plan →"}
             </button>
-            <Link to="/command/projects" className="cc-btn cc-btn-secondary">
-              Manage projects
-            </Link>
-            <Link to="/command/capabilities" className="cc-btn cc-btn-secondary">
-              Capability registry
-            </Link>
+            <span className="cc-muted text-xs">
+              Zero credits spent during planning. Execution waits for your approval.
+            </span>
           </div>
-          <span className="cc-muted text-xs">
-            No credits are spent until you approve the generated plan.
-          </span>
+          <div className="cc-lifecycle-mini" aria-label="Supervision sequence">
+            <span>Mission</span>
+            <span>→</span>
+            <span>Plan</span>
+            <span>→</span>
+            <span className="is-gate">Approve</span>
+            <span>→</span>
+            <span>Execute</span>
+            <span>→</span>
+            <span>Deliver</span>
+          </div>
         </div>
       </section>
 
+      {/* Recent Missions Ledger */}
       <section className="cc-panel">
         <div className="flex items-center justify-between gap-3">
           <h2 className="cc-panel-title mb-0">Recent missions</h2>
-          <span className="cc-muted text-xs">{data.recentMissions.length} shown</span>
+          <span className="cc-muted text-xs">{data.recentMissions.length} in workspace</span>
         </div>
         {data.recentMissions.length === 0 ? (
           <p className="cc-muted mt-4">
-            No missions yet. Pick Investigate, Prototype, or Improve above (or click a guided sample
-            brief) to commission your first supervised mission.
+            No missions commissioned yet. Choose <strong>Investigate</strong>,{" "}
+            <strong>Prototype</strong>, or <strong>Improve</strong> above (or click a sample brief)
+            to draft your first plan.
           </p>
         ) : (
           <ul className="cc-mission-list mt-4">

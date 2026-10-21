@@ -8,6 +8,7 @@ import {
   Lock,
   Search,
   ShieldCheck,
+  Sparkles,
   Wrench,
 } from "lucide-react";
 
@@ -25,7 +26,7 @@ const SCENARIOS: Record<
   }
 > = {
   investigate: {
-    hint: "Sourced brief · facts vs assumptions",
+    hint: "Decision research · facts vs assumptions",
     request:
       "Investigate whether we should add a sponsor reporting dashboard for healthcare delivery leads — separate sourced facts from assumptions.",
     permission: "Plan → Create (Internal)",
@@ -52,7 +53,7 @@ const SCENARIOS: Record<
     evidenceTag: "Sourced facts · Assumptions separated",
   },
   prototype: {
-    hint: "Product brief + interactive HTML pack",
+    hint: "Product spec + sandboxed HTML pack",
     request:
       "Prototype a workspace usage ceiling & approval notification drawer with clear hard-stop state and audit summary.",
     permission: "Create (Sandbox HTML)",
@@ -71,7 +72,7 @@ const SCENARIOS: Record<
     evidenceTag: "Agent-reviewed · Non-production",
   },
   improve: {
-    hint: "Friction diagnosis + bounded changes",
+    hint: "Friction diagnosis + bounded diff",
     request:
       "Improve mobile checkout drop-off between basket review and payment confirmation without altering Stripe webhook contracts.",
     permission: "Execute internally (Bounded)",
@@ -102,8 +103,7 @@ const SCENARIOS: Record<
 const LIFECYCLE_STEPS = ["Mission", "Plan", "Approve", "Execute", "Deliver"] as const;
 
 /**
- * Interactive Command Centre concept showcase for marketing.
- * Mirrors Stage 1 intake + plan approval chrome — explicitly labelled as a preview.
+ * Finsage-inspired 3D sculptural Command Centre showcase + interactive plan inspector.
  */
 export function CommandCentreComposition() {
   const [selectedIntent, setSelectedIntent] = useState<MissionIntent>("investigate");
@@ -126,38 +126,29 @@ export function CommandCentreComposition() {
         </div>
         <div className="cc-compose-usage">
           <span className="cc-compose-usage-dot" />
-          <span>12 / 100 credits · {wave1} Available</span>
+          <span>{wave1} Wave 1 Available · 100-credit ceiling</span>
         </div>
       </div>
 
-      {/* Multi-pane console body */}
-      <div className="cc-compose-shell">
-        {/* Mini dark rail */}
-        <div className="cc-compose-rail" aria-hidden="true">
-          <div className="cc-compose-rail-brand">
-            Deliver<span>X</span>
-          </div>
-          <div className="cc-compose-rail-nav">
-            <span className="is-active">Command Centre</span>
-            <span>Projects</span>
-            <span>Capability Registry</span>
-            <span>Audit &amp; Usage</span>
-          </div>
-          <div className="cc-compose-rail-meter">
-            <div className="cc-compose-rail-meter-top">
-              <span>Ceiling</span>
-              <strong>88 left</strong>
-            </div>
-            <div className="cc-compose-rail-bar">
-              <span style={{ width: "18%" }} />
-            </div>
-            <small>Hard-stop enforced</small>
-          </div>
+      {/* 3D Sculptural Approval Gate Showcase */}
+      <div className="cc-3d-stage">
+        <img
+          src="/assets/3d/command-core.jpg"
+          alt="3D sculptural representation of the DeliverX human approval gate prism routing Investigate, Prototype and Improve streams into verified deliverables"
+          className="cc-3d-hero-img"
+          loading="eager"
+        />
+        <div className="cc-3d-overlay-top">
+          <span className="cc-glass-pill">
+            <Sparkles className="size-3.5 text-amber-700" aria-hidden="true" />
+            <span>Supervised Architecture · Stage 1</span>
+          </span>
+          <span className="cc-glass-pill is-emerald">
+            <ShieldCheck className="size-3.5 text-emerald-700" aria-hidden="true" />
+            <span>Gate 03: Human Approval Required</span>
+          </span>
         </div>
-
-        {/* Main interactive canvas */}
-        <div className="cc-compose-body">
-          {/* Lifecycle Stepper */}
+        <div className="cc-3d-overlay-bottom">
           <div className="cc-compose-stepper" aria-label="Mission lifecycle stage">
             {LIFECYCLE_STEPS.map((step, index) => {
               const state = index < 2 ? "done" : index === 2 ? "current" : "upcoming";
@@ -169,98 +160,90 @@ export function CommandCentreComposition() {
               );
             })}
           </div>
+        </div>
+      </div>
 
-          <div className="cc-compose-header-row">
-            <div>
-              <div className="cc-compose-kicker">Interactive Preview · Select a mission intent</div>
-              <div className="cc-compose-title">Commission &amp; approve bounded AI work</div>
-            </div>
-            <span className="cc-compose-gate-badge">
-              <ShieldCheck className="size-3.5" aria-hidden="true" />
-              Human gate active
-            </span>
-          </div>
-
-          {/* Interactive Intent Selector */}
-          <div className="cc-compose-intents" role="tablist" aria-label="Preview mission intents">
-            {(
-              [
-                { id: "investigate", icon: Search },
-                { id: "prototype", icon: FlaskConical },
-                { id: "improve", icon: Wrench },
-              ] as const
-            ).map((item) => {
-              const Icon = item.icon;
-              const isSelected = selectedIntent === item.id;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={isSelected}
-                  onClick={() => setSelectedIntent(item.id)}
-                  className={`cc-compose-intent${isSelected ? " is-active" : ""}`}
-                >
-                  <div className="cc-compose-intent-top">
-                    <Icon className="size-3.5" aria-hidden="true" />
-                    <strong>{INTENT_LABELS[item.id]}</strong>
-                  </div>
-                  <span>{SCENARIOS[item.id].hint}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Request & Proposed Plan Card */}
-          <div className="cc-compose-panel">
-            <div className="cc-compose-panel-top">
-              <span className="cc-compose-label">Mission brief</span>
-              <span className="cc-compose-perm">{active.permission}</span>
-            </div>
-            <div className="cc-compose-request">{active.request}</div>
-
-            {/* Assigned Wave 1 capabilities */}
-            <div className="cc-compose-caps">
-              {active.capabilities.map((c) => (
-                <span key={c.id} className="cc-compose-cap-chip">
-                  <code>{c.id}</code>
-                  <span>{c.role}</span>
-                </span>
-              ))}
-            </div>
-
-            {/* Proposed Tasks */}
-            <div className="cc-compose-tasklist">
-              {active.tasks.map((t, idx) => (
-                <div key={t.title} className="cc-compose-task-item">
-                  <div className="cc-compose-task-left">
-                    {t.status === "ready" ? (
-                      <CheckCircle2 className="size-3.5 text-emerald-700 shrink-0" />
-                    ) : (
-                      <Clock3 className="size-3.5 text-amber-700 shrink-0" />
-                    )}
-                    <span>
-                      {idx + 1}. {t.title}
-                    </span>
-                  </div>
-                  <code>{t.cap}</code>
+      {/* Focused Interactive Inspector */}
+      <div className="cc-compose-body">
+        {/* Interactive Intent Selector */}
+        <div className="cc-compose-intents" role="tablist" aria-label="Preview mission intents">
+          {(
+            [
+              { id: "investigate", icon: Search },
+              { id: "prototype", icon: FlaskConical },
+              { id: "improve", icon: Wrench },
+            ] as const
+          ).map((item) => {
+            const Icon = item.icon;
+            const isSelected = selectedIntent === item.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                role="tab"
+                aria-selected={isSelected}
+                onClick={() => setSelectedIntent(item.id)}
+                className={`cc-compose-intent${isSelected ? " is-active" : ""}`}
+              >
+                <div className="cc-compose-intent-top">
+                  <Icon className="size-3.5" aria-hidden="true" />
+                  <strong>{INTENT_LABELS[item.id]}</strong>
                 </div>
-              ))}
-            </div>
+                <span>{SCENARIOS[item.id].hint}</span>
+              </button>
+            );
+          })}
+        </div>
 
-            {/* Footer Gate Bar */}
-            <div className="cc-compose-footer">
-              <div className="cc-compose-meta">
-                <span>
-                  Est. <strong>{active.credits} credits</strong>
-                </span>
-                <span>·</span>
-                <span>{active.deliverable}</span>
+        {/* Proposed Plan Card */}
+        <div className="cc-compose-panel">
+          <div className="cc-compose-panel-top">
+            <span className="cc-compose-label">Proposed Mission Plan</span>
+            <span className="cc-compose-perm">{active.permission}</span>
+          </div>
+          <div className="cc-compose-request">{active.request}</div>
+
+          {/* Assigned Wave 1 capabilities */}
+          <div className="cc-compose-caps">
+            {active.capabilities.map((c) => (
+              <span key={c.id} className="cc-compose-cap-chip">
+                <code>{c.id}</code>
+                <span>{c.role}</span>
+              </span>
+            ))}
+          </div>
+
+          {/* Proposed Tasks */}
+          <div className="cc-compose-tasklist">
+            {active.tasks.map((t, idx) => (
+              <div key={t.title} className="cc-compose-task-item">
+                <div className="cc-compose-task-left">
+                  {t.status === "ready" ? (
+                    <CheckCircle2 className="size-3.5 text-emerald-700 shrink-0" />
+                  ) : (
+                    <Clock3 className="size-3.5 text-amber-700 shrink-0" />
+                  )}
+                  <span>
+                    {idx + 1}. {t.title}
+                  </span>
+                </div>
+                <code>{t.cap}</code>
               </div>
-              <div className="cc-compose-actions">
-                <span className="cc-compose-btn primary">Approve plan &amp; queue</span>
-                <span className="cc-compose-btn">Revise scope</span>
-              </div>
+            ))}
+          </div>
+
+          {/* Footer Gate Bar */}
+          <div className="cc-compose-footer">
+            <div className="cc-compose-meta">
+              <span>
+                Est. <strong>{active.credits} / 100 credits</strong>
+              </span>
+              <span>·</span>
+              <span>{active.deliverable}</span>
+            </div>
+            <div className="cc-compose-actions">
+              <span className="cc-compose-btn primary">Approve plan &amp; queue</span>
+              <span className="cc-compose-btn">Revise scope</span>
             </div>
           </div>
         </div>

@@ -194,6 +194,17 @@ export type WfApproval = {
   createdAt: string;
 };
 
+export type WfAuditEvent = {
+  id: string;
+  workspaceId: string;
+  missionId: string | null;
+  actorId: string | null;
+  eventType: string;
+  entityType: string;
+  entityId: string | null;
+  createdAt: string;
+};
+
 export type DeliveryReport = {
   headline: string;
   summary: string;
@@ -226,6 +237,7 @@ export type MissionBundle = {
   tasks: WfMissionTask[];
   artefacts: WfArtefact[];
   approvals: WfApproval[];
+  auditEvents: WfAuditEvent[];
 };
 
 export const PERMISSION_LABELS: Record<PermissionLevel, string> = {

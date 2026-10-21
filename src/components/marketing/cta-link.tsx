@@ -43,6 +43,14 @@ export function CtaLink({
     );
   }
 
+  if (signedOutTo === "/signup" || signedOutTo === "/login") {
+    return (
+      <Link to={signedOutTo} search={{ redirect: signedInTo }} className={className} style={style}>
+        {signedOutLabel}
+      </Link>
+    );
+  }
+
   return (
     <Link to={signedOutTo} className={className} style={style}>
       {signedOutLabel}

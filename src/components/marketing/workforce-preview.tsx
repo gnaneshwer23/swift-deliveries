@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { CtaLink } from "@/components/marketing/cta-link";
 import {
   listAssignableCapabilities,
   listCapabilities,
@@ -23,6 +24,8 @@ export function WorkforcePreview({
   maxAvailable?: number;
 }) {
   const [filter, setFilter] = useState<"all" | "available" | "planned">("all");
+  const [expanded, setExpanded] = useState(false);
+
   const available = listAssignableCapabilities().slice(0, maxAvailable);
   const planned = showPlanned
     ? listCapabilities().filter((c) =>
@@ -30,7 +33,14 @@ export function WorkforcePreview({
       )
     : [];
   const allCards = [...available, ...planned];
-  const cards = filter === "available" ? available : filter === "planned" ? planned : allCards;
+  const filteredCards =
+    filter === "available" ? available : filter === "planned" ? planned : allCards;
+
+  // Progressive disclosure: show 6 spotlight cards by default unless expanded or filtered to a smaller subset
+  const spotlightCards =
+    filter === "all" && !expanded
+      ? [...available.slice(0, 4), ...planned.slice(0, 2)]
+      : filteredCards.slice(0, expanded ? filteredCards.length : 6);
 
   const availableCount = WAVE1_AVAILABLE_IDS.length;
   const totalCatalogue = listCapabilities().length;
@@ -86,12 +96,15 @@ export function WorkforcePreview({
             onClick={() => setFilter("all")}
             className={`workforce-filter-btn${filter === "all" ? " is-active" : ""}`}
           >
-            All previewed ({allCards.length})
+            Spotlight &amp; Preview ({allCards.length})
           </button>
           <button
             type="button"
             aria-pressed={filter === "available"}
-            onClick={() => setFilter("available")}
+            onClick={() => {
+              setFilter("available");
+              setExpanded(true);
+            }}
             className={`workforce-filter-btn${filter === "available" ? " is-active" : ""}`}
           >
             Wave 1 Available ({available.length})
@@ -99,7 +112,10 @@ export function WorkforcePreview({
           <button
             type="button"
             aria-pressed={filter === "planned"}
-            onClick={() => setFilter("planned")}
+            onClick={() => {
+              setFilter("planned");
+              setExpanded(true);
+            }}
             className={`workforce-filter-btn${filter === "planned" ? " is-active" : ""}`}
           >
             Planned sample ({planned.length})
@@ -108,7 +124,7 @@ export function WorkforcePreview({
       )}
 
       <div className="workforce-grid" role="list">
-        {cards.map((cap) => {
+        {spotlightCards.map((cap) => {
           const label = statusLabel(cap.lifecycle_status);
           const isAvail = label === "Available";
           return (
@@ -139,15 +155,32 @@ export function WorkforcePreview({
         })}
       </div>
 
+      {filteredCards.length > 6 && (
+        <div style={{ marginTop: 24, display: "flex", justifyContent: "center" }}>
+          <button
+            type="button"
+            onClick={() => setExpanded((prev) => !prev)}
+            className="btn btn-secondary"
+          >
+            {expanded
+              ? "Show compact 6-role spotlight"
+              : `Explore all ${filteredCards.length} previewed capabilities (${available.length} Wave 1 Available + ${planned.length} Planned) →`}
+          </button>
+        </div>
+      )}
+
       <div className="workforce-bottom-bar">
         <p className="caption" style={{ margin: 0 }}>
           Available roles may be assigned to missions. Planned roles appear in the catalogue only —
           they are never routed as operational labour.
         </p>
         <div className="flex flex-wrap gap-3">
-          <Link to="/signup" className="btn btn-primary">
-            Open Command Centre →
-          </Link>
+          <CtaLink
+            signedInTo="/command/capabilities"
+            signedInLabel="Browse 150-role Registry →"
+            signedOutLabel="Open Command Centre →"
+            className="btn btn-primary"
+          />
           <Link to="/how-it-works" className="btn btn-secondary">
             Read governance model
           </Link>

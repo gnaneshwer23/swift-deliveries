@@ -8,7 +8,18 @@ import { Loader2 } from "lucide-react";
 import { BrandLogo } from "@/components/brand-logo";
 import { GoogleButton } from "@/components/auth/google-button";
 
+function sanitizeRedirect(raw: unknown): string {
+  if (typeof raw === "string" && raw.startsWith("/") && !raw.startsWith("//")) {
+    return raw;
+  }
+  return "/command";
+}
+
 export const Route = createFileRoute("/signup")({
+  validateSearch: (search: Record<string, unknown>): { redirect?: string | undefined } => ({
+    redirect:
+      typeof search["redirect"] === "string" ? sanitizeRedirect(search["redirect"]) : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Create your account — DeliverX" },
@@ -33,6 +44,8 @@ export const Route = createFileRoute("/signup")({
 
 function SignupPage() {
   const navigate = useNavigate();
+  const search = Route.useSearch();
+  const targetPath = sanitizeRedirect(search.redirect);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -77,7 +90,7 @@ function SignupPage() {
         );
         return;
       }
-      navigate({ to: "/command" });
+      navigate({ to: targetPath });
       return;
     }
     setLoading(false);
