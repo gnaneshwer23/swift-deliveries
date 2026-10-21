@@ -100,9 +100,10 @@ function ResourcesPage() {
             <span className="mkt-label">Resources</span>
             <h1 className="mkt-section-title mt-3">Evidence-backed starting points</h1>
             <p className="mkt-section-sub mx-auto">
-              Short paths into the DeliverX products, plus full guides on PM portfolios and STAR
-              stories grounded in evidence. No job-board listings, no unexplained readiness
-              percentages, and no claim that finishing a course equals capability.
+              Paths into Command Centre (supervised AI workforce preview) and the career evidence
+              products, plus guides on PM portfolios and STAR stories. No job-board listings, no
+              unexplained readiness percentages, and no claim that finishing a course equals
+              capability.
             </p>
           </div>
 
@@ -111,10 +112,10 @@ function ResourcesPage() {
               Product paths
             </h2>
             <p className="mt-2 max-w-2xl text-sm text-[var(--mkt-text3)]">
-              Build the experience, land the opportunity, succeed in the role. Pick the stage that
-              matches where you are.
+              Supervised missions in Command Centre, or the career ladder through Experience and
+              Launchpad. Pick the path that matches the job you need done.
             </p>
-            <div className="mt-8 grid gap-6 md:grid-cols-3">
+            <div className="mt-8 grid gap-6 md:grid-cols-2">
               {productPaths.map((item) => (
                 <div key={item.title} className="mkt-card flex flex-col p-6">
                   <h3 className="font-serif text-lg tracking-[-0.01em] text-[var(--mkt-text1)]">
