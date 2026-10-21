@@ -89,10 +89,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "DeliverX — Professional Intelligence Platform" },
-      { name: "description", content: "DeliverX helps product people build experience, land opportunities and succeed in the role with AI teammates and evidence-backed Professional Intelligence." },
+      {
+        name: "description",
+        content:
+          "DeliverX helps product people build experience, land opportunities and succeed in the role with AI teammates and evidence-backed Professional Intelligence.",
+      },
       { name: "author", content: "DeliverX" },
       { property: "og:title", content: "DeliverX — Professional Intelligence Platform" },
-      { property: "og:description", content: "DeliverX helps product people build experience, land opportunities and succeed in the role with AI teammates and evidence-backed Professional Intelligence." },
+      {
+        property: "og:description",
+        content:
+          "DeliverX helps product people build experience, land opportunities and succeed in the role with AI teammates and evidence-backed Professional Intelligence.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@DeliverX" },

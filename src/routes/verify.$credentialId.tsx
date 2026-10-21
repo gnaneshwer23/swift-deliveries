@@ -40,8 +40,7 @@ function VerifyPage() {
         ) : !data?.found ? (
           <Panel title="Credential not found">
             <p className="text-sm text-[var(--mkt-text2)]">
-              We couldn't find this credential. Check the link, or ask the holder
-              for a fresh one.
+              We couldn't find this credential. Check the link, or ask the holder for a fresh one.
             </p>
           </Panel>
         ) : (
@@ -94,10 +93,9 @@ function VerifyPage() {
             </dl>
 
             <p className="mt-6 text-xs text-[var(--mkt-text2)]">
-              Verified means one thing on DeliverX: an external person signed a
-              fixed statement about work they saw. It is never set by AI scores,
-              self-report, payment or platform staff. The attester's identity is
-              held privately under the Trust Rail.
+              Verified means one thing on DeliverX: an external person signed a fixed statement
+              about work they saw. It is never set by AI scores, self-report, payment or platform
+              staff. The attester's identity is held privately under the Trust Rail.
             </p>
           </Panel>
         )}
@@ -119,11 +117,7 @@ function Panel({
     <div className="rounded-2xl border border-[var(--mkt-border)] bg-[var(--mkt-s1)] p-8">
       <h1
         className={`text-xl font-semibold tracking-tight ${
-          tone === "green"
-            ? "text-[var(--mkt-green)]"
-            : tone === "red"
-              ? "text-red-600"
-              : ""
+          tone === "green" ? "text-[var(--mkt-green)]" : tone === "red" ? "text-red-600" : ""
         }`}
       >
         {title}

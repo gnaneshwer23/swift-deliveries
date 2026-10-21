@@ -6,6 +6,7 @@ import { useSession } from "@/hooks/use-session";
 import { BrandLogo } from "@/components/brand-logo";
 
 const NAV_LINKS = [
+  { to: "/command", label: "Command Centre" },
   { to: "/how-it-works", label: "How it works" },
   { to: "/pricing", label: "Pricing" },
   { to: "/experience", label: "Experience" },

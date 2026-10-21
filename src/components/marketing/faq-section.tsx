@@ -31,7 +31,9 @@ export function JourneyCrossSell({ note }: { note: string }) {
     <div className="surfaces-section">
       <div className="cross-sell">
         <div className="cross-sell-label">Complete Journey</div>
-        <h3 className="cross-sell-title">Experience, Launchpad and the Professional Workspace together</h3>
+        <h3 className="cross-sell-title">
+          Experience, Launchpad and the Professional Workspace together
+        </h3>
         <p className="cross-sell-text">{note}</p>
         <Link to="/pricing" className="btn btn-primary">
           See the plans →

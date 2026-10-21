@@ -1,11 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import type Stripe from "stripe";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import {
-  createStripeClient,
-  getStripeErrorMessage,
-  type StripeEnv,
-} from "@/lib/stripe.server";
+import { createStripeClient, getStripeErrorMessage, type StripeEnv } from "@/lib/stripe.server";
 
 const PRICE_IDS = [
   "experience_monthly",
@@ -54,7 +50,8 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((data: { priceId: PriceId; returnUrl: string; environment: StripeEnv }) => {
     if (!PRICE_IDS.includes(data.priceId)) throw new Error("Unknown plan");
-    if (data.environment !== "sandbox" && data.environment !== "live") throw new Error("Invalid environment");
+    if (data.environment !== "sandbox" && data.environment !== "live")
+      throw new Error("Invalid environment");
     const url = new URL(data.returnUrl);
     const isAllowedHost =
       url.hostname === "localhost" ||

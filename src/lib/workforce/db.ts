@@ -23,6 +23,6 @@ export function isMissingRelationError(error: { message?: string; code?: string 
     error.code === "42P01" ||
     msg.includes("does not exist") ||
     msg.includes("could not find the table") ||
-    msg.includes("relation") && msg.includes("does not exist")
+    (msg.includes("relation") && msg.includes("does not exist"))
   );
 }

@@ -17,9 +17,7 @@ import type {
 const DEPARTMENT_HINTS: Array<{ department: string; patterns: RegExp }> = [
   {
     department: "Healthcare and Life Sciences",
-    patterns: [
-      /\b(healthcare|clinical|biomedical|patient|pharma|life sciences?|HIPAA|NHS)\b/i,
-    ],
+    patterns: [/\b(healthcare|clinical|biomedical|patient|pharma|life sciences?|HIPAA|NHS)\b/i],
   },
   {
     department: "Security, Privacy and Governance",
@@ -91,9 +89,7 @@ function toAssigned(capability: CapabilityRecord, intent: MissionIntent): Assign
 }
 
 function departmentHasAssignable(departmentName: string): boolean {
-  return listCapabilities().some(
-    (c) => c.department === departmentName && isAssignable(c),
-  );
+  return listCapabilities().some((c) => c.department === departmentName && isAssignable(c));
 }
 
 function detectUnavailableDepartments(requestText: string): string[] {
@@ -184,7 +180,8 @@ export function matchCapabilitiesForMission(input: {
       message: `${id} (${cap?.name ?? "unknown"}) is registered as ${cap?.lifecycle_status ?? "planned"} — not operational. It will not be assigned to this mission.`,
       requested_capability_ids: [id],
       alternative: {
-        summary: "Continue with Available Wave 1 roles only, or wait until this capability reaches Available after evaluation.",
+        summary:
+          "Continue with Available Wave 1 roles only, or wait until this capability reaches Available after evaluation.",
         capability_ids: assigned.map((a) => a.capability_id),
       },
     });

@@ -77,38 +77,51 @@ export const getLaunchpadPack = createServerFn({ method: "GET" })
       .single();
     if (!framework) throw new Error("The capability framework is unavailable.");
 
-    const [{ data: caps }, { data: ledger }, { data: claims }, { data: runs }, { data: profile }, { data: shares }] =
-      await Promise.all([
-        supabase
-          .from("framework_capabilities")
-          .select("key, name, sort_order")
-          .eq("framework_id", framework.id)
-          .order("sort_order", { ascending: true }),
-        supabase
-          .from("evidence_ledger")
-          .select("id, source, strength, capability_key, summary, occurred_at, provenance")
-          .eq("owner_id", userId)
-          .order("occurred_at", { ascending: false })
-          .limit(200),
-        supabase
-          .from("snapshot_claims")
-          .select("capability_key, level, band, attestation_status, readiness_basis, verified")
-          .eq("owner_id", userId),
-        supabase
-          .from("score_runs")
-          .select("id, created_at")
-          .eq("owner_id", userId)
-          .order("created_at", { ascending: false })
-          .limit(1),
-        supabase.from("profiles").select("full_name, display_name, headline").eq("id", userId).maybeSingle(),
-        supabase
-          .from("portfolio_shares")
-          .select("id, label, token, include_self_reported, expires_at, revoked_at, view_count, created_at")
-          .eq("owner_id", userId)
-          .order("created_at", { ascending: false }),
-      ]);
+    const [
+      { data: caps },
+      { data: ledger },
+      { data: claims },
+      { data: runs },
+      { data: profile },
+      { data: shares },
+    ] = await Promise.all([
+      supabase
+        .from("framework_capabilities")
+        .select("key, name, sort_order")
+        .eq("framework_id", framework.id)
+        .order("sort_order", { ascending: true }),
+      supabase
+        .from("evidence_ledger")
+        .select("id, source, strength, capability_key, summary, occurred_at, provenance")
+        .eq("owner_id", userId)
+        .order("occurred_at", { ascending: false })
+        .limit(200),
+      supabase
+        .from("snapshot_claims")
+        .select("capability_key, level, band, attestation_status, readiness_basis, verified")
+        .eq("owner_id", userId),
+      supabase
+        .from("score_runs")
+        .select("id, created_at")
+        .eq("owner_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(1),
+      supabase
+        .from("profiles")
+        .select("full_name, display_name, headline")
+        .eq("id", userId)
+        .maybeSingle(),
+      supabase
+        .from("portfolio_shares")
+        .select(
+          "id, label, token, include_self_reported, expires_at, revoked_at, view_count, created_at",
+        )
+        .eq("owner_id", userId)
+        .order("created_at", { ascending: false }),
+    ]);
 
-    let judgements: { capability_key: string; level: number; band: string; rationale: string }[] = [];
+    let judgements: { capability_key: string; level: number; band: string; rationale: string }[] =
+      [];
     const run = runs?.[0];
     if (run) {
       const { data } = await supabase
@@ -164,7 +177,8 @@ export const getLaunchpadPack = createServerFn({ method: "GET" })
     const verifiedCount = capabilities.filter((c) => c.verified).length;
     const percent =
       capabilities.length === 0 ? 0 : Math.round((judgedCount / capabilities.length) * 100);
-    const explainable = judgedCount > 0 && judgedCount === capabilities.filter((c) => c.evidenceCount > 0).length;
+    const explainable =
+      judgedCount > 0 && judgedCount === capabilities.filter((c) => c.evidenceCount > 0).length;
 
     const stories: Story[] = (ledger ?? [])
       .filter((e) => e.strength !== "self_reported")
@@ -274,7 +288,13 @@ export type PublicPortfolio =
         evidenceCount: number;
         strongestStrength: string | null;
       }[];
-      stories: { summary: string; source: string; strength: string; occurredAt: string; coachConfirmed: boolean }[];
+      stories: {
+        summary: string;
+        source: string;
+        strength: string;
+        occurredAt: string;
+        coachConfirmed: boolean;
+      }[];
     };
 
 /**
@@ -293,36 +313,46 @@ export const getPublicPortfolio = createServerFn({ method: "GET" })
       .maybeSingle();
     if (!share) return { valid: false, reason: "not_found" };
     if (share.revoked_at) return { valid: false, reason: "revoked" };
-    if (new Date(share.expires_at).getTime() < Date.now()) return { valid: false, reason: "expired" };
+    if (new Date(share.expires_at).getTime() < Date.now())
+      return { valid: false, reason: "expired" };
 
     const ownerId = share.owner_id;
 
-    const [{ data: framework }, { data: profile }, { data: claims }, { data: runs }, { data: ledger }] =
-      await Promise.all([
-        supabaseAdmin
-          .from("capability_frameworks")
-          .select("id, key, version")
-          .eq("key", PILOT_FRAMEWORK.key)
-          .eq("version", PILOT_FRAMEWORK.version)
-          .single(),
-        supabaseAdmin.from("profiles").select("full_name, display_name, headline").eq("id", ownerId).maybeSingle(),
-        supabaseAdmin
-          .from("snapshot_claims")
-          .select("capability_key, level, band, verified")
-          .eq("owner_id", ownerId),
-        supabaseAdmin
-          .from("score_runs")
-          .select("id")
-          .eq("owner_id", ownerId)
-          .order("created_at", { ascending: false })
-          .limit(1),
-        supabaseAdmin
-          .from("evidence_ledger")
-          .select("source, strength, capability_key, summary, occurred_at, provenance")
-          .eq("owner_id", ownerId)
-          .order("occurred_at", { ascending: false })
-          .limit(100),
-      ]);
+    const [
+      { data: framework },
+      { data: profile },
+      { data: claims },
+      { data: runs },
+      { data: ledger },
+    ] = await Promise.all([
+      supabaseAdmin
+        .from("capability_frameworks")
+        .select("id, key, version")
+        .eq("key", PILOT_FRAMEWORK.key)
+        .eq("version", PILOT_FRAMEWORK.version)
+        .single(),
+      supabaseAdmin
+        .from("profiles")
+        .select("full_name, display_name, headline")
+        .eq("id", ownerId)
+        .maybeSingle(),
+      supabaseAdmin
+        .from("snapshot_claims")
+        .select("capability_key, level, band, verified")
+        .eq("owner_id", ownerId),
+      supabaseAdmin
+        .from("score_runs")
+        .select("id")
+        .eq("owner_id", ownerId)
+        .order("created_at", { ascending: false })
+        .limit(1),
+      supabaseAdmin
+        .from("evidence_ledger")
+        .select("source, strength, capability_key, summary, occurred_at, provenance")
+        .eq("owner_id", ownerId)
+        .order("occurred_at", { ascending: false })
+        .limit(100),
+    ]);
     if (!framework) return { valid: false, reason: "not_found" };
 
     const { data: caps } = await supabaseAdmin
@@ -331,7 +361,8 @@ export const getPublicPortfolio = createServerFn({ method: "GET" })
       .eq("framework_id", framework.id)
       .order("sort_order", { ascending: true });
 
-    let judgements: { capability_key: string; level: number; band: string; rationale: string }[] = [];
+    let judgements: { capability_key: string; level: number; band: string; rationale: string }[] =
+      [];
     if (runs?.[0]) {
       const { data } = await supabaseAdmin
         .from("capability_judgements")
@@ -351,7 +382,10 @@ export const getPublicPortfolio = createServerFn({ method: "GET" })
       if (!e.capability_key) continue;
       const bucket = evidenceByKey.get(e.capability_key) ?? { count: 0, strongest: null };
       bucket.count += 1;
-      if (!bucket.strongest || (STRENGTH_RANK[e.strength] ?? 0) > (STRENGTH_RANK[bucket.strongest] ?? 0)) {
+      if (
+        !bucket.strongest ||
+        (STRENGTH_RANK[e.strength] ?? 0) > (STRENGTH_RANK[bucket.strongest] ?? 0)
+      ) {
         bucket.strongest = e.strength;
       }
       evidenceByKey.set(e.capability_key, bucket);
@@ -391,7 +425,8 @@ export const getPublicPortfolio = createServerFn({ method: "GET" })
       },
       framework: { key: framework.key, version: framework.version },
       readiness: {
-        percent: capabilities.length === 0 ? 0 : Math.round((judgedCount / capabilities.length) * 100),
+        percent:
+          capabilities.length === 0 ? 0 : Math.round((judgedCount / capabilities.length) * 100),
         explainable,
         label: explainable
           ? "Explainable — each judged capability cites ledger entries"

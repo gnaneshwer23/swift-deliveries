@@ -45,7 +45,11 @@ function AuthCallbackPage() {
           // Drop the code from the address bar so a refresh cannot reuse it.
           url.searchParams.delete("code");
           url.searchParams.delete("state");
-          window.history.replaceState({}, document.title, `${url.pathname}${url.search}${url.hash}`);
+          window.history.replaceState(
+            {},
+            document.title,
+            `${url.pathname}${url.search}${url.hash}`,
+          );
         }
 
         const session = await waitForSession();

@@ -94,8 +94,14 @@ describe("practice history", () => {
 
   it("averages rubric scores per dimension across closed sessions", () => {
     const history = summarisePracticeHistory([
-      session("a", "2026-10-01", [["structure", 3], ["metrics", 5]]),
-      session("b", "2026-10-05", [["structure", 5], ["metrics", 3]]),
+      session("a", "2026-10-01", [
+        ["structure", 3],
+        ["metrics", 5],
+      ]),
+      session("b", "2026-10-05", [
+        ["structure", 5],
+        ["metrics", 3],
+      ]),
     ]);
     const structure = history.find((d) => d.dimension === "structure")!;
     expect(structure.average).toBe(4);
@@ -123,8 +129,15 @@ describe("practice history", () => {
 
   it("counts a strength only when it averages 4+ across at least two sessions", () => {
     const history = summarisePracticeHistory([
-      session("a", "2026-10-01", [["structure", 5], ["metrics", 5], ["stakeholders", 2]]),
-      session("b", "2026-10-05", [["structure", 4], ["stakeholders", 2]]),
+      session("a", "2026-10-01", [
+        ["structure", 5],
+        ["metrics", 5],
+        ["stakeholders", 2],
+      ]),
+      session("b", "2026-10-05", [
+        ["structure", 4],
+        ["stakeholders", 2],
+      ]),
     ]);
     const strengths = recurringStrengths(history).map((d) => d.dimension);
     expect(strengths).toEqual(["structure"]);

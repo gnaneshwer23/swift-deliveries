@@ -1,9 +1,14 @@
 /** Map Supabase Auth errors to short, actionable copy for login/signup forms. */
-export function formatAuthError(error: {
-  message?: string;
-  code?: string;
-  status?: number;
-} | null | undefined): string {
+export function formatAuthError(
+  error:
+    | {
+        message?: string;
+        code?: string;
+        status?: number;
+      }
+    | null
+    | undefined,
+): string {
   if (!error) return "Something went wrong. Please try again.";
 
   const code = (error.code ?? "").toLowerCase();

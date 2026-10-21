@@ -3,11 +3,7 @@
 // break the request it is observing.
 
 export type MonitoringKind =
-  | "uptime_check"
-  | "journey_error"
-  | "client_error"
-  | "server_error"
-  | "payment_failure";
+  "uptime_check" | "journey_error" | "client_error" | "server_error" | "payment_failure";
 
 export type MonitoringSeverity = "info" | "warning" | "error" | "critical";
 
@@ -33,7 +29,8 @@ function truncate(value: string, limit: number): string {
   return value.length > limit ? `${value.slice(0, limit)}…` : value;
 }
 
-export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+export type JsonValue =
+  string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 
 function safeDetail(detail: Record<string, unknown> | undefined): JsonValue {
   if (!detail) return {};
@@ -66,7 +63,10 @@ export async function recordMonitoringEvent(input: MonitoringEventInput): Promis
   }
 }
 
-export function describeUnknownError(error: unknown): { message: string; detail: Record<string, unknown> } {
+export function describeUnknownError(error: unknown): {
+  message: string;
+  detail: Record<string, unknown>;
+} {
   if (error instanceof Error) {
     return {
       message: `${error.name}: ${error.message}`,

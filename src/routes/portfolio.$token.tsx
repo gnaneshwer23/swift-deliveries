@@ -12,7 +12,10 @@ export const Route = createFileRoute("/portfolio/$token")({
         content: "A private, provenance-backed evidence portfolio shared from DeliverX Launchpad.",
       },
       { property: "og:title", content: "Evidence Portfolio — DeliverX" },
-      { property: "og:description", content: "Provenance-backed professional evidence, shared by its owner." },
+      {
+        property: "og:description",
+        content: "Provenance-backed professional evidence, shared by its owner.",
+      },
       { property: "og:type", content: "profile" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
@@ -73,11 +76,15 @@ function PortfolioPage() {
         <div className="flex flex-wrap items-end gap-8">
           <div>
             <div className="text-4xl font-bold tracking-tight">{data.readiness.percent}%</div>
-            <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Coverage</div>
+            <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+              Coverage
+            </div>
           </div>
           <div>
             <div className="text-4xl font-bold tracking-tight">{data.readiness.verifiedCount}</div>
-            <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Externally verified</div>
+            <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+              Externally verified
+            </div>
           </div>
           <div className="flex items-center gap-2 text-[12px]">
             {data.readiness.explainable ? (
@@ -126,8 +133,8 @@ function PortfolioPage() {
       </ul>
 
       <p className="mt-10 text-[11px] text-muted-foreground">
-        Shared by its owner through DeliverX Launchpad. Verified means an external person confirmed the claim.
-        Levels come from a versioned framework, never from self-description.
+        Shared by its owner through DeliverX Launchpad. Verified means an external person confirmed
+        the claim. Levels come from a versioned framework, never from self-description.
       </p>
     </main>
   );

@@ -24,69 +24,79 @@ export const getWorkspaceFeed = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<WorkspaceFeed> => {
     const { supabase, userId } = context;
 
-    const [suggestions, tasks, meetings, documents, evidence, judgements, claims, submissions, reviews, applications] =
-      await Promise.all([
-        supabase
-          .from("workspace_ai_suggestions")
-          .select("id,kind,title,status,created_at")
-          .eq("owner_id", userId)
-          .order("created_at", { ascending: false })
-          .limit(25),
-        supabase
-          .from("workspace_tasks")
-          .select("id,title,status,priority,due_at,updated_at")
-          .eq("owner_id", userId)
-          .order("updated_at", { ascending: false })
-          .limit(40),
-        supabase
-          .from("workspace_meetings")
-          .select("id,title,status,scheduled_at,created_at")
-          .eq("owner_id", userId)
-          .order("created_at", { ascending: false })
-          .limit(25),
-        supabase
-          .from("workspace_documents")
-          .select("id,title,status,updated_at")
-          .eq("owner_id", userId)
-          .order("updated_at", { ascending: false })
-          .limit(25),
-        supabase
-          .from("evidence_ledger")
-          .select("id,summary,strength,capability_key,occurred_at")
-          .eq("owner_id", userId)
-          .order("occurred_at", { ascending: false })
-          .limit(40),
-        supabase
-          .from("capability_judgements")
-          .select("id,capability_key,level,band,created_at")
-          .eq("owner_id", userId)
-          .order("created_at", { ascending: false })
-          .limit(25),
-        supabase
-          .from("snapshot_claims")
-          .select("id,capability_key,verified,attestation_status,updated_at")
-          .eq("owner_id", userId)
-          .order("updated_at", { ascending: false })
-          .limit(25),
-        supabase
-          .from("coaching_submissions")
-          .select("id,state,submitted_at,reviewed_at")
-          .eq("owner_id", userId)
-          .order("submitted_at", { ascending: false })
-          .limit(25),
-        supabase
-          .from("performance_reviews")
-          .select("id,period_label,status,reviewer_decision,submitted_at,reviewed_at,created_at")
-          .eq("owner_id", userId)
-          .order("created_at", { ascending: false })
-          .limit(20),
-        supabase
-          .from("job_applications")
-          .select("id,company,role_title,stage,next_step,next_step_at,updated_at")
-          .eq("owner_id", userId)
-          .order("updated_at", { ascending: false })
-          .limit(30),
-      ]);
+    const [
+      suggestions,
+      tasks,
+      meetings,
+      documents,
+      evidence,
+      judgements,
+      claims,
+      submissions,
+      reviews,
+      applications,
+    ] = await Promise.all([
+      supabase
+        .from("workspace_ai_suggestions")
+        .select("id,kind,title,status,created_at")
+        .eq("owner_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(25),
+      supabase
+        .from("workspace_tasks")
+        .select("id,title,status,priority,due_at,updated_at")
+        .eq("owner_id", userId)
+        .order("updated_at", { ascending: false })
+        .limit(40),
+      supabase
+        .from("workspace_meetings")
+        .select("id,title,status,scheduled_at,created_at")
+        .eq("owner_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(25),
+      supabase
+        .from("workspace_documents")
+        .select("id,title,status,updated_at")
+        .eq("owner_id", userId)
+        .order("updated_at", { ascending: false })
+        .limit(25),
+      supabase
+        .from("evidence_ledger")
+        .select("id,summary,strength,capability_key,occurred_at")
+        .eq("owner_id", userId)
+        .order("occurred_at", { ascending: false })
+        .limit(40),
+      supabase
+        .from("capability_judgements")
+        .select("id,capability_key,level,band,created_at")
+        .eq("owner_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(25),
+      supabase
+        .from("snapshot_claims")
+        .select("id,capability_key,verified,attestation_status,updated_at")
+        .eq("owner_id", userId)
+        .order("updated_at", { ascending: false })
+        .limit(25),
+      supabase
+        .from("coaching_submissions")
+        .select("id,state,submitted_at,reviewed_at")
+        .eq("owner_id", userId)
+        .order("submitted_at", { ascending: false })
+        .limit(25),
+      supabase
+        .from("performance_reviews")
+        .select("id,period_label,status,reviewer_decision,submitted_at,reviewed_at,created_at")
+        .eq("owner_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(20),
+      supabase
+        .from("job_applications")
+        .select("id,company,role_title,stage,next_step,next_step_at,updated_at")
+        .eq("owner_id", userId)
+        .order("updated_at", { ascending: false })
+        .limit(30),
+    ]);
 
     const firstError = [
       suggestions.error,
@@ -268,7 +278,8 @@ export const getWorkspaceFeed = createServerFn({ method: "GET" })
       });
     }
 
-    const byNewest = (a: FeedItem, b: FeedItem) => new Date(b.at).getTime() - new Date(a.at).getTime();
+    const byNewest = (a: FeedItem, b: FeedItem) =>
+      new Date(b.at).getTime() - new Date(a.at).getTime();
     return {
       inbox: inbox.sort(byNewest).slice(0, 40),
       timeline: timeline.sort(byNewest).slice(0, 80),

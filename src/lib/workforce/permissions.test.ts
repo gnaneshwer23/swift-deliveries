@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  maxPermission,
-  permissionAllows,
-  requiresExternalApproval,
-} from "./permissions";
+import { maxPermission, permissionAllows, requiresExternalApproval } from "./permissions";
 
 describe("permission ladder", () => {
   it("allows lower work under a higher ceiling", () => {
@@ -18,8 +14,8 @@ describe("permission ladder", () => {
   });
 
   it("computes the max required permission", () => {
-    expect(
-      maxPermission(["plan", "create", "act_externally", "execute_internally"]),
-    ).toBe("act_externally");
+    expect(maxPermission(["plan", "create", "act_externally", "execute_internally"])).toBe(
+      "act_externally",
+    );
   });
 });

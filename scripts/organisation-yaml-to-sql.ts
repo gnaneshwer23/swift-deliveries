@@ -113,7 +113,8 @@ const DEFAULT_SECTIONS = [
 
 const HINTS_BY_DIMENSION: Record<string, string> = {
   discovery: "Is the problem clearly named, distinct from a solution, and grounded in evidence?",
-  prioritisation: "Are trade-offs stated honestly, with a clear recommendation and rejected options?",
+  prioritisation:
+    "Are trade-offs stated honestly, with a clear recommendation and rejected options?",
   delivery: "Is the plan small enough to run, with success measures agreed before it starts?",
   stakeholders: "Are decision rights, motivations and conflicts named rather than smoothed over?",
   data: "Are claims tied to numbers or observed behaviour, not anecdote?",

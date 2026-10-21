@@ -17,10 +17,7 @@ export function remainingUsage(budget: UsageBudget): number {
 }
 
 /** Charge billable usage; refuses any charge that would exceed the ceiling. */
-export function chargeUsage(
-  budget: UsageBudget,
-  amount: number,
-): UsageChargeResult {
+export function chargeUsage(budget: UsageBudget, amount: number): UsageChargeResult {
   if (amount <= 0) {
     return { ok: true, nextConsumed: budget.consumed, charged: 0 };
   }

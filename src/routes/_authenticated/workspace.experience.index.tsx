@@ -13,10 +13,14 @@ export const Route = createFileRoute("/_authenticated/workspace/experience/")({
       { title: "Experience Simulations — DeliverX" },
       {
         name: "description",
-        content: "Do realistic product work inside a simulated company. Every submission is locked and enters your evidence record.",
+        content:
+          "Do realistic product work inside a simulated company. Every submission is locked and enters your evidence record.",
       },
       { property: "og:title", content: "Experience Simulations — DeliverX" },
-      { property: "og:description", content: "Realistic simulated PM work that produces provenance-backed evidence." },
+      {
+        property: "og:description",
+        content: "Realistic simulated PM work that produces provenance-backed evidence.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -79,13 +83,20 @@ function ExperienceIndex() {
                     </span>
                   )
                 ) : (
-                  <Button size="sm" disabled={join.isPending} onClick={() => join.mutate(scenario.id)}>
+                  <Button
+                    size="sm"
+                    disabled={join.isPending}
+                    onClick={() => join.mutate(scenario.id)}
+                  >
                     {join.isPending ? "Joining…" : "Join scenario"}
                   </Button>
                 )
               }
             >
-              <div className="mb-5 flex flex-wrap gap-x-6 gap-y-2 text-[11px]" style={{ color: "var(--x-slate-light)" }}>
+              <div
+                className="mb-5 flex flex-wrap gap-x-6 gap-y-2 text-[11px]"
+                style={{ color: "var(--x-slate-light)" }}
+              >
                 <span>
                   Role · <strong className="font-semibold">{scenario.roleTitle}</strong>
                 </span>
@@ -109,11 +120,20 @@ function ExperienceIndex() {
                       }}
                     >
                       {state === "done" ? (
-                        <CheckCircle2 className="size-4 shrink-0" style={{ color: "var(--x-teal)" }} />
+                        <CheckCircle2
+                          className="size-4 shrink-0"
+                          style={{ color: "var(--x-teal)" }}
+                        />
                       ) : state === "open" ? (
-                        <PlayCircle className="size-4 shrink-0" style={{ color: "var(--x-amber)" }} />
+                        <PlayCircle
+                          className="size-4 shrink-0"
+                          style={{ color: "var(--x-amber)" }}
+                        />
                       ) : (
-                        <Lock className="size-4 shrink-0" style={{ color: "var(--x-slate-light)" }} />
+                        <Lock
+                          className="size-4 shrink-0"
+                          style={{ color: "var(--x-slate-light)" }}
+                        />
                       )}
                       <div className="min-w-0 flex-1">
                         <div className="text-[13px] font-semibold">{task.title}</div>
@@ -150,8 +170,8 @@ function ExperienceIndex() {
         })}
 
         <p className="text-[11px]" style={{ color: "var(--x-slate-light)" }}>
-          Simulated work creates observed evidence only. Capability levels come from a separate scoring run, and
-          Verified needs external attestation.
+          Simulated work creates observed evidence only. Capability levels come from a separate
+          scoring run, and Verified needs external attestation.
         </p>
       </div>
     </WorkspaceShell>

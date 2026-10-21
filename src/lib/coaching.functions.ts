@@ -54,20 +54,25 @@ export const getCoachingWorkspace = createServerFn({ method: "GET" })
     const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", userId);
     const isCoach = (roles ?? []).some((row) => row.role === "moderator" || row.role === "admin");
 
-    const [{ data: programmes }, { data: exercises }, { data: submissions, error }] = await Promise.all([
-      supabase
-        .from("coaching_programmes")
-        .select("id, name, description, enabled, capability_frameworks(key, version)")
-        .order("name"),
-      supabase
-        .from("coaching_exercises")
-        .select("id, programme_id, title, instructions, artefact_type, sort_order, framework_capabilities(name)")
-        .order("sort_order"),
-      supabase
-        .from("coaching_submissions")
-        .select("id, owner_id, exercise_id, artefact_version_id, intake_method, external_url, storage_path, content_hash, self_confidence, state, attempt, submitted_at")
-        .order("submitted_at", { ascending: false }),
-    ]);
+    const [{ data: programmes }, { data: exercises }, { data: submissions, error }] =
+      await Promise.all([
+        supabase
+          .from("coaching_programmes")
+          .select("id, name, description, enabled, capability_frameworks(key, version)")
+          .order("name"),
+        supabase
+          .from("coaching_exercises")
+          .select(
+            "id, programme_id, title, instructions, artefact_type, sort_order, framework_capabilities(name)",
+          )
+          .order("sort_order"),
+        supabase
+          .from("coaching_submissions")
+          .select(
+            "id, owner_id, exercise_id, artefact_version_id, intake_method, external_url, storage_path, content_hash, self_confidence, state, attempt, submitted_at",
+          )
+          .order("submitted_at", { ascending: false }),
+      ]);
     if (error) throw new Error(error.message);
 
     const rows = submissions ?? [];
@@ -76,10 +81,16 @@ export const getCoachingWorkspace = createServerFn({ method: "GET" })
     const submissionIds = rows.map((row) => row.id);
     const [{ data: versions }, { data: reviews }, { data: profiles }] = await Promise.all([
       versionIds.length
-        ? supabase.from("artefact_versions").select("id, artefact_id, body, artefacts(title)").in("id", versionIds)
+        ? supabase
+            .from("artefact_versions")
+            .select("id, artefact_id, body, artefacts(title)")
+            .in("id", versionIds)
         : Promise.resolve({ data: [] }),
       submissionIds.length
-        ? supabase.from("coach_reviews").select("submission_id, decision, coach_note, created_at").in("submission_id", submissionIds)
+        ? supabase
+            .from("coach_reviews")
+            .select("submission_id, decision, coach_note, created_at")
+            .in("submission_id", submissionIds)
         : Promise.resolve({ data: [] }),
       ownerIds.length
         ? supabase.from("profiles").select("id, full_name, display_name").in("id", ownerIds)
@@ -89,7 +100,9 @@ export const getCoachingWorkspace = createServerFn({ method: "GET" })
     const exerciseById = new Map((exercises ?? []).map((exercise) => [exercise.id, exercise]));
     const programmeById = new Map((programmes ?? []).map((programme) => [programme.id, programme]));
     const versionById = new Map((versions ?? []).map((version) => [version.id, version]));
-    const reviewBySubmission = new Map((reviews ?? []).map((review) => [review.submission_id, review]));
+    const reviewBySubmission = new Map(
+      (reviews ?? []).map((review) => [review.submission_id, review]),
+    );
     const profileById = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
 
     const mapped = rows.map((row): CoachingSubmission => {
@@ -115,7 +128,11 @@ export const getCoachingWorkspace = createServerFn({ method: "GET" })
         attempt: row.attempt,
         submittedAt: row.submitted_at,
         review: review
-          ? { decision: review.decision, coachNote: review.coach_note, createdAt: review.created_at }
+          ? {
+              decision: review.decision,
+              coachNote: review.coach_note,
+              createdAt: review.created_at,
+            }
           : null,
       };
     });
@@ -179,7 +196,13 @@ export const submitCoachingEvidence = createServerFn({ method: "POST" })
 export const reviewCoachingSubmission = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((data: unknown) =>
-    z.object({ submissionId: z.string().uuid(), decision: z.enum(["confirmed", "rejected"]), coachNote: z.string().trim().min(3).max(2000) }).parse(data),
+    z
+      .object({
+        submissionId: z.string().uuid(),
+        decision: z.enum(["confirmed", "rejected"]),
+        coachNote: z.string().trim().min(3).max(2000),
+      })
+      .parse(data),
   )
   .handler(async ({ data, context }) => {
     const { data: reviewId, error } = await context.supabase.rpc("review_coaching_submission", {
@@ -213,14 +236,22 @@ export const getCoachReviewWorkspace = createServerFn({ method: "GET" })
     const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", userId);
     const isCoach = (roles ?? []).some((row) => row.role === "moderator" || row.role === "admin");
     if (!isCoach) {
-      return { isCoach: false, stats: { waiting: 0, reviewedThisWeek: 0, averageWaitHours: null }, programmes: [], queue: [], history: [] };
+      return {
+        isCoach: false,
+        stats: { waiting: 0, reviewedThisWeek: 0, averageWaitHours: null },
+        programmes: [],
+        queue: [],
+        history: [],
+      };
     }
 
     const [{ data: submissions }, { data: myReviews }, { data: programmes }, { data: exercises }] =
       await Promise.all([
         supabase
           .from("coaching_submissions")
-          .select("id, owner_id, exercise_id, artefact_version_id, intake_method, external_url, storage_path, content_hash, self_confidence, state, attempt, submitted_at, reviewed_at")
+          .select(
+            "id, owner_id, exercise_id, artefact_version_id, intake_method, external_url, storage_path, content_hash, self_confidence, state, attempt, submitted_at, reviewed_at",
+          )
           .order("submitted_at", { ascending: true }),
         supabase
           .from("coach_reviews")
@@ -237,14 +268,18 @@ export const getCoachReviewWorkspace = createServerFn({ method: "GET" })
     const rows = submissions ?? [];
     const reviewsBySubmission = new Map((myReviews ?? []).map((row) => [row.submission_id, row]));
     const relevant = rows.filter(
-      (row) => (row.state === "pending" && row.owner_id !== userId) || reviewsBySubmission.has(row.id),
+      (row) =>
+        (row.state === "pending" && row.owner_id !== userId) || reviewsBySubmission.has(row.id),
     );
 
     const versionIds = relevant.map((row) => row.artefact_version_id);
     const ownerIds = [...new Set(relevant.map((row) => row.owner_id))];
     const [{ data: versions }, { data: profiles }] = await Promise.all([
       versionIds.length
-        ? supabase.from("artefact_versions").select("id, body, artefacts(title)").in("id", versionIds)
+        ? supabase
+            .from("artefact_versions")
+            .select("id, body, artefacts(title)")
+            .in("id", versionIds)
         : Promise.resolve({ data: [] }),
       ownerIds.length
         ? supabase.from("profiles").select("id, full_name, display_name").in("id", ownerIds)
@@ -278,7 +313,11 @@ export const getCoachReviewWorkspace = createServerFn({ method: "GET" })
         attempt: row.attempt,
         submittedAt: row.submitted_at,
         review: review
-          ? { decision: review.decision, coachNote: review.coach_note, createdAt: review.created_at }
+          ? {
+              decision: review.decision,
+              coachNote: review.coach_note,
+              createdAt: review.created_at,
+            }
           : null,
       };
     };
@@ -288,7 +327,10 @@ export const getCoachReviewWorkspace = createServerFn({ method: "GET" })
       .filter((row) => row.state === "pending" && row.owner_id !== userId)
       .map((row) => ({
         ...map(row),
-        waitingHours: Math.max(0, Math.round((now - new Date(row.submitted_at).getTime()) / 3_600_000)),
+        waitingHours: Math.max(
+          0,
+          Math.round((now - new Date(row.submitted_at).getTime()) / 3_600_000),
+        ),
       }));
 
     const weekAgo = now - 7 * 24 * 3_600_000;
@@ -309,7 +351,8 @@ export const getCoachReviewWorkspace = createServerFn({ method: "GET" })
       isCoach: true,
       stats: {
         waiting: queue.length,
-        reviewedThisWeek: history.filter((row) => new Date(row.decidedAt).getTime() >= weekAgo).length,
+        reviewedThisWeek: history.filter((row) => new Date(row.decidedAt).getTime() >= weekAgo)
+          .length,
         averageWaitHours: queue.length
           ? Math.round(queue.reduce((total, row) => total + row.waitingHours, 0) / queue.length)
           : null,

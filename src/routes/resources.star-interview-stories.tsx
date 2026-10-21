@@ -20,9 +20,7 @@ export const Route = createFileRoute("/resources/star-interview-stories")({
       { name: "twitter:card", content: "summary" },
       { property: "og:url", content: "https://deliverx.dev/resources/star-interview-stories" },
     ],
-    links: [
-      { rel: "canonical", href: "https://deliverx.dev/resources/star-interview-stories" },
-    ],
+    links: [{ rel: "canonical", href: "https://deliverx.dev/resources/star-interview-stories" }],
     scripts: [
       {
         type: "application/ld+json",
@@ -53,9 +51,9 @@ function StarStoriesGuide() {
     >
       <h2>Why polished STAR answers still fail</h2>
       <p>
-        Most rehearsed answers fail on the second question, not the first. An interviewer accepts the
-        story, then asks what the alternative was, who objected, what the numbers were, or what you
-        would change. Answers built from adjectives run out at that point. Answers built from
+        Most rehearsed answers fail on the second question, not the first. An interviewer accepts
+        the story, then asks what the alternative was, who objected, what the numbers were, or what
+        you would change. Answers built from adjectives run out at that point. Answers built from
         artefacts do not.
       </p>
       <p>
@@ -115,8 +113,8 @@ function StarStoriesGuide() {
         attester can confirm one, and coach confirmation is shown as its own distinct tier.
       </p>
       <p>
-        The point of all this is narrow and practical — when an interviewer digs, you have a document
-        to open and an honest label for every claim.
+        The point of all this is narrow and practical — when an interviewer digs, you have a
+        document to open and an honest label for every claim.
       </p>
     </GuideArticle>
   );

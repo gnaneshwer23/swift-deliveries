@@ -35,10 +35,22 @@ export const Route = createFileRoute("/_authenticated/workspace/")({
 });
 
 const JOURNEY: Record<JourneyState, { label: string; description: string }> = {
-  A: { label: "Pre-experience", description: "Your record is empty. Evidence only exists after you do the work." },
-  B: { label: "Evidence building", description: "Artefacts are landing in your ledger. Nothing has been judged yet." },
-  C: { label: "Readiness packaging", description: "Capability has been judged against the framework. You can package honestly." },
-  D: { label: "Externally verified", description: "At least one claim carries an external attestation." },
+  A: {
+    label: "Pre-experience",
+    description: "Your record is empty. Evidence only exists after you do the work.",
+  },
+  B: {
+    label: "Evidence building",
+    description: "Artefacts are landing in your ledger. Nothing has been judged yet.",
+  },
+  C: {
+    label: "Readiness packaging",
+    description: "Capability has been judged against the framework. You can package honestly.",
+  },
+  D: {
+    label: "Externally verified",
+    description: "At least one claim carries an external attestation.",
+  },
 };
 
 const SOURCE_LABELS: Record<string, string> = {
@@ -169,10 +181,7 @@ function ContextualHome() {
                 <div className="ev-meta">{step.reason}</div>
               </div>
               {step.done ? (
-                <span
-                  className="text-[10px] font-semibold"
-                  style={{ color: "var(--x-teal-text)" }}
-                >
+                <span className="text-[10px] font-semibold" style={{ color: "var(--x-teal-text)" }}>
                   Done
                 </span>
               ) : (
@@ -217,9 +226,15 @@ function ContextualHome() {
         <div>
           <div className="section-title">Evidence by source</div>
           <WorkspaceCard
-            title={briefing.evidenceTotal === 0 ? "No evidence yet" : `${briefing.evidenceTotal} entries`}
+            title={
+              briefing.evidenceTotal === 0 ? "No evidence yet" : `${briefing.evidenceTotal} entries`
+            }
             action={
-              <Link to="/workspace/evidence" className="text-xs no-underline" style={{ color: "var(--x-slate)" }}>
+              <Link
+                to="/workspace/evidence"
+                className="text-xs no-underline"
+                style={{ color: "var(--x-slate)" }}
+              >
                 View all →
               </Link>
             }
@@ -332,26 +347,34 @@ function ContextualHome() {
   );
 }
 
-function nextAction(briefing: DailyBriefing): { label: string; short: string; reason: string; to: string } {
+function nextAction(briefing: DailyBriefing): {
+  label: string;
+  short: string;
+  reason: string;
+  to: string;
+} {
   if (briefing.evidenceTotal === 0)
     return {
       label: "See how Experience works",
       short: "Start",
-      reason: "Your record has no evidence yet. Realistic work is the only thing that can create it.",
+      reason:
+        "Your record has no evidence yet. Realistic work is the only thing that can create it.",
       to: "/experience",
     };
   if (briefing.judgedCapabilities === 0)
     return {
       label: "Open your evidence",
       short: "Judge",
-      reason: "You have artefacts on record but no framework judgement yet. Review what is captured and run a judgement.",
+      reason:
+        "You have artefacts on record but no framework judgement yet. Review what is captured and run a judgement.",
       to: "/workspace/evidence",
     };
   if (briefing.verifiedClaims === 0)
     return {
       label: "Request an attestation",
       short: "Verify",
-      reason: "Capability has been judged. Verified only lights from an external attestation, so ask someone who saw the work.",
+      reason:
+        "Capability has been judged. Verified only lights from an external attestation, so ask someone who saw the work.",
       to: "/workspace/capability",
     };
   return {
@@ -361,4 +384,3 @@ function nextAction(briefing: DailyBriefing): { label: string; short: string; re
     to: "/workspace/capability",
   };
 }
-

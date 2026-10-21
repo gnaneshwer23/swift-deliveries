@@ -20,7 +20,8 @@ export const Route = createFileRoute("/_authenticated/workspace/reviews")({
       { title: "Performance review — DeliverX Workspace" },
       {
         name: "description",
-        content: "Write a self-assessment for a period of work, send it for human review, and keep the written outcome on record.",
+        content:
+          "Write a self-assessment for a period of work, send it for human review, and keep the written outcome on record.",
       },
       { property: "og:title", content: "Performance review — DeliverX Workspace" },
       { property: "og:description", content: "Self-assessment plus a written human decision." },
@@ -79,7 +80,11 @@ function ReviewsPage() {
           <div className="grid gap-3">
             <label className="grid gap-1 text-xs">
               Period
-              <Input value={periodLabel} onChange={(e) => setPeriodLabel(e.target.value)} placeholder="Sprint 4, or Q3 2026" />
+              <Input
+                value={periodLabel}
+                onChange={(e) => setPeriodLabel(e.target.value)}
+                placeholder="Sprint 4, or Q3 2026"
+              />
             </label>
             <label className="grid gap-1 text-xs">
               Self-assessment
@@ -93,7 +98,9 @@ function ReviewsPage() {
             <Button
               className="justify-self-start"
               onClick={() => create.mutate()}
-              disabled={periodLabel.trim().length < 2 || selfSummary.trim().length < 40 || create.isPending}
+              disabled={
+                periodLabel.trim().length < 2 || selfSummary.trim().length < 40 || create.isPending
+              }
             >
               Save draft
             </Button>
@@ -104,27 +111,51 @@ function ReviewsPage() {
           {data.mine.length ? (
             <ul className="grid gap-3">
               {data.mine.map((r) => (
-                <li key={r.id} className="rounded-lg border p-4" style={{ borderColor: "var(--x-border)" }}>
+                <li
+                  key={r.id}
+                  className="rounded-lg border p-4"
+                  style={{ borderColor: "var(--x-border)" }}
+                >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-[13px] font-semibold">{r.periodLabel}</p>
-                    <span className="text-[10px] uppercase tracking-[0.12em]" style={{ color: "var(--x-slate-light)" }}>
+                    <span
+                      className="text-[10px] uppercase tracking-[0.12em]"
+                      style={{ color: "var(--x-slate-light)" }}
+                    >
                       {STATUS_LABEL[r.status] ?? r.status}
                     </span>
                   </div>
                   {r.status === "draft" ? (
-                    <DraftEditor review={r} onSaved={invalidate} onSubmit={() => submit.mutate(r.id)} />
+                    <DraftEditor
+                      review={r}
+                      onSaved={invalidate}
+                      onSubmit={() => submit.mutate(r.id)}
+                    />
                   ) : (
-                    <p className="mt-2 whitespace-pre-wrap text-xs leading-relaxed" style={{ color: "var(--x-slate-light)" }}>
+                    <p
+                      className="mt-2 whitespace-pre-wrap text-xs leading-relaxed"
+                      style={{ color: "var(--x-slate-light)" }}
+                    >
                       {r.selfSummary}
                     </p>
                   )}
                   {r.reviewerSummary ? (
-                    <div className="mt-3 rounded-md border p-3" style={{ borderColor: "var(--x-border)" }}>
-                      <div className="text-[10px] uppercase tracking-[0.12em]" style={{ color: "var(--x-slate-light)" }}>
+                    <div
+                      className="mt-3 rounded-md border p-3"
+                      style={{ borderColor: "var(--x-border)" }}
+                    >
+                      <div
+                        className="text-[10px] uppercase tracking-[0.12em]"
+                        style={{ color: "var(--x-slate-light)" }}
+                      >
                         Reviewer decision: {r.reviewerDecision}
-                        {r.reviewedAt ? ` · ${new Date(r.reviewedAt).toLocaleDateString("en-GB")}` : ""}
+                        {r.reviewedAt
+                          ? ` · ${new Date(r.reviewedAt).toLocaleDateString("en-GB")}`
+                          : ""}
                       </div>
-                      <p className="mt-2 whitespace-pre-wrap text-xs leading-relaxed">{r.reviewerSummary}</p>
+                      <p className="mt-2 whitespace-pre-wrap text-xs leading-relaxed">
+                        {r.reviewerSummary}
+                      </p>
                     </div>
                   ) : null}
                 </li>
@@ -180,7 +211,11 @@ function DraftEditor({
   });
   return (
     <div className="mt-3 grid gap-2">
-      <Textarea className="min-h-28 text-xs" value={body} onChange={(e) => setBody(e.target.value)} />
+      <Textarea
+        className="min-h-28 text-xs"
+        value={body}
+        onChange={(e) => setBody(e.target.value)}
+      />
       <div className="flex flex-wrap gap-2">
         <Button
           variant="outline"
@@ -220,11 +255,19 @@ function ReviewerBlock({
     <li className="rounded-lg border p-4" style={{ borderColor: "var(--x-border)" }}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-[13px] font-semibold">{review.periodLabel}</p>
-        <span className="text-[10px] uppercase tracking-[0.12em]" style={{ color: "var(--x-slate-light)" }}>
-          {review.submittedAt ? `Submitted ${new Date(review.submittedAt).toLocaleDateString("en-GB")}` : "Submitted"}
+        <span
+          className="text-[10px] uppercase tracking-[0.12em]"
+          style={{ color: "var(--x-slate-light)" }}
+        >
+          {review.submittedAt
+            ? `Submitted ${new Date(review.submittedAt).toLocaleDateString("en-GB")}`
+            : "Submitted"}
         </span>
       </div>
-      <p className="mt-2 whitespace-pre-wrap text-xs leading-relaxed" style={{ color: "var(--x-slate-light)" }}>
+      <p
+        className="mt-2 whitespace-pre-wrap text-xs leading-relaxed"
+        style={{ color: "var(--x-slate-light)" }}
+      >
         {review.selfSummary}
       </p>
       <Textarea
@@ -234,7 +277,11 @@ function ReviewerBlock({
         placeholder="Your written decision: what the evidence supports, and what is still missing."
       />
       <div className="mt-2 flex flex-wrap gap-2">
-        <Button size="sm" disabled={summary.trim().length < 10 || decide.isPending} onClick={() => decide.mutate("confirmed")}>
+        <Button
+          size="sm"
+          disabled={summary.trim().length < 10 || decide.isPending}
+          onClick={() => decide.mutate("confirmed")}
+        >
           Confirm
         </Button>
         <Button

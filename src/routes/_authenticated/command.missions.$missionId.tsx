@@ -148,12 +148,7 @@ function MissionDetail() {
 
   const { mission, plan, tasks, artefacts, approvals, workspace } = data;
   const pendingQuestions = plan?.clarificationQuestions ?? [];
-  const ladder: PermissionLevel[] = [
-    "plan",
-    "create",
-    "execute_internally",
-    "act_externally",
-  ];
+  const ladder: PermissionLevel[] = ["plan", "create", "execute_internally", "act_externally"];
 
   return (
     <CommandShell
@@ -194,9 +189,7 @@ function MissionDetail() {
                     id={q.id}
                     className="cc-input"
                     value={answers[q.id] ?? ""}
-                    onChange={(e) =>
-                      setAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))
-                    }
+                    onChange={(e) => setAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))}
                   />
                 </div>
               ))}
@@ -276,7 +269,10 @@ function MissionDetail() {
               </ul>
 
               {mission.status === "awaiting_approval" || mission.status === "planned" ? (
-                <div className="mt-4 rounded-md border p-4" style={{ borderColor: "var(--x-border)" }}>
+                <div
+                  className="mt-4 rounded-md border p-4"
+                  style={{ borderColor: "var(--x-border)" }}
+                >
                   <label className="flex items-start gap-2 text-sm">
                     <input
                       type="checkbox"
@@ -363,9 +359,7 @@ function MissionDetail() {
                       {PERMISSION_LABELS[t.permissionRequired]}
                       {t.isExternal ? " · external" : ""} · est. {t.estimatedUsage}
                       {t.actualUsage ? ` · used ${t.actualUsage}` : ""}
-                      {t.capabilityIds.length
-                        ? ` · ${t.capabilityIds.join(", ")}`
-                        : ""}
+                      {t.capabilityIds.length ? ` · ${t.capabilityIds.join(", ")}` : ""}
                     </p>
                     <p className="text-xs mt-1">
                       <em>Acceptance:</em> {t.acceptanceCriteria}

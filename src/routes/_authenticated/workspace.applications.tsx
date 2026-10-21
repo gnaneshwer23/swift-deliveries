@@ -15,7 +15,8 @@ export const Route = createFileRoute("/_authenticated/workspace/applications")({
       { title: "Applications — DeliverX Workspace" },
       {
         name: "description",
-        content: "Track the roles you are applying for, the next step on each, and which shared portfolio link you sent.",
+        content:
+          "Track the roles you are applying for, the next step on each, and which shared portfolio link you sent.",
       },
       { property: "og:title", content: "Applications — DeliverX Workspace" },
       { property: "og:description", content: "One board for every role you are pursuing." },
@@ -66,8 +67,12 @@ function ApplicationsPage() {
   });
 
   const update = useMutation({
-    mutationFn: (input: { id: string; stage?: (typeof STAGES)[number]; nextStep?: string; notes?: string }) =>
-      updateApplication({ data: input }),
+    mutationFn: (input: {
+      id: string;
+      stage?: (typeof STAGES)[number];
+      nextStep?: string;
+      notes?: string;
+    }) => updateApplication({ data: input }),
     onSuccess: () => void invalidate(),
     onError: (e: Error) => toast.error(e.message),
   });
@@ -81,7 +86,9 @@ function ApplicationsPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const liveShares = data.shares.filter((s) => !s.revokedAt && new Date(s.expiresAt).getTime() > Date.now());
+  const liveShares = data.shares.filter(
+    (s) => !s.revokedAt && new Date(s.expiresAt).getTime() > Date.now(),
+  );
 
   const counts = STAGES.map((stage) => ({
     stage,
@@ -89,13 +96,23 @@ function ApplicationsPage() {
   }));
 
   return (
-    <WorkspaceShell title="Applications" subtitle="Your own record of the roles you are pursuing. Nothing is shared with employers automatically.">
+    <WorkspaceShell
+      title="Applications"
+      subtitle="Your own record of the roles you are pursuing. Nothing is shared with employers automatically."
+    >
       <div className="grid gap-5">
         <WorkspaceCard title="Where things stand">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
             {counts.map((c) => (
-              <div key={c.stage} className="rounded-lg border p-3" style={{ borderColor: "var(--x-border)" }}>
-                <div className="text-[10px] uppercase tracking-[0.12em]" style={{ color: "var(--x-slate-light)" }}>
+              <div
+                key={c.stage}
+                className="rounded-lg border p-3"
+                style={{ borderColor: "var(--x-border)" }}
+              >
+                <div
+                  className="text-[10px] uppercase tracking-[0.12em]"
+                  style={{ color: "var(--x-slate-light)" }}
+                >
                   {STAGE_LABEL[c.stage]}
                 </div>
                 <div className="mt-1 text-xl font-semibold">{c.count}</div>
@@ -104,19 +121,34 @@ function ApplicationsPage() {
           </div>
         </WorkspaceCard>
 
-        <WorkspaceCard title="Add an application" description="Attach one of your live portfolio links so you know exactly what an employer saw.">
+        <WorkspaceCard
+          title="Add an application"
+          description="Attach one of your live portfolio links so you know exactly what an employer saw."
+        >
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="grid gap-1 text-xs">
               Company
-              <Input value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Company name" />
+              <Input
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                placeholder="Company name"
+              />
             </label>
             <label className="grid gap-1 text-xs">
               Role
-              <Input value={roleTitle} onChange={(e) => setRoleTitle(e.target.value)} placeholder="Product Manager" />
+              <Input
+                value={roleTitle}
+                onChange={(e) => setRoleTitle(e.target.value)}
+                placeholder="Product Manager"
+              />
             </label>
             <label className="grid gap-1 text-xs">
               How you found it
-              <Input value={source} onChange={(e) => setSource(e.target.value)} placeholder="direct, referral, job board" />
+              <Input
+                value={source}
+                onChange={(e) => setSource(e.target.value)}
+                placeholder="direct, referral, job board"
+              />
             </label>
             <label className="grid gap-1 text-xs">
               Portfolio link sent (optional)
@@ -148,7 +180,11 @@ function ApplicationsPage() {
           {data.applications.length ? (
             <ul className="grid gap-3">
               {data.applications.map((a) => (
-                <li key={a.id} className="rounded-lg border p-4" style={{ borderColor: "var(--x-border)" }}>
+                <li
+                  key={a.id}
+                  className="rounded-lg border p-4"
+                  style={{ borderColor: "var(--x-border)" }}
+                >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-[13px] font-semibold">
@@ -156,7 +192,9 @@ function ApplicationsPage() {
                       </p>
                       <p className="mt-1 text-[11px]" style={{ color: "var(--x-slate-light)" }}>
                         Source {a.source}
-                        {a.appliedAt ? ` · applied ${new Date(a.appliedAt).toLocaleDateString("en-GB")}` : ""}
+                        {a.appliedAt
+                          ? ` · applied ${new Date(a.appliedAt).toLocaleDateString("en-GB")}`
+                          : ""}
                         {a.portfolioShareId ? " · portfolio link attached" : ""}
                       </p>
                     </div>
@@ -166,7 +204,10 @@ function ApplicationsPage() {
                         style={{ borderColor: "var(--x-border)" }}
                         value={a.stage}
                         onChange={(e) =>
-                          update.mutate({ id: a.id, stage: e.target.value as (typeof STAGES)[number] })
+                          update.mutate({
+                            id: a.id,
+                            stage: e.target.value as (typeof STAGES)[number],
+                          })
                         }
                       >
                         {STAGES.map((s) => (
@@ -212,13 +253,27 @@ function NextStepEditor({
     <div className="mt-3 grid gap-2">
       <label className="grid gap-1 text-xs">
         Next step
-        <Input value={nextStep} onChange={(e) => setNextStep(e.target.value)} placeholder="Send follow-up, prepare case study" />
+        <Input
+          value={nextStep}
+          onChange={(e) => setNextStep(e.target.value)}
+          placeholder="Send follow-up, prepare case study"
+        />
       </label>
       <label className="grid gap-1 text-xs">
         Notes
-        <Textarea className="min-h-20 text-xs" value={notes} onChange={(e) => setNotes(e.target.value)} />
+        <Textarea
+          className="min-h-20 text-xs"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+        />
       </label>
-      <Button variant="outline" size="sm" className="justify-self-start" disabled={!dirty} onClick={() => onSave(nextStep, notes)}>
+      <Button
+        variant="outline"
+        size="sm"
+        className="justify-self-start"
+        disabled={!dirty}
+        onClick={() => onSave(nextStep, notes)}
+      >
         Save changes
       </Button>
     </div>

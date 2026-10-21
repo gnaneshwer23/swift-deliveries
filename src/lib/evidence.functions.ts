@@ -75,41 +75,46 @@ export const getEvidenceOverview = createServerFn({ method: "GET" })
       .single();
     if (fwError || !framework) throw new Error("The capability framework is unavailable.");
 
-    const [{ data: caps }, { data: artefacts }, { data: versions }, { data: ledger }, { data: claims }, { data: runs }] =
-      await Promise.all([
-        supabase
-          .from("framework_capabilities")
-          .select("key, name, description, sort_order")
-          .eq("framework_id", framework.id)
-          .order("sort_order", { ascending: true }),
-        supabase
-          .from("artefacts")
-          .select("id, title, kind")
-          .eq("owner_id", userId)
-          .order("created_at", { ascending: false }),
-        supabase
-          .from("artefact_versions")
-          .select("id, artefact_id, version")
-          .eq("owner_id", userId),
-        supabase
-          .from("evidence_ledger")
-          .select("id, source, strength, capability_key, summary, occurred_at, artefact_version_id, provenance")
-          .eq("owner_id", userId)
-          .order("occurred_at", { ascending: false })
-          .limit(100),
-        supabase
-          .from("snapshot_claims")
-          .select(
-            "id, capability_key, level, band, evidence_strength, attestation_status, readiness_basis, verified",
-          )
-          .eq("owner_id", userId),
-        supabase
-          .from("score_runs")
-          .select("id, run_kind, created_at")
-          .eq("owner_id", userId)
-          .order("created_at", { ascending: false })
-          .limit(1),
-      ]);
+    const [
+      { data: caps },
+      { data: artefacts },
+      { data: versions },
+      { data: ledger },
+      { data: claims },
+      { data: runs },
+    ] = await Promise.all([
+      supabase
+        .from("framework_capabilities")
+        .select("key, name, description, sort_order")
+        .eq("framework_id", framework.id)
+        .order("sort_order", { ascending: true }),
+      supabase
+        .from("artefacts")
+        .select("id, title, kind")
+        .eq("owner_id", userId)
+        .order("created_at", { ascending: false }),
+      supabase.from("artefact_versions").select("id, artefact_id, version").eq("owner_id", userId),
+      supabase
+        .from("evidence_ledger")
+        .select(
+          "id, source, strength, capability_key, summary, occurred_at, artefact_version_id, provenance",
+        )
+        .eq("owner_id", userId)
+        .order("occurred_at", { ascending: false })
+        .limit(100),
+      supabase
+        .from("snapshot_claims")
+        .select(
+          "id, capability_key, level, band, evidence_strength, attestation_status, readiness_basis, verified",
+        )
+        .eq("owner_id", userId),
+      supabase
+        .from("score_runs")
+        .select("id, run_kind, created_at")
+        .eq("owner_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(1),
+    ]);
 
     const artefactById = new Map((artefacts ?? []).map((a) => [a.id, a]));
     const versionById = new Map((versions ?? []).map((v) => [v.id, v]));
@@ -171,9 +176,7 @@ export const getEvidenceOverview = createServerFn({ method: "GET" })
         .map((e) => e.capability_key as string),
     );
     const percent =
-      capabilityList.length === 0
-        ? 0
-        : Math.round((covered.size / capabilityList.length) * 100);
+      capabilityList.length === 0 ? 0 : Math.round((covered.size / capabilityList.length) * 100);
 
     return {
       framework,
@@ -187,7 +190,10 @@ export const getEvidenceOverview = createServerFn({ method: "GET" })
       ledger: (ledger ?? []).map((e) => {
         const version = e.artefact_version_id ? versionById.get(e.artefact_version_id) : undefined;
         const artefact = version ? artefactById.get(version.artefact_id) : undefined;
-        const provenance = e.provenance && typeof e.provenance === "object" && !Array.isArray(e.provenance) ? e.provenance : {};
+        const provenance =
+          e.provenance && typeof e.provenance === "object" && !Array.isArray(e.provenance)
+            ? e.provenance
+            : {};
         return {
           id: e.id,
           source: e.source,
@@ -199,7 +205,10 @@ export const getEvidenceOverview = createServerFn({ method: "GET" })
           occurredAt: e.occurred_at,
           coachConfirmed: provenance["coach_confirmed"] === true,
           coachNote: typeof provenance["coach_note"] === "string" ? provenance["coach_note"] : null,
-          frameworkVersion: typeof provenance["framework_version"] === "string" ? provenance["framework_version"] : null,
+          frameworkVersion:
+            typeof provenance["framework_version"] === "string"
+              ? provenance["framework_version"]
+              : null,
         };
       }),
       claims: (claims ?? []).map((c) => ({
@@ -245,14 +254,16 @@ export const recordWorkEvidence = createServerFn({ method: "POST" })
       .insert({ owner_id: userId, title: data.title, kind: data.kind })
       .select("id")
       .single();
-    if (artefactError || !artefact) throw new Error(artefactError?.message ?? "Could not save the work.");
+    if (artefactError || !artefact)
+      throw new Error(artefactError?.message ?? "Could not save the work.");
 
     const { data: version, error: versionError } = await supabase
       .from("artefact_versions")
       .insert({ artefact_id: artefact.id, owner_id: userId, version: 1, body: data.body })
       .select("id")
       .single();
-    if (versionError || !version) throw new Error(versionError?.message ?? "Could not save the version.");
+    if (versionError || !version)
+      throw new Error(versionError?.message ?? "Could not save the version.");
 
     const { error: ledgerError } = await supabase.from("evidence_ledger").insert({
       owner_id: userId,
@@ -314,7 +325,10 @@ export const runCapabilityScoring = createServerFn({ method: "POST" })
     let subjectId = userId;
     let coachInitiated = false;
     if (data.subjectUserId && data.subjectUserId !== userId) {
-      const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", userId);
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId);
       const isCoach = (roles ?? []).some((row) => row.role === "moderator" || row.role === "admin");
       if (!isCoach) throw new Error("Only a coach or admin can score someone else's evidence.");
       subjectId = data.subjectUserId;
@@ -380,7 +394,9 @@ export const runCapabilityScoring = createServerFn({ method: "POST" })
           row.provenance && typeof row.provenance === "object" && !Array.isArray(row.provenance)
             ? (row.provenance as Record<string, unknown>)
             : {};
-        const body = row.artefact_version_id ? bodyByVersion.get(row.artefact_version_id) : undefined;
+        const body = row.artefact_version_id
+          ? bodyByVersion.get(row.artefact_version_id)
+          : undefined;
         return {
           id: row.id,
           capabilityKey: row.capability_key as string,
@@ -618,7 +634,10 @@ export const respondToAttestation = createServerFn({ method: "POST" })
       .from("attestations")
       .update({
         state: data.decision,
-        statement: data.decision === "confirmed" ? statementTextFor(data.statementKey) : data.statement || null,
+        statement:
+          data.decision === "confirmed"
+            ? statementTextFor(data.statementKey)
+            : data.statement || null,
         statement_key: data.decision === "confirmed" ? data.statementKey : null,
         attestation_level: data.decision === "confirmed" ? data.level : null,
         renewal_due_at: data.decision === "confirmed" ? renewalDueAt(now).toISOString() : null,

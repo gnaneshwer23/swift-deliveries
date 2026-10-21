@@ -293,7 +293,6 @@ export const createOrganisation = createServerFn({ method: "POST" })
     return { organisationId };
   });
 
-
 export type TeamData = {
   members: {
     id: string;
@@ -349,7 +348,7 @@ export const getTeam = createServerFn({ method: "GET" })
     const myRole =
       org?.owner_id === userId
         ? "owner"
-        : (rows ?? []).find((r) => r.user_id === userId)?.role ?? null;
+        : ((rows ?? []).find((r) => r.user_id === userId)?.role ?? null);
     const canManage = myRole === "owner" || myRole === "admin";
 
     let invitations: TeamData["invitations"] = [];
@@ -439,9 +438,7 @@ export const renewInvitation = createServerFn({ method: "POST" })
 export const updateMemberRole = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((data: unknown) =>
-    z
-      .object({ membershipId: z.string().uuid(), role: z.enum(["admin", "member"]) })
-      .parse(data),
+    z.object({ membershipId: z.string().uuid(), role: z.enum(["admin", "member"]) }).parse(data),
   )
   .handler(async ({ data, context }) => {
     await assertNotOwnerMembership(context.supabase, data.membershipId);
@@ -526,17 +523,15 @@ export const acceptInvitation = createServerFn({ method: "POST" })
       throw new Error("This invitation was sent to a different email address.");
     }
 
-    const { error: memberError } = await supabaseAdmin
-      .from("organisation_memberships")
-      .upsert(
-        {
-          organisation_id: invite.organisation_id,
-          user_id: userId,
-          role: invite.role,
-          status: "active",
-        },
-        { onConflict: "organisation_id,user_id" },
-      );
+    const { error: memberError } = await supabaseAdmin.from("organisation_memberships").upsert(
+      {
+        organisation_id: invite.organisation_id,
+        user_id: userId,
+        role: invite.role,
+        status: "active",
+      },
+      { onConflict: "organisation_id,user_id" },
+    );
     if (memberError) throw new Error(memberError.message);
 
     await supabaseAdmin

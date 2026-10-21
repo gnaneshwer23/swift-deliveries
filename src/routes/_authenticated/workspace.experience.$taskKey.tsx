@@ -21,7 +21,8 @@ export const Route = createFileRoute("/_authenticated/workspace/experience/$task
       { property: "og:title", content: "Experience Task — DeliverX" },
       {
         property: "og:description",
-        content: "Do the work in a simulated company. Submissions are locked and provenance-backed.",
+        content:
+          "Do the work in a simulated company. Submissions are locked and provenance-backed.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -54,8 +55,7 @@ function ExperienceTaskPage() {
   }, [found?.task.id, found?.task.draft?.body, found?.task.draft?.sections]);
 
   const saveDraft = useMutation({
-    mutationFn: () =>
-      saveExperienceDraft({ data: { taskId: found!.task.id, body, sections } }),
+    mutationFn: () => saveExperienceDraft({ data: { taskId: found!.task.id, body, sections } }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["experience"] });
       toast.success("Draft saved. Drafts are private and never evidence.");
@@ -98,7 +98,10 @@ function ExperienceTaskPage() {
   const blocked = !task.unlocked && !locked;
 
   return (
-    <WorkspaceShell title={task.title} subtitle={`${scenario.companyName} · Week ${task.week} · ${task.phaseLabel}`}>
+    <WorkspaceShell
+      title={task.title}
+      subtitle={`${scenario.companyName} · Week ${task.week} · ${task.phaseLabel}`}
+    >
       <div className="space-y-5">
         <Link
           to="/workspace/experience"
@@ -139,7 +142,10 @@ function ExperienceTaskPage() {
         </WorkspaceCard>
 
         {task.guidance.length > 0 ? (
-          <WorkspaceCard title="What is being looked for" description="Guidance only — no scores are written here.">
+          <WorkspaceCard
+            title="What is being looked for"
+            description="Guidance only — no scores are written here."
+          >
             <ul className="space-y-2">
               {task.guidance.map((g) => (
                 <li key={g.dimension} className="text-xs leading-relaxed">
@@ -177,7 +183,10 @@ function ExperienceTaskPage() {
           }
         >
           {blocked ? (
-            <div className="flex items-center gap-3 text-xs" style={{ color: "var(--x-slate-light)" }}>
+            <div
+              className="flex items-center gap-3 text-xs"
+              style={{ color: "var(--x-slate-light)" }}
+            >
               <Lock className="size-4" />
               {scenario.enrolled
                 ? "This task unlocks once the previous task is submitted."
@@ -185,7 +194,9 @@ function ExperienceTaskPage() {
             </div>
           ) : locked ? (
             <div className="space-y-4">
-              <p className="whitespace-pre-wrap text-xs leading-relaxed">{task.draft?.body ?? ""}</p>
+              <p className="whitespace-pre-wrap text-xs leading-relaxed">
+                {task.draft?.body ?? ""}
+              </p>
               <p className="text-[11px]" style={{ color: "var(--x-slate-light)" }}>
                 The locked version lives in your evidence record.
               </p>
@@ -194,7 +205,10 @@ function ExperienceTaskPage() {
             <div className="space-y-4">
               {task.sections.length > 0 ? (
                 <div className="space-y-2">
-                  <div className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "var(--x-slate-light)" }}>
+                  <div
+                    className="text-[11px] font-semibold uppercase tracking-wide"
+                    style={{ color: "var(--x-slate-light)" }}
+                  >
                     Sections to cover
                   </div>
                   {task.sections.map((label, index) => (
@@ -226,8 +240,8 @@ function ExperienceTaskPage() {
         </WorkspaceCard>
 
         <p className="text-[11px]" style={{ color: "var(--x-slate-light)" }}>
-          Submitting records observed evidence citing an immutable version of your work. Capability levels come from a
-          separate scoring run, and Verified needs external attestation.
+          Submitting records observed evidence citing an immutable version of your work. Capability
+          levels come from a separate scoring run, and Verified needs external attestation.
         </p>
       </div>
     </WorkspaceShell>

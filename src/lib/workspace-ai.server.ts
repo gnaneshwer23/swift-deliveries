@@ -4,14 +4,21 @@ const MODEL = "openai/gpt-6-astra";
 export type WorkspaceSuggestionKind = "agenda" | "artefact" | "decision_options" | "risk_flags";
 
 const SYSTEM: Record<WorkspaceSuggestionKind, string> = {
-  agenda: "Prepare a concise meeting agenda for a product team. Return useful headings and questions only. Do not invent facts, people, dates, metrics, or commitments.",
-  artefact: "Prepare a concise working draft for a product team. Clearly separate known context, assumptions, and open questions. Do not invent evidence, metrics, or commitments.",
-  decision_options: "Prepare three genuinely distinct decision options with a benefit, trade-off, and test for each. Do not select an option or make the decision for the user.",
-  risk_flags: "Identify only risks grounded in the supplied project context. For each, state the signal, possible impact, and a practical mitigation. Do not activate or assign a risk.",
+  agenda:
+    "Prepare a concise meeting agenda for a product team. Return useful headings and questions only. Do not invent facts, people, dates, metrics, or commitments.",
+  artefact:
+    "Prepare a concise working draft for a product team. Clearly separate known context, assumptions, and open questions. Do not invent evidence, metrics, or commitments.",
+  decision_options:
+    "Prepare three genuinely distinct decision options with a benefit, trade-off, and test for each. Do not select an option or make the decision for the user.",
+  risk_flags:
+    "Identify only risks grounded in the supplied project context. For each, state the signal, possible impact, and a practical mitigation. Do not activate or assign a risk.",
 };
 
 export class WorkspaceAiError extends Error {
-  constructor(message: string, public status: number) {
+  constructor(
+    message: string,
+    public status: number,
+  ) {
     super(message);
     this.name = "WorkspaceAiError";
   }
@@ -37,13 +44,17 @@ export async function generateWorkspaceSuggestion(input: {
       model: MODEL,
       stream: true,
       instructions: `${SYSTEM[input.kind]} The result is an AI draft and must remain subject to human review, editing, approval, and separate submission.`,
-      input: [{
-        role: "user",
-        content: [{
-          type: "input_text",
-          text: `Project: ${input.projectTitle}\nPurpose: ${input.projectPurpose}\nApproved project context:\n${input.approvedContext || "No approved records yet."}\n\nWrite the draft in plain text, under 450 words.`,
-        }],
-      }],
+      input: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "input_text",
+              text: `Project: ${input.projectTitle}\nPurpose: ${input.projectPurpose}\nApproved project context:\n${input.approvedContext || "No approved records yet."}\n\nWrite the draft in plain text, under 450 words.`,
+            },
+          ],
+        },
+      ],
       reasoning: { effort: "low", summary: "auto" },
       include: ["reasoning.encrypted_content"],
       store: false,
@@ -70,15 +81,21 @@ export async function generateWorkspaceSuggestion(input: {
       const payload = line.slice(5).trim();
       if (!payload || payload === "[DONE]") continue;
       try {
-        const event = JSON.parse(payload) as { type?: string; delta?: string; response?: { output_text?: string } };
+        const event = JSON.parse(payload) as {
+          type?: string;
+          delta?: string;
+          response?: { output_text?: string };
+        };
         if (event.type === "response.output_text.delta" && event.delta) text += event.delta;
-        if (event.type === "response.completed" && !text && event.response?.output_text) text = event.response.output_text;
+        if (event.type === "response.completed" && !text && event.response?.output_text)
+          text = event.response.output_text;
       } catch {
         // Ignore keep-alive frames.
       }
     }
   }
-  if (!text.trim()) throw new WorkspaceAiError("AI drafting returned no usable content. Try again.", 502);
+  if (!text.trim())
+    throw new WorkspaceAiError("AI drafting returned no usable content. Try again.", 502);
   return text.trim().slice(0, 12000);
 }
 

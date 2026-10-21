@@ -75,9 +75,7 @@ function InvitePage() {
           </>
         ) : (
           <>
-            <h1 className="mt-8 text-xl font-semibold">
-              Join {preview.data.organisationName}
-            </h1>
+            <h1 className="mt-8 text-xl font-semibold">Join {preview.data.organisationName}</h1>
             <p className="mt-2 text-sm text-[var(--mkt-text2)]">
               Invited as {preview.data.role} · {preview.data.email}
             </p>

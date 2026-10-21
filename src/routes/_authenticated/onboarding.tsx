@@ -269,7 +269,10 @@ function OnboardingPage() {
           </div>
           <ol className="mt-8 space-y-2 font-mono text-[0.6875rem] font-bold uppercase text-[var(--mkt-text3)]">
             {STEPS.map((label, index) => (
-              <li key={label} className={index + 1 === step ? "text-[var(--mkt-text1)]" : undefined}>
+              <li
+                key={label}
+                className={index + 1 === step ? "text-[var(--mkt-text1)]" : undefined}
+              >
                 {String(index + 1).padStart(2, "0")} — {label}
               </li>
             ))}
@@ -289,8 +292,8 @@ function OnboardingPage() {
                   work, keep the proof, earn the signal.
                 </p>
                 <p className="border border-[var(--mkt-border-l)] bg-[var(--mkt-s2)] p-4 text-[var(--mkt-text1)]">
-                  Our commitment: verified means verified. Only an external attestation can light the
-                  Verified signal — never a score, never a coach, never this setup.
+                  Our commitment: verified means verified. Only an external attestation can light
+                  the Verified signal — never a score, never a coach, never this setup.
                 </p>
                 <p>The next seven steps take about three minutes. You can skip two of them.</p>
               </div>
@@ -394,8 +397,8 @@ function OnboardingPage() {
             {step === 4 ? (
               <>
                 <p className="text-sm leading-relaxed text-[var(--mkt-text2)]">
-                  Rate yourself against the current framework. This is a self-report and stays labelled
-                  as one — it never contributes capability.
+                  Rate yourself against the current framework. This is a self-report and stays
+                  labelled as one — it never contributes capability.
                 </p>
                 {data.capabilities.length === 0 ? (
                   <p className="border border-[var(--mkt-border-l)] p-4 text-sm text-[var(--mkt-text2)]">
@@ -641,15 +644,7 @@ function OnboardingPage() {
   );
 }
 
-function Field({
-  label,
-  id,
-  children,
-}: {
-  label: string;
-  id: string;
-  children: React.ReactNode;
-}) {
+function Field({ label, id, children }: { label: string; id: string; children: React.ReactNode }) {
   return (
     <div className="space-y-2">
       <Label htmlFor={id}>{label}</Label>

@@ -30,8 +30,19 @@ export const Route = createFileRoute("/pilot")({
 });
 
 const tick = (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--x-teal)" strokeWidth="2" style={{ flexShrink: 0 }}>
-    <path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" strokeLinecap="round" />
+  <svg
+    width="13"
+    height="13"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="var(--x-teal)"
+    strokeWidth="2"
+    style={{ flexShrink: 0 }}
+  >
+    <path
+      d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"
+      strokeLinecap="round"
+    />
   </svg>
 );
 
@@ -272,9 +283,13 @@ function PilotPage() {
           </form>
 
           <div className="form-trust">
-            <div className="trust-item">{tick}Evidence is private by default — you control sharing</div>
+            <div className="trust-item">
+              {tick}Evidence is private by default — you control sharing
+            </div>
             <div className="trust-item">{tick}No payment required during pilot — full access</div>
-            <div className="trust-item">{tick}Observation is off by default — you enable when ready</div>
+            <div className="trust-item">
+              {tick}Observation is off by default — you enable when ready
+            </div>
           </div>
 
           <div className="included-section">

@@ -8,7 +8,22 @@ import { evidenceOverviewQuery } from "@/lib/evidence-queries";
 import { requestAttestation, runCapabilityScoring } from "@/lib/evidence.functions";
 
 export const Route = createFileRoute("/_authenticated/workspace/capability")({
-  head: () => ({ meta: [{ title: "Capability Picture — DeliverX" }, { name: "description", content: "Review evidence-backed capability judgements and external attestations." }, { property: "og:title", content: "Capability Picture — DeliverX" }, { property: "og:description", content: "Your evidence-backed professional capability picture." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({
+    meta: [
+      { title: "Capability Picture — DeliverX" },
+      {
+        name: "description",
+        content: "Review evidence-backed capability judgements and external attestations.",
+      },
+      { property: "og:title", content: "Capability Picture — DeliverX" },
+      {
+        property: "og:description",
+        content: "Your evidence-backed professional capability picture.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   loader: ({ context }) => context.queryClient.ensureQueryData(evidenceOverviewQuery),
   component: CapabilityPage,
 });
@@ -37,8 +52,7 @@ function CapabilityPage() {
   const [relationship, setRelationship] = useState("");
   const [attestLink, setAttestLink] = useState<string | null>(null);
 
-  const nameFor = (key: string) =>
-    data.capabilities.find((c) => c.key === key)?.name ?? key;
+  const nameFor = (key: string) => data.capabilities.find((c) => c.key === key)?.name ?? key;
 
   const score = useMutation({
     mutationFn: () => runCapabilityScoring({ data: { runKind: "interim" } }),
@@ -232,9 +246,8 @@ function CapabilityPage() {
       ) : null}
 
       <p className="flex items-start gap-2 text-xs text-[var(--mkt-text2)]">
-        <ShieldQuestion className="mt-0.5 size-4 shrink-0" />
-        A scoring run is not Verified. Learning, ceremonies and practice interviews never change
-        these levels.
+        <ShieldQuestion className="mt-0.5 size-4 shrink-0" />A scoring run is not Verified.
+        Learning, ceremonies and practice interviews never change these levels.
       </p>
     </WorkspaceShell>
   );

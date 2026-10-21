@@ -66,7 +66,9 @@ function LoginPage() {
     const session = await waitForSession(2000);
     setLoading(false);
     if (!session) {
-      setError("Signed in, but the session did not stick. Check that cookies/storage are allowed, then try again.");
+      setError(
+        "Signed in, but the session did not stick. Check that cookies/storage are allowed, then try again.",
+      );
       return;
     }
     navigate({ to: "/command" });

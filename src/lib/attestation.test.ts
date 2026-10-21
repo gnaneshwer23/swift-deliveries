@@ -26,12 +26,7 @@ describe("fixed statements", () => {
   });
 
   it("accepts only the four framework levels", () => {
-    expect(ATTESTATION_LEVELS).toEqual([
-      "associate_pm",
-      "product_manager",
-      "senior_pm",
-      "lead_pm",
-    ]);
+    expect(ATTESTATION_LEVELS).toEqual(["associate_pm", "product_manager", "senior_pm", "lead_pm"]);
     expect(isValidAttestationLevel("senior_pm")).toBe(true);
     expect(isValidAttestationLevel("wizard")).toBe(false);
   });
@@ -49,27 +44,31 @@ describe("attester eligibility", () => {
   });
 
   it("rejects an attester on the candidate's own email domain", () => {
-    expect(
-      checkAttesterEligibility({ ...base, attesterEmail: "boss@candidate.org" }),
-    ).toEqual({ eligible: false, reason: "own_domain" });
+    expect(checkAttesterEligibility({ ...base, attesterEmail: "boss@candidate.org" })).toEqual({
+      eligible: false,
+      reason: "own_domain",
+    });
   });
 
   it("rejects DeliverX staff domains", () => {
-    expect(
-      checkAttesterEligibility({ ...base, attesterEmail: "team@deliverx.dev" }),
-    ).toEqual({ eligible: false, reason: "staff_domain" });
+    expect(checkAttesterEligibility({ ...base, attesterEmail: "team@deliverx.dev" })).toEqual({
+      eligible: false,
+      reason: "staff_domain",
+    });
   });
 
   it("rejects known staff and coach emails regardless of domain", () => {
-    expect(
-      checkAttesterEligibility({ ...base, attesterEmail: "tutor@amdari.com" }),
-    ).toEqual({ eligible: false, reason: "staff_or_coach" });
+    expect(checkAttesterEligibility({ ...base, attesterEmail: "tutor@amdari.com" })).toEqual({
+      eligible: false,
+      reason: "staff_or_coach",
+    });
   });
 
   it("rejects malformed emails", () => {
-    expect(
-      checkAttesterEligibility({ ...base, attesterEmail: "not-an-email" }),
-    ).toEqual({ eligible: false, reason: "invalid_email" });
+    expect(checkAttesterEligibility({ ...base, attesterEmail: "not-an-email" })).toEqual({
+      eligible: false,
+      reason: "invalid_email",
+    });
     expect(emailDomain("not-an-email")).toBeNull();
   });
 });

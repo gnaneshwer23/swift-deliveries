@@ -35,8 +35,8 @@ function CookiesPage() {
                 help us improve the platform and are only used with your consent.
               </p>
               <p>
-                You can manage cookie preferences through your browser settings. Disabling
-                essential cookies may prevent sign-in.
+                You can manage cookie preferences through your browser settings. Disabling essential
+                cookies may prevent sign-in.
               </p>
             </div>
           </div>

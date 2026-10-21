@@ -73,9 +73,9 @@ function CapabilitiesBrowser() {
       <section className="cc-panel cc-cap-banner">
         <p className="cc-kicker">Workforce Architecture v1.0</p>
         <p className="text-sm leading-relaxed">
-          The catalogue describes what the workforce can eventually do. The registry describes what is{" "}
-          <strong>Available</strong> now. Planned roles are catalogue entries only — they are never
-          presented as operational and cannot be assigned to missions.
+          The catalogue describes what the workforce can eventually do. The registry describes what
+          is <strong>Available</strong> now. Planned roles are catalogue entries only — they are
+          never presented as operational and cannot be assigned to missions.
         </p>
         <p className="cc-muted mt-2">
           Wave 1 Available: {WAVE1_AVAILABLE_IDS.join(", ")}. Spec:{" "}

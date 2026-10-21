@@ -9,7 +9,10 @@ export const Route = createFileRoute("/_authenticated/command/projects")({
   head: () => ({
     meta: [
       { title: "Projects — Command Centre — DeliverX" },
-      { name: "description", content: "Create and list workforce projects for supervised missions." },
+      {
+        name: "description",
+        content: "Create and list workforce projects for supervised missions.",
+      },
     ],
   }),
   loader: async ({ context }) => {

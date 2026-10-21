@@ -102,7 +102,9 @@ export function WorkspaceShell({
       </div>
       <div className="app-wrap">
         <aside className={`sidebar${open ? " open" : ""}`}>
-          <div onClick={() => setOpen(false)}><BrandLogo to="/workspace" inverse className="brand-logo sidebar-logo" /></div>
+          <div onClick={() => setOpen(false)}>
+            <BrandLogo to="/workspace" inverse className="brand-logo sidebar-logo" />
+          </div>
           <div className="sidebar-section">
             <div className="sidebar-label">Workspace</div>
             {nav.map((item) => {
@@ -160,12 +162,21 @@ export function WorkspaceCard({
   action?: ReactNode;
 }) {
   return (
-    <section className="overflow-hidden rounded-xl border bg-[var(--x-paper-raised)]" style={{ borderColor: "var(--x-border)" }}>
-      <div className="flex items-start justify-between gap-4 border-b px-5 py-4" style={{ borderColor: "var(--x-border)" }}>
+    <section
+      className="overflow-hidden rounded-xl border bg-[var(--x-paper-raised)]"
+      style={{ borderColor: "var(--x-border)" }}
+    >
+      <div
+        className="flex items-start justify-between gap-4 border-b px-5 py-4"
+        style={{ borderColor: "var(--x-border)" }}
+      >
         <div className="min-w-0">
           <h2 className="text-[13px] font-semibold">{title}</h2>
           {description ? (
-            <p className="mt-1 max-w-2xl text-xs leading-relaxed" style={{ color: "var(--x-slate-light)" }}>
+            <p
+              className="mt-1 max-w-2xl text-xs leading-relaxed"
+              style={{ color: "var(--x-slate-light)" }}
+            >
               {description}
             </p>
           ) : null}

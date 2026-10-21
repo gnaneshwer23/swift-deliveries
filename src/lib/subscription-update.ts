@@ -25,5 +25,8 @@ export function shouldApplySubscriptionUpdate(
   // active again, so any later non-terminal event is stale, whatever its period end.
   if (TERMINAL.has(existing.status) && !TERMINAL.has(incoming.status)) return false;
   if (!existing.current_period_end || !incoming.current_period_end) return true;
-  return new Date(incoming.current_period_end).getTime() >= new Date(existing.current_period_end).getTime();
+  return (
+    new Date(incoming.current_period_end).getTime() >=
+    new Date(existing.current_period_end).getTime()
+  );
 }

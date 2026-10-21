@@ -1,17 +1,15 @@
-import type {
-  GeneratedPlan,
-  PlanAssignedCapability,
-  PlanCapabilityLimitation,
-} from "./types";
+import type { GeneratedPlan, PlanAssignedCapability, PlanCapabilityLimitation } from "./types";
 
 const PLAN_META_PREFIX = "__dx_capability_meta__:";
 const TASK_CAP_SUFFIX = /\n\n<!-- dx-capabilities: ([A-Z0-9,\-]+) -->\s*$/;
 
 export function encodePlanAcceptanceCriteria(plan: GeneratedPlan): string[] {
-  const meta = PLAN_META_PREFIX + JSON.stringify({
-    assignedCapabilities: plan.assignedCapabilities,
-    capabilityLimitations: plan.capabilityLimitations,
-  });
+  const meta =
+    PLAN_META_PREFIX +
+    JSON.stringify({
+      assignedCapabilities: plan.assignedCapabilities,
+      capabilityLimitations: plan.capabilityLimitations,
+    });
   return [meta, ...plan.acceptanceCriteria];
 }
 
@@ -63,6 +61,9 @@ export function decodeTaskCapabilityIds(description: string): {
   }
   return {
     description: description.replace(TASK_CAP_SUFFIX, "").trimEnd(),
-    capabilityIds: match[1]!.split(",").map((s) => s.trim()).filter(Boolean),
+    capabilityIds: match[1]!
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
   };
 }

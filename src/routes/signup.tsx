@@ -72,7 +72,9 @@ function SignupPage() {
       const session = await waitForSession(2000);
       setLoading(false);
       if (!session) {
-        setError("Account created, but the session did not stick. Sign in with your email and password.");
+        setError(
+          "Account created, but the session did not stick. Sign in with your email and password.",
+        );
         return;
       }
       navigate({ to: "/command" });
@@ -180,7 +182,10 @@ function SignupPage() {
                 />
               </div>
               {error && (
-                <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600" role="alert">
+                <p
+                  className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600"
+                  role="alert"
+                >
                   {error}
                 </p>
               )}

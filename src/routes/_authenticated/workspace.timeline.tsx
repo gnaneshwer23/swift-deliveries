@@ -9,10 +9,14 @@ export const Route = createFileRoute("/_authenticated/workspace/timeline")({
       { title: "Timeline — DeliverX Workspace" },
       {
         name: "description",
-        content: "A dated record of your evidence, capability judgements, coach confirmations and external verifications.",
+        content:
+          "A dated record of your evidence, capability judgements, coach confirmations and external verifications.",
       },
       { property: "og:title", content: "Timeline — DeliverX Workspace" },
-      { property: "og:description", content: "What you did, when it was recorded, and how strongly it counts." },
+      {
+        property: "og:description",
+        content: "What you did, when it was recorded, and how strongly it counts.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -35,14 +39,24 @@ function TimelinePage() {
         {data.timeline.length ? (
           <ol className="grid gap-3">
             {data.timeline.map((item) => (
-              <li key={item.id} className="rounded-lg border p-4" style={{ borderColor: "var(--x-border)" }}>
-                <div className="flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-[0.12em]" style={{ color: "var(--x-slate-light)" }}>
+              <li
+                key={item.id}
+                className="rounded-lg border p-4"
+                style={{ borderColor: "var(--x-border)" }}
+              >
+                <div
+                  className="flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-[0.12em]"
+                  style={{ color: "var(--x-slate-light)" }}
+                >
                   <span>{new Date(item.at).toLocaleDateString("en-GB")}</span>
                   <span>·</span>
                   <span>{item.kind}</span>
                 </div>
                 <p className="mt-2 text-[13px] font-semibold">{item.title}</p>
-                <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--x-slate-light)" }}>
+                <p
+                  className="mt-1 text-xs leading-relaxed"
+                  style={{ color: "var(--x-slate-light)" }}
+                >
                   {item.detail}
                 </p>
                 <Link to={item.href} className="mt-3 inline-block text-xs font-semibold underline">

@@ -1,11 +1,6 @@
 import { maxPermission } from "./permissions";
 import { matchCapabilitiesForMission } from "./registry/matching";
-import type {
-  ClarificationQuestion,
-  GeneratedPlan,
-  MissionIntent,
-  PlannedTask,
-} from "./types";
+import type { ClarificationQuestion, GeneratedPlan, MissionIntent, PlannedTask } from "./types";
 
 const EXTERNAL_HINT =
   /\b(email|send|deploy|publish|post to|slack|tweet|call api|webhook|notify customer|production)\b/i;
@@ -14,11 +9,7 @@ function titleFromRequest(intent: MissionIntent, request: string): string {
   const cleaned = request.replace(/\s+/g, " ").trim();
   const clip = cleaned.length > 72 ? `${cleaned.slice(0, 69)}…` : cleaned;
   const prefix =
-    intent === "investigate"
-      ? "Investigate"
-      : intent === "prototype"
-        ? "Prototype"
-        : "Improve";
+    intent === "investigate" ? "Investigate" : intent === "prototype" ? "Prototype" : "Improve";
   return clip ? `${prefix}: ${clip}` : `${prefix} mission`;
 }
 
@@ -43,7 +34,11 @@ function clarificationFor(
     });
   }
 
-  if (intent === "investigate" && !answers["audience"] && !/\b(for|audience|stakeholder)\b/i.test(text)) {
+  if (
+    intent === "investigate" &&
+    !answers["audience"] &&
+    !/\b(for|audience|stakeholder)\b/i.test(text)
+  ) {
     questions.push({
       id: "audience",
       prompt: "Who is the primary audience for the investigation brief?",
@@ -51,7 +46,11 @@ function clarificationFor(
     });
   }
 
-  if (intent === "prototype" && !answers["surface"] && !/\b(page|screen|flow|ui|dashboard|form)\b/i.test(text)) {
+  if (
+    intent === "prototype" &&
+    !answers["surface"] &&
+    !/\b(page|screen|flow|ui|dashboard|form)\b/i.test(text)
+  ) {
     questions.push({
       id: "surface",
       prompt: "Which surface should the prototype cover (e.g. landing, settings, checkout)?",
@@ -59,7 +58,11 @@ function clarificationFor(
     });
   }
 
-  if (intent === "improve" && !answers["baseline"] && !/\b(current|existing|today|baseline)\b/i.test(text)) {
+  if (
+    intent === "improve" &&
+    !answers["baseline"] &&
+    !/\b(current|existing|today|baseline)\b/i.test(text)
+  ) {
     questions.push({
       id: "baseline",
       prompt: "What is the current baseline we are improving (link, description, or symptoms)?",

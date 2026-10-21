@@ -70,10 +70,21 @@ describe.skipIf(!hasDb)("purchase rules in the database", () => {
     expect(run("")).toBe("f");
   });
 
-  for (const status of ["incomplete", "incomplete_expired", "past_due", "unpaid", "canceled", "paused"]) {
+  for (const status of [
+    "incomplete",
+    "incomplete_expired",
+    "past_due",
+    "unpaid",
+    "canceled",
+    "paused",
+  ]) {
     it(`grants no access for a failed or incomplete payment (${status})`, () => {
-      expect(run(purchase("complete_journey_yearly", "now() + interval '1 year'", status))).toBe("f");
-      expect(run(purchase("complete_journey_monthly", "now() + interval '1 month'", status))).toBe("f");
+      expect(run(purchase("complete_journey_yearly", "now() + interval '1 year'", status))).toBe(
+        "f",
+      );
+      expect(run(purchase("complete_journey_monthly", "now() + interval '1 month'", status))).toBe(
+        "f",
+      );
       expect(run(purchase("career_sprint_pass", "now() + interval '90 days'", status))).toBe("f");
     });
   }

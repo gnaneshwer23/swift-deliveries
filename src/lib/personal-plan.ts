@@ -91,7 +91,8 @@ export function starterSteps(briefing: DailyBriefing): PersonalStep[] {
     steps.push({
       key: "interview",
       title: "Practise one interview story",
-      reason: "With fewer years behind you, a rehearsed story from real work closes the gap fastest.",
+      reason:
+        "With fewer years behind you, a rehearsed story from real work closes the gap fastest.",
       to: "/workspace/interview",
       done: false,
     });

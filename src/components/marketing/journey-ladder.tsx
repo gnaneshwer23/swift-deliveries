@@ -5,7 +5,12 @@ const STAGES: { key: LadderStage; n: string; name: string; desc: string }[] = [
   { key: "work", n: "02", name: "Work", desc: "Do realistic product work with real constraints." },
   { key: "build", n: "03", name: "Build", desc: "Turn what you did into an explainable record." },
   { key: "prove", n: "04", name: "Prove", desc: "A coach confirms it. An outsider attests to it." },
-  { key: "advance", n: "05", name: "Advance", desc: "Use it in interviews, applications and live work." },
+  {
+    key: "advance",
+    n: "05",
+    name: "Advance",
+    desc: "Use it in interviews, applications and live work.",
+  },
 ];
 
 export function JourneyLadder({ active }: { active?: LadderStage }) {
@@ -13,10 +18,7 @@ export function JourneyLadder({ active }: { active?: LadderStage }) {
     <div className="ladder">
       <div className="ladder-rail">
         {STAGES.map((stage) => (
-          <div
-            key={stage.key}
-            className={`ladder-step${active === stage.key ? " is-active" : ""}`}
-          >
+          <div key={stage.key} className={`ladder-step${active === stage.key ? " is-active" : ""}`}>
             <div className="ladder-n">{stage.n}</div>
             <div className="ladder-name">{stage.name}</div>
             <div className="ladder-desc">{stage.desc}</div>

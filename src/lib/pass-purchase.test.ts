@@ -27,13 +27,24 @@ describe("buildPassRow", () => {
 
   it("ignores subscription checkouts such as Journey Annual (saved by subscription events)", () => {
     expect(
-      buildPassRow({ ...session, mode: "subscription", metadata: { userId: "u1", priceId: "complete_journey_yearly" } }, "live"),
+      buildPassRow(
+        {
+          ...session,
+          mode: "subscription",
+          metadata: { userId: "u1", priceId: "complete_journey_yearly" },
+        },
+        "live",
+      ),
     ).toBeNull();
   });
 
   it("ignores unknown prices and missing users", () => {
-    expect(buildPassRow({ ...session, metadata: { userId: "u1", priceId: "other" } }, "live")).toBeNull();
-    expect(buildPassRow({ ...session, metadata: { priceId: "career_sprint_pass" } }, "live")).toBeNull();
+    expect(
+      buildPassRow({ ...session, metadata: { userId: "u1", priceId: "other" } }, "live"),
+    ).toBeNull();
+    expect(
+      buildPassRow({ ...session, metadata: { priceId: "career_sprint_pass" } }, "live"),
+    ).toBeNull();
   });
 
   it("does not save a pass when the payment has not gone through", () => {
@@ -42,8 +53,12 @@ describe("buildPassRow", () => {
   });
 
   it("does not save a pass for abandoned or expired checkouts", () => {
-    expect(buildPassRow({ ...session, status: "open", payment_status: "unpaid" }, "live")).toBeNull();
-    expect(buildPassRow({ ...session, status: "expired", payment_status: "unpaid" }, "live")).toBeNull();
+    expect(
+      buildPassRow({ ...session, status: "open", payment_status: "unpaid" }, "live"),
+    ).toBeNull();
+    expect(
+      buildPassRow({ ...session, status: "expired", payment_status: "unpaid" }, "live"),
+    ).toBeNull();
   });
 
   it("keys a replayed webhook to the same purchase, so the database keeps the original 90-day window", () => {

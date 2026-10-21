@@ -82,7 +82,10 @@ export const getExperienceWorkspace = createServerFn({ method: "GET" })
           .from("experience_submissions")
           .select("task_id, submitted_at")
           .eq("owner_id", userId),
-        supabase.from("experience_task_drafts").select("task_id, body, sections").eq("owner_id", userId),
+        supabase
+          .from("experience_task_drafts")
+          .select("task_id, body, sections")
+          .eq("owner_id", userId),
       ]);
 
     const enrolmentByScenario = new Map((enrolments ?? []).map((e) => [e.scenario_id, e]));
@@ -132,7 +135,11 @@ export const getExperienceWorkspace = createServerFn({ method: "GET" })
           durationLabel: s.duration_label,
           frameworkLabel: framework ? `${framework.key}@${framework.version}` : "",
           enrolled: Boolean(enrolment),
-          state: !enrolment ? "not_started" : enrolment.state === "completed" ? "completed" : "active",
+          state: !enrolment
+            ? "not_started"
+            : enrolment.state === "completed"
+              ? "completed"
+              : "active",
           tasks: mapped,
           submittedCount,
         };
@@ -247,7 +254,8 @@ export const submitExperienceTask = createServerFn({ method: "POST" })
       })
       .select("id")
       .single();
-    if (artefactError || !artefact) throw new Error(artefactError?.message ?? "Could not save the work.");
+    if (artefactError || !artefact)
+      throw new Error(artefactError?.message ?? "Could not save the work.");
 
     const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(data.body));
     const sha256 = Array.from(new Uint8Array(digest))
@@ -272,7 +280,8 @@ export const submitExperienceTask = createServerFn({ method: "POST" })
       })
       .select("id")
       .single();
-    if (versionError || !version) throw new Error(versionError?.message ?? "Could not lock the artefact.");
+    if (versionError || !version)
+      throw new Error(versionError?.message ?? "Could not lock the artefact.");
 
     const { error: ledgerError } = await supabase.from("evidence_ledger").insert({
       owner_id: userId,
@@ -303,7 +312,11 @@ export const submitExperienceTask = createServerFn({ method: "POST" })
     });
     if (submissionError) throw new Error(submissionError.message);
 
-    await supabase.from("experience_task_drafts").delete().eq("owner_id", userId).eq("task_id", task.id);
+    await supabase
+      .from("experience_task_drafts")
+      .delete()
+      .eq("owner_id", userId)
+      .eq("task_id", task.id);
 
     const allDone = (scenarioTasks ?? []).every((t) => t.id === task.id || submittedIds.has(t.id));
     if (allDone) {

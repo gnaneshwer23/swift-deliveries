@@ -117,7 +117,11 @@ export function summarisePracticeHistory(sessions: PracticeHistorySession[]): Di
       const average = scores.reduce((sum, s) => sum + s, 0) / scores.length;
       const latest = scores[scores.length - 1] ?? null;
       const trend: DimensionHistory["trend"] =
-        latest === null || latest === average ? "steady" : latest > average ? "improving" : "declining";
+        latest === null || latest === average
+          ? "steady"
+          : latest > average
+            ? "improving"
+            : "declining";
       return { dimension, average, sessions: scores.length, latest, trend };
     })
     .sort((a, b) => b.average - a.average);
@@ -125,5 +129,7 @@ export function summarisePracticeHistory(sessions: PracticeHistorySession[]): Di
 
 /** Dimensions that score strongly again and again — the user's reliable interview ground. */
 export function recurringStrengths(history: DimensionHistory[]): DimensionHistory[] {
-  return history.filter((d) => d.average >= STRENGTH_AVERAGE && d.sessions >= STRENGTH_MIN_SESSIONS);
+  return history.filter(
+    (d) => d.average >= STRENGTH_AVERAGE && d.sessions >= STRENGTH_MIN_SESSIONS,
+  );
 }

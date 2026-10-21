@@ -56,9 +56,17 @@ export const SUITE_PRODUCTS = [
 ] as const;
 
 export const SUITE_LIFECYCLE = [
-  { name: "Experience", line: "Build the experience", outcome: "Practical PM capability and evidence" },
+  {
+    name: "Experience",
+    line: "Build the experience",
+    outcome: "Practical PM capability and evidence",
+  },
   { name: "Launchpad", line: "Land the opportunity", outcome: "Interviews, offers and readiness" },
-  { name: "Professional Workspace", line: "Succeed in the role", outcome: "Confident delivery with AI teammates" },
+  {
+    name: "Professional Workspace",
+    line: "Succeed in the role",
+    outcome: "Confident delivery with AI teammates",
+  },
 ] as const;
 
 export const SUITE_DIFFERENCE = [

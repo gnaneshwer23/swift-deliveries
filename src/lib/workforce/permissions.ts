@@ -15,19 +15,14 @@ const RANK: Record<PermissionLevel, number> = {
 };
 
 /** True when the granted ceiling is high enough for the required level. */
-export function permissionAllows(
-  granted: PermissionLevel,
-  required: PermissionLevel,
-): boolean {
+export function permissionAllows(granted: PermissionLevel, required: PermissionLevel): boolean {
   return RANK[granted] >= RANK[required];
 }
 
 /** Highest permission among a set of task requirements. */
 export function maxPermission(levels: PermissionLevel[]): PermissionLevel {
   if (levels.length === 0) return "plan";
-  return levels.reduce((acc, level) =>
-    RANK[level] > RANK[acc] ? level : acc,
-  );
+  return levels.reduce((acc, level) => (RANK[level] > RANK[acc] ? level : acc));
 }
 
 /** External actions always need an explicit extra approval beyond plan approval. */

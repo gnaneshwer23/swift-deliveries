@@ -76,9 +76,7 @@ function PmPortfolioGuide() {
       </p>
 
       <h2>Claims, evidence and capability are three different things</h2>
-      <p>
-        Use three buckets and refuse to blur them.
-      </p>
+      <p>Use three buckets and refuse to blur them.</p>
       <ul>
         <li>
           <strong>Claims</strong> are what you say about yourself — goals, self-assessments,

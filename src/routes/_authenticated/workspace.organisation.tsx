@@ -13,7 +13,19 @@ import { workspaceBootstrapQuery } from "@/lib/workspace-queries";
 import { createOrganisation, updateOrganisation } from "@/lib/workspace.functions";
 
 export const Route = createFileRoute("/_authenticated/workspace/organisation")({
-  head: () => ({ meta: [{ title: "Organisation Settings — DeliverX" }, { name: "description", content: "Manage your organisation details and shared workspace identity." }, { property: "og:title", content: "Organisation Settings — DeliverX" }, { property: "og:description", content: "Manage your DeliverX organisation." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({
+    meta: [
+      { title: "Organisation Settings — DeliverX" },
+      {
+        name: "description",
+        content: "Manage your organisation details and shared workspace identity.",
+      },
+      { property: "og:title", content: "Organisation Settings — DeliverX" },
+      { property: "og:description", content: "Manage your DeliverX organisation." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   loader: ({ context }) => context.queryClient.ensureQueryData(workspaceBootstrapQuery),
   component: OrganisationPage,
 });
@@ -54,8 +66,6 @@ function OrganisationPage() {
     },
     onError: (error: Error) => toast.error(error.message),
   });
-
-
 
   if (!data.organisation) {
     return (
@@ -112,12 +122,14 @@ function OrganisationPage() {
     );
   }
 
-
-
   return (
     <WorkspaceShell
       title="Organisation"
-      subtitle={canManage ? "Owners and admins can edit these details." : "Only owners and admins can edit these details."}
+      subtitle={
+        canManage
+          ? "Owners and admins can edit these details."
+          : "Only owners and admins can edit these details."
+      }
     >
       <WorkspaceCard title="Details">
         <form

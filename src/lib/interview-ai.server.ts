@@ -12,7 +12,10 @@ const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/responses";
 const MODEL = "openai/gpt-6-astra";
 
 export class InterviewAiError extends Error {
-  constructor(message: string, public status: number) {
+  constructor(
+    message: string,
+    public status: number,
+  ) {
     super(message);
     this.name = "InterviewAiError";
   }
@@ -68,7 +71,10 @@ async function callGateway(body: Record<string, unknown>): Promise<unknown> {
   };
   const raw =
     payload.output_text ??
-    payload.output?.flatMap((o) => o.content ?? []).map((c) => c.text ?? "").join("") ??
+    payload.output
+      ?.flatMap((o) => o.content ?? [])
+      .map((c) => c.text ?? "")
+      .join("") ??
     "";
   try {
     return JSON.parse(raw);
@@ -88,7 +94,10 @@ const INTERVIEWER_RULES = [
 
 function evidenceBlock(entries: EvidenceEntry[]): string {
   return entries
-    .map((e) => `Entry ${e.id} (${e.strength}${e.capabilityKey ? `, ${e.capabilityKey}` : ""}): ${e.summary}`)
+    .map(
+      (e) =>
+        `Entry ${e.id} (${e.strength}${e.capabilityKey ? `, ${e.capabilityKey}` : ""}): ${e.summary}`,
+    )
     .join("\n");
 }
 
@@ -138,7 +147,10 @@ export async function generateInterviewQuestions(input: {
                 properties: {
                   prompt: { type: "string" },
                   capability_key: { type: ["string", "null"] },
-                  question_type: { type: "string", enum: ["defend", "trade-off", "stakeholder", "metric"] },
+                  question_type: {
+                    type: "string",
+                    enum: ["defend", "trade-off", "stakeholder", "metric"],
+                  },
                   evidence_id: { type: ["string", "null"] },
                 },
               },
@@ -167,7 +179,8 @@ export async function generateInterviewQuestions(input: {
     }))
     .filter((q) => q.prompt.length > 15)
     .slice(0, 5);
-  if (!questions.length) throw new InterviewAiError("AI drafting produced no usable questions. Try again.", 502);
+  if (!questions.length)
+    throw new InterviewAiError("AI drafting produced no usable questions. Try again.", 502);
   return questions;
 }
 
@@ -228,11 +241,20 @@ export async function assessInterviewAnswer(input: {
               items: {
                 type: "object",
                 additionalProperties: false,
-                required: ["claim_text", "claim_type", "support_status", "matched_evidence_id", "record_excerpt"],
+                required: [
+                  "claim_text",
+                  "claim_type",
+                  "support_status",
+                  "matched_evidence_id",
+                  "record_excerpt",
+                ],
                 properties: {
                   claim_text: { type: "string" },
                   claim_type: { type: "string", enum: ["metric", "action", "outcome", "role"] },
-                  support_status: { type: "string", enum: ["supported", "partial", "not_in_record", "contradicted"] },
+                  support_status: {
+                    type: "string",
+                    enum: ["supported", "partial", "not_in_record", "contradicted"],
+                  },
                   matched_evidence_id: { type: ["string", "null"] },
                   record_excerpt: { type: ["string", "null"] },
                 },
@@ -244,7 +266,10 @@ export async function assessInterviewAnswer(input: {
               required: ["prompt", "question_type"],
               properties: {
                 prompt: { type: "string" },
-                question_type: { type: "string", enum: ["defend", "trade-off", "stakeholder", "metric"] },
+                question_type: {
+                  type: "string",
+                  enum: ["defend", "trade-off", "stakeholder", "metric"],
+                },
               },
             },
           },
@@ -288,8 +313,14 @@ export async function assessInterviewAnswer(input: {
   const followUp =
     allowFollowUp &&
     followUpPrompt.length > 15 &&
-    shouldOfferFollowUp(scores.map((s) => s.score), input.currentDepth)
-      ? { prompt: followUpPrompt, questionType: normaliseQuestionType(parsed.follow_up?.question_type) }
+    shouldOfferFollowUp(
+      scores.map((s) => s.score),
+      input.currentDepth,
+    )
+      ? {
+          prompt: followUpPrompt,
+          questionType: normaliseQuestionType(parsed.follow_up?.question_type),
+        }
       : null;
 
   return { scores, claims, followUp };
@@ -359,7 +390,8 @@ export async function generateSessionFeedback(input: {
     }))
     .filter((f) => f.dimension.length > 0)
     .slice(0, 6);
-  if (!feedback.length) throw new InterviewAiError("AI feedback produced no usable result. Try again.", 502);
+  if (!feedback.length)
+    throw new InterviewAiError("AI feedback produced no usable result. Try again.", 502);
   return feedback;
 }
 

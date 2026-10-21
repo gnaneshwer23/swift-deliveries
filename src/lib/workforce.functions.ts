@@ -35,6 +35,17 @@ const intentSchema = z.enum(["investigate", "prototype", "improve"]);
 
 type DbClient = { from: (table: string) => any };
 
+/**
+ * Service-role accessor for writes that must not be forgeable by workspace members
+ * (usage, approvals, audit, permission/approval flags). Callers MUST authorise the
+ * request via the user-scoped client first. Loaded lazily: *.functions.ts is bundled
+ * for the client, so the service-role module must never be imported at top level.
+ */
+async function adminDb() {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  return wfDb(supabaseAdmin as unknown as { from: (table: string) => unknown });
+}
+
 function mapWorkspace(row: any): WfWorkspace {
   return {
     id: row.id,
@@ -82,7 +93,8 @@ function mapPlan(row: any): WfMissionPlan {
   const rawCriteria = (row.acceptance_criteria ?? []) as string[];
   const fromColumns = {
     assigned: (row.assigned_capabilities ?? null) as WfMissionPlan["assignedCapabilities"] | null,
-    limitations: (row.capability_limitations ?? null) as WfMissionPlan["capabilityLimitations"] | null,
+    limitations: (row.capability_limitations ?? null) as
+      WfMissionPlan["capabilityLimitations"] | null,
   };
   const decoded = decodePlanCapabilityMeta(rawCriteria);
   return {
@@ -161,7 +173,7 @@ function mapApproval(row: any): WfApproval {
 }
 
 async function audit(
-  db: ReturnType<typeof wfDb>,
+  _db: ReturnType<typeof wfDb>,
   input: {
     workspaceId: string;
     missionId?: string | null;
@@ -172,7 +184,7 @@ async function audit(
     metadata?: Record<string, unknown>;
   },
 ) {
-  await db.from("wf_audit_events").insert({
+  await (await adminDb()).from("wf_audit_events").insert({
     workspace_id: input.workspaceId,
     mission_id: input.missionId ?? null,
     actor_id: input.actorId,
@@ -231,11 +243,7 @@ async function ensureWorkspace(
   userId: string,
 ): Promise<{ workspace: WfWorkspace; storage: "supabase" }> {
   const db = wfDb(supabase);
-  const existing = await db
-    .from("wf_workspaces")
-    .select("*")
-    .eq("owner_id", userId)
-    .maybeSingle();
+  const existing = await db.from("wf_workspaces").select("*").eq("owner_id", userId).maybeSingle();
 
   if (existing.error && isMissingRelationError(existing.error)) {
     throw new Error(
@@ -248,7 +256,9 @@ async function ensureWorkspace(
     return { workspace: mapWorkspace(existing.data), storage: "supabase" };
   }
 
-  const created = await db
+  const created = await (
+    await adminDb()
+  )
     .from("wf_workspaces")
     .insert({
       owner_id: userId,
@@ -260,7 +270,7 @@ async function ensureWorkspace(
     .single();
   if (created.error) throw new Error(created.error.message);
 
-  const member = await db.from("wf_workspace_members").insert({
+  const member = await (await adminDb()).from("wf_workspace_members").insert({
     workspace_id: created.data.id,
     user_id: userId,
     role: "operator",
@@ -320,10 +330,14 @@ export const getCommandCentreBootstrap = createServerFn({ method: "GET" })
 
 export const createWfProject = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((data: unknown) => (z.object({
-      name: z.string().min(2).max(120),
-      description: z.string().max(500).optional(),
-    })).parse(data))
+  .validator((data: unknown) =>
+    z
+      .object({
+        name: z.string().min(2).max(120),
+        description: z.string().max(500).optional(),
+      })
+      .parse(data),
+  )
   .handler(async ({ context, data }): Promise<WfProject> => {
     const { supabase, userId } = context;
     const { workspace } = await ensureWorkspace(supabase, userId);
@@ -367,11 +381,15 @@ export const listWfProjects = createServerFn({ method: "GET" })
 
 export const createMission = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((data: unknown) => (z.object({
-      projectId: z.string().uuid(),
-      intent: intentSchema,
-      requestText: z.string().min(3).max(4000),
-    })).parse(data))
+  .validator((data: unknown) =>
+    z
+      .object({
+        projectId: z.string().uuid(),
+        intent: intentSchema,
+        requestText: z.string().min(3).max(4000),
+      })
+      .parse(data),
+  )
   .handler(async ({ context, data }): Promise<MissionBundle> => {
     const { supabase, userId } = context;
     const { workspace } = await ensureWorkspace(supabase, userId);
@@ -451,7 +469,7 @@ export const createMission = createServerFn({ method: "POST" })
       if (taskIns.error) throw new Error(taskIns.error.message);
       tasks = (taskIns.data ?? []).map(mapTask);
 
-      await db.from("wf_approvals").insert({
+      await (await adminDb()).from("wf_approvals").insert({
         mission_id: mission.id,
         workspace_id: workspace.id,
         kind: "plan",
@@ -469,10 +487,7 @@ export const createMission = createServerFn({ method: "POST" })
       metadata: { intent: data.intent },
     });
 
-    const approvalsRes = await db
-      .from("wf_approvals")
-      .select("*")
-      .eq("mission_id", mission.id);
+    const approvalsRes = await db.from("wf_approvals").select("*").eq("mission_id", mission.id);
     if (approvalsRes.error) throw new Error(approvalsRes.error.message);
 
     return {
@@ -486,7 +501,7 @@ export const createMission = createServerFn({ method: "POST" })
 
 export const getMissionBundle = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .validator((data: unknown) => (z.object({ missionId: z.string().uuid() })).parse(data))
+  .validator((data: unknown) => z.object({ missionId: z.string().uuid() }).parse(data))
   .handler(async ({ context, data }): Promise<MissionBundle & { workspace: WfWorkspace }> => {
     const { supabase, userId } = context;
     const { workspace } = await ensureWorkspace(supabase, userId);
@@ -496,11 +511,14 @@ export const getMissionBundle = createServerFn({ method: "GET" })
 
 export const answerClarifications = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((data: unknown) => (
-    z.object({
-      missionId: z.string().uuid(),
-      answers: z.record(z.string()),
-    })).parse(data))
+  .validator((data: unknown) =>
+    z
+      .object({
+        missionId: z.string().uuid(),
+        answers: z.record(z.string()),
+      })
+      .parse(data),
+  )
   .handler(async ({ context, data }): Promise<MissionBundle> => {
     const { supabase, userId } = context;
     const { workspace } = await ensureWorkspace(supabase, userId);
@@ -518,9 +536,7 @@ export const answerClarifications = createServerFn({ method: "POST" })
 
     const mergedAnswers = {
       ...mission.clarificationAnswers,
-      ...Object.fromEntries(
-        Object.entries(data.answers).map(([k, v]) => [k, v.trim()]),
-      ),
+      ...Object.fromEntries(Object.entries(data.answers).map(([k, v]) => [k, v.trim()])),
     };
 
     const draftPlan = generateMissionPlan({
@@ -607,8 +623,14 @@ export const answerClarifications = createServerFn({ method: "POST" })
       .select("*");
     if (taskIns.error) throw new Error(taskIns.error.message);
 
-    await db.from("wf_approvals").delete().eq("mission_id", mission.id).eq("kind", "plan");
-    await db.from("wf_approvals").insert({
+    await (
+      await adminDb()
+    )
+      .from("wf_approvals")
+      .delete()
+      .eq("mission_id", mission.id)
+      .eq("kind", "plan");
+    await (await adminDb()).from("wf_approvals").insert({
       mission_id: mission.id,
       workspace_id: workspace.id,
       kind: "plan",
@@ -629,10 +651,14 @@ export const answerClarifications = createServerFn({ method: "POST" })
 
 export const approveMissionPlan = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((data: unknown) => (z.object({
-      missionId: z.string().uuid(),
-      approveExternalActions: z.boolean().optional(),
-    })).parse(data))
+  .validator((data: unknown) =>
+    z
+      .object({
+        missionId: z.string().uuid(),
+        approveExternalActions: z.boolean().optional(),
+      })
+      .parse(data),
+  )
   .handler(async ({ context, data }): Promise<MissionBundle> => {
     const { supabase, userId } = context;
     const { workspace } = await ensureWorkspace(supabase, userId);
@@ -653,7 +679,9 @@ export const approveMissionPlan = createServerFn({ method: "POST" })
     const approveExternal = Boolean(data.approveExternalActions);
     const now = new Date().toISOString();
 
-    await db
+    await (
+      await adminDb()
+    )
       .from("wf_approvals")
       .update({
         status: "approved",
@@ -666,7 +694,7 @@ export const approveMissionPlan = createServerFn({ method: "POST" })
       .eq("status", "pending");
 
     if (approveExternal) {
-      await db.from("wf_approvals").insert({
+      await (await adminDb()).from("wf_approvals").insert({
         mission_id: data.missionId,
         workspace_id: workspace.id,
         kind: "external_action",
@@ -677,7 +705,9 @@ export const approveMissionPlan = createServerFn({ method: "POST" })
       });
     }
 
-    await db
+    await (
+      await adminDb()
+    )
       .from("wf_missions")
       .update({
         status: "queued",
@@ -685,7 +715,8 @@ export const approveMissionPlan = createServerFn({ method: "POST" })
         permission_ceiling: approveExternal ? "act_externally" : "execute_internally",
         updated_at: now,
       })
-      .eq("id", data.missionId);
+      .eq("id", data.missionId)
+      .eq("workspace_id", workspace.id);
 
     await audit(db, {
       workspaceId: workspace.id,
@@ -702,14 +733,23 @@ export const approveMissionPlan = createServerFn({ method: "POST" })
 
 export const approveExternalActions = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((data: unknown) => (z.object({ missionId: z.string().uuid() })).parse(data))
+  .validator((data: unknown) => z.object({ missionId: z.string().uuid() }).parse(data))
   .handler(async ({ context, data }): Promise<MissionBundle> => {
     const { supabase, userId } = context;
     const { workspace } = await ensureWorkspace(supabase, userId);
     const db = wfDb(supabase);
     const now = new Date().toISOString();
 
-    await db.from("wf_approvals").insert({
+    const owned = await db
+      .from("wf_missions")
+      .select("id")
+      .eq("id", data.missionId)
+      .eq("workspace_id", workspace.id)
+      .maybeSingle();
+    if (owned.error) throw new Error(owned.error.message);
+    if (!owned.data) throw new Error("Mission not found.");
+
+    await (await adminDb()).from("wf_approvals").insert({
       mission_id: data.missionId,
       workspace_id: workspace.id,
       kind: "external_action",
@@ -718,7 +758,9 @@ export const approveExternalActions = createServerFn({ method: "POST" })
       decided_at: now,
     });
 
-    await db
+    await (
+      await adminDb()
+    )
       .from("wf_missions")
       .update({
         external_actions_approved: true,
@@ -743,45 +785,241 @@ export const approveExternalActions = createServerFn({ method: "POST" })
 
 export const runMissionStep = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((data: unknown) => (z.object({ missionId: z.string().uuid() })).parse(data))
-  .handler(async ({ context, data }): Promise<MissionBundle & { workspace: WfWorkspace; done: boolean }> => {
-    const { supabase, userId } = context;
-    const { workspace } = await ensureWorkspace(supabase, userId);
-    const db = wfDb(supabase);
+  .validator((data: unknown) => z.object({ missionId: z.string().uuid() }).parse(data))
+  .handler(
+    async ({
+      context,
+      data,
+    }): Promise<MissionBundle & { workspace: WfWorkspace; done: boolean }> => {
+      const { supabase, userId } = context;
+      const { workspace } = await ensureWorkspace(supabase, userId);
+      const db = wfDb(supabase);
 
-    const bundle = await loadMissionBundle(supabase, workspace.id, data.missionId);
-    const { mission, tasks } = bundle;
-    if (mission.workspaceId !== workspace.id) throw new Error("Mission not found.");
+      const bundle = await loadMissionBundle(supabase, workspace.id, data.missionId);
+      const { mission, tasks } = bundle;
+      if (mission.workspaceId !== workspace.id) throw new Error("Mission not found.");
 
-    const runnableStatuses = new Set(["queued", "running", "blocked"]);
-    if (!runnableStatuses.has(mission.status)) {
-      return { ...bundle, workspace, done: true };
-    }
+      const runnableStatuses = new Set(["queued", "running", "blocked"]);
+      if (!runnableStatuses.has(mission.status)) {
+        return { ...bundle, workspace, done: true };
+      }
 
-    const nextTask = tasks.find(
-      (t) => t.status === "pending" || (t.status === "blocked" && mission.externalActionsApproved && t.isExternal),
-    );
+      const nextTask = tasks.find(
+        (t) =>
+          t.status === "pending" ||
+          (t.status === "blocked" && mission.externalActionsApproved && t.isExternal),
+      );
 
-    if (!nextTask) {
-      const finalStatus = nextMissionStatusAfterRun({ tasks, hitCeiling: false });
-      const report = buildDeliveryReport({
-        missionTitle: mission.title,
-        intent: mission.intent,
-        tasks,
-        artefacts: bundle.artefacts,
-        usageSpent: tasks.reduce((s, t) => s + t.actualUsage, 0),
-        partial: finalStatus === "partially_completed" || finalStatus === "blocked",
-      });
+      if (!nextTask) {
+        const finalStatus = nextMissionStatusAfterRun({ tasks, hitCeiling: false });
+        const report = buildDeliveryReport({
+          missionTitle: mission.title,
+          intent: mission.intent,
+          tasks,
+          artefacts: bundle.artefacts,
+          usageSpent: tasks.reduce((s, t) => s + t.actualUsage, 0),
+          partial: finalStatus === "partially_completed" || finalStatus === "blocked",
+        });
+        await db
+          .from("wf_missions")
+          .update({
+            status: finalStatus,
+            delivery_report: report,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", mission.id);
+
+        if (finalStatus === "completed" || finalStatus === "partially_completed") {
+          await db.from("wf_artefacts").insert({
+            mission_id: mission.id,
+            workspace_id: workspace.id,
+            kind: "delivery_report",
+            title: report.headline,
+            content: `# ${report.headline}\n\n${report.summary}\n\n## Outcomes\n${report.outcomes.map((o) => `- ${o}`).join("\n")}\n\n## Open risks\n${report.openRisks.map((r) => `- ${r}`).join("\n")}\n\n## Usage spent\n${report.usageSpent} credits`,
+            content_format: "markdown",
+            quality_labels: report.qualitySummary,
+            evidence_items: [],
+          });
+        }
+
+        const refreshed = await loadMissionBundle(supabase, workspace.id, mission.id);
+        return { ...refreshed, workspace, done: true };
+      }
+
+      // Mark running
+      if (mission.status === "queued" || mission.status === "blocked") {
+        await db
+          .from("wf_missions")
+          .update({ status: "running", updated_at: new Date().toISOString() })
+          .eq("id", mission.id);
+      }
       await db
-        .from("wf_missions")
-        .update({
-          status: finalStatus,
-          delivery_report: report,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", mission.id);
+        .from("wf_mission_tasks")
+        .update({ status: "running", started_at: new Date().toISOString() })
+        .eq("id", nextTask.id);
 
-      if (finalStatus === "completed" || finalStatus === "partially_completed") {
+      const liveWorkspace = (
+        await db.from("wf_workspaces").select("*").eq("id", workspace.id).single()
+      ).data;
+      const budget = {
+        ceiling: liveWorkspace?.usage_ceiling ?? workspace.usageCeiling,
+        consumed: liveWorkspace?.usage_consumed ?? workspace.usageConsumed,
+      };
+
+      const result = executeTaskStep({
+        mission: {
+          ...mission,
+          externalActionsApproved: mission.externalActionsApproved,
+          permissionCeiling: mission.permissionCeiling,
+        },
+        task: { ...nextTask, status: "running" },
+        budget,
+      });
+
+      if (!result.ok) {
+        await db
+          .from("wf_mission_tasks")
+          .update({
+            status: "blocked",
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", nextTask.id);
+
+        const newStatus =
+          result.reason === "ceiling_reached"
+            ? "partially_completed"
+            : result.reason === "external_approval_required"
+              ? "blocked"
+              : "blocked";
+
+        if (result.reason === "ceiling_reached") {
+          const completedTasks = tasks.map((t) => (t.id === nextTask.id ? result.task : t));
+          const report = buildDeliveryReport({
+            missionTitle: mission.title,
+            intent: mission.intent,
+            tasks: completedTasks,
+            artefacts: bundle.artefacts,
+            usageSpent: budget.consumed,
+            partial: true,
+          });
+          await db
+            .from("wf_missions")
+            .update({
+              status: newStatus,
+              delivery_report: report,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", mission.id);
+        } else {
+          await db
+            .from("wf_missions")
+            .update({ status: newStatus, updated_at: new Date().toISOString() })
+            .eq("id", mission.id);
+        }
+
+        await audit(db, {
+          workspaceId: workspace.id,
+          missionId: mission.id,
+          actorId: userId,
+          eventType: `mission.${result.reason}`,
+          entityType: "task",
+          entityId: nextTask.id,
+        });
+
+        const refreshed = await loadMissionBundle(supabase, workspace.id, mission.id);
+        return {
+          ...refreshed,
+          workspace: liveWorkspace ? mapWorkspace(liveWorkspace) : workspace,
+          done: result.reason === "ceiling_reached",
+        };
+      }
+
+      await db
+        .from("wf_mission_tasks")
+        .update({
+          status: "completed",
+          actual_usage: result.usageCharged,
+          evidence_notes: result.task.evidenceNotes,
+          started_at: result.task.startedAt,
+          completed_at: result.task.completedAt,
+          updated_at: result.task.updatedAt,
+        })
+        .eq("id", nextTask.id);
+
+      if (result.artefact) {
+        await db.from("wf_artefacts").insert({
+          mission_id: result.artefact.missionId,
+          workspace_id: result.artefact.workspaceId,
+          task_id: result.artefact.taskId,
+          kind: result.artefact.kind,
+          title: result.artefact.title,
+          content: result.artefact.content,
+          content_format: result.artefact.contentFormat,
+          quality_labels: result.artefact.qualityLabels,
+          evidence_items: result.artefact.evidenceItems,
+        });
+      }
+
+      if (result.usageCharged > 0) {
+        await (await adminDb()).from("wf_usage_records").insert({
+          workspace_id: workspace.id,
+          mission_id: mission.id,
+          task_id: nextTask.id,
+          amount: result.usageCharged,
+          label: nextTask.title,
+        });
+        await (
+          await adminDb()
+        )
+          .from("wf_workspaces")
+          .update({
+            usage_consumed: result.nextBudget.consumed,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", workspace.id);
+      }
+
+      await audit(db, {
+        workspaceId: workspace.id,
+        missionId: mission.id,
+        actorId: userId,
+        eventType: "task.completed",
+        entityType: "task",
+        entityId: nextTask.id,
+        metadata: { usage: result.usageCharged },
+      });
+
+      // If no pending tasks remain, close out
+      const remaining = tasks.filter(
+        (t) => t.id !== nextTask.id && (t.status === "pending" || t.status === "running"),
+      );
+      if (remaining.length === 0) {
+        const updatedTasks = tasks.map((t) => (t.id === nextTask.id ? result.task : t));
+        const artefactsRes = await db
+          .from("wf_artefacts")
+          .select("title, quality_labels")
+          .eq("mission_id", mission.id);
+        const report = buildDeliveryReport({
+          missionTitle: mission.title,
+          intent: mission.intent,
+          tasks: updatedTasks,
+          artefacts: (artefactsRes.data ?? []).map((a: any) => ({
+            title: a.title,
+            qualityLabels: a.quality_labels ?? [],
+          })),
+          usageSpent: updatedTasks.reduce((s, t) => s + t.actualUsage, 0),
+          partial: false,
+        });
+
+        await db
+          .from("wf_missions")
+          .update({
+            status: "reviewing",
+            delivery_report: report,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", mission.id);
+
         await db.from("wf_artefacts").insert({
           mission_id: mission.id,
           workspace_id: workspace.id,
@@ -792,220 +1030,34 @@ export const runMissionStep = createServerFn({ method: "POST" })
           quality_labels: report.qualitySummary,
           evidence_items: [],
         });
-      }
 
-      const refreshed = await loadMissionBundle(supabase, workspace.id, mission.id);
-      return { ...refreshed, workspace, done: true };
-    }
-
-    // Mark running
-    if (mission.status === "queued" || mission.status === "blocked") {
-      await db
-        .from("wf_missions")
-        .update({ status: "running", updated_at: new Date().toISOString() })
-        .eq("id", mission.id);
-    }
-    await db
-      .from("wf_mission_tasks")
-      .update({ status: "running", started_at: new Date().toISOString() })
-      .eq("id", nextTask.id);
-
-    const liveWorkspace = (
-      await db.from("wf_workspaces").select("*").eq("id", workspace.id).single()
-    ).data;
-    const budget = {
-      ceiling: liveWorkspace?.usage_ceiling ?? workspace.usageCeiling,
-      consumed: liveWorkspace?.usage_consumed ?? workspace.usageConsumed,
-    };
-
-    const result = executeTaskStep({
-      mission: {
-        ...mission,
-        externalActionsApproved: mission.externalActionsApproved,
-        permissionCeiling: mission.permissionCeiling,
-      },
-      task: { ...nextTask, status: "running" },
-      budget,
-    });
-
-    if (!result.ok) {
-      await db
-        .from("wf_mission_tasks")
-        .update({
-          status: "blocked",
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", nextTask.id);
-
-      const newStatus =
-        result.reason === "ceiling_reached"
-          ? "partially_completed"
-          : result.reason === "external_approval_required"
-            ? "blocked"
-            : "blocked";
-
-      if (result.reason === "ceiling_reached") {
-        const completedTasks = tasks.map((t) =>
-          t.id === nextTask.id ? result.task : t,
-        );
-        const report = buildDeliveryReport({
-          missionTitle: mission.title,
-          intent: mission.intent,
-          tasks: completedTasks,
-          artefacts: bundle.artefacts,
-          usageSpent: budget.consumed,
-          partial: true,
-        });
         await db
           .from("wf_missions")
-          .update({
-            status: newStatus,
-            delivery_report: report,
-            updated_at: new Date().toISOString(),
-          })
+          .update({ status: "completed", updated_at: new Date().toISOString() })
           .eq("id", mission.id);
-      } else {
-        await db
-          .from("wf_missions")
-          .update({ status: newStatus, updated_at: new Date().toISOString() })
-          .eq("id", mission.id);
+
+        const refreshed = await loadMissionBundle(supabase, workspace.id, mission.id);
+        const ws = await db.from("wf_workspaces").select("*").eq("id", workspace.id).single();
+        return {
+          ...refreshed,
+          workspace: ws.data ? mapWorkspace(ws.data) : workspace,
+          done: true,
+        };
       }
-
-      await audit(db, {
-        workspaceId: workspace.id,
-        missionId: mission.id,
-        actorId: userId,
-        eventType: `mission.${result.reason}`,
-        entityType: "task",
-        entityId: nextTask.id,
-      });
-
-      const refreshed = await loadMissionBundle(supabase, workspace.id, mission.id);
-      return {
-        ...refreshed,
-        workspace: liveWorkspace ? mapWorkspace(liveWorkspace) : workspace,
-        done: result.reason === "ceiling_reached",
-      };
-    }
-
-    await db
-      .from("wf_mission_tasks")
-      .update({
-        status: "completed",
-        actual_usage: result.usageCharged,
-        evidence_notes: result.task.evidenceNotes,
-        started_at: result.task.startedAt,
-        completed_at: result.task.completedAt,
-        updated_at: result.task.updatedAt,
-      })
-      .eq("id", nextTask.id);
-
-    if (result.artefact) {
-      await db.from("wf_artefacts").insert({
-        mission_id: result.artefact.missionId,
-        workspace_id: result.artefact.workspaceId,
-        task_id: result.artefact.taskId,
-        kind: result.artefact.kind,
-        title: result.artefact.title,
-        content: result.artefact.content,
-        content_format: result.artefact.contentFormat,
-        quality_labels: result.artefact.qualityLabels,
-        evidence_items: result.artefact.evidenceItems,
-      });
-    }
-
-    if (result.usageCharged > 0) {
-      await db.from("wf_usage_records").insert({
-        workspace_id: workspace.id,
-        mission_id: mission.id,
-        task_id: nextTask.id,
-        amount: result.usageCharged,
-        label: nextTask.title,
-      });
-      await db
-        .from("wf_workspaces")
-        .update({
-          usage_consumed: result.nextBudget.consumed,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", workspace.id);
-    }
-
-    await audit(db, {
-      workspaceId: workspace.id,
-      missionId: mission.id,
-      actorId: userId,
-      eventType: "task.completed",
-      entityType: "task",
-      entityId: nextTask.id,
-      metadata: { usage: result.usageCharged },
-    });
-
-    // If no pending tasks remain, close out
-    const remaining = tasks.filter(
-      (t) => t.id !== nextTask.id && (t.status === "pending" || t.status === "running"),
-    );
-    if (remaining.length === 0) {
-      const updatedTasks = tasks.map((t) => (t.id === nextTask.id ? result.task : t));
-      const artefactsRes = await db
-        .from("wf_artefacts")
-        .select("title, quality_labels")
-        .eq("mission_id", mission.id);
-      const report = buildDeliveryReport({
-        missionTitle: mission.title,
-        intent: mission.intent,
-        tasks: updatedTasks,
-        artefacts: (artefactsRes.data ?? []).map((a: any) => ({
-          title: a.title,
-          qualityLabels: a.quality_labels ?? [],
-        })),
-        usageSpent: updatedTasks.reduce((s, t) => s + t.actualUsage, 0),
-        partial: false,
-      });
-
-      await db.from("wf_missions").update({
-        status: "reviewing",
-        delivery_report: report,
-        updated_at: new Date().toISOString(),
-      }).eq("id", mission.id);
-
-      await db.from("wf_artefacts").insert({
-        mission_id: mission.id,
-        workspace_id: workspace.id,
-        kind: "delivery_report",
-        title: report.headline,
-        content: `# ${report.headline}\n\n${report.summary}\n\n## Outcomes\n${report.outcomes.map((o) => `- ${o}`).join("\n")}\n\n## Open risks\n${report.openRisks.map((r) => `- ${r}`).join("\n")}\n\n## Usage spent\n${report.usageSpent} credits`,
-        content_format: "markdown",
-        quality_labels: report.qualitySummary,
-        evidence_items: [],
-      });
-
-      await db
-        .from("wf_missions")
-        .update({ status: "completed", updated_at: new Date().toISOString() })
-        .eq("id", mission.id);
 
       const refreshed = await loadMissionBundle(supabase, workspace.id, mission.id);
       const ws = await db.from("wf_workspaces").select("*").eq("id", workspace.id).single();
       return {
         ...refreshed,
         workspace: ws.data ? mapWorkspace(ws.data) : workspace,
-        done: true,
+        done: false,
       };
-    }
-
-    const refreshed = await loadMissionBundle(supabase, workspace.id, mission.id);
-    const ws = await db.from("wf_workspaces").select("*").eq("id", workspace.id).single();
-    return {
-      ...refreshed,
-      workspace: ws.data ? mapWorkspace(ws.data) : workspace,
-      done: false,
-    };
-  });
+    },
+  );
 
 export const cancelMission = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((data: unknown) => (z.object({ missionId: z.string().uuid() })).parse(data))
+  .validator((data: unknown) => z.object({ missionId: z.string().uuid() }).parse(data))
   .handler(async ({ context, data }): Promise<MissionBundle> => {
     const { supabase, userId } = context;
     const { workspace } = await ensureWorkspace(supabase, userId);

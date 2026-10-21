@@ -4,11 +4,7 @@ import { useMemo, useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
 import { commandCentreBootstrapQuery } from "@/lib/workforce-queries";
 import { createMission, createWfProject } from "@/lib/workforce.functions";
-import {
-  INTENT_LABELS,
-  STATUS_LABELS,
-  type MissionIntent,
-} from "@/lib/workforce/types";
+import { INTENT_LABELS, STATUS_LABELS, type MissionIntent } from "@/lib/workforce/types";
 import { FlaskConical, Search, Sparkles, Wrench } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/command/")({
@@ -110,8 +106,7 @@ function CommandHome() {
         params: { missionId: bundle.mission.id },
       });
     },
-    onError: (err) =>
-      setFormError(err instanceof Error ? err.message : "Could not start mission"),
+    onError: (err) => setFormError(err instanceof Error ? err.message : "Could not start mission"),
   });
 
   if (isLoading) {

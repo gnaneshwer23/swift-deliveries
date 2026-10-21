@@ -35,7 +35,7 @@ function MonitoringPage() {
       subtitle="Uptime checks, broken journeys, payment failures and critical browser errors from the live site."
     >
       {isLoading ? (
-        <WorkspaceCard title="Loading" description="Reading the latest recorded events." >
+        <WorkspaceCard title="Loading" description="Reading the latest recorded events.">
           <div className="h-24 animate-pulse rounded bg-black/5" />
         </WorkspaceCard>
       ) : isError ? (
@@ -75,13 +75,19 @@ function MonitoringPage() {
             )}
           </WorkspaceCard>
 
-          <WorkspaceCard title="Recent volume" description="Counts across the latest 200 recorded events.">
+          <WorkspaceCard
+            title="Recent volume"
+            description="Counts across the latest 200 recorded events."
+          >
             {data.counts.length === 0 ? (
               <p className="text-sm text-[var(--mkt-text2)]">Nothing recorded yet.</p>
             ) : (
               <ul className="grid gap-2 sm:grid-cols-2">
                 {data.counts.map((row) => (
-                  <li key={row.kind} className="flex items-center justify-between rounded border px-3 py-2 text-sm">
+                  <li
+                    key={row.kind}
+                    className="flex items-center justify-between rounded border px-3 py-2 text-sm"
+                  >
                     <span>{KIND_LABEL[row.kind] ?? row.kind}</span>
                     <span className="font-semibold">{row.total}</span>
                   </li>
@@ -90,7 +96,10 @@ function MonitoringPage() {
             )}
           </WorkspaceCard>
 
-          <WorkspaceCard title="Event log" description="Newest first. Records cannot be edited or deleted.">
+          <WorkspaceCard
+            title="Event log"
+            description="Newest first. Records cannot be edited or deleted."
+          >
             {data.events.length === 0 ? (
               <p className="text-sm text-[var(--mkt-text2)]">Nothing recorded yet.</p>
             ) : (

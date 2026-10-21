@@ -128,9 +128,7 @@ function ProvePage() {
         <h2 className="heading-2" style={{ marginBottom: 6 }}>
           Three external references
         </h2>
-        <p className="body">
-          DeliverX is never the only source vouching for your record.
-        </p>
+        <p className="body">DeliverX is never the only source vouching for your record.</p>
         <div className="surfaces-grid">
           {REFERENCES.map((s) => (
             <div className="surface-card" key={s.n}>

@@ -58,8 +58,7 @@ export const mktClass = {
     "rounded-[var(--mkt-radius-panel)] border border-transparent bg-[var(--mkt-green)] text-white",
   statNumber:
     "font-serif text-[clamp(2.5rem,4vw,3.5rem)] tracking-[-0.04em] text-[var(--mkt-stat-accent)]",
-  kpiValue:
-    "font-serif text-xl leading-none tracking-[-0.02em] text-[var(--mkt-stat-value)]",
+  kpiValue: "font-serif text-xl leading-none tracking-[-0.02em] text-[var(--mkt-stat-value)]",
 } as const;
 
 export const mktCssVars = {

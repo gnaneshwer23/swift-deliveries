@@ -1,5 +1,9 @@
 import { queryOptions } from "@tanstack/react-query";
-import { getApplicationBoard, getInterviewLab, getPerformanceReviewBoard } from "./career.functions";
+import {
+  getApplicationBoard,
+  getInterviewLab,
+  getPerformanceReviewBoard,
+} from "./career.functions";
 import { getWorkspaceFeed } from "./workspace-feed.functions";
 
 export const interviewLabQuery = queryOptions({

@@ -19,8 +19,7 @@ export const Route = createFileRoute("/attest/$token")({
       { title: "Confirm someone's work — DeliverX" },
       {
         name: "description",
-        content:
-          "Confirm or dispute a capability claim based on work you have seen first-hand.",
+        content: "Confirm or dispute a capability claim based on work you have seen first-hand.",
       },
       { property: "og:title", content: "Confirm someone's work — DeliverX" },
       {
@@ -85,7 +84,9 @@ function AttestPage() {
               Only confirm if you genuinely observed the work.
             </p>
             <fieldset className="mt-5">
-              <legend className="text-sm font-medium">Pick the statement you can stand behind</legend>
+              <legend className="text-sm font-medium">
+                Pick the statement you can stand behind
+              </legend>
               <div className="mt-2 space-y-2">
                 {ATTESTATION_STATEMENTS.map((s) => (
                   <label

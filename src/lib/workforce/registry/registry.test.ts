@@ -49,7 +49,9 @@ describe("capability registry", () => {
       expect(isAssignable(cap!)).toBe(true);
       expect(isOperational(cap!.lifecycle_status)).toBe(true);
     }
-    const others = listCapabilities().filter((c) => !WAVE1.includes(c.capability_id as (typeof WAVE1)[number]));
+    const others = listCapabilities().filter(
+      (c) => !WAVE1.includes(c.capability_id as (typeof WAVE1)[number]),
+    );
     expect(others.length).toBe(138);
     for (const cap of others) {
       expect(["planned", "draft"]).toContain(cap.lifecycle_status);
@@ -95,9 +97,9 @@ describe("capability matching", () => {
     });
     expect(match.assigned.length).toBeGreaterThan(0);
     expect(match.assigned.every((a) => a.lifecycle_status === "available")).toBe(true);
-    expect(match.assigned.every((a) => WAVE1.includes(a.capability_id as (typeof WAVE1)[number]))).toBe(
-      true,
-    );
+    expect(
+      match.assigned.every((a) => WAVE1.includes(a.capability_id as (typeof WAVE1)[number])),
+    ).toBe(true);
     expect(match.limited).toBe(false);
   });
 
@@ -122,6 +124,8 @@ describe("capability matching", () => {
       requestText: "Prototype a settings page and also run DX-091 Clinical Literature Agent",
     });
     expect(match.assigned.some((a) => a.capability_id === "DX-091")).toBe(false);
-    expect(match.limitations.some((l) => l.requested_capability_ids?.includes("DX-091"))).toBe(true);
+    expect(match.limitations.some((l) => l.requested_capability_ids?.includes("DX-091"))).toBe(
+      true,
+    );
   });
 });

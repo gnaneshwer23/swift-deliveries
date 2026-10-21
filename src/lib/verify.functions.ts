@@ -10,9 +10,7 @@ import type { Database } from "@/integrations/supabase/types";
  * what the credential document itself already contains.
  */
 export const getPublicCredential = createServerFn({ method: "GET" })
-  .inputValidator((data: unknown) =>
-    z.object({ credentialId: z.string().uuid() }).parse(data),
-  )
+  .inputValidator((data: unknown) => z.object({ credentialId: z.string().uuid() }).parse(data))
   .handler(async ({ data }) => {
     const url = process.env["SUPABASE_URL"]!;
     const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;

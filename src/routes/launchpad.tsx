@@ -68,12 +68,30 @@ const SURFACES = [
 ];
 
 const PATHWAY = [
-  { h: "Select evidence", p: "In Launchpad, choose the specific artefact and framework dimension you want attested." },
-  { h: "Name your attester", p: "Identify an independent expert — former manager, senior peer, domain specialist. A secure link is created for them." },
-  { h: "Attestor reviews", p: "They see the artefact, the provenance chain, and the framework dimension — nothing else from your profile." },
-  { h: "Attestor confirms", p: "They confirm the evidence reflects capability they have personally witnessed. Their professional judgement, not a platform score." },
-  { h: "Ledger updated", p: "An external verification record is added to the ledger entry. Attestor identity is held under privacy controls. Dispute mechanism available." },
-  { h: "Verified lights", p: "Only now does the Verified signal activate on your profile and portfolio. It switches off if you revoke sharing." },
+  {
+    h: "Select evidence",
+    p: "In Launchpad, choose the specific artefact and framework dimension you want attested.",
+  },
+  {
+    h: "Name your attester",
+    p: "Identify an independent expert — former manager, senior peer, domain specialist. A secure link is created for them.",
+  },
+  {
+    h: "Attestor reviews",
+    p: "They see the artefact, the provenance chain, and the framework dimension — nothing else from your profile.",
+  },
+  {
+    h: "Attestor confirms",
+    p: "They confirm the evidence reflects capability they have personally witnessed. Their professional judgement, not a platform score.",
+  },
+  {
+    h: "Ledger updated",
+    p: "An external verification record is added to the ledger entry. Attestor identity is held under privacy controls. Dispute mechanism available.",
+  },
+  {
+    h: "Verified lights",
+    p: "Only now does the Verified signal activate on your profile and portfolio. It switches off if you revoke sharing.",
+  },
 ];
 
 function LaunchpadPage() {

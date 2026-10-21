@@ -19,7 +19,10 @@ export const Route = createFileRoute("/_authenticated/workspace/launchpad")({
           "Package judged evidence into an honest readiness story, then share it with a private, expiring link.",
       },
       { property: "og:title", content: "Launchpad Readiness Pack — DeliverX" },
-      { property: "og:description", content: "Honest, explainable readiness built from your evidence record." },
+      {
+        property: "og:description",
+        content: "Honest, explainable readiness built from your evidence record.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -58,7 +61,9 @@ function LaunchpadPage() {
       setLastLink(link);
       void navigator.clipboard?.writeText(link).catch(() => undefined);
       setLabel("");
-      toast.success("Link created and copied. It expires in 90 days and you can revoke it any time.");
+      toast.success(
+        "Link created and copied. It expires in 90 days and you can revoke it any time.",
+      );
       void invalidate();
     },
     onError: (e: Error) => toast.error(e.message),
@@ -86,13 +91,21 @@ function LaunchpadPage() {
           <div className="flex flex-wrap items-end gap-8">
             <div>
               <div className="text-4xl font-bold tracking-tight">{data.readiness.percent}%</div>
-              <div className="text-[11px] uppercase tracking-wider" style={{ color: "var(--x-slate-light)" }}>
+              <div
+                className="text-[11px] uppercase tracking-wider"
+                style={{ color: "var(--x-slate-light)" }}
+              >
                 Coverage
               </div>
             </div>
             <div>
-              <div className="text-4xl font-bold tracking-tight">{data.readiness.verifiedCount}</div>
-              <div className="text-[11px] uppercase tracking-wider" style={{ color: "var(--x-slate-light)" }}>
+              <div className="text-4xl font-bold tracking-tight">
+                {data.readiness.verifiedCount}
+              </div>
+              <div
+                className="text-[11px] uppercase tracking-wider"
+                style={{ color: "var(--x-slate-light)" }}
+              >
                 Externally verified
               </div>
             </div>
@@ -117,12 +130,16 @@ function LaunchpadPage() {
             </p>
           ) : (
             <p className="mt-4 text-[11px]" style={{ color: "var(--x-slate-light)" }}>
-              No judgement run yet. Run scoring on your capability profile to make readiness explainable.
+              No judgement run yet. Run scoring on your capability profile to make readiness
+              explainable.
             </p>
           )}
         </WorkspaceCard>
 
-        <WorkspaceCard title="Capability story" description="Each line says exactly what supports it.">
+        <WorkspaceCard
+          title="Capability story"
+          description="Each line says exactly what supports it."
+        >
           <ul className="space-y-2">
             {data.capabilities.map((c) => (
               <li
@@ -141,7 +158,9 @@ function LaunchpadPage() {
                 <div className="mt-1 text-[11px]" style={{ color: "var(--x-slate-light)" }}>
                   {BASIS_LABEL[c.basis]} · {c.evidenceCount} ledger{" "}
                   {c.evidenceCount === 1 ? "entry" : "entries"}
-                  {c.strongestStrength ? ` · strongest: ${STRENGTH_LABEL[c.strongestStrength]}` : ""}
+                  {c.strongestStrength
+                    ? ` · strongest: ${STRENGTH_LABEL[c.strongestStrength]}`
+                    : ""}
                 </div>
                 {c.rationale ? (
                   <p className="mt-2 text-[12px]" style={{ color: "var(--x-slate)" }}>
@@ -164,7 +183,11 @@ function LaunchpadPage() {
           ) : (
             <ul className="space-y-2">
               {data.stories.map((s) => (
-                <li key={s.id} className="border-t pt-3 text-[12px]" style={{ borderColor: "var(--x-border)" }}>
+                <li
+                  key={s.id}
+                  className="border-t pt-3 text-[12px]"
+                  style={{ borderColor: "var(--x-border)" }}
+                >
                   <div className="font-semibold">{s.summary}</div>
                   <div className="mt-1 text-[11px]" style={{ color: "var(--x-slate-light)" }}>
                     {s.capabilityKey ?? "unmapped"} · {STRENGTH_LABEL[s.strength] ?? s.strength} ·{" "}
@@ -188,7 +211,10 @@ function LaunchpadPage() {
               placeholder="Who is this link for? e.g. Northwind interview"
               className="max-w-sm"
             />
-            <label className="flex items-center gap-2 text-[12px]" style={{ color: "var(--x-slate)" }}>
+            <label
+              className="flex items-center gap-2 text-[12px]"
+              style={{ color: "var(--x-slate)" }}
+            >
               <input
                 type="checkbox"
                 checked={includeSelfReported}
@@ -196,7 +222,11 @@ function LaunchpadPage() {
               />
               Include self-reported claims (clearly labelled)
             </label>
-            <Button size="sm" disabled={create.isPending || label.trim().length < 2} onClick={() => create.mutate()}>
+            <Button
+              size="sm"
+              disabled={create.isPending || label.trim().length < 2}
+              onClick={() => create.mutate()}
+            >
               {create.isPending ? "Creating…" : "Create link"}
             </Button>
           </div>
@@ -245,7 +275,12 @@ function LaunchpadPage() {
                       >
                         Copy
                       </Button>
-                      <Button size="sm" variant="outline" disabled={revoke.isPending} onClick={() => revoke.mutate(s.id)}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={revoke.isPending}
+                        onClick={() => revoke.mutate(s.id)}
+                      >
                         Revoke
                       </Button>
                     </div>
@@ -257,7 +292,8 @@ function LaunchpadPage() {
         </WorkspaceCard>
 
         <p className="text-[11px]" style={{ color: "var(--x-slate-light)" }}>
-          Launchpad never invents a level. Verified appears only where an external person confirmed the claim.
+          Launchpad never invents a level. Verified appears only where an external person confirmed
+          the claim.
         </p>
       </div>
     </WorkspaceShell>

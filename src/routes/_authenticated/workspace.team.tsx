@@ -25,7 +25,19 @@ import {
 } from "@/lib/workspace.functions";
 
 export const Route = createFileRoute("/_authenticated/workspace/team")({
-  head: () => ({ meta: [{ title: "Team — DeliverX" }, { name: "description", content: "Manage members, roles and invitations for your DeliverX workspace." }, { property: "og:title", content: "Team — DeliverX" }, { property: "og:description", content: "Manage your DeliverX workspace team." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({
+    meta: [
+      { title: "Team — DeliverX" },
+      {
+        name: "description",
+        content: "Manage members, roles and invitations for your DeliverX workspace.",
+      },
+      { property: "og:title", content: "Team — DeliverX" },
+      { property: "og:description", content: "Manage your DeliverX workspace team." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   loader: async ({ context }) => {
     const bootstrap = await context.queryClient.ensureQueryData(workspaceBootstrapQuery);
     if (bootstrap.organisation) {
@@ -102,7 +114,10 @@ function TeamContent({ organisationId }: { organisationId: string }) {
   return (
     <WorkspaceShell title="Team" subtitle="Who is in this organisation, and who has been invited.">
       {data.canManage ? (
-        <WorkspaceCard title="Invite someone" description="They join as soon as they accept the invitation.">
+        <WorkspaceCard
+          title="Invite someone"
+          description="They join as soon as they accept the invitation."
+        >
           <form
             className="flex flex-col gap-3 sm:flex-row sm:items-end"
             onSubmit={(e) => {

@@ -17,8 +17,7 @@ export const Route = createFileRoute("/experience")({
       { property: "og:title", content: "DeliverX Experience — build the experience" },
       {
         property: "og:description",
-        content:
-          "A role you act in, not content you consume. Evidence only exists once you act.",
+        content: "A role you act in, not content you consume. Evidence only exists once you act.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://deliverx.dev/experience" },
@@ -75,7 +74,11 @@ const COMPANIES = [
 ];
 
 const LOOP = [
-  { l: "A", n: "Work happens", d: "You complete a task — a brief, a decision, an artefact. You submit." },
+  {
+    l: "A",
+    n: "Work happens",
+    d: "You complete a task — a brief, a decision, an artefact. You submit.",
+  },
   { l: "B", n: "Artefact locked", d: "Immutable artefact version assigned. Private by default." },
   { l: "C", n: "Scoring", d: "Your submission is assessed against pm-core@2026.1." },
   { l: "D", n: "Ledger entry", d: "An append-only entry is created with full provenance." },
@@ -97,9 +100,7 @@ function ExperiencePage() {
       <PositioningBanner variant="career" />
       <div className="hero-xp">
         <div className="hero-xp-tag">01 · Experience · Career product</div>
-        <h1>
-          Product management experience in realistic simulated organisations
-        </h1>
+        <h1>Product management experience in realistic simulated organisations</h1>
         <p>
           Work as a product manager inside realistic organisations. Your actions — not the setup —
           create the evidence.
@@ -110,7 +111,8 @@ function ExperiencePage() {
       <JourneyLadder active="work" />
 
       <div className="principle-bar">
-        A role you act in. Not content you consume. &nbsp;·&nbsp; <em>No evidence before you act.</em>
+        A role you act in. Not content you consume. &nbsp;·&nbsp;{" "}
+        <em>No evidence before you act.</em>
       </div>
 
       <div className="entry-seq">
@@ -142,7 +144,10 @@ function ExperiencePage() {
             </div>
             <div className="narrative-tag">Narrative only · creates no capability</div>
           </div>
-          <div className="entry-step" style={{ background: "var(--x-amber-light)", border: "none" }}>
+          <div
+            className="entry-step"
+            style={{ background: "var(--x-amber-light)", border: "none" }}
+          >
             <div className="entry-step-n" style={{ color: "var(--x-amber-text)" }}>
               04
             </div>

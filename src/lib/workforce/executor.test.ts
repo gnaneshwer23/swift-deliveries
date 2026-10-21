@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  buildDeliveryReport,
-  executeTaskStep,
-  nextMissionStatusAfterRun,
-} from "./executor";
+import { buildDeliveryReport, executeTaskStep, nextMissionStatusAfterRun } from "./executor";
 import type { WfMissionTask } from "./types";
 
 function baseTask(overrides: Partial<WfMissionTask> = {}): WfMissionTask {
@@ -96,9 +92,7 @@ describe("delivery status", () => {
       baseTask({ id: "a", status: "completed" }),
       baseTask({ id: "b", status: "blocked" }),
     ];
-    expect(nextMissionStatusAfterRun({ tasks, hitCeiling: true })).toBe(
-      "partially_completed",
-    );
+    expect(nextMissionStatusAfterRun({ tasks, hitCeiling: true })).toBe("partially_completed");
     const report = buildDeliveryReport({
       missionTitle: "Test",
       intent: "investigate",

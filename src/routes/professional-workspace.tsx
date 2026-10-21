@@ -72,13 +72,30 @@ const FEATURES = [
 ];
 
 const ROLES = [
-  { name: "Sponsor", desc: "Owns the case. Approves the baseline, change requests and closure. Sees objective health first." },
-  { name: "Delivery lead", desc: "Runs the weekly loop day to day: plan, decisions, risks and the approval queue." },
-  { name: "Business analyst", desc: "Structures the case into objectives and requirements and keeps traceability honest." },
-  { name: "Contributor", desc: "Engineers, QA and designers share one view with a role tag. Contributors join free." },
+  {
+    name: "Sponsor",
+    desc: "Owns the case. Approves the baseline, change requests and closure. Sees objective health first.",
+  },
+  {
+    name: "Delivery lead",
+    desc: "Runs the weekly loop day to day: plan, decisions, risks and the approval queue.",
+  },
+  {
+    name: "Business analyst",
+    desc: "Structures the case into objectives and requirements and keeps traceability honest.",
+  },
+  {
+    name: "Contributor",
+    desc: "Engineers, QA and designers share one view with a role tag. Contributors join free.",
+  },
 ];
 
-const CONTROL = ["Draft prepared", "Human reviewed", "Approved or returned", "Committed to the record"];
+const CONTROL = [
+  "Draft prepared",
+  "Human reviewed",
+  "Approved or returned",
+  "Committed to the record",
+];
 
 function ProfessionalWorkspacePage() {
   return (
@@ -124,8 +141,8 @@ function ProfessionalWorkspacePage() {
           Own the case, not the tickets.
         </h2>
         <p className="body">
-          Keep your task tool. Workspace holds what it does not: the case, its objectives, decisions,
-          risks and the sponsor's view.
+          Keep your task tool. Workspace holds what it does not: the case, its objectives,
+          decisions, risks and the sponsor's view.
         </p>
         <div className="features-grid">
           {FEATURES.map((f) => (

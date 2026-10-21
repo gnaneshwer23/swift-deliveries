@@ -8,7 +8,19 @@ import { evidenceOverviewQuery } from "@/lib/evidence-queries";
 import { recordSelfReport, recordWorkEvidence } from "@/lib/evidence.functions";
 
 export const Route = createFileRoute("/_authenticated/workspace/evidence")({
-  head: () => ({ meta: [{ title: "Evidence Record — DeliverX" }, { name: "description", content: "Record and review your private, provenance-backed professional evidence." }, { property: "og:title", content: "Evidence Record — DeliverX" }, { property: "og:description", content: "Your private professional evidence record." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  head: () => ({
+    meta: [
+      { title: "Evidence Record — DeliverX" },
+      {
+        name: "description",
+        content: "Record and review your private, provenance-backed professional evidence.",
+      },
+      { property: "og:title", content: "Evidence Record — DeliverX" },
+      { property: "og:description", content: "Your private professional evidence record." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   loader: ({ context }) => context.queryClient.ensureQueryData(evidenceOverviewQuery),
   component: EvidencePage,
 });
@@ -101,7 +113,13 @@ function EvidencePage() {
           }}
         >
           <Field label="What did you produce?">
-            <input className={inputCls} value={title} onChange={(e) => setTitle(e.target.value)} maxLength={160} required />
+            <input
+              className={inputCls}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              maxLength={160}
+              required
+            />
           </Field>
           <Field label="Type of work">
             <select className={inputCls} value={kind} onChange={(e) => setKind(e.target.value)}>
@@ -133,7 +151,13 @@ function EvidencePage() {
             </select>
           </Field>
           <Field label="One-line proof summary" span>
-            <input className={inputCls} value={summary} onChange={(e) => setSummary(e.target.value)} maxLength={400} required />
+            <input
+              className={inputCls}
+              value={summary}
+              onChange={(e) => setSummary(e.target.value)}
+              maxLength={400}
+              required
+            />
           </Field>
           <Field label="The work itself" span>
             <textarea
@@ -221,7 +245,12 @@ function EvidencePage() {
                       {STRENGTH_LABEL[e.strength] ?? e.strength}
                     </span>
                     <span>{SOURCE_LABEL[e.source] ?? e.source}</span>
-                    {e.coachConfirmed ? <span>· Coach confirmed{e.frameworkVersion ? ` · framework ${e.frameworkVersion}` : ""}</span> : null}
+                    {e.coachConfirmed ? (
+                      <span>
+                        · Coach confirmed
+                        {e.frameworkVersion ? ` · framework ${e.frameworkVersion}` : ""}
+                      </span>
+                    ) : null}
                     {e.artefactTitle ? (
                       <span>
                         · {e.artefactTitle} v{e.artefactVersion}
@@ -230,7 +259,11 @@ function EvidencePage() {
                     <span>· {new Date(e.occurredAt).toLocaleDateString()}</span>
                   </p>
                 </div>
-                {e.coachNote ? <p className="basis-full pl-7 text-xs text-[var(--mkt-text2)]">Coach note: {e.coachNote}</p> : null}
+                {e.coachNote ? (
+                  <p className="basis-full pl-7 text-xs text-[var(--mkt-text2)]">
+                    Coach note: {e.coachNote}
+                  </p>
+                ) : null}
               </li>
             ))}
           </ul>

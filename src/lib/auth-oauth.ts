@@ -1,7 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
 
 /** Canonical post-OAuth / email-confirm landing path. */
-export function authCallbackUrl(origin = typeof window !== "undefined" ? window.location.origin : ""): string {
+export function authCallbackUrl(
+  origin = typeof window !== "undefined" ? window.location.origin : "",
+): string {
   return `${origin}/auth/callback`;
 }
 

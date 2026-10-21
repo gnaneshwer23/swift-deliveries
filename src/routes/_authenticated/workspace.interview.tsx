@@ -35,7 +35,10 @@ export const Route = createFileRoute("/_authenticated/workspace/interview")({
           "Practise interview answers against questions drawn from your own recorded work, with a record check on every claim you make.",
       },
       { property: "og:title", content: "Interview Lab — DeliverX Workspace" },
-      { property: "og:description", content: "Questions from your evidence record. Answers stay yours." },
+      {
+        property: "og:description",
+        content: "Questions from your evidence record. Answers stay yours.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -122,7 +125,8 @@ function InterviewLabPage() {
             </Button>
           </div>
           <p className="mt-3 text-xs" style={{ color: "var(--x-slate-light)" }}>
-            Questions are AI-written drafts grounded in your record. Every answer is written by you and freezes at submit.
+            Questions are AI-written drafts grounded in your record. Every answer is written by you
+            and freezes at submit.
           </p>
         </WorkspaceCard>
 
@@ -173,14 +177,22 @@ function PracticeHistory({ sessions }: { sessions: Session[] }) {
             <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
               <span className="font-semibold capitalize">{d.dimension.replace(/_/g, " ")}</span>
               <span style={{ color: "var(--x-slate-light)" }}>
-                avg {d.average.toFixed(1)} of 5 · {d.sessions} session{d.sessions === 1 ? "" : "s"} ·{" "}
-                {d.trend === "improving" ? "↑ improving" : d.trend === "declining" ? "↓ declining" : "steady"}
+                avg {d.average.toFixed(1)} of 5 · {d.sessions} session{d.sessions === 1 ? "" : "s"}{" "}
+                ·{" "}
+                {d.trend === "improving"
+                  ? "↑ improving"
+                  : d.trend === "declining"
+                    ? "↓ declining"
+                    : "steady"}
               </span>
             </div>
             <div className="mt-1 h-1.5 rounded-full" style={{ background: "var(--x-surface)" }}>
               <div
                 className="h-1.5 rounded-full"
-                style={{ width: `${(d.average / 5) * 100}%`, background: "var(--x-amber, #b97a1a)" }}
+                style={{
+                  width: `${(d.average / 5) * 100}%`,
+                  background: "var(--x-amber, #b97a1a)",
+                }}
               />
             </div>
           </div>
@@ -195,7 +207,8 @@ function PracticeHistory({ sessions }: { sessions: Session[] }) {
           </p>
         ) : (
           <p className="text-xs" style={{ color: "var(--x-slate-light)" }}>
-            No recurring strengths yet — a dimension counts once it averages 4+ across at least two closed sessions.
+            No recurring strengths yet — a dimension counts once it averages 4+ across at least two
+            closed sessions.
           </p>
         )}
       </div>
@@ -249,14 +262,19 @@ function SessionCard({
 
         {!open && session.feedback.length ? (
           <div className="rounded-lg border p-4" style={{ borderColor: "var(--x-border)" }}>
-            <p className="text-[10px] uppercase tracking-[0.12em]" style={{ color: "var(--x-slate-light)" }}>
+            <p
+              className="text-[10px] uppercase tracking-[0.12em]"
+              style={{ color: "var(--x-slate-light)" }}
+            >
               Practice feedback · scored against pm-core@2026.1 · AI-observed
             </p>
             <div className="mt-3 grid gap-3">
               {session.feedback.map((f) => (
                 <div key={f.dimension}>
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold capitalize">{f.dimension.replace(/_/g, " ")}</span>
+                    <span className="font-semibold capitalize">
+                      {f.dimension.replace(/_/g, " ")}
+                    </span>
                     <span style={{ color: "var(--x-slate-light)" }}>{f.score} of 5</span>
                   </div>
                   <p className="mt-1 text-xs" style={{ color: "var(--x-slate)" }}>
@@ -266,7 +284,8 @@ function SessionCard({
               ))}
             </div>
             <p className="mt-3 text-[11px]" style={{ color: "var(--x-slate-light)" }}>
-              This is practice feedback observed by AI. It is never evidence and never affects your capability profile.
+              This is practice feedback observed by AI. It is never evidence and never affects your
+              capability profile.
             </p>
           </div>
         ) : null}
@@ -298,7 +317,10 @@ function AnswerBox({ question, onSaved }: { question: Question; onSaved: () => v
       <QuestionMeta question={question} />
       <p className="mt-2 text-[13px] font-semibold">{question.prompt}</p>
       {question.sourceEvidence ? (
-        <p className="mt-2 rounded-md bg-[var(--x-surface)] p-2 text-[11px]" style={{ color: "var(--x-slate)" }}>
+        <p
+          className="mt-2 rounded-md bg-[var(--x-surface)] p-2 text-[11px]"
+          style={{ color: "var(--x-slate)" }}
+        >
           From your record: {question.sourceEvidence.summary}
         </p>
       ) : null}
@@ -325,12 +347,17 @@ function AnswerBox({ question, onSaved }: { question: Question; onSaved: () => v
             ))}
           </select>
         </label>
-        <Button size="sm" onClick={() => save.mutate()} disabled={body.trim().length < 20 || save.isPending}>
+        <Button
+          size="sm"
+          onClick={() => save.mutate()}
+          disabled={body.trim().length < 20 || save.isPending}
+        >
           {save.isPending ? "Checking against your record…" : "Submit answer"}
         </Button>
       </div>
       <p className="mt-2 text-[11px]" style={{ color: "var(--x-slate-light)" }}>
-        Submitting freezes your answer — it cannot be edited afterwards. Your self-rating is practice only.
+        Submitting freezes your answer — it cannot be edited afterwards. Your self-rating is
+        practice only.
       </p>
     </div>
   );
@@ -347,7 +374,10 @@ function AnsweredBlock({ question }: { question: Question }) {
       </p>
       {answer.claims.length ? (
         <div className="mt-3 grid gap-2">
-          <p className="text-[10px] uppercase tracking-[0.12em]" style={{ color: "var(--x-slate-light)" }}>
+          <p
+            className="text-[10px] uppercase tracking-[0.12em]"
+            style={{ color: "var(--x-slate-light)" }}
+          >
             Record check
           </p>
           {answer.claims.map((claim) => (
@@ -378,7 +408,10 @@ function ClaimRow({ claim }: { claim: NonNullable<Question["answer"]>["claims"][
         >
           {label}
         </span>
-        <span className="text-[10px] uppercase tracking-[0.08em]" style={{ color: "var(--x-slate-light)" }}>
+        <span
+          className="text-[10px] uppercase tracking-[0.08em]"
+          style={{ color: "var(--x-slate-light)" }}
+        >
           {claim.claimType}
         </span>
       </div>
@@ -389,7 +422,10 @@ function ClaimRow({ claim }: { claim: NonNullable<Question["answer"]>["claims"][
         </p>
       ) : null}
       {claim.recordExcerpt ? (
-        <p className="mt-1 rounded bg-[var(--x-surface)] p-1.5 text-[11px]" style={{ color: "var(--x-slate)" }}>
+        <p
+          className="mt-1 rounded bg-[var(--x-surface)] p-1.5 text-[11px]"
+          style={{ color: "var(--x-slate)" }}
+        >
           Record: {claim.recordExcerpt}
         </p>
       ) : null}
@@ -437,9 +473,17 @@ function AddQuestion({ sessionId, onAdded }: { sessionId: string; onAdded: () =>
     <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
       <label className="grid gap-1 text-xs">
         Add your own question
-        <Input value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="A question you expect to be asked" />
+        <Input
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="A question you expect to be asked"
+        />
       </label>
-      <Button variant="outline" onClick={() => add.mutate()} disabled={prompt.trim().length < 10 || add.isPending}>
+      <Button
+        variant="outline"
+        onClick={() => add.mutate()}
+        disabled={prompt.trim().length < 10 || add.isPending}
+      >
         Add question
       </Button>
     </div>

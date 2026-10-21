@@ -149,7 +149,9 @@ function ReviewPage() {
                 : "border-[var(--mkt-border-l)] text-[var(--mkt-text2)]"
             }`}
           >
-            {value === "queue" ? `Queue (${data.queue.length})` : `My decisions (${data.history.length})`}
+            {value === "queue"
+              ? `Queue (${data.queue.length})`
+              : `My decisions (${data.history.length})`}
           </button>
         ))}
       </div>
@@ -301,8 +303,8 @@ function ReviewPage() {
 
       <p className="flex items-start gap-2 text-xs text-[var(--mkt-text2)]">
         <ShieldCheck className="mt-0.5 size-4 shrink-0" />
-        Coach-confirmed work is assessed evidence, not external verification. Verified still requires
-        someone outside DeliverX to confirm it.
+        Coach-confirmed work is assessed evidence, not external verification. Verified still
+        requires someone outside DeliverX to confirm it.
       </p>
     </WorkspaceShell>
   );
@@ -311,7 +313,9 @@ function ReviewPage() {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="border border-[var(--mkt-border)] p-4">
-      <p className="font-mono text-[0.625rem] font-bold uppercase text-[var(--mkt-text3)]">{label}</p>
+      <p className="font-mono text-[0.625rem] font-bold uppercase text-[var(--mkt-text3)]">
+        {label}
+      </p>
       <p className="mt-2 font-serif text-3xl font-black">{value}</p>
     </div>
   );
@@ -319,7 +323,8 @@ function Stat({ label, value }: { label: string; value: string }) {
 
 function Header({ row }: { row: CoachQueueItem | { [K in keyof CoachQueueItem]?: unknown } }) {
   const item = row as CoachQueueItem;
-  const Icon = item.state === "confirmed" ? CheckCircle2 : item.state === "rejected" ? XCircle : Clock3;
+  const Icon =
+    item.state === "confirmed" ? CheckCircle2 : item.state === "rejected" ? XCircle : Clock3;
   return (
     <div className="flex flex-wrap items-start gap-3">
       <Icon className="mt-0.5 size-4 shrink-0 text-[var(--mkt-green)]" />

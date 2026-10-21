@@ -92,11 +92,13 @@ function evidenceFor(intent: MissionIntent, request: string): EvidenceItem[] {
     },
     {
       classification: "assumptions",
-      statement: "Current friction is primarily comprehension / next-step clarity, not infrastructure.",
+      statement:
+        "Current friction is primarily comprehension / next-step clarity, not infrastructure.",
     },
     {
       classification: "inferences",
-      statement: "Clarifying the primary action and showing progress state yields the highest leverage.",
+      statement:
+        "Clarifying the primary action and showing progress state yields the highest leverage.",
     },
     {
       classification: "speculative",
@@ -106,8 +108,7 @@ function evidenceFor(intent: MissionIntent, request: string): EvidenceItem[] {
 }
 
 function briefMarkdown(mission: ExecuteStepInput["mission"]): string {
-  const audience =
-    mission.clarificationAnswers["audience"] ?? "Primary decision-maker / sponsor";
+  const audience = mission.clarificationAnswers["audience"] ?? "Primary decision-maker / sponsor";
   const success =
     mission.clarificationAnswers["success"] ??
     "A clear recommendation the operator can approve or reject.";
@@ -144,8 +145,7 @@ ${success}
 }
 
 function prototypeHtml(mission: ExecuteStepInput["mission"]): string {
-  const surface =
-    mission.clarificationAnswers["surface"] ?? "Primary product flow";
+  const surface = mission.clarificationAnswers["surface"] ?? "Primary product flow";
   const goal = mission.requestText.trim().slice(0, 180);
   return `<!DOCTYPE html>
 <html lang="en">
@@ -246,7 +246,11 @@ function artefactForTask(
   const evidence = evidenceFor(mission.intent, mission.requestText);
   const key = task.title.toLowerCase();
 
-  if (key.includes("brief") || key.includes("investigation") || task.title.includes("investigation")) {
+  if (
+    key.includes("brief") ||
+    key.includes("investigation") ||
+    task.title.includes("investigation")
+  ) {
     return {
       missionId: mission.id,
       workspaceId: mission.workspaceId,
@@ -260,7 +264,12 @@ function artefactForTask(
     };
   }
 
-  if (key.includes("html") || key.includes("prototype") || key.includes("sketch") || key.includes("improved flow")) {
+  if (
+    key.includes("html") ||
+    key.includes("prototype") ||
+    key.includes("sketch") ||
+    key.includes("improved flow")
+  ) {
     return {
       missionId: mission.id,
       workspaceId: mission.workspaceId,
@@ -279,7 +288,12 @@ function artefactForTask(
     };
   }
 
-  if (key.includes("improve") || key.includes("option") || key.includes("diagnose") || key.includes("memo")) {
+  if (
+    key.includes("improve") ||
+    key.includes("option") ||
+    key.includes("diagnose") ||
+    key.includes("memo")
+  ) {
     return {
       missionId: mission.id,
       workspaceId: mission.workspaceId,

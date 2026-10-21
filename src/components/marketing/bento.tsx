@@ -21,11 +21,7 @@ export function BentoTile({
   onInk?: boolean;
   children?: ReactNode;
 }) {
-  const classes = [
-    "bento-tile",
-    span && span !== 2 ? `span-${span}` : "",
-    onInk ? "on-ink" : "",
-  ]
+  const classes = ["bento-tile", span && span !== 2 ? `span-${span}` : "", onInk ? "on-ink" : ""]
     .filter(Boolean)
     .join(" ");
 
