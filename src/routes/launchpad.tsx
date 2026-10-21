@@ -3,6 +3,7 @@ import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { JourneyLadder } from "@/components/marketing/journey-ladder";
 import { FaqSection, JourneyCrossSell } from "@/components/marketing/faq-section";
 import { CtaLink } from "@/components/marketing/cta-link";
+import { PositioningBanner } from "@/components/marketing/positioning-banner";
 
 export const Route = createFileRoute("/launchpad")({
   head: () => ({
@@ -78,8 +79,9 @@ const PATHWAY = [
 function LaunchpadPage() {
   return (
     <MarketingLayout>
+      <PositioningBanner variant="career" />
       <div className="hero-lp">
-        <div className="hero-lp-tag">02 · Launchpad · Land the opportunity</div>
+        <div className="hero-lp-tag">02 · Launchpad · Career product</div>
         <h1>Make your readiness easy to inspect.</h1>
         <p className="hero-sub" style={{ marginBottom: 32 }}>
           Turn demonstrated work into a portfolio, interview narrative, and trust signal that can be

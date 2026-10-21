@@ -12,6 +12,7 @@ export function MarketingFooter() {
         <Link to="/prove">Prove</Link>
         <Link to="/professional-workspace">Workspace</Link>
         <Link to="/pricing">Pricing</Link>
+        <Link to="/resources">Resources</Link>
         <Link to="/privacy">Privacy</Link>
         <Link to="/terms">Terms</Link>
       </div>

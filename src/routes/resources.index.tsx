@@ -27,20 +27,26 @@ export const Route = createFileRoute("/resources/")({
 
 const productPaths = [
   {
+    title: "Open Command Centre",
+    body: "Stage 1 supervised AI workforce preview: Investigate, Prototype and Improve missions with Wave 1 Available capabilities under plan approval and a usage ceiling.",
+    to: "/signup",
+    cta: "Open Command Centre",
+  },
+  {
     title: "Start with Experience",
-    body: "Build practical Product Management experience inside seeded AI companies before you apply. Work produces artefacts; you decide what becomes evidence.",
+    body: "Career product: build practical Product Management experience inside simulated organisations. Work produces artefacts; you decide what becomes evidence.",
     to: "/experience",
     cta: "Explore Experience",
   },
   {
     title: "Prepare with Launchpad",
-    body: "Turn experience into interviews with readiness that cites its source, evidence-backed CV and portfolio packaging, and interview stories tied to real artefacts.",
+    body: "Career product: turn experience into interviews with readiness that cites its source, portfolio packaging, and interview stories tied to real artefacts.",
     to: "/launchpad",
     cta: "Explore Launchpad",
   },
   {
     title: "Deliver with Professional Workspace",
-    body: "Work with role-based AI teammates on tasks, meetings, decisions, risks and artefacts. AI drafts; you edit, approve and submit.",
+    body: "Live delivery for sponsors and teams — distinct from Command Centre missions and from Experience simulation.",
     to: "/professional-workspace",
     cta: "Explore Professional Workspace",
   },

@@ -118,15 +118,28 @@ function PricingPage() {
           <span className="mono-label">Pricing</span>
           <h1 className="heading-1" style={{ marginTop: 16, maxWidth: 520 }}>DeliverX plans and pricing</h1>
           <p className="body-large" style={{ marginTop: 16, maxWidth: 560 }}>
-            Build practical experience, turn it into career intelligence, or follow the complete journey.
+            Career evidence plans below. Command Centre Stage 1 is an early-access preview — sign up
+            to open it; Wave 1 Available capabilities run under a local usage ceiling (not metered
+            Stripe billing yet).
           </p>
 
           <div className="card mt-8 flex items-start gap-3" style={{ padding: "18px 22px" }}>
             <Check className="mt-1 size-4 shrink-0" style={{ color: "var(--x-teal)" }} />
             <p className="text-sm">
-              <strong>Start free.</strong> Create an account and work through the first phase of
-              your first scenario in Experience — no card needed. Assessed feedback, later phases
-              and attestation requests need a paid plan.
+              <strong>Command Centre early access.</strong> Create an account to open the supervised
+              workforce preview. Separate from the paid career plans on this page.{" "}
+              <Link to="/signup" className="font-semibold underline underline-offset-2">
+                Open Command Centre →
+              </Link>
+            </p>
+          </div>
+
+          <div className="card mt-4 flex items-start gap-3" style={{ padding: "18px 22px" }}>
+            <Check className="mt-1 size-4 shrink-0" style={{ color: "var(--x-teal)" }} />
+            <p className="text-sm">
+              <strong>Career path — start free.</strong> Work through the first phase of your first
+              Experience scenario without a card. Assessed feedback, later phases and attestation
+              requests need a paid plan.
             </p>
           </div>
 

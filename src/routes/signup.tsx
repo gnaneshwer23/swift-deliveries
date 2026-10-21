@@ -79,7 +79,8 @@ function SignupPage() {
             Create your account
           </h1>
           <p className="body" style={{ marginTop: 6, marginBottom: 24 }}>
-            Your evidence record starts empty — that's correct.
+            Sign up opens Command Centre (Stage 1 workforce preview). Career Experience and
+            Launchpad remain available from your account once you are in.
           </p>
 
           <button
