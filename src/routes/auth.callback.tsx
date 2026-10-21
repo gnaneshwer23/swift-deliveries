@@ -1,12 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { waitForSession } from "@/lib/auth-session";
 
 /**
- * Public landing point for email-confirmation and OAuth redirects. It waits for
- * the session to hydrate, then routes forward — the onboarding gate on
- * /workspace decides between setup and the dashboard.
+ * Public landing point for email-confirmation and OAuth redirects. It exchanges
+ * any `?code=` PKCE payload, waits for the session to hydrate, then routes to
+ * Command Centre.
  */
 export const Route = createFileRoute("/auth/callback")({
   ssr: false,
@@ -30,14 +31,35 @@ function AuthCallbackPage() {
 
   useEffect(() => {
     let active = true;
-    void waitForSession().then((session) => {
-      if (!active) return;
-      if (!session) {
-        setFailed(true);
-        return;
+
+    void (async () => {
+      try {
+        const url = new URL(window.location.href);
+        const code = url.searchParams.get("code");
+        if (code) {
+          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          if (error) {
+            if (active) setFailed(true);
+            return;
+          }
+          // Drop the code from the address bar so a refresh cannot reuse it.
+          url.searchParams.delete("code");
+          url.searchParams.delete("state");
+          window.history.replaceState({}, document.title, `${url.pathname}${url.search}${url.hash}`);
+        }
+
+        const session = await waitForSession();
+        if (!active) return;
+        if (!session) {
+          setFailed(true);
+          return;
+        }
+        navigate({ to: "/command", replace: true });
+      } catch {
+        if (active) setFailed(true);
       }
-      navigate({ to: "/command", replace: true });
-    });
+    })();
+
     return () => {
       active = false;
     };
