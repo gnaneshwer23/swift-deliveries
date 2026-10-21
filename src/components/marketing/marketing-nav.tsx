@@ -6,11 +6,10 @@ import { useSession } from "@/hooks/use-session";
 import { BrandLogo } from "@/components/brand-logo";
 
 const NAV_LINKS = [
-  { to: "/how-it-works", label: "How it works" },
-  { to: "/pricing", label: "Pricing" },
-  { to: "/experience", label: "Experience" },
-  { to: "/launchpad", label: "Launchpad" },
-  { to: "/prove", label: "Prove" },
+  { href: "/how-it-works", label: "How it works" },
+  { href: "/#mission-types", label: "Mission types" },
+  { href: "/#capabilities", label: "Capabilities" },
+  { href: "/#governance", label: "Control & safety" },
 ] as const;
 
 export function MarketingNav() {
@@ -23,14 +22,9 @@ export function MarketingNav() {
 
       <nav className="nav-links" aria-label="Primary navigation">
         {NAV_LINKS.map((item) => (
-          <Link
-            key={item.to}
-            to={item.to}
-            activeProps={{ className: "active" }}
-            activeOptions={{ exact: false }}
-          >
+          <a key={item.href} href={item.href}>
             {item.label}
-          </Link>
+          </a>
         ))}
       </nav>
 
@@ -65,15 +59,15 @@ export function MarketingNav() {
         >
           <nav className="flex flex-col" aria-label="Mobile navigation">
             {NAV_LINKS.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
+              <a
+                key={item.href}
+                href={item.href}
                 onClick={() => setOpen(false)}
                 className="border-b py-3 text-sm font-medium text-[var(--x-slate)]"
                 style={{ borderColor: "var(--x-border)" }}
               >
                 {item.label}
-              </Link>
+              </a>
             ))}
             {!user && (
               <>
