@@ -2722,11 +2722,12 @@ html:has(.marketing-page) {
 .dxs .finsage-3d-frame {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   border-radius: 18px;
   overflow: hidden;
-  background: #f4f6f2;
-  border: 1px solid rgba(20, 29, 22, 0.06);
+  background: #0c1310;
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  box-shadow: inset 0 0 40px rgba(16, 185, 129, 0.08);
 }
 .dxs .finsage-3d-img {
   width: 100%;
@@ -2741,15 +2742,15 @@ html:has(.marketing-page) {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 6px 13px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(12, 19, 16, 0.78);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(15, 118, 110, 0.18);
-  box-shadow: 0 4px 14px rgba(15, 25, 18, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.32);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
   font-size: 11.5px;
-  font-weight: 650;
-  color: #0f766e;
+  font-weight: 600;
+  color: #a7f3d0;
 }
 .dxs .finsage-card-body {
   display: flex;
@@ -2877,9 +2878,9 @@ html:has(.marketing-page) {
 .dxs .mission-arch-visual {
   position: relative;
   margin: -26px -26px 20px -26px;
-  height: 196px;
-  background: #f5f6f2;
-  border-bottom: 1px solid #e6ece6;
+  height: 224px;
+  background: #0c1310;
+  border-bottom: 1px solid #1e2d25;
   overflow: hidden;
   border-radius: 15px 15px 0 0;
 }
@@ -2887,6 +2888,7 @@ html:has(.marketing-page) {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   display: block;
   transition: transform 0.35s ease;
 }
@@ -2899,16 +2901,16 @@ html:has(.marketing-page) {
   left: 14px;
   display: inline-flex;
   align-items: center;
-  padding: 5px 11px;
+  padding: 5px 12px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(12, 19, 16, 0.78);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(20, 29, 22, 0.1);
+  border: 1px solid rgba(52, 211, 153, 0.3);
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 11px;
-  font-weight: 700;
-  color: #17211a;
-  box-shadow: 0 2px 10px rgba(15, 25, 18, 0.06);
+  font-weight: 600;
+  color: #a7f3d0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
 }
 
 /* Compact Epistemic Honesty Strip */

@@ -68,7 +68,7 @@ export function CommandCentreComposition() {
           loading="eager"
         />
         <div className="finsage-floating-badge">
-          <ShieldCheck className="size-3.5 text-emerald-700" aria-hidden="true" />
+          <ShieldCheck className="size-3.5 text-emerald-400" aria-hidden="true" />
           <span>Human Approval Gate</span>
         </div>
       </div>
