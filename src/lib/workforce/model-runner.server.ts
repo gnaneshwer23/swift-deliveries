@@ -16,7 +16,8 @@ import type { WfMission, WfMissionTask } from "./types";
 
 type Provider = { name: string; url: string; apiKey: string; model: string };
 
-const DEFAULT_MODEL = "anthropic/claude-sonnet-5.5";
+const DEFAULT_OPENAI_MODEL = "gpt-5";
+const DEFAULT_GATEWAY_MODEL = "anthropic/claude-sonnet-5.5";
 const TIMEOUT_MS = 90_000;
 const MAX_UPSTREAM_CHARS = 6_000;
 const MAX_CONTEXT_CHARS = 24_000;
@@ -25,7 +26,17 @@ export function resolveProvider(
   env: Record<string, string | undefined> = process.env,
 ): Provider | null {
   if (env["DXSI_MODEL_ENABLED"] !== "true") return null;
-  const model = env["DXSI_MODEL"]?.trim() || DEFAULT_MODEL;
+  // Direct OpenAI credentials take precedence so the configured provider choice is deterministic.
+  // API keys are read only in this server-only module and must be deployment secrets.
+  if (env["OPENAI_API_KEY"]) {
+    return {
+      name: "openai",
+      url: "https://api.openai.com/v1/chat/completions",
+      apiKey: env["OPENAI_API_KEY"],
+      model: env["DXSI_MODEL"]?.trim() || DEFAULT_OPENAI_MODEL,
+    };
+  }
+  const model = env["DXSI_MODEL"]?.trim() || DEFAULT_GATEWAY_MODEL;
   const gatewayKey = env["AI_GATEWAY_API_KEY"] || env["VERCEL_OIDC_TOKEN"];
   if (gatewayKey) {
     return {
