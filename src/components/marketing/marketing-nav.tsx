@@ -5,12 +5,17 @@ import { AccountMenu } from "./account-menu";
 import { useSession } from "@/hooks/use-session";
 import { BrandLogo } from "@/components/brand-logo";
 
-const LINKS = [
+export const MARKETING_LINKS = [
+  { to: "/", label: "Home" },
+  { to: "/psi", label: "PSI Platform" },
   { to: "/how-it-works", label: "How it works" },
-  { to: "/pricing", label: "Pricing" },
-  { to: "/resources", label: "Resources" },
-  { to: "/about", label: "About" },
+  { to: "/ai-agents", label: "150 AI Agents" },
+  { to: "/product-brain", label: "Product Brain" },
+  { to: "/solutions", label: "Solutions" },
+  { to: "/security", label: "Security & Trust" },
+  { to: "/pricing", label: "Pricing & Pilot" },
 ] as const;
+const LINKS = MARKETING_LINKS;
 
 export function MarketingNav() {
   const [open, setOpen] = useState(false);
@@ -23,7 +28,7 @@ export function MarketingNav() {
         <BrandLogo />
         <nav className="nav-links motion-nav-links" aria-label="Primary navigation">
           {LINKS.map((l) => (
-            <Link key={l.to} to={l.to} className={pathname.startsWith(l.to) ? "active" : ""}>
+            <Link key={l.to} to={l.to} className={pathname === l.to ? "active" : ""}>
               {l.label}
             </Link>
           ))}
@@ -34,7 +39,7 @@ export function MarketingNav() {
         {!loading && user ? (
           <>
             <Link to="/command" className="dxn-cta hidden sm:inline-flex">
-              Open Command Centre
+              Launch PSI Workspace
             </Link>
             <AccountMenu user={user} />
           </>
@@ -43,8 +48,8 @@ export function MarketingNav() {
             <Link to="/login" className="dxn-signin hidden sm:inline-flex">
               Sign in
             </Link>
-            <Link to="/signup" className="dxn-cta">
-              Start free
+            <Link to="/pricing" className="dxn-cta">
+              View plans
             </Link>
           </>
         )}
@@ -73,7 +78,7 @@ export function MarketingNav() {
                 onClick={() => setOpen(false)}
                 className="dxn-cta mt-3 justify-center"
               >
-                Open Command Centre
+                Launch PSI Workspace
               </Link>
             ) : (
               <div className="mt-3 flex flex-col gap-2">
@@ -85,11 +90,11 @@ export function MarketingNav() {
                   Sign in
                 </Link>
                 <Link
-                  to="/signup"
+                  to="/pricing"
                   onClick={() => setOpen(false)}
                   className="dxn-cta justify-center"
                 >
-                  Start free
+                  View plans
                 </Link>
               </div>
             )}

@@ -27,6 +27,30 @@ export const ILLUSTRATIONS = {
 
 export type IllustrationName = keyof typeof ILLUSTRATIONS;
 
+const HANDOFFS: Record<IllustrationName, string[]> = {
+  "product-brain": [
+    "Sources & brief",
+    "Evidence register",
+    "Decision record",
+    "Versioned artefacts",
+  ],
+  "specialist-team": ["Research", "Product strategy", "Design & engineering", "QA review"],
+  "evidence-decision": [
+    "Research evidence",
+    "Specialist positions",
+    "Red-team challenge",
+    "Verdict / your call",
+  ],
+  "human-direction": [
+    "Team recommendation",
+    "Your approval gate",
+    "Approved work",
+    "Reviewable output",
+  ],
+  "product-delivery": ["PRD & architecture", "Interface prototype", "QA checks", "Project export"],
+  "learning-loop": ["Product decision", "Build & inspect", "Observed feedback", "Next hypothesis"],
+};
+
 /** Original generated artwork; meaningful captions and controls stay in HTML. */
 export function ProductIllustration({
   name,
@@ -41,6 +65,7 @@ export function ProductIllustration({
 }) {
   return (
     <figure className={`psi-art${compact ? " psi-art-compact" : ""}`}>
+      <p className="psi-art-title">{ILLUSTRATIONS[name].label}</p>
       <div className="psi-art-canvas">
         <img
           src={`/illustrations/${name}.webp`}
@@ -54,7 +79,21 @@ export function ProductIllustration({
           decoding="async"
         />
       </div>
-      {caption ? <figcaption>{caption}</figcaption> : null}
+      <ol className="psi-art-handoffs" aria-label="Read the concept from left to right">
+        {HANDOFFS[name].map((label, i) => (
+          <li key={label}>
+            <span>{i + 1}</span>
+            {label}
+            {i < 3 && <b aria-hidden="true">→</b>}
+          </li>
+        ))}
+      </ol>
+      <figcaption>
+        {caption ??
+          (name === "learning-loop"
+            ? "Concept flow. Connected outcome learning is planned; observed feedback is supplied by you."
+            : "Concept illustration. Labels describe the handoff direction; this is not a live application screenshot.")}
+      </figcaption>
     </figure>
   );
 }

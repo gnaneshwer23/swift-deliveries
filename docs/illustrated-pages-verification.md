@@ -7,3 +7,11 @@ Home retains its original headline and interactive decision engine. How it works
 Validation: TypeScript passed; ESLint passed with ten existing warnings; 152 tests passed and 16 skipped; Vercel production build passed. Browser checks covered the six-step walkthrough, example brief population and actual Markdown download, desktop illustrations and mobile homepage navigation without horizontal overflow. Assets loaded successfully. Outcome learning is labelled planned.
 
 This change does not verify authenticated onboarding, database isolation, or agent production readiness. No production database writes were made.
+
+## Public architecture and paid pilot revision
+
+Eight ordered PSI pages are now implemented. Homepage sections follow the supplied brief with an illustrative interface preview. Six concept images have HTML titles and numbered directional labels. An optional play/pause example shows named specialist handoffs, challenge and human escalation. The agent directory exposes all 150 current registry roles across 12 browsing groups with search, status and department filters.
+
+Browser checks verified: search yields one Evidence Verification role; available filter yields 12 roles; Research wheel yields 10 roles; reset restores all roles; Founder selection preserves `/pilot?plan=founder` and £99/month; judgement controls show the owner escalation; optional playback reaches the final inspection step and stops. Mobile homepage and directory at 390px have no horizontal overflow. Mobile navigation follows the eight-page order. Dedicated Brain, Solutions and Trust pages load with distinct content.
+
+TypeScript and ESLint pass (10 existing warnings); all 152 tests pass with 16 skipped. The paid pilot prices are commercial offers, not validated unit economics. Automated access-request submission, checkout and paid entitlement enforcement remain unimplemented and are explicitly disclosed on the pilot preparation page. Research and acceptance criteria are recorded in psi-website-landing-pages-specification.md.

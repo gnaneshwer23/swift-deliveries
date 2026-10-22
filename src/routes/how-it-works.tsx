@@ -1,3 +1,4 @@
+import { JudgementFlow } from "@/components/marketing/judgement-flow";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, FileText, Search, UserRoundCheck } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
@@ -55,6 +56,7 @@ function HowItWorks() {
             <h2 className="dxl-h2">“Why do people leave during setup?”</h2>
             <p>Start with a question. Bring what you know. Keep the assumptions visible.</p>
           </div>
+          <JudgementFlow />
           <MissionWalkthrough />
         </div>
       </section>

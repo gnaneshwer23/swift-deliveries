@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AiAgentsRouteImport } from './routes/ai-agents'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as ExperienceRouteImport } from './routes/experience'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
@@ -21,11 +22,15 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as PilotRouteImport } from './routes/pilot'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ProductBrainRouteImport } from './routes/product-brain'
 import { Route as ProfessionalWorkspaceRouteImport } from './routes/professional-workspace'
 import { Route as ProveRouteImport } from './routes/prove'
+import { Route as PsiRouteImport } from './routes/psi'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SecurityRouteImport } from './routes/security'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as SolutionsRouteImport } from './routes/solutions'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedCareerOnboardingRouteImport } from './routes/_authenticated/career-onboarding'
 import { Route as AuthenticatedCommandRouteImport } from './routes/_authenticated/command'
@@ -87,6 +92,11 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AiAgentsRoute = AiAgentsRouteImport.update({
+  id: '/ai-agents',
+  path: '/ai-agents',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CookiesRoute = CookiesRouteImport.update({
   id: '/cookies',
   path: '/cookies',
@@ -132,6 +142,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProductBrainRoute = ProductBrainRouteImport.update({
+  id: '/product-brain',
+  path: '/product-brain',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfessionalWorkspaceRoute = ProfessionalWorkspaceRouteImport.update({
   id: '/professional-workspace',
   path: '/professional-workspace',
@@ -142,9 +157,19 @@ const ProveRoute = ProveRouteImport.update({
   path: '/prove',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PsiRoute = PsiRouteImport.update({
+  id: '/psi',
+  path: '/psi',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SecurityRoute = SecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SigninRoute = SigninRouteImport.update({
@@ -155,6 +180,11 @@ const SigninRoute = SigninRouteImport.update({
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SolutionsRoute = SolutionsRouteImport.update({
+  id: '/solutions',
+  path: '/solutions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermsRoute = TermsRouteImport.update({
@@ -422,6 +452,7 @@ const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/ai-agents': typeof AiAgentsRoute
   '/cookies': typeof CookiesRoute
   '/experience': typeof ExperienceRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -431,11 +462,15 @@ export interface FileRoutesByFullPath {
   '/pilot': typeof PilotRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/product-brain': typeof ProductBrainRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
   '/prove': typeof ProveRoute
+  '/psi': typeof PsiRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/security': typeof SecurityRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
+  '/solutions': typeof SolutionsRoute
   '/terms': typeof TermsRoute
   '/career-onboarding': typeof AuthenticatedCareerOnboardingRoute
   '/command': typeof AuthenticatedCommandRouteWithChildren
@@ -486,6 +521,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/ai-agents': typeof AiAgentsRoute
   '/cookies': typeof CookiesRoute
   '/experience': typeof ExperienceRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -495,11 +531,15 @@ export interface FileRoutesByTo {
   '/pilot': typeof PilotRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/product-brain': typeof ProductBrainRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
   '/prove': typeof ProveRoute
+  '/psi': typeof PsiRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/security': typeof SecurityRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
+  '/solutions': typeof SolutionsRoute
   '/terms': typeof TermsRoute
   '/career-onboarding': typeof AuthenticatedCareerOnboardingRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -549,6 +589,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
+  '/ai-agents': typeof AiAgentsRoute
   '/cookies': typeof CookiesRoute
   '/experience': typeof ExperienceRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -558,11 +599,15 @@ export interface FileRoutesById {
   '/pilot': typeof PilotRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/product-brain': typeof ProductBrainRoute
   '/professional-workspace': typeof ProfessionalWorkspaceRoute
   '/prove': typeof ProveRoute
+  '/psi': typeof PsiRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/security': typeof SecurityRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
+  '/solutions': typeof SolutionsRoute
   '/terms': typeof TermsRoute
   '/_authenticated/career-onboarding': typeof AuthenticatedCareerOnboardingRoute
   '/_authenticated/command': typeof AuthenticatedCommandRouteWithChildren
@@ -615,6 +660,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/ai-agents'
     | '/cookies'
     | '/experience'
     | '/forgot-password'
@@ -624,11 +670,15 @@ export interface FileRouteTypes {
     | '/pilot'
     | '/pricing'
     | '/privacy'
+    | '/product-brain'
     | '/professional-workspace'
     | '/prove'
+    | '/psi'
     | '/reset-password'
+    | '/security'
     | '/signin'
     | '/signup'
+    | '/solutions'
     | '/terms'
     | '/career-onboarding'
     | '/command'
@@ -679,6 +729,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/ai-agents'
     | '/cookies'
     | '/experience'
     | '/forgot-password'
@@ -688,11 +739,15 @@ export interface FileRouteTypes {
     | '/pilot'
     | '/pricing'
     | '/privacy'
+    | '/product-brain'
     | '/professional-workspace'
     | '/prove'
+    | '/psi'
     | '/reset-password'
+    | '/security'
     | '/signin'
     | '/signup'
+    | '/solutions'
     | '/terms'
     | '/career-onboarding'
     | '/onboarding'
@@ -741,6 +796,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/about'
+    | '/ai-agents'
     | '/cookies'
     | '/experience'
     | '/forgot-password'
@@ -750,11 +806,15 @@ export interface FileRouteTypes {
     | '/pilot'
     | '/pricing'
     | '/privacy'
+    | '/product-brain'
     | '/professional-workspace'
     | '/prove'
+    | '/psi'
     | '/reset-password'
+    | '/security'
     | '/signin'
     | '/signup'
+    | '/solutions'
     | '/terms'
     | '/_authenticated/career-onboarding'
     | '/_authenticated/command'
@@ -807,6 +867,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
+  AiAgentsRoute: typeof AiAgentsRoute
   CookiesRoute: typeof CookiesRoute
   ExperienceRoute: typeof ExperienceRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
@@ -816,11 +877,15 @@ export interface RootRouteChildren {
   PilotRoute: typeof PilotRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
+  ProductBrainRoute: typeof ProductBrainRoute
   ProfessionalWorkspaceRoute: typeof ProfessionalWorkspaceRoute
   ProveRoute: typeof ProveRoute
+  PsiRoute: typeof PsiRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SecurityRoute: typeof SecurityRoute
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
+  SolutionsRoute: typeof SolutionsRoute
   TermsRoute: typeof TermsRoute
   AttestTokenRoute: typeof AttestTokenRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
@@ -860,6 +925,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-agents': {
+      id: '/ai-agents'
+      path: '/ai-agents'
+      fullPath: '/ai-agents'
+      preLoaderRoute: typeof AiAgentsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cookies': {
@@ -925,6 +997,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/product-brain': {
+      id: '/product-brain'
+      path: '/product-brain'
+      fullPath: '/product-brain'
+      preLoaderRoute: typeof ProductBrainRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/professional-workspace': {
       id: '/professional-workspace'
       path: '/professional-workspace'
@@ -939,11 +1018,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProveRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/psi': {
+      id: '/psi'
+      path: '/psi'
+      fullPath: '/psi'
+      preLoaderRoute: typeof PsiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/security': {
+      id: '/security'
+      path: '/security'
+      fullPath: '/security'
+      preLoaderRoute: typeof SecurityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signin': {
@@ -958,6 +1051,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/solutions': {
+      id: '/solutions'
+      path: '/solutions'
+      fullPath: '/solutions'
+      preLoaderRoute: typeof SolutionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terms': {
@@ -1409,6 +1509,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
+  AiAgentsRoute: AiAgentsRoute,
   CookiesRoute: CookiesRoute,
   ExperienceRoute: ExperienceRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
@@ -1418,11 +1519,15 @@ const rootRouteChildren: RootRouteChildren = {
   PilotRoute: PilotRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
+  ProductBrainRoute: ProductBrainRoute,
   ProfessionalWorkspaceRoute: ProfessionalWorkspaceRoute,
   ProveRoute: ProveRoute,
+  PsiRoute: PsiRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SecurityRoute: SecurityRoute,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
+  SolutionsRoute: SolutionsRoute,
   TermsRoute: TermsRoute,
   AttestTokenRoute: AttestTokenRoute,
   AuthCallbackRoute: AuthCallbackRoute,

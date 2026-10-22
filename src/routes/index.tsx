@@ -1,15 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, FileStack, Gavel, Quote, ShieldCheck } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
-import { FaqSection } from "@/components/marketing/faq-section";
+import { JudgementFlow } from "@/components/marketing/judgement-flow";
 import { OnboardingGate } from "@/components/onboarding-gate";
 import { ProductIllustration } from "@/components/marketing/product-illustration";
-import { CtaLink } from "@/components/marketing/cta-link";
-import { ExportTree, LiveDecision, LiveProgrammeFlow } from "@/components/marketing/dxsi-landing";
+import { LiveDecision, LiveProgrammeFlow } from "@/components/marketing/dxsi-landing";
 
-const TITLE = "DeliverX — Your idea, run like a product company";
+const TITLE = "DeliverX — From product idea to continuous intelligence";
 const DESCRIPTION =
-  "150 AI specialists research, debate, design, build and verify your product. You approve every decision that matters, and download the whole project.";
+  "Product Super Intelligence connects evidence, specialist contributions, human decisions and product delivery in one evolving record.";
 
 const HOW_IT_WORKS_SCHEMA = [
   { name: "Describe", desc: "Describe your idea or business case." },
@@ -97,246 +96,194 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-const HOME_FAQ = [
-  {
-    q: "Is this a chatbot?",
-    a: "No. DeliverX runs your idea as a programme: a roadmap with owners, meetings, decisions, deliverables and approval gates — and you can download all of it.",
-  },
-  {
-    q: "Who makes the decisions?",
-    a: "Specialist panels form independent views, challenge each other and vote under fixed rules. High-impact or weakly evidenced decisions always come to you.",
-  },
-  {
-    q: "Are the customer interviews real?",
-    a: "Only the ones you add. Agents can rehearse with clearly labelled synthetic personas, but only real interview notes count as evidence.",
-  },
-  {
-    q: "What do I get at the end?",
-    a: "A portable project: business case, research with sources, PRD, roadmap, designs, architecture, prototype, decisions, meetings, tests and a full audit trail.",
-  },
-];
-
-const PHASES = [
-  { name: "Discover", items: ["Market", "Research", "Foresight", "Interviews"] },
-  { name: "Define", items: ["PRD", "Business model", "Roadmap"], gate: true },
-  { name: "Design", items: ["UX", "Architecture", "Threat model"], gate: true },
-  { name: "Build", items: ["Sprints", "Code review", "Prototype"], gate: true },
-  { name: "Verify", items: ["Tests", "Go / no-go"], gate: true },
-  { name: "Launch", items: ["GTM", "Analytics"] },
-  { name: "Evolve", items: ["Experiments", "Radar"] },
-];
-
-const TRUST = [
-  {
-    icon: Gavel,
-    title: "You hold the gates",
-    text: "Four approvals. Nothing consequential runs without you.",
-  },
-  {
-    icon: Quote,
-    title: "Evidence, cited",
-    text: "Claims link to sources. Unsourced numbers are rejected.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Nothing fabricated",
-    text: "Simulated work is labelled. Real interviews are yours.",
-  },
-  {
-    icon: FileStack,
-    title: "Fully portable",
-    text: "Every file, decision and event — one download.",
-  },
-];
-
 function HomePage() {
   return (
     <MarketingLayout>
       <OnboardingGate />
-
       <section className="dxl-hero">
         <div className="dxl-wrap">
-          <p className="dxl-eyebrow">DeliverX Super Intelligence</p>
+          <p className="dxl-eyebrow">DeliverX · Product Super Intelligence</p>
           <h1 className="dxl-h1">
-            Your idea,
+            From product idea
             <br />
-            <span className="dxl-grad">run like a product company.</span>
+            <span className="dxl-grad">to continuous intelligence.</span>
           </h1>
           <p className="dxl-lead">
-            150 AI specialists research, debate, design, build and verify. You approve what matters.
+            One intelligent workspace connecting evidence, decisions, specialist AI agents, product
+            delivery and learning.
           </p>
           <div className="dxl-ctas">
-            <CtaLink
-              signedInTo="/command/programmes"
-              signedInLabel="Start a programme"
-              signedOutLabel="Start free"
-              className="dxl-btn dxl-btn-primary"
-            />
-            <a href="#decisions" className="dxl-btn dxl-btn-ghost">
-              Watch a decision <ArrowRight className="size-4" />
-            </a>
+            <Link to="/psi" className="dxl-btn dxl-btn-primary">
+              Explore the platform <ArrowRight size={16} />
+            </Link>
+            <Link to="/how-it-works" className="dxl-btn dxl-btn-ghost">
+              View example mission
+            </Link>
           </div>
-        </div>
-        <div className="dxl-wrap psi-home-hero-art">
-          <ProductIllustration
-            name="product-brain"
-            priority
-            caption="Your product's sources, decisions and artefacts—brought into one working record."
-          />
-        </div>
-        <ul className="dxl-stats dxl-wrap" aria-label="At a glance">
-          <li>
-            <b>150</b>specialists
-          </li>
-          <li>
-            <b>15</b>departments
-          </li>
-          <li>
-            <b>7</b>phases
-          </li>
-          <li>
-            <b>4</b>founder gates
-          </li>
-          <li>
-            <b>1</b>download
-          </li>
-        </ul>
-      </section>
-
-      <section className="dxl-section" id="decisions">
-        <div className="dxl-wrap">
-          <div className="psi-split">
-            <header className="dxl-head dxl-left">
-              <p className="dxl-eyebrow">Collective judgement</p>
-              <h2 className="dxl-h2">Watch a decision get made.</h2>
-              <p className="dxl-sub">
-                Independent views. A red team. Hard vetoes. A rule-based verdict — or your call.
+          <div className="psi-product-preview">
+            <div className="psi-preview-sidebar">
+              <strong>DeliverX / Product Brain</strong>
+              <span>Overview</span>
+              <span>Missions</span>
+              <span>Evidence</span>
+              <span>Decisions</span>
+            </div>
+            <div className="psi-preview-main">
+              <p className="dxl-eyebrow">Example mission · illustrative interface</p>
+              <h2>Improve onboarding</h2>
+              <div className="psi-preview-metrics">
+                <span>
+                  Objective<strong>Reduce first-step friction</strong>
+                </span>
+                <span>
+                  Specialists<strong>Research + Product + QA</strong>
+                </span>
+                <span>
+                  Stage<strong>Decision ready</strong>
+                </span>
+              </div>
+              <p className="psi-preview-chain">
+                Evidence brief → Specialist positions → Your approval → Prototype brief
               </p>
-            </header>
-            <ProductIllustration name="evidence-decision" />
+              <p>
+                Recommendation: compare a shorter first session with the current onboarding flow.
+              </p>
+              <small>Hypothetical scenario. No customer result or live execution is claimed.</small>
+            </div>
           </div>
-          <details className="psi-demo-disclosure" open>
-            <summary>Explore a sample decision from the decision engine</summary>
+          <p className="psi-fine-print">
+            Illustrative interface composition, not a verified live product screenshot.
+          </p>
+        </div>
+      </section>
+      <section className="psi-section psi-tinted">
+        <div className="dxl-wrap">
+          <p className="dxl-eyebrow">01 · The problem</p>
+          <h2 className="dxl-h2">Every handoff can lose the reason.</h2>
+          <p className="psi-lead">
+            Research in one tool. Decisions in a chat. Delivery in another backlog. When the context
+            disappears, teams repeat questions and build on assumptions.
+          </p>
+          <div className="psi-feature-grid">
+            {[
+              "Evidence without a decision",
+              "A recommendation without a challenge",
+              "Delivery without observed feedback",
+            ].map((x) => (
+              <div className="psi-feature" key={x}>
+                <h3>{x}</h3>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      <section className="psi-section">
+        <div className="dxl-wrap psi-split">
+          <div>
+            <p className="dxl-eyebrow">02 · Meet Product Brain</p>
+            <h2 className="dxl-h2">One evolving product record.</h2>
+            <p>
+              Your sources connect to decisions, and decisions connect to artefacts. Inspect the
+              rationale before the next mission starts.
+            </p>
+            <Link to="/product-brain" className="dxl-link">
+              Explore Product Brain →
+            </Link>
+          </div>
+          <ProductIllustration name="product-brain" />
+        </div>
+      </section>
+      <section className="psi-section psi-tinted">
+        <div className="dxl-wrap psi-split">
+          <div>
+            <p className="dxl-eyebrow">03 · Specialist workforce</p>
+            <h2 className="dxl-h2">
+              Different disciplines.
+              <br />
+              Shared context.
+            </h2>
+            <p>
+              150 catalogue roles organised into 12 browsing groups. Explore the directory to see
+              capability status and limitations. Missions use enabled capabilities.
+            </p>
+            <Link to="/ai-agents" className="dxl-link">
+              Explore agents →
+            </Link>
+          </div>
+          <ProductIllustration name="specialist-team" />
+        </div>
+      </section>
+      <section className="psi-section">
+        <div className="dxl-wrap">
+          <p className="dxl-eyebrow">04 · From idea to impact</p>
+          <h2 className="dxl-h2">A lifecycle with human gates.</h2>
+          <LiveProgrammeFlow />
+          <Link to="/how-it-works" className="dxl-link">
+            Explore each stage →
+          </Link>
+        </div>
+      </section>
+      <section className="psi-section psi-tinted" id="decisions">
+        <div className="dxl-wrap">
+          <p className="dxl-eyebrow">05 · A mission in action</p>
+          <JudgementFlow />
+          <details>
+            <summary>Inspect the sample decision engine</summary>
             <LiveDecision />
           </details>
         </div>
       </section>
-
-      <section className="dxl-section dxl-alt">
-        <div className="dxl-wrap">
-          <header className="dxl-head">
-            <p className="dxl-eyebrow">One workflow</p>
-            <h2 className="dxl-h2">Idea to launch, with you at every gate.</h2>
-          </header>
-          <ProductIllustration
-            name="human-direction"
-            compact
-            caption="The team proposes. You review the decisions that move the work forward."
-          />
-          <LiveProgrammeFlow />
-          <ol className="dxl-rail">
-            {PHASES.map((p, i) => (
-              <li key={p.name} style={{ animationDelay: `${i * 90}ms` }}>
-                <span className="dxl-rail-step">{String(i + 1).padStart(2, "0")}</span>
-                <strong>{p.name}</strong>
-                <span className="dxl-rail-items">
-                  {p.items.map((it) => (
-                    <em key={it}>{it}</em>
-                  ))}
-                </span>
-                {p.gate ? <span className="dxl-rail-gate">You approve</span> : null}
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      <section className="dxl-section">
-        <div className="dxl-wrap dxl-two">
-          <header className="dxl-head dxl-left">
-            <p className="dxl-eyebrow">The workforce</p>
+      <section className="psi-section">
+        <div className="dxl-wrap psi-split">
+          <div>
+            <p className="dxl-eyebrow">06 · Continuous learning</p>
             <h2 className="dxl-h2">
-              Different disciplines.
+              What happened informs
               <br />
-              One shared objective.
+              what comes next.
             </h2>
-            <p className="dxl-sub">
-              A catalogue of 150 specialist roles. Teams form around the work, with contributions
-              from research, product, design, engineering and review. Missions use enabled
-              capabilities.
+            <p>
+              Bring observed results back to the product record and use them to frame the next
+              question. Connected outcome tracking and automatic learning are planned capabilities.
             </p>
-            <Link to="/how-it-works" hash="workforce" className="dxl-link">
-              See how the team works <ArrowRight className="size-4" />
+            <Link to="/product-brain" className="dxl-link">
+              Follow the learning loop →
             </Link>
-          </header>
-          <ProductIllustration name="specialist-team" />
-        </div>
-      </section>
-
-      <section className="dxl-section dxl-alt">
-        <div className="dxl-wrap dxl-two">
-          <ProductIllustration name="product-delivery" />
-          <header className="dxl-head dxl-left">
-            <p className="dxl-eyebrow">Yours to keep</p>
-            <h2 className="dxl-h2">Leave with the whole project.</h2>
-            <p className="dxl-sub">
-              Business case to audit trail, in one archive. A manifest states exactly what is real
-              and what was simulated.
-            </p>
-            <details className="psi-demo-disclosure">
-              <summary>See the project folder structure</summary>
-              <ExportTree />
-            </details>
-          </header>
-        </div>
-      </section>
-
-      <section className="dxl-section">
-        <div className="dxl-wrap psi-split">
-          <ProductIllustration name="human-direction" />
-          <div>
-            <p className="dxl-eyebrow">Human direction</p>
-            <h2 className="dxl-h2">
-              An AI team.
-              <br />
-              Your judgement.
-            </h2>
-            <ul className="dxl-trust psi-trust-grid">
-              {TRUST.map((t) => (
-                <li key={t.title}>
-                  <t.icon className="size-5" aria-hidden="true" />
-                  <strong>{t.title}</strong>
-                  <span>{t.text}</span>
-                </li>
-              ))}
-            </ul>
           </div>
+          <ProductIllustration name="learning-loop" />
         </div>
       </section>
-
-      <FaqSection items={HOME_FAQ} />
-
-      <section className="dxl-final">
+      <section className="psi-section psi-tinted">
         <div className="dxl-wrap psi-split">
-          <ProductIllustration name="learning-loop" />
           <div>
-            <p className="dxl-eyebrow">Build with purpose</p>
-            <h2 className="dxl-h2">
-              Bring an idea.
-              <br />
-              Make the next step tangible.
-            </h2>
-            <div className="dxl-ctas">
-              <CtaLink
-                signedInTo="/command/programmes"
-                signedInLabel="Start a programme"
-                signedOutLabel="Start free"
-                className="dxl-btn dxl-btn-primary"
-              />
-              <Link to="/resources" className="dxl-btn dxl-btn-ghost">
-                Learn through building →
-              </Link>
-            </div>
+            <p className="dxl-eyebrow">07 · Trust & governance</p>
+            <h2 className="dxl-h2">Judgement stays accountable.</h2>
+            <p>
+              You approve consequential steps. Records retain dissent, sources and generation mode.
+              Permissions and usage ceilings bound the work.
+            </p>
+            <Link to="/security" className="dxl-link">
+              View safeguards →
+            </Link>
+          </div>
+          <ProductIllustration name="human-direction" />
+        </div>
+      </section>
+      <section className="psi-section">
+        <div className="dxl-wrap">
+          <p className="dxl-eyebrow">08 · Build with purpose</p>
+          <h2 className="dxl-h2">
+            Bring a product question.
+            <br />
+            Make the next step tangible.
+          </h2>
+          <div className="psi-actions">
+            <Link to="/pricing" className="dxl-btn dxl-btn-primary">
+              Explore paid pilots
+            </Link>
+            <Link to="/resources" className="dxl-btn dxl-btn-ghost">
+              Prepare a product brief
+            </Link>
           </div>
         </div>
       </section>

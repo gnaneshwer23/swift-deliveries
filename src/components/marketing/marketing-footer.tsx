@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { BrandLogo } from "@/components/brand-logo";
+import { MARKETING_LINKS } from "./marketing-nav";
 import { CAREER_SUITE_ENABLED } from "@/lib/features";
 
 export function MarketingFooter() {
@@ -13,9 +14,11 @@ export function MarketingFooter() {
         <nav className="dxf-cols" aria-label="Footer navigation">
           <div>
             <h2>Product</h2>
-            <Link to="/how-it-works">How it works</Link>
-            <Link to="/pricing">Pricing</Link>
-            <Link to="/signup">Start free</Link>
+            {MARKETING_LINKS.map((l) => (
+              <Link key={l.to} to={l.to}>
+                {l.label}
+              </Link>
+            ))}
             <Link to="/login">Sign in</Link>
           </div>
           <div>

@@ -21,13 +21,13 @@ export const Route = createFileRoute("/signup")({
       {
         name: "description",
         content:
-          "Create your free DeliverX account and turn your idea into a product with a 150-role AI workforce.",
+          "Create your DeliverX account and turn your idea into a product with a 150-role AI workforce.",
       },
       { property: "og:title", content: "Create your account — DeliverX" },
       {
         property: "og:description",
         content:
-          "Create your free DeliverX account and turn your idea into a product with a 150-role AI workforce.",
+          "Create your DeliverX account and turn your idea into a product with a 150-role AI workforce.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -190,7 +190,7 @@ function SignupPage() {
                 </p>
               )}
               <button type="submit" className="form-submit" disabled={loading}>
-                {loading ? <Loader2 className="size-4 animate-spin" /> : "Start for free →"}
+                {loading ? <Loader2 className="size-4 animate-spin" /> : "Create account →"}
               </button>
             </form>
           )}
