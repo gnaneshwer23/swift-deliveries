@@ -3,13 +3,9 @@ import { ArrowRight, FileStack, Gavel, Quote, ShieldCheck } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { FaqSection } from "@/components/marketing/faq-section";
 import { OnboardingGate } from "@/components/onboarding-gate";
+import { ProductIllustration } from "@/components/marketing/product-illustration";
 import { CtaLink } from "@/components/marketing/cta-link";
-import {
-  ExportTree,
-  LiveDecision,
-  LiveProgrammeFlow,
-  WorkforceMatrix,
-} from "@/components/marketing/dxsi-landing";
+import { ExportTree, LiveDecision, LiveProgrammeFlow } from "@/components/marketing/dxsi-landing";
 
 const TITLE = "DeliverX — Your idea, run like a product company";
 const DESCRIPTION =
@@ -181,8 +177,12 @@ function HomePage() {
             </a>
           </div>
         </div>
-        <div className="dxl-wrap dxl-wide">
-          <LiveProgrammeFlow />
+        <div className="dxl-wrap psi-home-hero-art">
+          <ProductIllustration
+            name="product-brain"
+            priority
+            caption="Your product's sources, decisions and artefacts—brought into one working record."
+          />
         </div>
         <ul className="dxl-stats dxl-wrap" aria-label="At a glance">
           <li>
@@ -205,14 +205,20 @@ function HomePage() {
 
       <section className="dxl-section" id="decisions">
         <div className="dxl-wrap">
-          <header className="dxl-head">
-            <p className="dxl-eyebrow">Collective judgement</p>
-            <h2 className="dxl-h2">Watch a decision get made.</h2>
-            <p className="dxl-sub">
-              Independent views. A red team. Hard vetoes. A rule-based verdict — or your call.
-            </p>
-          </header>
-          <LiveDecision />
+          <div className="psi-split">
+            <header className="dxl-head dxl-left">
+              <p className="dxl-eyebrow">Collective judgement</p>
+              <h2 className="dxl-h2">Watch a decision get made.</h2>
+              <p className="dxl-sub">
+                Independent views. A red team. Hard vetoes. A rule-based verdict — or your call.
+              </p>
+            </header>
+            <ProductIllustration name="evidence-decision" />
+          </div>
+          <details className="psi-demo-disclosure" open>
+            <summary>Explore a sample decision from the decision engine</summary>
+            <LiveDecision />
+          </details>
         </div>
       </section>
 
@@ -222,6 +228,12 @@ function HomePage() {
             <p className="dxl-eyebrow">One workflow</p>
             <h2 className="dxl-h2">Idea to launch, with you at every gate.</h2>
           </header>
+          <ProductIllustration
+            name="human-direction"
+            compact
+            caption="The team proposes. You review the decisions that move the work forward."
+          />
+          <LiveProgrammeFlow />
           <ol className="dxl-rail">
             {PHASES.map((p, i) => (
               <li key={p.name} style={{ animationDelay: `${i * 90}ms` }}>
@@ -243,22 +255,27 @@ function HomePage() {
         <div className="dxl-wrap dxl-two">
           <header className="dxl-head dxl-left">
             <p className="dxl-eyebrow">The workforce</p>
-            <h2 className="dxl-h2">150 roles. Each with a seat.</h2>
+            <h2 className="dxl-h2">
+              Different disciplines.
+              <br />
+              One shared objective.
+            </h2>
             <p className="dxl-sub">
-              Panels form around each decision. Reviewers come from another department. Track
-              records build with every outcome.
+              A catalogue of 150 specialist roles. Teams form around the work, with contributions
+              from research, product, design, engineering and review. Missions use enabled
+              capabilities.
             </p>
             <Link to="/how-it-works" hash="workforce" className="dxl-link">
-              Explore the roles <ArrowRight className="size-4" />
+              See how the team works <ArrowRight className="size-4" />
             </Link>
           </header>
-          <WorkforceMatrix />
+          <ProductIllustration name="specialist-team" />
         </div>
       </section>
 
       <section className="dxl-section dxl-alt">
         <div className="dxl-wrap dxl-two">
-          <ExportTree />
+          <ProductIllustration name="product-delivery" />
           <header className="dxl-head dxl-left">
             <p className="dxl-eyebrow">Yours to keep</p>
             <h2 className="dxl-h2">Leave with the whole project.</h2>
@@ -266,39 +283,60 @@ function HomePage() {
               Business case to audit trail, in one archive. A manifest states exactly what is real
               and what was simulated.
             </p>
+            <details className="psi-demo-disclosure">
+              <summary>See the project folder structure</summary>
+              <ExportTree />
+            </details>
           </header>
         </div>
       </section>
 
       <section className="dxl-section">
-        <div className="dxl-wrap">
-          <ul className="dxl-trust">
-            {TRUST.map((t) => (
-              <li key={t.title}>
-                <t.icon className="size-5" aria-hidden="true" />
-                <strong>{t.title}</strong>
-                <span>{t.text}</span>
-              </li>
-            ))}
-          </ul>
+        <div className="dxl-wrap psi-split">
+          <ProductIllustration name="human-direction" />
+          <div>
+            <p className="dxl-eyebrow">Human direction</p>
+            <h2 className="dxl-h2">
+              An AI team.
+              <br />
+              Your judgement.
+            </h2>
+            <ul className="dxl-trust psi-trust-grid">
+              {TRUST.map((t) => (
+                <li key={t.title}>
+                  <t.icon className="size-5" aria-hidden="true" />
+                  <strong>{t.title}</strong>
+                  <span>{t.text}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </section>
 
       <FaqSection items={HOME_FAQ} />
 
       <section className="dxl-final">
-        <div className="dxl-wrap">
-          <h2 className="dxl-h2">Bring an idea. Leave with a product.</h2>
-          <div className="dxl-ctas">
-            <CtaLink
-              signedInTo="/command/programmes"
-              signedInLabel="Start a programme"
-              signedOutLabel="Start free"
-              className="dxl-btn dxl-btn-primary"
-            />
-            <Link to="/resources" className="dxl-btn dxl-btn-ghost">
-              Learn through building →
-            </Link>
+        <div className="dxl-wrap psi-split">
+          <ProductIllustration name="learning-loop" />
+          <div>
+            <p className="dxl-eyebrow">Build with purpose</p>
+            <h2 className="dxl-h2">
+              Bring an idea.
+              <br />
+              Make the next step tangible.
+            </h2>
+            <div className="dxl-ctas">
+              <CtaLink
+                signedInTo="/command/programmes"
+                signedInLabel="Start a programme"
+                signedOutLabel="Start free"
+                className="dxl-btn dxl-btn-primary"
+              />
+              <Link to="/resources" className="dxl-btn dxl-btn-ghost">
+                Learn through building →
+              </Link>
+            </div>
           </div>
         </div>
       </section>
