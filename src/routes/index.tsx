@@ -248,7 +248,7 @@ function HomePage() {
               Panels form around each decision. Reviewers come from another department. Track
               records build with every outcome.
             </p>
-            <Link to="/command/capabilities" className="dxl-link">
+            <Link to="/how-it-works" hash="workforce" className="dxl-link">
               Explore the roles <ArrowRight className="size-4" />
             </Link>
           </header>

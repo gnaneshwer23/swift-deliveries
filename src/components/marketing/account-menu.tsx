@@ -53,13 +53,13 @@ export function AccountMenu({ user }: { user: User }) {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to="/workspace" className="flex items-center gap-2">
-            <LayoutDashboard className="size-4" /> Career workspace
+          <Link to="/command/programmes" className="flex items-center gap-2">
+            <LayoutDashboard className="size-4" /> Programmes
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to="/workspace/profile" className="flex items-center gap-2">
-            <UserIcon className="size-4" /> Your profile
+          <Link to="/onboarding" className="flex items-center gap-2">
+            <UserIcon className="size-4" /> Your setup
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />

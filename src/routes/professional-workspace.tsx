@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { CAREER_SUITE_ENABLED } from "@/lib/features";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { JourneyLadder } from "@/components/marketing/journey-ladder";
 import { FaqSection, JourneyCrossSell } from "@/components/marketing/faq-section";
@@ -6,6 +7,9 @@ import { CtaLink } from "@/components/marketing/cta-link";
 import { PositioningBanner } from "@/components/marketing/positioning-banner";
 
 export const Route = createFileRoute("/professional-workspace")({
+  beforeLoad: () => {
+    if (!CAREER_SUITE_ENABLED) throw redirect({ to: "/" });
+  },
   head: () => ({
     meta: [
       { title: "Professional Workspace — From business case to delivery | DeliverX" },

@@ -26,13 +26,13 @@ export const Route = createFileRoute("/signup")({
       {
         name: "description",
         content:
-          "Create your DeliverX account to open Command Centre (Stage 1 workforce preview). Career Experience and Launchpad remain available from your account.",
+          "Create your free DeliverX account and turn your idea into a product with a 150-role AI workforce.",
       },
       { property: "og:title", content: "Create your account — DeliverX" },
       {
         property: "og:description",
         content:
-          "Create your DeliverX account to open Command Centre (Stage 1 workforce preview). Career Experience and Launchpad remain available from your account.",
+          "Create your free DeliverX account and turn your idea into a product with a 150-role AI workforce.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -121,8 +121,7 @@ function SignupPage() {
             Create your account
           </h1>
           <p className="body" style={{ marginTop: 6, marginBottom: 24 }}>
-            Sign up opens Command Centre (Stage 1 workforce preview). Career Experience and
-            Launchpad remain available from your account once you are in.
+            Free during early access. Takes a minute.
           </p>
 
           {googleEnabled && (

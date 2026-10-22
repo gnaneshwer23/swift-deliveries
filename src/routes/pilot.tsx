@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Check, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/pilot")({
+  // The pilot page is retired: always send visitors to sign-up.
   beforeLoad: () => {
     throw redirect({ to: "/signup", replace: true });
   },

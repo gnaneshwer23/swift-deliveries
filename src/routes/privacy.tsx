@@ -30,7 +30,7 @@ function PrivacyPage() {
             </p>
             <div className="mt-10 space-y-6 text-sm leading-relaxed text-[var(--mkt-text2)]">
               <p>
-                <strong>Last updated:</strong> 8 October 2026
+                <strong>Last updated:</strong> 22 October 2026
               </p>
               <section>
                 <h2 className="text-base font-semibold text-[var(--mkt-text1)]">Who we are</h2>
@@ -94,9 +94,11 @@ function PrivacyPage() {
                 <p className="mt-2">
                   Records are private by default. We share data with service providers only to run
                   DeliverX — our cloud hosting and database provider, our payment provider (Stripe),
-                  our email delivery provider, and our AI processing provider — and with coaches,
-                  teammates or attesters only where the feature and your choices require it. Public
-                  portfolio links are created, limited and revocable by you.
+                  our email delivery provider, our AI processing provider, and our web search
+                  provider (which receives research queries derived from the business case you
+                  enter) — and with coaches, teammates or attesters only where the feature and your
+                  choices require it. Public portfolio links are created, limited and revocable by
+                  you.
                 </p>
               </section>
               <section>

@@ -1,9 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { CAREER_SUITE_ENABLED } from "@/lib/features";
 import { useQuery } from "@tanstack/react-query";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { getPublicCredential } from "@/lib/verify.functions";
 
 export const Route = createFileRoute("/verify/$credentialId")({
+  beforeLoad: () => {
+    if (!CAREER_SUITE_ENABLED) throw redirect({ to: "/" });
+  },
   head: () => ({
     meta: [
       { title: "Verify a DeliverX credential" },

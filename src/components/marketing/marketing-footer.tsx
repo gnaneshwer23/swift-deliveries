@@ -1,37 +1,38 @@
 import { Link } from "@tanstack/react-router";
 import { BrandLogo } from "@/components/brand-logo";
+import { CAREER_SUITE_ENABLED } from "@/lib/features";
 
 export function MarketingFooter() {
   return (
-    <footer className="footer">
-      <div className="flex w-full flex-col gap-5">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+    <footer className="dxf">
+      <div className="dxf-inner">
+        <div className="dxf-brand">
           <BrandLogo />
-          <span className="footer-right">© 2026 DeliverX · Supervised AI Workforce</span>
+          <p>Your idea, run like a product company.</p>
         </div>
-        <div className="footer-links" aria-label="Footer navigation">
-          <Link to="/how-it-works">How it works</Link>
-          <Link to="/signup">Open Command Centre</Link>
-          <Link to="/pricing">Pricing</Link>
-          <Link to="/resources">Resources</Link>
-          <Link to="/privacy">Privacy</Link>
-          <Link to="/terms">Terms</Link>
-        </div>
-        <div className="border-t pt-4" style={{ borderColor: "var(--x-border)" }}>
-          <p
-            className="mb-2 text-xs font-semibold uppercase tracking-wider"
-            style={{ color: "var(--x-slate-light)" }}
-          >
-            Existing career products
-          </p>
-          <div className="footer-links">
-            <Link to="/experience">Experience</Link>
-            <Link to="/launchpad">Launchpad</Link>
-            <Link to="/prove">Prove</Link>
-            <Link to="/professional-workspace">Career workspace</Link>
+        <nav className="dxf-cols" aria-label="Footer navigation">
+          <div>
+            <h2>Product</h2>
+            <Link to="/how-it-works">How it works</Link>
+            <Link to="/pricing">Pricing</Link>
+            <Link to="/signup">Start free</Link>
+            <Link to="/login">Sign in</Link>
           </div>
-        </div>
+          <div>
+            <h2>Company</h2>
+            <Link to="/about">About</Link>
+            <Link to="/resources">Resources</Link>
+            {CAREER_SUITE_ENABLED ? <Link to="/experience">Career suite</Link> : null}
+          </div>
+          <div>
+            <h2>Legal</h2>
+            <Link to="/privacy">Privacy</Link>
+            <Link to="/terms">Terms</Link>
+            <Link to="/cookies">Cookies</Link>
+          </div>
+        </nav>
       </div>
+      <div className="dxf-base">© {new Date().getFullYear()} DeliverX</div>
     </footer>
   );
 }

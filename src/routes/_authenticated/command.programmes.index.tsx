@@ -8,6 +8,9 @@ import { programmeFeaturesQuery, programmesListQuery } from "@/lib/programme-que
 import { createProgrammeRun } from "@/lib/programme.functions";
 
 export const Route = createFileRoute("/_authenticated/command/programmes/")({
+  validateSearch: (search: Record<string, unknown>): { idea?: string | undefined } => ({
+    idea: typeof search["idea"] === "string" ? search["idea"].slice(0, 1000) : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Programmes — DeliverX Command Centre" },
@@ -48,9 +51,10 @@ function ProgrammesHome() {
   const list = useQuery(programmesListQuery);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const search = Route.useSearch();
   const [form, setForm] = useState({
     name: "",
-    idea: "",
+    idea: search.idea ?? "",
     targetUsers: "",
     problem: "",
     goals: "",
@@ -107,6 +111,11 @@ function ProgrammesHome() {
               <Rocket className="size-3.5" /> New programme
             </p>
             <h2 className="cc-hero-title">Describe the business case</h2>
+            {search.idea ? (
+              <p className="cc-muted text-sm">
+                Your idea from setup is filled in — add a name, users, problem and goals.
+              </p>
+            ) : null}
             <p className="cc-muted text-sm">
               The workforce builds the roadmap, then runs discovery, interviews, meetings,
               decisions, sprints, verification and launch. You approve at four gates.

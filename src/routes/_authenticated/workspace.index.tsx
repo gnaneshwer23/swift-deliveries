@@ -76,7 +76,7 @@ function ContextualHome() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!briefing.onboardingCompleted) navigate({ to: "/onboarding", replace: true });
+    if (!briefing.onboardingCompleted) navigate({ to: "/career-onboarding", replace: true });
   }, [briefing.onboardingCompleted, navigate]);
 
   const journey = JOURNEY[briefing.journeyState];
@@ -127,7 +127,7 @@ function ContextualHome() {
               Launch AI Workforce Command Centre →
             </Link>
             <Link
-              to="/onboarding"
+              to="/career-onboarding"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -318,7 +318,7 @@ function ContextualHome() {
             {[...briefing.targets, ...briefing.strengths, ...briefing.workingStyle].length === 0 ? (
               <div className="px-5 py-6 text-[13px]" style={{ color: "var(--x-slate-light)" }}>
                 Nothing recorded yet.{" "}
-                <Link to="/onboarding" className="underline">
+                <Link to="/career-onboarding" className="underline">
                   Complete setup
                 </Link>
                 .

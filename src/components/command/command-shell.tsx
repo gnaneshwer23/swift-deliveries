@@ -13,13 +13,13 @@ import {
 import { useSignOut } from "@/hooks/use-sign-out";
 import { useSession } from "@/hooks/use-session";
 import { BrandLogo } from "@/components/brand-logo";
+import { CAREER_SUITE_ENABLED } from "@/lib/features";
 
 const NAV = [
   { to: "/command", label: "Command Centre", icon: LayoutDashboard },
   { to: "/command/programmes", label: "Programmes", icon: Rocket },
   { to: "/command/projects", label: "Projects", icon: FolderKanban },
   { to: "/command/capabilities", label: "Capabilities", icon: UsersRound },
-  { to: "/workspace", label: "Career workspace", icon: Compass },
 ] as const;
 
 export function CommandShell({
@@ -69,7 +69,12 @@ export function CommandShell({
           </div>
           <div className="sidebar-section">
             <div className="sidebar-label">Supervised workforce</div>
-            {NAV.map((item) => {
+            {[
+              ...NAV,
+              ...(CAREER_SUITE_ENABLED
+                ? ([{ to: "/workspace", label: "Career workspace", icon: Compass }] as const)
+                : []),
+            ].map((item) => {
               const active =
                 item.to === "/command" ? pathname === "/command" : pathname.startsWith(item.to);
               const Icon = item.icon;

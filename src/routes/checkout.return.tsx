@@ -1,8 +1,12 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { CAREER_SUITE_ENABLED } from "@/lib/features";
 import { CheckCircle2 } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 
 export const Route = createFileRoute("/checkout/return")({
+  beforeLoad: () => {
+    if (!CAREER_SUITE_ENABLED) throw redirect({ to: "/" });
+  },
   validateSearch: (search: Record<string, unknown>): { session_id?: string } => ({
     ...(typeof search["session_id"] === "string" ? { session_id: search["session_id"] } : {}),
   }),

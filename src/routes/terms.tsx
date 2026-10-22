@@ -30,7 +30,7 @@ function TermsPage() {
             </p>
             <div className="mt-10 space-y-6 text-sm leading-relaxed text-[var(--mkt-text2)]">
               <p>
-                <strong>Last updated:</strong> 8 October 2026
+                <strong>Last updated:</strong> 22 October 2026
               </p>
               <section>
                 <h2 className="text-base font-semibold text-[var(--mkt-text1)]">Your account</h2>
@@ -59,15 +59,11 @@ function TermsPage() {
                 </p>
               </section>
               <section>
-                <h2 className="text-base font-semibold text-[var(--mkt-text1)]">Subscriptions</h2>
+                <h2 className="text-base font-semibold text-[var(--mkt-text1)]">Fees</h2>
                 <p className="mt-2">
-                  Plan prices, included products, billing periods and taxes are shown before
-                  checkout. Monthly plans (Experience, Launchpad, Complete Journey) and the Journey
-                  Annual plan renew until cancelled. When you cancel, access runs to the end of the
-                  period you have paid for; failed payments suspend access. The Career Sprint is a
-                  one-off purchase: it does not renew and its access ends 90 days after purchase.
-                  Your statutory rights, including any cooling-off or refund rights under UK
-                  consumer law, are not affected.
+                  DeliverX is free during early access and we do not take payment details. If we
+                  introduce paid plans, we will tell you in advance and you will choose whether to
+                  upgrade. Your statutory rights under UK consumer law are not affected.
                 </p>
               </section>
               <section>
@@ -90,6 +86,17 @@ function TermsPage() {
                   remain responsible for what you approve and submit.
                 </p>
               </section>
+              <section>
+                <h2 className="text-base font-semibold text-[var(--mkt-text1)]">
+                  AI-generated product work
+                </h2>
+                <p className="mt-2">
+                  Programmes and missions produce research, plans, decisions, designs and prototypes
+                  with AI agents. Outputs can be incomplete or wrong; simulated content is labelled
+                  as such. They are not legal, financial, regulatory or professional advice, and you
+                  decide what to rely on, build or publish.
+                </p>
+              </section>{" "}
               <section>
                 <h2 className="text-base font-semibold text-[var(--mkt-text1)]">
                   No employment promise

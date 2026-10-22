@@ -1,76 +1,58 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
+import { pageHead } from "@/components/marketing/page-head";
 
 export const Route = createFileRoute("/about")({
-  head: () => ({
-    meta: [
-      { title: "About — DeliverX" },
-      {
-        name: "description",
-        content:
-          "Learn why DeliverX exists and how Professional Intelligence helps product people build, prove and deliver.",
-      },
-      { property: "og:title", content: "About — DeliverX" },
-      {
-        property: "og:description",
-        content:
-          "Learn why DeliverX exists and how Professional Intelligence helps product people build, prove and deliver.",
-      },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://deliverx.dev/about" },
-      { name: "twitter:card", content: "summary" },
-    ],
-    links: [{ rel: "canonical", href: "https://deliverx.dev/about" }],
-  }),
-  component: AboutPage,
+  head: () =>
+    pageHead(
+      "/about",
+      "About — DeliverX",
+      "DeliverX turns ideas into products with a governed AI workforce — and keeps the founder in charge.",
+    ),
+  component: About,
 });
 
-function AboutPage() {
+const PRINCIPLES = [
+  { title: "You decide", text: "AI proposes and debates. Consequential calls are yours." },
+  {
+    title: "Show the evidence",
+    text: "Sources, dissent and simulations are visible, never hidden.",
+  },
+  { title: "Own your work", text: "Everything we produce for you is yours to download." },
+];
+
+function About() {
   return (
     <MarketingLayout>
-      <section className="px-5 py-20 lg:px-8 lg:py-28">
-        <div className="mx-auto max-w-[var(--mkt-maxw)]">
-          <div className="mx-auto max-w-2xl">
-            <span className="mkt-label">About</span>
-            <h1 className="mt-4 font-serif text-[clamp(2rem,5vw,3.5rem)] leading-[1.05] tracking-[-0.03em] text-[var(--mkt-text1)]">
-              Professional Intelligence for product people
-            </h1>
-            <p className="mt-6 text-lg font-light leading-relaxed text-[var(--mkt-text2)]">
-              DeliverX was built on a simple belief: the best way to prove product capability is to
-              practise it, document it, and deliver with support. We combine AI colleagues,
-              structured projects and evidence packaging so individuals and teams can move from
-              ambition to impact faster.
-            </p>
-            <div className="mt-12 space-y-8">
-              {[
-                {
-                  title: "Our mission",
-                  body: "Make product capability visible, measurable and transferable — from first experience through senior delivery.",
-                },
-                {
-                  title: "How we work",
-                  body: "AI drafts, humans decide. Every recommendation is surfaced for review, and every artefact can be traced back to evidence.",
-                },
-                {
-                  title: "Who it's for",
-                  body: "Aspiring and practising product managers, delivery leads, and the teams that hire and grow them.",
-                },
-                {
-                  title: "Who's behind it",
-                  body: "DeliverX is an independent product built and run by its founder, reachable at gnaneshwer.jadav@gmail.com. A registered company entity is being established — we think a product built on accountability should say so plainly.",
-                },
-              ].map((item) => (
-                <div key={item.title}>
-                  <h2 className="font-serif text-xl tracking-[-0.01em] text-[var(--mkt-text1)]">
-                    {item.title}
-                  </h2>
-                  <p className="mt-2 text-base font-light leading-relaxed text-[var(--mkt-text2)]">
-                    {item.body}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
+      <section className="dxl-hero">
+        <div className="dxl-wrap">
+          <p className="dxl-eyebrow">About</p>
+          <h1 className="dxl-h1">
+            A product company,
+            <br />
+            <span className="dxl-grad">for anyone with an idea.</span>
+          </h1>
+          <p className="dxl-lead">
+            Great products need researchers, strategists, designers, engineers and reviewers.
+            DeliverX gives every founder that team.
+          </p>
+        </div>
+      </section>
+      <section className="dxl-section dxl-alt">
+        <div className="dxl-wrap">
+          <ul className="dxl-trust dxl-trust-3">
+            {PRINCIPLES.map((p) => (
+              <li key={p.title}>
+                <strong>{p.title}</strong>
+                <span>{p.text}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="dxl-footnote" style={{ textAlign: "center", marginTop: 32 }}>
+            DeliverX is an independent product built and run by its founder, reachable at{" "}
+            <a href="mailto:gnaneshwer.jadav@gmail.com">gnaneshwer.jadav@gmail.com</a>. A registered
+            company entity is being established.
+          </p>
         </div>
       </section>
     </MarketingLayout>

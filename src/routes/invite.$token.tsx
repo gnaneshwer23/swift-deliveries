@@ -1,4 +1,5 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
+import { CAREER_SUITE_ENABLED } from "@/lib/features";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
@@ -10,6 +11,9 @@ import { useSession } from "@/hooks/use-session";
 import { acceptInvitation, getInvitationPreview } from "@/lib/workspace.functions";
 
 export const Route = createFileRoute("/invite/$token")({
+  beforeLoad: () => {
+    if (!CAREER_SUITE_ENABLED) throw redirect({ to: "/" });
+  },
   head: () => ({
     meta: [
       { title: "Join an organisation — DeliverX" },

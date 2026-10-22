@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { CAREER_SUITE_ENABLED } from "@/lib/features";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -14,6 +15,9 @@ const LEVEL_LABELS: Record<string, string> = {
 };
 
 export const Route = createFileRoute("/attest/$token")({
+  beforeLoad: () => {
+    if (!CAREER_SUITE_ENABLED) throw redirect({ to: "/" });
+  },
   head: () => ({
     meta: [
       { title: "Confirm someone's work — DeliverX" },

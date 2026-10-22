@@ -1,6 +1,9 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { waitForSession } from "@/lib/auth-session";
+import { dxProfileOf } from "@/lib/dx-profile";
+
+const ONBOARDING_PATHS = ["/onboarding", "/career-onboarding"];
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -12,6 +15,10 @@ export const Route = createFileRoute("/_authenticated")({
     if (!session) throw redirect({ to: "/login", search: { redirect: redirectTarget } });
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) throw redirect({ to: "/login", search: { redirect: redirectTarget } });
+    // Personalised setup happens once, before anything else.
+    if (!dxProfileOf(data.user) && !ONBOARDING_PATHS.some((p) => location.pathname.startsWith(p))) {
+      throw redirect({ to: "/onboarding", replace: true });
+    }
     return { user: data.user };
   },
   component: () => <Outlet />,

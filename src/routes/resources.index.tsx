@@ -1,214 +1,97 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
+import { pageHead } from "@/components/marketing/page-head";
 
 export const Route = createFileRoute("/resources/")({
-  head: () => ({
-    meta: [
-      { title: "Resources — DeliverX" },
-      {
-        name: "description",
-        content:
-          "Product paths, flagship guides and orientation notes on evidence, capability and what Verified means at DeliverX.",
-      },
-      { property: "og:title", content: "DeliverX resources — evidence-backed starting points" },
-      {
-        property: "og:description",
-        content:
-          "Guides on building an evaluable PM portfolio and grounding STAR stories in real artefacts, plus how DeliverX separates learning, evidence and capability.",
-      },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://deliverx.dev/resources" },
-      { name: "twitter:card", content: "summary" },
-    ],
-    links: [{ rel: "canonical", href: "https://deliverx.dev/resources" }],
-  }),
+  head: () =>
+    pageHead(
+      "/resources",
+      "Resources — DeliverX",
+      "Guides for product builders and short explainers on how DeliverX decides, evidences and delivers.",
+    ),
   component: ResourcesPage,
 });
 
-const productPaths = [
+const GUIDES = [
   {
-    title: "Open Command Centre",
-    body: "Stage 1 supervised AI workforce preview: Investigate, Prototype and Improve missions with Wave 1 Available capabilities under plan approval and a usage ceiling.",
-    to: "/signup",
-    cta: "Open Command Centre",
-  },
-  {
-    title: "Start with Experience",
-    body: "Career product: build practical Product Management experience inside simulated organisations. Work produces artefacts; you decide what becomes evidence.",
-    to: "/experience",
-    cta: "Explore Experience",
-  },
-  {
-    title: "Prepare with Launchpad",
-    body: "Career product: turn experience into interviews with readiness that cites its source, portfolio packaging, and interview stories tied to real artefacts.",
-    to: "/launchpad",
-    cta: "Explore Launchpad",
-  },
-  {
-    title: "Deliver with Professional Workspace",
-    body: "Live delivery for sponsors and teams — distinct from Command Centre missions and from Experience simulation.",
-    to: "/professional-workspace",
-    cta: "Explore Professional Workspace",
-  },
-] as const;
-
-const guides = [
-  {
-    index: "01",
-    title: "How to build a PM portfolio employers can evaluate",
-    body: "Hiring managers do not need another gallery of course logos. They need a trail of work they can inspect: problems framed, decisions taken, artefacts produced, and outcomes stated without theatre.",
+    title: "How to build a portfolio employers can evaluate",
+    text: "Show problems framed, decisions taken and artefacts produced.",
     to: "/resources/pm-portfolio",
   },
   {
-    index: "02",
-    title: "STAR interview stories grounded in real artefacts",
-    body: "STAR works when Situation, Task, Action and Result point to something you actually produced. Vague stories collapse under follow-up. Ground each letter in artefacts and decisions.",
+    title: "STAR stories grounded in real work",
+    text: "Tie every Situation, Task, Action and Result to something real.",
     to: "/resources/star-interview-stories",
   },
 ] as const;
 
-const notes = [
+const EXPLAINERS = [
   {
-    index: "01",
-    title: "Evidence vs claims vs learning",
-    body: "Knowledge is exposure. Evidence is a provenance-backed record of work. Capability is a judgement over evidence — not a course completion tick. AI drafts and coach notes are assistants, not proof. Learning never lights Verified and never writes capability levels.",
-    to: "/how-it-works",
-    cta: "Read how DeliverX works",
+    title: "How a decision gets made",
+    text: "Independent positions, a red team, hard vetoes and a 60% weighted threshold — or your call.",
   },
   {
-    index: "02",
-    title: "AI product experience without theatre",
-    body: "Simulated company work develops judgement when the loop is explicit: realistic challenges, human decisions, and an append-only evidence ledger. Observation consent defaults off. Readiness states whether it came from a scoring run or a labelled heuristic.",
-    to: "/experience",
-    cta: "Explore Experience",
+    title: "Synthetic vs real customer evidence",
+    text: "Agents rehearse with labelled personas. Only interviews you add count as evidence.",
   },
   {
-    index: "03",
-    title: "What Verified means here",
-    body: "Verified is an attestation signal, not a badge you earn by finishing work. A named independent attester must confirm a specific claim. A scoring run alone never lights it, and coach confirmation is recorded as a separate, distinctly labelled tier.",
-    to: "/prove",
-    cta: "How Prove works",
+    title: "What's in your download",
+    text: "Business case to audit trail, plus a manifest of what was simulated and what was real.",
   },
 ] as const;
 
 function ResourcesPage() {
   return (
     <MarketingLayout>
-      <section className="px-5 py-20 lg:px-8 lg:py-28">
-        <div className="mx-auto max-w-[var(--mkt-maxw)]">
-          <div className="mx-auto max-w-3xl text-center">
-            <span className="mkt-label">Resources</span>
-            <h1 className="mkt-section-title mt-3">Evidence-backed starting points</h1>
-            <p className="mkt-section-sub mx-auto">
-              Paths into Command Centre (supervised AI workforce preview) and the career evidence
-              products, plus guides on PM portfolios and STAR stories. No job-board listings, no
-              unexplained readiness percentages, and no claim that finishing a course equals
-              capability.
-            </p>
-          </div>
-
-          <div className="mt-16">
-            <h2 className="font-serif text-2xl tracking-[-0.01em] text-[var(--mkt-text1)]">
-              Product paths
-            </h2>
-            <p className="mt-2 max-w-2xl text-sm text-[var(--mkt-text3)]">
-              Supervised missions in Command Centre, or the career ladder through Experience and
-              Launchpad. Pick the path that matches the job you need done.
-            </p>
-            <div className="mt-8 grid gap-6 md:grid-cols-2">
-              {productPaths.map((item) => (
-                <div key={item.title} className="mkt-card flex flex-col p-6">
-                  <h3 className="font-serif text-lg tracking-[-0.01em] text-[var(--mkt-text1)]">
-                    {item.title}
-                  </h3>
-                  <p className="mt-3 flex-1 text-sm leading-relaxed text-[var(--mkt-text3)]">
-                    {item.body}
-                  </p>
-                  <Link
-                    to={item.to}
-                    className="mt-5 text-sm font-medium text-[var(--mkt-accent)] hover:underline"
-                  >
-                    {item.cta} &rarr;
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-20">
-            <h2 className="font-serif text-2xl tracking-[-0.01em] text-[var(--mkt-text1)]">
-              Flagship guides
-            </h2>
-            <p className="mt-2 max-w-2xl text-sm text-[var(--mkt-text3)]">
-              Full articles written for people preparing to be evaluated — not placement guarantees
-              or readiness theatre.
-            </p>
-            <div className="mt-8 grid gap-6 md:grid-cols-2">
-              {guides.map((guide) => (
-                <article key={guide.title} className="mkt-card flex flex-col p-7">
-                  <span className="mkt-label">{guide.index}</span>
-                  <h3 className="mt-3 font-serif text-xl tracking-[-0.01em] text-[var(--mkt-text1)]">
-                    {guide.title}
-                  </h3>
-                  <p className="mt-3 flex-1 text-sm leading-relaxed text-[var(--mkt-text3)]">
-                    {guide.body}
-                  </p>
-                  <Link
-                    to={guide.to}
-                    className="mt-5 text-sm font-medium text-[var(--mkt-accent)] hover:underline"
-                  >
-                    Read the guide &rarr;
-                  </Link>
-                </article>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-20">
-            <h2 className="font-serif text-2xl tracking-[-0.01em] text-[var(--mkt-text1)]">
-              Orientation notes
-            </h2>
-            <p className="mt-2 max-w-2xl text-sm text-[var(--mkt-text3)]">
-              Short trust framing that sits beside the guides.
-            </p>
-            <div className="mt-8 grid gap-6 md:grid-cols-3">
-              {notes.map((note) => (
-                <div key={note.title} className="mkt-card flex flex-col p-6">
-                  <span className="mkt-label">{note.index}</span>
-                  <h3 className="mt-3 font-serif text-lg tracking-[-0.01em] text-[var(--mkt-text1)]">
-                    {note.title}
-                  </h3>
-                  <p className="mt-3 flex-1 text-sm leading-relaxed text-[var(--mkt-text3)]">
-                    {note.body}
-                  </p>
-                  <Link
-                    to={note.to}
-                    className="mt-5 text-sm font-medium text-[var(--mkt-accent)] hover:underline"
-                  >
-                    {note.cta} &rarr;
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mkt-card mt-20 p-7">
-            <span className="mkt-label">Also useful</span>
-            <div className="mt-4 flex flex-wrap gap-x-6 gap-y-3 text-sm text-[var(--mkt-text2)]">
-              <Link to="/how-it-works" className="hover:text-[var(--mkt-accent)]">
-                How it works
-              </Link>
-              <Link to="/about" className="hover:text-[var(--mkt-accent)]">
-                About
-              </Link>
-              <Link to="/pricing" className="hover:text-[var(--mkt-accent)]">
-                Plans
-              </Link>
-              <Link to="/privacy" className="hover:text-[var(--mkt-accent)]">
-                Privacy
-              </Link>
-            </div>
-          </div>
+      <section className="dxl-hero">
+        <div className="dxl-wrap">
+          <p className="dxl-eyebrow">Resources</p>
+          <h1 className="dxl-h1">
+            Build better products,
+            <br />
+            <span className="dxl-grad">with less guesswork.</span>
+          </h1>
+        </div>
+      </section>
+      <section className="dxl-section dxl-alt">
+        <div className="dxl-wrap">
+          <header className="dxl-head">
+            <h2 className="dxl-h2">Guides</h2>
+          </header>
+          <ul className="dxl-cards">
+            {GUIDES.map((g) => (
+              <li key={g.to}>
+                <Link to={g.to}>
+                  <strong>{g.title}</strong>
+                  <span>{g.text}</span>
+                  <em>
+                    Read guide <ArrowRight className="size-4" />
+                  </em>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+      <section className="dxl-section">
+        <div className="dxl-wrap">
+          <header className="dxl-head">
+            <h2 className="dxl-h2">How DeliverX works, briefly</h2>
+          </header>
+          <ul className="dxl-trust dxl-trust-3">
+            {EXPLAINERS.map((e) => (
+              <li key={e.title}>
+                <strong>{e.title}</strong>
+                <span>{e.text}</span>
+              </li>
+            ))}
+          </ul>
+          <p style={{ textAlign: "center", marginTop: 28 }}>
+            <Link to="/how-it-works" className="dxl-link">
+              See it in motion <ArrowRight className="size-4" />
+            </Link>
+          </p>
         </div>
       </section>
     </MarketingLayout>

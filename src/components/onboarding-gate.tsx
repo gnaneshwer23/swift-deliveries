@@ -1,23 +1,20 @@
 import { useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
 import { useSession } from "@/hooks/use-session";
-import { piOnboardingQuery } from "@/lib/onboarding-queries";
+import { dxProfileOf } from "@/lib/dx-profile";
 
 /**
- * Sends a signed-in person who has not finished setup into the questionnaire.
- * Read-only: it inspects onboarding state and never writes claims, evidence,
- * scores or verification.
+ * Sends a signed-in person who has not finished setup to onboarding.
+ * Reads only their own auth profile; never writes.
  */
 export function OnboardingGate() {
   const navigate = useNavigate();
   const { user, loading } = useSession();
-  const { data } = useQuery({ ...piOnboardingQuery, enabled: !loading && !!user });
 
   useEffect(() => {
-    if (!data) return;
-    if (!data.state.completed) navigate({ to: "/onboarding", replace: true });
-  }, [data, navigate]);
+    if (loading || !user) return;
+    if (!dxProfileOf(user)) void navigate({ to: "/onboarding", replace: true });
+  }, [user, loading, navigate]);
 
   return null;
 }

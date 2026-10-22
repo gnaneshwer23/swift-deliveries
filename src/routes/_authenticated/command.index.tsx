@@ -2,6 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
+import { useSession } from "@/hooks/use-session";
+import { dxProfileOf, firstNameOf } from "@/lib/dx-profile";
 import { commandCentreBootstrapQuery } from "@/lib/workforce-queries";
 import {
   createMission,
@@ -307,37 +309,7 @@ function CommandHome() {
         ceiling: data.workspace.usageCeiling,
       }}
     >
-      {/* Top Personalisation & Workspace Switcher Banner */}
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#D8E5FF] bg-gradient-to-r from-[#EEF5FF] via-[#F8FAFF] to-white px-5 py-3.5">
-        <div className="flex items-center gap-3">
-          <span className="inline-flex size-8 items-center justify-center rounded-xl bg-[#3e63dd] text-white">
-            <Sparkles className="size-4" />
-          </span>
-          <div>
-            <strong className="block text-xs font-bold text-[#101828]">
-              Supervised Product Workforce · Stage 1 Operational
-            </strong>
-            <span className="text-xs text-[#475467]">
-              Every mission follows <strong>Mission → Plan → Approve → Execute → Deliver</strong>{" "}
-              under your 4-tier permission ceiling.
-            </span>
-          </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Link
-            to="/onboarding"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-          >
-            Personalise Setup
-          </Link>
-          <Link
-            to="/workspace"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-[#CAD4F4] bg-[#EEF5FF] px-3 py-1.5 text-xs font-semibold text-[#2C77E7] hover:bg-[#e0ecff]"
-          >
-            <Compass className="size-3.5" /> Career Evidence Dashboard →
-          </Link>
-        </div>
-      </div>
+      <WelcomeBanner />
 
       {/* Clean 4-Metric Operational Summary Strip */}
       <section className="cc-kpi-strip" aria-label="Workspace operational summary">
@@ -657,5 +629,54 @@ function CommandHome() {
         )}
       </section>
     </CommandShell>
+  );
+}
+
+const GOAL_NEXT: Record<string, { title: string; cta: string }> = {
+  "Validate a new idea": {
+    title: "Start with a programme: research, interviews and a go/no-go on your segment.",
+    cta: "Validate my idea",
+  },
+  "Build an MVP": {
+    title: "Run a full programme from business case to verified prototype and launch plan.",
+    cta: "Plan my MVP",
+  },
+  "Improve an existing product": {
+    title: "Commission an Improve mission below, or run a programme for a bigger change.",
+    cta: "Start a programme",
+  },
+  "Explore what's possible": {
+    title:
+      "Try a programme with the example idea — it takes minutes and you can download everything.",
+    cta: "Try an example",
+  },
+};
+
+function WelcomeBanner() {
+  const { user } = useSession();
+  const profile = dxProfileOf(user);
+  const next = GOAL_NEXT[profile?.goal ?? ""] ?? GOAL_NEXT["Explore what's possible"]!;
+  return (
+    <section className="cc-welcome" aria-label="Welcome">
+      <div>
+        <h2>Welcome{user ? `, ${firstNameOf(user)}` : ""}.</h2>
+        <p>
+          {profile?.role ? `${profile.role} · ${profile.teamSize} · ` : ""}
+          {next.title}
+        </p>
+      </div>
+      <div className="cc-welcome-actions">
+        <Link
+          to="/command/programmes"
+          search={(profile?.firstIdea ? { idea: profile.firstIdea } : {}) as never}
+          className="cc-btn cc-btn-primary"
+        >
+          {next.cta} →
+        </Link>
+        <Link to="/onboarding" className="cc-btn cc-btn-secondary">
+          Edit setup
+        </Link>
+      </div>
+    </section>
   );
 }

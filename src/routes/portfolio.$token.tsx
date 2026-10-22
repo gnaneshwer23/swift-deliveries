@@ -1,9 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { CAREER_SUITE_ENABLED } from "@/lib/features";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { BadgeCheck, ShieldQuestion } from "lucide-react";
 import { publicPortfolioQuery } from "@/lib/launchpad-queries";
 
 export const Route = createFileRoute("/portfolio/$token")({
+  beforeLoad: () => {
+    if (!CAREER_SUITE_ENABLED) throw redirect({ to: "/" });
+  },
   head: () => ({
     meta: [
       { title: "Evidence Portfolio — DeliverX" },
