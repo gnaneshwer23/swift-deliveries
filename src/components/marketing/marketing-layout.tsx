@@ -1,3 +1,4 @@
+import "@/deliverx-redesign.css";
 import { MarketingNav } from "./marketing-nav";
 import { MarketingFooter } from "./marketing-footer";
 
