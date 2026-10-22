@@ -14,6 +14,7 @@ import {
   type ProgrammeView,
 } from "@/lib/programme.functions";
 import { decisionStatus, finalOptionId, latestDecisions } from "@/lib/programme/engine";
+import { sourceRegister } from "@/lib/programme/research";
 import { displayName, member } from "@/lib/programme/roster";
 import { createZip } from "@/lib/programme/zip";
 import {
@@ -39,7 +40,7 @@ const TABS = [
   ["decisions", "Decisions"],
   ["meetings", "Meetings"],
   ["deliverables", "Deliverables"],
-  ["interviews", "Customer interviews"],
+  ["interviews", "Research & interviews"],
   ["workforce", "Workforce"],
   ["activity", "Activity"],
 ] as const;
@@ -140,6 +141,9 @@ function ProgrammeDashboard() {
           <span className="cc-chip">{STATUS_TEXT[state.status] ?? state.status}</span>
           <span className="cc-gen-badge" data-mode={modelMode.enabled ? "model" : "simulated"}>
             {modelMode.enabled ? `Model: ${modelMode.model}` : "Simulated mode"}
+          </span>
+          <span className="cc-gen-badge" data-mode={query.data.search ? "model" : "simulated"}>
+            {query.data.search ? `Research: ${query.data.search}` : "No web research"}
           </span>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -612,6 +616,10 @@ function DecisionDetail({ d }: { d: DecisionRecord }) {
       </div>
 
       <h4 className="cc-subhead">Option scores</h4>
+      <p className="cc-muted text-xs">
+        Strength of evidence is computed from the quality of the sources an option cites — never
+        scored by a model.
+      </p>
       <div className="pg-table-wrap">
         <table className="pg-table">
           <thead>
@@ -625,7 +633,16 @@ function DecisionDetail({ d }: { d: DecisionRecord }) {
           <tbody>
             {d.options.map((o) => (
               <tr key={o.id}>
-                <td className="text-xs">{o.label}</td>
+                <td className="text-xs">
+                  {o.label}
+                  <div className="cc-muted">
+                    {o.origin === "model" ? "model-proposed" : "blueprint template"}
+                    {o.sourceIds?.length ? ` · cites ${o.sourceIds.join(", ")}` : ""}
+                  </div>
+                  {o.assumptions?.length ? (
+                    <div className="cc-muted">Assumes: {o.assumptions.join("; ")}</div>
+                  ) : null}
+                </td>
                 {CRITERIA.map((c) => (
                   <td key={c} className="text-xs">
                     {o.scores[c].toFixed(2)}
@@ -762,8 +779,58 @@ function Interviews({
     },
     onError,
   });
+  const sources = sourceRegister(records);
   return (
     <div className="grid gap-4">
+      <div>
+        <h3 className="cc-subhead">Source register ({sources.length})</h3>
+        {sources.length ? (
+          <div className="pg-table-wrap">
+            <table className="pg-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Source</th>
+                  <th>Quality</th>
+                  <th>Used for</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sources.map((x) => (
+                  <tr key={x.id}>
+                    <td className="text-xs">{x.id}</td>
+                    <td className="text-xs">
+                      <a
+                        href={x.url}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className="underline"
+                      >
+                        {x.title}
+                      </a>
+                      <div className="cc-muted">
+                        {x.publisher}
+                        {x.publishedAt ? ` · ${x.publishedAt.slice(0, 10)}` : " · undated"} · via{" "}
+                        {x.provider}
+                      </div>
+                    </td>
+                    <td className="text-xs" title={x.qualityReasons.join("; ")}>
+                      {x.quality} ({x.score.toFixed(2)})
+                    </td>
+                    <td className="text-xs">{x.itemKey}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="cc-muted text-sm">
+            No sources yet. Research runs during discovery when a search provider (EXA_API_KEY,
+            TAVILY_API_KEY or BRAVE_SEARCH_API_KEY) is configured; without one, research
+            deliverables contain no external evidence.
+          </p>
+        )}
+      </div>
       <p className="cc-limitation text-sm">
         Synthetic personas are rehearsal material for sharpening questions — never evidence.
         Hypotheses only gain evidence from notes of real conversations ({real.length} added).

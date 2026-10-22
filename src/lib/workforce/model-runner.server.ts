@@ -111,6 +111,10 @@ export async function generateStageContent(input: {
     "title" | "description" | "acceptanceCriteria" | "requiredSections" | "produces"
   >;
   upstream: UpstreamArtefact[];
+  /** Extra system rules (e.g. citation requirements). */
+  extraInstructions?: string;
+  /** Additional acceptance check; a returned string triggers the corrective retry. */
+  extraCheck?: (content: string) => string | null;
 }): Promise<GeneratedContent> {
   const provider = resolveProvider();
   if (!provider) return { content: "", mode: "simulated", note: "model mode not enabled" };
@@ -124,12 +128,17 @@ export async function generateStageContent(input: {
     };
   }
 
-  const { system, user } = buildStagePrompt(input);
+  const prompt = buildStagePrompt(input);
+  const system = input.extraInstructions
+    ? `${prompt.system}\n${input.extraInstructions}`
+    : prompt.system;
+  const user = prompt.user;
   const first = await callModel(provider, system, user, input.task.produces === "prototype_html");
   if (first.mode !== "model") return first;
 
   // One bounded corrective retry when the handoff contract is not met.
-  const problem = contractProblem(first.content, input.task);
+  const problem =
+    contractProblem(first.content, input.task) ?? input.extraCheck?.(first.content) ?? null;
   if (!problem) return first;
   const retry = await callModel(
     provider,
@@ -200,4 +209,36 @@ async function callModel(
   } finally {
     clearTimeout(timer);
   }
+}
+
+/**
+ * JSON generation for structured outputs (decision options). Uses
+ * DXSI_DECISION_MODEL when set so option framing and deliverable drafting
+ * need not share one model. One corrective retry on validation failure.
+ */
+export async function generateJson<T>(input: {
+  system: string;
+  user: string;
+  screenText: string;
+  validate: (text: string) => { ok: true; value: T } | { ok: false; error: string };
+}): Promise<{ ok: true; value: T; model: string } | { ok: false; reason: string }> {
+  const base = resolveProvider();
+  if (!base) return { ok: false, reason: "model mode not enabled" };
+  if (containsLikelyPersonalIdentifiers(input.screenText)) {
+    return {
+      ok: false,
+      reason: "possible personal identifiers detected; not sent to an external model",
+    };
+  }
+  const provider = { ...base, model: process.env["DXSI_DECISION_MODEL"]?.trim() || base.model };
+  let user = input.user;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const res = await callModel(provider, input.system, user, false);
+    if (res.mode !== "model") return { ok: false, reason: res.note ?? "model call failed" };
+    const v = input.validate(res.content);
+    if (v.ok) return { ok: true, value: v.value, model: provider.model };
+    user = `${input.user}\n\nYour previous answer was rejected: ${v.error}. Return valid JSON only.`;
+    if (attempt === 1) return { ok: false, reason: `invalid model output: ${v.error}` };
+  }
+  return { ok: false, reason: "invalid model output" };
 }

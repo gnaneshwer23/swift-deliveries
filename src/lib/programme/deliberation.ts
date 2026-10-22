@@ -189,12 +189,13 @@ export function deliberate(spec: DecisionSpec, seed: string): DecisionRecord {
     ? [...CRITERIA].sort((a, b) => leaderOpt.scores[a] - leaderOpt.scores[b])[0]!
     : "evidence";
   const evidenceGap = !!leaderOpt && leaderOpt.scores.evidence < 0.5;
+  const templated = spec.options.every((o) => o.origin !== "model");
   const challenge = {
     by: "DX-004",
     weakest: CRITERION_LABELS[weakestCriterion],
     evidenceGap,
     note: leaderOpt
-      ? `${leaderOpt.label} is weakest on ${CRITERION_LABELS[weakestCriterion]} (${leaderOpt.scores[weakestCriterion].toFixed(2)}).${evidenceGap ? " Evidence is thin: run a low-cost validation experiment before treating this as settled." : ""} Agreement between agents sharing one underlying model is not independent verification.`
+      ? `${leaderOpt.label} is weakest on ${CRITERION_LABELS[weakestCriterion]} (${leaderOpt.scores[weakestCriterion].toFixed(2)}).${evidenceGap ? " Evidence is thin: run a low-cost validation experiment before treating this as settled." : ""} Agreement between agents sharing one underlying model is not independent verification.${templated ? " Options and scores are blueprint template profiles, not derived from this programme's evidence." : ""}`
       : "No viable option to challenge.",
   };
 

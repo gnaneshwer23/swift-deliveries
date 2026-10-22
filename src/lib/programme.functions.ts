@@ -10,10 +10,21 @@ import {
   planNextStep,
   programmeMetrics,
   reputation,
+  requiresCitations,
   settle,
 } from "@/lib/programme/engine";
 import { buildProgrammeExport } from "@/lib/programme/export";
-import type { ProgrammeRecord, ProgrammeState } from "@/lib/programme/types";
+import { buildOptionPrompt, parseGeneratedOptions } from "@/lib/programme/options";
+import {
+  buildSources,
+  checkCitations,
+  citationProblem,
+  researchQueries,
+  sourceRegister,
+  sourcesForPrompt,
+  type Source,
+} from "@/lib/programme/research";
+import type { DecisionOption, ProgrammeRecord, ProgrammeState } from "@/lib/programme/types";
 
 type DbClient = { from: (table: string) => any };
 
@@ -143,6 +154,7 @@ export type ProgrammeView = {
   metrics: ReturnType<typeof programmeMetrics>;
   reputation: ReturnType<typeof reputation>;
   modelMode: { enabled: boolean; model: string | null };
+  search: string | null;
 };
 
 async function view(state: ProgrammeState, records: ProgrammeRecord[]): Promise<ProgrammeView> {
@@ -154,6 +166,9 @@ async function view(state: ProgrammeState, records: ProgrammeRecord[]): Promise<
     metrics: programmeMetrics(state, records),
     reputation: reputation(records),
     modelMode: { enabled: mm.enabled, model: mm.model },
+    search:
+      (await import("@/lib/programme/research-provider.server")).resolveSearchProvider()?.name ??
+      null,
   };
 }
 
@@ -163,9 +178,11 @@ export const getProgrammeFeatures = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async () => {
     const { modelModeStatus } = await import("@/lib/workforce/model-runner.server");
+    const { resolveSearchProvider } = await import("@/lib/programme/research-provider.server");
     return {
       supported: await programmesSupported().catch(() => false),
       modelMode: modelModeStatus(),
+      search: resolveSearchProvider()?.name ?? null,
     };
   });
 
@@ -289,32 +306,76 @@ export const advanceProgramme = createServerFn({ method: "POST" })
       }
 
       const item = plan.item;
+      const bc = state.businessCase;
+      const { generateStageContent, generateJson, modelModeStatus } =
+        await import("@/lib/workforce/model-runner.server");
+      const modelOn = modelModeStatus().enabled;
+      const notes: string[] = [];
+
+      // Step 1 — research with citations: retrieve sources before research deliverables.
+      let sources: Source[] | undefined;
+      const queries =
+        item.kind === "deliverable" ? researchQueries(item.key, bc, new Date().getFullYear()) : [];
+      const { containsLikelyPersonalIdentifiers } = await import("@/lib/workforce/privacy");
+      if (
+        queries.length &&
+        containsLikelyPersonalIdentifiers(`${bc.idea} ${bc.problem} ${bc.targetUsers} ${bc.goals}`)
+      ) {
+        notes.push(
+          "Web research skipped: the business case appears to contain personal identifiers.",
+        );
+      } else if (queries.length) {
+        const { searchWeb } = await import("@/lib/programme/research-provider.server");
+        const results = await Promise.all(queries.map((q) => searchWeb(q, 5)));
+        const provider = results.find((r) => r.provider)?.provider ?? null;
+        if (provider) {
+          sources = buildSources(
+            results.flatMap((r, i) => r.results.map((x) => ({ ...x, query: queries[i]! }))),
+            { itemKey: item.key, provider, existing: sourceRegister(records), now: new Date() },
+          );
+          const errors = results.filter((r) => r.error).map((r) => r.error);
+          if (errors.length) notes.push(`Search issues: ${[...new Set(errors)].join(", ")}`);
+        }
+      }
+      const register = [...sourceRegister(records), ...(sources ?? [])];
+
       let generated;
-      if (item.kind === "deliverable" && item.produces !== "verification_report") {
-        const { generateStageContent, modelModeStatus } =
-          await import("@/lib/workforce/model-runner.server");
-        if (modelModeStatus().enabled) {
-          const ctx = deliverableContext(state, records, item);
-          const bc = state.businessCase;
-          generated = await generateStageContent({
-            mission: {
-              title: bc.name,
-              requestText: `${bc.idea}\nProblem: ${bc.problem}`,
-              clarificationAnswers: {
-                users: bc.targetUsers,
-                goals: bc.goals,
-                constraints: bc.constraints,
-              },
+      if (modelOn && item.kind === "deliverable" && item.produces !== "verification_report") {
+        const ctx = deliverableContext(state, records, item);
+        const cite = requiresCitations(item.key, register);
+        const known = new Set(register.map((x) => x.id));
+        generated = await generateStageContent({
+          mission: {
+            title: bc.name,
+            requestText: `${bc.idea}\nProblem: ${bc.problem}`,
+            clarificationAnswers: {
+              users: bc.targetUsers,
+              goals: bc.goals,
+              constraints: bc.constraints,
             },
-            task: {
-              title: item.title,
-              description: `${item.description}\nAdopted decisions: ${ctx.decisions.map((d) => `${d.key} = ${d.label} (${d.status})`).join("; ") || "none yet"}.${ctx.feedback.length ? `\nOperator feedback to address: ${ctx.feedback.join(" | ")}` : ""}`,
-              acceptanceCriteria:
-                "Reference the adopted decisions by name; label claims as fact (with source), assumption or inference.",
-              requiredSections: item.requiredSections ?? [],
-              produces: item.produces === "prototype" ? "prototype_html" : "note",
-            },
-            upstream: ctx.upstreamArtefacts.map((a) => ({
+          },
+          task: {
+            title: item.title,
+            description: `${item.description}\nAdopted decisions: ${ctx.decisions.map((d) => `${d.key} = ${d.label} (${d.status})`).join("; ") || "none yet"}.${ctx.feedback.length ? `\nOperator feedback to address: ${ctx.feedback.join(" | ")}` : ""}`,
+            acceptanceCriteria:
+              "Reference the adopted decisions by name; label claims as fact (with source), assumption or inference.",
+            requiredSections: item.requiredSections ?? [],
+            produces: item.produces === "prototype" ? "prototype_html" : "note",
+          },
+          upstream: [
+            ...(register.length
+              ? [
+                  {
+                    kind: "note" as const,
+                    title: "Source register",
+                    content: sourcesForPrompt(register, 20),
+                    contentFormat: "markdown" as const,
+                    taskKey: null,
+                    requiredSections: [],
+                  },
+                ]
+              : []),
+            ...ctx.upstreamArtefacts.map((a) => ({
               kind: "note" as const,
               title: a.title,
               content: a.body,
@@ -322,13 +383,50 @@ export const advanceProgramme = createServerFn({ method: "POST" })
               taskKey: a.itemKey,
               requiredSections: [],
             })),
-          });
-        }
+          ],
+          ...(cite
+            ? {
+                extraInstructions:
+                  "Every line containing a number, percentage or currency must cite a source from the Source register as [S#], or be explicitly labelled as an assumption, estimate or target. Never cite an id that is not in the register. End with a '## Sources' section listing the ids you cited.",
+                extraCheck: (content: string) => citationProblem(checkCitations(content, known)),
+              }
+            : {}),
+        });
+      }
+
+      // Step 2 — model-proposed decision options; evidence from cited sources.
+      let decisionOptions: { options: DecisionOption[]; model: string } | undefined;
+      let decisionOptionsNote: string | undefined;
+      if (modelOn && item.kind === "meeting" && item.decision) {
+        const ctx = deliverableContext(state, records, item);
+        const prompt = buildOptionPrompt({
+          spec: item.decision,
+          bc,
+          decisionsSoFar: ctx.decisions.map((d) => `${d.key} = ${d.label} (${d.status})`),
+          dossier: ctx.upstreamArtefacts
+            .filter((a) => a.format !== "html")
+            .map((a) => `### ${a.title}\n${a.body}`)
+            .join("\n\n"),
+          sources: register,
+        });
+        const res = await generateJson({
+          ...prompt,
+          screenText: `${bc.idea} ${bc.problem} ${bc.targetUsers} ${bc.goals} ${bc.constraints}`,
+          validate: (text) => {
+            const parsed = parseGeneratedOptions(text, register);
+            return parsed.ok ? { ok: true, value: parsed.options } : parsed;
+          },
+        });
+        if (res.ok) decisionOptions = { options: res.value, model: res.model };
+        else decisionOptionsNote = res.reason;
       }
 
       const result = executeItem(state, records, item, {
         now,
         ...(generated ? { generated } : {}),
+        ...(sources ? { sources } : {}),
+        ...(decisionOptions ? { decisionOptions } : {}),
+        ...(decisionOptionsNote ? { decisionOptionsNote } : {}),
       });
       const allRecords = [...records, ...result.records];
       const settled = settle(result.state, planNextStep(result.state, allRecords), now);
@@ -337,7 +435,7 @@ export const advanceProgramme = createServerFn({ method: "POST" })
       return {
         ...(await view(saved, savedRecords)),
         done: settled.status !== "active",
-        note: result.failed ?? null,
+        note: [result.failed, ...notes].filter(Boolean).join(" ") || null,
       };
     },
   );

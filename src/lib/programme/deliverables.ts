@@ -11,7 +11,10 @@ import {
   checkPrototypeHtml,
   markdownSections,
 } from "@/lib/workforce/contracts";
+import { checkCitations } from "./research";
 import { displayName } from "./roster";
+
+const RESEARCH_KEYS = new Set(["business_case", "market_research", "tech_radar", "business_model"]);
 import type { BusinessCase, ReviewRecord, WorkItem } from "./types";
 
 export type EffectiveDecision = { key: string; question: string; label: string; status: string };
@@ -264,7 +267,8 @@ export function reviewDeliverable(
 
 export function verificationReport(
   items: WorkItem[],
-  artefacts: Array<{ itemKey: string; body: string; format: string }>,
+  artefacts: Array<{ itemKey: string; body: string; format: string; generation?: string }>,
+  sourceIds: Set<string> = new Set(),
 ): { body: string; passed: boolean } {
   const rows: Array<{ check: string; ok: boolean; detail: string }> = [];
   for (const a of artefacts) {
@@ -278,6 +282,14 @@ export function verificationReport(
           detail: c.passed ? "pass" : "fail",
         });
     } else if (item.requiredSections?.length) {
+      if (a.generation?.startsWith("model") && sourceIds.size && RESEARCH_KEYS.has(a.itemKey)) {
+        const c = checkCitations(a.body, sourceIds);
+        rows.push({
+          check: `${item.title}: citations`,
+          ok: c.ok,
+          detail: `${Math.round(c.coverage * 100)}% of ${c.claims} numeric claims cited or labelled${c.unknownIds.length ? `; unknown ${c.unknownIds.join(", ")}` : ""}`,
+        });
+      }
       const r = checkMarkdownContract(a.body, item.requiredSections);
       rows.push({
         check: `${item.title}: contract`,

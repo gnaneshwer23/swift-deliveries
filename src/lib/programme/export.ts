@@ -8,6 +8,7 @@ import {
   reputation,
 } from "./engine";
 import { interviewMarkdown } from "./interviews";
+import { checkCitations, sourceRegister } from "./research";
 import { displayName, member } from "./roster";
 import {
   CRITERIA,
@@ -226,6 +227,15 @@ ${items.map((i, idx) => `| ${idx + 1} | ${i.week} | ${i.phase} | ${i.title} | ${
     );
   }
 
+  const register = sourceRegister(records);
+  const knownIds = new Set(register.map((x) => x.id));
+  add("research/sources.json", JSON.stringify(register, null, 2), {
+    generation: register.length
+      ? `web search (${[...new Set(register.map((x) => x.provider))].join(", ")})`
+      : "none",
+    status: register.length ? "complete" : "no search provider configured",
+  });
+
   add(
     "operations/tasks.csv",
     csv([
@@ -372,6 +382,22 @@ ${listCapabilities()
       decisions: {
         total: decisions.length,
         ratifiedOrOverriddenByFounder: decisions.filter((d) => d.human).length,
+        optionsFromModel: decisions.filter((d) => d.options.some((o) => o.origin === "model"))
+          .length,
+      },
+      research: {
+        sources: register.length,
+        byQuality: {
+          high: register.filter((x) => x.quality === "high").length,
+          medium: register.filter((x) => x.quality === "medium").length,
+          low: register.filter((x) => x.quality === "low").length,
+        },
+        citationCoverage: [...latestArtefact.values()]
+          .filter((a) => genOf(a).startsWith("model") && a.format === "markdown")
+          .map((a) => {
+            const c = checkCitations(a.body, knownIds);
+            return { item: a.itemKey, claims: c.claims, coverage: c.coverage, ok: c.ok };
+          }),
       },
     },
     excluded: ["secrets and credentials", "personal identifiers (none are collected by design)"],

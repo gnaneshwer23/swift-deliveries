@@ -141,5 +141,7 @@ Audit against the founder vision: docs/dxsi-capability-audit.md.
 - [x] Peer review, verification report, judgement track record per role
 - [x] Dashboard (/command/programmes) and complete ZIP export with manifest, CSV, JSON
 - [ ] Apply migration 20261022120000_dxsi_programmes.sql (after 20261022100000)
-- [ ] Execution service: real code in isolated sandboxes per sprint
-- [ ] Research connectors with citations; autonomy modes; durable background execution
+- [x] Research with citations: Exa/Tavily/Brave source register, quality scoring, enforced [S#] citations, sources.json export
+- [x] Model-proposed decision options with source-derived evidence; deterministic tally unchanged
+- [ ] Configure a search key (EXA_API_KEY / TAVILY_API_KEY / BRAVE_SEARCH_API_KEY) and model mode in Vercel
+- [ ] Durable background execution; GitHub-based engineering; real interview workflows; autonomy modes

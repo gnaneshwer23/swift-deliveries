@@ -86,6 +86,11 @@ export type DecisionOption = {
   label: string;
   summary: string;
   scores: Record<Criterion, number>;
+  /** Where the option and its scores came from (template profiles are disclosed as such). */
+  origin?: "template" | "model";
+  /** Source register ids the option relies on; evidence score derives from these. */
+  sourceIds?: string[];
+  assumptions?: string[];
 };
 
 export type DecisionSpec = {

@@ -22,8 +22,16 @@ import { meetingMarkdown, runMeeting } from "./meetings";
 import { displayName, member } from "./roster";
 import { extractHtmlDocument, checkMarkdownContract } from "@/lib/workforce/contracts";
 import {
+  checkCitations,
+  evidenceExcerpts,
+  sourceRegister,
+  sourcesRecord,
+  type Source,
+} from "./research";
+import {
   PHASES,
   type BusinessCase,
+  type DecisionOption,
   type DecisionRecord,
   type JsonRecord,
   type ProgrammeRecord,
@@ -33,6 +41,18 @@ import {
 } from "./types";
 
 export const MAX_REWORK_PER_GATE = 2;
+
+/** Deliverables whose factual claims must cite sources once any sources exist. */
+export const RESEARCH_ITEMS = new Set([
+  "business_case",
+  "market_research",
+  "tech_radar",
+  "business_model",
+]);
+
+export function requiresCitations(itemKey: string, register: Source[]): boolean {
+  return RESEARCH_ITEMS.has(itemKey) && register.length > 0;
+}
 
 export function createProgramme(id: string, bc: BusinessCase, now: string): ProgrammeState {
   return {
@@ -216,10 +236,21 @@ export function executeItem(
   state: ProgrammeState,
   records: ProgrammeRecord[],
   item: WorkItem,
-  ctx: { now: string; generated?: GeneratedContent },
+  ctx: {
+    now: string;
+    generated?: GeneratedContent;
+    /** Sources retrieved for this item (appended to the register). */
+    sources?: Source[];
+    /** Model-proposed options for this item's decision. */
+    decisionOptions?: { options: DecisionOption[]; model: string };
+    /** Why model options were not used, when they were attempted. */
+    decisionOptionsNote?: string;
+  },
 ): ExecuteResult {
   const { now } = ctx;
   const bc = state.businessCase;
+  const register = [...sourceRegister(records), ...(ctx.sources ?? [])];
+  const knownIds = new Set(register.map((x) => x.id));
   const out: ProgrammeRecord[] = [];
   const charge = (s: ProgrammeState) => ({
     ...s,
@@ -227,7 +258,22 @@ export function executeItem(
   });
 
   if (item.kind === "meeting") {
-    const { meeting, decision } = runMeeting(item, state);
+    const spec =
+      item.decision && ctx.decisionOptions
+        ? { ...item.decision, options: ctx.decisionOptions.options }
+        : item.decision
+          ? {
+              ...item.decision,
+              options: item.decision.options.map((o) => ({
+                ...o,
+                origin: o.origin ?? ("template" as const),
+              })),
+            }
+          : undefined;
+    const { meeting, decision } = runMeeting(spec ? { ...item, decision: spec } : item, state);
+    if (decision && ctx.decisionOptionsNote) {
+      decision.challenge.note += ` Model-proposed options were not used: ${ctx.decisionOptionsNote}.`;
+    }
     out.push(
       rec(
         "meeting",
@@ -287,6 +333,7 @@ export function executeItem(
   }
 
   if (item.kind === "deliverable") {
+    if (ctx.sources?.length) out.push(sourcesRecord(item.key, item.title, ctx.sources, now));
     const { upstreamArtefacts, decisions, feedback } = deliverableContext(state, records, item);
     let body: string;
     let format: ProgrammeRecord["format"] = "markdown";
@@ -302,7 +349,9 @@ export function executeItem(
           itemKey: a.itemKey!,
           body: a.body,
           format: a.format,
+          generation: String(a.data["generation"] ?? ""),
         })),
+        knownIds,
       );
       body = report.body;
       generation = "deterministic";
@@ -332,7 +381,8 @@ export function executeItem(
       generation = html ? `model:${ctx.generated!.model}` : "simulated";
     } else if (
       ctx.generated?.mode === "model" &&
-      checkMarkdownContract(ctx.generated.content, item.requiredSections ?? []).ok
+      checkMarkdownContract(ctx.generated.content, item.requiredSections ?? []).ok &&
+      (!requiresCitations(item.key, register) || checkCitations(ctx.generated.content, knownIds).ok)
     ) {
       body = ctx.generated.content;
       generation = `model:${ctx.generated.model}`;
@@ -341,8 +391,9 @@ export function executeItem(
         milestones: state.roadmap.milestones.map((m) => `- Week ${m.week}: ${m.title}`).join("\n"),
         upstreamTitles: upstreamArtefacts.map((a) => a.title),
       });
+      body += evidenceExcerpts(ctx.sources ?? []);
       if (ctx.generated?.mode === "model")
-        generation = "simulated (model output failed its contract)";
+        generation = "simulated (model output failed its contract or citation check)";
       else if (ctx.generated?.note) generation = `simulated (${ctx.generated.note})`;
     }
     if (feedback.length && format === "markdown") {
