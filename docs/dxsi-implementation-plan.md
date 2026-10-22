@@ -75,10 +75,13 @@ Total cost is 82 credits, which fits the default 100-credit ceiling.
 ## 4. Deploying
 
 1. **Apply the migration** `supabase/migrations/20261022100000_dxsi_product_mission.sql`. It is additive: it widens two CHECK constraints and adds a service-role-only `wf_schema_version()`. Until it is applied, the app hides "Build a product" (the composer shows it disabled) and every existing flow is unchanged.
-2. **Optional — enable model mode** (Vercel project env):
+2. **Optional — enable direct OpenAI model mode** (Vercel project environment variables / deployment secrets):
    - `DXSI_MODEL_ENABLED=true`
-   - `DXSI_MODEL=<gateway model id>` (default `anthropic/claude-sonnet-5.5`; confirm the exact id in the AI Gateway model list)
-   - Auth: on Vercel, AI Gateway authenticates via OIDC automatically. Elsewhere set `AI_GATEWAY_API_KEY` or `OPENROUTER_API_KEY`.
+   - `OPENAI_API_KEY=<set as a deployment secret; never commit it or send it in chat>`
+   - Optional `DXSI_MODEL=gpt-4.1` (default is `gpt-4.1`; choose a model available to your OpenAI project)
+   - OpenAI is selected ahead of gateway providers when `OPENAI_API_KEY` is present. If it is absent, the existing Vercel AI Gateway / OpenRouter provider selection remains available.
+   - The provider key alone does not activate model calls: `DXSI_MODEL_ENABLED=true` remains an explicit opt-in. A failed or blocked model call falls back to a disclosed simulated draft.
+   - Keep keys server-side only; do not use a `VITE_`-prefixed variable or expose them to browser code.
 3. **Function duration:** a model stage can take 30–90 s. Fluid compute's default limit covers this, but if a project-level `maxDuration` is set lower, raise it.
 
 ## 5. Decisions (resolved 22 Oct 2026: Healthcare and Books departments replaced by Future Technology & Foresight and Product Analytics; regulated healthcare out of scope — see docs/dxsi-capability-audit.md)
@@ -103,3 +106,4 @@ Total cost is 82 credits, which fits the default 100-credit ceiling.
   - routing from the outcome dataset (accepted / rejected / revised per artefact);
   - reusable team templates.
 - **Phase 5:** analytics and feedback connectors driving evidence-backed roadmap updates.
+\n\n## 7. Agreed end-to-end target and current boundary\n\nThe first delivery target is idea → research → PRD → prototype/code → automated tests → preview. The existing `build` mission already runs a lifecycle DAG for charter, market/customer hypotheses, research dossier, technology foresight, PRD, UX/architecture, a self-contained HTML prototype, deterministic static verification, release pack and evolution plan. Its “research” is model-generated unless grounded in supplied evidence; a direct OpenAI key does not itself provide live web research or independently verified citations. The current verifier checks contracts and static HTML properties; it does not execute generated application code in an isolated sandbox or run browser end-to-end tests. Public preview deployment is not yet implemented and remains an external action requiring explicit approval. Do not present the existing HTML artefact as production code, the static checks as full runtime tests, or a release plan as a deployed preview.\n\nNext implementation slice after this provider adapter: add source-backed web research with preserved URLs/citation metadata; then isolated, resource-limited code execution and test reports; then approval-gated preview deployment. Keep those capabilities disabled/unavailable until each is implemented and validated.
