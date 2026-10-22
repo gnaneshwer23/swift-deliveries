@@ -349,13 +349,25 @@ describe("task metadata persistence", () => {
 describe("model mode safeguards", () => {
   it("is off unless explicitly enabled, even with a provider key", () => {
     expect(resolveProvider({ AI_GATEWAY_API_KEY: "k" })).toBeNull();
+    expect(resolveProvider({ OPENAI_API_KEY: "k" })).toBeNull();
     expect(resolveProvider({ DXSI_MODEL_ENABLED: "true" })).toBeNull();
+    expect(
+      resolveProvider({ DXSI_MODEL_ENABLED: "true", OPENAI_API_KEY: "secret", DXSI_MODEL: "gpt-test" }),
+    ).toMatchObject({
+      name: "openai",
+      url: "https://api.openai.com/v1/chat/completions",
+      apiKey: "secret",
+      model: "gpt-test",
+    });
     expect(
       resolveProvider({ DXSI_MODEL_ENABLED: "true", OPENROUTER_API_KEY: "k", DXSI_MODEL: "m" }),
     ).toMatchObject({
       name: "openrouter",
       model: "m",
     });
+    expect(
+      resolveProvider({ DXSI_MODEL_ENABLED: "true", OPENAI_API_KEY: "openai", AI_GATEWAY_API_KEY: "gateway" }),
+    ).toMatchObject({ name: "openai" });
   });
 
   it("treats upstream artefacts as data and states the contract", () => {
