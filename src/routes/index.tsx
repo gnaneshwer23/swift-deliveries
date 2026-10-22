@@ -10,8 +10,8 @@ import { WAVE1_AVAILABLE_IDS } from "@/lib/workforce/registry";
 
 const WAVE1_COUNT = WAVE1_AVAILABLE_IDS.length;
 
-const TITLE = "DeliverX — AI work that follows a plan";
-const DESCRIPTION = `Command Centre for supervised AI labour: Investigate, Prototype or Improve under your approval. Wave 1 ships ${WAVE1_COUNT} Available capabilities — not 150 live agents. Career Experience and Launchpad remain available separately.`;
+const TITLE = "DeliverX — Supervised AI Workforce Platform";
+const DESCRIPTION = `Commission structured Investigate, Prototype, or Improve missions under human approval, explicit permissions, and deterministic usage ceilings.`;
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -65,14 +65,13 @@ export const Route = createFileRoute("/")({
               name: "DeliverX Command Centre",
               applicationCategory: "BusinessApplication",
               operatingSystem: "Web",
-              description:
-                "Stage 1 supervised AI workforce preview: Investigate, Prototype and Improve missions with Wave 1 Available capabilities, plan approval, permission ladder and usage ceiling.",
+              description: DESCRIPTION,
               url: "https://deliverx.dev/",
               brand: { "@id": "https://deliverx.dev/#organization" },
             },
             {
               "@type": "HowTo",
-              name: "How DeliverX Command Centre runs a supervised mission",
+              name: "How DeliverX runs a supervised mission",
               description: "Mission through plan, approval, execution and delivery.",
               step: HOW_IT_WORKS.map((s, i) => ({
                 "@type": "HowToStep",
@@ -91,37 +90,31 @@ export const Route = createFileRoute("/")({
 
 const MISSION_TYPES = [
   {
-    n: "01",
     tag: "Decision Research",
     title: "Investigate",
     image: "/assets/3d/intent-investigate.jpg",
     imageAlt: "3D frosted-glass optical prism separating evidence layers",
-    body: "Research a strategic or product decision and return a structured brief with sourced facts explicitly separated from assumptions and inferences.",
-    capabilities: ["DX-001", "DX-011", "DX-012", "DX-020"],
+    body: "Research a strategic or product decision and return a structured brief with sourced facts explicitly separated from working assumptions.",
     permission: "Plan → Create",
-    deliverable: "Decision Brief + Evidence Matrix",
+    deliverable: "Decision Brief & Evidence Matrix",
   },
   {
-    n: "02",
-    tag: "Product & UI Specification",
+    tag: "Product & UI Spec",
     title: "Prototype",
     image: "/assets/3d/intent-prototype.jpg",
-    imageAlt: "3D translucent glass UI planes and brushed-gold wireframe cube in a sandbox tray",
-    body: "Produce a reviewable PRD and a lightweight, sandboxed interactive HTML or structured UI pack — never an unapproved production deploy.",
-    capabilities: ["DX-021", "DX-023", "DX-035", "DX-049"],
-    permission: "Create (Sandboxed)",
-    deliverable: "Product Spec + Interactive HTML Pack",
+    imageAlt: "3D translucent glass UI planes and brushed-gold wireframe cube",
+    body: "Produce a reviewable product specification and a lightweight, sandboxed interactive prototype — never an unapproved production deploy.",
+    permission: "Sandboxed Create",
+    deliverable: "Product Spec & Interactive Prototype",
   },
   {
-    n: "03",
-    tag: "Flow & Funnel Diagnostics",
+    tag: "Flow Diagnostics",
     title: "Improve",
     image: "/assets/3d/intent-improve.jpg",
     imageAlt: "3D ascending emerald stepped pathway and precision gold tuning dial",
-    body: "Diagnose friction in an existing workflow, isolate root causes, and propose bounded remediation steps that hard-stop at your budget ceiling.",
-    capabilities: ["DX-018", "DX-041", "DX-049", "DX-071"],
-    permission: "Execute internally",
-    deliverable: "Friction Diagnosis + Remediation Diff",
+    body: "Diagnose friction in an existing workflow, isolate root causes, and propose bounded remediation steps within your budget ceiling.",
+    permission: "Internal Execution",
+    deliverable: "Friction Diagnosis & Remediation Plan",
   },
 ];
 
@@ -129,82 +122,78 @@ const HOW_IT_WORKS = [
   {
     n: "01",
     name: "Mission",
-    gate: "Intent + Clarification",
-    desc: "Select Investigate, Prototype or Improve and state your objective in plain English. Ambiguous requests trigger structured clarification before any plan is drafted.",
+    gate: "Intent & Scope",
+    desc: "Select Investigate, Prototype or Improve and state your objective. Ambiguous briefs prompt clarifying questions before any plan is drafted.",
   },
   {
     n: "02",
     name: "Plan",
-    gate: "Wave 1 Assignment",
-    desc: "Receive a task graph, acceptance criteria, credit estimate and capability assignment drawn strictly from the 12 Available Wave 1 roles.",
+    gate: "Task Breakdown",
+    desc: "Review a structured task graph, acceptance criteria, credit estimate, and assigned specialist capabilities before work begins.",
   },
   {
     n: "03",
     name: "Approve",
-    gate: "Mandatory Human Gate",
-    desc: "Nothing executes until you explicitly approve the plan within the permission ladder and workspace credit ceiling. External actions require separate authorisation.",
+    gate: "Human Approval Gate",
+    desc: "Nothing executes until you approve the plan within your permission ceiling and workspace budget. External actions require separate sign-off.",
   },
   {
     n: "04",
     name: "Execute",
-    gate: "Deterministic Ceiling",
-    desc: "Approved tasks execute step-by-step with live status visibility. Billable work hard-stops automatically if the workspace usage ceiling is reached.",
+    gate: "Bounded Execution",
+    desc: "Approved tasks run step-by-step with live progress tracking and automatic hard-stop protection at your configured credit ceiling.",
   },
   {
     n: "05",
     name: "Deliver",
-    gate: "Evidence & Quality Labels",
-    desc: "Inspect artefacts and a delivery report with classified evidence (Sourced facts, Assumptions, Inferences, Speculative) and discrete quality labels.",
+    gate: "Classified Evidence",
+    desc: "Receive reviewable artefacts and a delivery report with separated evidence (Sourced facts, Assumptions, Inferences) and discrete quality labels.",
   },
 ];
 
 const GOVERNANCE = [
   {
-    n: "01 · AUTHORITY",
+    n: "AUTHORITY",
     title: "Four-tier permission ladder",
-    body: "Plan → Create → Execute internally → Act externally. External actions (email, deploy, webhook, share) remain locked behind an explicit second approval.",
-    service: "svc-permissions · Deterministic service",
+    body: "Plan → Create → Execute internally → Act externally. External actions remain locked behind an explicit second approval.",
+    service: "Permission Gate",
   },
   {
-    n: "02 · COST CONTROL",
+    n: "COST CONTROL",
     title: "Hard-stop usage ceilings",
-    body: "Every workspace enforces a deterministic credit ceiling (default 100 credits). Tasks check remaining budget before running — zero silent overspend.",
-    service: "svc-budget · Deterministic service",
+    body: "Every workspace enforces a deterministic credit ceiling. Tasks verify remaining budget before running — zero silent overspend.",
+    service: "Budget Enforcement",
   },
   {
-    n: "03 · SUPERVISION",
-    title: "Plan-first human approval gate",
-    body: "No free-form autonomous loop. You inspect assigned capabilities, acceptance criteria, and limitations before queuing a single task.",
-    service: "Stage 1 Human-in-the-loop Gate",
+    n: "SUPERVISION",
+    title: "Plan-first human approval",
+    body: "No free-form autonomous loops. You inspect assigned roles, acceptance criteria, and scope before queuing a single task.",
+    service: "Human-in-the-Loop",
   },
   {
-    n: "04 · PROVENANCE",
-    title: "Immutable audit & quality trail",
-    body: "Every state transition, approval decision, and credit charge is logged. Workforce outputs carry discrete quality labels — never a bare 'Verified' claim.",
-    service: "svc-audit · Deterministic service",
+    n: "PROVENANCE",
+    title: "Audit & quality trail",
+    body: "Every state transition, approval decision, and credit charge is logged with discrete quality labels — never an unqualified Verified badge.",
+    service: "Immutable Ledger",
   },
 ];
 
 const HOME_FAQ = [
   {
-    q: "Is the full 150-role workforce live?",
-    a: `No. The catalogue describes 150 specialist capabilities. Wave 1 makes ${WAVE1_COUNT} of them Available in Command Centre. The rest are Planned and are not assigned to missions.`,
+    q: "How does DeliverX keep AI work under human control?",
+    a: "Every mission follows a strict five-stage lifecycle: Mission → Plan → Approve → Execute → Deliver. Nothing executes until you inspect and approve the proposed plan, capability assignment, and credit estimate.",
   },
   {
-    q: "What is Command Centre?",
-    a: "The Stage 1 product surface: you state a mission (Investigate, Prototype or Improve), review a plan, approve within a permission ladder and budget, then receive artefacts and a delivery report.",
+    q: "How many capabilities are available in the workforce registry?",
+    a: `The registry defines 150 specialist capabilities across 15 departments. Today, ${WAVE1_COUNT} verified capabilities are Available for active mission assignment, while the remaining roles are transparently marked Planned.`,
   },
   {
-    q: "How is this different from Experience and Launchpad?",
-    a: "Command Centre is supervised AI labour for outcomes. Experience and Launchpad are the career evidence product — simulated PM work, a provenance-backed record, and external attestation. Both coexist; pricing for career plans is unchanged.",
+    q: "How is Command Centre different from Experience and Launchpad?",
+    a: "Command Centre is our supervised AI workforce platform for executing bounded missions. Experience, Launchpad, and Prove form our career evidence path for Product Managers.",
   },
   {
-    q: "Does DeliverX guarantee a job or place me with employers?",
-    a: "No. There is no job guarantee, no money-back guarantee, and no employer marketplace.",
-  },
-  {
-    q: "What does Verified mean on the career product?",
-    a: "Only that a person outside DeliverX attested to a specific piece of work. Scores, coach confirmation and platform calculations never light Verified alone. Workforce missions use separate quality labels.",
+    q: "How do usage ceilings and permissions work?",
+    a: "Every workspace enforces a deterministic credit ceiling and a four-tier permission ladder (Plan, Create, Execute internally, Act externally). Tasks hard-stop automatically if the budget ceiling is reached.",
   },
 ];
 
@@ -213,12 +202,12 @@ function HomePage() {
     <MarketingLayout>
       <OnboardingGate />
 
-      {/* 1. HERO — Editorial headline + 3D Finsage-inspired Command Centre showcase */}
+      {/* 1. HERO — Clean Finsage-style executive headline + 3D sculptural showcase */}
       <section className="hero hero-workforce">
         <div className="hero-copy">
           <div className="hero-eyebrow">
             <span className="hero-dot" />
-            <span className="x-label">Supervised AI Workforce · Stage 1 Command Centre</span>
+            <span className="x-label">Supervised AI Workforce Platform</span>
           </div>
           <h1 className="hero-h1">
             AI work that follows a plan.
@@ -226,36 +215,34 @@ function HomePage() {
             <em>You stay in control.</em>
           </h1>
           <p className="hero-sub">
-            Commission structured <strong>Investigate</strong>, <strong>Prototype</strong> or{" "}
-            <strong>Improve</strong> missions. Review the task breakdown and assigned Wave 1
-            capabilities first — nothing executes without your approval, and usage hard-stops at
-            your workspace ceiling.
+            Commission structured <strong>Investigate</strong>, <strong>Prototype</strong>, or{" "}
+            <strong>Improve</strong> missions. Review the task breakdown and specialist assignments
+            first — nothing runs without your approval, and spend hard-stops at your budget ceiling.
           </p>
           <div className="hero-actions">
             <CtaLink
               signedInTo="/command"
               signedInLabel="Open Command Centre →"
-              signedOutLabel="Open Command Centre →"
+              signedOutLabel="Get started →"
               className="btn btn-primary"
             />
             <Link to="/how-it-works" className="btn btn-secondary">
-              Explore architecture &amp; governance
+              How it works
             </Link>
           </div>
 
-          {/* Executive Trust & Guardrail Strip */}
           <dl className="hero-trust-strip" aria-label="Platform guardrails">
             <div>
-              <dt>{WAVE1_COUNT} Available Roles</dt>
-              <dd>Wave 1 operational · 150-role catalogue</dd>
+              <dt>Plan-First Workflow</dt>
+              <dd>Inspect scope &amp; tasks before execution</dd>
             </div>
             <div>
               <dt>Human Approval Gate</dt>
-              <dd>Plan → Approve → Execute → Deliver</dd>
+              <dd>Mandatory sign-off on plans &amp; external actions</dd>
             </div>
             <div>
               <dt>Hard-Stop Budget</dt>
-              <dd>Deterministic ceiling · zero silent spend</dd>
+              <dd>Deterministic credit ceiling per workspace</dd>
             </div>
           </dl>
         </div>
@@ -268,43 +255,33 @@ function HomePage() {
       <section className="steps-section" id="mission-types">
         <div className="section-header-split">
           <div>
-            <div className="x-label">Bounded Mission Intents</div>
+            <div className="x-label">Mission Intents</div>
             <h2 className="heading-1" style={{ margin: "12px 0 0", maxWidth: 640 }}>
               Investigate. Prototype. Improve.
             </h2>
           </div>
           <p className="body" style={{ margin: 0, maxWidth: 460 }}>
-            Every mission enters through one of three structured intents. Each routes to a dedicated
-            planner template, Wave 1 capability set, and permission boundary — never an unbounded
-            chat loop.
+            Every mission begins with a clear intent, routing your brief to a structured planning
+            template, specialist capability set, and permission boundary.
           </p>
         </div>
 
         <div className="mission-cards-grid">
           {MISSION_TYPES.map((m) => (
-            <article className="mission-arch-card" key={m.n}>
+            <article className="mission-arch-card" key={m.title}>
               <div className="mission-arch-visual">
                 <img src={m.image} alt={m.imageAlt} loading="lazy" />
-                <span className="mission-arch-badge">
-                  {m.n} · {m.tag}
-                </span>
+                <span className="mission-arch-badge">{m.tag}</span>
               </div>
               <h3 className="mission-arch-title">{m.title}</h3>
               <p className="mission-arch-body">{m.body}</p>
-              <div className="mission-arch-caps" aria-label="Typical Wave 1 capabilities">
-                {m.capabilities.map((capId) => (
-                  <code key={capId} className="mission-arch-cap">
-                    {capId}
-                  </code>
-                ))}
-              </div>
               <div className="mission-arch-foot">
                 <div>
-                  <span>Permission ceiling</span>
+                  <span>Permission</span>
                   <strong>{m.permission}</strong>
                 </div>
                 <div>
-                  <span>Primary output</span>
+                  <span>Deliverable</span>
                   <strong>{m.deliverable}</strong>
                 </div>
               </div>
@@ -313,18 +290,18 @@ function HomePage() {
         </div>
       </section>
 
-      {/* 3. Five-Stage Supervised Lifecycle + Compact Epistemic Evidence Strip */}
+      {/* 3. Five-Stage Supervised Lifecycle */}
       <section className="products-section" id="how-it-works">
         <div className="section-header-split">
           <div>
-            <div className="x-label">Supervised Execution Lifecycle</div>
+            <div className="x-label">Execution Lifecycle</div>
             <h2 className="heading-1" style={{ margin: "12px 0 0", maxWidth: 680 }}>
               Mission → Plan → Approve → Execute → Deliver
             </h2>
           </div>
           <p className="body" style={{ margin: 0, maxWidth: 460 }}>
-            Five explicit stages backed by deterministic permission and budget services. Step 03 is
-            a mandatory human gate before any task runs.
+            Five structured stages designed around human authority. Step 03 is a mandatory approval
+            gate before any task is queued.
           </p>
         </div>
 
@@ -340,52 +317,20 @@ function HomePage() {
             />
           ))}
         </Bento>
-
-        {/* Compact Epistemic Evidence & Quality Strip (Replaces bulky 8-card ledger wall) */}
-        <div className="epistemic-strip" aria-label="Evidence classification and quality labels">
-          <div className="epistemic-strip-copy">
-            <span className="x-label">Epistemic Honesty in Every Report</span>
-            <p>
-              Every delivered artefact separates claims into four explicit classes and uses discrete
-              quality labels (<strong>Agent-reviewed</strong>, <strong>Automatically tested</strong>
-              , <strong>Human-reviewed</strong>, <strong>Externally attested</strong>) — never an
-              unqualified <code>Verified</code> badge.
-            </p>
-          </div>
-          <div className="epistemic-strip-pills">
-            <div className="epistemic-chip">
-              <span className="pill pill-teal">01 · Sourced facts</span>
-              <small>Traceable to your brief or cited sources</small>
-            </div>
-            <div className="epistemic-chip">
-              <span className="pill pill-neutral">02 · Assumptions</span>
-              <small>Working premises stated openly for review</small>
-            </div>
-            <div className="epistemic-chip">
-              <span className="pill pill-purple">03 · Inferences</span>
-              <small>Analytical conclusions reasoned from facts</small>
-            </div>
-            <div className="epistemic-chip">
-              <span className="pill pill-amber">04 · Speculative</span>
-              <small>Directional options flagged as low-confidence</small>
-            </div>
-          </div>
-        </div>
       </section>
 
-      {/* 4. Deterministic Governance & Wave 1 Capability Spotlight */}
+      {/* 4. Deterministic Governance & Capability Registry */}
       <section className="trust-section" id="governance">
         <div className="trust-inner">
-          <div className="trust-eyebrow">DETERMINISTIC CONTROL &amp; GOVERNANCE</div>
+          <div className="trust-eyebrow">CONTROL &amp; GOVERNANCE</div>
           <h2 className="trust-heading">
             Permissions, ceilings, approvals.
             <br />
             <em>Supervision is the architecture.</em>
           </h2>
           <p className="trust-lead">
-            Budget enforcement, permission gates, and audit logging are deterministic platform
-            services (`svc-budget`, `svc-permissions`, `svc-audit`) — never delegated to an AI
-            agent.
+            Budget enforcement, permission gates, and audit logging are enforced deterministically
+            by the platform — never delegated to an autonomous prompt.
           </p>
           <div className="trust-pillars">
             {GOVERNANCE.map((p) => (
@@ -406,26 +351,25 @@ function HomePage() {
       <section className="career-compact-section">
         <div className="career-compact-banner">
           <div>
-            <div className="x-label">Coexisting Product Line · Career Evidence</div>
+            <div className="x-label">Career Evidence Product</div>
             <h2 className="heading-2" style={{ marginTop: 8 }}>
-              Looking for the PM Career Evidence path?
+              Building a verified Product Management portfolio?
             </h2>
             <p className="body" style={{ marginTop: 6, maxWidth: 620 }}>
               <strong>Experience</strong>, <strong>Launchpad</strong>, and <strong>Prove</strong>{" "}
-              remain available as our dedicated career product (£19/month). Build a
-              provenance-backed PM portfolio where <em>Verified</em> lights only after independent
-              external attestation.
+              remain available as our dedicated career evidence path — where <em>Verified</em>{" "}
+              lights only after independent external attestation.
             </p>
           </div>
           <div className="career-compact-actions">
             <Link to="/experience" className="btn btn-secondary">
-              Explore Experience →
+              Experience →
             </Link>
             <Link to="/launchpad" className="btn btn-secondary">
               Launchpad →
             </Link>
             <Link to="/pricing" className="btn btn-secondary">
-              Career pricing
+              Pricing
             </Link>
           </div>
         </div>
@@ -437,14 +381,14 @@ function HomePage() {
         <div className="cta-box">
           <h2 className="cta-h">Put AI labour under a plan you approve.</h2>
           <p className="cta-sub">
-            Open Command Centre for the Stage 1 workforce preview — or explore the architecture and
-            governance model first.
+            Commission your first supervised mission in the Command Centre or explore the
+            architecture model.
           </p>
           <div className="cta-btns">
             <CtaLink
               signedInTo="/command"
               signedInLabel="Open Command Centre →"
-              signedOutLabel="Open Command Centre →"
+              signedOutLabel="Get started →"
             />
             <Link to="/how-it-works" className="btn btn-secondary">
               How it works

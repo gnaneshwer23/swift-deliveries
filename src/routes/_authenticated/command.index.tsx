@@ -211,10 +211,10 @@ function CommandHome() {
                 onClick={() => resetCredits.mutate()}
                 disabled={resetCredits.isPending}
                 className="cc-reset-credits-btn"
-                title="Reset Stage 1 preview allowance back to 100 credits"
+                title="Reset workspace credit allowance back to 100 credits"
               >
                 <RotateCcw className="size-3" />
-                {resetCredits.isPending ? "Resetting…" : "Reset preview credits"}
+                {resetCredits.isPending ? "Resetting…" : "Reset credits"}
               </button>
             ) : null}
           </div>
@@ -222,7 +222,7 @@ function CommandHome() {
             {remainingCredits} <small>/ {data.workspace.usageCeiling}</small>
           </strong>
           <span className="cc-kpi-sub">
-            {data.workspace.usageConsumed} consumed · deterministic hard-stop (`svc-budget`)
+            {data.workspace.usageConsumed} consumed · hard-stop ceiling enforced
           </span>
         </div>
         <div className="cc-kpi-card">
@@ -244,9 +244,9 @@ function CommandHome() {
           </span>
         </div>
         <div className="cc-kpi-card">
-          <span className="cc-kpi-label">Wave 1 Workforce</span>
+          <span className="cc-kpi-label">Available Capabilities</span>
           <strong className="cc-kpi-value">
-            {WAVE1_AVAILABLE_IDS.length} <small>Available</small>
+            {WAVE1_AVAILABLE_IDS.length} <small>Active</small>
           </strong>
           <span className="cc-kpi-sub">
             of 150 registry roles ·{" "}
@@ -257,12 +257,12 @@ function CommandHome() {
         </div>
       </section>
 
-      {/* Unified Mission Composer Card (Replaces 3 separate stacked intake sections) */}
+      {/* Unified Mission Composer Card */}
       <section className="cc-composer-card" aria-label="Commission a supervised mission">
         <div className="cc-composer-head">
           <div>
             <p className="cc-kicker">
-              <ShieldCheck className="size-3.5" /> Stage 1 Supervised Mission Composer
+              <ShieldCheck className="size-3.5" /> Supervised Mission Composer
             </p>
             <h2 className="cc-hero-title">Commission a bounded AI mission</h2>
           </div>

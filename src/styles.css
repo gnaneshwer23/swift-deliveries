@@ -2706,62 +2706,171 @@ html:has(.marketing-page) {
 /* ============================================================
    Finsage-Inspired 3D Sculptural Showcase & Decluttered Surfaces
    ============================================================ */
-.dxs .cc-3d-stage {
+.dxs .finsage-showcase {
+  border-radius: 24px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(20, 29, 22, 0.08);
+  box-shadow:
+    0 32px 80px -28px rgba(15, 25, 18, 0.16),
+    0 4px 20px rgba(15, 25, 18, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.dxs .finsage-3d-frame {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
-  background: #f4f6f2;
+  aspect-ratio: 16 / 10;
+  border-radius: 18px;
   overflow: hidden;
-  border-bottom: 1px solid #e1e8e1;
+  background: #f4f6f2;
+  border: 1px solid rgba(20, 29, 22, 0.06);
 }
-.dxs .cc-3d-hero-img {
+.dxs .finsage-3d-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
-.dxs .cc-3d-overlay-top {
+.dxs .finsage-floating-badge {
   position: absolute;
-  top: 12px;
-  left: 12px;
-  right: 12px;
+  top: 14px;
+  right: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(15, 118, 110, 0.18);
+  box-shadow: 0 4px 14px rgba(15, 25, 18, 0.08);
+  font-size: 11.5px;
+  font-weight: 650;
+  color: #0f766e;
+}
+.dxs .finsage-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.dxs .finsage-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 4px;
+  border-radius: 12px;
+  background: #f2f5f2;
+  border: 1px solid rgba(20, 29, 22, 0.06);
+}
+.dxs .finsage-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 9px;
+  border: none;
+  background: transparent;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #526057;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.dxs .finsage-tab:hover {
+  color: var(--dx-console-ink);
+}
+.dxs .finsage-tab.is-active {
+  background: #ffffff;
+  color: var(--dx-console-ink);
+  box-shadow: 0 2px 6px rgba(15, 25, 18, 0.07);
+}
+.dxs .finsage-tab.is-active svg {
+  color: #b45309;
+}
+.dxs .finsage-plan-box {
+  border-radius: 16px;
+  padding: 18px 20px;
+  background: #ffffff;
+  border: 1px solid rgba(20, 29, 22, 0.07);
+}
+.dxs .finsage-plan-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.dxs .finsage-plan-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #647067;
+}
+.dxs .finsage-plan-pill {
+  font-size: 11px;
+  font-weight: 600;
+  color: #0f766e;
+  background: #f0fdfa;
+  border: 1px solid #ccfbf1;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+.dxs .finsage-plan-request {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--dx-console-ink);
+  margin: 0 0 12px;
+}
+.dxs .finsage-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 11px;
+  background: #f8faf8;
+  border: 1px solid rgba(20, 29, 22, 0.05);
+  margin-bottom: 14px;
+}
+.dxs .finsage-task-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #2c3830;
+}
+.dxs .finsage-plan-foot {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  pointer-events: none;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid #eef2ee;
 }
-.dxs .cc-glass-pill {
-  display: inline-flex;
+.dxs .finsage-plan-meta {
+  display: flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 11px;
+  font-size: 12px;
+  color: #5b6760;
+}
+.dxs .finsage-plan-meta strong {
+  color: var(--dx-console-ink);
+}
+.dxs .finsage-approve-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(20, 29, 22, 0.1);
-  box-shadow: 0 4px 14px rgba(15, 25, 18, 0.08);
-  font-size: 11px;
-  font-weight: 650;
-  color: #17211a;
-}
-.dxs .cc-glass-pill.is-emerald {
-  background: rgba(240, 253, 250, 0.92);
-  border-color: rgba(15, 118, 110, 0.24);
-  color: #0f766e;
-}
-.dxs .cc-3d-overlay-bottom {
-  position: absolute;
-  bottom: 10px;
-  left: 12px;
-  right: 12px;
-}
-.dxs .cc-3d-overlay-bottom .cc-compose-stepper {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(12px);
-  border-color: rgba(20, 29, 22, 0.12);
-  box-shadow: 0 8px 24px rgba(15, 25, 18, 0.12);
+  background: #141d16;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 /* 3D Sculptural Mission Intent Cards */

@@ -111,7 +111,7 @@ export function CommandShell({
         <div className="main">
           <div className="main-header">
             <div>
-              <div className="cc-header-eyebrow">DeliverX Command Centre · Stage 1</div>
+              <div className="cc-header-eyebrow">DeliverX Command Centre</div>
               <h1 className="main-header-title">{title}</h1>
               {subtitle ? (
                 <p className="mt-0.5 text-xs" style={{ color: "var(--x-slate-light)" }}>
@@ -123,10 +123,10 @@ export function CommandShell({
               <div
                 className="cc-sim-pill"
                 role="note"
-                title="No live LLM is called in Stage 1; deterministic planner and executor stubs generate plans and artefacts while enforcing real permission and budget gates."
+                title="Deterministic planner and executor enforce real permission and budget gates."
               >
                 <span className="cc-sim-dot" />
-                <span>Deterministic simulation · Budget &amp; approval gates active</span>
+                <span>Supervised Execution · Budget &amp; Approval Gates Active</span>
               </div>
               <div className="cc-permission-chip" title="Permission ladder">
                 <Shield className="size-3.5" />

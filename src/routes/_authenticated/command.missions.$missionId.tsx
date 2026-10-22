@@ -404,7 +404,7 @@ function MissionDetail() {
 
               {plan.assignedCapabilities.length > 0 ? (
                 <>
-                  <h3 className="cc-subhead">Assigned Wave 1 Available capabilities</h3>
+                  <h3 className="cc-subhead">Assigned Available capabilities</h3>
                   <ul className="cc-cap-assign-list">
                     {plan.assignedCapabilities.map((c) => (
                       <li key={c.capability_id}>
@@ -445,7 +445,7 @@ function MissionDetail() {
                 <div className="cc-approval-gate-box mt-4">
                   <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-amber-800 mb-2">
                     <ShieldCheck className="size-4" />
-                    Stage 03 · Mandatory Human Approval Gate (`svc-permissions`)
+                    Mandatory Human Approval Gate
                   </div>
                   <label className="flex items-start gap-2 text-sm">
                     <input
@@ -701,7 +701,7 @@ function MissionDetail() {
 
           {/* Permission Ladder */}
           <section className="cc-panel">
-            <h2 className="cc-panel-title">Permission ladder (`svc-permissions`)</h2>
+            <h2 className="cc-panel-title">Permission ladder</h2>
             <ul className="cc-ladder">
               {ladder.map((level, idx) => {
                 const active =
@@ -731,7 +731,7 @@ function MissionDetail() {
           {/* Approvals & Immutable Audit Trail */}
           <section className="cc-panel">
             <div className="flex items-center justify-between gap-2 mb-2">
-              <h2 className="cc-panel-title mb-0">Approvals &amp; Audit (`svc-audit`)</h2>
+              <h2 className="cc-panel-title mb-0">Approvals &amp; Audit Trail</h2>
               <History className="size-4 text-slate-500" />
             </div>
             {approvals.length > 0 ? (

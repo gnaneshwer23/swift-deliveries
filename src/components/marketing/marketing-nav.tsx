@@ -6,11 +6,11 @@ import { useSession } from "@/hooks/use-session";
 import { BrandLogo } from "@/components/brand-logo";
 
 const NAV_LINKS = [
-  { href: "/#mission-types", label: "Mission types" },
+  { href: "/#mission-types", label: "Product" },
   { href: "/#how-it-works", label: "Lifecycle" },
-  { href: "/#capabilities", label: "Capabilities" },
   { href: "/#governance", label: "Governance" },
-  { href: "/how-it-works", label: "Architecture" },
+  { href: "/#capabilities", label: "Capabilities" },
+  { href: "/how-it-works", label: "How it works" },
 ] as const;
 
 export function MarketingNav() {
@@ -19,9 +19,8 @@ export function MarketingNav() {
 
   return (
     <header className="nav">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center">
         <BrandLogo />
-        <span className="nav-stage-badge hidden lg:inline-flex">Stage 1 · 12 Available</span>
       </div>
 
       <nav className="nav-links" aria-label="Primary navigation">
@@ -46,7 +45,7 @@ export function MarketingNav() {
               Sign in
             </Link>
             <Link to="/signup" className="btn-nav btn-nav-primary">
-              Open Command Centre
+              Get started
             </Link>
           </>
         )}
@@ -93,7 +92,7 @@ export function MarketingNav() {
                   onClick={() => setOpen(false)}
                   className="py-3 text-sm font-medium text-[var(--x-ink)]"
                 >
-                  Open Command Centre
+                  Get started
                 </Link>
               </>
             )}
