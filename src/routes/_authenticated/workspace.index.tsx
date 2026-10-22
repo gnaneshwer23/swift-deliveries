@@ -94,8 +94,57 @@ function ContextualHome() {
   return (
     <WorkspaceShell title="Daily briefing" subtitle={target ? `Target: ${target}` : undefined}>
       <div className="briefing">
-        <div className="journey-state">
-          Journey stage {briefing.journeyState} · {journey.label}
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "12px",
+            marginBottom: "14px",
+          }}
+        >
+          <div className="journey-state" style={{ marginBottom: 0 }}>
+            Journey stage {briefing.journeyState} · {journey.label}
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px" }}>
+            <Link
+              to="/command"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "6px 12px",
+                borderRadius: "8px",
+                background: "linear-gradient(180deg, #617fe3 0%, #3e63dd 100%)",
+                color: "#ffffff",
+                fontSize: "12px",
+                fontWeight: 700,
+                textDecoration: "none",
+                boxShadow: "0 2px 8px rgba(62, 99, 221, 0.35)",
+              }}
+            >
+              Launch AI Workforce Command Centre →
+            </Link>
+            <Link
+              to="/onboarding"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "6px 12px",
+                borderRadius: "8px",
+                background: "rgba(255, 255, 255, 0.1)",
+                border: "1px solid rgba(255, 255, 255, 0.18)",
+                color: "#ffffff",
+                fontSize: "12px",
+                fontWeight: 600,
+                textDecoration: "none",
+              }}
+            >
+              Personalise Setup
+            </Link>
+          </div>
         </div>
         <div className="briefing-greeting">
           Good to see you, <em>{firstName}</em>.

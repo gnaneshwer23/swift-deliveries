@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
 import { commandCentreBootstrapQuery } from "@/lib/workforce-queries";
 import {
@@ -20,12 +20,20 @@ import {
   ProductPrototypeIcon,
   ProductImproveIcon,
 } from "@/components/marketing/motion-product-visuals";
-import { FlaskConical, RotateCcw, Search, ShieldCheck, Wrench } from "lucide-react";
+import {
+  Compass,
+  FlaskConical,
+  RotateCcw,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  Wrench,
+} from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/command/")({
   head: () => ({
     meta: [
-      { title: "Command Centre — DeliverX" },
+      { title: "Command Centre — DeliverX Product & AI Workforce Dashboard" },
       {
         name: "description",
         content:
@@ -68,6 +76,10 @@ const INTENTS: Array<{
         label: "Enterprise Pricing & Buyer Objections",
         text: "Investigate enterprise buyer objections to usage-based credit ceilings for product operations teams.",
       },
+      {
+        label: "UK/EU Healthcare Data Residency Audit",
+        text: "Investigate UK NHS and Higher-Ed procurement requirements for AI-assisted project delivery workspaces.",
+      },
     ],
   },
   {
@@ -88,6 +100,10 @@ const INTENTS: Array<{
       {
         label: "External Attestation Review Flow",
         text: "Prototype an external attestation review screen showing frozen artefact provenance for hiring managers.",
+      },
+      {
+        label: "Baseline Freeze & Change Request Modal",
+        text: "Prototype a sponsor baseline freeze and scope change request approval modal with SHA-256 checksum display.",
       },
     ],
   },
@@ -110,6 +126,10 @@ const INTENTS: Array<{
         label: "Onboarding Intake Clarification Flow",
         text: "Improve mission clarification turnaround when operators submit single-sentence briefs in Command Centre.",
       },
+      {
+        label: "Weekly Delivery Loop Approval SLA",
+        text: "Improve sponsor approval turnaround on weekly delivery action queues so 75%+ clear within 48 hours.",
+      },
     ],
   },
 ];
@@ -123,6 +143,23 @@ function CommandHome() {
   const [projectId, setProjectId] = useState<string>("");
   const [newProjectName, setNewProjectName] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
+  const [missionFilter, setMissionFilter] = useState<
+    "all" | "awaiting" | "completed" | "investigate" | "prototype" | "improve"
+  >("all");
+
+  // Support deep-linked ?intent=...&prompt=... from the landing page Product Dashboard & cards
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const qIntent = params.get("intent");
+    const qPrompt = params.get("prompt");
+    if (qIntent === "investigate" || qIntent === "prototype" || qIntent === "improve") {
+      setIntent(qIntent);
+    }
+    if (qPrompt && qPrompt.trim().length > 0) {
+      setRequestText(qPrompt.trim());
+    }
+  }, []);
 
   const activeIntent = useMemo(() => {
     return INTENTS.find((i) => i.intent === intent) ?? INTENTS[0]!;
@@ -182,7 +219,7 @@ function CommandHome() {
 
   if (isLoading) {
     return (
-      <CommandShell title="Command Centre" subtitle="Loading your workspace…">
+      <CommandShell title="Command Centre" subtitle="Loading your product workforce workspace…">
         <p className="text-sm" style={{ color: "var(--x-slate-light)" }}>
           Preparing supervised workforce shell…
         </p>
@@ -213,16 +250,58 @@ function CommandHome() {
   const awaitingCount = data.recentMissions.filter(
     (m) => m.status === "awaiting_approval" || m.status === "needs_clarification",
   ).length;
+  const completedCount = data.recentMissions.filter((m) => m.status === "completed").length;
+  const runningCount = data.recentMissions.filter((m) => m.status === "running").length;
+
+  const filteredMissions = data.recentMissions.filter((m) => {
+    if (missionFilter === "awaiting")
+      return m.status === "awaiting_approval" || m.status === "needs_clarification";
+    if (missionFilter === "completed") return m.status === "completed";
+    if (missionFilter === "investigate" || missionFilter === "prototype" || missionFilter === "improve")
+      return m.intent === missionFilter;
+    return true;
+  });
 
   return (
     <CommandShell
-      title="Command Centre"
-      subtitle="Supervised AI Product Workforce · Mission intake, plan approval & execution monitor"
+      title="Product & AI Workforce Command Centre"
+      subtitle="Supervised AI Product Workforce · Mission intake, plan approval & delivery governance"
       usage={{
         consumed: data.workspace.usageConsumed,
         ceiling: data.workspace.usageCeiling,
       }}
     >
+      {/* Top Personalisation & Workspace Switcher Banner */}
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#D8E5FF] bg-gradient-to-r from-[#EEF5FF] via-[#F8FAFF] to-white px-5 py-3.5">
+        <div className="flex items-center gap-3">
+          <span className="inline-flex size-8 items-center justify-center rounded-xl bg-[#3e63dd] text-white">
+            <Sparkles className="size-4" />
+          </span>
+          <div>
+            <strong className="block text-xs font-bold text-[#101828]">
+              Supervised Product Workforce · Stage 1 Operational
+            </strong>
+            <span className="text-xs text-[#475467]">
+              Every mission follows <strong>Mission → Plan → Approve → Execute → Deliver</strong> under your 4-tier permission ceiling.
+            </span>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            to="/onboarding"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            Personalise Setup
+          </Link>
+          <Link
+            to="/workspace"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-[#CAD4F4] bg-[#EEF5FF] px-3 py-1.5 text-xs font-semibold text-[#2C77E7] hover:bg-[#e0ecff]"
+          >
+            <Compass className="size-3.5" /> Career Evidence Dashboard →
+          </Link>
+        </div>
+      </div>
+
       {/* Clean 4-Metric Operational Summary Strip */}
       <section className="cc-kpi-strip" aria-label="Workspace operational summary">
         <div className="cc-kpi-card">
@@ -245,29 +324,29 @@ function CommandHome() {
             {remainingCredits} <small>/ {data.workspace.usageCeiling}</small>
           </strong>
           <span className="cc-kpi-sub">
-            {data.workspace.usageConsumed} consumed · hard-stop ceiling enforced
+            {data.workspace.usageConsumed} consumed · deterministic hard-stop enforced
           </span>
         </div>
         <div className="cc-kpi-card">
-          <span className="cc-kpi-label">Active Supervision</span>
-          <strong className="cc-kpi-value">{data.recentMissions.length}</strong>
+          <span className="cc-kpi-label">Human Supervision Queue</span>
+          <strong className="cc-kpi-value">{awaitingCount}</strong>
           <span className="cc-kpi-sub">
             {awaitingCount > 0
-              ? `${awaitingCount} awaiting your review or approval`
-              : "All missions up to date"}
+              ? `${awaitingCount} awaiting your plan sign-off or clarification`
+              : "All mission gates cleared"}
           </span>
         </div>
         <div className="cc-kpi-card">
-          <span className="cc-kpi-label">Project Containers</span>
-          <strong className="cc-kpi-value">{data.projects.length}</strong>
+          <span className="cc-kpi-label">Delivered Reports</span>
+          <strong className="cc-kpi-value">
+            {completedCount} <small>of {data.recentMissions.length}</small>
+          </strong>
           <span className="cc-kpi-sub">
-            <Link to="/command/projects" className="underline">
-              Manage projects
-            </Link>
+            {runningCount > 0 ? `${runningCount} currently executing` : "Classified evidence & artefacts"}
           </span>
         </div>
         <div className="cc-kpi-card">
-          <span className="cc-kpi-label">Available Capabilities</span>
+          <span className="cc-kpi-label">Available Specialists</span>
           <strong className="cc-kpi-value">
             {WAVE1_AVAILABLE_IDS.length} <small>Active</small>
           </strong>
@@ -293,7 +372,7 @@ function CommandHome() {
           {/* Inline Project Container Selector */}
           <div className="cc-composer-project">
             <label className="cc-label mb-1" htmlFor="project">
-              Project container
+              Product container
             </label>
             {data.projects.length ? (
               <select
@@ -312,7 +391,7 @@ function CommandHome() {
               <div className="flex gap-2">
                 <input
                   className="cc-input"
-                  placeholder="First project name…"
+                  placeholder="First product container…"
                   value={newProjectName}
                   onChange={(e) => setNewProjectName(e.target.value)}
                 />
@@ -431,21 +510,59 @@ function CommandHome() {
         </div>
       </section>
 
-      {/* Recent Missions Ledger */}
+      {/* Recent Missions & Supervision Ledger */}
       <section className="cc-panel">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="cc-panel-title mb-0">Recent missions</h2>
-          <span className="cc-muted text-xs">{data.recentMissions.length} in workspace</span>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="cc-panel-title mb-0">Product Missions &amp; Supervision Ledger</h2>
+            <span className="cc-muted text-xs">
+              {filteredMissions.length} of {data.recentMissions.length} missions shown
+            </span>
+          </div>
+
+          {/* Filter Pills */}
+          <div className="flex flex-wrap gap-1.5">
+            {(
+              [
+                { id: "all", label: `All (${data.recentMissions.length})` },
+                { id: "awaiting", label: `Awaiting Gate (${awaitingCount})` },
+                { id: "completed", label: `Delivered (${completedCount})` },
+                { id: "investigate", label: "Investigate" },
+                { id: "prototype", label: "Prototype" },
+                { id: "improve", label: "Improve" },
+              ] as const
+            ).map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setMissionFilter(tab.id)}
+                className={`rounded-full px-3 py-1 text-xs font-semibold border transition cursor-pointer ${
+                  missionFilter === tab.id
+                    ? "border-[#2C77E7] bg-[#EEF5FF] text-[#2C77E7]"
+                    : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
-        {data.recentMissions.length === 0 ? (
+
+        {filteredMissions.length === 0 ? (
           <p className="cc-muted mt-4">
-            No missions commissioned yet. Choose <strong>Investigate</strong>,{" "}
-            <strong>Prototype</strong>, or <strong>Improve</strong> above (or click a Product
-            Playbook starter) to draft your first plan.
+            {data.recentMissions.length === 0 ? (
+              <>
+                No missions commissioned yet. Choose <strong>Investigate</strong>,{" "}
+                <strong>Prototype</strong>, or <strong>Improve</strong> above (or click a Product
+                Playbook starter) to draft your first plan.
+              </>
+            ) : (
+              "No missions match the selected filter."
+            )}
           </p>
         ) : (
           <ul className="cc-mission-list mt-4">
-            {data.recentMissions.map((m) => (
+            {filteredMissions.map((m) => (
               <li key={m.id}>
                 <Link
                   to="/command/missions/$missionId"

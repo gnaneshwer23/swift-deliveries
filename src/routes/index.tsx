@@ -8,6 +8,7 @@ import { CtaLink } from "@/components/marketing/cta-link";
 import { WorkforcePreview } from "@/components/marketing/workforce-preview";
 import {
   HeroProductInteractiveModule,
+  InteractiveProductDashboardShowcase,
   ProductAccordionVisual,
   DesktopMobileCommandShowcase,
   ProductDiscoveryIcon,
@@ -129,21 +130,29 @@ const ROLE_OUTCOMES = [
     role: "Product Managers & Leads",
     metric: "Investigate & Specify",
     desc: "Turn ambiguous stakeholder requests into structured Decision Briefs, PRDs, and acceptance criteria with sourced facts separated from assumptions.",
+    ctaLabel: "Draft a Decision Brief →",
+    intent: "investigate" as const,
   },
   {
     role: "Product Designers & Builders",
     metric: "Sandboxed Prototyping",
     desc: "Generate reviewable UI specifications and interactive HTML prototypes inside an isolated sandbox — never an unapproved production push.",
+    ctaLabel: "Prototype in Sandbox →",
+    intent: "prototype" as const,
   },
   {
     role: "Growth & Product Ops",
     metric: "Flow Diagnostics",
     desc: "Diagnose checkout, onboarding, or funnel drop-off root causes and produce bounded remediation plans with impact vs. risk scoring.",
+    ctaLabel: "Audit a Product Flow →",
+    intent: "improve" as const,
   },
   {
     role: "Founders & PMO Sponsors",
     metric: "Supervised Governance",
     desc: "Control exactly what AI can plan, create, or execute with mandatory human approval gates and deterministic workspace credit ceilings.",
+    ctaLabel: "Inspect Governance →",
+    intent: "investigate" as const,
   },
 ] as const;
 
@@ -375,6 +384,17 @@ const HOME_FAQ = [
 function AccordionSectionBlock({ section }: { section: AccordionFeatureSection }) {
   const [activeIndex, setActiveIndex] = useState(0);
 
+  const sectionCta =
+    section.sectionKey === "discovery"
+      ? { label: "Commission an Investigate Mission →", intent: "investigate" as const }
+      : section.sectionKey === "prototype"
+        ? { label: "Commission a Prototype Mission →", intent: "prototype" as const }
+        : section.sectionKey === "improve"
+          ? { label: "Commission an Improve Mission →", intent: "improve" as const }
+          : section.sectionKey === "lifecycle"
+            ? { label: "Inspect 5-Stage Lifecycle →", to: "/how-it-works" as const }
+            : { label: "Explore 150-Role Registry →", to: "/command/capabilities" as const };
+
   return (
     <section className="motion-feature-section" id={section.id}>
       <div className="motion-feature-header">
@@ -411,6 +431,25 @@ function AccordionSectionBlock({ section }: { section: AccordionFeatureSection }
               </button>
             );
           })}
+
+          <div className="pt-2">
+            {"intent" in sectionCta ? (
+              <Link
+                to="/command"
+                search={{ intent: sectionCta.intent } as never}
+                className="btn motion-btn-primary text-xs px-4 py-2.5"
+              >
+                {sectionCta.label}
+              </Link>
+            ) : (
+              <Link
+                to={sectionCta.to}
+                className="btn motion-btn-secondary text-xs px-4 py-2.5"
+              >
+                {sectionCta.label}
+              </Link>
+            )}
+          </div>
         </div>
 
         <div className="motion-accordion-stage">
@@ -456,8 +495,11 @@ function HomePage() {
               signedOutLabel="Try DeliverX for free →"
               className="btn motion-btn-primary motion-btn-lg"
             />
+            <a href="#product-dashboard" className="btn motion-btn-secondary motion-btn-lg">
+              Explore Product Dashboard
+            </a>
             <Link to="/how-it-works" className="btn motion-btn-secondary motion-btn-lg">
-              Explore 5-stage architecture
+              5-stage architecture
             </Link>
           </div>
 
@@ -471,13 +513,40 @@ function HomePage() {
                 <span className="motion-role-badge">{item.metric}</span>
                 <h2 className="motion-role-title">{item.role}</h2>
                 <p className="motion-role-desc">{item.desc}</p>
+                <Link
+                  to="/command"
+                  search={{ intent: item.intent } as never}
+                  className="motion-role-link"
+                >
+                  {item.ctaLabel}
+                </Link>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 2. BEFORE / AFTER COMPARISON — "Stop using fragmented, unsupervised AI tools" */}
+      {/* 2. FLAGSHIP PRODUCT COMMAND DASHBOARD SHOWCASE (Product Counterpart to Motion's Project Dashboard) */}
+      <section className="motion-dashboard-showcase-section" id="product-dashboard">
+        <div className="motion-section-container">
+          <div className="motion-feature-header">
+            <span className="motion-eyebrow">BUILT FOR PRODUCT TEAMS, NOT TICKET CHASERS</span>
+            <h2 className="motion-section-h2">
+              Your unified{" "}
+              <span className="motion-gradient-text">Product &amp; AI Workforce Dashboard.</span>
+            </h2>
+            <p className="motion-section-lead">
+              Traditional project tools track due dates and tickets. DeliverX gives Product Managers,
+              Founders, and Sponsors a live Command Centre for discovery briefs, PRDs, sandboxed HTML
+              prototypes, epistemic evidence, and human approval gates.
+            </p>
+          </div>
+
+          <InteractiveProductDashboardShowcase />
+        </div>
+      </section>
+
+      {/* 3. BEFORE / AFTER COMPARISON — "Stop using fragmented, unsupervised AI tools" */}
       <section className="motion-comparison-section">
         <div className="motion-section-container">
           <div className="motion-feature-header">
@@ -527,19 +596,30 @@ function HomePage() {
                   </li>
                 ))}
               </ul>
+              <div className="mt-6 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                <span className="text-xs font-medium text-slate-600">
+                  100 workspace credits included in early access
+                </span>
+                <CtaLink
+                  signedInTo="/command"
+                  signedInLabel="Open Command Centre →"
+                  signedOutLabel="Switch to DeliverX for free →"
+                  className="btn motion-btn-primary text-xs px-4 py-2"
+                />
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 3. FIVE ALTERNATING INTERACTIVE ACCORDION DEEP-DIVE SECTIONS */}
+      {/* 4. FIVE ALTERNATING INTERACTIVE ACCORDION DEEP-DIVE SECTIONS */}
       <div className="motion-accordions-wrapper" id="mission-types">
         {ACCORDION_SECTIONS.map((section) => (
           <AccordionSectionBlock key={section.id} section={section} />
         ))}
       </div>
 
-      {/* 4. WHY UNIFIED PRODUCT PLATFORM + "DELIVERX REPLACES..." */}
+      {/* 5. WHY UNIFIED PRODUCT PLATFORM + "DELIVERX REPLACES..." */}
       <section className="motion-replaces-section">
         <div className="motion-section-container">
           <div className="motion-feature-header">
@@ -568,6 +648,15 @@ function HomePage() {
                 </div>
               );
             })}
+          </div>
+
+          <div className="mt-8 flex justify-center">
+            <CtaLink
+              signedInTo="/command"
+              signedInLabel="Open Unified Command Centre →"
+              signedOutLabel="Try the Unified Product Workforce →"
+              className="btn motion-btn-primary motion-btn-lg"
+            />
           </div>
         </div>
       </section>
