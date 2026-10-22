@@ -1572,37 +1572,6 @@ export const markArtefactHumanReviewed = createServerFn({ method: "POST" })
     return loadMissionBundle(supabase, workspace.id, data.missionId);
   });
 
-export const resetWorkspacePreviewCredits = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
-  .handler(async ({ context }): Promise<WfWorkspace> => {
-    const { supabase, userId } = context;
-    const { workspace } = await ensureWorkspace(supabase, userId);
-    const db = wfDb(supabase);
-    const writeDb = await adminDb();
-    const now = new Date().toISOString();
-
-    const updated = await writeDb
-      .from("wf_workspaces")
-      .update({
-        usage_consumed: 0,
-        updated_at: now,
-      })
-      .eq("id", workspace.id)
-      .select("*")
-      .single();
-    if (updated.error) throw new Error(updated.error.message);
-
-    await audit(db, {
-      workspaceId: workspace.id,
-      actorId: userId,
-      eventType: "workspace.preview_credits_reset",
-      entityType: "workspace",
-      entityId: workspace.id,
-    });
-
-    return mapWorkspace(updated.data);
-  });
-
 export const cancelMission = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .validator((data: unknown) => z.object({ missionId: z.string().uuid() }).parse(data))

@@ -15,14 +15,16 @@ export const Route = createFileRoute("/resources/")({
 
 const GUIDES = [
   {
-    title: "How to build a portfolio employers can evaluate",
-    text: "Show problems framed, decisions taken and artefacts produced.",
-    to: "/resources/pm-portfolio",
+    title: "Turn an idea into a useful product brief",
+    text: "Name the problem, the people it affects, the outcome and the constraints before your team starts.",
+    to: "/how-it-works",
+    cta: "Explore the workflow",
   },
   {
-    title: "STAR stories grounded in real work",
-    text: "Tie every Situation, Task, Action and Result to something real.",
-    to: "/resources/star-interview-stories",
+    title: "Learn by building with an AI team",
+    text: "Start a small product, inspect the evidence and practise decisions at each approval gate.",
+    to: "/signup",
+    cta: "Start a learning project",
   },
 ] as const;
 
@@ -57,16 +59,19 @@ function ResourcesPage() {
       <section className="dxl-section dxl-alt">
         <div className="dxl-wrap">
           <header className="dxl-head">
-            <h2 className="dxl-h2">Guides</h2>
+            <h2 className="dxl-h2">Starting points</h2>
           </header>
           <ul className="dxl-cards">
             {GUIDES.map((g) => (
               <li key={g.to}>
-                <Link to={g.to}>
+                <Link
+                  to={g.to}
+                  search={g.to === "/signup" ? { redirect: "/command/programmes" } : {}}
+                >
                   <strong>{g.title}</strong>
                   <span>{g.text}</span>
                   <em>
-                    Read guide <ArrowRight className="size-4" />
+                    {g.cta} <ArrowRight className="size-4" />
                   </em>
                 </Link>
               </li>

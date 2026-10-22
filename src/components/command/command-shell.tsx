@@ -1,19 +1,10 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import {
-  Compass,
-  FolderKanban,
-  LayoutDashboard,
-  Menu,
-  Rocket,
-  Shield,
-  UsersRound,
-} from "lucide-react";
+import { FolderKanban, LayoutDashboard, Menu, Rocket, Shield, UsersRound } from "lucide-react";
 import { useSignOut } from "@/hooks/use-sign-out";
 import { useSession } from "@/hooks/use-session";
 import { BrandLogo } from "@/components/brand-logo";
-import { CAREER_SUITE_ENABLED } from "@/lib/features";
 
 const NAV = [
   { to: "/command", label: "Command Centre", icon: LayoutDashboard },
@@ -69,12 +60,7 @@ export function CommandShell({
           </div>
           <div className="sidebar-section">
             <div className="sidebar-label">Supervised workforce</div>
-            {[
-              ...NAV,
-              ...(CAREER_SUITE_ENABLED
-                ? ([{ to: "/workspace", label: "Career workspace", icon: Compass }] as const)
-                : []),
-            ].map((item) => {
+            {NAV.map((item) => {
               const active =
                 item.to === "/command" ? pathname === "/command" : pathname.startsWith(item.to);
               const Icon = item.icon;

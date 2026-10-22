@@ -121,7 +121,7 @@ export const auth = {
       neon().client.signIn.social({
         provider: "google",
         callbackURL,
-        errorCallbackURL: `${callbackURL}?error=oauth`,
+        errorCallbackURL: `${callbackURL}${callbackURL.includes("?") ? "&" : "?"}error=oauth`,
       }),
     );
   },

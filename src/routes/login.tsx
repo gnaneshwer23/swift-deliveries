@@ -3,17 +3,12 @@ import { useEffect, useState } from "react";
 import { auth } from "@/lib/auth/client";
 import { waitForSession } from "@/lib/auth-session";
 import { formatAuthError } from "@/lib/auth-errors";
-import { isGoogleAuthEnabled, signInWithGoogle } from "@/lib/auth-oauth";
+import { authCallbackUrl, isGoogleAuthEnabled, signInWithGoogle } from "@/lib/auth-oauth";
 import { Loader2 } from "lucide-react";
 import { BrandLogo } from "@/components/brand-logo";
 import { GoogleButton } from "@/components/auth/google-button";
 
-function sanitizeRedirect(raw: unknown): string {
-  if (typeof raw === "string" && raw.startsWith("/") && !raw.startsWith("//")) {
-    return raw;
-  }
-  return "/command";
-}
+import { safeProductRedirect as sanitizeRedirect } from "@/lib/product-journey";
 
 export const Route = createFileRoute("/login")({
   validateSearch: (search: Record<string, unknown>): { redirect?: string | undefined } => ({
@@ -90,7 +85,7 @@ function LoginPage() {
   const handleGoogle = async () => {
     setLoading(true);
     setError(null);
-    const { error: oauthError } = await signInWithGoogle();
+    const { error: oauthError } = await signInWithGoogle(authCallbackUrl(undefined, targetPath));
     setLoading(false);
     if (oauthError) setError(formatAuthError(oauthError));
   };
@@ -100,7 +95,7 @@ function LoginPage() {
       <header className="nav">
         <BrandLogo />
         <div className="nav-right">
-          <Link to="/signup" className="btn-nav btn-nav-primary">
+          <Link to="/signup" search={{ redirect: targetPath }} className="btn-nav btn-nav-primary">
             Get started
           </Link>
         </div>
@@ -111,7 +106,7 @@ function LoginPage() {
             Sign in
           </h1>
           <p className="body" style={{ marginTop: 6, marginBottom: 24 }}>
-            Pick up where your record left off.
+            Pick up where your product team left off.
           </p>
 
           {googleEnabled && (
@@ -176,7 +171,10 @@ function LoginPage() {
           </div>
 
           <div className="form-signin">
-            New here? <Link to="/signup">Create an account →</Link>
+            New here?{" "}
+            <Link to="/signup" search={{ redirect: targetPath }}>
+              Create an account →
+            </Link>
           </div>
         </div>
       </main>

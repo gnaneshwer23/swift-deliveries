@@ -6243,7 +6243,7 @@ html:has(.marketing-page) {
 .ob-input { width: 100%; border: 1px solid #d0d5dd; border-radius: 12px; padding: 12px 14px; font: inherit; font-size: 15px; background: #fff; }
 .ob-input:focus { outline: none; border-color: #3e63dd; box-shadow: 0 0 0 4px rgba(62, 99, 221, .15); }
 .ob-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.ob-chips button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #d0d5dd; background: #fff; border-radius: 999px; padding: 9px 16px; font-size: 14px; font-weight: 550; color: #344054; cursor: pointer; transition: all .15s ease; }
+.ob-chips button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #d0d5dd; background: #fff; border-radius: 999px; padding: 9px 16px; font-size: 14px; font-weight: 550; color: #344054; cursor: pointer; transition: border-color .15s ease, background-color .15s ease, transform .15s ease; }
 .ob-chips button:hover { border-color: #3e63dd; }
 .ob-chips button.active { background: #eef2ff; border-color: #3e63dd; color: #1d2b6b; }
 .ob-chips button:focus-visible, .ob-btn:focus-visible { outline: 3px solid #3e63dd; outline-offset: 2px; }
@@ -6308,3 +6308,16 @@ html:has(.marketing-page) {
 .dxl-cards span { color: #667085; font-size: 15px; }
 .dxl-cards em { font-style: normal; margin-top: auto; display: inline-flex; align-items: center; gap: 6px; color: #3e63dd; font-weight: 600; font-size: 14px; }
 @media (max-width: 640px) { .dxl-cards { grid-template-columns: 1fr; } }
+
+/* Product setup continues the homepage's restrained visual language. */
+.ob-next { margin-top: 24px; padding: 20px; border: 1px solid #dce4fe; border-radius: 16px; background: linear-gradient(120deg, #eef2ff, #fafbff); }
+.ob-next .dxl-eyebrow { margin: 0 0 8px; font-size: 11px; }
+.ob-next h2 { margin: 0 0 8px; font-size: 20px; letter-spacing: -.02em; color: #101828; }
+.ob-next p { margin: 0 0 12px; font-size: 14px; line-height: 1.6; color: #475467; }
+.ob-next small { color: #344054; font-size: 12px; }
+.ob-steps li[aria-current="step"] { color: #3e63dd; }
+.ob-chips button:active, .ob-btn:active { transform: scale(.98); }
+.ob-hint { color: #667085; }
+.ob-actions { gap: 12px; }
+@media (max-width: 420px) { .ob-actions { align-items: stretch; flex-direction: column-reverse; } .ob-btn { justify-content: center; height: auto; min-height: 44px; padding: 12px 18px; } }
+@media (prefers-reduced-motion: reduce) { .ob-chips button, .ob-btn { transition: none; } }

@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth/middleware";
-import type { DxProfile } from "@/lib/dx-profile";
+import { DX_ROLES, DX_GOALS, DX_TEAM_SIZES, type DxProfile } from "@/lib/dx-profile";
 
 function mapProfile(row: any): DxProfile | null {
   if (!row?.completed_at) return null;
@@ -34,9 +34,9 @@ export const saveMyProfile = createServerFn({ method: "POST" })
     z
       .object({
         fullName: z.string().trim().min(2).max(80),
-        role: z.string().trim().min(1).max(60),
-        teamSize: z.string().trim().min(1).max(20),
-        goal: z.string().trim().min(1).max(60),
+        role: z.enum(DX_ROLES),
+        teamSize: z.enum(DX_TEAM_SIZES),
+        goal: z.enum(DX_GOALS),
         firstIdea: z.string().trim().max(1000).default(""),
       })
       .parse(data),

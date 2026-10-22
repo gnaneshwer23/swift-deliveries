@@ -8,12 +8,7 @@ import { Loader2 } from "lucide-react";
 import { BrandLogo } from "@/components/brand-logo";
 import { GoogleButton } from "@/components/auth/google-button";
 
-function sanitizeRedirect(raw: unknown): string {
-  if (typeof raw === "string" && raw.startsWith("/") && !raw.startsWith("//")) {
-    return raw;
-  }
-  return "/command";
-}
+import { safeProductRedirect as sanitizeRedirect } from "@/lib/product-journey";
 
 export const Route = createFileRoute("/signup")({
   validateSearch: (search: Record<string, unknown>): { redirect?: string | undefined } => ({
@@ -72,7 +67,7 @@ function SignupPage() {
       name: fullName.trim(),
       email,
       password,
-      callbackURL: authCallbackUrl(),
+      callbackURL: authCallbackUrl(undefined, targetPath),
     });
     if (signUpError) {
       setLoading(false);
@@ -83,7 +78,7 @@ function SignupPage() {
     const user = await waitForSession(2000);
     if (user) {
       setLoading(false);
-      navigate({ to: "/onboarding" });
+      navigate({ to: "/onboarding", search: { redirect: targetPath } });
       return;
     }
     setLoading(false);
@@ -93,7 +88,7 @@ function SignupPage() {
   const handleGoogle = async () => {
     setLoading(true);
     setError(null);
-    const { error: oauthError } = await signInWithGoogle();
+    const { error: oauthError } = await signInWithGoogle(authCallbackUrl(undefined, targetPath));
     setLoading(false);
     if (oauthError) setError(formatAuthError(oauthError));
   };
@@ -103,7 +98,7 @@ function SignupPage() {
       <header className="nav">
         <BrandLogo />
         <div className="nav-right">
-          <Link to="/login" className="btn-nav">
+          <Link to="/login" search={{ redirect: targetPath }} className="btn-nav">
             Sign in
           </Link>
         </div>
@@ -211,7 +206,10 @@ function SignupPage() {
             .
           </p>
           <div className="form-signin">
-            Already have an account? <Link to="/login">Sign in →</Link>
+            Already have an account?{" "}
+            <Link to="/login" search={{ redirect: targetPath }}>
+              Sign in →
+            </Link>
           </div>
         </div>
       </main>

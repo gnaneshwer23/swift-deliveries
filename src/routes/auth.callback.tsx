@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { safeProductRedirect } from "@/lib/product-journey";
 import { waitForSession } from "@/lib/auth-session";
 
 /**
@@ -45,7 +46,7 @@ function AuthCallbackPage() {
           setFailed(true);
           return;
         }
-        navigate({ to: "/command", replace: true });
+        navigate({ to: safeProductRedirect(url.searchParams.get("redirect")), replace: true });
       } catch {
         if (active) setFailed(true);
       }

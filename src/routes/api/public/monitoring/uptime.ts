@@ -4,7 +4,7 @@ import { recordMonitoringEvent, describeUnknownError } from "@/lib/monitoring.se
 
 // Scheduled uptime + journey probe. Fetches the pages a visitor and a buyer
 // need, plus the health endpoint, and records one row per run.
-const PROBES = ["/", "/pricing", "/experience", "/launchpad", "/login"] as const;
+const PROBES = ["/", "/pricing", "/how-it-works", "/resources", "/login"] as const;
 
 type ProbeResult = { path: string; status: number; ok: boolean; ms: number; error?: string };
 

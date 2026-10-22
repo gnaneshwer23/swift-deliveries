@@ -2,7 +2,7 @@
  * Verifies Neon Auth JWTs on the server against the auth service's public
  * keys (JWKS). Server only.
  */
-import { createRemoteJWKSet, jwtVerify, type JWTPayload } from "jose";
+import { createRemoteJWKSet, jwtVerify, type JWTPayload, type JWTVerifyGetKey } from "jose";
 
 let jwks: ReturnType<typeof createRemoteJWKSet> | null = null;
 let resolving: Promise<ReturnType<typeof createRemoteJWKSet>> | null = null;
@@ -25,7 +25,10 @@ async function keySet() {
     ].filter(Boolean) as string[];
     for (const url of candidates) {
       try {
-        const res = await fetch(url, { headers: { accept: "application/json" } });
+        const res = await fetch(url, {
+          headers: { accept: "application/json" },
+          signal: AbortSignal.timeout(5000),
+        });
         if (!res.ok) continue;
         const body = (await res.json()) as { keys?: unknown[] };
         if (Array.isArray(body.keys) && body.keys.length) {
@@ -51,7 +54,24 @@ export type VerifiedUser = {
 
 export async function verifyNeonAuthToken(token: string): Promise<VerifiedUser> {
   if (!token || token.split(".").length !== 3) throw new Error("Unauthorized: invalid token");
-  const { payload } = await jwtVerify(token, await keySet(), { clockTolerance: 30 });
+  return verifyAuthToken(token, await keySet());
+}
+
+/** Shared by the remote verifier and local-key security tests. Never trust token-supplied issuers. */
+export async function verifyAuthToken(
+  token: string,
+  keys: JWTVerifyGetKey,
+  env: Record<string, string | undefined> = process.env,
+): Promise<VerifiedUser> {
+  const issuer = env["NEON_AUTH_ISSUER"] || env["NEON_AUTH_URL"] || env["VITE_NEON_AUTH_URL"];
+  if (!issuer) throw new Error("Unauthorized: auth issuer is not configured");
+  const { payload } = await jwtVerify(token, keys, {
+    issuer: issuer.replace(/\/+$/, ""),
+    ...(env["NEON_AUTH_AUDIENCE"] ? { audience: env["NEON_AUTH_AUDIENCE"] } : {}),
+    requiredClaims: ["sub", "iss", "exp", "iat"],
+    algorithms: ["RS256", "ES256", "EdDSA"],
+    clockTolerance: 30,
+  });
   if (!payload.sub) throw new Error("Unauthorized: token has no subject");
   return {
     id: payload.sub,

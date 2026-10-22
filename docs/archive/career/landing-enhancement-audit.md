@@ -1,3 +1,5 @@
+> Superseded on 22 October 2026. Historical context only; DeliverX now focuses on an AI product company.
+
 # Landing enhancement audit — DeliverX positioning
 
 **Date:** 21 Oct 2026 · **Branch:** `cursor/landing-positioning-929d`  

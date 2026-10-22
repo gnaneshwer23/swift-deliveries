@@ -9,6 +9,7 @@ export const DX_ROLES = [
   "Product or design lead",
   "Engineering lead",
   "Consultant or agency",
+  "Student or new builder",
   "Other",
 ] as const;
 export const DX_TEAM_SIZES = ["Just me", "2–10", "11–50", "51–250", "250+"] as const;
@@ -17,6 +18,7 @@ export const DX_GOALS = [
   "Build an MVP",
   "Improve an existing product",
   "Explore what's possible",
+  "Learn by building a product",
 ] as const;
 
 export type DxProfile = {

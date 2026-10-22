@@ -1,3 +1,5 @@
+> Superseded on 22 October 2026. Historical context only; DeliverX now focuses on an AI product company.
+
 # DeliverX Workspace — One-Page Spec
 
 Oct 2, 2026 · @Gnaneshwer Jadav

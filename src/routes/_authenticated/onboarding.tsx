@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { auth, type AppUser as User } from "@/lib/auth/client";
@@ -9,11 +9,17 @@ import { BrandLogo } from "@/components/brand-logo";
 import { DX_GOALS, DX_ROLES, DX_TEAM_SIZES, type DxProfile } from "@/lib/dx-profile";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
+  validateSearch: (search: Record<string, unknown>): { redirect?: string | undefined } => ({
+    redirect:
+      typeof search["redirect"] === "string" ? safeProductRedirect(search["redirect"]) : undefined,
+  }),
   head: () => ({
     meta: [{ title: "Set up your workspace — DeliverX" }, { name: "robots", content: "noindex" }],
   }),
   component: Onboarding,
 });
+
+import { firstActionFor, safeProductRedirect } from "@/lib/product-journey";
 
 const STEPS = ["About you", "Your goal", "First idea"] as const;
 
@@ -29,13 +35,12 @@ function Chips({
   label: string;
 }) {
   return (
-    <div className="ob-chips" role="radiogroup" aria-label={label}>
+    <div className="ob-chips" role="group" aria-label={label}>
       {options.map((o) => (
         <button
           key={o}
           type="button"
-          role="radio"
-          aria-checked={value === o}
+          aria-pressed={value === o}
           className={value === o ? "active" : ""}
           onClick={() => onChange(o)}
         >
@@ -49,10 +54,19 @@ function Chips({
 
 function Onboarding() {
   const { user, profile } = Route.useRouteContext() as { user: User; profile: DxProfile | null };
-  return <OnboardingForm user={user} existing={profile} />;
+  const { redirect } = Route.useSearch();
+  return <OnboardingForm user={user} existing={profile} redirectTo={redirect} />;
 }
 
-export function OnboardingForm({ user, existing }: { user: User; existing: DxProfile | null }) {
+export function OnboardingForm({
+  user,
+  existing,
+  redirectTo,
+}: {
+  user: User;
+  existing: DxProfile | null;
+  redirectTo?: string | undefined;
+}) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
@@ -63,6 +77,37 @@ export function OnboardingForm({ user, existing }: { user: User; existing: DxPro
   const [firstIdea, setFirstIdea] = useState(existing?.firstIdea ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [draftReady, setDraftReady] = useState(false);
+  const draftKey = `dx-product-setup:${user.id}`;
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(draftKey);
+      if (raw && !existing) {
+        const draft = JSON.parse(raw) as Record<string, unknown>;
+        if (typeof draft["name"] === "string") setName(draft["name"].slice(0, 80));
+        if (DX_ROLES.includes(draft["role"] as (typeof DX_ROLES)[number]))
+          setRole(draft["role"] as string);
+        if (DX_TEAM_SIZES.includes(draft["teamSize"] as (typeof DX_TEAM_SIZES)[number]))
+          setTeamSize(draft["teamSize"] as string);
+        if (DX_GOALS.includes(draft["goal"] as (typeof DX_GOALS)[number]))
+          setGoal(draft["goal"] as string);
+        if (typeof draft["firstIdea"] === "string") setFirstIdea(draft["firstIdea"].slice(0, 1000));
+      }
+    } catch {
+      /* Setup remains usable without browser storage. */
+    }
+    setDraftReady(true);
+  }, [draftKey, existing]);
+  useEffect(() => {
+    if (!draftReady || existing) return;
+    try {
+      sessionStorage.setItem(draftKey, JSON.stringify({ name, role, teamSize, goal, firstIdea }));
+    } catch {
+      /* Browser storage is optional. */
+    }
+  }, [draftReady, draftKey, existing, name, role, teamSize, goal, firstIdea]);
+  const firstAction = firstActionFor({ goal, firstIdea: firstIdea.trim() });
 
   const canNext =
     step === 0 ? name.trim().length >= 2 && !!role : step === 1 ? !!teamSize && !!goal : true;
@@ -90,15 +135,17 @@ export function OnboardingForm({ user, existing }: { user: User; existing: DxPro
     await auth.updateName(profile.fullName);
     queryClient.setQueryData(myProfileQuery.queryKey, profile);
     setSaving(false);
-    if (profile.firstIdea) {
-      void navigate({
-        to: "/command/programmes",
-        search: { idea: profile.firstIdea } as never,
-        replace: true,
-      });
-    } else {
-      void navigate({ to: "/command", replace: true });
+    try {
+      sessionStorage.removeItem(draftKey);
+    } catch {
+      /* optional storage */
     }
+    const requested = safeProductRedirect(redirectTo);
+    const target =
+      requested !== "/command" && requested !== "/command/programmes"
+        ? requested
+        : firstActionFor(profile).href;
+    void navigate({ to: target, replace: true });
   }
 
   return (
@@ -107,7 +154,11 @@ export function OnboardingForm({ user, existing }: { user: User; existing: DxPro
         <BrandLogo to="/" />
         <ol className="ob-steps" aria-label="Setup progress">
           {STEPS.map((s, i) => (
-            <li key={s} className={i < step ? "done" : i === step ? "active" : ""}>
+            <li
+              key={s}
+              aria-current={i === step ? "step" : undefined}
+              className={i < step ? "done" : i === step ? "active" : ""}
+            >
               <span>{i < step ? <Check className="size-3" aria-hidden="true" /> : i + 1}</span>
               {s}
             </li>
@@ -119,7 +170,9 @@ export function OnboardingForm({ user, existing }: { user: User; existing: DxPro
         {step === 0 ? (
           <>
             <h1 className="ob-h1">Welcome to DeliverX.</h1>
-            <p className="ob-sub">Two quick questions so your workforce knows who it works for.</p>
+            <p className="ob-sub">
+              Your product team starts with you. Tell us where you're coming from.
+            </p>
             <label className="ob-label" htmlFor="ob-name">
               Your name
             </label>
@@ -154,10 +207,10 @@ export function OnboardingForm({ user, existing }: { user: User; existing: DxPro
 
         {step === 2 ? (
           <>
-            <h1 className="ob-h1">Got an idea already?</h1>
+            <h1 className="ob-h1">What would you like to build?</h1>
             <p className="ob-sub">
-              Describe it in a sentence or two and we'll start your first programme with it. You can
-              skip this.
+              Describe an idea or an existing product problem. We'll carry it into your first brief.
+              You can also explore an example before choosing.
             </p>
             <label className="ob-label" htmlFor="ob-idea">
               Your idea (optional)
@@ -172,6 +225,12 @@ export function OnboardingForm({ user, existing }: { user: User; existing: DxPro
               onChange={(e) => setFirstIdea(e.target.value)}
             />
             <p className="ob-hint">Please don't include personal data about real people.</p>
+            <aside className="ob-next" aria-label="Your next step">
+              <p className="dxl-eyebrow">Your first step</p>
+              <h2>{firstAction.label}</h2>
+              <p>{firstAction.reason}</p>
+              <small>You review the brief before any work starts.</small>
+            </aside>
           </>
         ) : null}
 
@@ -206,14 +265,10 @@ export function OnboardingForm({ user, existing }: { user: User; existing: DxPro
             <button
               type="button"
               className="ob-btn ob-btn-primary"
-              disabled={saving}
+              disabled={saving || !draftReady}
               onClick={() => void finish()}
             >
-              {saving
-                ? "Setting up…"
-                : firstIdea.trim()
-                  ? "Start my first programme"
-                  : "Go to my Command Centre"}
+              {saving ? "Setting up…" : "Open my product workspace"}
               <ArrowRight className="size-4" />
             </button>
           )}

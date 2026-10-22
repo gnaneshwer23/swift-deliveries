@@ -26,19 +26,29 @@ export function resolveProvider(
   env: Record<string, string | undefined> = process.env,
 ): Provider | null {
   if (env["DXSI_MODEL_ENABLED"] !== "true") return null;
+  const selected = env["DXSI_PROVIDER"]?.trim();
+  if (selected && !["openai", "vercel-ai-gateway", "openrouter"].includes(selected)) {
+    throw new Error("DXSI_PROVIDER must be openai, vercel-ai-gateway or openrouter.");
+  }
   // Direct OpenAI credentials take precedence so the configured provider choice is deterministic.
   // API keys are read only in this server-only module and must be deployment secrets.
-  if (env["OPENAI_API_KEY"]) {
+  if ((!selected || selected === "openai") && env["OPENAI_API_KEY"]?.trim()) {
+    const model =
+      env["DXSI_OPENAI_MODEL"]?.trim() || env["DXSI_MODEL"]?.trim() || DEFAULT_OPENAI_MODEL;
+    if (model.includes("/"))
+      throw new Error(
+        "Direct OpenAI requires an OpenAI model ID without a gateway prefix. Set DXSI_OPENAI_MODEL.",
+      );
     return {
       name: "openai",
       url: "https://api.openai.com/v1/chat/completions",
-      apiKey: env["OPENAI_API_KEY"],
-      model: env["DXSI_MODEL"]?.trim() || DEFAULT_OPENAI_MODEL,
+      apiKey: env["OPENAI_API_KEY"].trim(),
+      model,
     };
   }
   const model = env["DXSI_MODEL"]?.trim() || DEFAULT_GATEWAY_MODEL;
   const gatewayKey = env["AI_GATEWAY_API_KEY"] || env["VERCEL_OIDC_TOKEN"];
-  if (gatewayKey) {
+  if ((!selected || selected === "vercel-ai-gateway") && gatewayKey?.trim()) {
     return {
       name: "vercel-ai-gateway",
       url: "https://ai-gateway.vercel.sh/v1/chat/completions",
@@ -46,7 +56,7 @@ export function resolveProvider(
       model,
     };
   }
-  if (env["OPENROUTER_API_KEY"]) {
+  if ((!selected || selected === "openrouter") && env["OPENROUTER_API_KEY"]?.trim()) {
     return {
       name: "openrouter",
       url: "https://openrouter.ai/api/v1/chat/completions",
@@ -54,6 +64,7 @@ export function resolveProvider(
       model,
     };
   }
+  if (selected) throw new Error(`The selected ${selected} provider has no configured credentials.`);
   return null;
 }
 
@@ -157,7 +168,16 @@ export async function generateStageContent(input: {
     `${user}\n\nYour previous attempt was rejected: ${problem}. Produce the complete deliverable again, satisfying the output contract exactly.`,
     input.task.produces === "prototype_html",
   );
-  return retry.mode === "model" ? retry : first;
+  if (retry.mode !== "model") return retry;
+  const retryProblem =
+    contractProblem(retry.content, input.task) ?? input.extraCheck?.(retry.content) ?? null;
+  return retryProblem
+    ? {
+        content: "",
+        mode: "simulated",
+        note: "model output failed its handoff contract after two attempts",
+      }
+    : retry;
 }
 
 function contractProblem(
@@ -206,8 +226,22 @@ async function callModel(
     if (!res.ok) {
       return { content: "", mode: "simulated", note: `model provider returned HTTP ${res.status}` };
     }
-    const json = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
-    const text = json.choices?.[0]?.message?.content?.trim() ?? "";
+    const json = (await res.json()) as {
+      choices?: Array<{
+        finish_reason?: string;
+        message?: { content?: unknown; refusal?: string };
+      }>;
+    };
+    const choice = json.choices?.[0];
+    if (choice?.message?.refusal)
+      return { content: "", mode: "simulated", note: "model declined this request" };
+    if (choice?.finish_reason !== "stop")
+      return {
+        content: "",
+        mode: "simulated",
+        note: "model did not return a complete deliverable",
+      };
+    const text = typeof choice.message?.content === "string" ? choice.message.content.trim() : "";
     if (!text) return { content: "", mode: "simulated", note: "model returned empty output" };
     return { content: text, mode: "model", model: provider.model };
   } catch (err) {

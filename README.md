@@ -1,83 +1,19 @@
-# DeliverX
+# DeliverX PSI
 
-**Supervised AI Workforce Platform** (Stage 1) — commission Investigate / Prototype / Improve missions from a Command Centre, with plans, human approval, a permission ladder, usage ceilings, and labelled artefacts.
+DeliverX is an AI product company. Bring an idea or product problem, work with a selected AI team, review decisions and keep the resulting artefacts. Students learn through building in the same product environment.
 
-Public product name: **DeliverX**. Repository name: **swift-deliveries**.
+## Current build
 
-The legacy career / Experience / Prove product remains available under `/workspace`. Product direction and Stage 1 decisions: [`docs/prd-deliverx-supervised-ai-workforce.md`](docs/prd-deliverx-supervised-ai-workforce.md). Gap analysis vs the prior product: [`docs/prd-gap-analysis.md`](docs/prd-gap-analysis.md).
+The homepage visual foundation is preserved. `/command` commissions missions; `/command/programmes` runs broader programmes with human gates. `/onboarding` captures the builder's role, goal and first idea, then carries the brief into the appropriate product flow.
 
-## What you can open
+Persistence and authentication use Neon PostgreSQL and Neon Auth. Direct OpenAI support is integrated from PR #5. Model mode remains an explicit opt-in, and simulated output is labelled. Current engineering output is an HTML prototype; static checks are not runtime execution or production deployment.
 
-### Command Centre (Stage 1 slice)
+Career-product routes are retirement redirects. Historical specifications live in `docs/archive/career/`; historical database records and migrations are retained. Legacy billing handlers remain for reconciliation and must be audited before removing their configuration.
 
-- `/command` — mission intake (Investigate / Prototype / Improve)
-- `/command/projects` — create and list projects
-- `/command/missions/$missionId` — clarify → plan → approve → run → delivery report
-- `/command/capabilities` — 150-role capability registry (15 departments; Wave 1 Available only)
+## Run and verify
 
-Workforce architecture spec: [`docs/workforce-architecture-and-agent-catalogue.md`](docs/workforce-architecture-and-agent-catalogue.md). Machine-readable registry: `content/capabilities/registry.{json,yaml}` (+ `src/lib/workforce/registry/`).
+Use Node 24 and `npm ci --legacy-peer-deps`, then `npm run dev` (port 43123). Required configuration is documented in `docs/psi-preview-setup.md`.
 
-Signed-in users land on `/command` after login.
+Checks: `npm run lint`, `npx tsc --noEmit`, `npm test`, `npm run build`. Live database tests are opt-in and must use isolated test data, never a production connection.
 
-### Legacy career surfaces
-
-- `/` — marketing story
-- `/experience`, `/launchpad`, `/prove`, `/pricing`
-- `/login` and `/signup`
-- `/workspace` — candidate / coach Professional Intelligence workspace
-
-## Run locally
-
-You need [Bun](https://bun.sh) (or Node.js 22 with npm).
-
-```sh
-bun install
-bun run dev
-```
-
-The dev server listens on port **43123**. Open [http://127.0.0.1:43123](http://127.0.0.1:43123).
-
-With npm:
-
-```sh
-npm install
-npm run dev
-```
-
-### Exercise the Stage 1 flow
-
-1. Sign in at `/login` (or create an account at `/signup`).
-2. Open `/command`.
-3. Create a project (or use the first-project prompt).
-4. Choose **Investigate**, **Prototype**, or **Improve**, describe the outcome, and start the mission.
-5. Answer clarification questions if prompted.
-6. Review the plan (usage estimate + permission ladder), approve, and watch tasks run.
-7. Open artefacts (brief / HTML prototype / memo) and the delivery report.
-
-AI providers are optional. Without model keys, a deterministic planner/executor stub still produces tangible artefacts. Stripe and service-role keys are **not** required for this slice.
-
-## Data
-
-Supabase project `jibmyxaldetyycmtlxet` (publishable URL/key in `.env`).
-
-Stage 1 tables (additive, RLS workspace-isolated):
-
-`wf_workspaces`, `wf_workspace_members`, `wf_projects`, `wf_missions`, `wf_mission_plans`, `wf_mission_tasks`, `wf_artefacts`, `wf_approvals`, `wf_usage_records`, `wf_audit_events`
-
-Migration: `supabase/migrations/20261021200000_workforce_command_centre.sql` (also applied via Supabase MCP as `workforce_command_centre`). Legacy Delivery-OS tables (`projects`, `tasks`, `artefacts`, …) are untouched.
-
-Server-only secrets (not required for Command Centre Stage 1):
-
-- `SUPABASE_SERVICE_ROLE_KEY`
-- Stripe / Lovable payment keys
-
-## Checks
-
-```sh
-bun run test
-bun run lint
-```
-
-Workforce unit tests cover planner, permissions, usage ceiling, executor, and the 150-role capability registry / matching rules under `src/lib/workforce/`.
-
-**Wave 1 Available capabilities (only these may be assigned to missions):** DX-001, DX-002, DX-011, DX-012, DX-018, DX-020, DX-021, DX-023, DX-035, DX-041, DX-049, DX-071. All other catalogue roles remain Planned — not operational. Budget, permissions, and audit are deterministic infrastructure services (not agents).
+Plan: `docs/psi-production-readiness-plan.md`. This branch is an implementation foundation, not a production certification.
