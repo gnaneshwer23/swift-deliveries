@@ -1,0 +1,75 @@
+/* Final shell-level polish for navigation and footer. */
+.dxs.marketing-page .dxn {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  min-height: 72px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 1px solid rgba(225,231,239,.9);
+  background: rgba(255,255,255,.94);
+  padding-inline: clamp(18px, 4vw, 56px);
+  backdrop-filter: blur(16px) saturate(160%);
+}
+.dxs.marketing-page .dxn .nav-links { gap: 8px; }
+.dxs.marketing-page .dxn .nav-links a {
+  border-radius: 8px;
+  color: #526176;
+  font-size: .9rem;
+  font-weight: 560;
+  padding: 9px 12px;
+}
+.dxs.marketing-page .dxn .nav-links a:hover,
+.dxs.marketing-page .dxn .nav-links a.active { color: #254eaf; background: #eef4ff; }
+.dxs.marketing-page .dxn .dxn-signin {
+  color: #344258;
+  font-size: .9rem;
+  font-weight: 650;
+  padding: 10px 12px;
+}
+.dxs.marketing-page .dxn .dxn-cta {
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #315fce;
+  border-radius: 9px;
+  background: #315fce;
+  color: #fff;
+  font-size: .9rem;
+  font-weight: 680;
+  padding: 10px 15px;
+}
+.dxs.marketing-page .dxn .dxn-cta:hover { background: #254eaf; }
+.dxs.marketing-page .dxn .btn-nav { border: 1px solid #e1e7ef; border-radius: 9px; color: #17243a; padding: 10px; }
+.dxs.marketing-page .dxn-mobile { position: absolute; inset: 100% 0 auto; border-bottom: 1px solid #e1e7ef; background: #fff; padding: 16px 20px 20px; box-shadow: 0 14px 24px rgba(20,35,65,.08); }
+.dxs.marketing-page .dxn-mobile nav > a { border-radius: 8px; padding: 12px; color: #344258; }
+.dxs.marketing-page .dxf { border-top: 1px solid #e1e7ef; background: #fff; color: #526176; padding: 42px clamp(18px, 4vw, 56px) 20px; }
+.dxs.marketing-page .dxf-inner { width: min(100%, 1180px); margin-inline: auto; gap: 40px; }
+.dxs.marketing-page .dxf-brand p { color: #65748a; max-width: 260px; line-height: 1.6; }
+.dxs.marketing-page .dxf-cols { gap: clamp(28px, 5vw, 72px); }
+.dxs.marketing-page .dxf-cols h2 { color: #17243a; font-size: .8rem; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; }
+.dxs.marketing-page .dxf-cols a { color: #65748a; font-size: .9rem; }
+.dxs.marketing-page .dxf-cols a:hover { color: #315fce; }
+.dxs.marketing-page .dxf-base { width: min(100%, 1180px); margin: 28px auto 0; border-top: 1px solid #e1e7ef; padding-top: 18px; color: #8290a3; font-size: .8rem; }
+.dxa .sidebar {
+  background: #17243a;
+  color: #d9e3f3;
+  border-right: 1px solid #26364e;
+}
+.dxa .sidebar .sidebar-label { color: #8fa0b9; }
+.dxa .sidebar .sidebar-link { color: #c4d0e2; }
+.dxa .sidebar .sidebar-link:hover { background: #243650; color: #fff; }
+.dxa .sidebar .sidebar-link.active { background: #2b4163; color: #fff; box-shadow: inset 3px 0 0 #82a9ff; }
+.dxa .sidebar .sidebar-user-name { color: #f8fafc; }
+.dxa .sidebar .sidebar-user-stage { color: #9eacc0; }
+.dxa .sidebar .sidebar-signout { color: #c4d0e2; }
+.dxa .sidebar .sidebar-signout:hover { color: #fff; }
+.dxa .sidebar .cc-usage-copy { color: #aebdd1; }
+.dxa .sidebar .cc-usage-meter { background: #31435c; }
+.dxa .sidebar .cc-usage-fill { background: #82a9ff; }
+@media (max-width: 767px) {
+  .dxs.marketing-page .dxn { min-height: 64px; }
+  .dxs.marketing-page .dxf-inner { display: flex; flex-direction: column; }
+}
