@@ -1,4 +1,4 @@
-/** Map Supabase Auth errors to short, actionable copy for login/signup forms. */
+/** Map auth errors (Neon Auth / Better Auth, and legacy Supabase wording) to short, actionable copy for login/signup forms. */
 export function formatAuthError(
   error:
     | {
@@ -18,6 +18,7 @@ export function formatAuthError(
   if (
     code === "email_not_confirmed" ||
     lower.includes("email not confirmed") ||
+    lower.includes("email not verified") ||
     lower.includes("email_not_confirmed")
   ) {
     return "Confirm your email before signing in. Check your inbox (and spam) for the link we sent.";
@@ -26,12 +27,17 @@ export function formatAuthError(
   if (
     code === "invalid_credentials" ||
     lower.includes("invalid login credentials") ||
+    lower.includes("invalid email or password") ||
     lower.includes("invalid credentials")
   ) {
     return "That email or password is incorrect. Try again, or reset your password.";
   }
 
-  if (lower.includes("user already registered") || lower.includes("already been registered")) {
+  if (
+    lower.includes("user already registered") ||
+    lower.includes("already been registered") ||
+    lower.includes("user already exists")
+  ) {
     return "An account with that email already exists. Sign in instead.";
   }
 

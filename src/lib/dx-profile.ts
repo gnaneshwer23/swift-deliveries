@@ -1,8 +1,7 @@
 /**
- * DeliverX onboarding profile, stored on the user's own auth record
- * (`user_metadata.dx_profile`) — no extra tables, owner-only by design.
+ * DeliverX onboarding profile, stored in Neon (`dx_profiles`), owner-only.
  */
-import type { User } from "@supabase/supabase-js";
+import type { AppUser } from "@/lib/auth/client";
 
 export const DX_ROLES = [
   "Founder",
@@ -10,6 +9,7 @@ export const DX_ROLES = [
   "Product or design lead",
   "Engineering lead",
   "Consultant or agency",
+  "Student or new builder",
   "Other",
 ] as const;
 export const DX_TEAM_SIZES = ["Just me", "2–10", "11–50", "51–250", "250+"] as const;
@@ -18,9 +18,11 @@ export const DX_GOALS = [
   "Build an MVP",
   "Improve an existing product",
   "Explore what's possible",
+  "Learn by building a product",
 ] as const;
 
 export type DxProfile = {
+  fullName: string;
   role: string;
   teamSize: string;
   goal: string;
@@ -28,13 +30,8 @@ export type DxProfile = {
   completedAt: string;
 };
 
-export function dxProfileOf(user: User | null | undefined): DxProfile | null {
-  const raw = user?.user_metadata?.["dx_profile"] as Partial<DxProfile> | undefined;
-  return raw && typeof raw.completedAt === "string" ? (raw as DxProfile) : null;
-}
-
-export function firstNameOf(user: User | null | undefined): string {
-  const full = (user?.user_metadata?.["full_name"] as string | undefined)?.trim();
+export function firstNameOf(user: AppUser | null | undefined, profile?: DxProfile | null): string {
+  const full = (profile?.fullName || user?.user_metadata?.full_name || "").trim();
   if (full) return full.split(/\s+/)[0]!;
   return user?.email?.split("@")[0] ?? "there";
 }

@@ -1,3 +1,5 @@
+> Historical transition analysis; the current direction is docs/psi-production-readiness-plan.md.
+
 # PRD gap analysis — career product vs supervised workforce
 
 **Date:** 21 Oct 2026 · **PRD:** `docs/prd-deliverx-supervised-ai-workforce.md`

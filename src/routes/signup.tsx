@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from "@/lib/auth/client";
 import { formatAuthError } from "@/lib/auth-errors";
 import { authCallbackUrl, isGoogleAuthEnabled, signInWithGoogle } from "@/lib/auth-oauth";
 import { waitForSession } from "@/lib/auth-session";
@@ -8,12 +8,7 @@ import { Loader2 } from "lucide-react";
 import { BrandLogo } from "@/components/brand-logo";
 import { GoogleButton } from "@/components/auth/google-button";
 
-function sanitizeRedirect(raw: unknown): string {
-  if (typeof raw === "string" && raw.startsWith("/") && !raw.startsWith("//")) {
-    return raw;
-  }
-  return "/command";
-}
+import { safeProductRedirect as sanitizeRedirect } from "@/lib/product-journey";
 
 export const Route = createFileRoute("/signup")({
   validateSearch: (search: Record<string, unknown>): { redirect?: string | undefined } => ({
@@ -68,29 +63,22 @@ function SignupPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const { data, error: signUpError } = await supabase.auth.signUp({
+    const signUpError = await auth.signUp({
+      name: fullName.trim(),
       email,
       password,
-      options: {
-        data: { full_name: fullName },
-        emailRedirectTo: authCallbackUrl(),
-      },
+      callbackURL: authCallbackUrl(undefined, targetPath),
     });
     if (signUpError) {
       setLoading(false);
-      setError(formatAuthError(signUpError));
+      setError(formatAuthError({ message: signUpError }));
       return;
     }
-    if (data.session) {
-      const session = await waitForSession(2000);
+    // Signed in straight away unless email verification is required.
+    const user = await waitForSession(2000);
+    if (user) {
       setLoading(false);
-      if (!session) {
-        setError(
-          "Account created, but the session did not stick. Sign in with your email and password.",
-        );
-        return;
-      }
-      navigate({ to: targetPath });
+      navigate({ to: "/onboarding", search: { redirect: targetPath } });
       return;
     }
     setLoading(false);
@@ -100,7 +88,7 @@ function SignupPage() {
   const handleGoogle = async () => {
     setLoading(true);
     setError(null);
-    const { error: oauthError } = await signInWithGoogle();
+    const { error: oauthError } = await signInWithGoogle(authCallbackUrl(undefined, targetPath));
     setLoading(false);
     if (oauthError) setError(formatAuthError(oauthError));
   };
@@ -110,7 +98,7 @@ function SignupPage() {
       <header className="nav">
         <BrandLogo />
         <div className="nav-right">
-          <Link to="/login" className="btn-nav">
+          <Link to="/login" search={{ redirect: targetPath }} className="btn-nav">
             Sign in
           </Link>
         </div>
@@ -218,7 +206,10 @@ function SignupPage() {
             .
           </p>
           <div className="form-signin">
-            Already have an account? <Link to="/login">Sign in →</Link>
+            Already have an account?{" "}
+            <Link to="/login" search={{ redirect: targetPath }}>
+              Sign in →
+            </Link>
           </div>
         </div>
       </main>

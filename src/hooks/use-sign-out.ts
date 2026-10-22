@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from "@/lib/auth/client";
 
 export function useSignOut() {
   const queryClient = useQueryClient();
@@ -9,7 +9,7 @@ export function useSignOut() {
   return async function signOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
-    await supabase.auth.signOut();
+    await auth.signOut();
     navigate({ to: "/login", replace: true });
   };
 }

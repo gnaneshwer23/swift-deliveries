@@ -1,6 +1,6 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from "@/lib/auth/client";
 import { Loader2 } from "lucide-react";
 import { BrandLogo } from "@/components/brand-logo";
 
@@ -19,28 +19,22 @@ export const Route = createFileRoute("/reset-password")({
 });
 
 function ResetPasswordPage() {
-  const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState<boolean | null>(null);
 
-  // The recovery link delivers a session; wait for it before allowing a change.
+  const [token, setToken] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
+
+  // The reset email links here with ?token=…; an expired link arrives with ?error=…
   useEffect(() => {
-    let active = true;
-    supabase.auth.getSession().then(({ data }) => {
-      if (active) setReady(Boolean(data.session));
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      setTimeout(() => {
-        if (active && session) setReady(true);
-      }, 0);
-    });
-    return () => {
-      active = false;
-      sub.subscription.unsubscribe();
-    };
+    const params = new URLSearchParams(window.location.search);
+    const t = params.get("token");
+    setToken(t);
+    setReady(Boolean(t) && !params.get("error"));
+    if (t) window.history.replaceState({}, document.title, window.location.pathname);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -49,15 +43,16 @@ function ResetPasswordPage() {
       setError("Both passwords must match.");
       return;
     }
+    if (!token) return;
     setLoading(true);
     setError(null);
-    const { error: updateError } = await supabase.auth.updateUser({ password });
+    const updateError = await auth.resetPassword(password, token);
     setLoading(false);
     if (updateError) {
-      setError(updateError.message);
+      setError(updateError);
       return;
     }
-    navigate({ to: "/command", replace: true });
+    setDone(true);
   };
 
   return (
@@ -71,7 +66,11 @@ function ResetPasswordPage() {
             Choose a new password
           </h1>
 
-          {ready === false ? (
+          {done ? (
+            <p className="body" style={{ marginTop: 12 }}>
+              Password updated. <Link to="/login">Sign in with your new password →</Link>
+            </p>
+          ) : ready === false ? (
             <p className="body" style={{ marginTop: 12 }}>
               This reset link is invalid or has expired.{" "}
               <Link to="/forgot-password">Request a new one →</Link>

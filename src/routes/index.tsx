@@ -296,8 +296,8 @@ function HomePage() {
               signedOutLabel="Start free"
               className="dxl-btn dxl-btn-primary"
             />
-            <Link to="/experience" className="dxl-btn dxl-btn-ghost">
-              Building a PM career? Experience →
+            <Link to="/resources" className="dxl-btn dxl-btn-ghost">
+              Learn through building →
             </Link>
           </div>
         </div>

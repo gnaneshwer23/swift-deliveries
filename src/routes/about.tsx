@@ -34,7 +34,8 @@ function About() {
           </h1>
           <p className="dxl-lead">
             Great products need researchers, strategists, designers, engineers and reviewers.
-            DeliverX gives every founder that team.
+            DeliverX brings those disciplines together around your product. Founders, product teams
+            and students can build with the team and learn through the work.
           </p>
         </div>
       </section>

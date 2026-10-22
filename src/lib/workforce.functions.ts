@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireAuth } from "@/lib/auth/middleware";
 import { wfDb, isMissingRelationError } from "@/lib/workforce/db";
 import { generateMissionPlan, deriveMissionTitle } from "@/lib/workforce/planner";
 import {
@@ -58,10 +58,8 @@ let schemaProbe: { at: number; productMission: boolean } | null = null;
  */
 async function productMissionSupported(): Promise<boolean> {
   if (schemaProbe && Date.now() - schemaProbe.at < 60_000) return schemaProbe.productMission;
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const res = await (
-    supabaseAdmin as unknown as { rpc: (fn: string) => Promise<{ data: unknown; error: unknown }> }
-  ).rpc("wf_schema_version");
+  const { neonDb } = await import("@/lib/db/neon.server");
+  const res = await neonDb().rpc("wf_schema_version");
   const productMission = !res.error && Number(res.data) >= 2;
   schemaProbe = { at: Date.now(), productMission };
   return productMission;
@@ -76,8 +74,8 @@ type DbClient = { from: (table: string) => any };
  * for the client, so the service-role module must never be imported at top level.
  */
 async function adminDb() {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  return wfDb(supabaseAdmin as unknown as { from: (table: string) => unknown });
+  const { neonDb } = await import("@/lib/db/neon.server");
+  return wfDb(neonDb());
 }
 
 function mapWorkspace(row: any): WfWorkspace {
@@ -361,7 +359,7 @@ export type CommandCentreBootstrap = {
 };
 
 export const getCommandCentreBootstrap = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .handler(async ({ context }): Promise<CommandCentreBootstrap> => {
     const { supabase, userId } = context;
     const { workspace, storage } = await ensureWorkspace(supabase, userId);
@@ -397,7 +395,7 @@ export const getCommandCentreBootstrap = createServerFn({ method: "GET" })
   });
 
 export const createWfProject = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .validator((data: unknown) =>
     z
       .object({
@@ -434,7 +432,7 @@ export const createWfProject = createServerFn({ method: "POST" })
   });
 
 export const listWfProjects = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .handler(async ({ context }): Promise<WfProject[]> => {
     const { supabase, userId } = context;
     const { workspace } = await ensureWorkspace(supabase, userId);
@@ -449,7 +447,7 @@ export const listWfProjects = createServerFn({ method: "GET" })
   });
 
 export const createMission = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .validator((data: unknown) =>
     z
       .object({
@@ -577,7 +575,7 @@ export const createMission = createServerFn({ method: "POST" })
   });
 
 export const getMissionBundle = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .validator((data: unknown) => z.object({ missionId: z.string().uuid() }).parse(data))
   .handler(async ({ context, data }): Promise<MissionBundle & { workspace: WfWorkspace }> => {
     const { supabase, userId } = context;
@@ -587,7 +585,7 @@ export const getMissionBundle = createServerFn({ method: "GET" })
   });
 
 export const answerClarifications = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .validator((data: unknown) =>
     z
       .object({
@@ -724,7 +722,7 @@ export const answerClarifications = createServerFn({ method: "POST" })
   });
 
 export const reviseMissionScope = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .validator((data: unknown) =>
     z
       .object({
@@ -843,7 +841,7 @@ export const reviseMissionScope = createServerFn({ method: "POST" })
   });
 
 export const rejectMissionPlan = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .validator((data: unknown) =>
     z
       .object({
@@ -904,7 +902,7 @@ export const rejectMissionPlan = createServerFn({ method: "POST" })
   });
 
 export const approveMissionPlan = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .validator((data: unknown) =>
     z
       .object({
@@ -986,7 +984,7 @@ export const approveMissionPlan = createServerFn({ method: "POST" })
   });
 
 export const approveExternalActions = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .validator((data: unknown) => z.object({ missionId: z.string().uuid() }).parse(data))
   .handler(async ({ context, data }): Promise<MissionBundle> => {
     const { supabase, userId } = context;
@@ -1139,7 +1137,7 @@ async function chargeWorkspaceUsage(
 }
 
 export const runMissionStep = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .validator((data: unknown) => z.object({ missionId: z.string().uuid() }).parse(data))
   .handler(async ({ context, data }): Promise<StepResult> => {
     const { supabase, userId } = context;
@@ -1420,7 +1418,7 @@ const gateDecisionSchema = z.object({
 
 /** Operator decision on a lifecycle human gate. Agents can never pass a gate. */
 export const decideStageGate = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .validator((data: unknown) => gateDecisionSchema.parse(data))
   .handler(async ({ context, data }): Promise<MissionBundle> => {
     const { supabase, userId } = context;
@@ -1503,7 +1501,7 @@ export const decideStageGate = createServerFn({ method: "POST" })
   });
 
 export const markArtefactHumanReviewed = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .validator((data: unknown) =>
     z
       .object({
@@ -1574,39 +1572,8 @@ export const markArtefactHumanReviewed = createServerFn({ method: "POST" })
     return loadMissionBundle(supabase, workspace.id, data.missionId);
   });
 
-export const resetWorkspacePreviewCredits = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<WfWorkspace> => {
-    const { supabase, userId } = context;
-    const { workspace } = await ensureWorkspace(supabase, userId);
-    const db = wfDb(supabase);
-    const writeDb = await adminDb();
-    const now = new Date().toISOString();
-
-    const updated = await writeDb
-      .from("wf_workspaces")
-      .update({
-        usage_consumed: 0,
-        updated_at: now,
-      })
-      .eq("id", workspace.id)
-      .select("*")
-      .single();
-    if (updated.error) throw new Error(updated.error.message);
-
-    await audit(db, {
-      workspaceId: workspace.id,
-      actorId: userId,
-      eventType: "workspace.preview_credits_reset",
-      entityType: "workspace",
-      entityId: workspace.id,
-    });
-
-    return mapWorkspace(updated.data);
-  });
-
 export const cancelMission = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .validator((data: unknown) => z.object({ missionId: z.string().uuid() }).parse(data))
   .handler(async ({ context, data }): Promise<MissionBundle> => {
     const { supabase, userId } = context;

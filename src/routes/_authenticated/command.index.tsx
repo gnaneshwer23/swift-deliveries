@@ -3,13 +3,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
 import { useSession } from "@/hooks/use-session";
-import { dxProfileOf, firstNameOf } from "@/lib/dx-profile";
+import { firstActionFor } from "@/lib/product-journey";
+import { firstNameOf } from "@/lib/dx-profile";
+import { myProfileQuery } from "@/lib/profile-queries";
 import { commandCentreBootstrapQuery } from "@/lib/workforce-queries";
-import {
-  createMission,
-  createWfProject,
-  resetWorkspacePreviewCredits,
-} from "@/lib/workforce.functions";
+import { createMission, createWfProject } from "@/lib/workforce.functions";
 import {
   INTENT_LABELS,
   PERMISSION_LABELS,
@@ -22,16 +20,7 @@ import {
   ProductPrototypeIcon,
   ProductImproveIcon,
 } from "@/components/marketing/motion-product-visuals";
-import {
-  Compass,
-  FlaskConical,
-  Rocket,
-  RotateCcw,
-  Search,
-  ShieldCheck,
-  Sparkles,
-  Wrench,
-} from "lucide-react";
+import { Compass, FlaskConical, Rocket, Search, ShieldCheck, Sparkles, Wrench } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/command/")({
   head: () => ({
@@ -101,8 +90,8 @@ const INTENTS: Array<{
         text: "Prototype a workspace credit ceiling alert drawer with hard-stop state and approval history for workspace operators.",
       },
       {
-        label: "External Attestation Review Flow",
-        text: "Prototype an external attestation review screen showing frozen artefact provenance for hiring managers.",
+        label: "Product Evidence Review Flow",
+        text: "Prototype a product evidence review screen showing source citations, assumptions and approval history for product leads.",
       },
       {
         label: "Baseline Freeze & Change Request Modal",
@@ -211,14 +200,6 @@ function CommandHome() {
     onError: (err) => setFormError(err instanceof Error ? err.message : "Could not create project"),
   });
 
-  const resetCredits = useMutation({
-    mutationFn: () => resetWorkspacePreviewCredits(),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["command"] });
-    },
-    onError: (err) => setFormError(err instanceof Error ? err.message : "Could not reset credits"),
-  });
-
   const startMission = useMutation({
     mutationFn: async () => {
       let pid = projectId;
@@ -316,18 +297,6 @@ function CommandHome() {
         <div className="cc-kpi-card">
           <div className="flex items-center justify-between gap-2">
             <span className="cc-kpi-label">Credits Remaining</span>
-            {data.workspace.usageConsumed > 0 ? (
-              <button
-                type="button"
-                onClick={() => resetCredits.mutate()}
-                disabled={resetCredits.isPending}
-                className="cc-reset-credits-btn"
-                title="Reset workspace credit allowance back to 100 credits"
-              >
-                <RotateCcw className="size-3" />
-                {resetCredits.isPending ? "Resetting…" : "Reset credits"}
-              </button>
-            ) : null}
           </div>
           <strong className="cc-kpi-value">
             {remainingCredits} <small>/ {data.workspace.usageCeiling}</small>
@@ -632,46 +601,22 @@ function CommandHome() {
   );
 }
 
-const GOAL_NEXT: Record<string, { title: string; cta: string }> = {
-  "Validate a new idea": {
-    title: "Start with a programme: research, interviews and a go/no-go on your segment.",
-    cta: "Validate my idea",
-  },
-  "Build an MVP": {
-    title: "Run a full programme from business case to verified prototype and launch plan.",
-    cta: "Plan my MVP",
-  },
-  "Improve an existing product": {
-    title: "Commission an Improve mission below, or run a programme for a bigger change.",
-    cta: "Start a programme",
-  },
-  "Explore what's possible": {
-    title:
-      "Try a programme with the example idea — it takes minutes and you can download everything.",
-    cta: "Try an example",
-  },
-};
-
 function WelcomeBanner() {
   const { user } = useSession();
-  const profile = dxProfileOf(user);
-  const next = GOAL_NEXT[profile?.goal ?? ""] ?? GOAL_NEXT["Explore what's possible"]!;
+  const { data: profile } = useQuery(myProfileQuery);
+  const next = firstActionFor(profile ?? { goal: "", firstIdea: "" });
   return (
     <section className="cc-welcome" aria-label="Welcome">
       <div>
-        <h2>Welcome{user ? `, ${firstNameOf(user)}` : ""}.</h2>
+        <h2>Welcome{user ? `, ${firstNameOf(user, profile)}` : ""}.</h2>
         <p>
           {profile?.role ? `${profile.role} · ${profile.teamSize} · ` : ""}
-          {next.title}
+          {next.reason}
         </p>
       </div>
       <div className="cc-welcome-actions">
-        <Link
-          to="/command/programmes"
-          search={(profile?.firstIdea ? { idea: profile.firstIdea } : {}) as never}
-          className="cc-btn cc-btn-primary"
-        >
-          {next.cta} →
+        <Link to={next.href} className="cc-btn cc-btn-primary">
+          {next.label} →
         </Link>
         <Link to="/onboarding" className="cc-btn cc-btn-secondary">
           Edit setup

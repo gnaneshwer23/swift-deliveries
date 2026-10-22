@@ -45,18 +45,20 @@ function safeDetail(detail: Record<string, unknown> | undefined): JsonValue {
 
 export async function recordMonitoringEvent(input: MonitoringEventInput): Promise<void> {
   try {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("monitoring_events").insert({
-      kind: input.kind,
-      severity: input.severity,
-      environment: environment(),
-      source: input.source,
-      message: truncate(input.message || "Unknown error", MESSAGE_LIMIT),
-      route: input.route ?? null,
-      user_id: input.userId ?? null,
-      fingerprint: input.fingerprint ?? null,
-      detail: safeDetail(input.detail),
-    });
+    const { neonDb } = await import("@/lib/db/neon.server");
+    const { error } = await neonDb()
+      .from("monitoring_events")
+      .insert({
+        kind: input.kind,
+        severity: input.severity,
+        environment: environment(),
+        source: input.source,
+        message: truncate(input.message || "Unknown error", MESSAGE_LIMIT),
+        route: input.route ?? null,
+        user_id: input.userId ?? null,
+        fingerprint: input.fingerprint ?? null,
+        detail: safeDetail(input.detail),
+      });
     if (error) console.error("monitoring insert failed", error);
   } catch (error) {
     console.error("monitoring sink unavailable", error);
