@@ -15,6 +15,11 @@ import {
   type MissionIntent,
 } from "@/lib/workforce/types";
 import { WAVE1_AVAILABLE_IDS } from "@/lib/workforce/registry";
+import {
+  ProductDiscoveryIcon,
+  ProductPrototypeIcon,
+  ProductImproveIcon,
+} from "@/components/marketing/motion-product-visuals";
 import { FlaskConical, RotateCcw, Search, ShieldCheck, Wrench } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/command/")({
@@ -24,7 +29,7 @@ export const Route = createFileRoute("/_authenticated/command/")({
       {
         name: "description",
         content:
-          "Commission supervised AI missions: investigate, prototype, or improve — with plans, approvals, and usage ceilings.",
+          "Commission supervised AI product missions: investigate, prototype, or improve — with plans, approvals, and usage ceilings.",
       },
     ],
   }),
@@ -37,56 +42,74 @@ export const Route = createFileRoute("/_authenticated/command/")({
 const INTENTS: Array<{
   intent: MissionIntent;
   icon: typeof Search;
-  image: string;
+  duotoneIcon: typeof ProductDiscoveryIcon;
   tag: string;
   blurb: string;
   deliverable: string;
   placeholder: string;
-  samples: string[];
+  samples: Array<{ label: string; text: string }>;
 }> = [
   {
     intent: "investigate",
     icon: Search,
-    image: "/assets/3d/intent-investigate.jpg",
-    tag: "Decision Research",
+    duotoneIcon: ProductDiscoveryIcon,
+    tag: "Product Discovery & Research",
     blurb:
       "Research a strategic or product decision and return a brief with sourced facts separated from assumptions.",
     deliverable: "Decision Brief + Evidence Matrix",
     placeholder:
       "Investigate whether we should add a sponsor dashboard for healthcare delivery leads, for the COO audience…",
     samples: [
-      "Investigate whether we should add a sponsor reporting dashboard for delivery leads, for the COO audience, comparing build vs partner options.",
-      "Investigate enterprise buyer objections to usage-based credit ceilings for product operations teams.",
+      {
+        label: "Build vs. Partner Decision Brief",
+        text: "Investigate whether we should add a sponsor reporting dashboard for delivery leads, for the COO audience, comparing build vs partner options.",
+      },
+      {
+        label: "Enterprise Pricing & Buyer Objections",
+        text: "Investigate enterprise buyer objections to usage-based credit ceilings for product operations teams.",
+      },
     ],
   },
   {
     intent: "prototype",
     icon: FlaskConical,
-    image: "/assets/3d/intent-prototype.jpg",
-    tag: "Product & UI Spec",
+    duotoneIcon: ProductPrototypeIcon,
+    tag: "PRD & Sandboxed UI Prototype",
     blurb:
       "Produce a reviewable product specification plus a lightweight sandboxed HTML prototype.",
     deliverable: "PRD + Interactive HTML Pack",
     placeholder:
       "Prototype a notification settings drawer with a clear save confirmation for workspace admins…",
     samples: [
-      "Prototype a workspace credit ceiling alert drawer with hard-stop state and approval history for workspace operators.",
-      "Prototype an external attestation review screen showing frozen artefact provenance for hiring managers.",
+      {
+        label: "Credit Ceiling Alert Drawer PRD + UI",
+        text: "Prototype a workspace credit ceiling alert drawer with hard-stop state and approval history for workspace operators.",
+      },
+      {
+        label: "External Attestation Review Flow",
+        text: "Prototype an external attestation review screen showing frozen artefact provenance for hiring managers.",
+      },
     ],
   },
   {
     intent: "improve",
     icon: Wrench,
-    image: "/assets/3d/intent-improve.jpg",
-    tag: "Flow Diagnostics",
+    duotoneIcon: ProductImproveIcon,
+    tag: "Flow & Funnel Diagnostics",
     blurb:
-      "Diagnose friction in an existing workflow and propose bounded changes — never an unapproved deploy.",
+      "Diagnose friction in an existing product workflow and propose bounded changes — never an unapproved deploy.",
     deliverable: "Friction Diagnosis + Remediation Plan",
     placeholder:
       "Improve mobile checkout abandonment between basket review and payment confirmation…",
     samples: [
-      "Improve mobile checkout drop-off between basket review and payment confirmation without changing Stripe webhook schemas.",
-      "Improve mission clarification turnaround when operators submit single-sentence briefs in Command Centre.",
+      {
+        label: "Mobile Checkout Drop-Off Audit",
+        text: "Improve mobile checkout drop-off between basket review and payment confirmation without changing Stripe webhook schemas.",
+      },
+      {
+        label: "Onboarding Intake Clarification Flow",
+        text: "Improve mission clarification turnaround when operators submit single-sentence briefs in Command Centre.",
+      },
     ],
   },
 ];
@@ -194,7 +217,7 @@ function CommandHome() {
   return (
     <CommandShell
       title="Command Centre"
-      subtitle="Supervised AI workforce · Mission intake, plan approval & execution monitor"
+      subtitle="Supervised AI Product Workforce · Mission intake, plan approval & execution monitor"
       usage={{
         consumed: data.workspace.usageConsumed,
         ceiling: data.workspace.usageCeiling,
@@ -262,9 +285,9 @@ function CommandHome() {
         <div className="cc-composer-head">
           <div>
             <p className="cc-kicker">
-              <ShieldCheck className="size-3.5" /> Supervised Mission Composer
+              <ShieldCheck className="size-3.5" /> Supervised Product Mission Composer
             </p>
-            <h2 className="cc-hero-title">Commission a bounded AI mission</h2>
+            <h2 className="cc-hero-title">Commission a bounded AI product mission</h2>
           </div>
 
           {/* Inline Project Container Selector */}
@@ -306,10 +329,11 @@ function CommandHome() {
           </div>
         </div>
 
-        {/* 3 Sculptural Intent Tabs */}
+        {/* 3 Product Intent Tabs with Motion-Style Duotone Icons */}
         <div className="cc-intent-grid" role="tablist" aria-label="Select mission intent">
           {INTENTS.map((item) => {
             const Icon = item.icon;
+            const DuotoneIcon = item.duotoneIcon;
             const active = intent === item.intent;
             return (
               <button
@@ -321,13 +345,9 @@ function CommandHome() {
                 onClick={() => setIntent(item.intent)}
               >
                 <div className="cc-intent-top-row">
-                  <img
-                    src={item.image}
-                    alt=""
-                    aria-hidden="true"
-                    className="cc-intent-thumb"
-                    loading="lazy"
-                  />
+                  <div className="cc-intent-duotone-box" aria-hidden="true">
+                    <DuotoneIcon className="size-7" />
+                  </div>
                   <div className="cc-intent-meta">
                     <span className="cc-intent-badge">
                       <Icon className="size-3" /> {item.tag}
@@ -359,17 +379,17 @@ function CommandHome() {
             onChange={(e) => setRequestText(e.target.value)}
           />
 
-          {/* Compact Guided Templates */}
+          {/* Compact Guided Product Playbook Starters */}
           <div className="cc-sample-row">
-            <span className="cc-sample-label">Quick-fill sample:</span>
-            {activeIntent.samples.map((sample, idx) => (
+            <span className="cc-sample-label">Product Playbook Starter:</span>
+            {activeIntent.samples.map((sample) => (
               <button
-                key={sample}
+                key={sample.label}
                 type="button"
                 className="cc-sample-chip"
-                onClick={() => setRequestText(sample)}
+                onClick={() => setRequestText(sample.text)}
               >
-                Sample {idx + 1}: {sample.slice(0, 62)}…
+                {sample.label} →
               </button>
             ))}
           </div>
@@ -420,8 +440,8 @@ function CommandHome() {
         {data.recentMissions.length === 0 ? (
           <p className="cc-muted mt-4">
             No missions commissioned yet. Choose <strong>Investigate</strong>,{" "}
-            <strong>Prototype</strong>, or <strong>Improve</strong> above (or click a sample brief)
-            to draft your first plan.
+            <strong>Prototype</strong>, or <strong>Improve</strong> above (or click a Product
+            Playbook starter) to draft your first plan.
           </p>
         ) : (
           <ul className="cc-mission-list mt-4">

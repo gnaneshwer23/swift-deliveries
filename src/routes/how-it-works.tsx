@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { JourneyLadder } from "@/components/marketing/journey-ladder";
 import { CtaLink } from "@/components/marketing/cta-link";
+import { ProductAccordionVisual } from "@/components/marketing/motion-product-visuals";
 import { WAVE1_AVAILABLE_IDS } from "@/lib/workforce/registry";
 
 const WAVE1_COUNT = WAVE1_AVAILABLE_IDS.length;
@@ -14,7 +15,7 @@ export const Route = createFileRoute("/how-it-works")({
       {
         name: "description",
         content:
-          "DeliverX runs supervised AI missions through intake, planning, human approval, bounded execution, and classified delivery.",
+          "DeliverX runs supervised AI product missions through intake, planning, human approval, bounded execution, and classified delivery.",
       },
       {
         property: "og:title",
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/how-it-works")({
       {
         property: "og:description",
         content:
-          "Mission → Plan → Approve → Execute → Deliver for AI labour. Learn → Work → Build → Prove → Advance for career evidence.",
+          "Mission → Plan → Approve → Execute → Deliver for AI product labour. Learn → Work → Build → Prove → Advance for career evidence.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://deliverx.dev/how-it-works" },
@@ -37,49 +38,60 @@ export const Route = createFileRoute("/how-it-works")({
 const CC_STEPS = [
   {
     n: "1",
-    title: "State a mission",
+    title: "State a product mission",
     gate: "Intent & Clarification",
-    body: "Choose Investigate, Prototype, or Improve and describe your outcome in plain English. Ambiguous or underspecified briefs prompt clarifying questions before any plan is drafted.",
+    body: "Choose Investigate, Prototype, or Improve and describe your product outcome in plain English. Ambiguous or underspecified briefs prompt clarifying questions before any plan is drafted.",
+    visualSection: "discovery" as const,
+    visualIndex: 1,
   },
   {
     n: "2",
-    title: "Review the plan",
+    title: "Review the task dependency plan",
     gate: "Task Breakdown & Assignment",
     body: `Inspect the proposed task graph, acceptance criteria, credit estimate, and assigned specialist roles. Only verified Available capabilities (${WAVE1_COUNT} operational today) are assigned.`,
+    visualSection: "lifecycle" as const,
+    visualIndex: 0,
   },
   {
     n: "3",
-    title: "Approve under authority",
+    title: "Approve under human authority",
     gate: "Mandatory Human Approval Gate",
     body: "Accept, revise, or reject the plan within the four-tier permission ladder (Plan → Create → Execute internally → Act externally) and workspace credit ceiling. External actions require separate sign-off.",
+    visualSection: "lifecycle" as const,
+    visualIndex: 1,
   },
   {
     n: "4",
-    title: "Execute with visibility",
+    title: "Execute with hard-stop protection",
     gate: "Bounded Execution",
     body: "Approved tasks run step-by-step with live status updates and artefact inspection. Execution checks remaining credits before every task and hard-stops automatically at your ceiling.",
+    visualSection: "governance" as const,
+    visualIndex: 0,
   },
   {
     n: "5",
-    title: "Receive a delivery report",
+    title: "Receive a classified delivery report",
     gate: "Classified Evidence & Quality",
     body: "Deliverables separate Sourced facts, Assumptions, Inferences, and Speculative claims, paired with discrete quality labels (Agent-reviewed, Automatically tested, Human-reviewed, Externally attested).",
+    visualSection: "lifecycle" as const,
+    visualIndex: 2,
   },
 ];
 
 function HowItWorksPage() {
   const [activeTrack, setActiveTrack] = useState<"workforce" | "career">("workforce");
+  const [activeStepIdx, setActiveStepIdx] = useState(2); // Default to Step 3: Approve Gate
+
+  const activeStep = CC_STEPS[activeStepIdx] ?? CC_STEPS[0]!;
 
   return (
     <MarketingLayout>
       <div className="hero-hiw">
-        <div className="x-label" style={{ marginBottom: 14 }}>
-          Platform Architecture
-        </div>
-        <h1>How DeliverX works</h1>
+        <span className="motion-eyebrow">PLATFORM ARCHITECTURE</span>
+        <h1 style={{ marginTop: 10 }}>How DeliverX works</h1>
         <p>
-          Explore the <strong>Supervised AI Workforce</strong> lifecycle or switch to the{" "}
-          <strong>Career Evidence</strong> path.
+          Explore the <strong>Supervised AI Product Workforce</strong> lifecycle or switch to the{" "}
+          <strong>PM Career Evidence</strong> path.
         </p>
 
         {/* Segmented Architecture Track Switcher */}
@@ -102,54 +114,49 @@ function HowItWorksPage() {
             className={`hiw-track-btn${activeTrack === "career" ? " is-active" : ""}`}
           >
             <span>Career Product</span>
-            <strong>Career Evidence Path</strong>
+            <strong>PM Career Evidence Path</strong>
           </button>
         </div>
       </div>
 
       {activeTrack === "workforce" ? (
         <>
-          {/* 3D Architecture Visual Showcase */}
-          <div className="hiw-3d-showcase">
-            <img
-              src="/assets/3d/command-core.jpg"
-              alt="3D sculptural diagram of the DeliverX human approval gate prism"
-              className="hiw-3d-img"
-            />
-            <div className="hiw-3d-caption">
-              <div>
-                <div className="x-label">Command Centre Lifecycle</div>
-                <h2 className="heading-2" style={{ marginTop: 6 }}>
-                  Mission → Plan → Approve → Execute → Deliver
-                </h2>
-                <p className="body" style={{ marginTop: 6, maxWidth: 560 }}>
-                  Every mission passes through a mandatory human approval gate and a deterministic
-                  workspace credit ceiling before any task executes.
-                </p>
+          {/* Interactive 5-Stage Lifecycle Explorer (Motion UI Card Style) */}
+          <section className="motion-feature-section" style={{ paddingTop: 16 }}>
+            <div className="motion-accordion-grid">
+              <div className="motion-accordion-list" role="tablist" aria-label="Lifecycle steps">
+                {CC_STEPS.map((s, idx) => {
+                  const isActive = idx === activeStepIdx;
+                  return (
+                    <button
+                      key={s.n}
+                      type="button"
+                      role="tab"
+                      aria-selected={isActive}
+                      onClick={() => setActiveStepIdx(idx)}
+                      className={`motion-accordion-item${isActive ? " is-active" : ""}`}
+                    >
+                      <div className="motion-accordion-item-top">
+                        <span className="motion-accordion-tag">
+                          Step 0{s.n} · {s.gate}
+                        </span>
+                        <span className="motion-accordion-step">0{s.n}</span>
+                      </div>
+                      <h2 className="motion-accordion-title">{s.title}</h2>
+                      {isActive && <p className="motion-accordion-body">{s.body}</p>}
+                    </button>
+                  );
+                })}
               </div>
-              <CtaLink
-                signedInTo="/command"
-                signedInLabel="Open Command Centre →"
-                signedOutLabel="Get started →"
-                className="btn btn-primary"
-              />
-            </div>
-          </div>
 
-          <div className="steps-detailed" style={{ paddingBottom: 48 }}>
-            {CC_STEPS.map((s) => (
-              <div className="step-detail" key={s.n}>
-                <div className={`step-num-circle${s.n === "3" ? " amber" : ""}`}>{s.n}</div>
-                <div className="step-content">
-                  <div className="x-label" style={{ marginBottom: 6 }}>
-                    {s.gate}
-                  </div>
-                  <h2>{s.title}</h2>
-                  <p>{s.body}</p>
-                </div>
+              <div className="motion-accordion-stage">
+                <ProductAccordionVisual
+                  section={activeStep.visualSection}
+                  activeIndex={activeStep.visualIndex}
+                />
               </div>
-            ))}
-          </div>
+            </div>
+          </section>
 
           <div className="quote-rule">
             <div className="blockquote">
@@ -164,10 +171,8 @@ function HowItWorksPage() {
       ) : (
         <>
           <div className="hero-hiw" style={{ paddingTop: 24, paddingBottom: 24 }}>
-            <div className="x-label" style={{ marginBottom: 12 }}>
-              Career Evidence Path
-            </div>
-            <h2 className="heading-1" style={{ marginBottom: 12 }}>
+            <span className="motion-eyebrow">CAREER EVIDENCE PATH</span>
+            <h2 className="heading-1" style={{ marginTop: 10, marginBottom: 12 }}>
               Learn → Work → Build → Prove → Advance
             </h2>
             <p>
@@ -257,17 +262,18 @@ function HowItWorksPage() {
       )}
 
       <div className="cta-section">
-        <div className="cta-box">
+        <div className="cta-box motion-cta-box">
           <h2 className="cta-h">Choose the path that matches the job.</h2>
           <p className="cta-sub">
-            Commission supervised AI missions in the Command Centre, or build a verified career
-            evidence record through Experience.
+            Commission supervised AI product missions in the Command Centre, or build a verified
+            career evidence record through Experience.
           </p>
           <div className="cta-btns">
             <CtaLink
               signedInTo="/command"
               signedInLabel="Open Command Centre →"
-              signedOutLabel="Get started →"
+              signedOutLabel="Try DeliverX for free →"
+              className="btn motion-btn-primary motion-btn-lg"
             />
             <Link to="/pricing" className="btn btn-secondary">
               Pricing
