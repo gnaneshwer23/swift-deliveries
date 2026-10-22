@@ -6,8 +6,8 @@ import { recordMonitoringEvent, describeUnknownError } from "@/lib/monitoring.se
 async function checkDatabase(): Promise<{ ok: boolean; latencyMs: number; error?: string }> {
   const started = Date.now();
   try {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin
+    const { neonDb } = await import("@/lib/db/neon.server");
+    const { error } = await neonDb()
       .from("monitoring_events")
       .select("id", { count: "exact", head: true })
       .limit(1);

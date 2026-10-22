@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from "@/lib/auth/client";
 import { formatAuthError } from "@/lib/auth-errors";
 import { Loader2 } from "lucide-react";
 import { BrandLogo } from "@/components/brand-logo";
@@ -36,12 +36,13 @@ function ForgotPasswordPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
+    const resetError = await auth.requestPasswordReset(
+      email,
+      `${window.location.origin}/reset-password`,
+    );
     setLoading(false);
     if (resetError) {
-      setError(formatAuthError(resetError));
+      setError(formatAuthError({ message: resetError }));
       return;
     }
     setSent(true);

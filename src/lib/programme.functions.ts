@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireAuth } from "@/lib/auth/middleware";
 import { wfDb } from "@/lib/workforce/db";
 import {
   createProgramme,
@@ -30,17 +30,15 @@ type DbClient = { from: (table: string) => any };
 
 /** Service-role writes; callers authorise via the user-scoped client first. Lazy: never in the client bundle. */
 async function adminDb() {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  return wfDb(supabaseAdmin as unknown as { from: (table: string) => unknown });
+  const { neonDb } = await import("@/lib/db/neon.server");
+  return wfDb(neonDb());
 }
 
 let probe: { at: number; ok: boolean } | null = null;
 async function programmesSupported(): Promise<boolean> {
   if (probe && Date.now() - probe.at < 60_000) return probe.ok;
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const res = await (
-    supabaseAdmin as unknown as { rpc: (fn: string) => Promise<{ data: unknown; error: unknown }> }
-  ).rpc("wf_schema_version");
+  const { neonDb } = await import("@/lib/db/neon.server");
+  const res = await neonDb().rpc("wf_schema_version");
   probe = { at: Date.now(), ok: !res.error && Number(res.data) >= 3 };
   return probe.ok;
 }
@@ -175,7 +173,7 @@ async function view(state: ProgrammeState, records: ProgrammeRecord[]): Promise<
 const idSchema = z.object({ id: z.string().uuid() });
 
 export const getProgrammeFeatures = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .handler(async () => {
     const { modelModeStatus } = await import("@/lib/workforce/model-runner.server");
     const { resolveSearchProvider } = await import("@/lib/programme/research-provider.server");
@@ -196,7 +194,7 @@ export type ProgrammeSummary = {
 };
 
 export const listProgrammes = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .handler(async ({ context }): Promise<ProgrammeSummary[]> => {
     if (!(await programmesSupported().catch(() => false))) return [];
     const workspaceId = await workspaceIdFor(context.supabase, context.userId);
@@ -232,7 +230,7 @@ const businessCaseSchema = z.object({
 });
 
 export const createProgrammeRun = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .validator((data: unknown) => businessCaseSchema.parse(data))
   .handler(async ({ context, data }) => {
     await requireSupport();
@@ -269,7 +267,7 @@ export const createProgrammeRun = createServerFn({ method: "POST" })
   });
 
 export const getProgramme = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .validator((data: unknown) => idSchema.parse(data))
   .handler(async ({ context, data }): Promise<ProgrammeView> => {
     await requireSupport();
@@ -279,7 +277,7 @@ export const getProgramme = createServerFn({ method: "GET" })
   });
 
 export const advanceProgramme = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .validator((data: unknown) => idSchema.parse(data))
   .handler(
     async ({ context, data }): Promise<ProgrammeView & { done: boolean; note: string | null }> => {
@@ -441,7 +439,7 @@ export const advanceProgramme = createServerFn({ method: "POST" })
   );
 
 export const decideProgrammeGate = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .validator((data: unknown) =>
     z
       .object({
@@ -475,7 +473,7 @@ export const decideProgrammeGate = createServerFn({ method: "POST" })
   });
 
 export const addProgrammeBudget = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .validator((data: unknown) =>
     z.object({ id: z.string().uuid(), credits: z.number().int().min(10).max(1000) }).parse(data),
   )
@@ -507,7 +505,7 @@ export const addProgrammeBudget = createServerFn({ method: "POST" })
   });
 
 export const addInterviewNotes = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .validator((data: unknown) =>
     z
       .object({
@@ -537,7 +535,7 @@ export const addInterviewNotes = createServerFn({ method: "POST" })
   });
 
 export const cancelProgramme = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .validator((data: unknown) => idSchema.parse(data))
   .handler(async ({ context, data }): Promise<ProgrammeView> => {
     await requireSupport();
@@ -564,7 +562,7 @@ export const cancelProgramme = createServerFn({ method: "POST" })
   });
 
 export const exportProgramme = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .validator((data: unknown) => idSchema.parse(data))
   .handler(async ({ context, data }) => {
     await requireSupport();

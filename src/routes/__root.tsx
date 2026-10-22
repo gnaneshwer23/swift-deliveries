@@ -13,7 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { installClientMonitoring, reportClientIssue } from "../lib/client-monitoring";
 import { Toaster } from "@/components/ui/sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { AUTH_CHANGE_EVENT } from "@/lib/auth/client";
 
 function NotFoundComponent() {
   return (
@@ -144,20 +144,12 @@ function RootComponent() {
   useEffect(() => installClientMonitoring(), []);
 
   useEffect(() => {
-    let active = true;
-    const { data } = supabase.auth.onAuthStateChange((event) => {
-      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
-      // Supabase can fire this synchronously while React is still rendering.
-      setTimeout(() => {
-        if (!active) return;
-        void router.invalidate();
-        if (event !== "SIGNED_OUT") void queryClient.invalidateQueries();
-      }, 0);
-    });
-    return () => {
-      active = false;
-      data.subscription.unsubscribe();
+    const onChange = () => {
+      void router.invalidate();
+      void queryClient.invalidateQueries();
     };
+    window.addEventListener(AUTH_CHANGE_EVENT, onChange);
+    return () => window.removeEventListener(AUTH_CHANGE_EVENT, onChange);
   }, [router, queryClient]);
 
   return (

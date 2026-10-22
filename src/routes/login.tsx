@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from "@/lib/auth/client";
 import { waitForSession } from "@/lib/auth-session";
 import { formatAuthError } from "@/lib/auth-errors";
 import { isGoogleAuthEnabled, signInWithGoogle } from "@/lib/auth-oauth";
@@ -69,10 +69,10 @@ function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+    const signInError = await auth.signIn({ email, password });
     if (signInError) {
       setLoading(false);
-      setError(formatAuthError(signInError));
+      setError(formatAuthError({ message: signInError }));
       return;
     }
     // Ensure the session is readable before the authenticated gate runs.

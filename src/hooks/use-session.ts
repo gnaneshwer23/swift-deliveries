@@ -1,40 +1,32 @@
 import { useEffect, useState } from "react";
-import type { Session } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { auth, AUTH_CHANGE_EVENT, type AppUser } from "@/lib/auth/client";
 
 /**
  * Client-only session state for UI affordances (header, CTAs).
- * `loading` is true until the first session read resolves, so SSR markup
- * and the first client render agree.
+ * `loading` stays true until the first read resolves so SSR markup and the
+ * first client render agree.
  */
 export function useSession() {
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
-
-    supabase.auth.getSession().then(({ data }) => {
-      if (!active) return;
-      setSession(data.session ?? null);
-      setLoading(false);
-    });
-
-    // Supabase can invoke this listener synchronously during subscribe, before
-    // the component has finished mounting — defer so the update is safe.
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
-      setTimeout(() => {
+    const refresh = () =>
+      void auth.getUser().then((u) => {
         if (!active) return;
-        setSession(next ?? null);
+        setUser(u);
         setLoading(false);
-      }, 0);
-    });
-
+      });
+    refresh();
+    window.addEventListener(AUTH_CHANGE_EVENT, refresh);
+    window.addEventListener("focus", refresh);
     return () => {
       active = false;
-      sub.subscription.unsubscribe();
+      window.removeEventListener(AUTH_CHANGE_EVENT, refresh);
+      window.removeEventListener("focus", refresh);
     };
   }, []);
 
-  return { session, user: session?.user ?? null, loading };
+  return { user, loading };
 }

@@ -1,10 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
-import type { User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
+import { auth, type AppUser as User } from "@/lib/auth/client";
+import { saveMyProfile } from "@/lib/profile.functions";
+import { myProfileQuery } from "@/lib/profile-queries";
 import { BrandLogo } from "@/components/brand-logo";
-import { DX_GOALS, DX_ROLES, DX_TEAM_SIZES, dxProfileOf, type DxProfile } from "@/lib/dx-profile";
+import { DX_GOALS, DX_ROLES, DX_TEAM_SIZES, type DxProfile } from "@/lib/dx-profile";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({
@@ -46,15 +48,15 @@ function Chips({
 }
 
 function Onboarding() {
-  const { user } = Route.useRouteContext() as { user: User };
-  return <OnboardingForm user={user} />;
+  const { user, profile } = Route.useRouteContext() as { user: User; profile: DxProfile | null };
+  return <OnboardingForm user={user} existing={profile} />;
 }
 
-export function OnboardingForm({ user }: { user: User }) {
+export function OnboardingForm({ user, existing }: { user: User; existing: DxProfile | null }) {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const existing = dxProfileOf(user);
   const [step, setStep] = useState(0);
-  const [name, setName] = useState((user.user_metadata?.["full_name"] as string | undefined) ?? "");
+  const [name, setName] = useState(existing?.fullName || user.user_metadata.full_name || "");
   const [role, setRole] = useState(existing?.role ?? "");
   const [teamSize, setTeamSize] = useState(existing?.teamSize ?? "");
   const [goal, setGoal] = useState(existing?.goal ?? "");
@@ -68,21 +70,26 @@ export function OnboardingForm({ user }: { user: User }) {
   async function finish() {
     setSaving(true);
     setError(null);
-    const profile: DxProfile = {
-      role,
-      teamSize,
-      goal,
-      firstIdea: firstIdea.trim().slice(0, 1000),
-      completedAt: new Date().toISOString(),
-    };
-    const { error: updateError } = await supabase.auth.updateUser({
-      data: { full_name: name.trim().slice(0, 80), dx_profile: profile },
-    });
-    setSaving(false);
-    if (updateError) {
+    let profile: DxProfile;
+    try {
+      profile = await saveMyProfile({
+        data: {
+          fullName: name.trim().slice(0, 80),
+          role,
+          teamSize,
+          goal,
+          firstIdea: firstIdea.trim().slice(0, 1000),
+        },
+      });
+    } catch {
+      setSaving(false);
       setError("We couldn't save your setup. Check your connection and try again.");
       return;
     }
+    // Display name on the auth account; a failure here doesn't block setup.
+    await auth.updateName(profile.fullName);
+    queryClient.setQueryData(myProfileQuery.queryKey, profile);
+    setSaving(false);
     if (profile.firstIdea) {
       void navigate({
         to: "/command/programmes",

@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from "@/lib/auth/client";
 import { formatAuthError } from "@/lib/auth-errors";
 import { authCallbackUrl, isGoogleAuthEnabled, signInWithGoogle } from "@/lib/auth-oauth";
 import { waitForSession } from "@/lib/auth-session";
@@ -68,29 +68,22 @@ function SignupPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const { data, error: signUpError } = await supabase.auth.signUp({
+    const signUpError = await auth.signUp({
+      name: fullName.trim(),
       email,
       password,
-      options: {
-        data: { full_name: fullName },
-        emailRedirectTo: authCallbackUrl(),
-      },
+      callbackURL: authCallbackUrl(),
     });
     if (signUpError) {
       setLoading(false);
-      setError(formatAuthError(signUpError));
+      setError(formatAuthError({ message: signUpError }));
       return;
     }
-    if (data.session) {
-      const session = await waitForSession(2000);
+    // Signed in straight away unless email verification is required.
+    const user = await waitForSession(2000);
+    if (user) {
       setLoading(false);
-      if (!session) {
-        setError(
-          "Account created, but the session did not stick. Sign in with your email and password.",
-        );
-        return;
-      }
-      navigate({ to: targetPath });
+      navigate({ to: "/onboarding" });
       return;
     }
     setLoading(false);

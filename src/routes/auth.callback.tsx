@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { waitForSession } from "@/lib/auth-session";
 
 /**
@@ -34,24 +33,12 @@ function AuthCallbackPage() {
 
     void (async () => {
       try {
+        // OAuth or email-verification redirects land here; an error is passed as ?error=…
         const url = new URL(window.location.href);
-        const code = url.searchParams.get("code");
-        if (code) {
-          const { error } = await supabase.auth.exchangeCodeForSession(code);
-          if (error) {
-            if (active) setFailed(true);
-            return;
-          }
-          // Drop the code from the address bar so a refresh cannot reuse it.
-          url.searchParams.delete("code");
-          url.searchParams.delete("state");
-          window.history.replaceState(
-            {},
-            document.title,
-            `${url.pathname}${url.search}${url.hash}`,
-          );
+        if (url.searchParams.get("error")) {
+          if (active) setFailed(true);
+          return;
         }
-
         const session = await waitForSession();
         if (!active) return;
         if (!session) {

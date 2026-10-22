@@ -3,7 +3,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
 import { useSession } from "@/hooks/use-session";
-import { dxProfileOf, firstNameOf } from "@/lib/dx-profile";
+import { firstNameOf } from "@/lib/dx-profile";
+import { myProfileQuery } from "@/lib/profile-queries";
 import { commandCentreBootstrapQuery } from "@/lib/workforce-queries";
 import {
   createMission,
@@ -654,12 +655,12 @@ const GOAL_NEXT: Record<string, { title: string; cta: string }> = {
 
 function WelcomeBanner() {
   const { user } = useSession();
-  const profile = dxProfileOf(user);
+  const { data: profile } = useQuery(myProfileQuery);
   const next = GOAL_NEXT[profile?.goal ?? ""] ?? GOAL_NEXT["Explore what's possible"]!;
   return (
     <section className="cc-welcome" aria-label="Welcome">
       <div>
-        <h2>Welcome{user ? `, ${firstNameOf(user)}` : ""}.</h2>
+        <h2>Welcome{user ? `, ${firstNameOf(user, profile)}` : ""}.</h2>
         <p>
           {profile?.role ? `${profile.role} · ${profile.teamSize} · ` : ""}
           {next.title}

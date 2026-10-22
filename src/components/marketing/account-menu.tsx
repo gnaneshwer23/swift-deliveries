@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { LayoutDashboard, LogOut, Radar, User as UserIcon } from "lucide-react";
-import type { User } from "@supabase/supabase-js";
+import type { AppUser as User } from "@/lib/auth/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
