@@ -8,6 +8,7 @@ type WorkspaceTarget =
   | "/workspace/launchpad"
   | "/workspace/projects"
   | "/command"
+  | "/command/programmes"
   | "/command/capabilities"
   | "/command/projects";
 
