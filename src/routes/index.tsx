@@ -407,9 +407,7 @@ function AccordionSectionBlock({ section }: { section: AccordionFeatureSection }
         <p className="motion-section-lead">{section.lead}</p>
       </div>
 
-      <div
-        className={`motion-accordion-grid${section.reverse ? " is-reversed" : ""}`}
-      >
+      <div className={`motion-accordion-grid${section.reverse ? " is-reversed" : ""}`}>
         <div className="motion-accordion-list" role="tablist" aria-label={section.eyebrow}>
           {section.items.map((item, idx) => {
             const isActive = idx === activeIndex;
@@ -442,10 +440,7 @@ function AccordionSectionBlock({ section }: { section: AccordionFeatureSection }
                 {sectionCta.label}
               </Link>
             ) : (
-              <Link
-                to={sectionCta.to}
-                className="btn motion-btn-secondary text-xs px-4 py-2.5"
-              >
+              <Link to={sectionCta.to} className="btn motion-btn-secondary text-xs px-4 py-2.5">
                 {sectionCta.label}
               </Link>
             )}
@@ -453,10 +448,7 @@ function AccordionSectionBlock({ section }: { section: AccordionFeatureSection }
         </div>
 
         <div className="motion-accordion-stage">
-          <ProductAccordionVisual
-            section={section.sectionKey}
-            activeIndex={activeIndex}
-          />
+          <ProductAccordionVisual section={section.sectionKey} activeIndex={activeIndex} />
         </div>
       </div>
     </section>
@@ -536,9 +528,9 @@ function HomePage() {
               <span className="motion-gradient-text">Product &amp; AI Workforce Dashboard.</span>
             </h2>
             <p className="motion-section-lead">
-              Traditional project tools track due dates and tickets. DeliverX gives Product Managers,
-              Founders, and Sponsors a live Command Centre for discovery briefs, PRDs, sandboxed HTML
-              prototypes, epistemic evidence, and human approval gates.
+              Traditional project tools track due dates and tickets. DeliverX gives Product
+              Managers, Founders, and Sponsors a live Command Centre for discovery briefs, PRDs,
+              sandboxed HTML prototypes, epistemic evidence, and human approval gates.
             </p>
           </div>
 
@@ -689,7 +681,10 @@ function HomePage() {
           <div className="motion-security-card">
             <div className="motion-security-copy">
               <span className="motion-eyebrow">DETERMINISTIC GOVERNANCE</span>
-              <h2 className="motion-section-h2" style={{ textAlign: "left", margin: "10px 0 12px" }}>
+              <h2
+                className="motion-section-h2"
+                style={{ textAlign: "left", margin: "10px 0 12px" }}
+              >
                 Enterprise-grade supervision built into the runtime.
               </h2>
               <p className="motion-section-lead" style={{ textAlign: "left", margin: 0 }}>

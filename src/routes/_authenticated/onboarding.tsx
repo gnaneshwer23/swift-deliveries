@@ -239,7 +239,8 @@ function OnboardingPage() {
       };
     return {
       title: "Ready for Supervised Product Execution",
-      reason: "Your workspace is configured with a 100-credit ceiling, 12 verified AI specialists, and an append-only evidence record.",
+      reason:
+        "Your workspace is configured with a 100-credit ceiling, 12 verified AI specialists, and an append-only evidence record.",
     };
   }, [answers.posture, answers.targetRole, answers.targetDomains]);
 
@@ -269,10 +270,7 @@ function OnboardingPage() {
             <span className="text-xs font-semibold text-slate-500">
               Step {String(step).padStart(2, "0")} of 08
             </span>
-            <Link
-              to="/command"
-              className="text-xs font-semibold text-[#2C77E7] hover:underline"
-            >
+            <Link to="/command" className="text-xs font-semibold text-[#2C77E7] hover:underline">
               Skip to Command Centre →
             </Link>
           </div>
@@ -386,7 +384,8 @@ function OnboardingPage() {
           <div className="mt-6 flex items-center gap-2.5 text-xs text-slate-600">
             <ShieldCheck className="size-4 text-[#2C77E7] shrink-0" />
             <span>
-              Honest provenance guarantee: self-reported setup answers never create fake capability scores.
+              Honest provenance guarantee: self-reported setup answers never create fake capability
+              scores.
             </span>
           </div>
         </section>
@@ -418,9 +417,7 @@ function OnboardingPage() {
             <div className="mt-6 space-y-5">
               {step === 1 ? (
                 <div className="space-y-4 text-sm leading-relaxed text-[#475467]">
-                  <p>
-                    DeliverX combines two connected workspaces in one platform:
-                  </p>
+                  <p>DeliverX combines two connected workspaces in one platform:</p>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div className="rounded-2xl border border-[#DCE4FE] bg-[#F8FAFF] p-4">
                       <div className="flex items-center gap-2 font-bold text-[#101828]">
@@ -429,7 +426,8 @@ function OnboardingPage() {
                       </div>
                       <p className="mt-1.5 text-xs text-slate-600">
                         Commission <strong>Investigate</strong>, <strong>Prototype</strong>, and{" "}
-                        <strong>Improve</strong> product missions with 12 verified AI specialists under human approval.
+                        <strong>Improve</strong> product missions with 12 verified AI specialists
+                        under human approval.
                       </p>
                     </div>
                     <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4">
@@ -438,14 +436,17 @@ function OnboardingPage() {
                         <span>2. Product Evidence Dashboard</span>
                       </div>
                       <p className="mt-1.5 text-xs text-slate-600">
-                        Build provenance-backed PM artefacts through <strong>Experience</strong>, package in{" "}
-                        <strong>Launchpad</strong>, and earn external attestation.
+                        Build provenance-backed PM artefacts through <strong>Experience</strong>,
+                        package in <strong>Launchpad</strong>, and earn external attestation.
                       </p>
                     </div>
                   </div>
                   <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-700">
-                    <strong className="text-slate-900">Our supervision &amp; evidence commitment:</strong>{" "}
-                    Nothing executes in Command Centre without your plan approval, and only an independent external attestation lights the Verified career badge.
+                    <strong className="text-slate-900">
+                      Our supervision &amp; evidence commitment:
+                    </strong>{" "}
+                    Nothing executes in Command Centre without your plan approval, and only an
+                    independent external attestation lights the Verified career badge.
                   </div>
                 </div>
               ) : null}
@@ -523,16 +524,21 @@ function OnboardingPage() {
                     </div>
                   </Field>
                   <Field label="Target seniority level" id="targetLevel">
-                    <Select value={answers.targetLevel} onValueChange={(v) => set("targetLevel", v)}>
+                    <Select
+                      value={answers.targetLevel}
+                      onValueChange={(v) => set("targetLevel", v)}
+                    >
                       <SelectTrigger id="targetLevel">
                         <SelectValue placeholder="Choose level" />
                       </SelectTrigger>
                       <SelectContent>
-                        {["Associate / Junior", "Mid-level", "Senior", "Lead or Head of"].map((v) => (
-                          <SelectItem key={v} value={v}>
-                            {v}
-                          </SelectItem>
-                        ))}
+                        {["Associate / Junior", "Mid-level", "Senior", "Lead or Head of"].map(
+                          (v) => (
+                            <SelectItem key={v} value={v}>
+                              {v}
+                            </SelectItem>
+                          ),
+                        )}
                       </SelectContent>
                     </Select>
                   </Field>
@@ -580,11 +586,13 @@ function OnboardingPage() {
               {step === 4 ? (
                 <>
                   <p className="text-xs leading-relaxed text-[#475467]">
-                    Rate your current confidence across core product capabilities. This stays labelled as a self-report and helps order your recommended missions.
+                    Rate your current confidence across core product capabilities. This stays
+                    labelled as a self-report and helps order your recommended missions.
                   </p>
                   {data.capabilities.length === 0 ? (
                     <p className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-                      Capability dimensions are ready in your workspace. You can continue or skip this step.
+                      Capability dimensions are ready in your workspace. You can continue or skip
+                      this step.
                     </p>
                   ) : (
                     <div className="max-h-80 space-y-3 overflow-y-auto pr-1">
@@ -654,7 +662,10 @@ function OnboardingPage() {
                       );
                     })}
                   </div>
-                  <Field label="Additional context on your product portfolio (optional)" id="postureNotes">
+                  <Field
+                    label="Additional context on your product portfolio (optional)"
+                    id="postureNotes"
+                  >
                     <Textarea
                       id="postureNotes"
                       rows={3}
@@ -756,9 +767,7 @@ function OnboardingPage() {
                     <span className="text-[11px] font-bold uppercase tracking-wider text-[#2C77E7]">
                       Personalised Recommendation
                     </span>
-                    <h3 className="mt-1 text-lg font-bold text-[#101828]">
-                      {recommended.title}
-                    </h3>
+                    <h3 className="mt-1 text-lg font-bold text-[#101828]">{recommended.title}</h3>
                     <p className="mt-2 text-xs leading-relaxed text-[#475467]">
                       {recommended.reason}
                     </p>

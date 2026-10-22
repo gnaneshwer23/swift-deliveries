@@ -16,7 +16,14 @@ export function ProductDiscoveryIcon({ className = "size-6" }: { className?: str
         strokeWidth="1.6"
         strokeLinecap="round"
       />
-      <circle cx="16.5" cy="15.5" r="3.5" fill="#CAD4F4" stroke="url(#dx-grad-1)" strokeWidth="1.5" />
+      <circle
+        cx="16.5"
+        cy="15.5"
+        r="3.5"
+        fill="#CAD4F4"
+        stroke="url(#dx-grad-1)"
+        strokeWidth="1.5"
+      />
       <path d="m19 18 2.2 2.2" stroke="url(#dx-grad-1)" strokeWidth="1.8" strokeLinecap="round" />
       <rect
         x="2.5"
@@ -28,7 +35,14 @@ export function ProductDiscoveryIcon({ className = "size-6" }: { className?: str
         strokeWidth="1.5"
       />
       <defs>
-        <linearGradient id="dx-grad-1" x1="12" y1="3" x2="12" y2="21" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id="dx-grad-1"
+          x1="12"
+          y1="3"
+          x2="12"
+          y2="21"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop stopColor="#849BE5" />
           <stop offset="1" stopColor="#3D61DD" />
         </linearGradient>
@@ -55,7 +69,14 @@ export function ProductPrdIcon({ className = "size-6" }: { className?: string })
         strokeLinecap="round"
       />
       <defs>
-        <linearGradient id="dx-grad-2" x1="12" y1="3" x2="12" y2="21" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id="dx-grad-2"
+          x1="12"
+          y1="3"
+          x2="12"
+          y2="21"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop stopColor="#849BE5" />
           <stop offset="1" stopColor="#3D61DD" />
         </linearGradient>
@@ -67,13 +88,29 @@ export function ProductPrdIcon({ className = "size-6" }: { className?: string })
 export function ProductPrototypeIcon({ className = "size-6" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
-      <rect x="2.5" y="4" width="19" height="16" rx="3.5" fill="#F6F9FF" stroke="url(#dx-grad-3)" strokeWidth="1.5" />
+      <rect
+        x="2.5"
+        y="4"
+        width="19"
+        height="16"
+        rx="3.5"
+        fill="#F6F9FF"
+        stroke="url(#dx-grad-3)"
+        strokeWidth="1.5"
+      />
       <path d="M2.5 8.5h19" stroke="url(#dx-grad-3)" strokeWidth="1.4" />
       <rect x="5.5" y="11" width="5.5" height="6.5" rx="1.5" fill="#CAD4F4" />
       <rect x="13" y="11" width="5.5" height="3" rx="1" fill="#9AADEC" />
       <rect x="13" y="15" width="5.5" height="2.5" rx="1" fill="#DEE5FB" />
       <defs>
-        <linearGradient id="dx-grad-3" x1="12" y1="4" x2="12" y2="20" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id="dx-grad-3"
+          x1="12"
+          y1="4"
+          x2="12"
+          y2="20"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop stopColor="#849BE5" />
           <stop offset="1" stopColor="#3D61DD" />
         </linearGradient>
@@ -85,11 +122,38 @@ export function ProductPrototypeIcon({ className = "size-6" }: { className?: str
 export function ProductImproveIcon({ className = "size-6" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
-      <rect x="2.5" y="3.5" width="19" height="17" rx="3.5" fill="#F6F9FF" stroke="url(#dx-grad-4)" strokeWidth="1.5" />
-      <path d="M6.5 16.5v-4M10.5 16.5v-6.5M14.5 16.5v-3.5M18 16.5V8" stroke="url(#dx-grad-4)" strokeWidth="2" strokeLinecap="round" />
-      <path d="m6.5 10 4-2.5 3.5 2 4-3" stroke="#3D61DD" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <rect
+        x="2.5"
+        y="3.5"
+        width="19"
+        height="17"
+        rx="3.5"
+        fill="#F6F9FF"
+        stroke="url(#dx-grad-4)"
+        strokeWidth="1.5"
+      />
+      <path
+        d="M6.5 16.5v-4M10.5 16.5v-6.5M14.5 16.5v-3.5M18 16.5V8"
+        stroke="url(#dx-grad-4)"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="m6.5 10 4-2.5 3.5 2 4-3"
+        stroke="#3D61DD"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
       <defs>
-        <linearGradient id="dx-grad-4" x1="12" y1="3.5" x2="12" y2="20.5" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id="dx-grad-4"
+          x1="12"
+          y1="3.5"
+          x2="12"
+          y2="20.5"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop stopColor="#849BE5" />
           <stop offset="1" stopColor="#3D61DD" />
         </linearGradient>
@@ -110,7 +174,14 @@ export function MissionPlannerIcon({ className = "size-6" }: { className?: strin
       />
       <path d="M4 7l8 4 8-4M12 11v10" stroke="url(#dx-grad-5)" strokeWidth="1.5" />
       <defs>
-        <linearGradient id="dx-grad-5" x1="12" y1="3" x2="12" y2="21" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id="dx-grad-5"
+          x1="12"
+          y1="3"
+          x2="12"
+          y2="21"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop stopColor="#849BE5" />
           <stop offset="1" stopColor="#3D61DD" />
         </linearGradient>
@@ -136,7 +207,14 @@ export function ApprovalGateIcon({ className = "size-6" }: { className?: string 
         strokeLinejoin="round"
       />
       <defs>
-        <linearGradient id="dx-grad-6" x1="12" y1="2.8" x2="12" y2="21.7" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id="dx-grad-6"
+          x1="12"
+          y1="2.8"
+          x2="12"
+          y2="21.7"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop stopColor="#849BE5" />
           <stop offset="1" stopColor="#3D61DD" />
         </linearGradient>
@@ -148,12 +226,28 @@ export function ApprovalGateIcon({ className = "size-6" }: { className?: string 
 export function BudgetShieldIcon({ className = "size-6" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
-      <rect x="3" y="4.5" width="18" height="15" rx="3.5" fill="#F6F9FF" stroke="url(#dx-grad-7)" strokeWidth="1.5" />
+      <rect
+        x="3"
+        y="4.5"
+        width="18"
+        height="15"
+        rx="3.5"
+        fill="#F6F9FF"
+        stroke="url(#dx-grad-7)"
+        strokeWidth="1.5"
+      />
       <path d="M3 9.5h18" stroke="url(#dx-grad-7)" strokeWidth="1.5" />
       <rect x="6.5" y="13" width="6" height="3" rx="1" fill="#CAD4F4" />
       <circle cx="16.5" cy="14.5" r="1.8" fill="#3D61DD" />
       <defs>
-        <linearGradient id="dx-grad-7" x1="12" y1="4.5" x2="12" y2="19.5" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id="dx-grad-7"
+          x1="12"
+          y1="4.5"
+          x2="12"
+          y2="19.5"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop stopColor="#849BE5" />
           <stop offset="1" stopColor="#3D61DD" />
         </linearGradient>
@@ -167,13 +261,7 @@ export function BudgetShieldIcon({ className = "size-6" }: { className?: string 
    ============================================================================ */
 
 export type HeroToolKey =
-  | "discovery"
-  | "prd"
-  | "prototype"
-  | "diagnostics"
-  | "planner"
-  | "approval"
-  | "evidence";
+  "discovery" | "prd" | "prototype" | "diagnostics" | "planner" | "approval" | "evidence";
 
 interface HeroToolSpec {
   id: HeroToolKey;
@@ -558,7 +646,11 @@ export function HeroProductInteractiveModule() {
   function handleToggleCheck(id: HeroToolKey, e: React.MouseEvent) {
     e.stopPropagation();
     setSelectedIds((prev) =>
-      prev.includes(id) ? (prev.length > 1 ? prev.filter((item) => item !== id) : prev) : [...prev, id],
+      prev.includes(id)
+        ? prev.length > 1
+          ? prev.filter((item) => item !== id)
+          : prev
+        : [...prev, id],
     );
     setActiveId(id);
   }
@@ -757,7 +849,9 @@ type DashboardTabKey = "missions" | "specs" | "evidence" | "governance";
 
 export function InteractiveProductDashboardShowcase() {
   const [activeTab, setActiveTab] = useState<DashboardTabKey>("missions");
-  const [intentFilter, setIntentFilter] = useState<"all" | "investigate" | "prototype" | "improve">("all");
+  const [intentFilter, setIntentFilter] = useState<"all" | "investigate" | "prototype" | "improve">(
+    "all",
+  );
 
   const missions = [
     {
@@ -824,7 +918,11 @@ export function InteractiveProductDashboardShowcase() {
   return (
     <div className="motion-prod-dashboard-wrap">
       {/* Top Interactive View Switcher Bar */}
-      <div className="motion-prod-dashboard-tabs" role="tablist" aria-label="Product Dashboard Views">
+      <div
+        className="motion-prod-dashboard-tabs"
+        role="tablist"
+        aria-label="Product Dashboard Views"
+      >
         <button
           type="button"
           role="tab"
@@ -893,7 +991,9 @@ export function InteractiveProductDashboardShowcase() {
               deliverx.dev/command · Supervised Product Workforce Workspace
             </div>
             <div className="motion-prod-chrome-right">
-              <span className="motion-pill-emerald">● Budget Gate Active: 63 / 100 Credits Remaining</span>
+              <span className="motion-pill-emerald">
+                ● Budget Gate Active: 63 / 100 Credits Remaining
+              </span>
               <span className="motion-pill-blue">Ceiling: Execute Internally</span>
             </div>
           </div>
@@ -982,7 +1082,9 @@ export function InteractiveProductDashboardShowcase() {
                   <div className="motion-prod-panel-head">
                     <div>
                       <h4>Product Missions &amp; Supervision Pipeline</h4>
-                      <p>Click any intent filter or launch a mission directly into Command Centre.</p>
+                      <p>
+                        Click any intent filter or launch a mission directly into Command Centre.
+                      </p>
                     </div>
                     <div className="motion-prod-filter-pills">
                       {(["all", "investigate", "prototype", "improve"] as const).map((f) => (
@@ -1045,15 +1147,20 @@ export function InteractiveProductDashboardShowcase() {
                   <div className="motion-prod-panel-head">
                     <div>
                       <h4>PRD Specification + Interactive HTML Sandbox</h4>
-                      <p>Every Prototype mission pairs structured product requirements with an isolated UI preview.</p>
+                      <p>
+                        Every Prototype mission pairs structured product requirements with an
+                        isolated UI preview.
+                      </p>
                     </div>
                     <Link
                       to="/command"
-                      search={{
-                        intent: "prototype",
-                        prompt:
-                          "Prototype a workspace credit ceiling alert drawer with hard-stop state and approval history for workspace operators.",
-                      } as never}
+                      search={
+                        {
+                          intent: "prototype",
+                          prompt:
+                            "Prototype a workspace credit ceiling alert drawer with hard-stop state and approval history for workspace operators.",
+                        } as never
+                      }
                       className="btn motion-btn-primary text-xs px-3.5 py-2"
                     >
                       Commission Prototype Mission →
@@ -1068,24 +1175,34 @@ export function InteractiveProductDashboardShowcase() {
                       </h5>
                       <ul className="mt-3 space-y-2 text-xs text-slate-600">
                         <li>
-                          <strong className="text-slate-900">Problem Statement:</strong> Operators need deterministic cost visibility before approving multi-agent product missions.
+                          <strong className="text-slate-900">Problem Statement:</strong> Operators
+                          need deterministic cost visibility before approving multi-agent product
+                          missions.
                         </li>
                         <li>
-                          <strong className="text-slate-900">AC-01 (Warning State):</strong> Trigger amber banner at 80/100 credits consumed.
+                          <strong className="text-slate-900">AC-01 (Warning State):</strong> Trigger
+                          amber banner at 80/100 credits consumed.
                         </li>
                         <li>
-                          <strong className="text-slate-900">AC-02 (Hard-Stop Gate):</strong> Halt billable task queue immediately at 100/100 credits with 0 silent overspend.
+                          <strong className="text-slate-900">AC-02 (Hard-Stop Gate):</strong> Halt
+                          billable task queue immediately at 100/100 credits with 0 silent
+                          overspend.
                         </li>
                         <li>
-                          <strong className="text-slate-900">Non-Goals:</strong> Do not auto-charge Stripe cards without explicit plan upgrade.
+                          <strong className="text-slate-900">Non-Goals:</strong> Do not auto-charge
+                          Stripe cards without explicit plan upgrade.
                         </li>
                       </ul>
                     </div>
 
                     <div className="motion-clean-ui-card">
                       <div className="flex items-center justify-between">
-                        <span className="motion-pill-emerald">Artefact 02 · Isolated HTML Sandbox</span>
-                        <span className="text-[11px] font-mono text-slate-500">sha256:9f4a…8c12</span>
+                        <span className="motion-pill-emerald">
+                          Artefact 02 · Isolated HTML Sandbox
+                        </span>
+                        <span className="text-[11px] font-mono text-slate-500">
+                          sha256:9f4a…8c12
+                        </span>
                       </div>
                       <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
                         <div className="flex items-center justify-between text-xs font-bold text-slate-900">
@@ -1098,13 +1215,11 @@ export function InteractiveProductDashboardShowcase() {
                           <div className="h-full w-[82%] bg-gradient-to-r from-[#3e63dd] to-[#f59e0b]" />
                         </div>
                         <p className="text-xs text-slate-600 mt-2.5">
-                          Next queued task (Wireframing Agent · 6 cr) fits within your 18 remaining credits.
+                          Next queued task (Wireframing Agent · 6 cr) fits within your 18 remaining
+                          credits.
                         </p>
                         <div className="mt-3 flex gap-2">
-                          <Link
-                            to="/command"
-                            className="motion-btn-primary text-xs px-3 py-1.5"
-                          >
+                          <Link to="/command" className="motion-btn-primary text-xs px-3 py-1.5">
                             Approve Task Execution
                           </Link>
                           <Link
@@ -1125,15 +1240,20 @@ export function InteractiveProductDashboardShowcase() {
                   <div className="motion-prod-panel-head">
                     <div>
                       <h4>Epistemic Evidence Matrix &amp; Objective Health</h4>
-                      <p>DeliverX separates verified Sourced Facts from Working Assumptions so roadmaps never rest on guesswork.</p>
+                      <p>
+                        DeliverX separates verified Sourced Facts from Working Assumptions so
+                        roadmaps never rest on guesswork.
+                      </p>
                     </div>
                     <Link
                       to="/command"
-                      search={{
-                        intent: "investigate",
-                        prompt:
-                          "Investigate whether we should add a sponsor reporting dashboard for delivery leads, for the COO audience, comparing build vs partner options.",
-                      } as never}
+                      search={
+                        {
+                          intent: "investigate",
+                          prompt:
+                            "Investigate whether we should add a sponsor reporting dashboard for delivery leads, for the COO audience, comparing build vs partner options.",
+                        } as never
+                      }
                       className="btn motion-btn-primary text-xs px-3.5 py-2"
                     >
                       Run Discovery Mission →
@@ -1144,8 +1264,13 @@ export function InteractiveProductDashboardShowcase() {
                     <div className="motion-ui-row">
                       <span className="motion-dot-emerald" />
                       <div className="flex-1">
-                        <strong>Sourced Fact · Sponsor Buyer Persona (Healthcare &amp; Higher-Ed)</strong>
-                        <p>COOs and Delivery Directors evaluate objective health and baseline variance, not raw Jira ticket velocity.</p>
+                        <strong>
+                          Sourced Fact · Sponsor Buyer Persona (Healthcare &amp; Higher-Ed)
+                        </strong>
+                        <p>
+                          COOs and Delivery Directors evaluate objective health and baseline
+                          variance, not raw Jira ticket velocity.
+                        </p>
                       </div>
                       <span className="motion-badge-fact">Sourced Fact</span>
                     </div>
@@ -1153,7 +1278,10 @@ export function InteractiveProductDashboardShowcase() {
                       <span className="motion-dot-blue" />
                       <div className="flex-1">
                         <strong>Analytical Inference · Architecture Boundary</strong>
-                        <p>Keeping task tracking lightweight in v1 avoids engineering resistance while preserving case-to-objective traceability.</p>
+                        <p>
+                          Keeping task tracking lightweight in v1 avoids engineering resistance
+                          while preserving case-to-objective traceability.
+                        </p>
                       </div>
                       <span className="motion-badge-inference">Inference</span>
                     </div>
@@ -1161,7 +1289,10 @@ export function InteractiveProductDashboardShowcase() {
                       <span className="motion-dot-amber" />
                       <div className="flex-1">
                         <strong>Working Assumption · Pricing Willingness-to-Pay</strong>
-                        <p>£750/month per active project with unlimited free contributors requires validation across 3 design partners.</p>
+                        <p>
+                          £750/month per active project with unlimited free contributors requires
+                          validation across 3 design partners.
+                        </p>
                       </div>
                       <span className="motion-badge-assumption">Assumption</span>
                     </div>
@@ -1174,9 +1305,15 @@ export function InteractiveProductDashboardShowcase() {
                   <div className="motion-prod-panel-head">
                     <div>
                       <h4>150-Role Capability Registry &amp; 4-Tier Permission Gate</h4>
-                      <p>Only the 12 verified Wave-1 capabilities can be assigned to live missions; 138 Planned roles are transparently locked.</p>
+                      <p>
+                        Only the 12 verified Wave-1 capabilities can be assigned to live missions;
+                        138 Planned roles are transparently locked.
+                      </p>
                     </div>
-                    <Link to="/command/capabilities" className="btn motion-btn-primary text-xs px-3.5 py-2">
+                    <Link
+                      to="/command/capabilities"
+                      className="btn motion-btn-primary text-xs px-3.5 py-2"
+                    >
                       Explore Full 150-Role Registry →
                     </Link>
                   </div>
@@ -1188,19 +1325,27 @@ export function InteractiveProductDashboardShowcase() {
                       </h5>
                       <div className="space-y-2 text-xs">
                         <div className="flex justify-between items-center p-2 rounded-lg bg-emerald-50 border border-emerald-200">
-                          <span><strong>Tier 1 · Plan:</strong> Draft task graph &amp; credit estimate</span>
+                          <span>
+                            <strong>Tier 1 · Plan:</strong> Draft task graph &amp; credit estimate
+                          </span>
                           <span className="motion-badge-fact">0 Credits</span>
                         </div>
                         <div className="flex justify-between items-center p-2 rounded-lg bg-emerald-50 border border-emerald-200">
-                          <span><strong>Tier 2 · Create:</strong> Generate briefs, PRDs &amp; specs</span>
+                          <span>
+                            <strong>Tier 2 · Create:</strong> Generate briefs, PRDs &amp; specs
+                          </span>
                           <span className="motion-badge-fact">Allowed</span>
                         </div>
                         <div className="flex justify-between items-center p-2 rounded-lg bg-blue-50 border border-blue-200">
-                          <span><strong>Tier 3 · Execute Internally:</strong> Sandboxed HTML &amp; QA</span>
+                          <span>
+                            <strong>Tier 3 · Execute Internally:</strong> Sandboxed HTML &amp; QA
+                          </span>
                           <span className="motion-badge-inference">Plan Sign-off</span>
                         </div>
                         <div className="flex justify-between items-center p-2 rounded-lg bg-amber-50 border border-amber-300">
-                          <span><strong>Tier 4 · Act Externally:</strong> Mutate external systems</span>
+                          <span>
+                            <strong>Tier 4 · Act Externally:</strong> Mutate external systems
+                          </span>
                           <span className="motion-badge-assumption">2nd Approval Gate</span>
                         </div>
                       </div>
@@ -1211,7 +1356,8 @@ export function InteractiveProductDashboardShowcase() {
                         Honest Quality Provenance States
                       </h5>
                       <p className="text-xs text-slate-600 mb-3">
-                        DeliverX never displays an unqualified “Verified” badge on AI outputs. Every artefact carries its exact recorded state:
+                        DeliverX never displays an unqualified “Verified” badge on AI outputs. Every
+                        artefact carries its exact recorded state:
                       </p>
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         <div className="p-2.5 rounded-lg border border-slate-200 bg-slate-50">
@@ -1224,11 +1370,15 @@ export function InteractiveProductDashboardShowcase() {
                         </div>
                         <div className="p-2.5 rounded-lg border border-blue-200 bg-blue-50/60">
                           <strong className="block text-blue-950">Human-reviewed</strong>
-                          <span className="text-blue-700">Operator signed off in Command Centre</span>
+                          <span className="text-blue-700">
+                            Operator signed off in Command Centre
+                          </span>
                         </div>
                         <div className="p-2.5 rounded-lg border border-emerald-200 bg-emerald-50/70">
                           <strong className="block text-emerald-950">Externally attested</strong>
-                          <span className="text-emerald-700">Independent 3rd-party attestation</span>
+                          <span className="text-emerald-700">
+                            Independent 3rd-party attestation
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -1259,21 +1409,9 @@ const SECTION_VISUAL_MAP: Record<string, string[]> = {
     "prototype-acceptance-criteria",
     "prototype-dependency-timeline",
   ],
-  improve: [
-    "improve-funnel-diagnosis",
-    "improve-remediation-backlog",
-    "improve-context-synthesis",
-  ],
-  lifecycle: [
-    "lifecycle-five-stages",
-    "lifecycle-permission-ladder",
-    "lifecycle-audit-trail",
-  ],
-  governance: [
-    "governance-budget-charts",
-    "lifecycle-permission-ladder",
-    "lifecycle-audit-trail",
-  ],
+  improve: ["improve-funnel-diagnosis", "improve-remediation-backlog", "improve-context-synthesis"],
+  lifecycle: ["lifecycle-five-stages", "lifecycle-permission-ladder", "lifecycle-audit-trail"],
+  governance: ["governance-budget-charts", "lifecycle-permission-ladder", "lifecycle-audit-trail"],
 };
 
 export function ProductAccordionVisual({
@@ -1367,7 +1505,8 @@ export function ProductAccordionVisual({
             <div className="motion-alert-banner-red">
               <span className="motion-alert-icon">!</span>
               <span>
-                <strong>2 unverified assumptions</strong> separated from Sourced Facts before roadmap sign-off
+                <strong>2 unverified assumptions</strong> separated from Sourced Facts before
+                roadmap sign-off
               </span>
             </div>
             <div className="motion-ui-list mt-4">
@@ -1417,7 +1556,8 @@ export function ProductAccordionVisual({
             <div className="space-y-3">
               <div className="rounded-xl border border-[#DCE4FE] bg-[#F8FAFF] p-3.5">
                 <p className="text-xs font-semibold text-[#101828]">
-                  Q1. Who is the primary decision-maker for this brief (e.g., COO sponsor, Product Lead, or Engineering Manager)?
+                  Q1. Who is the primary decision-maker for this brief (e.g., COO sponsor, Product
+                  Lead, or Engineering Manager)?
                 </p>
                 <div className="mt-2 rounded-lg bg-white px-3 py-2 text-xs text-[#2C77E7] font-medium border border-[#CAD4F4]">
                   ✓ Answered: COO / Head of Delivery running 5–30 change projects/year
@@ -1518,7 +1658,10 @@ export function ProductAccordionVisual({
                 <span className="motion-check-circle is-done">✓</span>
                 <div className="flex-1">
                   <strong>AC-02 · Deterministic Credit Hard-Stop</strong>
-                  <p>When workspace consumption hits 100/100 credits, halt billable tasks immediately.</p>
+                  <p>
+                    When workspace consumption hits 100/100 credits, halt billable tasks
+                    immediately.
+                  </p>
                 </div>
                 <span className="motion-badge-fact">Tested</span>
               </div>
@@ -1551,7 +1694,9 @@ export function ProductAccordionVisual({
                 </div>
               </div>
               <div className="grid grid-cols-[150px_1fr] items-center gap-3">
-                <span className="text-xs font-semibold text-slate-700">2. PRD &amp; User Stories</span>
+                <span className="text-xs font-semibold text-slate-700">
+                  2. PRD &amp; User Stories
+                </span>
                 <div className="h-7 rounded-lg bg-blue-100 text-blue-900 text-xs font-semibold flex items-center px-3 ml-[18%] w-[54%]">
                   Completed · 6 credits
                 </div>
@@ -1563,7 +1708,9 @@ export function ProductAccordionVisual({
                 </div>
               </div>
               <div className="grid grid-cols-[150px_1fr] items-center gap-3">
-                <span className="text-xs font-semibold text-slate-700">4. Code &amp; QA Review</span>
+                <span className="text-xs font-semibold text-slate-700">
+                  4. Code &amp; QA Review
+                </span>
                 <div className="h-7 rounded-lg bg-amber-100 text-amber-900 text-xs font-semibold flex items-center px-3 ml-[54%] w-[44%]">
                   Queued after Step 3 · 3 credits
                 </div>
@@ -1581,13 +1728,16 @@ export function ProductAccordionVisual({
             <div className="motion-alert-banner-red">
               <span className="motion-alert-icon">!</span>
               <span>
-                <strong>38% drop-off detected</strong> between mobile plan selection and onboarding step 2
+                <strong>38% drop-off detected</strong> between mobile plan selection and onboarding
+                step 2
               </span>
             </div>
             <div className="mt-4 space-y-2.5">
               <div className="rounded-xl border border-slate-200 p-3 flex items-center justify-between gap-3">
                 <div>
-                  <span className="text-[11px] font-bold uppercase text-rose-600">Root Cause #1 · P0 Impact</span>
+                  <span className="text-[11px] font-bold uppercase text-rose-600">
+                    Root Cause #1 · P0 Impact
+                  </span>
                   <h5 className="text-sm font-semibold text-slate-900">
                     Unauthenticated CTA drops ?redirect=/command destination parameter
                   </h5>
@@ -1596,7 +1746,9 @@ export function ProductAccordionVisual({
               </div>
               <div className="rounded-xl border border-slate-200 p-3 flex items-center justify-between gap-3">
                 <div>
-                  <span className="text-[11px] font-bold uppercase text-amber-600">Root Cause #2 · P1 Impact</span>
+                  <span className="text-[11px] font-bold uppercase text-amber-600">
+                    Root Cause #2 · P1 Impact
+                  </span>
                   <h5 className="text-sm font-semibold text-slate-900">
                     Mobile form requires 6 fields before showing sample mission preview
                   </h5>
@@ -1631,7 +1783,9 @@ export function ProductAccordionVisual({
               <div className="motion-ui-row">
                 <span className="motion-dot-emerald" />
                 <div className="flex-1">
-                  <strong>Step 2 · Add 1-click Quick-Fill Product Brief chips in Command Centre</strong>
+                  <strong>
+                    Step 2 · Add 1-click Quick-Fill Product Brief chips in Command Centre
+                  </strong>
                   <p>Impact: High · Effort: S · Verification: Operator onboarding smoke test</p>
                 </div>
                 <span className="motion-badge-fact">Approved</span>
@@ -1651,15 +1805,21 @@ export function ProductAccordionVisual({
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
               <div className="rounded-xl bg-[#F8FAFF] border border-[#DCE4FE] p-3.5">
-                <span className="text-[11px] font-bold uppercase text-[#3D61DD]">Your Constraints</span>
+                <span className="text-[11px] font-bold uppercase text-[#3D61DD]">
+                  Your Constraints
+                </span>
                 <p className="text-xs text-slate-700 mt-1.5 leading-relaxed">
-                  “Keep existing Stripe webhook schema intact and do not alter legacy career tables.”
+                  “Keep existing Stripe webhook schema intact and do not alter legacy career
+                  tables.”
                 </p>
               </div>
               <div className="rounded-xl bg-emerald-50/70 border border-emerald-200 p-3.5">
-                <span className="text-[11px] font-bold uppercase text-emerald-800">AI Architect Output</span>
+                <span className="text-[11px] font-bold uppercase text-emerald-800">
+                  AI Architect Output
+                </span>
                 <p className="text-xs text-slate-700 mt-1.5 leading-relaxed">
-                  All remediation steps scoped strictly to client route guards and additive `wf_*` tables.
+                  All remediation steps scoped strictly to client route guards and additive `wf_*`
+                  tables.
                 </p>
               </div>
             </div>
@@ -1694,7 +1854,9 @@ export function ProductAccordionVisual({
                         : "bg-slate-50 border-slate-200"
                   }`}
                 >
-                  <span className="text-[10px] font-mono font-bold text-slate-500">STEP {s.step}</span>
+                  <span className="text-[10px] font-mono font-bold text-slate-500">
+                    STEP {s.step}
+                  </span>
                   <strong className="block text-sm text-slate-900 mt-0.5">{s.name}</strong>
                   <small className="block text-[11px] text-slate-600 mt-0.5">{s.sub}</small>
                 </div>
@@ -1714,10 +1876,26 @@ export function ProductAccordionVisual({
             </div>
             <div className="mt-3 space-y-2">
               {[
-                { tier: "Tier 1 · Plan", desc: "Propose task graph & estimate credits", status: "Allowed" },
-                { tier: "Tier 2 · Create", desc: "Draft internal PRDs, briefs & HTML prototypes", status: "Allowed" },
-                { tier: "Tier 3 · Execute internally", desc: "Run sandboxed checks & evidence verification", status: "Approved" },
-                { tier: "Tier 4 · Act externally", desc: "Send emails, deploy code, or mutate external APIs", status: "Requires 2nd Sign-off" },
+                {
+                  tier: "Tier 1 · Plan",
+                  desc: "Propose task graph & estimate credits",
+                  status: "Allowed",
+                },
+                {
+                  tier: "Tier 2 · Create",
+                  desc: "Draft internal PRDs, briefs & HTML prototypes",
+                  status: "Allowed",
+                },
+                {
+                  tier: "Tier 3 · Execute internally",
+                  desc: "Run sandboxed checks & evidence verification",
+                  status: "Approved",
+                },
+                {
+                  tier: "Tier 4 · Act externally",
+                  desc: "Send emails, deploy code, or mutate external APIs",
+                  status: "Requires 2nd Sign-off",
+                },
               ].map((t, idx) => (
                 <div
                   key={t.tier}
@@ -1753,7 +1931,9 @@ export function ProductAccordionVisual({
                 <span className="text-slate-500">Operator · Ceiling: 18 credits</span>
               </div>
               <div className="rounded-lg bg-slate-50 border border-slate-200 p-2.5 flex justify-between">
-                <span className="text-blue-700 font-semibold">task.completed (DX-023 PRD Agent)</span>
+                <span className="text-blue-700 font-semibold">
+                  task.completed (DX-023 PRD Agent)
+                </span>
                 <span className="text-slate-500">-6 credits · 84 remaining</span>
               </div>
               <div className="rounded-lg bg-slate-50 border border-slate-200 p-2.5 flex justify-between">
@@ -1782,7 +1962,9 @@ export function ProductAccordionVisual({
               </p>
             </div>
             <div className="motion-clean-ui-card">
-              <h4 className="text-sm font-bold text-slate-900 mb-3">150-Role Capability Registry</h4>
+              <h4 className="text-sm font-bold text-slate-900 mb-3">
+                150-Role Capability Registry
+              </h4>
               <div className="space-y-2.5 text-xs">
                 <div>
                   <div className="flex justify-between font-semibold mb-1">
@@ -1935,7 +2117,8 @@ export function DesktopMobileCommandShowcase() {
         </div>
         <h4 className="text-base font-bold text-white mt-1">Q4 Onboarding Delivery Report</h4>
         <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-          Objective: Reduce mobile onboarding drop-off while preserving workspace RLS and budget gates.
+          Objective: Reduce mobile onboarding drop-off while preserving workspace RLS and budget
+          gates.
         </p>
         <div className="mt-3 pt-3 border-t border-slate-700">
           <div className="text-xs font-bold text-slate-200 mb-2">Key Deliverables Ready</div>

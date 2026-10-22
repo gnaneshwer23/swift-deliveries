@@ -88,10 +88,7 @@ export function MarketingNav() {
   const { user, loading } = useSession();
 
   return (
-    <header
-      className="nav motion-nav"
-      onMouseLeave={() => setOpenDropdown(null)}
-    >
+    <header className="nav motion-nav" onMouseLeave={() => setOpenDropdown(null)}>
       <div className="flex items-center gap-8">
         <BrandLogo />
 
@@ -105,9 +102,7 @@ export function MarketingNav() {
               type="button"
               className="motion-nav-trigger"
               aria-expanded={openDropdown === "features"}
-              onClick={() =>
-                setOpenDropdown((prev) => (prev === "features" ? null : "features"))
-              }
+              onClick={() => setOpenDropdown((prev) => (prev === "features" ? null : "features"))}
             >
               <span>Product AI Features</span>
               <ChevronDown className="size-3.5 opacity-70" />
@@ -155,9 +150,7 @@ export function MarketingNav() {
               type="button"
               className="motion-nav-trigger"
               aria-expanded={openDropdown === "useCases"}
-              onClick={() =>
-                setOpenDropdown((prev) => (prev === "useCases" ? null : "useCases"))
-              }
+              onClick={() => setOpenDropdown((prev) => (prev === "useCases" ? null : "useCases"))}
             >
               <span>Solutions</span>
               <ChevronDown className="size-3.5 opacity-70" />

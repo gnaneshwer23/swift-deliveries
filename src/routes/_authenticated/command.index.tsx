@@ -257,7 +257,11 @@ function CommandHome() {
     if (missionFilter === "awaiting")
       return m.status === "awaiting_approval" || m.status === "needs_clarification";
     if (missionFilter === "completed") return m.status === "completed";
-    if (missionFilter === "investigate" || missionFilter === "prototype" || missionFilter === "improve")
+    if (
+      missionFilter === "investigate" ||
+      missionFilter === "prototype" ||
+      missionFilter === "improve"
+    )
       return m.intent === missionFilter;
     return true;
   });
@@ -282,7 +286,8 @@ function CommandHome() {
               Supervised Product Workforce · Stage 1 Operational
             </strong>
             <span className="text-xs text-[#475467]">
-              Every mission follows <strong>Mission → Plan → Approve → Execute → Deliver</strong> under your 4-tier permission ceiling.
+              Every mission follows <strong>Mission → Plan → Approve → Execute → Deliver</strong>{" "}
+              under your 4-tier permission ceiling.
             </span>
           </div>
         </div>
@@ -342,7 +347,9 @@ function CommandHome() {
             {completedCount} <small>of {data.recentMissions.length}</small>
           </strong>
           <span className="cc-kpi-sub">
-            {runningCount > 0 ? `${runningCount} currently executing` : "Classified evidence & artefacts"}
+            {runningCount > 0
+              ? `${runningCount} currently executing`
+              : "Classified evidence & artefacts"}
           </span>
         </div>
         <div className="cc-kpi-card">
