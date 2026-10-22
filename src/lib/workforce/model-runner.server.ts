@@ -16,7 +16,7 @@ import type { WfMission, WfMissionTask } from "./types";
 
 type Provider = { name: string; url: string; apiKey: string; model: string };
 
-const DEFAULT_OPENAI_MODEL = "gpt-5";
+const DEFAULT_OPENAI_MODEL = "gpt-4.1";
 const DEFAULT_GATEWAY_MODEL = "anthropic/claude-sonnet-5.5";
 const TIMEOUT_MS = 90_000;
 const MAX_UPSTREAM_CHARS = 6_000;
