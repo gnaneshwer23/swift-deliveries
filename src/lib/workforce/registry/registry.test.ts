@@ -103,25 +103,31 @@ describe("capability matching", () => {
     expect(match.limited).toBe(false);
   });
 
-  it("discloses healthcare department limitation without silent substitution", () => {
+  it("discloses regulated healthcare work as out of scope", () => {
     const match = matchCapabilitiesForMission({
       intent: "investigate",
       requestText:
         "Investigate clinical literature on healthcare workflow bottlenecks for NHS patient pathways",
     });
     expect(match.limited).toBe(true);
-    expect(match.limitations.some((l) => l.code === "department_unavailable")).toBe(true);
-    expect(match.limitations[0]?.requested_department).toMatch(/Healthcare/i);
-    expect(match.limitations[0]?.alternative?.capability_ids.length).toBeGreaterThan(0);
-    // Never assigns Planned healthcare IDs (DX-091+)
-    expect(match.assigned.every((a) => Number(a.capability_id.slice(3)) < 91)).toBe(true);
+    expect(match.limitations[0]?.code).toBe("out_of_scope");
+    expect(match.limitations[0]?.message).toMatch(/Regulated healthcare/);
     expect(match.assigned.every((a) => a.lifecycle_status === "available")).toBe(true);
+  });
+
+  it("has no healthcare or publishing departments and keeps 15 x 10 roles", () => {
+    const names = listDepartments().map((d) => d.name);
+    expect(names).toContain("Future Technology and Foresight");
+    expect(names).toContain("Product Analytics and Continuous Improvement");
+    expect(names.some((n) => /Healthcare|Books/.test(n))).toBe(false);
+    expect(listDepartments()).toHaveLength(15);
+    expect(listDepartments().every((d) => d.capability_ids.length === 10)).toBe(true);
   });
 
   it("refuses to treat an explicitly requested Planned capability as Available", () => {
     const match = matchCapabilitiesForMission({
       intent: "prototype",
-      requestText: "Prototype a settings page and also run DX-091 Clinical Literature Agent",
+      requestText: "Prototype a settings page and also run DX-091 Emerging Technology Scout",
     });
     expect(match.assigned.some((a) => a.capability_id === "DX-091")).toBe(false);
     expect(match.limitations.some((l) => l.requested_capability_ids?.includes("DX-091"))).toBe(

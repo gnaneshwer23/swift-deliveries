@@ -117,3 +117,29 @@ Source: DeliverX — Organisations & Prove Implementation Plan. Build order: tem
 - [x] Sprint 5: PayBridge + ShiftHire authored and loaded; rubric dimensions aligned to real pm-core keys across all four organisations; mapping published at docs/pm-core-gov-digital-data-mapping.md (labelled as interpretation, not endorsement)
 - [x] Sprint 6: Ledgerly + Meridian Freight authored and loaded (six YAML organisations live); /experience page now lists all six real organisations instead of placeholders
 - [ ] Product decisions parked: no payment per attestation (default); one attestation for Senior/Lead (default)
+
+## DXSI product missions — Phase 1 proof point (22 Oct 2026)
+Plan and gap analysis: docs/dxsi-implementation-plan.md.
+- [x] "Build a product" intent: 8-stage lifecycle as a 14-task DAG (parallel discovery; human gates on scope, design, release)
+- [x] Deterministic DAG scheduler with cascade-blocking; failed stages stop only their dependants
+- [x] Handoff contracts per stage; real automated verification stage (contracts + static prototype checks + PRD traceability)
+- [x] Model-agnostic stage generation (opt-in `DXSI_MODEL_ENABLED`), one bounded retry, disclosed simulated fallback
+- [x] Identifier screen blocks external model calls for likely personal data
+- [x] Race-safe step execution: atomic task claim + optimistic usage charge
+- [x] Fixed: "Run next step" stayed disabled after a mission blocked; external-approval button showed for gate blocks
+- [ ] Apply migration 20261022100000_dxsi_product_mission.sql (enables the Build intent)
+- [ ] Decide canonical taxonomy: vision divisions vs registry departments
+- [ ] Phase 2: Product Brain, artefact versioning, sandboxed code execution for Stage 5
+
+## DXSI programmes — idea to end-to-end product programme (22 Oct 2026)
+Audit against the founder vision: docs/dxsi-capability-audit.md.
+- [x] Taxonomy: Healthcare and Books departments replaced by Future Technology & Foresight (DX-091–100) and Product Analytics & Continuous Improvement (DX-121–130); regulated healthcare requests disclosed as out of scope
+- [x] Business case → roadmap: 7 phases, 7 milestones, 35+ work items; all 150 roles staffed (test-enforced for 6–52 week timelines)
+- [x] Deliberation protocol: independent positions, red-team challenge, bounded persuasion, vetoes, weighted supermajority, sensitivity, review conditions, dissent
+- [x] Meetings with agendas, transcripts, decisions and actions; customer interview programme with synthetic rehearsal + real notes
+- [x] Four founder gates with ratify/override and bounded rework; budget hard stop
+- [x] Peer review, verification report, judgement track record per role
+- [x] Dashboard (/command/programmes) and complete ZIP export with manifest, CSV, JSON
+- [ ] Apply migration 20261022120000_dxsi_programmes.sql (after 20261022100000)
+- [ ] Execution service: real code in isolated sandboxes per sprint
+- [ ] Research connectors with citations; autonomy modes; durable background execution

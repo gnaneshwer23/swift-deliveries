@@ -1,3 +1,4 @@
+import { productMissionLimitations, productMissionTasks } from "./lifecycle";
 import { maxPermission } from "./permissions";
 import { matchCapabilitiesForMission } from "./registry/matching";
 import type { ClarificationQuestion, GeneratedPlan, MissionIntent, PlannedTask } from "./types";
@@ -9,7 +10,13 @@ function titleFromRequest(intent: MissionIntent, request: string): string {
   const cleaned = request.replace(/\s+/g, " ").trim();
   const clip = cleaned.length > 72 ? `${cleaned.slice(0, 69)}…` : cleaned;
   const prefix =
-    intent === "investigate" ? "Investigate" : intent === "prototype" ? "Prototype" : "Improve";
+    intent === "investigate"
+      ? "Investigate"
+      : intent === "prototype"
+        ? "Prototype"
+        : intent === "build"
+          ? "Build"
+          : "Improve";
   return clip ? `${prefix}: ${clip}` : `${prefix} mission`;
 }
 
@@ -67,6 +74,27 @@ function clarificationFor(
       id: "baseline",
       prompt: "What is the current baseline we are improving (link, description, or symptoms)?",
       required: true,
+    });
+  }
+
+  if (
+    intent === "build" &&
+    !answers["users"] &&
+    !/\b(for|users?|customers?|clinicians?|teams?|founders?|patients?|operators?)\b/i.test(text)
+  ) {
+    questions.push({
+      id: "users",
+      prompt: "Who are the primary users of this product?",
+      required: true,
+    });
+  }
+
+  if (intent === "build" && !answers["constraints"]) {
+    questions.push({
+      id: "constraints",
+      prompt:
+        "Any constraints the workforce must respect (budget, timeline, regulation, data residency, stack)?",
+      required: false,
     });
   }
 
@@ -293,7 +321,10 @@ export function generateMissionPlan(input: {
   });
   const allowed = new Set(match.assigned.map((a) => a.capability_id));
   const assignedCapabilities = match.assigned;
-  const capabilityLimitations = match.limitations;
+  const capabilityLimitations =
+    input.intent === "build"
+      ? [...match.limitations, ...productMissionLimitations()]
+      : match.limitations;
 
   if (questions.some((q) => q.required)) {
     return {
@@ -314,7 +345,9 @@ export function generateMissionPlan(input: {
       ? investigateTasks(input.requestText, external)
       : input.intent === "prototype"
         ? prototypeTasks(input.requestText, external)
-        : improveTasks(input.requestText, external);
+        : input.intent === "build"
+          ? productMissionTasks(input.requestText, external)
+          : improveTasks(input.requestText, external);
 
   const tasks = filterTaskCapabilities(rawTasks, allowed);
 
@@ -328,6 +361,13 @@ export function generateMissionPlan(input: {
     `Assigned Available capabilities only: ${assignedCapabilities.map((c) => c.capability_id).join(", ") || "none"}.`,
   ];
 
+  if (input.intent === "build") {
+    acceptanceCriteria.push(
+      "Each stage artefact passes its handoff contract before any downstream stage consumes it.",
+      "Scope, design and release only advance on explicit operator approval at each human gate.",
+    );
+  }
+
   if (capabilityLimitations.length > 0) {
     acceptanceCriteria.push(
       "Capability limitations disclosed to the operator (no silent substitution of Planned roles).",
@@ -339,7 +379,9 @@ export function generateMissionPlan(input: {
       ? "Produce a reviewable investigation brief with classified evidence and a clear recommendation."
       : input.intent === "prototype"
         ? "Produce a product brief plus a lightweight interactive HTML prototype (not a production deploy)."
-        : "Diagnose friction, recommend improvements, and sketch an improved flow.";
+        : input.intent === "build"
+          ? "Run the eight-stage product lifecycle: charter → parallel discovery → PRD → design → sandboxed build → automated verification → release candidate → evolution plan, with human gates on scope, design and release."
+          : "Diagnose friction, recommend improvements, and sketch an improved flow.";
 
   if (capabilityLimitations.length > 0) {
     summary += ` Limitation: ${capabilityLimitations[0]!.message}`;

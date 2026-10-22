@@ -1,6 +1,6 @@
 /** Stage 1 Supervised AI Workforce domain types (PRD v1.0). */
 
-export const MISSION_INTENTS = ["investigate", "prototype", "improve"] as const;
+export const MISSION_INTENTS = ["investigate", "prototype", "improve", "build"] as const;
 export type MissionIntent = (typeof MISSION_INTENTS)[number];
 
 export const MISSION_STATUSES = [
@@ -65,8 +65,47 @@ export type ClarificationQuestion = {
   required: boolean;
 };
 
+/**
+ * DXSI product lifecycle stages (vision §3). Every task in a `build` mission
+ * belongs to exactly one stage; other intents leave `stage` undefined.
+ */
+export const LIFECYCLE_STAGES = [
+  "capture",
+  "discover",
+  "define",
+  "design",
+  "build",
+  "verify",
+  "release",
+  "evolve",
+] as const;
+export type LifecycleStage = (typeof LIFECYCLE_STAGES)[number];
+
+export const LIFECYCLE_STAGE_LABELS: Record<LifecycleStage, string> = {
+  capture: "1 · Capture the mission",
+  discover: "2 · Discover & research",
+  define: "3 · Define the opportunity",
+  design: "4 · Design the solution",
+  build: "5 · Coordinate the build",
+  verify: "6 · Verify the product",
+  release: "7 · Approve & release",
+  evolve: "8 · Learn & evolve",
+};
+
+/** How an artefact's content was produced — always disclosed to the operator. */
+export type GenerationMode = "model" | "simulated";
+
 export type PlannedTask = {
   key: string;
+  /** Task keys that must be completed before this task may run (DAG edges). */
+  dependsOn?: string[];
+  stage?: LifecycleStage;
+  /** Human gate: never executed by an agent; completes only on explicit operator approval. */
+  gate?: boolean;
+  /** Markdown `## ` headings the produced artefact must contain (handoff contract). */
+  requiredSections?: string[];
+  /** Artefact kind this task produces, when it produces one. */
+  produces?: WfArtefact["kind"];
   title: string;
   description: string;
   acceptanceCriteria: string;
@@ -161,6 +200,13 @@ export type WfMissionTask = {
   actualUsage: number;
   evidenceNotes: EvidenceItem[];
   capabilityIds: string[];
+  /** Stable key within the mission plan; falls back to `t<sortOrder>` for legacy rows. */
+  key: string;
+  dependsOn: string[];
+  stage: LifecycleStage | null;
+  gate: boolean;
+  requiredSections: string[];
+  produces: WfArtefact["kind"] | null;
   startedAt: string | null;
   completedAt: string | null;
   createdAt: string;
@@ -172,7 +218,21 @@ export type WfArtefact = {
   missionId: string;
   workspaceId: string;
   taskId: string | null;
-  kind: "brief" | "prototype_html" | "improvement_memo" | "delivery_report" | "note";
+  kind:
+    | "brief"
+    | "prototype_html"
+    | "improvement_memo"
+    | "delivery_report"
+    | "note"
+    | "mission_charter"
+    | "research_dossier"
+    | "tech_radar"
+    | "prd"
+    | "design_spec"
+    | "architecture"
+    | "test_report"
+    | "release_pack"
+    | "evolution_plan";
   title: string;
   content: string;
   contentFormat: "markdown" | "html" | "json";
@@ -280,4 +340,5 @@ export const INTENT_LABELS: Record<MissionIntent, string> = {
   investigate: "Investigate",
   prototype: "Prototype",
   improve: "Improve",
+  build: "Build a product",
 };

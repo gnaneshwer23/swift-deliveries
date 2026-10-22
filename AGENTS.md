@@ -16,6 +16,13 @@ Source: docs/prd-deliverx-supervised-ai-workforce.md. Gap analysis: docs/prd-gap
 - Quality labels are Agent-reviewed / Automatically tested / Human-reviewed / Externally attested — never a generic “Verified”.
 - Usage ceilings hard-stop further billable steps. Stage 1 uses deterministic planner/executor stubs unless model keys exist.
 - New persistence uses additive `wf_*` tables with RLS workspace isolation; do not mutate legacy Delivery-OS `projects`/`tasks`/`artefacts`.
+- Mission tasks form a DAG (`src/lib/workforce/graph.ts`); a task never runs on a failed, blocked or unapproved upstream — why: errors cascade through handoffs.
+- Lifecycle gates are human-only: agents and the scheduler can block on a gate but never pass one.
+- Every stage artefact must pass its handoff contract (`contracts.ts`) before downstream stages consume it; failures are persisted and reported, never dropped.
+- Programme decisions use `src/lib/programme/deliberation.ts`: independent positions before critique, vetoes as hard rules, deterministic tally; high-impact or evidence-gap decisions always go to the founder — why: agent agreement on one model is not independent verification.
+- Never fabricate customers, interviews or meetings: synthetic interviews are rehearsal-only and labelled; only founder-supplied notes count as evidence. Exports must state what is simulated in `project-manifest.json`.
+- Books/publishing and regulated healthcare are out of scope for DeliverX.
+- Every artefact discloses how it was produced (model id or simulated draft). Model mode is opt-in and never receives text that looks like personal identifiers.
 
 ## DeliverX Workspace (B2B) product rules
 Source: docs/workspace-one-page-spec.md. These rules govern every Workspace feature.

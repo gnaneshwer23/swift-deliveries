@@ -91,7 +91,7 @@ export type AssignedCapability = {
 };
 
 export type CapabilityMatchLimitation = {
-  code: "department_unavailable" | "capability_not_available" | "no_match";
+  code: "department_unavailable" | "capability_not_available" | "no_match" | "out_of_scope";
   message: string;
   requested_department?: string;
   requested_capability_ids?: string[];

@@ -23,6 +23,7 @@ import {
 import {
   Compass,
   FlaskConical,
+  Rocket,
   RotateCcw,
   Search,
   ShieldCheck,
@@ -77,8 +78,8 @@ const INTENTS: Array<{
         text: "Investigate enterprise buyer objections to usage-based credit ceilings for product operations teams.",
       },
       {
-        label: "UK/EU Healthcare Data Residency Audit",
-        text: "Investigate UK NHS and Higher-Ed procurement requirements for AI-assisted project delivery workspaces.",
+        label: "UK/EU Data Residency Requirements",
+        text: "Investigate UK and EU public-sector procurement and data residency requirements for AI-assisted project delivery workspaces.",
       },
     ],
   },
@@ -132,6 +133,31 @@ const INTENTS: Array<{
       },
     ],
   },
+  {
+    intent: "build",
+    icon: Rocket,
+    duotoneIcon: ProductPrototypeIcon,
+    tag: "End-to-End Product Mission",
+    blurb:
+      "Take one objective through all eight lifecycle stages — parallel discovery, PRD, design, sandboxed build, verification and release — with human gates at scope, design and release.",
+    deliverable: "Charter → PRD → Design → Prototype → Verified Release Pack",
+    placeholder:
+      "Build a subscription meal-planning app for busy parents that turns pantry photos into weekly plans and shopping lists…",
+    samples: [
+      {
+        label: "Freelancer Invoicing Assistant",
+        text: "Build an invoicing and late-payment assistant for UK freelancers that drafts invoices, tracks payment status and nudges clients politely.",
+      },
+      {
+        label: "SME Cash-Flow Forecaster",
+        text: "Build a cash-flow forecasting tool for UK small businesses that flags shortfalls six weeks ahead for founders and their accountants.",
+      },
+      {
+        label: "Research-to-Roadmap Radar",
+        text: "Build a technology radar for product teams that turns new research papers into adopt, experiment, monitor or reject recommendations.",
+      },
+    ],
+  },
 ];
 
 function CommandHome() {
@@ -144,7 +170,7 @@ function CommandHome() {
   const [newProjectName, setNewProjectName] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const [missionFilter, setMissionFilter] = useState<
-    "all" | "awaiting" | "completed" | "investigate" | "prototype" | "improve"
+    "all" | "awaiting" | "completed" | "investigate" | "prototype" | "improve" | "build"
   >("all");
 
   // Support deep-linked ?intent=...&prompt=... from the landing page Product Dashboard & cards
@@ -153,7 +179,12 @@ function CommandHome() {
     const params = new URLSearchParams(window.location.search);
     const qIntent = params.get("intent");
     const qPrompt = params.get("prompt");
-    if (qIntent === "investigate" || qIntent === "prototype" || qIntent === "improve") {
+    if (
+      qIntent === "investigate" ||
+      qIntent === "prototype" ||
+      qIntent === "improve" ||
+      qIntent === "build"
+    ) {
       setIntent(qIntent);
     }
     if (qPrompt && qPrompt.trim().length > 0) {
@@ -260,7 +291,8 @@ function CommandHome() {
     if (
       missionFilter === "investigate" ||
       missionFilter === "prototype" ||
-      missionFilter === "improve"
+      missionFilter === "improve" ||
+      missionFilter === "build"
     )
       return m.intent === missionFilter;
     return true;
@@ -421,14 +453,30 @@ function CommandHome() {
             const Icon = item.icon;
             const DuotoneIcon = item.duotoneIcon;
             const active = intent === item.intent;
+            const unavailable = item.intent === "build" && !data.features.productMission;
             return (
               <button
                 key={item.intent}
                 type="button"
                 role="tab"
                 aria-selected={active}
+                aria-disabled={unavailable}
+                title={
+                  unavailable
+                    ? "Available once the product-mission database migration is applied."
+                    : undefined
+                }
                 className={`cc-intent${active ? " active" : ""}`}
-                onClick={() => setIntent(item.intent)}
+                onClick={() => {
+                  if (unavailable) {
+                    setFormError(
+                      "Product missions are not enabled on this workspace yet: the product-mission database migration has not been applied.",
+                    );
+                    return;
+                  }
+                  setFormError(null);
+                  setIntent(item.intent);
+                }}
               >
                 <div className="cc-intent-top-row">
                   <div className="cc-intent-duotone-box" aria-hidden="true">
@@ -454,7 +502,22 @@ function CommandHome() {
             <label className="cc-label mb-0" htmlFor="mission-request">
               Mission brief ({INTENT_LABELS[activeIntent.intent]})
             </label>
-            <span className="cc-chip">Output: {activeIntent.deliverable}</span>
+            <span className="flex flex-wrap gap-1.5">
+              <span className="cc-chip">Output: {activeIntent.deliverable}</span>
+              <span
+                className="cc-gen-badge"
+                data-mode={data.features.modelMode.enabled ? "model" : "simulated"}
+                title={
+                  data.features.modelMode.enabled
+                    ? `Stage outputs are generated by ${data.features.modelMode.model} via ${data.features.modelMode.provider}.`
+                    : "No model is enabled: stage outputs are deterministic, clearly labelled simulated drafts."
+                }
+              >
+                {data.features.modelMode.enabled
+                  ? `Model: ${data.features.modelMode.model}`
+                  : "Simulated mode"}
+              </span>
+            </span>
           </div>
           <textarea
             id="mission-request"
@@ -537,6 +600,7 @@ function CommandHome() {
                 { id: "investigate", label: "Investigate" },
                 { id: "prototype", label: "Prototype" },
                 { id: "improve", label: "Improve" },
+                { id: "build", label: "Product" },
               ] as const
             ).map((tab) => (
               <button

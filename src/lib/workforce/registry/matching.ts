@@ -16,10 +16,6 @@ import type {
 /** Department keyword hints used to detect requests for unavailable specialist capacity. */
 const DEPARTMENT_HINTS: Array<{ department: string; patterns: RegExp[] }> = [
   {
-    department: "Healthcare and Life Sciences",
-    patterns: [/\b(healthcare|clinical|biomedical|patient|pharma|life sciences?|HIPAA|NHS)\b/i],
-  },
-  {
     department: "Security, Privacy and Governance",
     patterns: [/\b(threat model|penetration|SOC 2|GDPR compliance audit)\b/i],
   },
@@ -35,17 +31,20 @@ const DEPARTMENT_HINTS: Array<{ department: string; patterns: RegExp[] }> = [
     department: "Finance, Legal and Governance",
     patterns: [/\b(financial model|unit economics|contract review|procurement)\b/i],
   },
-  {
-    department: "Books, Education and Publishing",
-    patterns: [/\b(curriculum|textbook|course production|publishing)\b/i],
-  },
 ];
 
-const ROLE_HINTS: Array<{ id: string; patterns: RegExp[] }> = [
-  { id: "DX-091", patterns: [/\bclinical literature\b/i] },
-  { id: "DX-092", patterns: [/\bbiomedical research\b/i] },
-  { id: "DX-100", patterns: [/\bclinical safety\b/i] },
-];
+const ROLE_HINTS: Array<{ id: string; patterns: RegExp[] }> = [];
+
+/**
+ * Regulated domains DeliverX deliberately does not serve (they need a clinical
+ * or regulatory operating environment the workforce does not provide).
+ */
+const REGULATED_DOMAIN =
+  /\b(clinical|clinicians?|patients?|medical device|diagnos(?:is|tic|e)|pharma(?:ceutical)?|biomedical|HIPAA|NHS|SaMD|MHRA|FDA)\b/i;
+
+export function isRegulatedDomainRequest(text: string): boolean {
+  return REGULATED_DOMAIN.test(text);
+}
 
 function roleInPlan(capability: CapabilityRecord, intent: MissionIntent): string {
   switch (capability.capability_id) {
@@ -130,7 +129,8 @@ function detectUnavailableCapabilityIds(requestText: string): string[] {
  *
  * Governance:
  * - Never silently substitute a Planned capability as operational.
- * - If the request needs an unavailable department (e.g. Healthcare DX-091+),
+ * - Regulated healthcare/clinical requests are disclosed as out of scope.
+ * - If the request needs an unavailable department,
  *   disclose the limitation and offer a bounded alternative from Available roles.
  * - DX-148/DX-149 style monitoring may advise later; budget/permission ceilings
  *   remain deterministic infrastructure services (see registry infrastructure_services).
@@ -153,6 +153,14 @@ export function matchCapabilitiesForMission(input: {
   }
 
   const limitations: CapabilityMatchLimitation[] = [];
+  if (isRegulatedDomainRequest(input.requestText)) {
+    limitations.push({
+      code: "out_of_scope",
+      message:
+        "Regulated healthcare/clinical work is out of scope: DeliverX does not operate in a clinical or medical-device regulatory environment. Outputs are generic product work only and must not be used for clinical decisions.",
+      requested_department: "Regulated healthcare",
+    });
+  }
   const unavailableDepts = detectUnavailableDepartments(input.requestText);
   const unavailableIds = detectUnavailableCapabilityIds(input.requestText);
 
@@ -166,7 +174,7 @@ export function matchCapabilitiesForMission(input: {
       requested_capability_ids: plannedIds,
       alternative: {
         summary:
-          "Bounded alternative: run this mission with Available Wave 1 research/product capabilities, clearly labelling specialist healthcare/domain claims as out of scope.",
+          "Bounded alternative: run this mission with Available Wave 1 research/product capabilities, clearly labelling specialist domain claims as out of scope.",
         capability_ids: assigned.map((a) => a.capability_id),
       },
     });

@@ -61,6 +61,8 @@ import { Route as AuthenticatedWorkspaceReviewsRouteImport } from './routes/_aut
 import { Route as AuthenticatedWorkspaceTeamRouteImport } from './routes/_authenticated/workspace.team'
 import { Route as AuthenticatedWorkspaceTimelineRouteImport } from './routes/_authenticated/workspace.timeline'
 import { Route as AuthenticatedCommandMissionsMissionIdRouteImport } from './routes/_authenticated/command.missions.$missionId'
+import { Route as AuthenticatedCommandProgrammesIndexRouteImport } from './routes/_authenticated/command.programmes.index'
+import { Route as AuthenticatedCommandProgrammesProgrammeIdRouteImport } from './routes/_authenticated/command.programmes.$programmeId'
 import { Route as AuthenticatedWorkspaceExperienceIndexRouteImport } from './routes/_authenticated/workspace.experience.index'
 import { Route as AuthenticatedWorkspaceExperienceTaskKeyRouteImport } from './routes/_authenticated/workspace.experience.$taskKey'
 import { Route as ApiPublicMonitoringClientErrorRouteImport } from './routes/api/public/monitoring/client-error'
@@ -351,6 +353,18 @@ const AuthenticatedCommandMissionsMissionIdRoute =
     path: '/missions/$missionId',
     getParentRoute: () => AuthenticatedCommandRoute,
   } as any)
+const AuthenticatedCommandProgrammesIndexRoute =
+  AuthenticatedCommandProgrammesIndexRouteImport.update({
+    id: '/programmes/',
+    path: '/programmes/',
+    getParentRoute: () => AuthenticatedCommandRoute,
+  } as any)
+const AuthenticatedCommandProgrammesProgrammeIdRoute =
+  AuthenticatedCommandProgrammesProgrammeIdRouteImport.update({
+    id: '/programmes/$programmeId',
+    path: '/programmes/$programmeId',
+    getParentRoute: () => AuthenticatedCommandRoute,
+  } as any)
 const AuthenticatedWorkspaceExperienceIndexRoute =
   AuthenticatedWorkspaceExperienceIndexRouteImport.update({
     id: '/',
@@ -450,6 +464,7 @@ export interface FileRoutesByFullPath {
   '/command/': typeof AuthenticatedCommandIndexRoute
   '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/command/missions/$missionId': typeof AuthenticatedCommandMissionsMissionIdRoute
+  '/command/programmes/$programmeId': typeof AuthenticatedCommandProgrammesProgrammeIdRoute
   '/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
   '/api/public/monitoring/client-error': typeof ApiPublicMonitoringClientErrorRoute
   '/api/public/monitoring/health': typeof ApiPublicMonitoringHealthRoute
@@ -457,6 +472,7 @@ export interface FileRoutesByFullPath {
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
+  '/command/programmes/': typeof AuthenticatedCommandProgrammesIndexRoute
   '/workspace/experience/': typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
 export interface FileRoutesByTo {
@@ -508,6 +524,7 @@ export interface FileRoutesByTo {
   '/command': typeof AuthenticatedCommandIndexRoute
   '/workspace': typeof AuthenticatedWorkspaceIndexRoute
   '/command/missions/$missionId': typeof AuthenticatedCommandMissionsMissionIdRoute
+  '/command/programmes/$programmeId': typeof AuthenticatedCommandProgrammesProgrammeIdRoute
   '/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
   '/api/public/monitoring/client-error': typeof ApiPublicMonitoringClientErrorRoute
   '/api/public/monitoring/health': typeof ApiPublicMonitoringHealthRoute
@@ -515,6 +532,7 @@ export interface FileRoutesByTo {
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
+  '/command/programmes': typeof AuthenticatedCommandProgrammesIndexRoute
   '/workspace/experience': typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
 export interface FileRoutesById {
@@ -571,6 +589,7 @@ export interface FileRoutesById {
   '/_authenticated/command/': typeof AuthenticatedCommandIndexRoute
   '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/_authenticated/command/missions/$missionId': typeof AuthenticatedCommandMissionsMissionIdRoute
+  '/_authenticated/command/programmes/$programmeId': typeof AuthenticatedCommandProgrammesProgrammeIdRoute
   '/_authenticated/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
   '/api/public/monitoring/client-error': typeof ApiPublicMonitoringClientErrorRoute
   '/api/public/monitoring/health': typeof ApiPublicMonitoringHealthRoute
@@ -578,6 +597,7 @@ export interface FileRoutesById {
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
+  '/_authenticated/command/programmes/': typeof AuthenticatedCommandProgrammesIndexRoute
   '/_authenticated/workspace/experience/': typeof AuthenticatedWorkspaceExperienceIndexRoute
 }
 export interface FileRouteTypes {
@@ -634,6 +654,7 @@ export interface FileRouteTypes {
     | '/command/'
     | '/workspace/'
     | '/command/missions/$missionId'
+    | '/command/programmes/$programmeId'
     | '/workspace/experience/$taskKey'
     | '/api/public/monitoring/client-error'
     | '/api/public/monitoring/health'
@@ -641,6 +662,7 @@ export interface FileRouteTypes {
     | '/api/public/payments/webhook'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
+    | '/command/programmes/'
     | '/workspace/experience/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -692,6 +714,7 @@ export interface FileRouteTypes {
     | '/command'
     | '/workspace'
     | '/command/missions/$missionId'
+    | '/command/programmes/$programmeId'
     | '/workspace/experience/$taskKey'
     | '/api/public/monitoring/client-error'
     | '/api/public/monitoring/health'
@@ -699,6 +722,7 @@ export interface FileRouteTypes {
     | '/api/public/payments/webhook'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
+    | '/command/programmes'
     | '/workspace/experience'
   id:
     | '__root__'
@@ -754,6 +778,7 @@ export interface FileRouteTypes {
     | '/_authenticated/command/'
     | '/_authenticated/workspace/'
     | '/_authenticated/command/missions/$missionId'
+    | '/_authenticated/command/programmes/$programmeId'
     | '/_authenticated/workspace/experience/$taskKey'
     | '/api/public/monitoring/client-error'
     | '/api/public/monitoring/health'
@@ -761,6 +786,7 @@ export interface FileRouteTypes {
     | '/api/public/payments/webhook'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
+    | '/_authenticated/command/programmes/'
     | '/_authenticated/workspace/experience/'
   fileRoutesById: FileRoutesById
 }
@@ -1166,6 +1192,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCommandMissionsMissionIdRouteImport
       parentRoute: typeof AuthenticatedCommandRoute
     }
+    '/_authenticated/command/programmes/': {
+      id: '/_authenticated/command/programmes/'
+      path: '/programmes'
+      fullPath: '/command/programmes/'
+      preLoaderRoute: typeof AuthenticatedCommandProgrammesIndexRouteImport
+      parentRoute: typeof AuthenticatedCommandRoute
+    }
+    '/_authenticated/command/programmes/$programmeId': {
+      id: '/_authenticated/command/programmes/$programmeId'
+      path: '/programmes/$programmeId'
+      fullPath: '/command/programmes/$programmeId'
+      preLoaderRoute: typeof AuthenticatedCommandProgrammesProgrammeIdRouteImport
+      parentRoute: typeof AuthenticatedCommandRoute
+    }
     '/_authenticated/workspace/experience/': {
       id: '/_authenticated/workspace/experience/'
       path: '/'
@@ -1230,6 +1270,8 @@ interface AuthenticatedCommandRouteChildren {
   AuthenticatedCommandProjectsRoute: typeof AuthenticatedCommandProjectsRoute
   AuthenticatedCommandIndexRoute: typeof AuthenticatedCommandIndexRoute
   AuthenticatedCommandMissionsMissionIdRoute: typeof AuthenticatedCommandMissionsMissionIdRoute
+  AuthenticatedCommandProgrammesProgrammeIdRoute: typeof AuthenticatedCommandProgrammesProgrammeIdRoute
+  AuthenticatedCommandProgrammesIndexRoute: typeof AuthenticatedCommandProgrammesIndexRoute
 }
 
 const AuthenticatedCommandRouteChildren: AuthenticatedCommandRouteChildren = {
@@ -1238,6 +1280,10 @@ const AuthenticatedCommandRouteChildren: AuthenticatedCommandRouteChildren = {
   AuthenticatedCommandIndexRoute: AuthenticatedCommandIndexRoute,
   AuthenticatedCommandMissionsMissionIdRoute:
     AuthenticatedCommandMissionsMissionIdRoute,
+  AuthenticatedCommandProgrammesProgrammeIdRoute:
+    AuthenticatedCommandProgrammesProgrammeIdRoute,
+  AuthenticatedCommandProgrammesIndexRoute:
+    AuthenticatedCommandProgrammesIndexRoute,
 }
 
 const AuthenticatedCommandRouteWithChildren =

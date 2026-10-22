@@ -3,7 +3,7 @@ import { INTENT_LABELS, type MissionIntent } from "@/lib/workforce/types";
 import { CheckCircle2, Clock3, FlaskConical, Search, ShieldCheck, Wrench } from "lucide-react";
 
 const SCENARIOS: Record<
-  MissionIntent,
+  Exclude<MissionIntent, "build">,
   {
     request: string;
     permission: string;
@@ -54,7 +54,8 @@ const SCENARIOS: Record<
  * Clean, Finsage-inspired 3D sculptural hero showcase with minimal interactive plan card.
  */
 export function CommandCentreComposition() {
-  const [selectedIntent, setSelectedIntent] = useState<MissionIntent>("investigate");
+  const [selectedIntent, setSelectedIntent] =
+    useState<Exclude<MissionIntent, "build">>("investigate");
   const active = SCENARIOS[selectedIntent];
 
   return (

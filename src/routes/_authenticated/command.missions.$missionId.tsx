@@ -8,6 +8,7 @@ import {
   approveExternalActions,
   approveMissionPlan,
   cancelMission,
+  decideStageGate,
   markArtefactHumanReviewed,
   rejectMissionPlan,
   reviseMissionScope,
@@ -16,12 +17,18 @@ import {
 import {
   EVIDENCE_LABEL_DISPLAY,
   INTENT_LABELS,
+  LIFECYCLE_STAGES,
+  LIFECYCLE_STAGE_LABELS,
   PERMISSION_LABELS,
   QUALITY_LABEL_DISPLAY,
   STATUS_LABELS,
+  type LifecycleStage,
   type PermissionLevel,
   type QualityLabel,
+  type WfArtefact,
+  type WfMissionTask,
 } from "@/lib/workforce/types";
+import { GENERATION_SOURCE_PREFIX } from "@/lib/workforce/stage-artefacts";
 import { CheckCircle2, Edit3, History, ShieldCheck, XCircle } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/command/missions/$missionId")({
@@ -53,6 +60,8 @@ function MissionDetail() {
   const [revisedText, setRevisedText] = useState("");
   const [rejectReason, setRejectReason] = useState("");
   const [showRejectBox, setShowRejectBox] = useState(false);
+  const [runNote, setRunNote] = useState<string | null>(null);
+  const [gateNote, setGateNote] = useState("");
 
   const invalidate = async () => {
     await queryClient.invalidateQueries({ queryKey: ["command", "mission", missionId] });
@@ -125,6 +134,7 @@ function MissionDetail() {
     mutationFn: () => runMissionStep({ data: { missionId } }),
     onSuccess: async (result) => {
       setActionError(null);
+      setRunNote(result.note ?? null);
       await invalidate();
       if (result.done) setAutoRunning(false);
     },
@@ -154,11 +164,31 @@ function MissionDetail() {
     },
   });
 
+  const decideGate = useMutation({
+    mutationFn: (input: { taskId: string; decision: "approve" | "reject" }) =>
+      decideStageGate({
+        data: {
+          missionId,
+          taskId: input.taskId,
+          decision: input.decision,
+          note: gateNote.trim() || undefined,
+        },
+      }),
+    onSuccess: async () => {
+      setGateNote("");
+      setActionError(null);
+      setRunNote(null);
+      await invalidate();
+    },
+    onError: (e) => setActionError(e instanceof Error ? e.message : "Gate decision failed"),
+  });
+
   useEffect(() => {
     if (!autoRunning || !query.data) return;
     const status = query.data.mission.status;
     if (status !== "queued" && status !== "running") {
-      if (status !== "blocked") setAutoRunning(false);
+      // Blocked missions wait for a human decision; release the run button.
+      setAutoRunning(false);
       return;
     }
     if (step.isPending) return;
@@ -541,7 +571,9 @@ function MissionDetail() {
                     {autoRunning || step.isPending ? "Running…" : "Run next step →"}
                   </button>
                 )}
-                {mission.status === "blocked" && !mission.externalActionsApproved ? (
+                {mission.status === "blocked" &&
+                !mission.externalActionsApproved &&
+                tasks.some((t) => t.isExternal && t.status === "blocked") ? (
                   <button
                     type="button"
                     className="cc-btn cc-btn-secondary"
@@ -566,28 +598,84 @@ function MissionDetail() {
             {!tasks.length ? (
               <p className="cc-muted mt-4">Tasks appear after clarifications are complete.</p>
             ) : (
-              <ol className="cc-task-list mt-4">
-                {tasks.map((t) => (
-                  <li key={t.id} className={`cc-task cc-task-${t.status}`}>
-                    <div className="cc-task-head">
-                      <strong>
-                        {t.sortOrder + 1}. {t.title}
-                      </strong>
-                      <span>{t.status}</span>
-                    </div>
-                    <p className="cc-muted">{t.description}</p>
-                    <p className="cc-task-meta">
-                      {PERMISSION_LABELS[t.permissionRequired]}
-                      {t.isExternal ? " · external" : ""} · est. {t.estimatedUsage}
-                      {t.actualUsage ? ` · used ${t.actualUsage}` : ""}
-                      {t.capabilityIds.length ? ` · ${t.capabilityIds.join(", ")}` : ""}
-                    </p>
-                    <p className="text-xs mt-1">
-                      <em>Acceptance:</em> {t.acceptanceCriteria}
-                    </p>
-                  </li>
-                ))}
-              </ol>
+              <>
+                {mission.intent === "build" ? <StageTrack tasks={tasks} /> : null}
+                {runNote ? <p className="cc-muted mt-3 text-sm">{runNote}</p> : null}
+                <ol className="cc-task-list mt-4">
+                  {tasks.map((t) => (
+                    <li key={t.id} className={`cc-task cc-task-${t.status}`}>
+                      <div className="cc-task-head">
+                        <strong>
+                          {t.sortOrder + 1}. {t.title}
+                        </strong>
+                        <span>
+                          {t.gate && t.status === "blocked" ? "awaiting your decision" : t.status}
+                        </span>
+                      </div>
+                      {t.stage || t.dependsOn.length ? (
+                        <p className="cc-task-meta">
+                          {t.stage ? LIFECYCLE_STAGE_LABELS[t.stage] : ""}
+                          {t.dependsOn.length
+                            ? `${t.stage ? " · " : ""}after ${t.dependsOn
+                                .map((k) => tasks.find((x) => x.key === k)?.title ?? k)
+                                .join(", ")}`
+                            : ""}
+                        </p>
+                      ) : null}
+                      {t.gate && t.status === "blocked" ? (
+                        <div className="cc-gate-box">
+                          <p className="text-sm">
+                            Review the upstream artefacts, then approve to let the workforce
+                            continue or reject to stop downstream stages. Approving marks those
+                            artefacts Human-reviewed.
+                          </p>
+                          <label className="cc-label mt-2" htmlFor={`gate-note-${t.id}`}>
+                            Decision note (optional, recorded in the audit trail)
+                          </label>
+                          <input
+                            id={`gate-note-${t.id}`}
+                            className="cc-input"
+                            value={gateNote}
+                            onChange={(e) => setGateNote(e.target.value)}
+                          />
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            <button
+                              type="button"
+                              className="cc-btn cc-btn-primary"
+                              disabled={decideGate.isPending}
+                              onClick={() =>
+                                decideGate.mutate({ taskId: t.id, decision: "approve" })
+                              }
+                            >
+                              <CheckCircle2 className="size-4" /> Approve &amp; continue
+                            </button>
+                            <button
+                              type="button"
+                              className="cc-btn cc-btn-ghost"
+                              disabled={decideGate.isPending}
+                              onClick={() =>
+                                decideGate.mutate({ taskId: t.id, decision: "reject" })
+                              }
+                            >
+                              <XCircle className="size-4" /> Reject
+                            </button>
+                          </div>
+                        </div>
+                      ) : null}
+                      <p className="cc-muted">{t.description}</p>
+                      <p className="cc-task-meta">
+                        {PERMISSION_LABELS[t.permissionRequired]}
+                        {t.isExternal ? " · external" : ""} · est. {t.estimatedUsage}
+                        {t.actualUsage ? ` · used ${t.actualUsage}` : ""}
+                        {t.capabilityIds.length ? ` · ${t.capabilityIds.join(", ")}` : ""}
+                      </p>
+                      <p className="text-xs mt-1">
+                        <em>Acceptance:</em> {t.acceptanceCriteria}
+                      </p>
+                    </li>
+                  ))}
+                </ol>
+              </>
             )}
           </section>
 
@@ -657,6 +745,7 @@ function MissionDetail() {
               <div className="cc-artefact-view mt-3">
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                   <div className="flex flex-wrap gap-1.5">
+                    <GenerationBadge artefact={selectedArtefact} />
                     {selectedArtefact.qualityLabels.map((q) => (
                       <span key={q} className="cc-chip">
                         {QUALITY_LABEL_DISPLAY[q]}
@@ -774,5 +863,54 @@ function MissionDetail() {
         </aside>
       </div>
     </CommandShell>
+  );
+}
+
+function stageState(tasks: WfMissionTask[], stage: LifecycleStage): string {
+  const inStage = tasks.filter((t) => t.stage === stage);
+  if (!inStage.length) return "idle";
+  if (inStage.some((t) => t.status === "failed")) return "failed";
+  if (inStage.some((t) => t.gate && t.status === "blocked")) return "gate";
+  if (inStage.every((t) => t.status === "completed" || t.status === "skipped")) return "done";
+  if (inStage.some((t) => t.status === "completed" || t.status === "running")) return "active";
+  return "idle";
+}
+
+const STAGE_STATE_TEXT: Record<string, string> = {
+  idle: "Not started",
+  active: "In progress",
+  done: "Complete",
+  gate: "Awaiting approval",
+  failed: "Stopped",
+};
+
+function StageTrack({ tasks }: { tasks: WfMissionTask[] }) {
+  return (
+    <ol className="cc-stage-track" aria-label="Product lifecycle stages">
+      {LIFECYCLE_STAGES.map((stage) => {
+        const state = stageState(tasks, stage);
+        return (
+          <li key={stage} className="cc-stage" data-state={state}>
+            <strong>{LIFECYCLE_STAGE_LABELS[stage]}</strong>
+            {STAGE_STATE_TEXT[state]}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+function GenerationBadge({ artefact }: { artefact: WfArtefact }) {
+  const source = artefact.evidenceItems.find((e) =>
+    e.source?.startsWith(GENERATION_SOURCE_PREFIX),
+  )?.source;
+  if (!source) return null;
+  const isModel = source.startsWith(`${GENERATION_SOURCE_PREFIX}model:`);
+  return (
+    <span className="cc-gen-badge" data-mode={isModel ? "model" : "simulated"}>
+      {isModel
+        ? `Model: ${source.slice(`${GENERATION_SOURCE_PREFIX}model:`.length)}`
+        : "Simulated draft"}
+    </span>
   );
 }

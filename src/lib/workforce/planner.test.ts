@@ -29,7 +29,7 @@ describe("generateMissionPlan", () => {
     expect(plan.tasks.every((t) => t.capabilityIds.every((id) => id.startsWith("DX-")))).toBe(true);
   });
 
-  it("discloses healthcare limitation and still only assigns Available roles", () => {
+  it("discloses regulated healthcare as out of scope and still only assigns Available roles", () => {
     const plan = generateMissionPlan({
       intent: "investigate",
       requestText:

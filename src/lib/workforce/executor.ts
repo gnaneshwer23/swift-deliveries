@@ -1,8 +1,10 @@
 import { requiresExternalApproval } from "./permissions";
+import { stageArtefact } from "./stage-artefacts";
 import { canAfford, chargeUsage, type UsageBudget } from "./usage";
 import type {
   DeliveryReport,
   EvidenceItem,
+  GenerationMode,
   MissionIntent,
   PermissionLevel,
   QualityLabel,
@@ -26,7 +28,26 @@ export type ExecuteStepInput = {
   task: WfMissionTask;
   budget: UsageBudget;
   now?: string;
+  /** Artefacts already produced by this mission (upstream stage outputs). */
+  upstream?: UpstreamArtefact[];
+  /** Model output for this task; when absent the deterministic simulated draft is used. */
+  generated?: GeneratedContent;
 };
+
+export type UpstreamArtefact = Pick<WfArtefact, "kind" | "title" | "content" | "contentFormat"> & {
+  taskKey: string | null;
+  requiredSections: string[];
+};
+
+export type GeneratedContent = {
+  content: string;
+  mode: GenerationMode;
+  model?: string;
+  /** Why the run fell back to simulated mode, when it did. */
+  note?: string;
+};
+
+type ArtefactDraft = Omit<WfArtefact, "id" | "createdAt" | "updatedAt">;
 
 export type ExecuteStepResult =
   | {
@@ -38,9 +59,18 @@ export type ExecuteStepResult =
     }
   | {
       ok: false;
-      reason: "ceiling_reached" | "external_approval_required" | "permission_denied";
+      reason:
+        | "ceiling_reached"
+        | "external_approval_required"
+        | "permission_denied"
+        | "human_gate"
+        | "contract_failed";
       task: WfMissionTask;
       nextBudget: UsageBudget;
+      /** Contract/verification failures still persist their (failing) artefact for review. */
+      artefact?: ArtefactDraft | null;
+      usageCharged?: number;
+      detail?: string | undefined;
     };
 
 function evidenceFor(intent: MissionIntent, request: string): EvidenceItem[] {
@@ -354,6 +384,15 @@ export function executeTaskStep(input: ExecuteStepInput): ExecuteStepResult {
   const now = input.now ?? new Date().toISOString();
   const { task, mission, budget } = input;
 
+  if (task.gate) {
+    return {
+      ok: false,
+      reason: "human_gate",
+      task: { ...task, status: "blocked", updatedAt: now },
+      nextBudget: budget,
+    };
+  }
+
   if (
     requiresExternalApproval(task.permissionRequired, mission.externalActionsApproved) ||
     (task.isExternal && !mission.externalActionsApproved)
@@ -402,13 +441,52 @@ export function executeTaskStep(input: ExecuteStepInput): ExecuteStepResult {
     };
   }
 
+  const nextBudget = { ceiling: budget.ceiling, consumed: charged.nextConsumed };
+
+  if (task.produces) {
+    const staged = stageArtefact(input);
+    if (!staged.passed) {
+      return {
+        ok: false,
+        reason: "contract_failed",
+        task: {
+          ...task,
+          status: "failed",
+          actualUsage: charged.charged,
+          startedAt: task.startedAt ?? now,
+          completedAt: now,
+          updatedAt: now,
+        },
+        nextBudget,
+        usageCharged: charged.charged,
+        artefact: staged.artefact,
+        detail: staged.detail,
+      };
+    }
+    return {
+      ok: true,
+      usageCharged: charged.charged,
+      nextBudget,
+      artefact: staged.artefact,
+      task: {
+        ...task,
+        status: "completed",
+        actualUsage: charged.charged,
+        evidenceNotes: staged.artefact.evidenceItems.slice(0, 2),
+        startedAt: task.startedAt ?? now,
+        completedAt: now,
+        updatedAt: now,
+      },
+    };
+  }
+
   const artefact = artefactForTask(mission, task);
   const evidenceNotes = evidenceFor(mission.intent, mission.requestText).slice(0, 2);
 
   return {
     ok: true,
     usageCharged: charged.charged,
-    nextBudget: { ceiling: budget.ceiling, consumed: charged.nextConsumed },
+    nextBudget,
     artefact,
     task: {
       ...task,
@@ -432,6 +510,7 @@ export function buildDeliveryReport(input: {
 }): DeliveryReport {
   const completed = input.tasks.filter((t) => t.status === "completed").length;
   const blocked = input.tasks.filter((t) => t.status === "blocked").length;
+  const failedTasks = input.tasks.filter((t) => t.status === "failed");
   const labels = Array.from(
     new Set(input.artefacts.flatMap((a) => a.qualityLabels)),
   ) as QualityLabel[];
@@ -441,10 +520,14 @@ export function buildDeliveryReport(input: {
       ? `Partial delivery — ${input.missionTitle}`
       : `Delivery complete — ${input.missionTitle}`,
     summary: input.partial
-      ? `Stopped after ${completed} task(s) with ${blocked} blocked (budget or external gate). Artefacts produced so far remain available.`
+      ? `Stopped after ${completed} task(s) with ${blocked} blocked and ${failedTasks.length} failed. Artefacts produced so far remain available.`
       : `Completed ${completed} task(s) for the ${input.intent} mission. Review artefacts and evidence labels below.`,
     outcomes: input.artefacts.map((a) => a.title),
     openRisks: [
+      ...failedTasks.map(
+        (t) =>
+          `${t.title} failed${t.gate ? " (rejected at human gate)" : " its quality contract"}; downstream stages did not run on its output.`,
+      ),
       ...(blocked
         ? ["One or more tasks remain blocked — approve Act externally or raise the usage ceiling."]
         : []),
@@ -466,6 +549,8 @@ export function nextMissionStatusAfterRun(input: {
 
   if (pending) return "blocked";
   if (input.hitCeiling && completed < total) return "partially_completed";
+  // A failed stage (contract failure or rejected gate) ends the mission honestly as partial.
+  if (input.tasks.some((t) => t.status === "failed")) return "partially_completed";
   if (blocked && completed < total) return "blocked";
   if (completed === total) return "completed";
   if (completed > 0) return "partially_completed";
