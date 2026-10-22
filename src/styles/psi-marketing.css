@@ -1044,3 +1044,207 @@
     animation: none;
   }
 }
+
+/* Process-first visual language: lightweight nodes, explicit arrows, restrained motion. */
+.psi-process {
+  width: 100%;
+  margin: 0;
+  min-width: 0;
+}
+.psi-process-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #34437a;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.psi-process-top > span {
+  font-weight: 600;
+}
+.psi-process-top button,
+.psi-flow-toggle {
+  border: 1px solid #dce0ef;
+  border-radius: 20px;
+  background: #fff;
+  padding: 7px 12px;
+  font-size: 11px;
+  color: #5c6381;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.psi-process-top button:disabled {
+  cursor: default;
+  color: #7e8497;
+}
+.psi-process-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  background-image: radial-gradient(#c7d2e533 0.8px, transparent 0.8px);
+  background-size: 20px 20px;
+}
+.psi-process-edge {
+  fill: none;
+  stroke: #b3b0dd;
+  stroke-width: 1.5;
+}
+.psi-process-node rect {
+  fill: #f7f8ff;
+  stroke: #bcc5fa;
+  stroke-width: 1.4;
+}
+.psi-process-gate rect {
+  fill: #effbf4;
+  stroke: #66d99b;
+  stroke-width: 1.4;
+}
+.psi-process-label {
+  fill: #303d78;
+  font-weight: 650;
+  font-size: 13px;
+}
+.psi-process-role {
+  fill: #7a849d;
+  font-size: 9px;
+}
+.psi-process-gate .psi-process-label {
+  fill: #187746;
+}
+.psi-process figcaption {
+  font-size: 11px;
+  line-height: 1.7;
+  color: #78839a;
+  margin: 10px 0 0;
+  text-align: left;
+}
+.psi-process-mobile {
+  display: none;
+}
+.psi-flow-toggle {
+  display: block;
+  margin: 0 0 10px auto;
+}
+.dxs .nav-links {
+  gap: 24px;
+}
+.dxs .nav-links a {
+  font-size: 14px;
+}
+@media (min-width: 960px) and (max-width: 1230px) {
+  .dxs .nav-links {
+    display: flex;
+  }
+  .dxs .btn-nav {
+    display: none;
+  }
+  .dxs .dxn-mobile {
+    display: none;
+  }
+}
+@media (max-width: 720px) {
+  .psi-process-svg {
+    display: none;
+  }
+  .psi-process-top button {
+    display: none;
+  }
+  .psi-process-mobile {
+    display: grid;
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+    gap: 20px;
+  }
+  .psi-process-mobile li {
+    position: relative;
+    border: 1px solid #c9d1f5;
+    border-radius: 10px;
+    padding: 12px 16px;
+    background: #f8f9ff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13px;
+  }
+  .psi-process-mobile li + li:before {
+    content: "↓";
+    position: absolute;
+    top: -21px;
+    left: 50%;
+    color: #8b80d0;
+  }
+  .psi-process-mobile li.is-gate {
+    border-color: #82d6a7;
+    background: #f0fcf5;
+  }
+  .psi-process-mobile span {
+    font-size: 11px;
+    color: #738099;
+  }
+}
+/* Give explanatory branches the full section width rather than shrinking labels. */
+.psi-split:has(> .psi-process) {
+  grid-template-columns: 1fr;
+  gap: 28px;
+}
+.psi-split:has(> .psi-process) > .psi-section-copy {
+  max-width: 740px;
+}
+.psi-split > .psi-process {
+  max-width: 1080px;
+  margin-inline: auto;
+}
+.psi-process-compact .psi-process-svg {
+  display: none;
+}
+.psi-process-compact .psi-process-top button {
+  display: none;
+}
+.psi-process-compact .psi-process-mobile {
+  display: grid;
+  list-style: none;
+  padding: 0;
+  gap: 10px;
+  margin: 20px 0;
+}
+.psi-process-compact .psi-process-mobile li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  border-left: 2px solid #c6c9f6;
+  padding: 5px 12px;
+}
+.psi-process-compact .psi-process-mobile span {
+  font-size: 11px;
+  color: #78839a;
+}
+@media (prefers-reduced-motion: reduce) {
+  .psi-process * {
+    animation: none !important;
+  }
+}
+.psi-process-mobile small {
+  display: block;
+  font-size: 10px;
+  margin-top: 4px;
+  color: #64749a;
+}
+@media (max-width: 720px) {
+  .psi-process-mobile li + li:before {
+    content: none;
+  }
+  .psi-process-mobile li {
+    align-items: flex-start;
+  }
+  .psi-process-mobile li > span {
+    text-align: right;
+    max-width: 60%;
+  }
+}
+.dxl-flow.is-paused .dxl-edge-live {
+  animation-play-state: paused;
+}

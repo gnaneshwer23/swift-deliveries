@@ -15,7 +15,9 @@ export const MARKETING_LINKS = [
   { to: "/security", label: "Security & Trust" },
   { to: "/pricing", label: "Pricing & Pilot" },
 ] as const;
-const LINKS = MARKETING_LINKS;
+const LINKS = MARKETING_LINKS.filter((l) =>
+  ["/psi", "/how-it-works", "/ai-agents", "/pricing"].includes(l.to),
+);
 
 export function MarketingNav() {
   const [open, setOpen] = useState(false);
@@ -28,7 +30,12 @@ export function MarketingNav() {
         <BrandLogo />
         <nav className="nav-links motion-nav-links" aria-label="Primary navigation">
           {LINKS.map((l) => (
-            <Link key={l.to} to={l.to} className={pathname === l.to ? "active" : ""}>
+            <Link
+              key={l.to}
+              to={l.to}
+              aria-current={pathname === l.to ? "page" : undefined}
+              className={pathname === l.to ? "active" : ""}
+            >
               {l.label}
             </Link>
           ))}

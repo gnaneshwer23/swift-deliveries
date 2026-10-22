@@ -4,7 +4,7 @@ Companion chapter for the DeliverX master development guide. Public marketing an
 
 ## Required public order
 
-Home → PSI Platform → How It Works → 150 AI Agents → Product Brain → Solutions → Security & Trust → Pricing & Pilot. Authenticated users have a persistent Launch PSI Workspace entry. Resources and About remain in secondary navigation. Retired career routes retain their existing redirects.
+Page architecture: Home → PSI Platform → How It Works → 150 AI Agents → Product Brain → Solutions → Security & Trust → Pricing & Pilot. Header is reduced to PSI Platform, How It Works, Agents and Pricing; the logo links Home. Product Brain, Solutions and Security & Trust remain accessible in the footer. Authenticated users have a persistent Launch PSI Workspace entry. Resources and About remain in secondary navigation. Retired career routes retain their existing redirects.
 
 | Page | Purpose and sections | Primary destination |
 | --- | --- | --- |
@@ -19,7 +19,7 @@ Home → PSI Platform → How It Works → 150 AI Agents → Product Brain → S
 
 ## Visual rules
 
-Interface previews carry the core product explanation; realistic illustrations support the corresponding concept. Every illustration has an HTML title, numbered handoff labels and explicit direction. The example judgement flow names senders, recipients, outputs and escalation rules. Do not use unreadable labels baked into raster artwork. Do not imply a concept image is a live screenshot.
+Interface previews carry the core product explanation. Following founder review, clean code-native process diagrams replace decorative glass raster images in the public pages. Each diagram has readable stage/role labels, branching arrow paths, moving handoff particles, pause/play controls, an accessible description and a static reduced-motion view. Mobile uses text cards that explicitly name incoming stages, preserving branch semantics. The example judgement flow names senders, recipients, outputs and escalation rules. Do not use unreadable labels baked into raster artwork. Do not imply a concept image is a live screenshot.
 
 The 150-role directory uses the current generated capability registry. Twelve public browsing groups merge strategy/orchestration, trust/finance governance and growth/commercial from the existing fifteen execution departments. This does not change execution taxonomy. Foresight and analytics remain explicit groups. Search, wheel and status filters compose and have a reset and zero-results state. Catalogue availability is not runtime certification.
 
@@ -31,9 +31,9 @@ These are positioning hypotheses, not validated willingness-to-pay or proven mar
 
 ## Responsive, accessibility and SEO criteria
 
-- Desktop navigation follows the specified order. At smaller widths use the same ordered mobile menu and avoid horizontal overflow.
+- Desktop navigation uses the reduced four-link set. At smaller widths use the same ordered mobile menu and avoid horizontal overflow.
 - Department wheel becomes a readable button grid on phones. All controls have visible names, keyboard focus and pressed state. Search and filters have labels; result counts announce updates.
-- Art labels remain real text, wrap on mobile and have sufficient contrast. Images have meaningful alt text and responsive WebP sources. Reduced-motion preference disables decorative movement.
+- Art labels remain real text, wrap on mobile and have sufficient contrast. SVG diagrams have titles and descriptions; retained original WebP artwork is no longer the default public explanation. Reduced-motion preference disables decorative movement.
 - Example handoff controls update the named receiving team, output and escalation rule. Never silently advance a real mission or a human gate.
 - Each page has its own title, description and canonical URL; all public product pages appear in sitemap.xml. No invented testimonials or customer outcomes.
 - Plans show GBP, billing period, scope, included usage and availability together. Pilot preparation must preserve the chosen plan and must not imply a request was submitted or a payment made.
