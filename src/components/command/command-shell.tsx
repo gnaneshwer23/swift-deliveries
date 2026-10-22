@@ -1,3 +1,4 @@
+import "@/deliverx-redesign.css";
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
@@ -41,7 +42,7 @@ export function CommandShell({
   const displayName =
     (user?.user_metadata?.["full_name"] as string | undefined) ?? user?.email ?? "Operator";
   const initials = displayName
-    .split(/[\s@]/)
+    .split(/[\\s@]/)
     .filter(Boolean)
     .slice(0, 2)
     .map((p) => p[0]?.toUpperCase())
@@ -56,6 +57,7 @@ export function CommandShell({
         <button
           type="button"
           aria-label="Toggle menu"
+          aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
           className="rounded-md border border-white/20 p-2 text-white"
         >
