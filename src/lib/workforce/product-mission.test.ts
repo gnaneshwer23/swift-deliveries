@@ -352,7 +352,11 @@ describe("model mode safeguards", () => {
     expect(resolveProvider({ OPENAI_API_KEY: "k" })).toBeNull();
     expect(resolveProvider({ DXSI_MODEL_ENABLED: "true" })).toBeNull();
     expect(
-      resolveProvider({ DXSI_MODEL_ENABLED: "true", OPENAI_API_KEY: "secret", DXSI_MODEL: "gpt-test" }),
+      resolveProvider({
+        DXSI_MODEL_ENABLED: "true",
+        OPENAI_API_KEY: "secret",
+        DXSI_MODEL: "gpt-test",
+      }),
     ).toMatchObject({
       name: "openai",
       url: "https://api.openai.com/v1/chat/completions",
@@ -366,7 +370,11 @@ describe("model mode safeguards", () => {
       model: "m",
     });
     expect(
-      resolveProvider({ DXSI_MODEL_ENABLED: "true", OPENAI_API_KEY: "openai", AI_GATEWAY_API_KEY: "gateway" }),
+      resolveProvider({
+        DXSI_MODEL_ENABLED: "true",
+        OPENAI_API_KEY: "openai",
+        AI_GATEWAY_API_KEY: "gateway",
+      }),
     ).toMatchObject({ name: "openai" });
   });
 
