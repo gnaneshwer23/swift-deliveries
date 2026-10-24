@@ -1,10 +1,9 @@
-import { ContextContinuity } from "@/components/marketing/context-and-impact";
+import { HomeProductStory } from "@/components/marketing/home-product-story";
 import { ProductBrainExplorer } from "@/components/marketing/product-brain-explorer";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { OnboardingGate } from "@/components/onboarding-gate";
-import { ACCOUNT_DOES_NOT_ACTIVATE } from "@/lib/pilot/commercial-copy";
 
 const TITLE = "DeliverX — From product idea to continuous intelligence";
 const DESCRIPTION =
@@ -124,134 +123,7 @@ function HomePage() {
           <ProductBrainExplorer />
         </div>
       </section>
-      <section className="psi-section psi-tinted">
-        <div className="dxl-wrap">
-          <p className="dxl-eyebrow">01 · The problem</p>
-          <h2 className="dxl-h2">Every handoff can lose the reason.</h2>
-          <ContextContinuity />
-        </div>
-      </section>
-      <section className="psi-section">
-        <div className="dxl-wrap psi-split">
-          <div>
-            <p className="dxl-eyebrow">A useful first outcome</p>
-            <h2 className="dxl-h2">One question. A decision you can explain.</h2>
-            <p>
-              Which onboarding change should we investigate first? Follow a sample from supplied
-              evidence to compared options, an owner decision and an experiment brief.
-            </p>
-            <Link to="/how-it-works" className="dxl-btn dxl-btn-primary">
-              Inspect the example mission
-            </Link>
-          </div>
-          <div className="journey-output-list">
-            <p>
-              <strong>Evidence register</strong>
-              <span>Sources, observations and what is still unknown.</span>
-            </p>
-            <p>
-              <strong>Decision record</strong>
-              <span>Alternatives, objections and the reason for the owner's choice.</span>
-            </p>
-            <p>
-              <strong>Experiment brief</strong>
-              <span>A bounded next step and a plan to measure it.</span>
-            </p>
-            <p className="psi-fine-print">
-              Illustrative sample documents, not customer research or observed results.
-            </p>
-          </div>
-        </div>
-      </section>
-      <section className="psi-section psi-tinted">
-        <div className="dxl-wrap">
-          <p className="dxl-eyebrow">The product behind the example</p>
-          <h2 className="dxl-h2">Shared context. Specialist contributions. Your call.</h2>
-          <div className="psi-feature-grid">
-            <div className="psi-feature">
-              <h3>Keep the reasoning</h3>
-              <p>
-                Product Brain keeps the order on a supervised mission: decision, owner-supplied
-                observation, review, then a proposed next mission.
-              </p>
-              <Link to="/psi" hash="product-brain" className="dxl-link">
-                Explore the product record
-              </Link>
-            </div>
-            <div className="psi-feature">
-              <h3>Understand the contribution</h3>
-              <p>
-                Specialist roles have bounded inputs and outputs. Catalogue entries are not proof of
-                live execution.
-              </p>
-              <Link to="/ai-agents" className="dxl-link">
-                Inspect specialist status
-              </Link>
-            </div>
-            <div className="psi-feature">
-              <h3>Control the next step</h3>
-              <p>
-                Consequential work needs human approval. Inspect scope, evidence and uncertainty.
-              </p>
-              <Link to="/security" className="dxl-link">
-                Read about safeguards
-              </Link>
-            </div>
-          </div>
-          <p className="journey-status">
-            Current scope: a supervised mission can keep a decision, an owner-supplied observation,
-            a versioned review and a proposed next mission. Connected analytics, automatic approval
-            and production deployment are not included. Release verification is still required.
-          </p>
-          <Link to="/psi" className="dxl-link">
-            See the system and its current scope
-          </Link>
-        </div>
-      </section>
-      <section className="home-close" aria-labelledby="home-close-title">
-        <div className="dxl-wrap">
-          <div className="home-close-head">
-            <h2 id="home-close-title" className="dxl-h2">
-              Build with purpose
-            </h2>
-            <p>Bring one product question.</p>
-          </div>
-          <div className="home-close-bench">
-            <div className="home-close-top">
-              <figure className="home-close-scene">
-                <img
-                  src="/illustrations/role-builder.webp"
-                  width={1152}
-                  height={864}
-                  alt="Blocks assembled inside a frame, next to a blank interface."
-                  loading="lazy"
-                />
-              </figure>
-              <ul className="home-close-cards">
-                <li className="home-close-plinth">
-                  <Link to="/pilot" search={{ plan: "founder" }} className="home-close-card">
-                    <span className="home-close-mark" aria-hidden="true" />
-                    Request a pilot
-                  </Link>
-                </li>
-                <li className="home-close-plinth">
-                  <Link to="/resources" hash="brief-builder" className="home-close-card">
-                    <span className="home-close-mark" aria-hidden="true" />
-                    Prepare your brief
-                  </Link>
-                </li>
-                <li className="home-close-plinth">
-                  <Link to="/login" className="home-close-card">
-                    <span className="home-close-mark" aria-hidden="true" />
-                    Sign in
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <p className="home-close-note">{ACCOUNT_DOES_NOT_ACTIVATE}</p>
-          </div>
-        </div>
-      </section>
+      <HomeProductStory />
     </MarketingLayout>
   );
 }

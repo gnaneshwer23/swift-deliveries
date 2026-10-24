@@ -1,0 +1,343 @@
+.home-product-story {
+  color: #202b43;
+}
+.home-story-problem {
+  padding: 76px 0 48px;
+  background: #f7f8fd;
+}
+.home-story-heading {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 24px;
+  margin-bottom: 30px;
+  align-items: start;
+}
+.home-story-number {
+  border-top: 2px solid #bdc9ee;
+  padding-top: 7px;
+  color: #7a8fca;
+  font-size: 21px;
+}
+.home-story-heading h2 {
+  font-size: clamp(29px, 3.1vw, 42px);
+  line-height: 1.18;
+  letter-spacing: -0.035em;
+  font-weight: 550;
+  max-width: 550px;
+  margin-top: 14px;
+}
+.home-story-heading > p {
+  font-size: 15px;
+  line-height: 1.85;
+  color: #66738c;
+  padding-top: 25px;
+}
+.home-story-takeaway {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 24px 0 0;
+}
+.home-story-takeaway > span {
+  font-size: 12px;
+  color: #8b98ae;
+  white-space: nowrap;
+}
+.home-story-takeaway > p {
+  color: #4e5f7b;
+  font-size: 15px;
+  line-height: 1.7;
+  max-width: 570px;
+}
+.home-story-takeaway > a {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: #536fb8;
+  font-size: 12px;
+  margin-left: auto;
+}
+.home-story-navigation {
+  position: sticky;
+  top: 68px;
+  z-index: 19;
+  background: #fffffff5;
+  backdrop-filter: blur(12px);
+  border-block: 1px solid #e1e6f1;
+}
+.home-story-navigation > .dxl-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  overflow-x: auto;
+  padding-block: 19px;
+  white-space: nowrap;
+}
+.home-story-navigation span {
+  font-size: 11px;
+  color: #9aa5bb;
+}
+.home-story-navigation a {
+  font-size: 12px;
+  color: #5b6c91;
+}
+.home-story-navigation a:hover {
+  color: #3e5ab2;
+}
+.home-story-section {
+  padding: 64px 0;
+  scroll-margin-top: 145px;
+}
+.home-story-section:nth-of-type(odd) {
+  background: #f8f9fd;
+}
+.home-story-handoff {
+  display: grid;
+  grid-template-columns: 1fr 25px 1fr auto;
+  align-items: center;
+  gap: 24px;
+  padding: 22px 0;
+  border-bottom: 1px solid #dfe6f2;
+}
+.home-story-handoff > svg {
+  color: #8a9dcc;
+}
+.home-story-handoff > div > span {
+  font-size: 11px;
+  color: #8795ad;
+}
+.home-story-handoff p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #52637f;
+  margin-top: 6px;
+}
+.home-story-handoff > a {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 180px;
+}
+.home-workforce-caption {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  border-top: 1px solid #dfe5f1;
+  padding: 18px 0 0;
+  margin-top: 22px;
+  font-size: 12px;
+  color: #75849d;
+}
+.home-workforce-caption > strong {
+  font-size: 14px;
+  font-weight: 500;
+  color: #4c638e;
+}
+.home-workforce-caption > span:last-child {
+  margin-left: auto;
+  font-size: 11px;
+  max-width: 450px;
+  line-height: 1.7;
+}
+.home-product-story .section-explorer-layout {
+  grid-template-columns: minmax(0, 1.7fr) minmax(260px, 1fr);
+}
+.home-product-story .section-explorer {
+  margin-top: 22px;
+}
+.home-product-story .section-explorer-detail {
+  padding-block: 26px;
+}
+.home-product-story .continuity {
+  margin-top: 28px;
+}
+.home-product-story .continuity-scene {
+  min-height: 270px;
+}
+.home-product-story .impact-explorer {
+  margin-top: 24px;
+}
+.home-mission-records {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 44px;
+  padding-top: 30px;
+  margin-top: 30px;
+  border-top: 1px solid #dfe6f2;
+}
+.home-mission-records > div > span {
+  font-size: 11px;
+  color: #8090aa;
+}
+.home-mission-records h3 {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+  max-width: 290px;
+  margin-top: 12px;
+}
+.home-mission-documents {
+  display: grid;
+}
+.home-mission-documents > a {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  border-bottom: 1px solid #e1e7f3;
+  padding: 16px 0;
+  color: #617bb6;
+}
+.home-mission-documents > a:first-child {
+  padding-top: 0;
+}
+.home-mission-documents > a > span {
+  flex: 1;
+}
+.home-mission-documents strong {
+  display: block;
+  font-size: 14px;
+  color: #465978;
+  font-weight: 500;
+}
+.home-mission-documents small {
+  display: block;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #7b89a4;
+  margin-top: 6px;
+}
+.home-mission-documents > a:hover strong {
+  color: #3958b2;
+}
+.home-story-close {
+  padding: 64px 0;
+  background: #f0f3fc;
+  border-top: 1px solid #dce4f3;
+}
+.home-story-close-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  align-items: center;
+  gap: 60px;
+}
+.home-story-close h2 {
+  font-size: clamp(30px, 3.4vw, 46px);
+  font-weight: 550;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+  margin: 18px 0 24px;
+}
+.home-story-close p:not(.dxl-eyebrow) {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #67758f;
+  max-width: 550px;
+}
+.home-story-close .psi-actions {
+  margin: 26px 0;
+}
+.home-story-close p.home-story-close-note {
+  font-size: 11px;
+  max-width: 460px;
+  color: #8996ae;
+}
+.home-story-close figure {
+  margin: 0;
+}
+.home-story-close img {
+  display: block;
+  width: 100%;
+  height: auto;
+  mix-blend-mode: multiply;
+}
+.home-story-close figcaption {
+  text-align: center;
+  font-size: 11px;
+  color: #8090b2;
+  margin-top: 12px;
+}
+.home-product-story a:focus-visible {
+  outline: 3px solid #4965d6;
+  outline-offset: 5px;
+}
+.dxs.marketing-page:has(.home-product-story) {
+  overflow-x: clip;
+}
+@media (max-width: 760px) {
+  .home-story-problem {
+    padding: 44px 0 28px;
+  }
+  .home-story-heading {
+    grid-template-columns: 30px 1fr;
+    gap: 16px;
+  }
+  .home-story-heading > p {
+    grid-column: 2;
+    padding-top: 0;
+  }
+  .home-story-number {
+    font-size: 18px;
+  }
+  .home-story-section {
+    padding: 44px 0;
+  }
+  .home-story-navigation > .dxl-wrap {
+    justify-content: flex-start;
+  }
+  .home-story-navigation span {
+    display: none;
+  }
+  .home-story-takeaway {
+    display: block;
+  }
+  .home-story-takeaway p {
+    margin: 10px 0 16px;
+  }
+  .home-story-takeaway a {
+    margin: 0;
+  }
+  .home-product-story .section-explorer-layout {
+    grid-template-columns: 1fr;
+  }
+  .home-story-handoff {
+    grid-template-columns: 1fr 20px 1fr;
+    gap: 14px;
+  }
+  .home-story-handoff > a {
+    grid-column: 1/-1;
+    max-width: none;
+    margin-top: 8px;
+  }
+  .home-workforce-caption > span:last-child {
+    margin-left: 0;
+  }
+  .home-mission-records,
+  .home-story-close-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .home-mission-records h3 {
+    max-width: none;
+  }
+  .home-story-close figure {
+    max-width: 360px;
+    margin: auto;
+  }
+  .home-story-close {
+    padding: 44px 0;
+  }
+  .home-product-story .continuity-scene {
+    min-height: 0;
+  }
+}
+.home-product-story .impact-explorer .dxl-flow {
+  margin: 0;
+  padding-top: 16px;
+}
+.home-story-problem {
+  scroll-margin-top: 90px;
+}
