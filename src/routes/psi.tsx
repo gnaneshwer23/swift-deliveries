@@ -75,64 +75,65 @@ function ProductPage() {
         </div>
       </section>
       <section className="psi-section psi-reading" id="product-brain">
-        <div className="dxl-wrap psi-reading-stage">
+        <div className="dxl-wrap">
           <div className="psi-reading-head">
             <p className="dxl-eyebrow">Product Brain</p>
             <h2 className="dxl-h2">Where the reasoning is kept.</h2>
           </div>
-          <ProductBench
-            label="Where the reasoning is kept"
-            source="Product Brain is the persistent record of that work: the question, the evidence, the options, the decision, and the export."
-            known="Source references, decision records, and export history are present. A later step can cite why it exists."
-            open="A full interactive knowledge graph is still planned, and it is not part of this page."
-            note="Record reading only. The picture beside the cards is an example, not a live knowledge graph."
-          />
-          <div className="psi-reading-follow">
-            <ProductCards
-              label="What the record holds"
-              cards={[
-                {
-                  name: "Sources",
-                  status: "In the record",
-                  meta: "Gaps stay visible",
-                  source: "The question you brought",
-                  known: "Each source stays attached, and gaps are left visible.",
-                  open: "A missing source is not filled in on this page.",
-                },
-                {
-                  name: "Options",
-                  status: "In the record",
-                  meta: "Compared, including dissent",
-                  source: "The evidence already recorded",
-                  known: "Approaches are compared, including dissent.",
-                  open: "The comparison is not itself the decision.",
-                },
-                {
-                  name: "Decision and export",
-                  status: "In the record",
-                  meta: "A person records the choice",
-                  source: "The options and the dissent",
-                  known: "A person records the decision, and the export follows.",
-                  open: "An interactive knowledge graph is still planned.",
-                },
-              ]}
+          <SectionExplorer kind="record" />
+          <div className="psi-reading-stage">
+            <ProductBench
+              label="Where the reasoning is kept"
+              source="Product Brain is the persistent record of that work: the question, the evidence, the options, the decision, and the export."
+              known="Source references, decision records, and export history are present. A later step can cite why it exists."
+              open="A full interactive knowledge graph is still planned, and it is not part of this page."
+              note="Record reading only. The diagram above is an example, not a live knowledge graph."
             />
-            <Link to="/how-it-works" hash="sample-record" className="dxl-link">
-              Inspect linked sample records
-            </Link>
-          </div>
-          <div className="psi-reading-art">
-            <SectionExplorer kind="record" />
+            <div className="psi-reading-follow">
+              <ProductCards
+                label="What the record holds"
+                cards={[
+                  {
+                    name: "Sources",
+                    status: "In the record",
+                    meta: "Gaps stay visible",
+                    source: "The question you brought",
+                    known: "Each source stays attached, and gaps are left visible.",
+                    open: "A missing source is not filled in on this page.",
+                  },
+                  {
+                    name: "Options",
+                    status: "In the record",
+                    meta: "Compared, including dissent",
+                    source: "The evidence already recorded",
+                    known: "Approaches are compared, including dissent.",
+                    open: "The comparison is not itself the decision.",
+                  },
+                  {
+                    name: "Decision and export",
+                    status: "In the record",
+                    meta: "A person records the choice",
+                    source: "The options and the dissent",
+                    known: "A person records the decision, and the export follows.",
+                    open: "An interactive knowledge graph is still planned.",
+                  },
+                ]}
+              />
+              <Link to="/how-it-works" hash="sample-record" className="dxl-link">
+                Inspect linked sample records
+              </Link>
+            </div>
           </div>
         </div>
       </section>
       <section className="psi-section psi-reading" id="specialists">
         <div className="dxl-wrap">
+          <div className="psi-reading-head">
+            <p className="dxl-eyebrow">Specialist contributions</p>
+            <h2 className="dxl-h2">Each role finishes one piece.</h2>
+          </div>
+          <SectionExplorer kind="team" />
           <div className="psi-reading-stage">
-            <div className="psi-reading-head">
-              <p className="dxl-eyebrow">Specialist contributions</p>
-              <h2 className="dxl-h2">Each role finishes one piece.</h2>
-            </div>
             <div className="psi-reading-follow">
               <ProductBench
                 label="Each role finishes one piece"
@@ -144,9 +145,6 @@ function ProductPage() {
               <Link to="/ai-agents" className="dxl-link">
                 Inspect the specialist catalogue
               </Link>
-            </div>
-            <div className="psi-reading-art">
-              <SectionExplorer kind="team" />
             </div>
           </div>
           <SpecialistHandoff />
@@ -212,54 +210,54 @@ function ProductPage() {
         </div>
       </section>
       <section className="psi-section psi-reading" id="controls">
-        <div className="dxl-wrap psi-reading-stage">
+        <div className="dxl-wrap">
           <div className="psi-reading-head">
             <p className="dxl-eyebrow">Human control</p>
             <h2 className="dxl-h2">The owner approves the consequential step.</h2>
           </div>
-          <ProductBench
-            label="The owner approves the consequential step"
-            source="A specialist can prepare the case."
-            known="A specialist does not approve their own step. You read the scope, the uncertainty, and the dissent, then approve, reject, or ask for more evidence. That rule is part of the product."
-            open="Binding the approval to live permissions and measured usage still needs release verification, alongside the mission runtime."
-            note="Control reading only. Approval on this page is not bound to live permissions."
-          />
-          <div className="psi-reading-follow">
-            <ProductCards
-              label="Owner actions"
-              cards={[
-                {
-                  name: "Approve",
-                  status: "Owner step",
-                  meta: "The consequential step",
-                  source: "The case a specialist prepared",
-                  known: "You approve the step. A specialist does not.",
-                  open: "Live permissions are not bound on this page.",
-                },
-                {
-                  name: "Reject",
-                  status: "Owner step",
-                  meta: "The same case",
-                  source: "Scope, uncertainty, and dissent",
-                  known: "You can reject the step.",
-                  open: "Measured usage limits are not bound on this page.",
-                },
-                {
-                  name: "Ask for more evidence",
-                  status: "Owner step",
-                  meta: "Send the case back",
-                  source: "What is still uncertain",
-                  known: "You can ask for more evidence before the step proceeds.",
-                  open: "Release verification is still required for the mission runtime.",
-                },
-              ]}
+          <SectionExplorer kind="trust" />
+          <div className="psi-reading-stage">
+            <ProductBench
+              label="The owner approves the consequential step"
+              source="A specialist can prepare the case."
+              known="A specialist does not approve their own step. You read the scope, the uncertainty, and the dissent, then approve, reject, or ask for more evidence. That rule is part of the product."
+              open="Binding the approval to live permissions and measured usage still needs release verification, alongside the mission runtime."
+              note="Control reading only. Approval on this page is not bound to live permissions."
             />
-            <Link to="/security" className="dxl-link">
-              Read safeguards and limitations
-            </Link>
-          </div>
-          <div className="psi-reading-art">
-            <SectionExplorer kind="trust" />
+            <div className="psi-reading-follow">
+              <ProductCards
+                label="Owner actions"
+                cards={[
+                  {
+                    name: "Approve",
+                    status: "Owner step",
+                    meta: "The consequential step",
+                    source: "The case a specialist prepared",
+                    known: "You approve the step. A specialist does not.",
+                    open: "Live permissions are not bound on this page.",
+                  },
+                  {
+                    name: "Reject",
+                    status: "Owner step",
+                    meta: "The same case",
+                    source: "Scope, uncertainty, and dissent",
+                    known: "You can reject the step.",
+                    open: "Measured usage limits are not bound on this page.",
+                  },
+                  {
+                    name: "Ask for more evidence",
+                    status: "Owner step",
+                    meta: "Send the case back",
+                    source: "What is still uncertain",
+                    known: "You can ask for more evidence before the step proceeds.",
+                    open: "Release verification is still required for the mission runtime.",
+                  },
+                ]}
+              />
+              <Link to="/security" className="dxl-link">
+                Read safeguards and limitations
+              </Link>
+            </div>
           </div>
         </div>
       </section>

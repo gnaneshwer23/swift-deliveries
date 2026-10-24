@@ -1780,8 +1780,7 @@
 }
 .psi-reading-stage {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
-  column-gap: 52px;
+  grid-template-columns: minmax(0, 1fr);
   row-gap: 22px;
   align-items: start;
 }
@@ -1903,10 +1902,8 @@
 .psi-reading-cards.is-4 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-.psi-reading-follow .psi-reading-cards,
-.psi-reading-follow .psi-reading-cards.is-4,
-.psi-reading-follow .psi-research-bench-top {
-  grid-template-columns: 1fr;
+.psi-reading .section-explorer {
+  margin-top: 18px;
 }
 .psi-reading-follow .psi-research-bench {
   margin-top: 0;
@@ -1929,17 +1926,9 @@
   font-weight: 650;
 }
 @media (max-width: 1000px) {
-  .psi-reading-stage {
-    column-gap: 32px;
-  }
   .psi-reading-cards,
   .psi-reading-cards.is-4 {
     grid-template-columns: 1fr 1fr;
-  }
-  .psi-reading-follow .psi-reading-cards,
-  .psi-reading-follow .psi-reading-cards.is-4,
-  .psi-reading-follow .psi-research-bench-top {
-    grid-template-columns: 1fr;
   }
 }
 @media (max-width: 720px) {
