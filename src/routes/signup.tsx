@@ -109,7 +109,7 @@ function SignupPage() {
             Create your account
           </h1>
           <p className="body" style={{ marginTop: 6, marginBottom: 24 }}>
-            Free during early access. Takes a minute.
+            Create an account. Paid pilot access is agreed separately.
           </p>
 
           {googleEnabled && (

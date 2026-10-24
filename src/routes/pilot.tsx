@@ -27,7 +27,7 @@ function Pilot() {
     <MarketingLayout>
       <section className="psi-page-hero">
         <div className="dxl-wrap">
-          <p className="dxl-eyebrow">Paid pilot · Access preparation</p>
+          <p className="dxl-eyebrow">Paid pilot · Preparation only</p>
           <h1 className="dxl-h1">
             Start with
             <br />
@@ -37,8 +37,10 @@ function Pilot() {
             Selected offer: <strong>{names[plan]}</strong>
           </p>
           <ol className="psi-check-list">
-            <li>Prepare your product problem and intended outcome.</li>
-            <li>Create your account to enter the workspace.</li>
+            <li>Prepare and download your product brief; it will not transfer automatically.</li>
+            <li>
+              Explore account setup separately; creating an account does not activate this offer.
+            </li>
             <li>Agree pilot availability, scope and billing before paid work begins.</li>
           </ol>
           <p className="psi-fine-print">

@@ -49,8 +49,12 @@ const FIELDS: {
   },
 ];
 
-export function BriefBuilder() {
-  const [brief, setBrief] = useState<ProductBrief>(EMPTY_BRIEF);
+export function BriefBuilder({
+  initialBrief = EMPTY_BRIEF,
+}: {
+  initialBrief?: ProductBrief | undefined;
+}) {
+  const [brief, setBrief] = useState<ProductBrief>(initialBrief);
   const [downloaded, setDownloaded] = useState(false);
   const ready = [brief.audience, brief.problem, brief.objective].every(
     (value) => value.trim().length > 0,
