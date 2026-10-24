@@ -653,6 +653,7 @@
 }
 .psi-workforce .psi-walk-art {
   margin: 0;
+  background: #f4f2ff;
 }
 .psi-workforce .psi-walk-copy h2 {
   font-size: 28px;
@@ -714,18 +715,6 @@
   opacity: 0.45;
   cursor: not-allowed;
 }
-.psi-export-sheet,
-.psi-export-latch {
-  transform-box: fill-box;
-  transform-origin: center;
-  transition: transform 240ms ease;
-}
-.psi-export-sheet.is-released {
-  transform: translate(28px, -10px);
-}
-.psi-export-latch.is-released {
-  transform: translate(18px, -16px) rotate(-24deg);
-}
 @keyframes psi-scene-in {
   from {
     opacity: 0;
@@ -742,8 +731,6 @@
     transform: none;
   }
   .psi-workforce-scene,
-  .psi-export-sheet,
-  .psi-export-latch,
   .psi-workforce-gate .dxl-btn {
     animation: none;
     transition: none;

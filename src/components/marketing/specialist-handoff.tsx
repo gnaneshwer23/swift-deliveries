@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { SpecialistScene } from "@/components/marketing/specialist-workforce";
 
 const STEPS = [
   {
@@ -60,7 +61,7 @@ export function SpecialistHandoff() {
   const step = STEPS.find((item) => item.id === selected) ?? STEPS[0];
 
   return (
-    <div className="psi-walkthrough mt-8">
+    <div className="psi-walkthrough psi-workforce mt-8">
       <div className="psi-step-selector" role="group" aria-label="Specialist contribution">
         {STEPS.map((item) => (
           <button
@@ -73,19 +74,22 @@ export function SpecialistHandoff() {
           </button>
         ))}
       </div>
-      <div className="psi-walk-copy">
-        <p>
-          <strong>Task finished.</strong> {step.task}
-        </p>
-        <p>
-          <strong>Reason.</strong> {step.reason}
-        </p>
-        <p>
-          <strong>Evidence.</strong> {step.evidence}
-        </p>
-        <p>
-          <strong>Artefact handed on.</strong> {step.artefact}
-        </p>
+      <div className="psi-walk-panel">
+        <SpecialistScene role={step.id} />
+        <div className="psi-walk-copy">
+          <p>
+            <strong>Task finished.</strong> {step.task}
+          </p>
+          <p>
+            <strong>Reason.</strong> {step.reason}
+          </p>
+          <p>
+            <strong>Evidence.</strong> {step.evidence}
+          </p>
+          <p>
+            <strong>Artefact handed on.</strong> {step.artefact}
+          </p>
+        </div>
       </div>
     </div>
   );
