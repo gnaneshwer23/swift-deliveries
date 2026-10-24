@@ -8,7 +8,12 @@ import {
   EXAMPLE_BRIEF,
   type ProductBrief,
 } from "@/lib/marketing/product-resources";
-import { clearPilotBrief, loadPilotBrief, savePilotBrief } from "@/lib/pilot/storage";
+import {
+  clearPilotBrief,
+  loadPilotBrief,
+  savePilotBrief,
+  loadPilotPlan,
+} from "@/lib/pilot/storage";
 
 const FIELDS: {
   key: keyof ProductBrief;
@@ -58,14 +63,20 @@ export function BriefBuilder({
 }) {
   const [brief, setBrief] = useState<ProductBrief>(initialBrief);
   const [downloaded, setDownloaded] = useState(false);
+  const [plan, setPlan] = useState<"builder" | "founder" | "studio">("founder");
+  const [restored, setRestored] = useState(false);
+  const [persistenceUnavailable, setPersistenceUnavailable] = useState(false);
   useEffect(() => {
-    const initialHasContent = Object.values(initialBrief).some((value) => value.trim().length > 0);
-    if (initialHasContent) {
-      savePilotBrief(initialBrief);
-      return;
-    }
+    setPlan(loadPilotPlan() ?? "founder");
     const stored = loadPilotBrief();
-    if (stored && Object.values(stored).some((value) => value.trim())) setBrief(stored);
+    if (stored && Object.values(stored).some((value) => value.trim())) {
+      setBrief(stored);
+      setRestored(true);
+    } else {
+      setBrief(initialBrief);
+      if (Object.values(initialBrief).some((value) => value.trim()))
+        setPersistenceUnavailable(!savePilotBrief(initialBrief));
+    }
   }, [initialBrief]);
   const ready = [brief.audience, brief.problem, brief.objective].every(
     (value) => value.trim().length > 0,
@@ -79,13 +90,25 @@ export function BriefBuilder({
           className="psi-text-button"
           onClick={() => {
             setBrief(EXAMPLE_BRIEF);
-            savePilotBrief(EXAMPLE_BRIEF);
+            setPersistenceUnavailable(!savePilotBrief(EXAMPLE_BRIEF));
             setDownloaded(false);
           }}
         >
           Load an example
         </button>
       </div>
+      {restored && (
+        <p role="status" className="psi-fine-print">
+          Your saved draft has been restored. Loading an example replaces it; Clear removes it from
+          this browser.
+        </p>
+      )}
+      {persistenceUnavailable ? (
+        <p role="status" className="journey-status">
+          This browser could not save your draft. Download it before reloading or leaving; automatic
+          enquiry transfer is unavailable.
+        </p>
+      ) : null}
       <form
         onSubmit={(event) => {
           event.preventDefault();
@@ -111,7 +134,7 @@ export function BriefBuilder({
               onChange={(event) => {
                 setBrief((previous) => {
                   const next = { ...previous, [field.key]: event.target.value };
-                  savePilotBrief(next);
+                  setPersistenceUnavailable(!savePilotBrief(next));
                   return next;
                 });
                 setDownloaded(false);
@@ -138,7 +161,7 @@ export function BriefBuilder({
           >
             <RotateCcw size={14} /> Clear
           </button>
-          <Link to="/pilot" search={{ plan: "founder" }} className="dxl-btn dxl-btn-ghost">
+          <Link to="/pilot" search={{ plan }} className="dxl-btn dxl-btn-ghost">
             Use this brief in a pilot enquiry
           </Link>
         </div>

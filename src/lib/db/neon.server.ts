@@ -3,7 +3,7 @@
  * connection string; prepared statements are off for the transaction pooler.
  */
 import postgres from "postgres";
-import { createDb, type ColumnTypes, type Db } from "./builder";
+import { createDb, type ColumnTypes, type Db, type Executor } from "./builder";
 
 let sql: ReturnType<typeof postgres> | null = null;
 let typesPromise: Promise<ColumnTypes> | null = null;
@@ -70,3 +70,22 @@ export function neonDb(): Db {
   );
   return db;
 }
+
+/** Runs all queries on one connection; any thrown error rolls the whole unit back. */
+export async function neonTransaction<T>(
+  work: (db: Db, query: Executor) => Promise<T>,
+): Promise<T> {
+  const types = await (typesPromise ??= loadColumnTypes().catch((error) => {
+    typesPromise = null;
+    throw error;
+  }));
+  return client().begin(async (tx) => {
+    const query: Executor = async (text, params) =>
+      (await tx.unsafe(text, params)) as unknown as Record<string, unknown>[];
+    return work(
+      createDb(query, async () => types),
+      query,
+    );
+  }) as unknown as Promise<T>;
+}
+export type DbTransaction = typeof neonTransaction;

@@ -30,6 +30,7 @@ function SupervisedMissionPage() {
     queryFn: () => getSupervisedMission({ data: { id: missionId } }),
   });
   const [error, setError] = useState<string | null>(null);
+  const [consentedScope, setConsentedScope] = useState<string | null>(null);
   const invalidate = async () => {
     setError(null);
     await queryClient.invalidateQueries({ queryKey: ["supervised"] });
@@ -38,7 +39,14 @@ function SupervisedMissionPage() {
     setError(err instanceof Error ? err.message : "The mission could not be updated.");
 
   const compare = useMutation({
-    mutationFn: () => runSupervisedComparison({ data: { id: missionId } }),
+    mutationFn: () =>
+      runSupervisedComparison({
+        data: {
+          id: missionId,
+          expectedScope: query.data?.comparisonScope ?? "",
+          allowModel: consentedScope === query.data?.comparisonScope,
+        },
+      }),
     onSuccess: async () => {
       setError(null);
       await invalidate();
@@ -139,12 +147,28 @@ function SupervisedMissionPage() {
             ? ` Generation: ${mission.proposal.generation.label}.`
             : " Comparison has not been stored yet."}
         </p>
+        {(next.id === "compare" || next.id === "retry" || next.id === "recover") &&
+        query.data.modelConfigured ? (
+          <label className="cc-muted mt-3 block">
+            <input
+              type="checkbox"
+              checked={consentedScope === query.data.comparisonScope}
+              onChange={(e) =>
+                setConsentedScope(e.target.checked ? query.data.comparisonScope : null)
+              }
+            />{" "}
+            Allow this comparison to send the current brief and evidence to the configured provider
+            and reserve one comparison unit. Unknown provider attempts remain held for
+            reconciliation. This is not approval to deploy or contact customers.
+          </label>
+        ) : null}
         {next.id === "compare" || next.id === "retry" || next.id === "recover" ? (
           <button
             type="button"
             className="cc-btn cc-btn-primary mt-3"
             disabled={
               compare.isPending ||
+              (query.data.modelConfigured && consentedScope !== query.data.comparisonScope) ||
               (next.id === "recover" && Date.parse(mission.job.leaseUntil ?? "") > Date.now())
             }
             onClick={() => compare.mutate()}

@@ -6,6 +6,19 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: deliverx_phase1_ci
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PSI_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/deliverx_phase1_ci
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -15,5 +28,13 @@ jobs:
       - run: npm ci --legacy-peer-deps
       - run: npm run lint
       - run: npx tsc --noEmit
+      - name: Prepare isolated reliability schema
+        run: >-
+          psql "$PSI_TEST_DATABASE_URL" -v ON_ERROR_STOP=1
+          -f scripts/psi-phase-one-test-schema.sql
+          -f drizzle/migrations/0019_psi_pilot_requests.sql
+          -f drizzle/migrations/0020_psi_supervised_missions.sql
+          -f drizzle/migrations/0021_psi_pilot_activations.sql
+          -f drizzle/migrations/0022_psi_comparison_reservations.sql
       - run: npm test
       - run: npm run build
