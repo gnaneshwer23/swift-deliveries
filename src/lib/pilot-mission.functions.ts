@@ -1,14 +1,10 @@
+import { scopeHash } from "./pilot-mission/scope.server";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import type { Db } from "@/lib/db/builder";
 import { requireAuth } from "@/lib/auth/middleware";
 import { wfDb } from "@/lib/workforce/db";
-import {
-  ActivationStoreUnavailableError,
-  billableComparisonGate,
-  recordBillableComparison,
-} from "./pilot/activation";
-import { activationRepository } from "./pilot/enquiry.functions";
+import { reservedComparison } from "./pilot-mission/reservations.server";
 import {
   generateComparison,
   generationPlan,
@@ -22,13 +18,7 @@ import {
   UsageLimitError,
 } from "./pilot-mission/service";
 import { learningLinks } from "./pilot-mission/learning";
-import {
-  nextRequiredAction,
-  scopeHash,
-  spendKey,
-  workspaceAllowsSpend,
-  type SupervisedMission,
-} from "./pilot-mission/types";
+import { nextRequiredAction, type SupervisedMission } from "./pilot-mission/types";
 
 type DbClient = { from: (table: string) => unknown };
 
@@ -89,10 +79,18 @@ export type SupervisedMissionView = {
   mission: SupervisedMission;
   next: ReturnType<typeof nextRequiredAction>;
   usageWarning: string | null;
+  comparisonScope: string;
+  modelConfigured: boolean;
 };
 
 function view(mission: SupervisedMission, usageWarning: string | null): SupervisedMissionView {
-  return { mission, next: nextRequiredAction(mission), usageWarning };
+  return {
+    mission,
+    next: nextRequiredAction(mission),
+    usageWarning,
+    comparisonScope: scopeHash(mission.brief, mission.evidence),
+    modelConfigured: generationPlan(process.env, "").cost > 0,
+  };
 }
 
 export const getSupervisedMissionHome = createServerFn({ method: "GET" })
@@ -195,58 +193,39 @@ export const reviseSupervisedBrief = createServerFn({ method: "POST" })
 
 export const runSupervisedComparison = createServerFn({ method: "POST" })
   .middleware([requireAuth])
-  .validator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .validator((data: unknown) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        expectedScope: z.string().min(16).max(128),
+        allowModel: z.boolean(),
+      })
+      .parse(data),
+  )
   .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
     const workspace = await workspaceFor(context.supabase, context.userId);
     const { db, service } = await serviceFor();
     const current = await service.get(workspace.id, data.id);
     if (!current) throw new Error("Mission not found.");
-    const key = spendKey(scopeHash(current.brief, current.evidence));
-    const alreadyRecorded = current.spendRecords.some((spend) => spend.key === key);
     const plan = generationPlan(process.env, missionScreenText(current));
-    if (
-      !workspaceAllowsSpend({
-        ceiling: workspace.usageCeiling,
-        consumed: workspace.usageConsumed,
-        cost: plan.cost,
-        alreadyRecorded,
-      })
-    ) {
-      throw new UsageLimitError("Workspace usage ceiling reached. This step was not run.");
-    }
-    const workspaceKey = workspace.id.toLowerCase();
-    const activation = await activationRepository(db).findByWorkspace(workspaceKey);
-    const allowance = billableComparisonGate(
-      activation,
-      workspaceKey,
-      plan.cost > 0 && !alreadyRecorded,
-    );
-    if (!allowance.ok) throw new UsageLimitError(allowance.message);
+    if (data.expectedScope !== scopeHash(current.brief, current.evidence))
+      throw new Error("The brief or evidence changed. Review the current scope before comparing.");
+    if (plan.cost > 0 && !data.allowModel)
+      throw new Error("Confirm provider use and the allowance reservation before comparing.");
     const outcome = await service.runAlternatives({
       workspaceId: workspace.id,
       id: data.id,
       workerId: `${context.userId}:${crypto.randomUUID()}`,
       nowMs: Date.now(),
-      generator: { cost: plan.cost, run: (mission) => generateComparison(mission) },
+      generator: {
+        cost: plan.cost,
+        run: (mission) =>
+          plan.cost > 0
+            ? reservedComparison(mission, () => generateComparison(mission))
+            : generateComparison(mission),
+      },
     });
-    let allowanceWarning: string | null = null;
-    if (outcome.chargedUnits > 0) {
-      try {
-        const noted = await recordBillableComparison(activationRepository(db), workspaceKey);
-        if (noted.activation && !noted.recorded) {
-          allowanceWarning =
-            "The comparison was saved. The mission allowance was already used, so the count was not increased.";
-        }
-      } catch (error) {
-        allowanceWarning =
-          error instanceof ActivationStoreUnavailableError
-            ? error.message
-            : "The comparison was saved. The mission allowance was not updated.";
-      }
-    }
-    const settled = await settleUsage(db, outcome.mission);
-    const usageWarning = [allowanceWarning, settled].filter(Boolean).join(" ") || null;
-    return view(outcome.mission, usageWarning);
+    return view(outcome.mission, await settleUsage(db, outcome.mission));
   });
 
 export const decideSupervisedMission = createServerFn({ method: "POST" })

@@ -63,7 +63,9 @@ export async function verifyAuthToken(
   keys: JWTVerifyGetKey,
   env: Record<string, string | undefined> = process.env,
 ): Promise<VerifiedUser> {
-  const issuer = env["NEON_AUTH_ISSUER"] || env["NEON_AUTH_URL"] || env["VITE_NEON_AUTH_URL"];
+  const base = env["NEON_AUTH_URL"] || env["VITE_NEON_AUTH_URL"];
+  // Managed Neon Auth signs JWTs with the service origin, not /neondb/auth.
+  const issuer = env["NEON_AUTH_ISSUER"] || (base ? new URL(base).origin : undefined);
   if (!issuer) throw new Error("Unauthorized: auth issuer is not configured");
   const { payload } = await jwtVerify(token, keys, {
     issuer: issuer.replace(/\/+$/, ""),

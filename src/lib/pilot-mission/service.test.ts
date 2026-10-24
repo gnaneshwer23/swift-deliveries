@@ -756,3 +756,55 @@ describe("supervised mission outcome review", () => {
     expect(restored?.workspaceId).toBe("alpha");
   });
 });
+
+describe("phase-one scope and cancellation regression", () => {
+  it("does not bind an old generation to evidence changed during the call", async () => {
+    const service = new SupervisedMissionService(new MemoryStore());
+    const m = await readyMission(service);
+    let resolve!: (result: GenerationResult) => void;
+    let started!: () => void;
+    const began = new Promise<void>((r) => {
+      started = r;
+    });
+    const waiting = service.runAlternatives({
+      workspaceId: "alpha",
+      id: m.id,
+      workerId: "worker",
+      nowMs: 3000,
+      generator: {
+        cost: 1,
+        run: async () => {
+          started();
+          return new Promise<GenerationResult>((r) => {
+            resolve = r;
+          });
+        },
+      },
+    });
+    await began;
+    await service.saveEvidence({
+      workspaceId: "alpha",
+      id: m.id,
+      items: [
+        ...evidence,
+        {
+          statement: "New source changes the input scope.",
+          source: "Fixture",
+          classification: "supplied",
+        },
+      ],
+      nowMs: 3500,
+    });
+    resolve(modelResult());
+    await expect(waiting).rejects.toThrow("changed during generation");
+    expect((await service.get("alpha", m.id))?.proposal).toBeNull();
+  });
+  it("cannot export a cancelled mission with a previously prepared artefact", async () => {
+    const service = new SupervisedMissionService(new MemoryStore());
+    const m = await exportedMission(service);
+    await service.cancel({ workspaceId: "alpha", id: m.id, nowMs: 7000 });
+    await expect(
+      service.exportMission({ workspaceId: "alpha", id: m.id, nowMs: 8000 }),
+    ).rejects.toThrow("cancelled");
+  });
+});

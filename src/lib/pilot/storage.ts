@@ -8,6 +8,30 @@ const CLAIM_KEY = "dx-psi-claim";
 
 export type PilotClaim = { token: string; reference: string; plan: PilotPlan };
 
+function read(key: string): string | null {
+  try {
+    return store()?.getItem(key) ?? null;
+  } catch {
+    return null;
+  }
+}
+function write(key: string, value: string): boolean {
+  try {
+    const storage = store();
+    if (!storage) return false;
+    storage.setItem(key, value);
+    return true;
+  } catch {
+    return false; // Editing and downloads still work without persistence.
+  }
+}
+function remove(key: string): void {
+  try {
+    store()?.removeItem(key);
+  } catch {
+    /* Storage is unavailable. */
+  }
+}
 function store(): Storage | null {
   try {
     return globalThis.localStorage ?? null;
@@ -16,15 +40,16 @@ function store(): Storage | null {
   }
 }
 
-export function savePilotBrief(brief: ProductBrief): void {
-  store()?.setItem(BRIEF_KEY, JSON.stringify(brief));
+export function savePilotBrief(brief: ProductBrief): boolean {
+  return write(BRIEF_KEY, JSON.stringify(brief));
 }
 
 export function loadPilotBrief(): ProductBrief | null {
-  const raw = store()?.getItem(BRIEF_KEY);
+  const raw = read(BRIEF_KEY);
   if (!raw) return null;
   try {
     const parsed = JSON.parse(raw) as Partial<ProductBrief>;
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
     return {
       product: typeof parsed.product === "string" ? parsed.product.slice(0, 200) : "",
       audience: typeof parsed.audience === "string" ? parsed.audience.slice(0, 2000) : "",
@@ -39,7 +64,7 @@ export function loadPilotBrief(): ProductBrief | null {
 }
 
 export function clearPilotBrief(): void {
-  store()?.removeItem(BRIEF_KEY);
+  remove(BRIEF_KEY);
 }
 
 export function hasPilotBrief(brief: ProductBrief): boolean {
@@ -47,20 +72,20 @@ export function hasPilotBrief(brief: ProductBrief): boolean {
 }
 
 export function savePilotPlan(plan: PilotPlan): void {
-  store()?.setItem(PLAN_KEY, plan);
+  write(PLAN_KEY, plan);
 }
 
 export function loadPilotPlan(): PilotPlan | null {
-  const value = store()?.getItem(PLAN_KEY) ?? "";
+  const value = read(PLAN_KEY) ?? "";
   return isPilotPlan(value) ? value : null;
 }
 
 export function savePilotClaim(claim: PilotClaim): void {
-  store()?.setItem(CLAIM_KEY, JSON.stringify(claim));
+  write(CLAIM_KEY, JSON.stringify(claim));
 }
 
 export function loadPilotClaim(): PilotClaim | null {
-  const raw = store()?.getItem(CLAIM_KEY);
+  const raw = read(CLAIM_KEY);
   if (!raw) return null;
   try {
     const parsed = JSON.parse(raw) as Partial<PilotClaim>;
@@ -73,7 +98,7 @@ export function loadPilotClaim(): PilotClaim | null {
 }
 
 export function clearPilotClaim(): void {
-  store()?.removeItem(CLAIM_KEY);
+  remove(CLAIM_KEY);
 }
 
 export function blankBrief(): ProductBrief {

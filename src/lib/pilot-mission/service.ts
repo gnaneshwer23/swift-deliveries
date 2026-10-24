@@ -1,3 +1,4 @@
+import { scopeHash } from "./scope.server";
 import { draftOptions, parseModelOptions } from "./generate";
 import {
   assertOutcomeReading,
@@ -9,7 +10,6 @@ import {
   LEASE_MS,
   OWNER_SUPPLIED_OBSERVATION_LABEL,
   nextRequiredAction,
-  scopeHash,
   spendKey,
   type ApprovalClaim,
   type ApprovalRecord,
@@ -78,6 +78,11 @@ export type MissionStore = {
   get(workspaceId: string, id: string): Promise<SupervisedMission | null>;
   list(workspaceId: string): Promise<SupervisedMission[]>;
   save(mission: SupervisedMission, expectedVersion: number): Promise<SupervisedMission>;
+  saveFollowUp(
+    parent: SupervisedMission,
+    expectedVersion: number,
+    child: SupervisedMission,
+  ): Promise<SupervisedMission>;
 };
 
 export type ComparisonGenerator = {
@@ -301,6 +306,26 @@ export class MemoryStore implements MissionStore {
       .map((row) => clone(withLearningDefaults(row)));
   }
 
+  async saveFollowUp(
+    parent: SupervisedMission,
+    expectedVersion: number,
+    child: SupervisedMission,
+  ): Promise<SupervisedMission> {
+    const current = this.rows.get(parent.id);
+    if (
+      !current ||
+      current.workspaceId !== parent.workspaceId ||
+      current.version !== expectedVersion ||
+      this.rows.has(child.id) ||
+      child.workspaceId !== parent.workspaceId
+    )
+      throw new MissionConflictError();
+    // No await between validation and the two writes: memory-test equivalent of one transaction.
+    this.rows.set(child.id, clone(child));
+    this.rows.set(parent.id, clone(parent));
+    return clone(parent);
+  }
+
   async save(mission: SupervisedMission, expectedVersion: number): Promise<SupervisedMission> {
     const existing = this.rows.get(mission.id);
     if (existing && existing.workspaceId !== mission.workspaceId) {
@@ -354,6 +379,18 @@ export class SupervisedMissionService {
     nowMs: number;
     origin?: MissionOrigin | null;
   }): Promise<SupervisedMission> {
+    return this.store.save(this.initialMission(input), 0);
+  }
+
+  private initialMission(input: {
+    id: string;
+    workspaceId: string;
+    ownerUserId: string;
+    brief: Brief;
+    usageCeiling: number;
+    nowMs: number;
+    origin?: MissionOrigin | null;
+  }): SupervisedMission {
     if (!Number.isInteger(input.usageCeiling) || input.usageCeiling < 0) {
       throw new Error("Usage ceiling must be a whole number.");
     }
@@ -381,7 +418,7 @@ export class SupervisedMissionService {
       origin: input.origin ?? null,
       updatedAt: new Date(input.nowMs).toISOString(),
     };
-    return this.store.save(mission, 0);
+    return mission;
   }
 
   async saveEvidence(input: {
@@ -507,6 +544,10 @@ export class SupervisedMissionService {
       const generation = await input.generator.run(leased);
       const fresh = await this.must(input.workspaceId, input.id);
       if (fresh.stage === "cancelled") throw new Error("Mission was cancelled.");
+      if (scopeHash(fresh.brief, fresh.evidence) !== hash)
+        throw new MissionConflictError(
+          "The brief or evidence changed during generation. The result cannot approve the new scope.",
+        );
       if (fresh.job.ownerId !== input.workerId || fresh.job.status !== "leased") {
         throw new MissionConflictError("Lease recovered by another worker.");
       }
@@ -645,6 +686,7 @@ export class SupervisedMissionService {
     nowMs: number;
   }): Promise<SupervisedMission> {
     const current = await this.must(input.workspaceId, input.id);
+    if (current.stage === "cancelled") throw new Error("Mission is cancelled.");
     if (current.exportBody) return current;
     if (!current.artefact) throw new Error("Prepare the decision pack before export.");
     const next: SupervisedMission = {
@@ -811,7 +853,7 @@ export class SupervisedMissionService {
     ) {
       throw new Error("The follow-up proposal does not match the latest review.");
     }
-    const child = await this.create({
+    const child = this.initialMission({
       id: input.followUpMissionId,
       workspaceId: input.workspaceId,
       ownerUserId: input.actorId,
@@ -838,7 +880,7 @@ export class SupervisedMissionService {
       },
       updatedAt: approvedAt,
     };
-    return this.store.save(next, current.version);
+    return this.store.saveFollowUp(next, current.version, child);
   }
 
   private prepareComparison(

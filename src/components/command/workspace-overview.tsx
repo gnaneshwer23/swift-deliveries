@@ -1,0 +1,196 @@
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
+import { useState } from "react";
+import {
+  ArrowUpRight,
+  BrainCircuit,
+  CheckCheck,
+  FileCheck2,
+  Fingerprint,
+  GitBranch,
+  Layers3,
+  ShieldCheck,
+  UsersRound,
+} from "lucide-react";
+import { getSupervisedMissionHome } from "@/lib/pilot-mission.functions";
+import { commandCentreBootstrapQuery } from "@/lib/workforce-queries";
+import { WAVE1_AVAILABLE_IDS } from "@/lib/workforce/registry";
+
+const FLOW = [
+  {
+    title: "Evidence & memory",
+    detail: "Keep supplied sources, assumptions and gaps attached to the product question.",
+    icon: BrainCircuit,
+    output: "Evidence with context",
+  },
+  {
+    title: "Judgement",
+    detail:
+      "Compare options against the saved evidence. The owner records a decision bound to the proposal version.",
+    icon: Fingerprint,
+    output: "Your decision, with its reasoning",
+  },
+  {
+    title: "Delivery",
+    detail:
+      "Prepare a reviewable decision and experiment brief. A download is not permission to deploy or act externally.",
+    icon: Layers3,
+    output: "A reviewable artefact",
+  },
+  {
+    title: "Feedback",
+    detail:
+      "Supply an observed result, review it against the hypothesis, and approve any proposed follow-up separately.",
+    icon: GitBranch,
+    output: "An evidence-led next question",
+  },
+];
+const STAGES = ["brief", "evidence", "alternatives", "decision", "artefact", "exported"];
+export function WorkspaceOverview() {
+  const home = useQuery({
+    queryKey: ["supervised", "home"],
+    queryFn: () => getSupervisedMissionHome(),
+  });
+  const legacy = useQuery(commandCentreBootstrapQuery);
+  const [step, setStep] = useState(0);
+  const missions = home.data?.missions ?? [];
+  const old = legacy.data?.recentMissions ?? [];
+  const waiting =
+    missions.filter((m) => m.nextTitle === "Record your decision").length +
+    old.filter((m) => m.status === "awaiting_approval").length;
+  const exported = missions.filter((m) => m.stage === "exported").length;
+  const flow = FLOW[step]!;
+  const countsReady = !!home.data?.ready && !!legacy.data && !home.isError && !legacy.isError;
+  return (
+    <>
+      <section className="ps-stat-row" aria-label="Recorded workspace summary">
+        <div className="ps-stat">
+          <span>
+            <Layers3 size={14} />
+            Recent missions
+          </span>
+          <strong>{countsReady ? missions.length + old.length : "—"}</strong>
+          <small>Across both saved mission lists</small>
+        </div>
+        <div className="ps-stat">
+          <span>
+            <ShieldCheck size={14} />
+            Awaiting your decision
+          </span>
+          <strong>{countsReady ? waiting : "—"}</strong>
+          <small>Recorded approval steps only</small>
+        </div>
+        <div className="ps-stat">
+          <span>
+            <FileCheck2 size={14} />
+            Exported decision packs
+          </span>
+          <strong>{home.data?.ready && !home.isError ? exported : "—"}</strong>
+          <small>Supervised mission records</small>
+        </div>
+        <div className="ps-stat">
+          <span>
+            <UsersRound size={14} />
+            Roles available for planning
+          </span>
+          <strong>
+            {WAVE1_AVAILABLE_IDS.length}
+            <small> / 150</small>
+          </strong>
+          <small>Execution depends on tools and configuration</small>
+        </div>
+      </section>
+      <section className="ps-journey">
+        <div className="ps-section-heading">
+          <div>
+            <h2>Your product, from question to learning</h2>
+            <p>
+              Build a product, learn from the work, and keep the reasoning behind each decision.
+            </p>
+          </div>
+          <Link to="/command/capabilities">
+            Explore the workforce <ArrowUpRight size={13} />
+          </Link>
+        </div>
+        <div className="ps-flow">
+          {FLOW.map((item, i) => (
+            <button key={item.title} aria-pressed={step === i} onClick={() => setStep(i)}>
+              <item.icon size={24} />
+              <strong>{item.title}</strong>
+              <small>{item.output}</small>
+            </button>
+          ))}
+        </div>
+        <div className="ps-flow-detail">
+          <p>
+            <strong>{flow.title}.</strong> {flow.detail}
+          </p>
+          <a href="#supervised-brief">Start with a question →</a>
+        </div>
+      </section>
+      <div className="ps-mission-grid">
+        <section className="ps-mission-feed">
+          <div className="ps-section-heading">
+            <div>
+              <h2>Mission activity</h2>
+              <p>Your saved work and its next required action.</p>
+            </div>
+            <span className="ps-pill">Saved records</span>
+          </div>
+          {home.isError ? (
+            <p className="ps-error">Mission activity could not load. Refresh to try again.</p>
+          ) : home.isPending ? (
+            <p className="ps-busy">Loading saved missions…</p>
+          ) : !home.data?.ready ? (
+            <p className="ps-error">{home.data?.reason}</p>
+          ) : missions.length === 0 ? (
+            <div className="ps-empty">
+              <CheckCheck size={20} />
+              <p>
+                No supervised missions yet. Save your first product question below to create an
+                evidence and decision trail.
+              </p>
+            </div>
+          ) : (
+            missions.slice(0, 5).map((m) => {
+              const index = STAGES.indexOf(m.stage);
+              return (
+                <Link
+                  className="ps-mission-item"
+                  key={m.id}
+                  to="/command/supervised/$missionId"
+                  params={{ missionId: m.id }}
+                >
+                  <div>
+                    <strong>{m.question}</strong>
+                    <ArrowUpRight size={15} />
+                  </div>
+                  <div className="ps-stage-track" aria-label={`Recorded stage: ${m.stage}`}>
+                    {STAGES.map((s, i) => (
+                      <span key={s} className={index >= i ? "is-done" : ""} />
+                    ))}
+                  </div>
+                  <p>
+                    {m.nextTitle} · {m.usageConsumed} usage units
+                  </p>
+                </Link>
+              );
+            })
+          )}
+        </section>
+        <aside className="ps-mission-aside">
+          <ShieldCheck size={28} />
+          <h3>Progress you can inspect.</h3>
+          <p>
+            Task completion, owner approval and measured product outcomes are different signals.
+            Each keeps its own record.
+          </p>
+          <Link to="/command/capabilities">Inspect specialist involvement →</Link>
+          <p style={{ marginTop: 20 }}>
+            Model configuration: {home.data?.providerLabel ?? "Checking…"}
+          </p>
+        </aside>
+      </div>
+    </>
+  );
+}

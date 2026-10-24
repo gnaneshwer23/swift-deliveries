@@ -13,6 +13,10 @@ Status is what this repository can show today. It is not a production-readiness 
 | 5     | Outcome review: expected result, supplied observation, comparison and a human-approved next mission                                                                   | Implemented in this repository on the supervised mission. See the Phase 5 boundary. It is not connected analytics, automatic approval, or production certification.                                                                                                    |
 | 6     | Controlled paid release: manual activation of one scoped plan, an explicit mission allowance, and a block on the next billable comparison when that allowance is used | Implemented in this repository. See the Phase 6 boundary. Self-service checkout is not live. This is not production certification.                                                                                                                                     |
 
+## Forward PSI roadmap: Phase 1 acceptance
+
+The newer illustrated-product roadmap begins with reliability, not another website redesign. See `docs/psi-phase-one-reliability.md` for implemented fixes and exact verification. Code implementation, isolated environment verification and release acceptance are separate statuses. Existing phases 3–6 below are implementation history, not production acceptance.
+
 ## Phase 4 boundary
 
 The accepted path is a supervised mission in the product workspace: save a brief, add evidence, compare options, record an owner decision, prepare the pack, and export it. State is stored per workspace in `psi_supervised_missions`. A comparison is owned by a worker lease, can be cancelled, and can be retried after a failure or an expired lease. Reloading a completed comparison does not add a second usage record. An approval matches the proposal action `compare_options`, its version and its scope. Changing the brief or evidence clears that approval. Two workspaces cannot read each other's mission through the mission store. The workspace usage ceiling is checked on the server before a billable comparison.

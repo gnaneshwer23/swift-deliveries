@@ -141,10 +141,15 @@ export function SpecialistWorkforce() {
 
   return (
     <div className="psi-walkthrough psi-workforce">
+      <p className="journey-status">
+        Interactive simulation · no model calls, customer research or stored mission decisions. The
+        example export control demonstrates a local download choice, not permission to spend,
+        contact anyone or deploy.
+      </p>
       <div
         className="psi-step-selector"
         role="tablist"
-        aria-label="Working specialist roles. Arrow keys move between roles."
+        aria-label="Example specialist contributions. Arrow keys move between roles."
         onKeyDown={onTabsKeyDown}
       >
         {ROLES.map((item, index) => {
@@ -179,7 +184,7 @@ export function SpecialistWorkforce() {
           aria-labelledby={`${baseId}-tab-${role.id}`}
           tabIndex={0}
         >
-          <p className="psi-label">Task finished</p>
+          <p className="psi-label">Example output</p>
           <h2>{role.task}</h2>
           <dl className="psi-workforce-facts">
             <div>
@@ -207,9 +212,9 @@ export function SpecialistWorkforce() {
             disabled={approved}
           >
             {approved
-              ? "Approved by you"
+              ? "Example download allowed"
               : role.id === "export"
-                ? "Approve as owner"
+                ? "Allow example download"
                 : "Review the held export"}
           </button>
           <button

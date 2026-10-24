@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { myProfileQuery } from "@/lib/profile-queries";
@@ -48,8 +48,8 @@ export function SupervisedMissionStart() {
 
   return (
     <section id="supervised-brief" className="cc-panel" aria-label="Supervised mission">
-      <p className="cc-kicker">Next required decision</p>
-      <h2 className="cc-panel-title">One supervised mission</h2>
+      <p className="cc-kicker">Start a mission</p>
+      <h2 className="cc-panel-title">What product question are you exploring?</h2>
       <p className="cc-muted">
         Save a brief, add evidence, compare options, record your decision, then export a decision
         and experiment brief. One comparison runs only when a model provider is already configured.
@@ -63,30 +63,6 @@ export function SupervisedMissionStart() {
         </p>
       ) : null}
       {home.data && !home.data.ready ? <p className="cc-error">{home.data.reason}</p> : null}
-      {home.data?.missions.length ? (
-        <ul className="cc-mission-list mt-4">
-          {home.data.missions.map((mission) => (
-            <li key={mission.id}>
-              <Link
-                to="/command/supervised/$missionId"
-                params={{ missionId: mission.id }}
-                className="cc-mission-row"
-              >
-                <div>
-                  <strong>{mission.question}</strong>
-                  <span className="cc-muted">
-                    {mission.nextTitle} · {mission.stage}
-                  </span>
-                  <span className="cc-muted">
-                    {mission.links.map((link) => `${link.title} ${link.state}`).join(" → ")}
-                  </span>
-                </div>
-                <span className="cc-chip">{mission.nextTitle}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      ) : null}
       <div className="mt-4 grid gap-3">
         <label className="cc-label" htmlFor="supervised-question">
           Product question

@@ -118,7 +118,7 @@ function ProgrammeDashboard() {
     <CommandShell
       title={state.title}
       subtitle={state.businessCase.idea.slice(0, 160)}
-      usage={{ consumed: state.budget.consumed, ceiling: state.budget.ceiling }}
+      usage={{ consumed: state.budget.consumed, ceiling: state.budget.ceiling, scope: "programme" }}
     >
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">

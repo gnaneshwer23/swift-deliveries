@@ -8,7 +8,7 @@ export const Route = createFileRoute("/ai-agents")({
   head: () =>
     pageHead(
       "/ai-agents",
-      "Specialist workforce — Six working roles and the wider catalogue | DeliverX",
+      "Specialist workforce — Six example contributions and the wider catalogue | DeliverX",
       "Follow six specialists from evidence to a held export. The wider catalogue is not 150 live working agents.",
     ),
   component: Agents,
@@ -29,8 +29,9 @@ function Agents() {
             <span className="dxl-grad">a defined contribution.</span>
           </h1>
           <p className="psi-lead">
-            Six roles finish a task, record why, attach evidence, and hand the artefact on. You
-            approve the export. A specialist does not approve that step.
+            Explore six example contributions: evidence, options, challenge, decision, a bounded
+            draft and packaging. This public simulation does not run agents or record a real mission
+            approval.
           </p>
           <p className="journey-status">
             The wider catalogue lists {registry.capabilities.length} roles. {foundationCount} are

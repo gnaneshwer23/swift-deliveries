@@ -30,6 +30,7 @@ function SupervisedMissionPage() {
     queryFn: () => getSupervisedMission({ data: { id: missionId } }),
   });
   const [error, setError] = useState<string | null>(null);
+  const [consentedScope, setConsentedScope] = useState<string | null>(null);
   const invalidate = async () => {
     setError(null);
     await queryClient.invalidateQueries({ queryKey: ["supervised"] });
@@ -38,7 +39,14 @@ function SupervisedMissionPage() {
     setError(err instanceof Error ? err.message : "The mission could not be updated.");
 
   const compare = useMutation({
-    mutationFn: () => runSupervisedComparison({ data: { id: missionId } }),
+    mutationFn: () =>
+      runSupervisedComparison({
+        data: {
+          id: missionId,
+          expectedScope: query.data?.comparisonScope ?? "",
+          allowModel: consentedScope === query.data?.comparisonScope,
+        },
+      }),
     onSuccess: async () => {
       setError(null);
       await invalidate();
@@ -94,7 +102,13 @@ function SupervisedMissionPage() {
       title={mission.brief.question}
       subtitle={next.detail}
       {...(mission.usageCeiling > 0
-        ? { usage: { consumed: mission.usageConsumed, ceiling: mission.usageCeiling } }
+        ? {
+            usage: {
+              consumed: mission.usageConsumed,
+              ceiling: mission.usageCeiling,
+              scope: "mission" as const,
+            },
+          }
         : {})}
     >
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -112,13 +126,14 @@ function SupervisedMissionPage() {
           </button>
         ) : null}
       </div>
-      <ol className="mb-4 flex flex-wrap gap-2" aria-label="Mission progress">
+      <ol className="ps-mission-progress" aria-label="Mission progress">
         {PROGRESS_STEPS.map((step, index) => {
           const state = stepState(mission.stage, index);
           return (
             <li
               key={step.id}
-              className="cc-chip"
+              className="ps-progress-step"
+              data-state={state}
               aria-current={state === "current" ? "step" : undefined}
             >
               {state === "done" ? "Done · " : state === "current" ? "Now · " : ""}
@@ -139,12 +154,28 @@ function SupervisedMissionPage() {
             ? ` Generation: ${mission.proposal.generation.label}.`
             : " Comparison has not been stored yet."}
         </p>
+        {(next.id === "compare" || next.id === "retry" || next.id === "recover") &&
+        query.data.modelConfigured ? (
+          <label className="cc-muted mt-3 block">
+            <input
+              type="checkbox"
+              checked={consentedScope === query.data.comparisonScope}
+              onChange={(e) =>
+                setConsentedScope(e.target.checked ? query.data.comparisonScope : null)
+              }
+            />{" "}
+            Allow this comparison to send the current brief and evidence to the configured provider
+            and reserve one comparison unit. Unknown provider attempts remain held for
+            reconciliation. This is not approval to deploy or contact customers.
+          </label>
+        ) : null}
         {next.id === "compare" || next.id === "retry" || next.id === "recover" ? (
           <button
             type="button"
             className="cc-btn cc-btn-primary mt-3"
             disabled={
               compare.isPending ||
+              (query.data.modelConfigured && consentedScope !== query.data.comparisonScope) ||
               (next.id === "recover" && Date.parse(mission.job.leaseUntil ?? "") > Date.now())
             }
             onClick={() => compare.mutate()}

@@ -2,10 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
+import { WorkspaceOverview } from "@/components/command/workspace-overview";
 import { SupervisedMissionStart } from "@/components/command/supervised-mission-start";
-import { useSession } from "@/hooks/use-session";
-import { firstActionFor } from "@/lib/product-journey";
-import { firstNameOf } from "@/lib/dx-profile";
 import { myProfileQuery } from "@/lib/profile-queries";
 import { commandCentreBootstrapQuery } from "@/lib/workforce-queries";
 import { createMission, createWfProject } from "@/lib/workforce.functions";
@@ -15,13 +13,12 @@ import {
   STATUS_LABELS,
   type MissionIntent,
 } from "@/lib/workforce/types";
-import { WAVE1_AVAILABLE_IDS } from "@/lib/workforce/registry";
 import {
   ProductDiscoveryIcon,
   ProductPrototypeIcon,
   ProductImproveIcon,
 } from "@/components/marketing/motion-product-visuals";
-import { Compass, FlaskConical, Rocket, Search, ShieldCheck, Sparkles, Wrench } from "lucide-react";
+import { FlaskConical, Rocket, Search, ShieldCheck, Wrench } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/command/")({
   head: () => ({
@@ -59,7 +56,7 @@ const INTENTS: Array<{
       "Research a strategic or product decision and return a brief with sourced facts separated from assumptions.",
     deliverable: "Decision Brief + Evidence Matrix",
     placeholder:
-      "Investigate whether we should add a sponsor dashboard for healthcare delivery leads, for the COO audience…",
+      "Investigate which onboarding change would help first-time product builders, using supplied evidence…",
     samples: [
       {
         label: "Build vs. Partner Decision Brief",
@@ -274,12 +271,10 @@ function CommandHome() {
   }
 
   const selectedProjectId = projectId || data.projects[0]?.id || "";
-  const remainingCredits = Math.max(0, data.workspace.usageCeiling - data.workspace.usageConsumed);
   const awaitingCount = data.recentMissions.filter(
     (m) => m.status === "awaiting_approval" || m.status === "needs_clarification",
   ).length;
   const completedCount = data.recentMissions.filter((m) => m.status === "completed").length;
-  const runningCount = data.recentMissions.filter((m) => m.status === "running").length;
 
   const filteredMissions = data.recentMissions.filter((m) => {
     if (missionFilter === "awaiting")
@@ -297,259 +292,214 @@ function CommandHome() {
 
   return (
     <CommandShell
-      title="Product workspace"
-      subtitle="A product question, the evidence behind it, your decision, and work you can review."
+      title="Product overview"
+      subtitle="A shared view of your product, the work behind it, and what happens next."
       usage={{
         consumed: data.workspace.usageConsumed,
         ceiling: data.workspace.usageCeiling,
       }}
     >
-      <WelcomeBanner />
+      <WorkspaceOverview />
       <SupervisedMissionStart />
 
-      {/* Clean 4-Metric Operational Summary Strip */}
-      <section className="cc-kpi-strip" aria-label="Workspace operational summary">
-        <div className="cc-kpi-card">
-          <div className="flex items-center justify-between gap-2">
-            <span className="cc-kpi-label">Usage remaining</span>
-          </div>
-          <strong className="cc-kpi-value">
-            {remainingCredits} <small>/ {data.workspace.usageCeiling}</small>
-          </strong>
-          <span className="cc-kpi-sub">
-            {data.workspace.usageConsumed} consumed · deterministic hard-stop enforced
-          </span>
-        </div>
-        <div className="cc-kpi-card">
-          <span className="cc-kpi-label">Human Supervision Queue</span>
-          <strong className="cc-kpi-value">{awaitingCount}</strong>
-          <span className="cc-kpi-sub">
-            {awaitingCount > 0
-              ? `${awaitingCount} awaiting your plan sign-off or clarification`
-              : "No decisions are waiting"}
-          </span>
-        </div>
-        <div className="cc-kpi-card">
-          <span className="cc-kpi-label">Delivered Reports</span>
-          <strong className="cc-kpi-value">
-            {completedCount} <small>of {data.recentMissions.length}</small>
-          </strong>
-          <span className="cc-kpi-sub">
-            {runningCount > 0
-              ? `${runningCount} currently executing`
-              : "Completed missions keep reviewable artefacts"}
-          </span>
-        </div>
-        <div className="cc-kpi-card">
-          <span className="cc-kpi-label">Role foundations</span>
-          <strong className="cc-kpi-value">
-            {WAVE1_AVAILABLE_IDS.length} <small>available</small>
-          </strong>
-          <span className="cc-kpi-sub">
-            Planned catalogue roles do not run.{" "}
-            <Link to="/command/capabilities" className="underline">
-              Inspect status
-            </Link>
-          </span>
-        </div>
-      </section>
+      <details className="ps-legacy">
+        <summary>Advanced mission planner · discovery, prototypes and product builds</summary>
+        {/* Unified Mission Composer Card */}
+        <section
+          id="mission-composer"
+          className="cc-composer-card"
+          aria-label="Draft a specialist mission"
+        >
+          <div className="cc-composer-head">
+            <div>
+              <p className="cc-kicker">
+                <ShieldCheck className="size-3.5" /> Product question, evidence, your decision
+              </p>
+              <h2 className="cc-hero-title">Plan a specialist mission</h2>
+              <p className="cc-muted text-sm">
+                Choose discovery, a prototype, an improvement or a product build. Review the
+                assigned specialists, scope and usage before approving execution. Missing evidence
+                remains visible, and external actions need separate approval.
+              </p>
+            </div>
 
-      {/* Unified Mission Composer Card */}
-      <section
-        id="mission-composer"
-        className="cc-composer-card"
-        aria-label="Draft an earlier product mission"
-      >
-        <div className="cc-composer-head">
-          <div>
-            <p className="cc-kicker">
-              <ShieldCheck className="size-3.5" /> Product question, evidence, your decision
-            </p>
-            <h2 className="cc-hero-title">Investigate one question</h2>
-            <p className="cc-muted text-sm">
-              This is the earlier product-mission draft, not the supervised mission above.
-              Specialist contributions draft the work. You approve the plan before anything
-              proceeds. Missing evidence stays visible. It does not start a follow-up mission.
-            </p>
-          </div>
-
-          {/* Inline Project Container Selector */}
-          <div className="cc-composer-project">
-            <label className="cc-label mb-1" htmlFor="project">
-              Product container
-            </label>
-            {data.projects.length ? (
-              <select
-                id="project"
-                className="cc-input"
-                value={selectedProjectId}
-                onChange={(e) => setProjectId(e.target.value)}
-              >
-                {data.projects.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <div className="flex gap-2">
-                <input
+            {/* Inline Project Container Selector */}
+            <div className="cc-composer-project">
+              <label className="cc-label mb-1" htmlFor="project">
+                Project
+              </label>
+              {data.projects.length ? (
+                <select
+                  id="project"
                   className="cc-input"
-                  placeholder="First product container…"
-                  value={newProjectName}
-                  onChange={(e) => setNewProjectName(e.target.value)}
-                />
-                <button
-                  type="button"
-                  className="cc-btn cc-btn-secondary"
-                  disabled={createProject.isPending}
-                  onClick={() => createProject.mutate()}
+                  value={selectedProjectId}
+                  onChange={(e) => setProjectId(e.target.value)}
                 >
-                  Create
-                </button>
-              </div>
-            )}
+                  {data.projects.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <div className="flex gap-2">
+                  <input
+                    className="cc-input"
+                    placeholder="Name your first project…"
+                    value={newProjectName}
+                    onChange={(e) => setNewProjectName(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="cc-btn cc-btn-secondary"
+                    disabled={createProject.isPending}
+                    onClick={() => createProject.mutate()}
+                  >
+                    Create
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* 3 Product Intent Tabs with Motion-Style Duotone Icons */}
-        <div className="cc-intent-grid" role="tablist" aria-label="Select mission intent">
-          {INTENTS.map((item) => {
-            const Icon = item.icon;
-            const DuotoneIcon = item.duotoneIcon;
-            const active = intent === item.intent;
-            const unavailable = item.intent === "build" && !data.features.productMission;
-            return (
-              <button
-                key={item.intent}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                aria-disabled={unavailable}
-                title={
-                  unavailable
-                    ? "Available once the product-mission database migration is applied."
-                    : undefined
-                }
-                className={`cc-intent${active ? " active" : ""}`}
-                onClick={() => {
-                  if (unavailable) {
-                    setFormError(
-                      "Product missions are not enabled on this workspace yet: the product-mission database migration has not been applied.",
-                    );
-                    return;
+          {/* 3 Product Intent Tabs with Motion-Style Duotone Icons */}
+          <div className="cc-intent-grid" role="tablist" aria-label="Select mission intent">
+            {INTENTS.map((item) => {
+              const Icon = item.icon;
+              const DuotoneIcon = item.duotoneIcon;
+              const active = intent === item.intent;
+              const unavailable = item.intent === "build" && !data.features.productMission;
+              return (
+                <button
+                  key={item.intent}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  aria-disabled={unavailable}
+                  title={
+                    unavailable
+                      ? "Product builds are not enabled in this workspace yet."
+                      : undefined
                   }
+                  className={`cc-intent${active ? " active" : ""}`}
+                  onClick={() => {
+                    if (unavailable) {
+                      setFormError(
+                        "Product builds are not enabled in this workspace yet. You can still plan discovery, a prototype or an improvement.",
+                      );
+                      return;
+                    }
+                    setFormError(null);
+                    setIntent(item.intent);
+                  }}
+                >
+                  <div className="cc-intent-top-row">
+                    <div className="cc-intent-duotone-box" aria-hidden="true">
+                      <DuotoneIcon className="size-7" />
+                    </div>
+                    <div className="cc-intent-meta">
+                      <span className="cc-intent-badge">
+                        <Icon className="size-3" /> {item.tag}
+                      </span>
+                      <strong>{INTENT_LABELS[item.intent]}</strong>
+                    </div>
+                  </div>
+                  <span>{item.blurb}</span>
+                  <small className="cc-intent-deliverable">Deliverable: {item.deliverable}</small>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Brief Input */}
+          <div className="mt-4">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+              <label className="cc-label mb-0" htmlFor="mission-request">
+                Mission brief ({INTENT_LABELS[activeIntent.intent]})
+              </label>
+              <span className="flex flex-wrap gap-1.5">
+                <span className="cc-chip">Output: {activeIntent.deliverable}</span>
+                <span
+                  className="cc-gen-badge"
+                  data-mode={data.features.modelMode.enabled ? "model" : "simulated"}
+                  title={
+                    data.features.modelMode.enabled
+                      ? `Stage outputs are generated by ${data.features.modelMode.model} via ${data.features.modelMode.provider}.`
+                      : "No model is enabled: stage outputs are deterministic, clearly labelled simulated drafts."
+                  }
+                >
+                  {data.features.modelMode.enabled
+                    ? `Model: ${data.features.modelMode.model}`
+                    : "Simulated mode"}
+                </span>
+              </span>
+            </div>
+            <textarea
+              id="mission-request"
+              className="cc-input cc-textarea"
+              rows={4}
+              placeholder={activeIntent.placeholder}
+              value={requestText}
+              onChange={(e) => setRequestText(e.target.value)}
+            />
+
+            {/* Compact Guided Product Playbook Starters */}
+            <div className="cc-sample-row">
+              <span className="cc-sample-label">Product Playbook Starter:</span>
+              {activeIntent.samples.map((sample) => (
+                <button
+                  key={sample.label}
+                  type="button"
+                  className="cc-sample-chip"
+                  onClick={() => setRequestText(sample.text)}
+                >
+                  {sample.label} →
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {formError ? <p className="cc-error mt-3">{formError}</p> : null}
+
+          <div
+            className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t pt-4"
+            style={{ borderColor: "var(--x-border)" }}
+          >
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                className="cc-btn cc-btn-primary"
+                disabled={startMission.isPending || requestText.trim().length < 3}
+                onClick={() => {
                   setFormError(null);
-                  setIntent(item.intent);
+                  startMission.mutate();
                 }}
               >
-                <div className="cc-intent-top-row">
-                  <div className="cc-intent-duotone-box" aria-hidden="true">
-                    <DuotoneIcon className="size-7" />
-                  </div>
-                  <div className="cc-intent-meta">
-                    <span className="cc-intent-badge">
-                      <Icon className="size-3" /> {item.tag}
-                    </span>
-                    <strong>{INTENT_LABELS[item.intent]}</strong>
-                  </div>
-                </div>
-                <span>{item.blurb}</span>
-                <small className="cc-intent-deliverable">Deliverable: {item.deliverable}</small>
+                {startMission.isPending ? "Generating plan…" : "Draft mission plan →"}
               </button>
-            );
-          })}
-        </div>
-
-        {/* Brief Input */}
-        <div className="mt-4">
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
-            <label className="cc-label mb-0" htmlFor="mission-request">
-              Mission brief ({INTENT_LABELS[activeIntent.intent]})
-            </label>
-            <span className="flex flex-wrap gap-1.5">
-              <span className="cc-chip">Output: {activeIntent.deliverable}</span>
-              <span
-                className="cc-gen-badge"
-                data-mode={data.features.modelMode.enabled ? "model" : "simulated"}
-                title={
-                  data.features.modelMode.enabled
-                    ? `Stage outputs are generated by ${data.features.modelMode.model} via ${data.features.modelMode.provider}.`
-                    : "No model is enabled: stage outputs are deterministic, clearly labelled simulated drafts."
-                }
-              >
-                {data.features.modelMode.enabled
-                  ? `Model: ${data.features.modelMode.model}`
-                  : "Simulated mode"}
+              <span className="cc-muted text-xs">
+                Drafting the plan does not record usage. Execution waits for your approval.
               </span>
-            </span>
+            </div>
+            <div className="cc-lifecycle-mini" aria-label="Supervision sequence">
+              <span>Mission</span>
+              <span>→</span>
+              <span>Plan</span>
+              <span>→</span>
+              <span className="is-gate">Approve</span>
+              <span>→</span>
+              <span>Execute</span>
+              <span>→</span>
+              <span>Deliver</span>
+            </div>
           </div>
-          <textarea
-            id="mission-request"
-            className="cc-input cc-textarea"
-            rows={4}
-            placeholder={activeIntent.placeholder}
-            value={requestText}
-            onChange={(e) => setRequestText(e.target.value)}
-          />
-
-          {/* Compact Guided Product Playbook Starters */}
-          <div className="cc-sample-row">
-            <span className="cc-sample-label">Product Playbook Starter:</span>
-            {activeIntent.samples.map((sample) => (
-              <button
-                key={sample.label}
-                type="button"
-                className="cc-sample-chip"
-                onClick={() => setRequestText(sample.text)}
-              >
-                {sample.label} →
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {formError ? <p className="cc-error mt-3">{formError}</p> : null}
-
-        <div
-          className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t pt-4"
-          style={{ borderColor: "var(--x-border)" }}
-        >
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              className="cc-btn cc-btn-primary"
-              disabled={startMission.isPending || requestText.trim().length < 3}
-              onClick={() => {
-                setFormError(null);
-                startMission.mutate();
-              }}
-            >
-              {startMission.isPending ? "Generating plan…" : "Draft mission plan →"}
-            </button>
-            <span className="cc-muted text-xs">
-              Drafting the plan does not record usage. Execution waits for your approval.
-            </span>
-          </div>
-          <div className="cc-lifecycle-mini" aria-label="Supervision sequence">
-            <span>Mission</span>
-            <span>→</span>
-            <span>Plan</span>
-            <span>→</span>
-            <span className="is-gate">Approve</span>
-            <span>→</span>
-            <span>Execute</span>
-            <span>→</span>
-            <span>Deliver</span>
-          </div>
-        </div>
-      </section>
-
+        </section>
+      </details>
       {/* Recent Missions & Supervision Ledger */}
       <section className="cc-panel">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="cc-panel-title mb-0">Product Missions &amp; Supervision Ledger</h2>
+            <h2 className="cc-panel-title mb-0">Specialist missions</h2>
             <span className="cc-muted text-xs">
               {filteredMissions.length} of {data.recentMissions.length} missions shown
             </span>
@@ -588,7 +538,7 @@ function CommandHome() {
           <p className="cc-muted mt-4">
             {data.recentMissions.length === 0 ? (
               <>
-                No missions yet. Start with the product question above. The plan waits for your
+                No specialist missions yet. Use the advanced planner above. The plan waits for your
                 decision before downstream work runs.
               </>
             ) : (
@@ -621,30 +571,5 @@ function CommandHome() {
         )}
       </section>
     </CommandShell>
-  );
-}
-
-function WelcomeBanner() {
-  const { user } = useSession();
-  const { data: profile } = useQuery(myProfileQuery);
-  const next = firstActionFor(profile ?? { goal: "", firstIdea: "" });
-  return (
-    <section className="cc-welcome" aria-label="Welcome">
-      <div>
-        <h2>Welcome{user ? `, ${firstNameOf(user, profile)}` : ""}.</h2>
-        <p>
-          {profile?.role ? `${profile.role} · ${profile.teamSize} · ` : ""}
-          {next.reason}
-        </p>
-      </div>
-      <div className="cc-welcome-actions">
-        <Link to={next.href} className="cc-btn cc-btn-primary">
-          {next.label} →
-        </Link>
-        <Link to="/onboarding" className="cc-btn cc-btn-secondary">
-          Edit setup
-        </Link>
-      </div>
-    </section>
   );
 }

@@ -137,7 +137,7 @@ function ProductPage() {
             <div className="psi-reading-follow">
               <ProductBench
                 label="Each role finishes one piece"
-                source="The six working roles are Evidence, Options, Challenge, Decision, Builder, and Export."
+                source="The six illustrated contributions are Evidence, Options, Challenge, Decision, Builder, and Export."
                 known="Evidence starts from what you supplied. Options compares approaches. Challenge tests the recommendation. Decision prepares the choice for the owner to record. Builder drafts inside that choice. Export packs the work and waits."
                 open="The picture is an example of work moving forward. The wider catalogue describes further roles. It is not a live team of 150."
                 note="Role reading only. The control below shows one role at a time. It does not run a live team."

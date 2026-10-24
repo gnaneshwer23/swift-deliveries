@@ -1,3 +1,4 @@
+import { neonTransaction, type DbTransaction } from "@/lib/db/neon.server";
 import type { Db } from "@/lib/db/builder";
 import { isMissingRelationError } from "@/lib/workforce/db";
 import {
@@ -35,8 +36,20 @@ function rowFrom(mission: SupervisedMission): Record<string, unknown> {
   };
 }
 
-export function createMissionStore(db: Db): MissionStore {
+export function createMissionStore(
+  db: Db,
+  transact: DbTransaction = neonTransaction,
+): MissionStore {
   return {
+    async saveFollowUp(parent, expectedVersion, child) {
+      if (parent.workspaceId !== child.workspaceId) throw new MissionConflictError();
+      return transact(async (tx) => {
+        const store = createMissionStore(tx, transact);
+        await store.save(parent, expectedVersion);
+        await store.save(child, 0);
+        return parent;
+      });
+    },
     async get(workspaceId, id) {
       const res = await db
         .from("psi_supervised_missions")
@@ -96,79 +109,37 @@ export function createMissionStore(db: Db): MissionStore {
   };
 }
 
+/** Legacy spend reconciliation is atomic. New provider attempts reserve this row before dispatch. */
 export async function postWorkspaceSpend(
-  db: Db,
+  _db: Db,
   mission: SupervisedMission,
   spend: SpendRecord,
+  transact: DbTransaction = neonTransaction,
 ): Promise<void> {
   if (spend.units <= 0) return;
-  const existing = await db
-    .from("psi_supervised_spend")
-    .select("spend_key")
-    .eq("mission_id", mission.id)
-    .eq("spend_key", spend.key)
-    .maybeSingle();
-  if (existing.error) {
-    if (unavailable(existing.error)) throw new MissionStoreUnavailableError();
-    throw new Error(existing.error.message);
-  }
-  if (existing.data) return;
-
-  const inserted = await db
-    .from("psi_supervised_spend")
-    .insert({
-      mission_id: mission.id,
-      workspace_id: mission.workspaceId,
-      spend_key: spend.key,
-      units: spend.units,
-    })
-    .select("spend_key")
-    .maybeSingle();
-  if (inserted.error) {
-    if (unavailable(inserted.error)) throw new MissionStoreUnavailableError();
-    if (inserted.error.code === "23505" || /duplicate|unique/i.test(inserted.error.message)) return;
-    throw new Error(inserted.error.message);
-  }
-  if (!inserted.data) return;
-
-  const workspace = await db
-    .from("wf_workspaces")
-    .select("usage_ceiling, usage_consumed")
-    .eq("id", mission.workspaceId)
-    .maybeSingle();
-  if (workspace.error || !workspace.data) {
-    await db
-      .from("psi_supervised_spend")
-      .delete()
-      .eq("mission_id", mission.id)
-      .eq("spend_key", spend.key);
-    throw new Error(workspace.error?.message ?? "Workspace not found.");
-  }
-  const ceiling = Number(workspace.data.usage_ceiling);
-  const consumed = Number(workspace.data.usage_consumed);
-  if (consumed + spend.units > ceiling) {
-    await db
-      .from("psi_supervised_spend")
-      .delete()
-      .eq("mission_id", mission.id)
-      .eq("spend_key", spend.key);
-    throw new Error("Workspace usage ceiling reached. This step was not run.");
-  }
-  const updated = await db
-    .from("wf_workspaces")
-    .update({
-      usage_consumed: consumed + spend.units,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", mission.workspaceId)
-    .eq("usage_consumed", consumed)
-    .select("id");
-  if (updated.error || !((updated.data ?? []) as unknown[]).length) {
-    await db
-      .from("psi_supervised_spend")
-      .delete()
-      .eq("mission_id", mission.id)
-      .eq("spend_key", spend.key);
-    throw new Error(updated.error?.message ?? "Workspace usage changed. Retry this step.");
-  }
+  await transact(async (_tx, query) => {
+    const workspace = await query(
+      "select usage_ceiling, usage_consumed from wf_workspaces where id = $1::uuid for update",
+      [mission.workspaceId],
+    );
+    if (!workspace[0]) throw new Error("Workspace not found.");
+    const exists = await query(
+      "select 1 from psi_supervised_spend where mission_id = $1::uuid and spend_key = $2::text",
+      [mission.id, spend.key],
+    );
+    if (exists.length) return;
+    const consumed = Number(workspace[0]["usage_consumed"]);
+    if (consumed + spend.units > Number(workspace[0]["usage_ceiling"]))
+      throw new Error(
+        "Workspace usage ceiling reached; the prior provider usage needs reconciliation.",
+      );
+    await query(
+      "insert into psi_supervised_spend(mission_id,workspace_id,spend_key,units) values ($1::uuid,$2::uuid,$3::text,$4::int)",
+      [mission.id, mission.workspaceId, spend.key, String(spend.units)],
+    );
+    await query(
+      "update wf_workspaces set usage_consumed = usage_consumed + $2::int, updated_at = now() where id = $1::uuid",
+      [mission.workspaceId, String(spend.units)],
+    );
+  });
 }
