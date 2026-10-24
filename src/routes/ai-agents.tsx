@@ -2,13 +2,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { pageHead } from "@/components/marketing/page-head";
+import { SpecialistWorkforce } from "@/components/marketing/specialist-workforce";
 import { capabilityRegistryData as registry } from "@/lib/workforce/registry/data";
 export const Route = createFileRoute("/ai-agents")({
   head: () =>
     pageHead(
       "/ai-agents",
-      "Specialist catalogue — Roles and current limitations | DeliverX",
-      "Search the DeliverX specialist catalogue, explore lifecycle departments and inspect capability status and limitations.",
+      "Specialist workforce — Six working roles and the wider catalogue | DeliverX",
+      "Follow six specialists from evidence to a held export. The wider catalogue is not 150 live working agents.",
     ),
   component: Agents,
 });
@@ -52,13 +53,25 @@ function Agents() {
             <span className="dxl-grad">a defined contribution.</span>
           </h1>
           <p className="psi-lead">
-            Explore the disciplines behind a product mission. A role in the catalogue is not a
-            guarantee that an autonomous agent is live.
+            Six roles finish a task, record why, attach evidence, and hand the artefact on. You
+            approve the export. A specialist does not approve that step.
           </p>
           <p className="journey-status">
-            {foundationCount} role foundations have deterministic-stub limitations. {plannedCount}{" "}
-            roles are planned. None of these labels establishes evaluated live execution. Provider
-            integration, tools and permissions require separate verification.
+            The wider catalogue lists {registry.capabilities.length} roles. {foundationCount} are
+            available as role foundations with deterministic-stub limitations, and {plannedCount}{" "}
+            are planned. This is not {registry.capabilities.length} live working agents.
+          </p>
+          <SpecialistWorkforce />
+        </div>
+      </section>
+      <section className="psi-section" id="catalogue">
+        <div className="dxl-wrap">
+          <h2 className="dxl-h2">Wider catalogue</h2>
+          <p>
+            The six roles above are the working set on this page. The entries below describe the
+            wider catalogue. Available means a role foundation with stub limitations. Planned means
+            the role is not in use. Provider integration, tools and permissions still need separate
+            verification.
           </p>
           <details className="journey-detail">
             <summary>How the catalogue is organised</summary>
@@ -131,8 +144,9 @@ function Agents() {
             </button>
           </div>
           <p role="status">
-            {roles.length} matching roles · {registry.capabilities.length} total catalogue entries
-            {group ? ` · ${group}` : ""}
+            {`${roles.length} matching catalogue entries${
+              status === "available" ? ", shown as role foundations with stub limitations" : ""
+            }${status === "planned" ? ", shown as planned roles" : ""}. ${registry.capabilities.length} entries in the wider catalogue${group ? `, ${group}` : ""}.`}
           </p>
           <div className="psi-directory">
             {roles.map((c) => (
