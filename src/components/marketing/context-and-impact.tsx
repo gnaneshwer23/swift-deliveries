@@ -17,7 +17,7 @@ const CONTEXT = [
     icon: FileText,
     document: "Evidence brief",
     lost: "Which observation supports this?",
-    kept: "The source stays attached",
+    kept: "Source E-01 stays attached",
     detail:
       "An interview note or cited source is linked to the brief. An unsupported assumption remains marked as a question.",
   },
@@ -26,7 +26,7 @@ const CONTEXT = [
     icon: MessageSquare,
     document: "Chosen direction",
     lost: "Why did we choose this?",
-    kept: "The decision cites its source",
+    kept: "Decision D-01 cites E-01",
     detail:
       "The decision preserves alternatives, rationale and dissent. The approved direction references its evidence.",
   },
@@ -35,7 +35,7 @@ const CONTEXT = [
     icon: Layers,
     document: "Product prototype",
     lost: "What are we checking against?",
-    kept: "The artefact follows the decision",
+    kept: "Artefact A-01 follows D-01",
     detail:
       "The artefact links back to the decision and its acceptance criteria. Inspection can follow the reasoning, not just the file.",
   },
@@ -121,7 +121,9 @@ export function ContextContinuity() {
           </button>
         )}
       </div>
-      <small className="continuity-note">Sample record.</small>
+      <small className="continuity-note">
+        Illustrative records E-01, D-01 and A-01 show traceability, not real customer evidence.
+      </small>
     </div>
   );
 }

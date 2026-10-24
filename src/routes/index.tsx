@@ -1,3 +1,5 @@
+import { ContextContinuity } from "@/components/marketing/context-and-impact";
+import { ProductBrainExplorer } from "@/components/marketing/product-brain-explorer";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
@@ -93,39 +95,6 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-const STORY = [
-  {
-    title: "Product question",
-    caption: "Which change first",
-    src: "/illustrations/role-options.webp",
-    alt: "Three option cards compared on one shared platform.",
-  },
-  {
-    title: "Evidence",
-    caption: "Sources, gap open",
-    src: "/illustrations/role-evidence.webp",
-    alt: "Source cards under a magnifying glass, with one empty card left open.",
-  },
-  {
-    title: "Decision",
-    caption: "The reason, unsealed",
-    src: "/illustrations/role-decision.webp",
-    alt: "A decision dossier beside an empty approval seal.",
-  },
-  {
-    title: "Export",
-    caption: "Pack held",
-    src: "/illustrations/role-export-held.webp",
-    alt: "A bound pack with the latch closed.",
-  },
-  {
-    title: "Owner approves",
-    caption: "Latch open",
-    src: "/illustrations/role-export-released.webp",
-    alt: "The pack latch is open after the owner approved the export.",
-  },
-] as const;
-
 function HomePage() {
   return (
     <MarketingLayout>
@@ -139,7 +108,9 @@ function HomePage() {
             <span className="dxl-grad">to continuous intelligence.</span>
           </h1>
           <p className="dxl-lead">
-            A product question becomes evidence, a decision, and an export you approve.
+            For founders and product builders, turn a product question into an evidence brief,
+            compared options and a clear next step, then keep the reasoning together and approve the
+            decisions that matter.
           </p>
           <div className="dxl-ctas">
             <Link to="/how-it-works" className="dxl-btn dxl-btn-primary">
@@ -149,57 +120,117 @@ function HomePage() {
               Prepare your brief
             </Link>
           </div>
-          <figure className="home-hero-scene">
-            <img
-              src="/illustrations/mission-workbench-v1.webp"
-              width={1536}
-              height={1024}
-              alt="A product question moves through evidence, a decision, and a held export until the owner approves."
-            />
-            <figcaption>Sample record</figcaption>
-          </figure>
+          <ProductBrainExplorer />
         </div>
       </section>
-      <section className="home-story" aria-labelledby="home-story-title">
-        <div className="dxl-wrap dxl-wide">
-          <div className="home-story-head">
-            <h2 id="home-story-title" className="dxl-h2">
-              Question to approval.
-            </h2>
-            <p>The export stays held until you approve it.</p>
-          </div>
-          <ol className="home-beats">
-            {STORY.map((beat) => (
-              <li key={beat.title}>
-                <figure>
-                  <img src={beat.src} width={1152} height={864} alt={beat.alt} loading="lazy" />
-                  <figcaption>
-                    <strong>{beat.title}</strong>
-                    <span>{beat.caption}</span>
-                  </figcaption>
-                </figure>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-      <section className="home-stage" aria-labelledby="home-stage-title">
+      <section className="psi-section psi-tinted">
         <div className="dxl-wrap">
-          <div className="home-story-head">
-            <h2 id="home-stage-title" className="dxl-h2">
-              One workbench.
-            </h2>
-            <p>Specialists pass the work. The call stays yours.</p>
+          <p className="dxl-eyebrow">01 · The problem</p>
+          <h2 className="dxl-h2">Every handoff can lose the reason.</h2>
+          <ContextContinuity />
+        </div>
+      </section>
+      <section className="psi-section">
+        <div className="dxl-wrap psi-split">
+          <div>
+            <p className="dxl-eyebrow">A useful first outcome</p>
+            <h2 className="dxl-h2">One question. A decision you can explain.</h2>
+            <p>
+              Which onboarding change should we investigate first? Follow a sample from supplied
+              evidence to compared options, an owner decision and an experiment brief.
+            </p>
+            <Link to="/how-it-works" className="dxl-btn dxl-btn-primary">
+              Inspect the example mission
+            </Link>
           </div>
-          <figure className="home-stage-scene">
-            <img
-              src="/illustrations/specialist-workbench-v1.webp"
-              width={1536}
-              height={1024}
-              alt="A clay workbench passes research, design, and review to a human approval before export."
-              loading="lazy"
-            />
-          </figure>
+          <div className="journey-output-list">
+            <p>
+              <strong>Evidence register</strong>
+              <span>Sources, observations and what is still unknown.</span>
+            </p>
+            <p>
+              <strong>Decision record</strong>
+              <span>Alternatives, objections and the reason for the owner's choice.</span>
+            </p>
+            <p>
+              <strong>Experiment brief</strong>
+              <span>A bounded next step and a plan to measure it.</span>
+            </p>
+            <p className="psi-fine-print">
+              Illustrative sample documents, not customer research or observed results.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section className="psi-section psi-tinted">
+        <div className="dxl-wrap">
+          <p className="dxl-eyebrow">The product behind the example</p>
+          <h2 className="dxl-h2">Shared context. Specialist contributions. Your call.</h2>
+          <div className="psi-feature-grid">
+            <div className="psi-feature">
+              <h3>Keep the reasoning</h3>
+              <p>
+                Product Brain keeps the order on a supervised mission: decision, owner-supplied
+                observation, review, then a proposed next mission.
+              </p>
+              <Link to="/psi" hash="product-brain" className="dxl-link">
+                Explore the product record
+              </Link>
+            </div>
+            <div className="psi-feature">
+              <h3>Understand the contribution</h3>
+              <p>
+                Specialist roles have bounded inputs and outputs. Catalogue entries are not proof of
+                live execution.
+              </p>
+              <Link to="/ai-agents" className="dxl-link">
+                Inspect specialist status
+              </Link>
+            </div>
+            <div className="psi-feature">
+              <h3>Control the next step</h3>
+              <p>
+                Consequential work needs human approval. Inspect scope, evidence and uncertainty.
+              </p>
+              <Link to="/security" className="dxl-link">
+                Read about safeguards
+              </Link>
+            </div>
+          </div>
+          <p className="journey-status">
+            Current scope: a supervised mission can keep a decision, an owner-supplied observation,
+            a versioned review and a proposed next mission. Connected analytics, automatic approval
+            and production deployment are not included. Release verification is still required.
+          </p>
+          <Link to="/psi" className="dxl-link">
+            See the system and its current scope
+          </Link>
+        </div>
+      </section>
+      <section className="psi-section">
+        <div className="dxl-wrap psi-split">
+          <div>
+            <p className="dxl-eyebrow">Build with purpose</p>
+            <h2 className="dxl-h2">Bring a question worth investigating.</h2>
+            <p>
+              Founders validate a direction. Product teams investigate an improvement. Students
+              learn by building and inspecting the same work.
+            </p>
+          </div>
+          <div>
+            <p>
+              Prepare your brief without an account, or explore the three scoped paid pilot offers.
+              Pilot scope and availability are confirmed before billing.
+            </p>
+            <div className="psi-actions">
+              <Link to="/resources" hash="brief-builder" className="dxl-btn dxl-btn-primary">
+                Prepare your brief
+              </Link>
+              <Link to="/pricing" className="dxl-btn dxl-btn-ghost">
+                Explore paid pilots
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
     </MarketingLayout>
