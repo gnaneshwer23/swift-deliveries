@@ -1,24 +1,22 @@
-import { ContextContinuity, ImpactExplorer } from "@/components/marketing/context-and-impact";
-import { SectionExplorer } from "@/components/marketing/section-explorer";
+import { ContextContinuity } from "@/components/marketing/context-and-impact";
 import { ProductBrainExplorer } from "@/components/marketing/product-brain-explorer";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { OnboardingGate } from "@/components/onboarding-gate";
-import { LiveDecision } from "@/components/marketing/dxsi-landing";
 
 const TITLE = "DeliverX — From product idea to continuous intelligence";
 const DESCRIPTION =
-  "Product Super Intelligence connects evidence, specialist contributions, human decisions and product delivery in one evolving record.";
+  "DeliverX helps founders and product builders turn a product question into evidence, an accountable decision and inspectable work.";
 
 const HOW_IT_WORKS_SCHEMA = [
-  { name: "Describe", desc: "Describe your idea or business case." },
-  { name: "Discover", desc: "Agents research the market, customers and technology in parallel." },
-  { name: "Decide", desc: "Specialist panels debate options; you approve high-impact decisions." },
-  { name: "Build", desc: "Design, architecture and build sprints with peer review." },
+  { name: "Frame", desc: "Define one product question, constraints and supplied evidence." },
+  { name: "Investigate", desc: "Organise supplied sources and retain evidence gaps." },
+  { name: "Compare", desc: "Inspect alternatives, trade-offs and a recommendation." },
+  { name: "Decide", desc: "The owner approves a bounded next step or requests more evidence." },
   {
-    name: "Verify & launch",
-    desc: "Automated verification, go/no-go, launch plan and full export.",
+    name: "Inspect",
+    desc: "Review the decision record and experiment brief. This is an illustrative workflow.",
   },
 ];
 
@@ -110,15 +108,16 @@ function HomePage() {
             <span className="dxl-grad">to continuous intelligence.</span>
           </h1>
           <p className="dxl-lead">
-            One intelligent workspace connecting evidence, decisions, specialist AI agents, product
-            delivery and learning.
+            For founders and product builders. Turn your product question into an evidence brief,
+            compared options and a clear next step. Keep the reasoning together and approve the
+            decisions that matter.
           </p>
           <div className="dxl-ctas">
-            <Link to="/" hash="explore-product" className="dxl-btn dxl-btn-primary">
-              Explore the platform <ArrowRight size={16} />
+            <Link to="/how-it-works" className="dxl-btn dxl-btn-primary">
+              Explore the example <ArrowRight size={16} />
             </Link>
-            <Link to="/how-it-works" className="dxl-btn dxl-btn-ghost">
-              View example mission
+            <Link to="/resources" hash="brief-builder" className="dxl-btn dxl-btn-ghost">
+              Prepare your brief
             </Link>
           </div>
           <ProductBrainExplorer />
@@ -134,111 +133,100 @@ function HomePage() {
       <section className="psi-section">
         <div className="dxl-wrap psi-split">
           <div>
-            <p className="dxl-eyebrow">02 · Meet Product Brain</p>
-            <h2 className="dxl-h2">One evolving product record.</h2>
+            <p className="dxl-eyebrow">A useful first outcome</p>
+            <h2 className="dxl-h2">One question. A decision you can explain.</h2>
             <p>
-              Your sources connect to decisions, and decisions connect to artefacts. Inspect the
-              rationale before the next mission starts.
+              Which onboarding change should we investigate first? Follow a sample from supplied
+              evidence to compared options, an owner decision and an experiment brief.
             </p>
-            <Link to="/product-brain" className="dxl-link">
-              Explore Product Brain →
+            <Link to="/how-it-works" className="dxl-btn dxl-btn-primary">
+              Inspect the example mission
             </Link>
           </div>
-          <SectionExplorer kind="record" />
+          <div className="journey-output-list">
+            <p>
+              <strong>Evidence register</strong>
+              <span>Sources, observations and what is still unknown.</span>
+            </p>
+            <p>
+              <strong>Decision record</strong>
+              <span>Alternatives, objections and the reason for the owner's choice.</span>
+            </p>
+            <p>
+              <strong>Experiment brief</strong>
+              <span>A bounded next step and a plan to measure it.</span>
+            </p>
+            <p className="psi-fine-print">
+              Illustrative sample documents, not customer research or observed results.
+            </p>
+          </div>
         </div>
       </section>
       <section className="psi-section psi-tinted">
-        <div className="dxl-wrap psi-split">
-          <div>
-            <p className="dxl-eyebrow">03 · Specialist workforce</p>
-            <h2 className="dxl-h2">
-              Different disciplines.
-              <br />
-              Shared context.
-            </h2>
-            <p>
-              150 catalogue roles organised into 12 browsing groups. Explore the directory to see
-              capability status and limitations. Missions use enabled capabilities.
-            </p>
-            <Link to="/ai-agents" className="dxl-link">
-              Explore agents →
-            </Link>
-          </div>
-          <SectionExplorer kind="team" />
-        </div>
-      </section>
-      <section className="psi-section">
         <div className="dxl-wrap">
-          <p className="dxl-eyebrow">04 · From idea to impact</p>
-          <h2 className="dxl-h2">A lifecycle with human gates.</h2>
-          <ImpactExplorer />
-          <Link to="/how-it-works" className="dxl-link">
-            Explore each stage →
+          <p className="dxl-eyebrow">The product behind the example</p>
+          <h2 className="dxl-h2">Shared context. Specialist contributions. Your call.</h2>
+          <div className="psi-feature-grid">
+            <div className="psi-feature">
+              <h3>Keep the reasoning</h3>
+              <p>Product Brain connects sources, decisions and artefacts.</p>
+              <Link to="/psi" hash="product-brain" className="dxl-link">
+                Explore the product record
+              </Link>
+            </div>
+            <div className="psi-feature">
+              <h3>Understand the contribution</h3>
+              <p>
+                Specialist roles have bounded inputs and outputs. Catalogue entries are not proof of
+                live execution.
+              </p>
+              <Link to="/ai-agents" className="dxl-link">
+                Inspect specialist status
+              </Link>
+            </div>
+            <div className="psi-feature">
+              <h3>Control the next step</h3>
+              <p>
+                Consequential work needs human approval. Inspect scope, evidence and uncertainty.
+              </p>
+              <Link to="/security" className="dxl-link">
+                Read about safeguards
+              </Link>
+            </div>
+          </div>
+          <p className="journey-status">
+            Current scope: interactive examples and supervised mission foundations requiring release
+            verification. Connected outcome tracking, automatic learning and production deployment
+            remain planned.
+          </p>
+          <Link to="/psi" className="dxl-link">
+            See the system and its current scope
           </Link>
         </div>
       </section>
-      <section className="psi-section psi-tinted" id="decisions">
-        <div className="dxl-wrap">
-          <p className="dxl-eyebrow">05 · A mission in action</p>
-          <h2 className="dxl-h2">Follow the work. Inspect the judgement.</h2>
-          <SectionExplorer kind="mission" />
-          <details>
-            <summary>Inspect the sample decision engine</summary>
-            <LiveDecision />
-          </details>
-        </div>
-      </section>
       <section className="psi-section">
         <div className="dxl-wrap psi-split">
           <div>
-            <p className="dxl-eyebrow">06 · Continuous learning</p>
-            <h2 className="dxl-h2">
-              What happened informs
-              <br />
-              what comes next.
-            </h2>
+            <p className="dxl-eyebrow">Build with purpose</p>
+            <h2 className="dxl-h2">Bring a question worth investigating.</h2>
             <p>
-              Bring observed results back to the product record and use them to frame the next
-              question. Connected outcome tracking and automatic learning are planned capabilities.
+              Founders validate a direction. Product teams investigate an improvement. Students
+              learn by building and inspecting the same work.
             </p>
-            <Link to="/product-brain" className="dxl-link">
-              Follow the learning loop →
-            </Link>
           </div>
-          <SectionExplorer kind="learning" />
-        </div>
-      </section>
-      <section className="psi-section psi-tinted">
-        <div className="dxl-wrap psi-split">
           <div>
-            <p className="dxl-eyebrow">07 · Trust & governance</p>
-            <h2 className="dxl-h2">Judgement stays accountable.</h2>
             <p>
-              You approve consequential steps. Records retain dissent, sources and generation mode.
-              Permissions and usage ceilings bound the work.
+              Prepare your brief without an account, or explore the three scoped paid pilot offers.
+              Pilot scope and availability are confirmed before billing.
             </p>
-            <Link to="/security" className="dxl-link">
-              View safeguards →
-            </Link>
-          </div>
-          <SectionExplorer kind="trust" />
-        </div>
-      </section>
-      <section className="psi-section">
-        <div className="dxl-wrap">
-          <p className="dxl-eyebrow">08 · Build with purpose</p>
-          <h2 className="dxl-h2">
-            Bring a product question.
-            <br />
-            Make the next step tangible.
-          </h2>
-          <div className="psi-actions">
-            <Link to="/pricing" className="dxl-btn dxl-btn-primary">
-              Explore paid pilots
-            </Link>
-            <Link to="/resources" className="dxl-btn dxl-btn-ghost">
-              Prepare a product brief
-            </Link>
+            <div className="psi-actions">
+              <Link to="/resources" hash="brief-builder" className="dxl-btn dxl-btn-primary">
+                Prepare your brief
+              </Link>
+              <Link to="/pricing" className="dxl-btn dxl-btn-ghost">
+                Explore paid pilots
+              </Link>
+            </div>
           </div>
         </div>
       </section>

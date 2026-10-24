@@ -7,17 +7,15 @@ import { BrandLogo } from "@/components/brand-logo";
 
 export const MARKETING_LINKS = [
   { to: "/", label: "Home" },
-  { to: "/psi", label: "PSI Platform" },
-  { to: "/how-it-works", label: "How it works" },
-  { to: "/ai-agents", label: "150 AI Agents" },
+  { to: "/psi", label: "Product" },
+  { to: "/how-it-works", label: "Example mission" },
+  { to: "/ai-agents", label: "Specialists" },
   { to: "/product-brain", label: "Product Brain" },
   { to: "/solutions", label: "Solutions" },
   { to: "/security", label: "Security & Trust" },
   { to: "/pricing", label: "Pricing & Pilot" },
 ] as const;
-const LINKS = MARKETING_LINKS.filter((l) =>
-  ["/psi", "/how-it-works", "/ai-agents", "/pricing"].includes(l.to),
-);
+const LINKS = MARKETING_LINKS.filter((l) => ["/psi", "/how-it-works", "/pricing"].includes(l.to));
 
 export function MarketingNav() {
   const [open, setOpen] = useState(false);
@@ -55,8 +53,8 @@ export function MarketingNav() {
             <Link to="/login" className="dxn-signin hidden sm:inline-flex">
               Sign in
             </Link>
-            <Link to="/pricing" className="dxn-cta">
-              View plans
+            <Link to="/resources" hash="brief-builder" className="dxn-cta">
+              Prepare your brief
             </Link>
           </>
         )}
@@ -97,11 +95,12 @@ export function MarketingNav() {
                   Sign in
                 </Link>
                 <Link
-                  to="/pricing"
+                  to="/resources"
+                  hash="brief-builder"
                   onClick={() => setOpen(false)}
                   className="dxn-cta justify-center"
                 >
-                  View plans
+                  Prepare your brief
                 </Link>
               </div>
             )}
