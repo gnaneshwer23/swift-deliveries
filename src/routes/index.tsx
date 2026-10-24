@@ -1,3 +1,4 @@
+import { ContextContinuity, ImpactExplorer } from "@/components/marketing/context-and-impact";
 import { SectionExplorer } from "@/components/marketing/section-explorer";
 import { ProductBrainExplorer } from "@/components/marketing/product-brain-explorer";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -6,7 +7,7 @@ import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { JudgementFlow } from "@/components/marketing/judgement-flow";
 import { OnboardingGate } from "@/components/onboarding-gate";
 import { ProductIllustration } from "@/components/marketing/product-illustration";
-import { LiveDecision, LiveProgrammeFlow } from "@/components/marketing/dxsi-landing";
+import { LiveDecision } from "@/components/marketing/dxsi-landing";
 
 const TITLE = "DeliverX — From product idea to continuous intelligence";
 const DESCRIPTION =
@@ -129,21 +130,7 @@ function HomePage() {
         <div className="dxl-wrap">
           <p className="dxl-eyebrow">01 · The problem</p>
           <h2 className="dxl-h2">Every handoff can lose the reason.</h2>
-          <p className="psi-lead">
-            Research in one tool. Decisions in a chat. Delivery in another backlog. When the context
-            disappears, teams repeat questions and build on assumptions.
-          </p>
-          <div className="psi-feature-grid">
-            {[
-              "Evidence without a decision",
-              "A recommendation without a challenge",
-              "Delivery without observed feedback",
-            ].map((x) => (
-              <div className="psi-feature" key={x}>
-                <h3>{x}</h3>
-              </div>
-            ))}
-          </div>
+          <ContextContinuity />
         </div>
       </section>
       <section className="psi-section">
@@ -186,7 +173,7 @@ function HomePage() {
         <div className="dxl-wrap">
           <p className="dxl-eyebrow">04 · From idea to impact</p>
           <h2 className="dxl-h2">A lifecycle with human gates.</h2>
-          <LiveProgrammeFlow />
+          <ImpactExplorer />
           <Link to="/how-it-works" className="dxl-link">
             Explore each stage →
           </Link>
