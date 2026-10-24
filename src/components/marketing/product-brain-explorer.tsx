@@ -1,3 +1,4 @@
+import { PSI_LAYER_LABELS } from "@/lib/psi-journey";
 import { useEffect, useId, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Play, Pause, RotateCcw } from "lucide-react";
@@ -6,7 +7,7 @@ import { MissionSampleRecord } from "./mission-sample-record";
 const LAYERS = [
   {
     id: "evidence",
-    name: "Evidence & memory",
+    name: PSI_LAYER_LABELS.evidence,
     subtitle: "Give the team a shared starting point.",
     description:
       "Research Synthesis connects your brief, supplied sources and observations. Select an object to inspect its contribution.",
@@ -14,7 +15,7 @@ const LAYERS = [
   },
   {
     id: "judgement",
-    name: "Judgement",
+    name: PSI_LAYER_LABELS.judgement,
     subtitle: "Compare the options. Challenge the recommendation.",
     description:
       "Product Strategy frames alternatives. Security and Engineering review trade-offs. You decide whether the work can move forward.",
@@ -22,7 +23,7 @@ const LAYERS = [
   },
   {
     id: "delivery",
-    name: "Delivery",
+    name: PSI_LAYER_LABELS.delivery,
     subtitle: "Turn approved direction into work you can inspect.",
     description:
       "Design and Engineering shape the prototype. QA checks the output. The record keeps the reasoning alongside the artefacts.",
@@ -30,7 +31,7 @@ const LAYERS = [
   },
   {
     id: "feedback",
-    name: "Feedback loop",
+    name: PSI_LAYER_LABELS.feedback,
     subtitle: "Bring what happened into the next decision.",
     description:
       "You supply an observed result on a supervised mission. It is not measured here. A follow-up stays proposed until you approve it.",

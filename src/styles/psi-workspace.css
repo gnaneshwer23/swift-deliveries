@@ -1981,3 +1981,63 @@
     display: none;
   }
 }
+.ps-record-selector {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  margin-top: 20px;
+  background: #f8faff;
+  border: 1px solid #e1e8f5;
+  border-radius: 8px;
+}
+.ps-record-selector label {
+  font-size: 10px;
+  color: #667085;
+  white-space: nowrap;
+}
+.ps-record-selector select {
+  flex: 1;
+  min-width: 0;
+  font-size: 11px;
+  color: #475467;
+  border: 0;
+  background: transparent;
+  padding: 5px;
+  max-width: 100%;
+}
+.ps-record-selector > span {
+  font-size: 9px;
+  color: #8696b0;
+  white-space: nowrap;
+}
+.ps-record-anchor {
+  scroll-margin-top: 24px;
+}
+.ps-record-pending {
+  display: none;
+}
+.ps-record-anchor:target .ps-record-pending {
+  display: block;
+}
+.psi-workspace #mission-next-action {
+  scroll-margin-top: 24px;
+}
+@media (max-width: 760px) {
+  .ps-record-selector {
+    flex-wrap: wrap;
+  }
+  .ps-record-selector select {
+    flex-basis: 100%;
+    order: 3;
+  }
+  .ps-record-selector > span {
+    margin-left: auto;
+  }
+  .ps-flow-detail a {
+    white-space: normal;
+  }
+}
+.ps-record-anchor[data-active="true"] .ps-record-pending {
+  display: block;
+}
