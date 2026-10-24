@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { SectionExplorer } from "@/components/marketing/section-explorer";
+import { SpecialistHandoff } from "@/components/marketing/specialist-handoff";
 import { ImpactExplorer } from "@/components/marketing/context-and-impact";
 import { pageHead } from "@/components/marketing/page-head";
 
@@ -72,25 +73,28 @@ function ProductPage() {
         </div>
       </section>
       <section className="psi-section" id="specialists">
-        <div className="dxl-wrap psi-split">
-          <div>
-            <p className="dxl-eyebrow">Specialist contributions</p>
-            <h2 className="dxl-h2">Know who passes what to whom.</h2>
-            <p>
-              Research hands an evidence brief to product strategy. Reviewers challenge the
-              recommendation. The owner approves a bounded next step. Each handoff should retain its
-              inputs and limitations.
-            </p>
-            <p>
-              150 roles describe the catalogue; 12 are marked available with deterministic-stub
-              limitations. Provider integration exists, but evaluated live execution is not yet
-              established.
-            </p>
-            <Link to="/ai-agents" className="dxl-link">
-              Inspect the specialist catalogue
-            </Link>
+        <div className="dxl-wrap">
+          <div className="psi-split">
+            <div>
+              <p className="dxl-eyebrow">Specialist contributions</p>
+              <h2 className="dxl-h2">Know who passes what to whom.</h2>
+              <p>
+                Research hands an evidence brief to product strategy. Reviewers challenge the
+                recommendation. The owner approves a bounded next step. Each handoff should retain its
+                inputs and limitations.
+              </p>
+              <p>
+                150 roles describe the catalogue; 12 are marked available with deterministic-stub
+                limitations. Provider integration exists, but evaluated live execution is not yet
+                established.
+              </p>
+              <Link to="/ai-agents" className="dxl-link">
+                Inspect the specialist catalogue
+              </Link>
+            </div>
+            <SectionExplorer kind="team" />
           </div>
-          <SectionExplorer kind="team" />
+          <SpecialistHandoff />
         </div>
       </section>
       <section className="psi-section psi-tinted">
