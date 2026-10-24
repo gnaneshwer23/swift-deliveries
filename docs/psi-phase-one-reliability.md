@@ -24,7 +24,7 @@ Production branch inspected: `br-fancy-breeze-zatt9ocp`, project `spring-wind-48
 
 Created schema-only acceptance branch `psi-phase1-acceptance-20261024`, id `br-holy-meadow-zasru9wn`. No parent data was copied. Neon confirmed one-day auto-deletion on 25 October 2026 (18:24 UTC, 18:24 Europe/London after the clock change).
 
-Applied migrations 0020, 0021 and 0022 on that isolated branch in one transaction. A follow-up schema query returned all four expected tables. Branch Auth and a signed-in acceptance environment are not configured by this migration. Any browser credential storage or creation of Auth access requires the pending explicit approval.
+Applied migrations 0020, 0021 and 0022 on that isolated branch in one transaction. A follow-up schema query returned all four expected tables. With explicit user approval, stored the isolated connection in ignored `.env.phase1.local` (mode 0600), confirmed the nine inherited auth tables contained zero records, and removed only the isolated `neon_auth` schema. Restored branch-local provisioning permissions for the existing `neon_auth`/`neon_service` roles after Neon reported missing CREATE, SET ROLE and role-administration privileges. Fresh Managed Better Auth provisioned successfully. Confirmed its branch-specific endpoint and trusted origin `http://127.0.0.1:43128`; restarted the acceptance preview in `phase1` mode with model execution disabled. User test-account creation/sign-in remains pending; no passwords are stored in Git or documentation.
 
 New production deployment must wait for an agreed migration/rollback plan and release acceptance. Do not merge and enable a provider assuming the reservation table already exists there.
 
@@ -57,7 +57,7 @@ The fixture is deliberately isolated and reduced; it must not be used as a produ
 
 ## Acceptance work still required
 
-1. With explicit approval, configure the isolated acceptance database/Auth/local trusted origin and securely save its connection configuration in an ignored local file. Do not paste credentials in chat.
+1. Isolated database/Auth/local trusted origin configuration is complete. User must create/sign in to a test account directly in the acceptance preview before signed-in acceptance can proceed.
 2. Prove enquiry → reference → same account → onboarding → saved brief → authenticated mission → decision/export → supplied outcome → follow-up, including recovery, a second workspace and failures.
 3. Run a bounded configured-provider evaluation with retained provider usage/request evidence and validated costs; no configured key exists in this local environment.
 4. Prove background dispatch and worker termination recovery. Generation currently remains an awaited request; leases plus fail-closed reservations are not a durable background worker. Unknown provider attempts require reconciliation, not blind retry.
@@ -66,3 +66,7 @@ The fixture is deliberately isolated and reduced; it must not be used as a produ
 ## Approval semantics
 
 A provider-use request covers comparison of a specific saved brief/evidence snapshot within its declared allowance. A decision accepts an option or requests more evidence for that proposal's version/scope. Neither grants external-contact or deployment permission. Public demonstration controls change browser-local example state only. Do not reintroduce “six working agents” or “finished task” claims without an actual run record.
+
+## Remote candidate checks
+
+Draft PR #13 (`2ca46ff`) passed GitHub CI (including PostgreSQL 18 integration checks) and Vercel preview deployment. These checks do not establish production migration readiness or signed-in acceptance.
