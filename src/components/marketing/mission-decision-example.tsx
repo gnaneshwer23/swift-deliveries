@@ -30,6 +30,10 @@ export function MissionDecisionExample() {
   return (
     <div className="mission-decision-example">
       <div className="mission-case-trail">
+        <div className="mission-case-heading">
+          <span>Decision inputs</span>
+          <h3>The case in front of you</h3>
+        </div>
         <div>
           <FileSearch aria-hidden="true" />
           <span>Research Synthesis</span>
@@ -62,6 +66,9 @@ export function MissionDecisionExample() {
             beside the recommendation.
           </p>
         </div>
+        <a href="#sample-documents" className="mission-case-record-link">
+          Inspect the supporting documents ↗
+        </a>
       </div>
       <div className="mission-owner-desk">
         <div className="mission-owner-title">

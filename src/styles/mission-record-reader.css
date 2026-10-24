@@ -1,0 +1,409 @@
+.sample-record-reader {
+  border: 1px solid #dce3f0;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+  color: #2b3650;
+  min-width: 0;
+}
+.sample-reader-banner {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+  padding: 15px 24px;
+  border-bottom: 1px solid #e0e6f1;
+  background: #f5f7fd;
+  font-size: 12px;
+  color: #62718e;
+}
+.sample-reader-banner > span:first-child {
+  color: #435578;
+  font-weight: 500;
+}
+.sample-reader-layout {
+  display: grid;
+  grid-template-columns: 235px minmax(0, 1fr);
+}
+.sample-reader-directory {
+  padding: 26px 16px;
+  background: #fbfcff;
+  border-right: 1px solid #e3e8f3;
+}
+.sample-directory-label {
+  display: block;
+  color: #8a96ad;
+  font-size: 11px;
+  padding: 0 12px 18px;
+}
+.sample-reader-directory button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: none;
+  padding: 14px 12px;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 7px;
+  cursor: pointer;
+  color: #64728d;
+}
+.sample-reader-directory button[aria-pressed="true"] {
+  color: #3d56aa;
+  background: #edf1fd;
+  border-color: #d8e1f7;
+}
+.sample-reader-directory button > span {
+  flex: 1;
+  min-width: 0;
+}
+.sample-reader-directory strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+}
+.sample-reader-directory small {
+  display: block;
+  font-size: 11px;
+  margin-top: 5px;
+  color: #8b98b2;
+}
+.sample-reader-directory > p {
+  border-top: 1px solid #e2e7f2;
+  margin: 24px 12px 0;
+  padding-top: 18px;
+  color: #7d89a0;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.sample-reader-document {
+  padding: 30px;
+  min-width: 0;
+}
+.sample-reader-document header {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  flex-wrap: wrap;
+}
+.sample-document-icon {
+  background: #f0f3fc;
+  color: #647cc3;
+  width: 44px;
+  height: 48px;
+  border: 1px solid #dce4f4;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+}
+.sample-document-reference {
+  font-size: 11px;
+  color: #8290ac;
+}
+.sample-reader-document h4 {
+  font-size: 23px;
+  font-weight: 550;
+  letter-spacing: -0.025em;
+  margin: 5px 0 0;
+  line-height: 1.2;
+}
+.sample-document-status {
+  margin-left: auto;
+  font-size: 11px;
+  border: 1px solid #e0e5ef;
+  background: #fafbfe;
+  border-radius: 20px;
+  padding: 6px 10px;
+  color: #7b6a48;
+}
+.sample-document-subtitle {
+  font-size: 13px;
+  color: #71809a;
+  line-height: 1.7;
+  margin: 22px 0;
+}
+.sample-document-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 28px;
+  margin: 0;
+}
+.sample-document-fields > div {
+  padding: 17px 0;
+  border-top: 1px solid #e7ebf3;
+  min-width: 0;
+}
+.sample-document-fields dt {
+  font-size: 11px;
+  font-weight: 500;
+  color: #7b89a4;
+  margin-bottom: 8px;
+}
+.sample-document-fields dd {
+  font-size: 14px;
+  color: #41516c;
+  line-height: 1.75;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.sample-document-fields > div[data-tone="gap"] dt {
+  color: #96723c;
+}
+.sample-document-fields > div[data-tone="gap"] {
+  border-top-color: #e8dcc5;
+}
+.sample-document-fields > div[data-tone="proposal"] dt {
+  color: #617dc4;
+}
+.sample-record-provenance {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 16px 0;
+  border-top: 1px solid #e3e9f4;
+  margin-top: 16px;
+}
+.sample-record-provenance > span {
+  font-size: 11px;
+  color: #8290a8;
+}
+.sample-record-provenance > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.sample-record-provenance button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: #7385b9;
+  padding: 5px 7px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  background: none;
+}
+.sample-record-provenance button[aria-pressed="true"] {
+  background: #edf2ff;
+  border-color: #d6e0f7;
+  color: #3657af;
+}
+.sample-reader-document footer {
+  border-top: 1px solid #e3e9f4;
+  padding-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+.sample-reader-document footer > div {
+  max-width: 420px;
+}
+.sample-reader-document footer span {
+  font-size: 11px;
+  color: #8290a8;
+}
+.sample-reader-document footer p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #61728e;
+  margin-top: 6px;
+}
+.sample-reader-document footer .dxl-btn {
+  font-size: 11px;
+  gap: 8px;
+  white-space: normal;
+  flex-shrink: 0;
+  max-width: 240px;
+}
+.sample-reader-footnote {
+  font-size: 11px;
+  line-height: 1.7;
+  color: #8390a9;
+  border-top: 1px solid #e3e9f4;
+  padding: 13px 24px;
+  margin: 0;
+}
+.sample-record-reader button:focus-visible {
+  outline: 3px solid #4965d6;
+  outline-offset: 3px;
+}
+.mission-redesign .mission-document-shelf {
+  display: block;
+  margin-top: 42px;
+  padding-top: 30px;
+}
+.mission-record-section-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  align-items: center;
+  margin-bottom: 26px;
+}
+.mission-document-shelf .mission-record-section-heading h3 {
+  margin: 12px 0;
+  font-size: 28px;
+}
+.mission-record-section-heading > p {
+  max-width: 410px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: #71809a;
+}
+.mission-redesign .mission-handoff {
+  border-radius: 0;
+  border-width: 0 0 1px;
+  padding: 20px 0;
+  background: none;
+}
+.mission-redesign .mission-handoff div > span {
+  font-size: 11px;
+  color: #7e8da7;
+}
+.mission-redesign .mission-handoff p {
+  font-size: 14px;
+}
+.mission-redesign .mission-observation-strip {
+  padding: 24px 0;
+  gap: 28px;
+  border-left: 0;
+  border-top: 1px solid #dce4f3;
+  border-bottom: 1px solid #dce4f3;
+}
+.mission-redesign .mission-observation-strip > div {
+  position: relative;
+  padding-left: 22px;
+}
+.mission-redesign .mission-observation-strip > div:before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  position: absolute;
+  left: 0;
+  top: 5px;
+  border: 1px solid #8197d3;
+  border-radius: 50%;
+  background: #eff3ff;
+}
+.mission-redesign .mission-observation-strip > div:nth-child(2):before {
+  border-color: #b49765;
+  background: #fcf6eb;
+}
+.mission-redesign .mission-case-trail {
+  background: #f8faff;
+}
+.mission-redesign .mission-response {
+  background: #f6f8ff;
+  border-radius: 0 10px 10px 0;
+  padding: 16px 18px;
+  min-height: 175px;
+}
+.mission-redesign .mission-response-options button {
+  border-radius: 8px;
+}
+.mission-redesign .mission-owner-desk > small {
+  color: #77849c;
+}
+@media (max-width: 760px) {
+  .sample-reader-layout {
+    grid-template-columns: 1fr;
+  }
+  .sample-reader-directory {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    padding: 14px;
+    border-right: 0;
+    border-bottom: 1px solid #e3e8f3;
+  }
+  .sample-directory-label,
+  .sample-reader-directory > p {
+    display: none;
+  }
+  .sample-reader-directory button {
+    margin: 0;
+    padding: 12px 10px;
+    gap: 8px;
+  }
+  .sample-reader-directory button > svg:last-child {
+    display: none;
+  }
+  .sample-reader-directory strong {
+    font-size: 12px;
+  }
+  .sample-reader-document {
+    padding: 22px;
+  }
+  .sample-document-fields {
+    grid-template-columns: 1fr;
+  }
+  .sample-document-status {
+    margin-left: 0;
+  }
+  .sample-reader-document footer {
+    display: block;
+  }
+  .sample-reader-document footer .dxl-btn {
+    margin-top: 18px;
+    max-width: none;
+  }
+  .mission-record-section-heading {
+    display: block;
+  }
+  .mission-record-section-heading > p {
+    margin-top: 14px;
+    max-width: none;
+  }
+  .sample-reader-banner {
+    padding: 14px 18px;
+  }
+  .sample-reader-footnote {
+    padding: 14px 18px;
+  }
+  .sample-record-provenance {
+    gap: 10px;
+  }
+  .mission-redesign .mission-observation-strip {
+    gap: 24px;
+  }
+}
+.mission-redesign .mission-case-trail .mission-case-heading {
+  padding: 0 0 22px;
+  margin-bottom: 22px;
+  width: 100%;
+  border-bottom: 1px solid #dfe6f4;
+}
+.mission-redesign .mission-case-heading h3 {
+  font-size: 20px;
+  margin-top: 8px;
+}
+.mission-case-record-link {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid #dfe6f4;
+  font-size: 12px;
+  color: #4e69b9;
+  width: 100%;
+  line-height: 1.6;
+}
+.mission-redesign .mission-owner-title {
+  padding-bottom: 18px;
+  border-bottom: 1px solid #e1e7f3;
+}
+.mission-redesign .mission-response-options button[aria-pressed="true"] {
+  box-shadow: inset 3px 0 #4967dc;
+}
+.mission-redesign .mission-response > span {
+  display: inline-block;
+  padding: 4px 8px;
+  border: 1px solid #d9e1f4;
+  border-radius: 5px;
+  font-size: 11px;
+}
+.mission-redesign .mission-chapter-heading > p {
+  max-width: 440px;
+}
