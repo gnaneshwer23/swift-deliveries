@@ -3,6 +3,13 @@ import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { pageHead } from "@/components/marketing/page-head";
 import { PilotEnquiryForm } from "@/components/marketing/pilot-enquiry-form";
 import { PILOT_PLAN_LABELS, parsePilotPlan } from "@/lib/pilot/model";
+import {
+  ACCOUNT_DOES_NOT_ACTIVATE,
+  CHECKOUT_NOT_LIVE_COPY,
+  MANUAL_ACTIVATION_COPY,
+  PUBLISHED_OPERATOR_EMAIL,
+  SUPPORT_RECOVERY_COPY,
+} from "@/lib/pilot/commercial-copy";
 
 export const Route = createFileRoute("/pilot")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -56,11 +63,19 @@ function Pilot() {
             <ol className="psi-check-list">
               <li>You receive a request reference on this page if the save succeeds.</li>
               <li>An authorised operator can read the request and record follow-up.</li>
-              <li>A paid pilot starts only after scope and access are agreed.</li>
+              <li>
+                {MANUAL_ACTIVATION_COPY} {CHECKOUT_NOT_LIVE_COPY}
+              </li>
             </ol>
             <p className="psi-fine-print">
-              There is no promised reply window. If saving fails, the page says so and the request
-              is not confirmed.
+              {ACCOUNT_DOES_NOT_ACTIVATE} There is no promised reply window. If saving fails, the
+              page says so and the request is not confirmed.
+            </p>
+            <p className="psi-fine-print">{SUPPORT_RECOVERY_COPY}</p>
+            <p>
+              <a className="dxl-link" href={`mailto:${PUBLISHED_OPERATOR_EMAIL}`}>
+                Email {PUBLISHED_OPERATOR_EMAIL}
+              </a>
             </p>
             <Link to="/resources" hash="brief-builder" className="dxl-link">
               Prepare the brief first

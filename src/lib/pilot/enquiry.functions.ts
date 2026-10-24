@@ -2,7 +2,16 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth/middleware";
 import type { Db } from "@/lib/db/builder";
+import { isMissingRelationError } from "@/lib/workforce/db";
 import type { ProductBrief } from "@/lib/marketing/product-resources";
+import {
+  ActivationConflictError,
+  ActivationStoreUnavailableError,
+  activateEnquiry,
+  isPilotOperator,
+  type ActivationRepository,
+  type PilotActivation,
+} from "./activation";
 import {
   claimEnquiry,
   isPilotPlan,
@@ -192,19 +201,185 @@ async function clientKey(): Promise<string> {
   );
 }
 
+function missingActivationStore(
+  error: { message?: string | undefined; code?: string | undefined } | null,
+): boolean {
+  if (!error) return false;
+  const probe: { message?: string; code?: string } = {};
+  if (typeof error.message === "string") probe.message = error.message;
+  if (typeof error.code === "string") probe.code = error.code;
+  return (
+    isMissingRelationError(probe) ||
+    /unknown table: psi_pilot_activations/i.test(error.message ?? "")
+  );
+}
+
+function mapActivation(row: Record<string, unknown> | null): PilotActivation | null {
+  if (!row || typeof row["id"] !== "string" || typeof row["request_id"] !== "string") return null;
+  if (row["payment_taken"] === true) return null;
+  const plan = row["plan"];
+  const allowance = Number(row["mission_allowance"]);
+  const consumed = Number(row["missions_consumed"]);
+  const workspaceId = row["workspace_id"];
+  if (typeof plan !== "string" || !isPilotPlan(plan)) return null;
+  if (typeof workspaceId !== "string") return null;
+  if (!Number.isInteger(allowance) || !Number.isInteger(consumed)) return null;
+  return {
+    id: row["id"],
+    requestId: row["request_id"],
+    workspaceId: workspaceId.toLowerCase(),
+    plan,
+    missionAllowance: allowance,
+    missionsConsumed: consumed,
+    paymentTaken: false,
+    exhaustion: "block_next_billable_comparison",
+    activatedBy: String(row["activated_by"] ?? ""),
+    activatedAt: String(row["activated_at"] ?? ""),
+  };
+}
+
+export function activationRepository(db: Db): ActivationRepository {
+  return {
+    async findRequest(id) {
+      const res = await db.from("psi_pilot_requests").select("*").eq("id", id).maybeSingle();
+      if (res.error) throw new Error(res.error.message);
+      return mapRow(res.data as Record<string, unknown> | null);
+    },
+    async findByRequest(requestId) {
+      const res = await db
+        .from("psi_pilot_activations")
+        .select("*")
+        .eq("request_id", requestId)
+        .maybeSingle();
+      if (res.error) {
+        if (missingActivationStore(res.error)) return null;
+        throw new Error(res.error.message);
+      }
+      return mapActivation(res.data as Record<string, unknown> | null);
+    },
+    async findByWorkspace(workspaceId) {
+      const res = await db
+        .from("psi_pilot_activations")
+        .select("*")
+        .eq("workspace_id", workspaceId)
+        .maybeSingle();
+      if (res.error) {
+        if (missingActivationStore(res.error)) return null;
+        throw new Error(res.error.message);
+      }
+      return mapActivation(res.data as Record<string, unknown> | null);
+    },
+    async insert(row) {
+      const res = await db
+        .from("psi_pilot_activations")
+        .insert({
+          id: row.id,
+          request_id: row.requestId,
+          workspace_id: row.workspaceId,
+          plan: row.plan,
+          mission_allowance: row.missionAllowance,
+          missions_consumed: 0,
+          payment_taken: false,
+          exhaustion: row.exhaustion,
+          activated_by: row.activatedBy,
+          activated_at: row.activatedAt,
+        })
+        .select("*")
+        .maybeSingle();
+      if (res.error || !res.data) {
+        if (missingActivationStore(res.error)) throw new ActivationStoreUnavailableError();
+        if (res.error?.code === "23505" || /duplicate|unique/i.test(res.error?.message ?? "")) {
+          throw new ActivationConflictError();
+        }
+        throw new Error(res.error?.message ?? "Insert failed");
+      }
+      const mapped = mapActivation(res.data as Record<string, unknown>);
+      if (!mapped) throw new Error("Insert failed");
+      return mapped;
+    },
+    async advanceConsumption(workspaceId, expectedConsumed) {
+      const res = await db
+        .from("psi_pilot_activations")
+        .update({ missions_consumed: expectedConsumed + 1 })
+        .eq("workspace_id", workspaceId)
+        .eq("missions_consumed", expectedConsumed)
+        .select("*")
+        .maybeSingle();
+      if (res.error) {
+        if (missingActivationStore(res.error)) throw new ActivationStoreUnavailableError();
+        throw new Error(res.error.message);
+      }
+      return mapActivation(res.data as Record<string, unknown> | null);
+    },
+  };
+}
+
+async function workspaceExists(db: Db, workspaceId: string): Promise<boolean> {
+  const res = await db.from("wf_workspaces").select("id").eq("id", workspaceId).maybeSingle();
+  if (res.error) throw new Error(res.error.message);
+  const row = res.data as { id?: string } | null;
+  return typeof row?.id === "string";
+}
+
 async function operatorAllowed(db: Db, userId: string, email: string | null): Promise<boolean> {
-  const configured = process.env["PSI_OPERATOR_EMAILS"];
-  const allow = (configured && configured.trim() ? configured : "gnaneshwer.jadav@gmail.com")
-    .split(",")
-    .map((item) => item.trim().toLowerCase())
-    .filter(Boolean);
-  if (email && allow.includes(email.trim().toLowerCase())) return true;
   const res = await db.from("user_roles").select("role").eq("user_id", userId);
-  if (res.error || !Array.isArray(res.data)) return false;
-  return res.data.some((row) => {
-    const role = (row as { role?: string }).role;
-    return role === "admin" || role === "moderator";
+  const roles =
+    res.error || !Array.isArray(res.data)
+      ? []
+      : res.data.flatMap((row) => {
+          const role = (row as { role?: string }).role;
+          return typeof role === "string" ? [role] : [];
+        });
+  if (res.error && !(email && email.trim())) return false;
+  return isPilotOperator({
+    email,
+    configuredEmails: process.env["PSI_OPERATOR_EMAILS"],
+    roles,
   });
+}
+
+function publicActivation(row: PilotActivation | null): OperatorActivation | null {
+  if (!row) return null;
+  return {
+    workspaceId: row.workspaceId,
+    plan: row.plan,
+    missionAllowance: row.missionAllowance,
+    missionsConsumed: row.missionsConsumed,
+    paymentTaken: false,
+    exhaustion: "block_next_billable_comparison",
+  };
+}
+
+async function listActivations(db: Db, ids: string[]): Promise<Map<string, PilotActivation>> {
+  const found = new Map<string, PilotActivation>();
+  if (!ids.length) return found;
+  const res = await db.from("psi_pilot_activations").select("*").in("request_id", ids);
+  if (res.error) {
+    if (missingActivationStore(res.error)) return found;
+    throw new Error(res.error.message);
+  }
+  for (const row of (res.data ?? []) as Record<string, unknown>[]) {
+    const mapped = mapActivation(row);
+    if (mapped) found.set(mapped.requestId, mapped);
+  }
+  return found;
+}
+
+async function suggestedWorkspaces(db: Db, ownerIds: string[]): Promise<Map<string, string[]>> {
+  const found = new Map<string, string[]>();
+  const unique = [...new Set(ownerIds)];
+  if (!unique.length) return found;
+  const res = await db.from("wf_workspaces").select("id, owner_id").in("owner_id", unique);
+  if (res.error || !Array.isArray(res.data)) return found;
+  for (const row of res.data as Record<string, unknown>[]) {
+    const ownerId = row["owner_id"];
+    const id = row["id"];
+    if (typeof ownerId !== "string" || typeof id !== "string") continue;
+    const list = found.get(ownerId) ?? [];
+    list.push(id);
+    found.set(ownerId, list);
+  }
+  return found;
 }
 
 export type PilotContinuity = {
@@ -273,6 +448,15 @@ export const getPilotOperatorAccess = createServerFn({ method: "GET" })
     }
   });
 
+export type OperatorActivation = {
+  workspaceId: string;
+  plan: PilotPlan;
+  missionAllowance: number;
+  missionsConsumed: number;
+  paymentTaken: false;
+  exhaustion: "block_next_billable_comparison";
+};
+
 export type OperatorPilotRequest = {
   id: string;
   reference: string;
@@ -285,6 +469,8 @@ export type OperatorPilotRequest = {
   followUpNote: string;
   linkedAccount: boolean;
   createdAt: string;
+  activation: OperatorActivation | null;
+  suggestedWorkspaceIds: string[];
 };
 
 export const listPilotRequests = createServerFn({ method: "GET" })
@@ -295,6 +481,14 @@ export const listPilotRequests = createServerFn({ method: "GET" })
       return { authorised: false as const, requests: [] as OperatorPilotRequest[] };
     }
     const rows = await pilotRepository(db).listRecent(100);
+    const activations = await listActivations(
+      db,
+      rows.map((row) => row.id),
+    );
+    const suggested = await suggestedWorkspaces(
+      db,
+      rows.flatMap((row) => (row.ownerUserId ? [row.ownerUserId] : [])),
+    );
     return {
       authorised: true as const,
       requests: rows.map((row) => ({
@@ -309,6 +503,8 @@ export const listPilotRequests = createServerFn({ method: "GET" })
         followUpNote: row.followUpNote,
         linkedAccount: Boolean(row.ownerUserId),
         createdAt: row.createdAt,
+        activation: publicActivation(activations.get(row.id) ?? null),
+        suggestedWorkspaceIds: row.ownerUserId ? (suggested.get(row.ownerUserId) ?? []) : [],
       })),
     };
   });
@@ -337,5 +533,48 @@ export const updatePilotRequest = createServerFn({ method: "POST" })
       return { ok: true as const, reference: updated.reference, status: updated.status };
     } catch {
       return { ok: false as const, message: "The follow-up could not be saved." };
+    }
+  });
+
+export const activatePilotRequest = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        workspaceId: z.string().uuid(),
+        plan: z.enum(["builder", "founder", "studio"]),
+        missionAllowance: z.number().int().min(1).max(24),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const db = await database();
+    const authorised = await operatorAllowed(db, context.userId, context.userEmail);
+    try {
+      const result = await activateEnquiry(
+        {
+          authorised,
+          requestId: data.id,
+          workspaceId: data.workspaceId,
+          plan: data.plan,
+          missionAllowance: data.missionAllowance,
+          actorId: context.userId,
+        },
+        activationRepository(db),
+        () => new Date().toISOString(),
+        { workspaceExists: (workspaceId) => workspaceExists(db, workspaceId) },
+      );
+      if (!result.ok) return result;
+      return {
+        ok: true as const,
+        already: result.already,
+        activation: publicActivation(result.activation),
+      };
+    } catch (error) {
+      if (error instanceof ActivationStoreUnavailableError) {
+        return { ok: false as const, message: error.message };
+      }
+      return { ok: false as const, message: "The activation was not saved." };
     }
   });

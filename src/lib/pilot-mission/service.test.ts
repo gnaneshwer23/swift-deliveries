@@ -382,6 +382,56 @@ describe("supervised mission isolation, approval and recovery", () => {
     );
   });
 
+  it("blocks the next billable comparison when a workspace is at its ceiling and leaves another workspace able to run", async () => {
+    const service = new SupervisedMissionService(new MemoryStore());
+    const alpha = await readyMission(service, "alpha", 1);
+    const beta = await readyMission(service, "beta", 1);
+    const first = await service.runAlternatives({
+      workspaceId: "alpha",
+      id: alpha.id,
+      workerId: "worker-alpha",
+      nowMs: 3_000,
+      generator: { cost: 1, run: async () => modelResult() },
+    });
+    expect(first.chargedUnits).toBe(1);
+    const changed = await service.saveEvidence({
+      workspaceId: "alpha",
+      id: alpha.id,
+      items: [
+        ...evidence,
+        {
+          statement: "A second note was added after the first comparison.",
+          source: "Founder note, 24 Oct 2026",
+          classification: "supplied",
+        },
+      ],
+      nowMs: 4_000,
+    });
+    expect(changed.evidence).toHaveLength(3);
+    await expect(
+      service.runAlternatives({
+        workspaceId: "alpha",
+        id: alpha.id,
+        workerId: "worker-alpha-2",
+        nowMs: 5_000,
+        generator: { cost: 1, run: async () => modelResult() },
+      }),
+    ).rejects.toBeInstanceOf(UsageLimitError);
+    const readable = await service.get("alpha", alpha.id);
+    expect(readable?.evidence).toHaveLength(3);
+    expect(readable?.usageConsumed).toBe(1);
+    const betaRun = await service.runAlternatives({
+      workspaceId: "beta",
+      id: beta.id,
+      workerId: "worker-beta",
+      nowMs: 6_000,
+      generator: { cost: 1, run: async () => modelResult() },
+    });
+    expect(betaRun.chargedUnits).toBe(1);
+    expect(await service.get("beta", alpha.id)).toBeNull();
+    expect((await service.get("alpha", alpha.id))?.id).toBe(alpha.id);
+  });
+
   it("does not call a provider when none is configured, and withholds personal identifiers", () => {
     expect(generationPlan({}, "Which setup change should we investigate?").mode).toBe(
       "not_configured",

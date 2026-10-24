@@ -11,6 +11,7 @@ import { GoogleButton } from "@/components/auth/google-button";
 import { safeProductRedirect as sanitizeRedirect } from "@/lib/product-journey";
 import { PILOT_PLAN_LABELS } from "@/lib/pilot/model";
 import { loadPilotClaim, loadPilotPlan } from "@/lib/pilot/storage";
+import { ACCOUNT_DOES_NOT_ACTIVATE } from "@/lib/pilot/commercial-copy";
 
 export const Route = createFileRoute("/signup")({
   validateSearch: (search: Record<string, unknown>): { redirect?: string | undefined } => ({
@@ -22,14 +23,12 @@ export const Route = createFileRoute("/signup")({
       { title: "Create your account — DeliverX" },
       {
         name: "description",
-        content:
-          "Create a free DeliverX account. This does not activate a paid pilot or start a subscription.",
+        content: `${ACCOUNT_DOES_NOT_ACTIVATE} It does not start a subscription.`,
       },
       { property: "og:title", content: "Create your account — DeliverX" },
       {
         property: "og:description",
-        content:
-          "Create a free DeliverX account. This does not activate a paid pilot or start a subscription.",
+        content: `${ACCOUNT_DOES_NOT_ACTIVATE} It does not start a subscription.`,
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -59,7 +58,7 @@ function SignupPage() {
       setPilotNote(
         `${claim ? `Request ${claim.reference} is saved on this device. ` : ""}${
           plan ? `Chosen offer: ${PILOT_PLAN_LABELS[plan]}. ` : ""
-        }Creating an account does not activate a paid pilot.`,
+        }${ACCOUNT_DOES_NOT_ACTIVATE}`,
       );
     }
     let active = true;
@@ -121,7 +120,7 @@ function SignupPage() {
             Create your account
           </h1>
           <p className="body" style={{ marginTop: 6, marginBottom: 24 }}>
-            Create a free account. This does not activate a paid pilot.
+            {ACCOUNT_DOES_NOT_ACTIVATE}
           </p>
           {pilotNote ? <p className="body">{pilotNote}</p> : null}
 

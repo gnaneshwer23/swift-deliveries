@@ -2,6 +2,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { pageHead } from "@/components/marketing/page-head";
 import { FaqSection } from "@/components/marketing/faq-section";
+import {
+  ACCOUNT_DOES_NOT_ACTIVATE,
+  ALLOWANCE_EXHAUSTED_COPY,
+  CHECKOUT_NOT_LIVE_COPY,
+  MANUAL_ACTIVATION_COPY,
+  PUBLISHED_OPERATOR_EMAIL,
+  SUPPORT_RECOVERY_COPY,
+} from "@/lib/pilot/commercial-copy";
 export const Route = createFileRoute("/pricing")({
   head: () =>
     pageHead(
@@ -68,9 +76,9 @@ function Pricing() {
             capabilities and billing must be agreed before paid work starts.
           </p>
           <p className="psi-fine-print">
-            These are proposed paid pilot offers, not active subscriptions. Requesting a pilot
-            stores an enquiry. It does not take payment or enforce quotas. Checkout is not live.
-            Prices exclude applicable taxes. No annual commitment.
+            These are proposed paid pilot offers, not active subscriptions.{" "}
+            {ACCOUNT_DOES_NOT_ACTIVATE} {MANUAL_ACTIVATION_COPY} {CHECKOUT_NOT_LIVE_COPY} Prices
+            exclude applicable taxes. No annual commitment.
           </p>
           <div className="psi-price-grid">
             {PLANS.map((plan) => (
@@ -94,8 +102,8 @@ function Pricing() {
                 </ul>
                 <strong>{plan.budget}</strong>
                 <p className="psi-fine-print">
-                  The agreed mission scope and allowance are confirmed during onboarding. Additional
-                  usage needs your approval; no automatic overage billing.
+                  {MANUAL_ACTIVATION_COPY} Additional usage needs a new agreement. There is no
+                  automatic overage charge.
                 </p>
               </article>
             ))}
@@ -114,8 +122,9 @@ function Pricing() {
           <p className="journey-status">
             A first pilot is proposed to deliver a mission brief, evidence register, alternatives
             and owner decision, experiment brief and export. A prototype is an agreed extension.
-            Seat, product and mission quotas are proposed offer limits, not currently enforced
-            entitlements.
+            Seat, product and mission counts on the offers above are proposed limits. A recorded
+            mission allowance blocks the next billable comparison only after an operator activates
+            that workspace. It is not an automatic entitlement.
           </p>
           <div className="psi-feature-grid">
             {[
@@ -130,6 +139,22 @@ function Pricing() {
           </div>
         </div>
       </section>
+      <section className="psi-section">
+        <div className="dxl-wrap">
+          <p className="dxl-eyebrow">Support and recovery</p>
+          <h2 className="dxl-h2">Ask for a record to be reviewed.</h2>
+          <p className="psi-lead">
+            {ACCOUNT_DOES_NOT_ACTIVATE} {MANUAL_ACTIVATION_COPY} {CHECKOUT_NOT_LIVE_COPY}
+          </p>
+          <p className="psi-lead">{ALLOWANCE_EXHAUSTED_COPY}</p>
+          <p className="psi-lead">{SUPPORT_RECOVERY_COPY}</p>
+          <p>
+            <a className="dxl-link" href={`mailto:${PUBLISHED_OPERATOR_EMAIL}`}>
+              Email {PUBLISHED_OPERATOR_EMAIL}
+            </a>
+          </p>
+        </div>
+      </section>
       <FaqSection
         title="Before you commit"
         items={[
@@ -139,11 +164,17 @@ function Pricing() {
           },
           {
             q: "What happens at the usage ceiling?",
-            a: "The proposed pilot rule is to pause and agree reduced scope or additional usage before continuing. Model allowances are GBP cost budgets; measured provider-cost enforcement still requires release verification. No automatic overage is offered.",
+            a:
+              ALLOWANCE_EXHAUSTED_COPY +
+              " Model cost budgets on the offers are proposed limits. There is no automatic overage charge.",
           },
           {
             q: "When do I pay?",
-            a: "These are paid pilot offers. Account creation does not activate a subscription. Scope, access, included capabilities and billing terms must be confirmed before any payment.",
+            a: `${ACCOUNT_DOES_NOT_ACTIVATE} ${MANUAL_ACTIVATION_COPY} ${CHECKOUT_NOT_LIVE_COPY}`,
+          },
+          {
+            q: "How do I get help?",
+            a: SUPPORT_RECOVERY_COPY,
           },
           {
             q: "Is deployment or continuous learning included?",

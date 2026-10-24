@@ -4,6 +4,12 @@ import type { Db } from "@/lib/db/builder";
 import { requireAuth } from "@/lib/auth/middleware";
 import { wfDb } from "@/lib/workforce/db";
 import {
+  ActivationStoreUnavailableError,
+  billableComparisonGate,
+  recordBillableComparison,
+} from "./pilot/activation";
+import { activationRepository } from "./pilot/enquiry.functions";
+import {
   generateComparison,
   generationPlan,
   missionScreenText,
@@ -208,6 +214,14 @@ export const runSupervisedComparison = createServerFn({ method: "POST" })
     ) {
       throw new UsageLimitError("Workspace usage ceiling reached. This step was not run.");
     }
+    const workspaceKey = workspace.id.toLowerCase();
+    const activation = await activationRepository(db).findByWorkspace(workspaceKey);
+    const allowance = billableComparisonGate(
+      activation,
+      workspaceKey,
+      plan.cost > 0 && !alreadyRecorded,
+    );
+    if (!allowance.ok) throw new UsageLimitError(allowance.message);
     const outcome = await service.runAlternatives({
       workspaceId: workspace.id,
       id: data.id,
@@ -215,7 +229,24 @@ export const runSupervisedComparison = createServerFn({ method: "POST" })
       nowMs: Date.now(),
       generator: { cost: plan.cost, run: (mission) => generateComparison(mission) },
     });
-    return view(outcome.mission, await settleUsage(db, outcome.mission));
+    let allowanceWarning: string | null = null;
+    if (outcome.chargedUnits > 0) {
+      try {
+        const noted = await recordBillableComparison(activationRepository(db), workspaceKey);
+        if (noted.activation && !noted.recorded) {
+          allowanceWarning =
+            "The comparison was saved. The mission allowance was already used, so the count was not increased.";
+        }
+      } catch (error) {
+        allowanceWarning =
+          error instanceof ActivationStoreUnavailableError
+            ? error.message
+            : "The comparison was saved. The mission allowance was not updated.";
+      }
+    }
+    const settled = await settleUsage(db, outcome.mission);
+    const usageWarning = [allowanceWarning, settled].filter(Boolean).join(" ") || null;
+    return view(outcome.mission, usageWarning);
   });
 
 export const decideSupervisedMission = createServerFn({ method: "POST" })
