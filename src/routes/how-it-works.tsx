@@ -45,6 +45,7 @@ function ExampleMission() {
             <a href="#walkthrough">Follow the work</a>
             <a href="#your-decision">Make an example decision</a>
             <a href="#sample-record">Inspect the record</a>
+            <a href="#safeguards">Check the safeguards</a>
             <a href="#outcome-review">Close the loop</a>
           </nav>
         </div>
@@ -66,6 +67,15 @@ function ExampleMission() {
             </p>
           </div>
           <SectionExplorer kind="mission" />
+          <details className="mission-supporting-visual" id="specialist-handoffs" open>
+            <summary>See how specialist contributions connect</summary>
+            <p>
+              Research passes evidence to strategy, then design and engineering develop a proposal.
+              Review findings reach you before consequential work proceeds. This is a conceptual
+              team flow, not live execution.
+            </p>
+            <SectionExplorer kind="team" />
+          </details>
         </div>
       </section>
       <section className="psi-section mission-decision-section" id="your-decision">
@@ -103,11 +113,34 @@ function ExampleMission() {
               documents keep the owner decision pending, regardless of your example choice above.
             </p>
           </div>
-          <MissionSampleRecord />
+          <SectionExplorer kind="record" />
+          <details className="mission-supporting-visual" open>
+            <summary>Inspect and download the sample documents</summary>
+            <MissionSampleRecord />
+          </details>
           <p className="mission-example-label">
             Downloading a sample is a local document action. It authorises no experiment, external
             action or deployment.
           </p>
+        </div>
+      </section>
+      <section className="psi-section mission-decision-section" id="safeguards">
+        <div className="dxl-wrap">
+          <div className="mission-section-heading">
+            <div>
+              <p className="dxl-eyebrow">Before consequential work</p>
+              <h2 className="dxl-h2">
+                A proposal passes checks.
+                <br />
+                You keep authority.
+              </h2>
+            </div>
+            <p>
+              Follow the permission scope, usage ceiling and human decision through to an audit
+              record. Exploring this illustration changes no workspace permissions.
+            </p>
+          </div>
+          <SectionExplorer kind="trust" />
         </div>
       </section>
       <section className="psi-section mission-learning-section" id="outcome-review">

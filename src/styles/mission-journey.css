@@ -327,3 +327,29 @@
     transition: none;
   }
 }
+
+.mission-supporting-visual {
+  margin-top: 32px;
+  border-top: 1px solid #dbe2ee;
+  padding-top: 24px;
+}
+.mission-supporting-visual > summary {
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 500;
+  color: #35496b;
+  padding: 10px 0;
+}
+.mission-supporting-visual > summary:focus-visible {
+  outline: 3px solid #4967dc;
+  outline-offset: 4px;
+}
+.mission-supporting-visual > p {
+  max-width: 740px;
+  color: #59677c;
+  line-height: 1.75;
+  margin: 16px 0 24px;
+}
+.mission-supporting-visual .mission-record {
+  margin-top: 20px;
+}
