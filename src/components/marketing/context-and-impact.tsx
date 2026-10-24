@@ -248,8 +248,11 @@ export function ImpactExplorer() {
   return (
     <div className="impact-explorer">
       <div className="impact-top">
-        <span>Explore the lifecycle</span>
-        <p>Select a stage or play the journey. It pauses at each human gate.</p>
+        <span>Stages beyond the first pilot</span>
+        <p>
+          Select a stage. The walkthrough pauses at each human gate. These later stages are still
+          planned.
+        </p>
       </div>
       <LiveProgrammeFlow onSelectStage={setSelected} selectedStage={selected} />
       <div className={`impact-inspector ${stage.gate ? "is-gate" : ""}`} aria-live="polite">

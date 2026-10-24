@@ -9,8 +9,8 @@ export const Route = createFileRoute("/psi")({
   head: () =>
     pageHead(
       "/psi",
-      "The DeliverX product — Context, missions and human decisions",
-      "Explore the product record, specialist handoffs and human controls behind DeliverX, with clear current and planned capabilities.",
+      "The DeliverX product: who it is for, and what it keeps",
+      "Founders, product teams, and students turn a product question into evidence, compared options, a human decision, and an export. Product Brain keeps that record. See what is present and what is still planned.",
     ),
   component: ProductPage,
 });
@@ -21,13 +21,14 @@ function ProductPage() {
         <div className="dxl-wrap">
           <p className="dxl-eyebrow">The DeliverX product</p>
           <h1 className="dxl-h1">
-            The reasoning stays
+            For founders, product teams,
             <br />
-            with the work.
+            and students.
           </h1>
           <p className="psi-lead">
-            Product Brain holds the context. Missions organise bounded work. Specialist
-            contributions propose a direction. You decide what moves forward.
+            Founders and product teams use it to decide what to build. Students learn by building
+            the same work. A product question becomes evidence, compared options, a human decision,
+            and an export.
           </p>
           <div className="psi-actions">
             <Link to="/how-it-works" className="dxl-btn dxl-btn-primary">
@@ -38,8 +39,9 @@ function ProductPage() {
             </Link>
           </div>
           <p className="journey-status">
-            Interactive explanations of a product in development. Mission foundations require
-            release verification; illustrations do not prove live execution.
+            This page describes the product as it stands. The pictures are examples. They are not a
+            completed live mission. Release checks are still required before that mission is offered
+            as working software.
           </p>
         </div>
       </section>
@@ -47,23 +49,19 @@ function ProductPage() {
         <div className="dxl-wrap psi-split">
           <div>
             <p className="dxl-eyebrow">Product Brain</p>
-            <h2 className="dxl-h2">A record of what you know—and why.</h2>
+            <h2 className="dxl-h2">Where the reasoning is kept.</h2>
             <p>
-              On a supervised mission the record runs in this order: decision, owner-supplied
-              observation, outcome review, then one proposed next mission. The follow-up stays a
-              proposal until you approve it.
+              Product Brain is the persistent record of that work: the question, the evidence, the
+              options, the decision, and the export. A later step can cite why it exists.
             </p>
-            <ol className="mt-3 grid gap-2" aria-label="Learning record">
-              <li>Decision — the choice you recorded and the decision pack.</li>
-              <li>Observation — a result you supply. DeliverX does not measure it.</li>
-              <li>
-                Review — expected and observed kept side by side, with the uncertainty in words.
-              </li>
-              <li>Proposed next mission — inactive until you approve it.</li>
+            <ol className="mt-3 grid gap-2" aria-label="What the record holds">
+              <li>Sources, with gaps left visible.</li>
+              <li>Options that were compared, including dissent.</li>
+              <li>The decision a person recorded, and the export that followed.</li>
             </ol>
             <p>
-              Source references, decision records and export history are the current foundation. A
-              full interactive knowledge graph is not part of this page.
+              Source references, decision records, and export history are present. A full
+              interactive knowledge graph is still planned, and it is not part of this page.
             </p>
             <Link to="/how-it-works" hash="sample-record" className="dxl-link">
               Inspect linked sample records
@@ -77,16 +75,16 @@ function ProductPage() {
           <div className="psi-split">
             <div>
               <p className="dxl-eyebrow">Specialist contributions</p>
-              <h2 className="dxl-h2">Know who passes what to whom.</h2>
+              <h2 className="dxl-h2">Each role finishes one piece.</h2>
               <p>
-                Research hands an evidence brief to product strategy. Reviewers challenge the
-                recommendation. The owner approves a bounded next step. Each handoff should retain its
-                inputs and limitations.
+                The six working roles are Evidence, Options, Challenge, Decision, Builder, and
+                Export. Evidence starts from what you supplied. Options compares approaches.
+                Challenge tests the recommendation. Decision prepares the choice for the owner to
+                record. Builder drafts inside that choice. Export packs the work and waits.
               </p>
               <p>
-                150 roles describe the catalogue; 12 are marked available with deterministic-stub
-                limitations. Provider integration exists, but evaluated live execution is not yet
-                established.
+                The picture is an example of work moving forward. The wider catalogue describes
+                further roles. It is not a live team of 150.
               </p>
               <Link to="/ai-agents" className="dxl-link">
                 Inspect the specialist catalogue
@@ -99,13 +97,14 @@ function ProductPage() {
       </section>
       <section className="psi-section psi-tinted">
         <div className="dxl-wrap">
-          <h2 className="dxl-h2">Explore the wider lifecycle.</h2>
+          <h2 className="dxl-h2">Later stages are drawn, not running.</h2>
           <p>
-            The first pilot focuses on evidence, decisions and experiment planning. The wider
-            lifecycle includes planned build and release capabilities.
+            The first pilot stops at a decision and an experiment brief. The map below continues
+            into design, build, verification, and release. Those later stages are still planned.
+            Opening one does not build, test, or ship software.
           </p>
           <details className="journey-detail">
-            <summary>Explore lifecycle stages and human gates</summary>
+            <summary>Open the planned stages and the human gates</summary>
             <ImpactExplorer />
           </details>
         </div>
@@ -114,11 +113,15 @@ function ProductPage() {
         <div className="dxl-wrap psi-split">
           <div>
             <p className="dxl-eyebrow">Human control</p>
-            <h2 className="dxl-h2">A recommendation needs a decision.</h2>
+            <h2 className="dxl-h2">The owner approves the consequential step.</h2>
             <p>
-              Inspect scope, uncertainty and dissent before approving consequential work.
-              Permissions, approval binding and measured usage controls need release verification
-              alongside the mission runtime.
+              A specialist can prepare the case. A specialist does not approve their own step. You
+              read the scope, the uncertainty, and the dissent, then approve, reject, or ask for
+              more evidence.
+            </p>
+            <p>
+              That rule is part of the product. Binding the approval to live permissions and
+              measured usage still needs release verification, alongside the mission runtime.
             </p>
             <Link to="/security" className="dxl-link">
               Read safeguards and limitations
@@ -129,35 +132,38 @@ function ProductPage() {
       </section>
       <section className="psi-section psi-tinted" id="learning">
         <div className="dxl-wrap">
-          <h2 className="dxl-h2">The next loop starts with an observed result.</h2>
+          <h2 className="dxl-h2">A result counts only if you supply it.</h2>
           <p>
-            On a supervised mission you record the hypothesis, expected metric, baseline and
-            observation window before the change. Later you supply the result and its evidence. The
-            review keeps that result beside what you expected, and proposes one next mission. The
-            proposal does not become active until you approve it. This page does not measure a
-            result or approve a mission. Connected analytics and automatic learning are not
-            included.
+            Before a change, record the hypothesis, the metric you expect, a baseline, and the
+            observation window. Afterwards, add the result you actually saw and the evidence for it.
+            DeliverX does not measure that result. The review keeps it beside the expectation and
+            may propose one next mission. The proposal stays inactive until you approve it.
+          </p>
+          <p>
+            Connected analytics and automatic learning are still planned. This page does not store a
+            result or start a mission.
           </p>
           <details className="journey-detail">
-            <summary>See how the learning loop is organised</summary>
+            <summary>See how a supplied result is reviewed</summary>
             <SectionExplorer kind="learning" />
           </details>
         </div>
       </section>
       <section className="psi-section">
         <div className="dxl-wrap">
-          <h2 className="dxl-h2">Start with a bounded question.</h2>
+          <h2 className="dxl-h2">An account is not a paid pilot.</h2>
           <p>
-            Suggested first pilot scope: an evidence register, compared options, owner decision,
-            experiment brief and portable record. Scope and availability are confirmed before
-            billing.
+            A useful first scope is an evidence register, compared options, your decision, an
+            experiment brief, and a portable record. You can prepare the brief in this browser.
+            Creating an account does not activate a paid pilot. Scope and availability are confirmed
+            before any billing.
           </p>
           <div className="psi-actions">
             <Link to="/resources" hash="brief-builder" className="dxl-btn dxl-btn-primary">
               Prepare your brief
             </Link>
             <Link to="/pricing" className="dxl-btn dxl-btn-ghost">
-              Explore pilot offers
+              Read the pilot offers
             </Link>
           </div>
         </div>
