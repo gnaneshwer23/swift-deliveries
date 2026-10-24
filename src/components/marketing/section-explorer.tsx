@@ -162,12 +162,12 @@ const TEAM: Point[] = [
 const MISSION: Point[] = [
   {
     id: "question",
-    name: "Product question",
-    role: "You + Problem-Framing",
-    input: "An onboarding problem and constraints",
-    output: "A bounded mission brief",
+    name: "Question",
+    role: "You hand this to Evidence",
+    input: "Why people leave during setup, and the constraints you set",
+    output: "One bounded question for this sample",
     explanation:
-      "Start with a specific question: which onboarding change should we investigate? This is a sample mission, not customer research.",
+      "People reach setup, and you do not yet know why some leave. That question is what moves. You hand it to Evidence. Nothing is approved here, and this is not customer research.",
     x: 14,
     y: 50,
     path: "M 14 50 C 14 26 26 26 37 26",
@@ -175,12 +175,12 @@ const MISSION: Point[] = [
   },
   {
     id: "evidence",
-    name: "Evidence brief",
-    role: "Research Synthesis",
-    input: "Genuine notes and source references",
-    output: "Supported findings and evidence gaps",
+    name: "Evidence",
+    role: "Evidence hands this to Options",
+    input: "The question, plus the setup notes you actually supplied",
+    output: "A brief that keeps the gap open",
     explanation:
-      "Link findings to supplied sources. If customer observations are missing, ask for them rather than inventing interviews.",
+      "What moves is the sample note that setup asks for several details before the first useful action, and the missing record of where people leave. Evidence hands that brief to Options. Missing interviews stay missing.",
     x: 37,
     y: 26,
     path: "M 37 26 L 65 26",
@@ -188,24 +188,24 @@ const MISSION: Point[] = [
   },
   {
     id: "options",
-    name: "Compare options",
-    role: "Specialist decision panel",
-    input: "Evidence, goals and constraints",
-    output: "Alternatives, trade-offs and recommendation",
+    name: "Options",
+    role: "Options hands this to Challenge",
+    input: "The brief, including the abandonment gap",
+    output: "Three options, and no chosen change",
     explanation:
-      "Compare shorter setup with guided onboarding. Keep dissent and uncertainty beside the recommendation; no conversion uplift is claimed.",
+      "What moves is the comparison: shorten the fields, defer optional details until after the first useful action, or explain why each detail is needed. Options hands that comparison to Challenge. No change in completion is claimed.",
     x: 65,
     y: 26,
     path: "M 65 26 C 80 26 86 38 86 50",
   },
   {
     id: "approval",
-    name: "Your decision",
-    role: "Human approval gate",
-    input: "Recommendation, evidence and review findings",
-    output: "Approve, reject or ask for evidence",
+    name: "Owner decision",
+    role: "You decide. Export stays held.",
+    input: "The options, the challenge, and the missing abandonment evidence",
+    output: "Approve a scoped investigation, ask for evidence, or reject",
     explanation:
-      "Inspect the case before work advances. Approving this walkthrough changes the example only and cannot approve an actual mission.",
+      "Challenge hands you the objection: without abandonment evidence, the cause is unknown, so implementation is not justified. You decide. Export does not leave before that. Approving here changes this example only.",
     x: 86,
     y: 50,
     path: "M 86 50 C 86 76 76 76 65 76",
@@ -214,23 +214,23 @@ const MISSION: Point[] = [
   {
     id: "experiment",
     name: "Experiment brief",
-    role: "Product + design disciplines",
-    input: "Approved example direction",
-    output: "Hypothesis, prototype plan and acceptance criteria",
+    role: "Packed for Export. Not a result.",
+    input: "The investigation you would allow",
+    output: "A hypothesis and a measure, with no observed outcome",
     explanation:
-      "Describe the smallest useful experiment and how you would measure it. A plan is not a completed test or deployed change.",
+      "What moves into the pack is a plan: defer optional details, then watch setup completion and time to the first useful action. The baseline is not supplied. This station is inside the export. It is not a second mission, and it reports no result.",
     x: 65,
     y: 76,
     path: "M 65 76 L 37 76",
   },
   {
     id: "record",
-    name: "Keep the record",
-    role: "Product owner inspection",
-    input: "Brief, decision and proposed artefacts",
-    output: "Portable mission record",
+    name: "Export",
+    role: "Export holds the pack until you approve",
+    input: "The brief, the register, the decision, and the experiment brief",
+    output: "A pack that stays held",
     explanation:
-      "Keep sources, alternatives, generation labels and the decision together. Add actual observations later; do not turn completion into a success claim.",
+      "Export assembles those sample documents and holds them. The pack leaves only after you approve. This page does not release it, and it does not record what happened in setup.",
     x: 37,
     y: 76,
     path: "M 37 76 L 37 76",
@@ -384,12 +384,13 @@ const SCENES = {
   },
   mission: {
     points: MISSION,
-    title: "A mission: investigate onboarding friction",
+    title: "One example: why people leave during setup",
     image: "mission-workbench-v1",
     alt: "A product question flows through evidence, alternatives, human approval and an experiment brief into a mission archive.",
     to: "/how-it-works",
-    link: "Explore the worked mission",
-    note: "Sample mission only. No real research, experiment or deployment is performed.",
+    hash: "sample-record",
+    link: "Open the sample documents",
+    note: "One sample mission. The owner approves before export. No research, experiment, or deployment runs here.",
   },
   learning: {
     points: LEARNING,
@@ -577,10 +578,17 @@ export function SectionExplorer({ kind }: { kind: SceneKind }) {
           {approved && (
             <small className="section-example-approved">Approved for this example only.</small>
           )}
-          <Link to={scene.to} className="section-explorer-destination">
-            {scene.link}
-            <ArrowRight size={13} />
-          </Link>
+          {"hash" in scene ? (
+            <Link to={scene.to} hash={scene.hash} className="section-explorer-destination">
+              {scene.link}
+              <ArrowRight size={13} />
+            </Link>
+          ) : (
+            <Link to={scene.to} className="section-explorer-destination">
+              {scene.link}
+              <ArrowRight size={13} />
+            </Link>
+          )}
         </div>
       </div>
       <div

@@ -1799,6 +1799,93 @@
   border-radius: 32px;
   padding: 18px 18px 22px;
 }
+.psi-hero-reading .journey-status,
+.psi-mission .journey-status {
+  max-width: none;
+  background: #fbfaf7;
+  border: 0;
+  border-radius: 18px;
+  box-shadow: 0 6px 0 #2a2a2e;
+  color: #3d3a4a;
+}
+.psi-mission .section-explorer {
+  border: 0;
+  border-radius: 28px;
+  background: #2a2a2e;
+  box-shadow: 0 22px 40px rgba(42, 36, 68, 0.1);
+}
+.psi-mission .section-explorer-toolbar,
+.psi-mission .section-explorer-note,
+.psi-mission .section-explorer-stages {
+  background: transparent;
+  border-color: transparent;
+  color: #e7e2f6;
+}
+.psi-mission .section-explorer-toolbar > span,
+.psi-mission .section-explorer-note {
+  color: #e7e2f6 !important;
+}
+.psi-mission .section-explorer-toolbar button,
+.psi-mission .section-explorer-stages button {
+  background: #fbfaf7;
+  border: 0;
+  border-radius: 14px;
+  box-shadow: 0 4px 0 #1a1a1e;
+  color: #1c1b22;
+}
+.psi-mission .section-explorer-stages button[aria-pressed="true"] {
+  background: #fbfaf7;
+  color: #1c1b22;
+  box-shadow:
+    inset 0 -3px 0 #c9b8f2,
+    0 4px 0 #1a1a1e;
+}
+.psi-mission .section-explorer-layout {
+  align-items: center;
+  gap: 16px;
+  margin: 0 12px;
+  padding: 12px;
+  background: #f4f2ff;
+  border-radius: 24px;
+}
+.psi-mission .section-explorer-visual {
+  min-width: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fbfaf7;
+}
+.psi-mission .section-explorer-detail {
+  margin: 0;
+  padding: 18px 18px 14px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 6px 0 #2a2a2e;
+}
+.psi-mission .mission-record-selector button {
+  border: 0;
+  border-radius: 14px;
+  background: #fbfaf7;
+  box-shadow: 0 4px 0 #2a2a2e;
+  color: #1c1b22;
+}
+.psi-mission .mission-record-selector button[aria-pressed="true"] {
+  background: #2a2a2e;
+  color: #fbfaf7;
+  box-shadow: inset 0 -3px 0 #c9b8f2;
+}
+.psi-mission .mission-record-body {
+  background: #fbfaf7;
+  border: 0;
+  border-radius: 20px;
+  box-shadow: 0 8px 0 #2a2a2e;
+}
+.psi-mission .dxl-btn-ghost {
+  background: #fbfaf7;
+  border: 0;
+  border-radius: 14px;
+  box-shadow: 0 4px 0 #2a2a2e;
+  color: #1c1b22;
+}
 .psi-hero-reading .psi-research-bench {
   margin-top: 0;
 }
