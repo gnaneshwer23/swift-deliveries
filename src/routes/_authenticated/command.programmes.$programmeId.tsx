@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
-import { CheckCircle2, Download, Pause, Play, RotateCcw, StepForward, XCircle } from "lucide-react";
+import { useMemo, useState } from "react";
+import { CheckCircle2, Download, RotateCcw, StepForward, XCircle } from "lucide-react";
 import { CommandShell } from "@/components/command/command-shell";
 import { programmeQuery } from "@/lib/programme-queries";
 import {
@@ -60,14 +60,12 @@ function ProgrammeDashboard() {
   const query = useQuery(programmeQuery(programmeId));
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<Tab>("items");
-  const [autoRun, setAutoRun] = useState(false);
   const [note, setNote] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const setData = (v: ProgrammeView) =>
     queryClient.setQueryData(programmeQuery(programmeId).queryKey, v);
   const onError = (e: unknown) => {
-    setAutoRun(false);
     setError(e instanceof Error ? e.message : "Something went wrong");
   };
 
@@ -77,20 +75,9 @@ function ProgrammeDashboard() {
       setError(null);
       setNote(r.note);
       setData(r);
-      if (r.done) setAutoRun(false);
     },
     onError,
   });
-
-  useEffect(() => {
-    if (!autoRun || step.isPending || query.data?.state.status !== "active") {
-      if (autoRun && query.data && query.data.state.status !== "active") setAutoRun(false);
-      return;
-    }
-    const t = window.setTimeout(() => step.mutate(), 250);
-    return () => window.clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoRun, step.isPending, query.data?.state.version, query.data?.state.status]);
 
   const download = useMutation({
     mutationFn: () => exportProgramme({ data: { id: programmeId } }),
@@ -152,18 +139,11 @@ function ProgrammeDashboard() {
               <button
                 type="button"
                 className="cc-btn cc-btn-primary"
-                onClick={() => setAutoRun((v) => !v)}
-              >
-                {autoRun ? <Pause className="size-4" /> : <Play className="size-4" />}
-                {autoRun ? "Pause" : "Run workforce"}
-              </button>
-              <button
-                type="button"
-                className="cc-btn cc-btn-secondary"
-                disabled={step.isPending || autoRun}
+                disabled={step.isPending}
                 onClick={() => step.mutate()}
               >
-                <StepForward className="size-4" /> One step
+                <StepForward className="size-4" />{" "}
+                {step.isPending ? "Running…" : "Run next server step"}
               </button>
             </>
           ) : null}

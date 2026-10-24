@@ -229,7 +229,7 @@ describe("chosen plan and brief continuity", () => {
       goal: "Validate a new idea",
       firstIdea: brief.problem,
     });
-    expect(action.href).toBe("/command?intent=investigate#mission-composer");
+    expect(action.href).toBe("/command#supervised-brief");
     expect(hrefContainsPrivateBrief(action.href, brief)).toBe(false);
     expect(action.reason.toLowerCase()).toContain("evidence");
   });

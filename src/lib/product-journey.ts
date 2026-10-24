@@ -18,10 +18,10 @@ export function safeProductRedirect(raw: unknown): string {
 }
 
 export function firstActionFor(profile: Pick<DxProfile, "goal" | "firstIdea">) {
-  // The product question stays on the saved profile. Only the public intent is placed in the URL.
+  // The product question stays on the saved profile. The address only opens the supervised brief.
   if (profile.goal === "Improve an existing product") {
     return {
-      href: "/command?intent=improve#mission-composer",
+      href: "/command#supervised-brief",
       label: "Investigate the question",
       reason:
         "Separate supplied evidence from assumptions, compare options, and approve the decision before any change.",
@@ -29,7 +29,7 @@ export function firstActionFor(profile: Pick<DxProfile, "goal" | "firstIdea">) {
   }
   if (profile.goal === "Build an MVP") {
     return {
-      href: "/command?intent=prototype#mission-composer",
+      href: "/command#supervised-brief",
       label: "Shape reviewable work",
       reason:
         "Turn the question into a specification you can inspect. A prototype is an agreed extension, not a deployed product.",
@@ -37,7 +37,7 @@ export function firstActionFor(profile: Pick<DxProfile, "goal" | "firstIdea">) {
   }
   if (profile.goal === "Learn by building a product") {
     return {
-      href: "/command?intent=investigate#mission-composer",
+      href: "/command#supervised-brief",
       label: "Start from the question",
       reason:
         "Use the same path as a founder: evidence, a human decision and reviewable work. Learning does not lower that standard.",
@@ -45,14 +45,14 @@ export function firstActionFor(profile: Pick<DxProfile, "goal" | "firstIdea">) {
   }
   if (profile.goal === "Validate a new idea") {
     return {
-      href: "/command?intent=investigate#mission-composer",
+      href: "/command#supervised-brief",
       label: "Compare the evidence",
       reason:
         "Bring the product question, compare options against supplied evidence, and decide what happens next.",
     };
   }
   return {
-    href: "/command?intent=investigate#mission-composer",
+    href: "/command#supervised-brief",
     label: "Open the product question",
     reason:
       "Start with one product question. Evidence, your decision and reviewable work stay together.",

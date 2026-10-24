@@ -18,28 +18,24 @@ describe("product entry journey", () => {
       "/command?intent=improve#brief",
     );
   });
-  it("sends improvements to the mission composer without putting the brief in the URL", () => {
+  it("sends improvements to the supervised brief without putting the brief in the URL", () => {
     const action = firstActionFor({
       goal: "Improve an existing product",
       firstIdea: "Reduce drop-off & keep approvals",
     });
     const url = new URL(action.href, "https://deliverx.dev");
     expect(url.pathname).toBe("/command");
-    expect(url.searchParams.get("intent")).toBe("improve");
+    expect(url.hash).toBe("#supervised-brief");
     expect(url.searchParams.get("prompt")).toBeNull();
     expect(action.href).not.toContain("Reduce drop-off");
   });
-  it.each([
-    ["Build an MVP", "prototype"],
-    ["Learn by building a product", "investigate"],
-    ["Validate a new idea", "investigate"],
-  ] as const)(
-    "opens the workspace intent without copying the idea into the URL for %s",
-    (goal, intent) => {
+  it.each(["Build an MVP", "Learn by building a product", "Validate a new idea"] as const)(
+    "opens the supervised brief without copying the idea into the URL for %s",
+    (goal) => {
       const action = firstActionFor({ goal, firstIdea: "A tool for students" });
       const url = new URL(action.href, "https://deliverx.dev");
       expect(url.pathname).toBe("/command");
-      expect(url.searchParams.get("intent")).toBe(intent);
+      expect(url.hash).toBe("#supervised-brief");
       expect(url.searchParams.get("idea")).toBeNull();
       expect(url.searchParams.get("prompt")).toBeNull();
       expect(action.href).not.toContain("students");

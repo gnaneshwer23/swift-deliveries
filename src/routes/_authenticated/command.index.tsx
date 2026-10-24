@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
+import { SupervisedMissionStart } from "@/components/command/supervised-mission-start";
 import { useSession } from "@/hooks/use-session";
 import { firstActionFor } from "@/lib/product-journey";
 import { firstNameOf } from "@/lib/dx-profile";
@@ -304,6 +305,7 @@ function CommandHome() {
       }}
     >
       <WelcomeBanner />
+      <SupervisedMissionStart />
 
       {/* Clean 4-Metric Operational Summary Strip */}
       <section className="cc-kpi-strip" aria-label="Workspace operational summary">

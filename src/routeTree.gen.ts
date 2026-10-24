@@ -70,6 +70,7 @@ import { Route as AuthenticatedWorkspaceTimelineRouteImport } from './routes/_au
 import { Route as AuthenticatedCommandMissionsMissionIdRouteImport } from './routes/_authenticated/command.missions.$missionId'
 import { Route as AuthenticatedCommandProgrammesIndexRouteImport } from './routes/_authenticated/command.programmes.index'
 import { Route as AuthenticatedCommandProgrammesProgrammeIdRouteImport } from './routes/_authenticated/command.programmes.$programmeId'
+import { Route as AuthenticatedCommandSupervisedMissionIdRouteImport } from './routes/_authenticated/command.supervised.$missionId'
 import { Route as AuthenticatedWorkspaceExperienceIndexRouteImport } from './routes/_authenticated/workspace.experience.index'
 import { Route as AuthenticatedWorkspaceExperienceTaskKeyRouteImport } from './routes/_authenticated/workspace.experience.$taskKey'
 import { Route as ApiPublicMonitoringClientErrorRouteImport } from './routes/api/public/monitoring/client-error'
@@ -409,6 +410,12 @@ const AuthenticatedCommandProgrammesProgrammeIdRoute =
     path: '/programmes/$programmeId',
     getParentRoute: () => AuthenticatedCommandRoute,
   } as any)
+const AuthenticatedCommandSupervisedMissionIdRoute =
+  AuthenticatedCommandSupervisedMissionIdRouteImport.update({
+    id: '/supervised/$missionId',
+    path: '/supervised/$missionId',
+    getParentRoute: () => AuthenticatedCommandRoute,
+  } as any)
 const AuthenticatedWorkspaceExperienceIndexRoute =
   AuthenticatedWorkspaceExperienceIndexRouteImport.update({
     id: '/',
@@ -516,6 +523,7 @@ export interface FileRoutesByFullPath {
   '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/command/missions/$missionId': typeof AuthenticatedCommandMissionsMissionIdRoute
   '/command/programmes/$programmeId': typeof AuthenticatedCommandProgrammesProgrammeIdRoute
+  '/command/supervised/$missionId': typeof AuthenticatedCommandSupervisedMissionIdRoute
   '/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
   '/api/public/monitoring/client-error': typeof ApiPublicMonitoringClientErrorRoute
   '/api/public/monitoring/health': typeof ApiPublicMonitoringHealthRoute
@@ -583,6 +591,7 @@ export interface FileRoutesByTo {
   '/workspace': typeof AuthenticatedWorkspaceIndexRoute
   '/command/missions/$missionId': typeof AuthenticatedCommandMissionsMissionIdRoute
   '/command/programmes/$programmeId': typeof AuthenticatedCommandProgrammesProgrammeIdRoute
+  '/command/supervised/$missionId': typeof AuthenticatedCommandSupervisedMissionIdRoute
   '/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
   '/api/public/monitoring/client-error': typeof ApiPublicMonitoringClientErrorRoute
   '/api/public/monitoring/health': typeof ApiPublicMonitoringHealthRoute
@@ -655,6 +664,7 @@ export interface FileRoutesById {
   '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/_authenticated/command/missions/$missionId': typeof AuthenticatedCommandMissionsMissionIdRoute
   '/_authenticated/command/programmes/$programmeId': typeof AuthenticatedCommandProgrammesProgrammeIdRoute
+  '/_authenticated/command/supervised/$missionId': typeof AuthenticatedCommandSupervisedMissionIdRoute
   '/_authenticated/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
   '/api/public/monitoring/client-error': typeof ApiPublicMonitoringClientErrorRoute
   '/api/public/monitoring/health': typeof ApiPublicMonitoringHealthRoute
@@ -727,6 +737,7 @@ export interface FileRouteTypes {
     | '/workspace/'
     | '/command/missions/$missionId'
     | '/command/programmes/$programmeId'
+    | '/command/supervised/$missionId'
     | '/workspace/experience/$taskKey'
     | '/api/public/monitoring/client-error'
     | '/api/public/monitoring/health'
@@ -794,6 +805,7 @@ export interface FileRouteTypes {
     | '/workspace'
     | '/command/missions/$missionId'
     | '/command/programmes/$programmeId'
+    | '/command/supervised/$missionId'
     | '/workspace/experience/$taskKey'
     | '/api/public/monitoring/client-error'
     | '/api/public/monitoring/health'
@@ -865,6 +877,7 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace/'
     | '/_authenticated/command/missions/$missionId'
     | '/_authenticated/command/programmes/$programmeId'
+    | '/_authenticated/command/supervised/$missionId'
     | '/_authenticated/workspace/experience/$taskKey'
     | '/api/public/monitoring/client-error'
     | '/api/public/monitoring/health'
@@ -1346,6 +1359,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCommandProgrammesProgrammeIdRouteImport
       parentRoute: typeof AuthenticatedCommandRoute
     }
+    '/_authenticated/command/supervised/$missionId': {
+      id: '/_authenticated/command/supervised/$missionId'
+      path: '/supervised/$missionId'
+      fullPath: '/command/supervised/$missionId'
+      preLoaderRoute: typeof AuthenticatedCommandSupervisedMissionIdRouteImport
+      parentRoute: typeof AuthenticatedCommandRoute
+    }
     '/_authenticated/workspace/experience/': {
       id: '/_authenticated/workspace/experience/'
       path: '/'
@@ -1412,6 +1432,7 @@ interface AuthenticatedCommandRouteChildren {
   AuthenticatedCommandIndexRoute: typeof AuthenticatedCommandIndexRoute
   AuthenticatedCommandMissionsMissionIdRoute: typeof AuthenticatedCommandMissionsMissionIdRoute
   AuthenticatedCommandProgrammesProgrammeIdRoute: typeof AuthenticatedCommandProgrammesProgrammeIdRoute
+  AuthenticatedCommandSupervisedMissionIdRoute: typeof AuthenticatedCommandSupervisedMissionIdRoute
   AuthenticatedCommandProgrammesIndexRoute: typeof AuthenticatedCommandProgrammesIndexRoute
 }
 
@@ -1425,6 +1446,8 @@ const AuthenticatedCommandRouteChildren: AuthenticatedCommandRouteChildren = {
     AuthenticatedCommandMissionsMissionIdRoute,
   AuthenticatedCommandProgrammesProgrammeIdRoute:
     AuthenticatedCommandProgrammesProgrammeIdRoute,
+  AuthenticatedCommandSupervisedMissionIdRoute:
+    AuthenticatedCommandSupervisedMissionIdRoute,
   AuthenticatedCommandProgrammesIndexRoute:
     AuthenticatedCommandProgrammesIndexRoute,
 }

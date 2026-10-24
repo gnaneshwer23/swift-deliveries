@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
 import { missionBundleQuery } from "@/lib/workforce-queries";
 import {
@@ -55,7 +55,6 @@ function MissionDetail() {
   const [approveExternal, setApproveExternal] = useState(false);
   const [selectedArtefactId, setSelectedArtefactId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
-  const [autoRunning, setAutoRunning] = useState(false);
   const [isEditingScope, setIsEditingScope] = useState(false);
   const [revisedText, setRevisedText] = useState("");
   const [rejectReason, setRejectReason] = useState("");
@@ -98,7 +97,6 @@ function MissionDetail() {
     onSuccess: async () => {
       setActionError(null);
       await invalidate();
-      setAutoRunning(true);
     },
     onError: (e) => setActionError(e instanceof Error ? e.message : "Approval failed"),
   });
@@ -125,7 +123,6 @@ function MissionDetail() {
     onSuccess: async () => {
       setActionError(null);
       await invalidate();
-      setAutoRunning(true);
     },
     onError: (e) => setActionError(e instanceof Error ? e.message : "External approval failed"),
   });
@@ -136,10 +133,8 @@ function MissionDetail() {
       setActionError(null);
       setRunNote(result.note ?? null);
       await invalidate();
-      if (result.done) setAutoRunning(false);
     },
     onError: (e) => {
-      setAutoRunning(false);
       setActionError(e instanceof Error ? e.message : "Execution failed");
     },
   });
@@ -159,7 +154,6 @@ function MissionDetail() {
   const cancel = useMutation({
     mutationFn: () => cancelMission({ data: { missionId } }),
     onSuccess: async () => {
-      setAutoRunning(false);
       await invalidate();
     },
   });
@@ -182,19 +176,6 @@ function MissionDetail() {
     },
     onError: (e) => setActionError(e instanceof Error ? e.message : "Gate decision failed"),
   });
-
-  useEffect(() => {
-    if (!autoRunning || !query.data) return;
-    const status = query.data.mission.status;
-    if (status !== "queued" && status !== "running") {
-      // Blocked missions wait for a human decision; release the run button.
-      setAutoRunning(false);
-      return;
-    }
-    if (step.isPending) return;
-    const timer = window.setTimeout(() => step.mutate(), 450);
-    return () => window.clearTimeout(timer);
-  }, [autoRunning, query.data?.mission.status, query.data?.tasks, step.isPending]);
 
   const data = query.data;
   const selectedArtefact = useMemo(() => {
@@ -562,13 +543,10 @@ function MissionDetail() {
                   <button
                     type="button"
                     className="cc-btn cc-btn-primary"
-                    disabled={step.isPending || autoRunning}
-                    onClick={() => {
-                      setAutoRunning(true);
-                      step.mutate();
-                    }}
+                    disabled={step.isPending}
+                    onClick={() => step.mutate()}
                   >
-                    {autoRunning || step.isPending ? "Running…" : "Run next step →"}
+                    {step.isPending ? "Running…" : "Run next step →"}
                   </button>
                 )}
                 {mission.status === "blocked" &&

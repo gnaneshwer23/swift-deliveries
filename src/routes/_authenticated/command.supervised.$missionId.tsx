@@ -1,0 +1,577 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { CommandShell } from "@/components/command/command-shell";
+import {
+  cancelSupervisedMission,
+  decideSupervisedMission,
+  exportSupervisedMission,
+  getSupervisedMission,
+  prepareSupervisedArtefact,
+  reviseSupervisedBrief,
+  runSupervisedComparison,
+  saveSupervisedEvidence,
+} from "@/lib/pilot-mission.functions";
+import { PROGRESS_STEPS, stepState, type DecisionChoice } from "@/lib/pilot-mission/types";
+
+export const Route = createFileRoute("/_authenticated/command/supervised/$missionId")({
+  head: () => ({
+    meta: [{ title: "Supervised mission — DeliverX" }, { name: "robots", content: "noindex" }],
+  }),
+  component: SupervisedMissionPage,
+});
+
+function SupervisedMissionPage() {
+  const { missionId } = Route.useParams();
+  const queryClient = useQueryClient();
+  const query = useQuery({
+    queryKey: ["supervised", "mission", missionId],
+    queryFn: () => getSupervisedMission({ data: { id: missionId } }),
+  });
+  const [error, setError] = useState<string | null>(null);
+  const invalidate = async () => {
+    setError(null);
+    await queryClient.invalidateQueries({ queryKey: ["supervised"] });
+  };
+  const onError = (err: unknown) =>
+    setError(err instanceof Error ? err.message : "The mission could not be updated.");
+
+  const compare = useMutation({
+    mutationFn: () => runSupervisedComparison({ data: { id: missionId } }),
+    onSuccess: async () => {
+      setError(null);
+      await invalidate();
+    },
+    onError,
+  });
+  const prepare = useMutation({
+    mutationFn: () => prepareSupervisedArtefact({ data: { id: missionId } }),
+    onSuccess: async () => {
+      setError(null);
+      await invalidate();
+    },
+    onError,
+  });
+  const cancel = useMutation({
+    mutationFn: () => cancelSupervisedMission({ data: { id: missionId } }),
+    onSuccess: async () => {
+      setError(null);
+      await invalidate();
+    },
+    onError,
+  });
+
+  if (query.isLoading) {
+    return (
+      <CommandShell title="Supervised mission" subtitle="Loading the saved mission…">
+        <p className="cc-muted">Loading brief, evidence and outputs.</p>
+      </CommandShell>
+    );
+  }
+  if (query.isError || !query.data) {
+    return (
+      <CommandShell title="Supervised mission" subtitle="The mission could not be loaded">
+        <p className="cc-error">
+          {query.error instanceof Error ? query.error.message : "Mission not found."}
+        </p>
+        <Link
+          to="/command"
+          hash="supervised-brief"
+          className="cc-btn cc-btn-secondary mt-4 inline-flex"
+        >
+          Back to the workspace
+        </Link>
+      </CommandShell>
+    );
+  }
+
+  const { mission, next, usageWarning } = query.data;
+  const open = mission.stage !== "cancelled" && mission.stage !== "exported";
+
+  return (
+    <CommandShell
+      title={mission.brief.question}
+      subtitle={next.detail}
+      {...(mission.usageCeiling > 0
+        ? { usage: { consumed: mission.usageConsumed, ceiling: mission.usageCeiling } }
+        : {})}
+    >
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <Link to="/command" hash="supervised-brief" className="cc-muted text-sm">
+          ← Product workspace
+        </Link>
+        {open ? (
+          <button
+            type="button"
+            className="cc-btn cc-btn-ghost"
+            disabled={cancel.isPending}
+            onClick={() => cancel.mutate()}
+          >
+            Cancel mission
+          </button>
+        ) : null}
+      </div>
+      <ol className="mb-4 flex flex-wrap gap-2" aria-label="Mission progress">
+        {PROGRESS_STEPS.map((step, index) => {
+          const state = stepState(mission.stage, index);
+          return (
+            <li
+              key={step.id}
+              className="cc-chip"
+              aria-current={state === "current" ? "step" : undefined}
+            >
+              {state === "done" ? "Done · " : state === "current" ? "Now · " : ""}
+              {step.label}
+            </li>
+          );
+        })}
+      </ol>
+      <section className="cc-panel" aria-label="Next action">
+        <h2 className="cc-panel-title">{next.title}</h2>
+        <p className="cc-muted">{next.detail}</p>
+        {usageWarning ? <p className="cc-error mt-2">{usageWarning}</p> : null}
+        {error ? <p className="cc-error mt-2">{error}</p> : null}
+        <p className="cc-muted mt-2 text-sm">
+          Usage on this mission: {mission.usageConsumed} / {mission.usageCeiling}. Attempts:{" "}
+          {mission.job.attempts}.
+          {mission.proposal
+            ? ` Generation: ${mission.proposal.generation.label}.`
+            : " Comparison has not been stored yet."}
+        </p>
+        {next.id === "compare" || next.id === "retry" || next.id === "recover" ? (
+          <button
+            type="button"
+            className="cc-btn cc-btn-primary mt-3"
+            disabled={
+              compare.isPending ||
+              (next.id === "recover" && Date.parse(mission.job.leaseUntil ?? "") > Date.now())
+            }
+            onClick={() => compare.mutate()}
+          >
+            {compare.isPending
+              ? "Comparing…"
+              : next.id === "retry"
+                ? "Retry comparison"
+                : "Compare options"}
+          </button>
+        ) : null}
+        {next.id === "artefact" ? (
+          <button
+            type="button"
+            className="cc-btn cc-btn-primary mt-3"
+            disabled={prepare.isPending}
+            onClick={() => prepare.mutate()}
+          >
+            {prepare.isPending ? "Preparing…" : "Prepare decision pack"}
+          </button>
+        ) : null}
+        {next.id === "export" || mission.exportBody ? (
+          <ExportButton missionId={missionId} existing={mission.exportBody} onError={onError} />
+        ) : null}
+      </section>
+      <EvidenceEditor
+        missionId={missionId}
+        initial={mission.evidence}
+        locked={!open}
+        onDone={invalidate}
+        onError={onError}
+      />
+      <BriefEditor
+        missionId={missionId}
+        initial={mission.brief}
+        locked={!open}
+        onDone={invalidate}
+        onError={onError}
+      />
+      {mission.proposal ? (
+        <section className="cc-panel" aria-label="Alternatives">
+          <h2 className="cc-panel-title">Alternatives</h2>
+          <p className="cc-muted text-sm">
+            Proposal version {mission.proposal.version}. Scope{" "}
+            {mission.proposal.scopeHash.slice(0, 12)}.
+          </p>
+          <ul className="mt-3 grid gap-3">
+            {mission.proposal.options.map((option) => (
+              <li key={option.id} className="cc-panel">
+                <strong>{option.title}</strong>
+                <p className="cc-muted">{option.tradeoff}</p>
+                <p className="cc-muted text-sm">Basis: {option.basis}</p>
+              </li>
+            ))}
+          </ul>
+          {mission.proposal.generation.gaps.length ? (
+            <p className="cc-muted mt-3 text-sm">
+              Gaps: {mission.proposal.generation.gaps.join(" · ")}
+            </p>
+          ) : null}
+          {mission.stage === "alternatives" ||
+          (mission.stage === "decision" && !mission.artefact) ? (
+            <DecisionForm
+              key={mission.proposal.scopeHash}
+              missionId={missionId}
+              action={mission.proposal.action}
+              version={mission.proposal.version}
+              scopeHash={mission.proposal.scopeHash}
+              options={mission.proposal.options.map((option) => ({
+                id: option.id,
+                title: option.title,
+              }))}
+              onDone={invalidate}
+              onError={onError}
+            />
+          ) : null}
+        </section>
+      ) : null}
+      {mission.evidence.length ? (
+        <section className="cc-panel" aria-label="Evidence">
+          <h2 className="cc-panel-title">Evidence</h2>
+          <ul className="mt-3 grid gap-2">
+            {mission.evidence.map((item) => (
+              <li key={item.id}>
+                <strong>
+                  {item.id} · {item.classification}
+                </strong>
+                <p>{item.statement}</p>
+                {item.source ? <p className="cc-muted text-sm">Source: {item.source}</p> : null}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+      {mission.approval ? (
+        <section className="cc-panel" aria-label="Decision">
+          <h2 className="cc-panel-title">Owner decision</h2>
+          <p>
+            {mission.approval.choice === "accept" ? "Accepted" : "More evidence requested"}:{" "}
+            {mission.approval.optionId}
+          </p>
+          {mission.approval.note ? <p className="cc-muted">{mission.approval.note}</p> : null}
+          <p className="cc-muted text-sm">
+            Bound to {mission.approval.action} version {mission.approval.version}.
+          </p>
+        </section>
+      ) : null}
+      {mission.invalidatedApprovals.length ? (
+        <section className="cc-panel" aria-label="Cleared approvals">
+          <h2 className="cc-panel-title">Cleared approvals</h2>
+          <ul className="mt-2 grid gap-2">
+            {mission.invalidatedApprovals.map((approval) => (
+              <li key={`${approval.scopeHash}-${approval.decidedAt}`}>
+                <p>{approval.reason}</p>
+                <p className="cc-muted text-sm">
+                  Version {approval.version} · {approval.optionId}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+      {mission.artefact ? (
+        <section className="cc-panel" aria-label="Decision pack">
+          <h2 className="cc-panel-title">{mission.artefact.title}</h2>
+          <pre className="mt-3 whitespace-pre-wrap text-sm">{mission.artefact.decisionBrief}</pre>
+          <pre className="mt-3 whitespace-pre-wrap text-sm">{mission.artefact.experimentBrief}</pre>
+        </section>
+      ) : null}
+    </CommandShell>
+  );
+}
+
+function EvidenceEditor({
+  missionId,
+  initial,
+  locked,
+  onDone,
+  onError,
+}: {
+  missionId: string;
+  initial: Array<{ statement: string; source: string; classification: string }>;
+  locked: boolean;
+  onDone: () => Promise<void>;
+  onError: (error: unknown) => void;
+}) {
+  const [items, setItems] = useState(
+    initial.length
+      ? initial.map((item) => ({
+          statement: item.statement,
+          source: item.source,
+          classification: item.classification,
+        }))
+      : [{ statement: "", source: "", classification: "supplied" }],
+  );
+  const save = useMutation({
+    mutationFn: () => saveSupervisedEvidence({ data: { id: missionId, items } }),
+    onSuccess: async () => {
+      await onDone();
+    },
+    onError,
+  });
+  if (locked) return null;
+  return (
+    <section className="cc-panel" aria-label="Edit evidence">
+      <h2 className="cc-panel-title">Evidence</h2>
+      <p className="cc-muted text-sm">
+        Saving a different brief or evidence clears the current proposal and any approval of it.
+      </p>
+      <div className="mt-3 grid gap-3">
+        {items.map((item, index) => (
+          <div key={index} className="grid gap-2">
+            <label className="cc-label" htmlFor={`evidence-${index}`}>
+              Statement {index + 1}
+            </label>
+            <textarea
+              id={`evidence-${index}`}
+              className="cc-input cc-textarea"
+              rows={2}
+              value={item.statement}
+              onChange={(event) =>
+                setItems((current) =>
+                  current.map((row, rowIndex) =>
+                    rowIndex === index ? { ...row, statement: event.target.value } : row,
+                  ),
+                )
+              }
+            />
+            <input
+              className="cc-input"
+              aria-label={`Source ${index + 1}`}
+              placeholder="Source"
+              value={item.source}
+              onChange={(event) =>
+                setItems((current) =>
+                  current.map((row, rowIndex) =>
+                    rowIndex === index ? { ...row, source: event.target.value } : row,
+                  ),
+                )
+              }
+            />
+            <select
+              className="cc-input"
+              aria-label={`Classification ${index + 1}`}
+              value={item.classification}
+              onChange={(event) =>
+                setItems((current) =>
+                  current.map((row, rowIndex) =>
+                    rowIndex === index ? { ...row, classification: event.target.value } : row,
+                  ),
+                )
+              }
+            >
+              <option value="supplied">Supplied</option>
+              <option value="assumption">Assumption</option>
+              <option value="gap">Gap</option>
+            </select>
+          </div>
+        ))}
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            className="cc-btn cc-btn-secondary"
+            onClick={() =>
+              setItems((current) => [
+                ...current,
+                { statement: "", source: "", classification: "gap" },
+              ])
+            }
+          >
+            Add evidence
+          </button>
+          <button
+            type="button"
+            className="cc-btn cc-btn-primary"
+            disabled={save.isPending}
+            onClick={() => save.mutate()}
+          >
+            {save.isPending ? "Saving…" : "Save evidence"}
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function BriefEditor({
+  missionId,
+  initial,
+  locked,
+  onDone,
+  onError,
+}: {
+  missionId: string;
+  initial: { question: string; audience: string; outcome: string; constraints: string };
+  locked: boolean;
+  onDone: () => Promise<void>;
+  onError: (error: unknown) => void;
+}) {
+  const [brief, setBrief] = useState(initial);
+  const save = useMutation({
+    mutationFn: () => reviseSupervisedBrief({ data: { id: missionId, brief } }),
+    onSuccess: onDone,
+    onError,
+  });
+  if (locked) return null;
+  return (
+    <section className="cc-panel" aria-label="Edit brief">
+      <h2 className="cc-panel-title">Brief</h2>
+      <div className="mt-3 grid gap-2">
+        <textarea
+          className="cc-input cc-textarea"
+          aria-label="Question"
+          rows={2}
+          value={brief.question}
+          onChange={(event) => setBrief({ ...brief, question: event.target.value })}
+        />
+        <input
+          className="cc-input"
+          aria-label="Audience"
+          value={brief.audience}
+          onChange={(event) => setBrief({ ...brief, audience: event.target.value })}
+        />
+        <input
+          className="cc-input"
+          aria-label="Outcome"
+          value={brief.outcome}
+          onChange={(event) => setBrief({ ...brief, outcome: event.target.value })}
+        />
+        <input
+          className="cc-input"
+          aria-label="Constraints"
+          value={brief.constraints}
+          onChange={(event) => setBrief({ ...brief, constraints: event.target.value })}
+        />
+        <button
+          type="button"
+          className="cc-btn cc-btn-secondary"
+          disabled={save.isPending}
+          onClick={() => save.mutate()}
+        >
+          {save.isPending ? "Saving…" : "Save brief changes"}
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function DecisionForm({
+  missionId,
+  action,
+  version,
+  scopeHash,
+  options,
+  onDone,
+  onError,
+}: {
+  missionId: string;
+  action: "compare_options";
+  version: number;
+  scopeHash: string;
+  options: Array<{ id: string; title: string }>;
+  onDone: () => Promise<void>;
+  onError: (error: unknown) => void;
+}) {
+  const [optionId, setOptionId] = useState(options[0]?.id ?? "");
+  const [choice, setChoice] = useState<DecisionChoice>("accept");
+  const [note, setNote] = useState("");
+  const decide = useMutation({
+    mutationFn: () =>
+      decideSupervisedMission({
+        data: { id: missionId, action, version, scopeHash, optionId, choice, note },
+      }),
+    onSuccess: onDone,
+    onError,
+  });
+  return (
+    <form
+      className="mt-4 grid gap-2"
+      onSubmit={(event) => {
+        event.preventDefault();
+        decide.mutate();
+      }}
+    >
+      <label className="cc-label" htmlFor="decision-option">
+        Option
+      </label>
+      <select
+        id="decision-option"
+        className="cc-input"
+        value={optionId}
+        onChange={(event) => setOptionId(event.target.value)}
+      >
+        {options.map((option) => (
+          <option key={option.id} value={option.id}>
+            {option.title}
+          </option>
+        ))}
+      </select>
+      <label className="cc-label" htmlFor="decision-choice">
+        Decision
+      </label>
+      <select
+        id="decision-choice"
+        className="cc-input"
+        value={choice}
+        onChange={(event) => setChoice(event.target.value as DecisionChoice)}
+      >
+        <option value="accept">Accept this option</option>
+        <option value="request_more_evidence">Request more evidence</option>
+      </select>
+      <textarea
+        className="cc-input cc-textarea"
+        aria-label="Decision note"
+        rows={2}
+        value={note}
+        onChange={(event) => setNote(event.target.value)}
+      />
+      <button
+        type="submit"
+        className="cc-btn cc-btn-primary"
+        disabled={decide.isPending || !optionId}
+      >
+        {decide.isPending ? "Recording…" : "Record decision"}
+      </button>
+    </form>
+  );
+}
+
+function ExportButton({
+  missionId,
+  existing,
+  onError,
+}: {
+  missionId: string;
+  existing: string | null;
+  onError: (error: unknown) => void;
+}) {
+  const queryClient = useQueryClient();
+  const save = useMutation({
+    mutationFn: () => exportSupervisedMission({ data: { id: missionId } }),
+    onSuccess: async (result) => {
+      const body = result.mission.exportBody;
+      if (body) download(body);
+      await queryClient.invalidateQueries({ queryKey: ["supervised"] });
+    },
+    onError,
+  });
+  return (
+    <button
+      type="button"
+      className="cc-btn cc-btn-primary mt-3"
+      disabled={save.isPending}
+      onClick={() => {
+        if (existing) download(existing);
+        else save.mutate();
+      }}
+    >
+      {save.isPending ? "Exporting…" : "Download decision pack"}
+    </button>
+  );
+}
+
+function download(body: string) {
+  const url = URL.createObjectURL(new Blob([body], { type: "text/markdown;charset=utf-8" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "decision-pack.md";
+  link.click();
+  URL.revokeObjectURL(url);
+}
