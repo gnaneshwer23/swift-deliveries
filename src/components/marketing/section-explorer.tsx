@@ -159,8 +159,261 @@ const TEAM: Point[] = [
     path: "M 38 76 L 38 76",
   },
 ];
-export function SectionExplorer({ kind }: { kind: "record" | "team" }) {
-  const points = kind === "record" ? RECORD : TEAM;
+const MISSION: Point[] = [
+  {
+    id: "question",
+    name: "Product question",
+    role: "You + Problem-Framing",
+    input: "An onboarding problem and constraints",
+    output: "A bounded mission brief",
+    explanation:
+      "Start with a specific question: which onboarding change should we investigate? This is a sample mission, not customer research.",
+    x: 14,
+    y: 50,
+    path: "M 14 50 C 14 26 26 26 37 26",
+    capability: "DX-002",
+  },
+  {
+    id: "evidence",
+    name: "Evidence brief",
+    role: "Research Synthesis",
+    input: "Genuine notes and source references",
+    output: "Supported findings and evidence gaps",
+    explanation:
+      "Link findings to supplied sources. If customer observations are missing, ask for them rather than inventing interviews.",
+    x: 37,
+    y: 26,
+    path: "M 37 26 L 65 26",
+    capability: "DX-020",
+  },
+  {
+    id: "options",
+    name: "Compare options",
+    role: "Specialist decision panel",
+    input: "Evidence, goals and constraints",
+    output: "Alternatives, trade-offs and recommendation",
+    explanation:
+      "Compare shorter setup with guided onboarding. Keep dissent and uncertainty beside the recommendation; no conversion uplift is claimed.",
+    x: 65,
+    y: 26,
+    path: "M 65 26 C 80 26 86 38 86 50",
+  },
+  {
+    id: "approval",
+    name: "Your decision",
+    role: "Human approval gate",
+    input: "Recommendation, evidence and review findings",
+    output: "Approve, reject or ask for evidence",
+    explanation:
+      "Inspect the case before work advances. Approving this walkthrough changes the example only and cannot approve an actual mission.",
+    x: 86,
+    y: 50,
+    path: "M 86 50 C 86 76 76 76 65 76",
+    gate: true,
+  },
+  {
+    id: "experiment",
+    name: "Experiment brief",
+    role: "Product + design disciplines",
+    input: "Approved example direction",
+    output: "Hypothesis, prototype plan and acceptance criteria",
+    explanation:
+      "Describe the smallest useful experiment and how you would measure it. A plan is not a completed test or deployed change.",
+    x: 65,
+    y: 76,
+    path: "M 65 76 L 37 76",
+  },
+  {
+    id: "record",
+    name: "Keep the record",
+    role: "Product owner inspection",
+    input: "Brief, decision and proposed artefacts",
+    output: "Portable mission record",
+    explanation:
+      "Keep sources, alternatives, generation labels and the decision together. Add actual observations later; do not turn completion into a success claim.",
+    x: 37,
+    y: 76,
+    path: "M 37 76 L 37 76",
+  },
+];
+const LEARNING: Point[] = [
+  {
+    id: "measure",
+    name: "Measurement plan",
+    role: "Product owner",
+    input: "A hypothesis and success question",
+    output: "Expected metric, baseline and observation window",
+    explanation:
+      "Decide what you would measure before making a change. Expected outcomes are hypotheses, not observed results.",
+    x: 17,
+    y: 48,
+    path: "M 17 48 C 17 23 35 23 49 23",
+  },
+  {
+    id: "change",
+    name: "Inspectable change",
+    role: "Product and engineering disciplines",
+    input: "Approved experiment scope",
+    output: "An artefact to inspect",
+    explanation:
+      "Connect the proposed change to its decision and acceptance criteria. Runtime execution and deployment require their own evidence.",
+    x: 49,
+    y: 23,
+    path: "M 49 23 C 75 23 82 35 82 48",
+  },
+  {
+    id: "observe",
+    name: "Observed evidence",
+    role: "You supply actual results",
+    input: "Genuine feedback or measured observations",
+    output: "Source-linked outcome material",
+    explanation:
+      "Bring the real result into the review. Connected analytics ingestion is planned; this illustration does not collect telemetry or invent measurements.",
+    x: 82,
+    y: 48,
+    path: "M 82 48 C 82 70 78 78 67 78",
+  },
+  {
+    id: "compare",
+    name: "Outcome review",
+    role: "Planned learning workflow",
+    input: "Expected result and supplied observation",
+    output: "Comparison, limitations and open questions",
+    explanation:
+      "Compare what you expected with what happened, retaining limitations and uncertainty. Outcome review is a planned capability.",
+    x: 67,
+    y: 78,
+    path: "M 67 78 L 30 78",
+  },
+  {
+    id: "next",
+    name: "Next question",
+    role: "Human-directed follow-up",
+    input: "Review findings and unresolved assumptions",
+    output: "A proposed next mission",
+    explanation:
+      "Propose another question for human review. Automatic belief updates and autonomous replanning are planned capabilities, not something this public scene executes.",
+    x: 30,
+    y: 78,
+    path: "M 30 78 C 12 78 17 65 17 48",
+    gate: true,
+  },
+];
+const TRUST: Point[] = [
+  {
+    id: "proposal",
+    name: "Proposed action",
+    role: "Specialist recommendation",
+    input: "The intended action and target",
+    output: "A scoped proposal",
+    explanation:
+      "An agent proposes the work. The proposal itself is not permission to act, spend or contact an external service.",
+    x: 12,
+    y: 53,
+    path: "M 12 53 C 18 38 24 38 32 38",
+  },
+  {
+    id: "permissions",
+    name: "Permission scope",
+    role: "Deterministic server controls",
+    input: "Workspace, actor and allowed action",
+    output: "An allowed scope or a block",
+    explanation:
+      "Permissions constrain which workspace and actions are allowed. Review enabled safeguards and access scope before starting sensitive work.",
+    x: 32,
+    y: 38,
+    path: "M 32 38 L 52 34",
+  },
+  {
+    id: "budget",
+    name: "Usage ceiling",
+    role: "Budget enforcement",
+    input: "Approved allowance and usage",
+    output: "Continue within limits or pause",
+    explanation:
+      "Usage ceilings stop further work when exhausted. Workflow credits and model spending are different limits; cash-based model budgets are still being developed.",
+    x: 52,
+    y: 34,
+    path: "M 52 34 L 72 44",
+  },
+  {
+    id: "approval",
+    name: "Human authority",
+    role: "You approve consequential work",
+    input: "Evidence, target, scope and risks",
+    output: "Approval, rejection or revision",
+    explanation:
+      "Human lifecycle gates cannot be passed by an agent. Example continuation here is local only; it grants no tool access and performs no external action.",
+    x: 72,
+    y: 44,
+    path: "M 72 44 C 85 44 89 53 89 65",
+    gate: true,
+  },
+  {
+    id: "audit",
+    name: "Audit record",
+    role: "Inspection and accountability",
+    input: "Actor, decision and artefact history",
+    output: "A reviewable work record",
+    explanation:
+      "Keep who decided what alongside the evidence and output. Agent review, executed tests, human review and external attestation are distinct assurance labels.",
+    x: 89,
+    y: 65,
+    path: "M 89 65 L 89 65",
+  },
+];
+type SceneKind = "record" | "team" | "mission" | "learning" | "trust";
+const SCENES = {
+  record: {
+    points: RECORD,
+    title: "Follow a product record",
+    image: "connected-record-v1",
+    alt: "A central archive connects sources, decisions, artefacts and observations.",
+    to: "/product-brain",
+    link: "Explore Product Brain",
+    note: "Connected outcome tracking remains planned.",
+  },
+  team: {
+    points: TEAM,
+    title: "Follow the specialist handoffs",
+    image: "specialist-workbench-v1",
+    alt: "A specialist workbench connects research, strategy, design, review and human approval.",
+    to: "/ai-agents",
+    link: "Browse the role directory",
+    note: "Human gates control real missions; this example changes no workspace data.",
+  },
+  mission: {
+    points: MISSION,
+    title: "A mission: investigate onboarding friction",
+    image: "mission-workbench-v1",
+    alt: "A product question flows through evidence, alternatives, human approval and an experiment brief into a mission archive.",
+    to: "/how-it-works",
+    link: "Explore the worked mission",
+    note: "Sample mission only. No real research, experiment or deployment is performed.",
+  },
+  learning: {
+    points: LEARNING,
+    title: "From a result to a better next question",
+    image: "learning-workbench-v1",
+    alt: "A circular workbench links a measurement plan, change, supplied observations, outcome comparison and a human-reviewed next question.",
+    to: "/product-brain",
+    link: "Explore the learning direction",
+    note: "Learning concept. Connected tracking, complete outcome reviews and automatic learning remain planned.",
+  },
+  trust: {
+    points: TRUST,
+    title: "Before work can move forward",
+    image: "trust-workbench-v1",
+    alt: "A proposed action passes permission, budget and human-approval checkpoints before a reviewable audit record.",
+    to: "/security",
+    link: "Inspect the safeguards",
+    note: "Safeguard explanation, not a security certification. No permissions, budget or workspace records are changed.",
+  },
+} as const;
+
+export function SectionExplorer({ kind }: { kind: SceneKind }) {
+  const scene = SCENES[kind];
+  const points: Point[] = scene.points;
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [waiting, setWaiting] = useState(false);
@@ -217,23 +470,18 @@ export function SectionExplorer({ kind }: { kind: "record" | "team" }) {
     : undefined;
   const markdown = `# ${point.output}\n\nIllustrative DeliverX handoff template — no live mission executed.\n\n## Contributor\n${point.role}\n\n## Required input\n${point.input}\n\n## Output\n${point.output}\n\n## Review questions\n- Which source supports this?\n- What is still assumed or missing?\n- Who must inspect or approve the next step?\n\n## Your notes\n[Add genuine evidence and decisions here.]\n`;
   return (
-    <div
-      className={`section-explorer section-explorer-${kind}`}
-      ref={ref}
-      aria-label={
-        kind === "record"
-          ? "Explore the connected product record"
-          : "Explore specialist team handoffs"
-      }
-    >
+    <div className={`section-explorer section-explorer-${kind}`} ref={ref} aria-label={scene.title}>
       <div className="section-explorer-toolbar">
-        <span>
-          {kind === "record" ? "Follow a product record" : "Follow the specialist handoffs"}
-        </span>
+        <span>{scene.title}</span>
         <div>
           <button
             type="button"
             onClick={() => {
+              if (point.gate && !approved) {
+                setWaiting(true);
+                setPlaying(false);
+                return;
+              }
               if (index === points.length - 1) restart();
               else setPlaying(!playing);
             }}
@@ -251,14 +499,10 @@ export function SectionExplorer({ kind }: { kind: "record" | "team" }) {
       <div className="section-explorer-layout">
         <div className="section-explorer-visual">
           <img
-            src={`/illustrations/${kind === "record" ? "connected-record-v1" : "specialist-workbench-v1"}.webp`}
+            src={`/illustrations/${scene.image}.webp`}
             width="1536"
             height="1024"
-            alt={
-              kind === "record"
-                ? "A central product archive connects sources, decisions, artefacts and observations."
-                : "An illustrated workbench connects research, strategy, parallel design and architecture, independent review, a human approval gate and an output folio."
-            }
+            alt={scene.alt}
             loading="lazy"
           />
           <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
@@ -333,11 +577,8 @@ export function SectionExplorer({ kind }: { kind: "record" | "team" }) {
           {approved && (
             <small className="section-example-approved">Approved for this example only.</small>
           )}
-          <Link
-            to={kind === "record" ? "/product-brain" : "/ai-agents"}
-            className="section-explorer-destination"
-          >
-            {kind === "record" ? "Explore Product Brain" : "Browse the role directory"}
+          <Link to={scene.to} className="section-explorer-destination">
+            {scene.link}
             <ArrowRight size={13} />
           </Link>
         </div>
@@ -356,10 +597,7 @@ export function SectionExplorer({ kind }: { kind: "record" | "team" }) {
       </div>
       <p className="section-explorer-note">
         Interactive concept · click a labelled object to inspect its contribution. Catalogue status
-        does not certify live execution.
-        {kind === "record"
-          ? " Connected outcome tracking remains planned."
-          : " Human gates control real missions; this example changes no workspace data."}
+        does not certify live execution. {scene.note}
       </p>
     </div>
   );
