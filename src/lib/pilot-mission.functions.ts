@@ -1,3 +1,4 @@
+import { scopeHash } from "./pilot-mission/scope.server";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import type { Db } from "@/lib/db/builder";
@@ -17,7 +18,7 @@ import {
   UsageLimitError,
 } from "./pilot-mission/service";
 import { learningLinks } from "./pilot-mission/learning";
-import { nextRequiredAction, scopeHash, type SupervisedMission } from "./pilot-mission/types";
+import { nextRequiredAction, type SupervisedMission } from "./pilot-mission/types";
 
 type DbClient = { from: (table: string) => unknown };
 

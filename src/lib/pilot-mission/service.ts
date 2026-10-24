@@ -1,3 +1,4 @@
+import { scopeHash } from "./scope.server";
 import { draftOptions, parseModelOptions } from "./generate";
 import {
   assertOutcomeReading,
@@ -9,7 +10,6 @@ import {
   LEASE_MS,
   OWNER_SUPPLIED_OBSERVATION_LABEL,
   nextRequiredAction,
-  scopeHash,
   spendKey,
   type ApprovalClaim,
   type ApprovalRecord,

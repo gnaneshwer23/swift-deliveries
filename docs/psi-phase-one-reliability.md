@@ -24,7 +24,7 @@ Production branch inspected: `br-fancy-breeze-zatt9ocp`, project `spring-wind-48
 
 Created schema-only acceptance branch `psi-phase1-acceptance-20261024`, id `br-holy-meadow-zasru9wn`. No parent data was copied. Neon confirmed one-day auto-deletion on 25 October 2026 (18:24 UTC, 18:24 Europe/London after the clock change).
 
-Applied migrations 0020, 0021 and 0022 on that isolated branch in one transaction. A follow-up schema query returned all four expected tables. With explicit user approval, stored the isolated connection in ignored `.env.phase1.local` (mode 0600), confirmed the nine inherited auth tables contained zero records, and removed only the isolated `neon_auth` schema. Restored branch-local provisioning permissions for the existing `neon_auth`/`neon_service` roles after Neon reported missing CREATE, SET ROLE and role-administration privileges. Fresh Managed Better Auth provisioned successfully. Confirmed its branch-specific endpoint and trusted origin `http://127.0.0.1:43128`; restarted the acceptance preview in `phase1` mode with model execution disabled. User test-account creation/sign-in remains pending; no passwords are stored in Git or documentation.
+Applied migrations 0020, 0021 and 0022 on that isolated branch in one transaction. A follow-up schema query returned all four expected tables. With explicit user approval, stored the isolated connection in ignored `.env.phase1.local` (mode 0600), confirmed the nine inherited auth tables contained zero records, and removed only the isolated `neon_auth` schema. Restored branch-local provisioning permissions for the existing `neon_auth`/`neon_service` roles after Neon reported missing CREATE, SET ROLE and role-administration privileges. Fresh Managed Better Auth provisioned successfully. Confirmed its branch-specific endpoint and trusted origin `http://127.0.0.1:43128`; restarted the acceptance preview in `phase1` mode with model execution disabled. User test-account creation/sign-in subsequently succeeded; no passwords are stored in Git or documentation.
 
 New production deployment must wait for an agreed migration/rollback plan and release acceptance. Do not merge and enable a provider assuming the reservation table already exists there.
 
@@ -57,7 +57,7 @@ The fixture is deliberately isolated and reduced; it must not be used as a produ
 
 ## Acceptance work still required
 
-1. Isolated database/Auth/local trusted origin configuration is complete. User must create/sign in to a test account directly in the acceptance preview before signed-in acceptance can proceed.
+1. Isolated database/Auth/local trusted origin configuration and user sign-in are verified. Complete the live-provider and outcome/follow-up browser acceptance gates below before release acceptance.
 2. Prove enquiry → reference → same account → onboarding → saved brief → authenticated mission → decision/export → supplied outcome → follow-up, including recovery, a second workspace and failures.
 3. Run a bounded configured-provider evaluation with retained provider usage/request evidence and validated costs; no configured key exists in this local environment.
 4. Prove background dispatch and worker termination recovery. Generation currently remains an awaited request; leases plus fail-closed reservations are not a durable background worker. Unknown provider attempts require reconciliation, not blind retry.
@@ -70,3 +70,11 @@ A provider-use request covers comparison of a specific saved brief/evidence snap
 ## Remote candidate checks
 
 Draft PR #13 (`2ca46ff`) passed GitHub CI (including PostgreSQL 18 integration checks) and Vercel preview deployment. These checks do not establish production migration readiness or signed-in acceptance.
+
+## Signed-in preview findings and fixes
+
+The user created a test account directly in the isolated preview. Onboarding initially failed issuer validation: Managed Neon Auth uses the service origin as JWT issuer, while our fallback expected the full `/neondb/auth` URL. Corrected the fallback to the configured service origin; an explicit `NEON_AUTH_ISSUER` still takes precedence. Added signed-token regression coverage for origin matching, rejection of the full-path issuer by default, and explicit issuer overrides. Reference: https://github.com/neondatabase/website/blob/main/content/docs/compute/functions/authentication.md .
+
+A second browser failure occurred because shared mission UI helpers imported `node:crypto`. Moved scope hashing into `scope.server.ts`; browser helpers no longer depend on Node crypto. Verified authenticated founder onboarding, workspace creation, saved mission navigation/reload and synthetic evidence persistence against the isolated Neon branch. Model execution remained disabled. Full tests: 192 passed, 16 skipped; TypeScript and production build passed. Live-provider execution and operational release gates remain pending.
+
+Browser acceptance also verified the provider-disabled comparison records zero usage, a version-bound owner decision, saved measurement plan, decision/experiment pack preparation and a successful download. All fixture copy explicitly identifies synthetic evidence and unmeasured outcomes. Lint passed with nine existing warnings.

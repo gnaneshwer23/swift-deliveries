@@ -1,5 +1,3 @@
-import { createHash } from "node:crypto";
-
 /** Exact record stored when no model provider is configured. */
 export const NOT_RUN_LABEL = "not run — provider not configured";
 
@@ -207,22 +205,6 @@ export const PROGRESS_STEPS = [
 
 export function spendKey(scope: string): string {
   return `alternatives:${scope}`;
-}
-
-export function scopeHash(brief: Brief, evidence: EvidenceItem[]): string {
-  const payload = JSON.stringify({
-    question: brief.question,
-    audience: brief.audience,
-    outcome: brief.outcome,
-    constraints: brief.constraints,
-    evidence: evidence.map((item) => ({
-      id: item.id,
-      statement: item.statement,
-      source: item.source,
-      classification: item.classification,
-    })),
-  });
-  return createHash("sha256").update(payload).digest("hex");
 }
 
 export function workspaceAllowsSpend(input: {

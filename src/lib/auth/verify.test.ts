@@ -5,8 +5,8 @@ import { verifyAuthToken } from "./verify.server";
 describe("Neon identity boundary", () => {
   let pair: Awaited<ReturnType<typeof generateKeyPair>>;
   let keys: ReturnType<typeof createLocalJWKSet>;
-  const issuer = "https://auth.example.test/neondb/auth";
-  const env = { NEON_AUTH_URL: issuer, NEON_AUTH_AUDIENCE: "deliverx" };
+  const issuer = "https://auth.example.test";
+  const env = { NEON_AUTH_URL: `${issuer}/neondb/auth`, NEON_AUTH_AUDIENCE: "deliverx" };
   beforeAll(async () => {
     pair = await generateKeyPair("RS256");
     keys = createLocalJWKSet({
@@ -28,7 +28,22 @@ describe("Neon identity boundary", () => {
   it("accepts a signed, scoped, expiring token", async () => {
     expect((await verifyAuthToken(await token(), keys, env)).id).toBe("owner-1");
   });
+  it("honours an explicitly configured issuer including its path", async () => {
+    const customIssuer = `${issuer}/custom`;
+    expect(
+      (
+        await verifyAuthToken(await token({ iss: customIssuer }), keys, {
+          ...env,
+          NEON_AUTH_ISSUER: customIssuer,
+        })
+      ).id,
+    ).toBe("owner-1");
+    await expect(
+      verifyAuthToken(await token(), keys, { ...env, NEON_AUTH_ISSUER: customIssuer }),
+    ).rejects.toThrow();
+  });
   it.each([
+    { iss: `${issuer}/neondb/auth` },
     { iss: "https://another-tenant.test" },
     { aud: "another-app" },
     { exp: 1 },

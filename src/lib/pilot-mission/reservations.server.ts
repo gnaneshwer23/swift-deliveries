@@ -1,6 +1,7 @@
+import { scopeHash } from "./scope.server";
 import { neonTransaction, type DbTransaction } from "@/lib/db/neon.server";
 import { UsageLimitError } from "./service";
-import { scopeHash, spendKey, type GenerationResult, type SupervisedMission } from "./types";
+import { spendKey, type GenerationResult, type SupervisedMission } from "./types";
 
 export class ComparisonReconciliationRequired extends Error {
   constructor() {
