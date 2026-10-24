@@ -38,9 +38,9 @@ function Resources() {
             Write your brief
           </a>
           <p className="journey-status">
-            These public tools need no account. Your entered brief is not sent to a server or saved
-            when you leave. Download it before navigating away. This does not submit a pilot request
-            or activate paid access.
+            These tools need no account. The brief stays in this browser so a pilot enquiry on this
+            device can use it. It is not put in the address, and nothing is submitted until you send
+            the enquiry. Downloading does not activate paid access.
           </p>
         </div>
       </section>
@@ -134,19 +134,19 @@ function Resources() {
             </li>
             <li>
               <span>Download</span>
-              <strong>Keep your brief; it does not transfer automatically.</strong>
+              <strong>Keep a copy. This browser can carry it into the enquiry.</strong>
             </li>
             <li>
               <span>Compare</span>
               <strong>Explore a paid pilot offer for the bounded work.</strong>
             </li>
           </ol>
-          <Link to="/pricing" className="dxl-btn dxl-btn-primary">
-            Compare pilot offers
+          <Link to="/pilot" search={{ plan: "founder" }} className="dxl-btn dxl-btn-primary">
+            Request a pilot
           </Link>
           <p className="psi-fine-print">
-            Pilot availability and billing must be agreed separately. The current preparation page
-            does not submit an enquiry.
+            The enquiry stores the request and gives you a reference. It does not take payment or
+            start a paid pilot. Availability and billing are agreed separately.
           </p>
         </div>
       </section>

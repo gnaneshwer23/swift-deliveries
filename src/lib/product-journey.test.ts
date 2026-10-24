@@ -13,12 +13,12 @@ describe("product entry journey", () => {
   ])("rejects unsafe or retired destinations: %s", (value) => {
     expect(safeProductRedirect(value)).toBe("/command");
   });
-  it("preserves a specific product destination and its input", () => {
-    expect(safeProductRedirect("/command?intent=improve&prompt=checkout#brief")).toBe(
-      "/command?intent=improve&prompt=checkout#brief",
+  it("keeps the workspace destination and drops private brief text from the address", () => {
+    expect(safeProductRedirect("/command?intent=improve&prompt=checkout&idea=secret#brief")).toBe(
+      "/command?intent=improve#brief",
     );
   });
-  it("sends improvements to the mission composer with the user's exact brief", () => {
+  it("sends improvements to the mission composer without putting the brief in the URL", () => {
     const action = firstActionFor({
       goal: "Improve an existing product",
       firstIdea: "Reduce drop-off & keep approvals",
@@ -26,15 +26,23 @@ describe("product entry journey", () => {
     const url = new URL(action.href, "https://deliverx.dev");
     expect(url.pathname).toBe("/command");
     expect(url.searchParams.get("intent")).toBe("improve");
-    expect(url.searchParams.get("prompt")).toBe("Reduce drop-off & keep approvals");
+    expect(url.searchParams.get("prompt")).toBeNull();
+    expect(action.href).not.toContain("Reduce drop-off");
   });
-  it.each(["Build an MVP", "Learn by building a product", "Validate a new idea"])(
-    "carries the idea into programme intake for %s",
-    (goal) => {
+  it.each([
+    ["Build an MVP", "prototype"],
+    ["Learn by building a product", "investigate"],
+    ["Validate a new idea", "investigate"],
+  ] as const)(
+    "opens the workspace intent without copying the idea into the URL for %s",
+    (goal, intent) => {
       const action = firstActionFor({ goal, firstIdea: "A tool for students" });
       const url = new URL(action.href, "https://deliverx.dev");
-      expect(url.pathname).toBe("/command/programmes");
-      expect(url.searchParams.get("idea")).toBe("A tool for students");
+      expect(url.pathname).toBe("/command");
+      expect(url.searchParams.get("intent")).toBe(intent);
+      expect(url.searchParams.get("idea")).toBeNull();
+      expect(url.searchParams.get("prompt")).toBeNull();
+      expect(action.href).not.toContain("students");
     },
   );
 });

@@ -402,9 +402,51 @@
   font-size: 13px;
   line-height: 1.6;
 }
-.psi-field textarea:focus {
+.psi-field textarea:focus,
+.psi-text-input:focus {
   outline: 3px solid #3e63dd24;
   border-color: #6388d3;
+}
+.psi-text-input {
+  width: 100%;
+  border: 1px solid #d5dce7;
+  border-radius: 9px;
+  padding: 11px 12px;
+  background: #fbfcfe;
+  color: #101828;
+  font: inherit;
+  font-size: 13px;
+}
+.psi-honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.psi-consent {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 8px 0 16px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.psi-consent input {
+  margin-top: 3px;
+}
+.psi-form-error {
+  color: #9f1239;
+  background: #fff1f2;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+.psi-enquiry-result {
+  background: #fff;
+  border: 1px solid #e4e7ec;
+  border-radius: 16px;
+  padding: 28px;
 }
 .psi-builder-actions .dxl-btn:disabled {
   opacity: 0.45;

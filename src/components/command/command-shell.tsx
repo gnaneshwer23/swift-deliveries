@@ -1,7 +1,17 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { FolderKanban, LayoutDashboard, Menu, Rocket, Shield, UsersRound } from "lucide-react";
+import {
+  FolderKanban,
+  Inbox,
+  LayoutDashboard,
+  Menu,
+  Rocket,
+  Shield,
+  UsersRound,
+} from "lucide-react";
+import { getPilotOperatorAccess } from "@/lib/pilot/enquiry.functions";
 import { useSignOut } from "@/hooks/use-sign-out";
 import { useSession } from "@/hooks/use-session";
 import { BrandLogo } from "@/components/brand-logo";
@@ -28,6 +38,11 @@ export function CommandShell({
   const signOut = useSignOut();
   const { user } = useSession();
   const [open, setOpen] = useState(false);
+  const operatorAccess = useQuery({
+    queryKey: ["pilot", "operator-access"],
+    queryFn: () => getPilotOperatorAccess(),
+    staleTime: 60_000,
+  });
 
   const displayName =
     (user?.user_metadata?.["full_name"] as string | undefined) ?? user?.email ?? "Operator";
@@ -59,7 +74,7 @@ export function CommandShell({
             <BrandLogo to="/command" inverse className="brand-logo sidebar-logo" />
           </div>
           <div className="sidebar-section">
-            <div className="sidebar-label">Supervised workforce</div>
+            <div className="sidebar-label">Product workspace</div>
             {NAV.map((item) => {
               const active =
                 item.to === "/command" ? pathname === "/command" : pathname.startsWith(item.to);
@@ -76,6 +91,16 @@ export function CommandShell({
                 </Link>
               );
             })}
+            {operatorAccess.data?.authorised ? (
+              <Link
+                to="/command/pilot-requests"
+                onClick={() => setOpen(false)}
+                className={`sidebar-link${pathname.startsWith("/command/pilot-requests") ? " active" : ""}`}
+              >
+                <Inbox />
+                Pilot requests
+              </Link>
+            ) : null}
           </div>
           {usage ? (
             <div className="cc-usage-rail">

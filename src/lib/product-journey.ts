@@ -8,49 +8,53 @@ export function safeProductRedirect(raw: unknown): string {
     const url = new URL(raw, "https://deliverx.invalid");
     if (url.origin !== "https://deliverx.invalid" || !/^\/command(?:\/|$)/.test(url.pathname))
       return "/command";
-    return `${url.pathname}${url.search}${url.hash}`;
+    url.searchParams.delete("prompt");
+    url.searchParams.delete("idea");
+    const search = url.searchParams.toString();
+    return `${url.pathname}${search ? `?${search}` : ""}${url.hash}`;
   } catch {
     return "/command";
   }
 }
 
 export function firstActionFor(profile: Pick<DxProfile, "goal" | "firstIdea">) {
+  // The product question stays on the saved profile. Only the public intent is placed in the URL.
   if (profile.goal === "Improve an existing product") {
-    const search = new URLSearchParams({ intent: "improve" });
-    if (profile.firstIdea) search.set("prompt", profile.firstIdea);
     return {
-      href: `/command?${search}`,
-      label: "Plan my improvement",
-      reason: "Start with a focused diagnosis and a plan you can review before work begins.",
+      href: "/command?intent=improve#mission-composer",
+      label: "Investigate the question",
+      reason:
+        "Separate supplied evidence from assumptions, compare options, and approve the decision before any change.",
     };
   }
-  const params = new URLSearchParams();
-  if (profile.firstIdea) params.set("idea", profile.firstIdea);
-  const href = `/command/programmes${params.size ? `?${params}` : ""}`;
-  if (profile.goal === "Validate a new idea")
+  if (profile.goal === "Build an MVP") {
     return {
-      href,
-      label: "Validate my idea",
+      href: "/command?intent=prototype#mission-composer",
+      label: "Shape reviewable work",
       reason:
-        "Start with discovery, compare your options and review the evidence before committing to a build.",
+        "Turn the question into a specification you can inspect. A prototype is an agreed extension, not a deployed product.",
     };
-  if (profile.goal === "Learn by building a product")
+  }
+  if (profile.goal === "Learn by building a product") {
     return {
-      href,
-      label: "Start my learning project",
+      href: "/command?intent=investigate#mission-composer",
+      label: "Start from the question",
       reason:
-        "Bring a product idea, inspect the team's work and practise making the decisions at each approval gate.",
+        "Use the same path as a founder: evidence, a human decision and reviewable work. Learning does not lower that standard.",
     };
-  if (profile.goal === "Build an MVP")
+  }
+  if (profile.goal === "Validate a new idea") {
     return {
-      href,
-      label: "Plan my MVP",
+      href: "/command?intent=investigate#mission-composer",
+      label: "Compare the evidence",
       reason:
-        "Shape your idea into a product brief, roadmap and reviewable prototype, with you at each gate.",
+        "Bring the product question, compare options against supplied evidence, and decide what happens next.",
     };
+  }
   return {
-    href,
-    label: "Explore a programme",
-    reason: "Try your own idea or load the example to explore how the product team works.",
+    href: "/command?intent=investigate#mission-composer",
+    label: "Open the product question",
+    reason:
+      "Start with one product question. Evidence, your decision and reviewable work stay together.",
   };
 }

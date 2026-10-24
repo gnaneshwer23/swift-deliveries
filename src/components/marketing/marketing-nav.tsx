@@ -53,8 +53,8 @@ export function MarketingNav() {
             <Link to="/login" className="dxn-signin hidden sm:inline-flex">
               Sign in
             </Link>
-            <Link to="/resources" hash="brief-builder" className="dxn-cta">
-              Prepare your brief
+            <Link to="/pilot" search={{ plan: "founder" }} className="dxn-cta">
+              Request a pilot
             </Link>
           </>
         )}
@@ -95,12 +95,12 @@ export function MarketingNav() {
                   Sign in
                 </Link>
                 <Link
-                  to="/resources"
-                  hash="brief-builder"
+                  to="/pilot"
+                  search={{ plan: "founder" }}
                   onClick={() => setOpen(false)}
                   className="dxn-cta justify-center"
                 >
-                  Prepare your brief
+                  Request a pilot
                 </Link>
               </div>
             )}

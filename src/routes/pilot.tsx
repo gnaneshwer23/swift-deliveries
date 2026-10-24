@@ -1,63 +1,72 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { pageHead } from "@/components/marketing/page-head";
-const names = {
-  builder: "Builder · £29/month",
-  founder: "Founder · £99/month",
-  studio: "Studio · £299/month",
-};
+import { PilotEnquiryForm } from "@/components/marketing/pilot-enquiry-form";
+import { PILOT_PLAN_LABELS, parsePilotPlan } from "@/lib/pilot/model";
+
 export const Route = createFileRoute("/pilot")({
-  validateSearch: (s: Record<string, unknown>) => ({
-    plan:
-      typeof s["plan"] === "string" && s["plan"] in names
-        ? (s["plan"] as keyof typeof names)
-        : ("founder" as const),
+  validateSearch: (search: Record<string, unknown>) => ({
+    plan: parsePilotPlan(search["plan"]),
   }),
   head: () =>
     pageHead(
       "/pilot",
-      "Pilot access — DeliverX",
-      "Choose a paid pilot and prepare your product brief before onboarding.",
+      "Request a pilot — DeliverX",
+      "Submit a DeliverX pilot enquiry with your product question. Account creation does not activate a paid pilot.",
     ),
   component: Pilot,
 });
+
 function Pilot() {
   const { plan } = Route.useSearch();
   return (
     <MarketingLayout>
       <section className="psi-page-hero">
         <div className="dxl-wrap">
-          <p className="dxl-eyebrow">Paid pilot · Preparation only</p>
+          <p className="dxl-eyebrow">Pilot enquiry</p>
           <h1 className="dxl-h1">
-            Start with
+            Request a review
             <br />
-            <span className="dxl-grad">a clear scope.</span>
+            <span className="dxl-grad">of one question.</span>
           </h1>
           <p className="psi-lead">
-            Selected offer: <strong>{names[plan]}</strong>
-          </p>
-          <ol className="psi-check-list">
-            <li>Prepare and download your product brief; it will not transfer automatically.</li>
-            <li>
-              Explore account setup separately; creating an account does not activate this offer.
-            </li>
-            <li>Agree pilot availability, scope and billing before paid work begins.</li>
-          </ol>
-          <p className="psi-fine-print">
-            This page does not submit an access request or charge you. Automated pilot approval and
-            billing are not live. Your account does not establish a paid subscription.
+            Selected offer: <strong>{PILOT_PLAN_LABELS[plan]}</strong>. This is a proposed paid
+            pilot. Sending this form stores the request. It does not take payment or start the
+            pilot.
           </p>
           <div className="psi-actions">
-            <Link to="/resources" hash="brief-builder" className="dxl-btn dxl-btn-primary">
-              Prepare my brief
-            </Link>
-            <Link to="/signup" className="dxl-btn dxl-btn-ghost">
-              Create workspace account
-            </Link>
-            <Link to="/pricing" className="dxl-link">
-              Compare plans
+            {(["builder", "founder", "studio"] as const).map((item) => (
+              <Link
+                key={item}
+                to="/pilot"
+                search={{ plan: item }}
+                className={item === plan ? "dxl-btn dxl-btn-primary" : "dxl-btn dxl-btn-ghost"}
+                aria-current={item === plan ? "page" : undefined}
+              >
+                {PILOT_PLAN_LABELS[item].split(" · ")[0]}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+      <section className="psi-section">
+        <div className="dxl-wrap psi-builder-layout">
+          <div className="psi-section-copy">
+            <h2 className="dxl-h2">What happens after you submit</h2>
+            <ol className="psi-check-list">
+              <li>You receive a request reference on this page if the save succeeds.</li>
+              <li>An authorised operator can read the request and record follow-up.</li>
+              <li>A paid pilot starts only after scope and access are agreed.</li>
+            </ol>
+            <p className="psi-fine-print">
+              There is no promised reply window. If saving fails, the page says so and the request
+              is not confirmed.
+            </p>
+            <Link to="/resources" hash="brief-builder" className="dxl-link">
+              Prepare the brief first
             </Link>
           </div>
+          <PilotEnquiryForm plan={plan} />
         </div>
       </section>
     </MarketingLayout>

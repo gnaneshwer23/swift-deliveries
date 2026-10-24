@@ -68,9 +68,9 @@ function Pricing() {
             capabilities and billing must be agreed before paid work starts.
           </p>
           <p className="psi-fine-print">
-            Pilot offers, not active subscriptions. Enquiry submission, self-service checkout and
-            automatic plan enforcement are not live. These buttons open preparation, not a purchase
-            or submitted request. Prices exclude applicable taxes. No annual commitment.
+            These are proposed paid pilot offers, not active subscriptions. Requesting a pilot
+            stores an enquiry. It does not take payment or enforce quotas. Checkout is not live.
+            Prices exclude applicable taxes. No annual commitment.
           </p>
           <div className="psi-price-grid">
             {PLANS.map((plan) => (
@@ -85,7 +85,7 @@ function Pricing() {
                   <small> / month</small>
                 </div>
                 <Link to="/pilot" search={{ plan: plan.id }} className="dxl-btn dxl-btn-primary">
-                  Prepare for {plan.name}
+                  Request {plan.name}
                 </Link>
                 <ul>
                   {plan.features.map((f) => (

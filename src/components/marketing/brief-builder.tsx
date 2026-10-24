@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { ArrowDownToLine, Check, RotateCcw } from "lucide-react";
 import {
   briefMarkdown,
@@ -7,6 +8,7 @@ import {
   EXAMPLE_BRIEF,
   type ProductBrief,
 } from "@/lib/marketing/product-resources";
+import { clearPilotBrief, loadPilotBrief, savePilotBrief } from "@/lib/pilot/storage";
 
 const FIELDS: {
   key: keyof ProductBrief;
@@ -56,6 +58,15 @@ export function BriefBuilder({
 }) {
   const [brief, setBrief] = useState<ProductBrief>(initialBrief);
   const [downloaded, setDownloaded] = useState(false);
+  useEffect(() => {
+    const initialHasContent = Object.values(initialBrief).some((value) => value.trim().length > 0);
+    if (initialHasContent) {
+      savePilotBrief(initialBrief);
+      return;
+    }
+    const stored = loadPilotBrief();
+    if (stored && Object.values(stored).some((value) => value.trim())) setBrief(stored);
+  }, [initialBrief]);
   const ready = [brief.audience, brief.problem, brief.objective].every(
     (value) => value.trim().length > 0,
   );
@@ -68,6 +79,7 @@ export function BriefBuilder({
           className="psi-text-button"
           onClick={() => {
             setBrief(EXAMPLE_BRIEF);
+            savePilotBrief(EXAMPLE_BRIEF);
             setDownloaded(false);
           }}
         >
@@ -97,15 +109,19 @@ export function BriefBuilder({
               maxLength={2000}
               required={field.required}
               onChange={(event) => {
-                setBrief((previous) => ({ ...previous, [field.key]: event.target.value }));
+                setBrief((previous) => {
+                  const next = { ...previous, [field.key]: event.target.value };
+                  savePilotBrief(next);
+                  return next;
+                });
                 setDownloaded(false);
               }}
             />
           </div>
         ))}
         <p className="psi-fine-print">
-          Required: audience, problem and outcome. Your answers stay in this page; they are not sent
-          to a server or saved when you leave.
+          Required: audience, problem and outcome. Answers stay in this browser so the pilot enquiry
+          can use them. They are not placed in the URL, and downloading does not submit a request.
         </p>
         <div className="psi-builder-actions">
           <button type="submit" className="dxl-btn dxl-btn-primary" disabled={!ready}>
@@ -116,11 +132,15 @@ export function BriefBuilder({
             className="psi-text-button"
             onClick={() => {
               setBrief(EMPTY_BRIEF);
+              clearPilotBrief();
               setDownloaded(false);
             }}
           >
             <RotateCcw size={14} /> Clear
           </button>
+          <Link to="/pilot" search={{ plan: "founder" }} className="dxl-btn dxl-btn-ghost">
+            Use this brief in a pilot enquiry
+          </Link>
         </div>
         <p className="psi-download-status" role="status">
           {downloaded ? (

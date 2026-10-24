@@ -29,11 +29,11 @@ Every diagram must make direction and handoff meaning understandable without mot
 
 The directory defaults to role foundations. Registry lifecycle status is not execution certification; available entries have deterministic-stub limitations. Counts derive from the registry; 12 browsing groups do not mean 12 operational teams. Live provider execution, authenticated isolation, durable runtime and the complete outcome loop require later release verification.
 
-Builder £29, Founder £99 and Studio £299 monthly are proposed paid pilot offers. Quotas/allowances are not active enforced entitlements. Preparation buttons do not submit requests or take payment. Account creation does not activate paid access. Pilot request handling, saved brief/plan continuity, auth verification and billing belong to later phases. Do not claim free paid-pilot access. No price/market or margin validation is established by this specification.
+Builder £29, Founder £99 and Studio £299 monthly are proposed paid pilot offers. Quotas/allowances are not active enforced entitlements. The pilot enquiry stores a request and returns a reference. It does not take payment or activate the offer. Account creation is free and does not activate paid access. Auth verification, billing and runtime proof remain later phases. Do not claim that a paid pilot is free. No price/market or margin validation is established by this specification.
 
 ## Brief starters and public data handling
 
-/resources?useCase=founder|team|student opens the corresponding editable hypothetical starter. Invalid values fall back to a blank brief. These public identifiers contain no user-entered brief text. Entered fields remain page-local, are not submitted, and are lost on navigation unless downloaded. Switching starters replaces the page-local draft; the page explicitly advises downloading before navigation. Phase 3 will add reviewed persistence/continuity, not silent URL transport of private content.
+/resources?useCase=founder|team|student opens the corresponding editable hypothetical starter. Invalid values fall back to a blank brief. These public identifiers contain no user-entered brief text. Entered fields are kept in this browser and copied into a pilot enquiry only when that form is submitted. They are not placed in the URL. Switching starters replaces the browser draft. Downloading does not submit the enquiry.
 
 ## Acceptance
 

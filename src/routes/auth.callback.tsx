@@ -40,7 +40,7 @@ function AuthCallbackPage() {
           if (active) setFailed(true);
           return;
         }
-        const session = await waitForSession();
+        const session = await waitForSession(4000);
         if (!active) return;
         if (!session) {
           setFailed(true);

@@ -1,5 +1,7 @@
 # DeliverX PSI roadmap
 
+The phase plan for the current product is [docs/roadmap.md](docs/roadmap.md). The checklist below is the earlier foundation backlog.
+
 Product direction: an AI product company, with learning through participation. Preserve the homepage visual foundation.
 
 - [x] Integrate existing Neon migration and direct OpenAI provider on the foundation branch.

@@ -9,6 +9,8 @@ import { BrandLogo } from "@/components/brand-logo";
 import { GoogleButton } from "@/components/auth/google-button";
 
 import { safeProductRedirect as sanitizeRedirect } from "@/lib/product-journey";
+import { PILOT_PLAN_LABELS } from "@/lib/pilot/model";
+import { loadPilotClaim, loadPilotPlan } from "@/lib/pilot/storage";
 
 export const Route = createFileRoute("/signup")({
   validateSearch: (search: Record<string, unknown>): { redirect?: string | undefined } => ({
@@ -21,13 +23,13 @@ export const Route = createFileRoute("/signup")({
       {
         name: "description",
         content:
-          "Create your DeliverX account and turn your idea into a product with a 150-role AI workforce.",
+          "Create a free DeliverX account. This does not activate a paid pilot or start a subscription.",
       },
       { property: "og:title", content: "Create your account — DeliverX" },
       {
         property: "og:description",
         content:
-          "Create your DeliverX account and turn your idea into a product with a 150-role AI workforce.",
+          "Create a free DeliverX account. This does not activate a paid pilot or start a subscription.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -48,8 +50,18 @@ function SignupPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [googleEnabled, setGoogleEnabled] = useState(false);
+  const [pilotNote, setPilotNote] = useState<string | null>(null);
 
   useEffect(() => {
+    const plan = loadPilotPlan();
+    const claim = loadPilotClaim();
+    if (plan || claim) {
+      setPilotNote(
+        `${claim ? `Request ${claim.reference} is saved on this device. ` : ""}${
+          plan ? `Chosen offer: ${PILOT_PLAN_LABELS[plan]}. ` : ""
+        }Creating an account does not activate a paid pilot.`,
+      );
+    }
     let active = true;
     void isGoogleAuthEnabled().then((enabled) => {
       if (active) setGoogleEnabled(enabled);
@@ -109,8 +121,9 @@ function SignupPage() {
             Create your account
           </h1>
           <p className="body" style={{ marginTop: 6, marginBottom: 24 }}>
-            Create an account. Paid pilot access is agreed separately.
+            Create a free account. This does not activate a paid pilot.
           </p>
+          {pilotNote ? <p className="body">{pilotNote}</p> : null}
 
           {googleEnabled && (
             <>

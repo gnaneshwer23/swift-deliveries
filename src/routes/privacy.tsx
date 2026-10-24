@@ -30,7 +30,7 @@ function PrivacyPage() {
             </p>
             <div className="mt-10 space-y-6 text-sm leading-relaxed text-[var(--mkt-text2)]">
               <p>
-                <strong>Last updated:</strong> 22 October 2026
+                <strong>Last updated:</strong> 24 October 2026
               </p>
               <section>
                 <h2 className="text-base font-semibold text-[var(--mkt-text1)]">Who we are</h2>
@@ -51,8 +51,10 @@ function PrivacyPage() {
                 <p className="mt-2">
                   We store account details, profile and organisation information, the work and
                   evidence you create, coaching or attestation activity, consent choices, and
-                  subscription status. Payment card details are handled by our payment provider and
-                  are not stored by DeliverX.
+                  subscription status. A pilot enquiry also stores the name, email, optional
+                  organisation, chosen offer and product brief you submit, plus the follow-up status
+                  an authorised operator records. Payment card details are handled by our payment
+                  provider and are not stored by DeliverX.
                 </p>
               </section>
               <section>

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { auth, type AppUser as User } from "@/lib/auth/client";
-import { saveMyProfile } from "@/lib/profile.functions";
+import { getMyProfileDraft, saveMyProfile, saveMyProfileDraft } from "@/lib/profile.functions";
 import { myProfileQuery } from "@/lib/profile-queries";
 import { BrandLogo } from "@/components/brand-logo";
 import { DX_GOALS, DX_ROLES, DX_TEAM_SIZES, type DxProfile } from "@/lib/dx-profile";
@@ -19,9 +19,13 @@ export const Route = createFileRoute("/_authenticated/onboarding")({
   component: Onboarding,
 });
 
+import { claimStoredPilotRequest } from "@/lib/pilot/continuity";
+import { getMyPilotContinuity } from "@/lib/pilot/enquiry.functions";
+import { PILOT_PLAN_LABELS, type PilotPlan } from "@/lib/pilot/model";
+import { loadPilotBrief, loadPilotClaim, loadPilotPlan } from "@/lib/pilot/storage";
 import { firstActionFor, safeProductRedirect } from "@/lib/product-journey";
 
-const STEPS = ["About you", "Your goal", "First idea"] as const;
+const STEPS = ["About you", "Your goal", "Question"] as const;
 
 function Chips({
   options,
@@ -77,6 +81,8 @@ export function OnboardingForm({
   const [firstIdea, setFirstIdea] = useState(existing?.firstIdea ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [chosenPlan, setChosenPlan] = useState<PilotPlan | null>(null);
+  const [requestReference, setRequestReference] = useState<string | null>(null);
 
   const [draftReady, setDraftReady] = useState(false);
   const draftKey = `dx-product-setup:${user.id}`;
@@ -94,11 +100,48 @@ export function OnboardingForm({
           setGoal(draft["goal"] as string);
         if (typeof draft["firstIdea"] === "string") setFirstIdea(draft["firstIdea"].slice(0, 1000));
       }
+      const storedBrief = loadPilotBrief();
+      const storedPlan = loadPilotPlan();
+      const storedClaim = loadPilotClaim();
+      if (storedPlan) setChosenPlan(storedPlan);
+      if (storedClaim) setRequestReference(storedClaim.reference);
+      if (storedBrief?.problem.trim()) {
+        setFirstIdea((current) => current || storedBrief.problem.slice(0, 1000));
+      }
     } catch {
       /* Setup remains usable without browser storage. */
     }
     setDraftReady(true);
   }, [draftKey, existing]);
+  useEffect(() => {
+    let active = true;
+    void (async () => {
+      await claimStoredPilotRequest();
+      const saved = await getMyPilotContinuity().catch(() => null);
+      if (!active) return;
+      if (saved && !existing) {
+        setChosenPlan(saved.plan);
+        setRequestReference(saved.reference);
+        setFirstIdea((current) => current || saved.brief.problem.slice(0, 1000));
+      }
+      const draft = await getMyProfileDraft().catch(() => null);
+      if (!active || !draft || existing || draft.completedAt) return;
+      setName((current) => current || draft.fullName);
+      if (DX_ROLES.includes(draft.role as (typeof DX_ROLES)[number])) {
+        setRole((current) => current || draft.role);
+      }
+      if (DX_TEAM_SIZES.includes(draft.teamSize as (typeof DX_TEAM_SIZES)[number])) {
+        setTeamSize((current) => current || draft.teamSize);
+      }
+      if (DX_GOALS.includes(draft.goal as (typeof DX_GOALS)[number])) {
+        setGoal((current) => current || draft.goal);
+      }
+      setFirstIdea((current) => current || draft.firstIdea.slice(0, 1000));
+    })();
+    return () => {
+      active = false;
+    };
+  }, [existing]);
   useEffect(() => {
     if (!draftReady || existing) return;
     try {
@@ -111,6 +154,22 @@ export function OnboardingForm({
 
   const canNext =
     step === 0 ? name.trim().length >= 2 && !!role : step === 1 ? !!teamSize && !!goal : true;
+
+  async function persistDraft() {
+    try {
+      await saveMyProfileDraft({
+        data: {
+          fullName: name.trim().slice(0, 80),
+          role,
+          teamSize,
+          goal,
+          firstIdea: firstIdea.trim().slice(0, 1000),
+        },
+      });
+    } catch {
+      /* The browser draft remains if the account draft cannot be saved. */
+    }
+  }
 
   async function finish() {
     setSaving(true);
@@ -171,7 +230,7 @@ export function OnboardingForm({
           <>
             <h1 className="ob-h1">Welcome to DeliverX.</h1>
             <p className="ob-sub">
-              Your product team starts with you. Tell us where you're coming from.
+              Tell us who is asking the product question. A paid pilot stays a separate agreement.
             </p>
             <label className="ob-label" htmlFor="ob-name">
               Your name
@@ -191,8 +250,11 @@ export function OnboardingForm({
 
         {step === 1 ? (
           <>
-            <h1 className="ob-h1">What are you here to do?</h1>
-            <p className="ob-sub">We'll tailor your Command Centre around it.</p>
+            <h1 className="ob-h1">What question are you bringing?</h1>
+            <p className="ob-sub">
+              The workspace starts from a product question, then evidence, your decision and
+              reviewable work.
+            </p>
             <p className="ob-label">Team size</p>
             <Chips
               options={DX_TEAM_SIZES}
@@ -207,20 +269,27 @@ export function OnboardingForm({
 
         {step === 2 ? (
           <>
-            <h1 className="ob-h1">What would you like to build?</h1>
+            <h1 className="ob-h1">What product question should we investigate?</h1>
             <p className="ob-sub">
-              Describe an idea or an existing product problem. We'll carry it into your first brief.
-              You can also explore an example before choosing.
+              This stays on your account. It is not added to the address. You can change it before
+              any mission starts.
             </p>
+            {chosenPlan ? (
+              <p className="ob-hint">
+                Chosen offer: {PILOT_PLAN_LABELS[chosenPlan]}
+                {requestReference ? ` · Request ${requestReference}` : ""}. Creating this account
+                does not activate a paid pilot.
+              </p>
+            ) : null}
             <label className="ob-label" htmlFor="ob-idea">
-              Your idea (optional)
+              Product question (optional)
             </label>
             <textarea
               id="ob-idea"
               className="ob-input"
               rows={4}
               maxLength={1000}
-              placeholder="e.g. A booking app for independent personal trainers that handles payments and reminders."
+              placeholder="Which onboarding change should we investigate first?"
               value={firstIdea}
               onChange={(e) => setFirstIdea(e.target.value)}
             />
@@ -257,7 +326,10 @@ export function OnboardingForm({
               type="button"
               className="ob-btn ob-btn-primary"
               disabled={!canNext}
-              onClick={() => setStep((s) => s + 1)}
+              onClick={() => {
+                void persistDraft();
+                setStep((s) => s + 1);
+              }}
             >
               Continue <ArrowRight className="size-4" />
             </button>

@@ -15,6 +15,65 @@ function mapProfile(row: any): DxProfile | null {
   };
 }
 
+export type DxProfileDraft = Omit<DxProfile, "completedAt"> & { completedAt: string | null };
+
+function mapDraft(row: any): DxProfileDraft | null {
+  if (!row) return null;
+  return {
+    fullName: row.full_name ?? "",
+    role: row.role ?? "",
+    teamSize: row.team_size ?? "",
+    goal: row.goal ?? "",
+    firstIdea: row.first_idea ?? "",
+    completedAt: row.completed_at ?? null,
+  };
+}
+
+/** Incomplete setup, so a refresh does not ask for the same answers again. */
+export const getMyProfileDraft = createServerFn({ method: "GET" })
+  .middleware([requireAuth])
+  .handler(async ({ context }): Promise<DxProfileDraft | null> => {
+    const res = await context.db
+      .from("dx_profiles")
+      .select("*")
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    if (res.error) throw new Error(res.error.message);
+    return mapDraft(res.data);
+  });
+
+const draftSchema = z.object({
+  fullName: z.string().trim().max(80).default(""),
+  role: z.string().trim().max(80).default(""),
+  teamSize: z.string().trim().max(40).default(""),
+  goal: z.string().trim().max(80).default(""),
+  firstIdea: z.string().trim().max(1000).default(""),
+});
+
+export const saveMyProfileDraft = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) => draftSchema.parse(data))
+  .handler(async ({ context, data }): Promise<DxProfileDraft> => {
+    const res = await context.db
+      .from("dx_profiles")
+      .upsert(
+        {
+          user_id: context.userId,
+          full_name: data.fullName,
+          role: data.role,
+          team_size: data.teamSize,
+          goal: data.goal,
+          first_idea: data.firstIdea,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id" },
+      )
+      .select("*")
+      .single();
+    if (res.error) throw new Error(res.error.message);
+    return mapDraft(res.data)!;
+  });
+
 /** The signed-in user's onboarding profile, or null when setup is unfinished. */
 export const getMyProfile = createServerFn({ method: "GET" })
   .middleware([requireAuth])

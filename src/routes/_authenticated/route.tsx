@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { PilotContinuityClaim } from "@/components/pilot-continuity-claim";
 import { waitForSession } from "@/lib/auth-session";
 import { myProfileQuery } from "@/lib/profile-queries";
 
@@ -17,5 +18,10 @@ export const Route = createFileRoute("/_authenticated")({
     }
     return { user, profile };
   },
-  component: () => <Outlet />,
+  component: () => (
+    <>
+      <PilotContinuityClaim />
+      <Outlet />
+    </>
+  ),
 });

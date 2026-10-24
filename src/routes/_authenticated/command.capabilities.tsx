@@ -17,7 +17,7 @@ export const Route = createFileRoute("/_authenticated/command/capabilities")({
       {
         name: "description",
         content:
-          "Browse the 150-role DeliverX workforce catalogue across 15 departments. Only Available Wave 1 capabilities are operational.",
+          "Browse specialist roles. Only roles marked available can run. The rest of the catalogue is planned.",
       },
     ],
   }),

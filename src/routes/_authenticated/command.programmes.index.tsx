@@ -1,23 +1,22 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Rocket } from "lucide-react";
 import { CommandShell } from "@/components/command/command-shell";
+import { myProfileQuery } from "@/lib/profile-queries";
 import { commandCentreBootstrapQuery } from "@/lib/workforce-queries";
 import { programmeFeaturesQuery, programmesListQuery } from "@/lib/programme-queries";
 import { createProgrammeRun } from "@/lib/programme.functions";
 
 export const Route = createFileRoute("/_authenticated/command/programmes/")({
-  validateSearch: (search: Record<string, unknown>): { idea?: string | undefined } => ({
-    idea: typeof search["idea"] === "string" ? search["idea"].slice(0, 1000) : undefined,
-  }),
+  validateSearch: () => ({}),
   head: () => ({
     meta: [
       { title: "Programmes — DeliverX Command Centre" },
       {
         name: "description",
         content:
-          "Turn an idea or business case into an end-to-end product programme run by the 150-role DeliverX workforce.",
+          "Turn a product question into evidence, a decision you approve, and work you can review.",
       },
     ],
   }),
@@ -33,7 +32,8 @@ const EXAMPLE = {
   idea: "An invoicing and late-payment assistant that drafts invoices, tracks payment status and nudges clients politely so freelancers get paid on time.",
   targetUsers: "UK freelancers, small creative agencies",
   problem: "Freelancers lose hours every month chasing late payments, and cash flow suffers.",
-  goals: "500 paying users within 6 months; cut average days-to-paid by 30%.",
+  goals:
+    "Agree what would be measured before anyone claims an improvement. No observed result is included in this example.",
   constraints: "UK only at launch; never store card details; budget-conscious build.",
 };
 
@@ -49,12 +49,12 @@ const STATUS_TEXT: Record<string, string> = {
 function ProgrammesHome() {
   const features = useQuery(programmeFeaturesQuery);
   const list = useQuery(programmesListQuery);
+  const profile = useQuery(myProfileQuery);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const search = Route.useSearch();
   const [form, setForm] = useState({
     name: "",
-    idea: search.idea ?? "",
+    idea: "",
     targetUsers: "",
     problem: "",
     goals: "",
@@ -63,6 +63,17 @@ function ProgrammesHome() {
     budgetCredits: 400,
   });
   const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    const question = profile.data?.firstIdea?.trim();
+    if (!question) return;
+    setForm((current) => (current.idea.trim() ? current : { ...current, idea: question }));
+  }, [profile.data?.firstIdea]);
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.location.search.includes("idea=")) return;
+    const next = new URL(window.location.href);
+    next.searchParams.delete("idea");
+    window.history.replaceState({}, "", `${next.pathname}${next.search}${next.hash}`);
+  }, []);
 
   const create = useMutation({
     mutationFn: () => createProgrammeRun({ data: form }),
@@ -90,7 +101,7 @@ function ProgrammesHome() {
   return (
     <CommandShell
       title="Programmes"
-      subtitle="From idea or business case to a researched, designed, built, verified and launched product — run by the whole workforce, governed by you."
+      subtitle="Carry a product question into evidence, a decision you control, and reviewable work."
     >
       {features.isSuccess && !supported ? (
         <section className="cc-panel cc-panel-active-gate">
@@ -110,15 +121,15 @@ function ProgrammesHome() {
             <p className="cc-kicker">
               <Rocket className="size-3.5" /> New programme
             </p>
-            <h2 className="cc-hero-title">Describe the business case</h2>
-            {search.idea ? (
+            <h2 className="cc-hero-title">Describe the product question</h2>
+            {profile.data?.firstIdea ? (
               <p className="cc-muted text-sm">
-                Your idea from setup is filled in — add a name, users, problem and goals.
+                Your saved question is filled in from your account. It is not read from the address.
               </p>
             ) : null}
             <p className="cc-muted text-sm">
-              The workforce builds the roadmap, then runs discovery, interviews, meetings,
-              decisions, sprints, verification and launch. You approve at four gates.
+              Compare evidence, record the human decision, and keep the work reviewable. Agents do
+              not pass a gate. A prototype or launch is not part of this form.
             </p>
           </div>
           <button
@@ -126,7 +137,7 @@ function ProgrammesHome() {
             className="cc-btn cc-btn-secondary"
             onClick={() => setForm((f) => ({ ...f, ...EXAMPLE }))}
           >
-            Fill example
+            Fill hypothetical example
           </button>
         </div>
 

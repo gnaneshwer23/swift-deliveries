@@ -25,11 +25,11 @@ import { Compass, FlaskConical, Rocket, Search, ShieldCheck, Sparkles, Wrench } 
 export const Route = createFileRoute("/_authenticated/command/")({
   head: () => ({
     meta: [
-      { title: "Command Centre — DeliverX Product & AI Workforce Dashboard" },
+      { title: "Product workspace — DeliverX" },
       {
         name: "description",
         content:
-          "Commission supervised AI product missions: investigate, prototype, or improve — with plans, approvals, and usage ceilings.",
+          "Turn a product question into evidence, a decision you control, and work you can review.",
       },
     ],
   }),
@@ -164,7 +164,8 @@ function CommandHome() {
     "all" | "awaiting" | "completed" | "investigate" | "prototype" | "improve" | "build"
   >("all");
 
-  // Support deep-linked ?intent=...&prompt=... from the landing page Product Dashboard & cards
+  const { data: profile } = useQuery(myProfileQuery);
+  // Public sample cards may pass an intent and a sample prompt. A private brief is never written here.
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
@@ -178,10 +179,22 @@ function CommandHome() {
     ) {
       setIntent(qIntent);
     }
-    if (qPrompt && qPrompt.trim().length > 0) {
-      setRequestText(qPrompt.trim());
+    if (profile?.firstIdea) {
+      setRequestText((current) => current || profile.firstIdea);
+    } else if (qPrompt && qPrompt.trim().length > 0 && qPrompt.trim().length < 180) {
+      setRequestText((current) => current || qPrompt.trim());
     }
-  }, []);
+    if (params.has("idea") || params.has("prompt")) {
+      params.delete("idea");
+      params.delete("prompt");
+      const next = params.toString();
+      window.history.replaceState(
+        {},
+        "",
+        `${window.location.pathname}${next ? `?${next}` : ""}${window.location.hash}`,
+      );
+    }
+  }, [profile?.firstIdea]);
 
   const activeIntent = useMemo(() => {
     return INTENTS.find((i) => i.intent === intent) ?? INTENTS[0]!;
@@ -283,8 +296,8 @@ function CommandHome() {
 
   return (
     <CommandShell
-      title="Product & AI Workforce Command Centre"
-      subtitle="Supervised AI Product Workforce · Mission intake, plan approval & delivery governance"
+      title="Product workspace"
+      subtitle="A product question, the evidence behind it, your decision, and work you can review."
       usage={{
         consumed: data.workspace.usageConsumed,
         ceiling: data.workspace.usageCeiling,
@@ -311,7 +324,7 @@ function CommandHome() {
           <span className="cc-kpi-sub">
             {awaitingCount > 0
               ? `${awaitingCount} awaiting your plan sign-off or clarification`
-              : "All mission gates cleared"}
+              : "No decisions are waiting"}
           </span>
         </div>
         <div className="cc-kpi-card">
@@ -322,31 +335,39 @@ function CommandHome() {
           <span className="cc-kpi-sub">
             {runningCount > 0
               ? `${runningCount} currently executing`
-              : "Classified evidence & artefacts"}
+              : "Completed missions keep reviewable artefacts"}
           </span>
         </div>
         <div className="cc-kpi-card">
-          <span className="cc-kpi-label">Available Specialists</span>
+          <span className="cc-kpi-label">Role foundations</span>
           <strong className="cc-kpi-value">
-            {WAVE1_AVAILABLE_IDS.length} <small>Active</small>
+            {WAVE1_AVAILABLE_IDS.length} <small>available</small>
           </strong>
           <span className="cc-kpi-sub">
-            of 150 registry roles ·{" "}
+            Planned catalogue roles do not run.{" "}
             <Link to="/command/capabilities" className="underline">
-              Inspect catalogue
+              Inspect status
             </Link>
           </span>
         </div>
       </section>
 
       {/* Unified Mission Composer Card */}
-      <section className="cc-composer-card" aria-label="Commission a supervised mission">
+      <section
+        id="mission-composer"
+        className="cc-composer-card"
+        aria-label="Commission a supervised mission"
+      >
         <div className="cc-composer-head">
           <div>
             <p className="cc-kicker">
-              <ShieldCheck className="size-3.5" /> Supervised Product Mission Composer
+              <ShieldCheck className="size-3.5" /> Product question, evidence, your decision
             </p>
-            <h2 className="cc-hero-title">Commission a bounded AI product mission</h2>
+            <h2 className="cc-hero-title">Investigate one question</h2>
+            <p className="cc-muted text-sm">
+              Specialist contributions draft the work. You approve the plan before anything
+              proceeds. Missing evidence stays visible.
+            </p>
           </div>
 
           {/* Inline Project Container Selector */}
@@ -564,9 +585,8 @@ function CommandHome() {
           <p className="cc-muted mt-4">
             {data.recentMissions.length === 0 ? (
               <>
-                No missions commissioned yet. Choose <strong>Investigate</strong>,{" "}
-                <strong>Prototype</strong>, or <strong>Improve</strong> above (or click a Product
-                Playbook starter) to draft your first plan.
+                No missions yet. Start with the product question above. The plan waits for your
+                decision before downstream work runs.
               </>
             ) : (
               "No missions match the selected filter."

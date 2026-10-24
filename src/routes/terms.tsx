@@ -61,9 +61,11 @@ function TermsPage() {
               <section>
                 <h2 className="text-base font-semibold text-[var(--mkt-text1)]">Fees</h2>
                 <p className="mt-2">
-                  DeliverX is free during early access and we do not take payment details. If we
-                  introduce paid plans, we will tell you in advance and you will choose whether to
-                  upgrade. Your statutory rights under UK consumer law are not affected.
+                  Creating a DeliverX account is free. It does not activate a paid pilot or turn on
+                  Builder, Founder or Studio access. Those are proposed paid offers. Scope, access
+                  and any payment are agreed separately, and this site does not take payment details
+                  until a checkout has passed release checks. Your statutory rights under UK
+                  consumer law are not affected.
                 </p>
               </section>
               <section>
