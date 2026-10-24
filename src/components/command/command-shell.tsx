@@ -31,8 +31,10 @@ export function CommandShell({
   subtitle,
   children,
   usage,
+  networkMode = false,
 }: {
   title: string;
+  networkMode?: boolean;
   subtitle?: string;
   children: ReactNode;
   usage?:
@@ -52,7 +54,7 @@ export function CommandShell({
   const remaining = usage ? Math.max(0, usage.ceiling - usage.consumed) : null;
   return (
     <div
-      className="dxa cc-shell psi-workspace"
+      className={`dxa cc-shell psi-workspace${networkMode ? " ps-network-shell" : ""}`}
       onKeyDown={(event) => {
         if (event.key === "Escape") setOpen(false);
       }}

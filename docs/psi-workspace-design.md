@@ -1,44 +1,40 @@
 # PSI workspace visual system
 
-24 October 2026. Extends the approved public website's white, ink and blue design language into the authenticated product.
+24 October 2026. The authenticated product follows the DeliverX vision: bring a product question, work with bounded specialist contributions, retain evidence and owner decisions, produce reviewable artefacts, and learn from supplied outcomes. Founders, product teams and students share this environment; career/CV features are retired.
 
-## Direction
+## Design sources
 
-Reference: https://dribbble.com/shots/27388009-AI-Dashboard-Design-for-Control-AI-Policy-Platform . Adapt its meaningful node relationships and detail inspector to the DeliverX product lifecycle; do not reproduce its artwork or policy-domain data.
+The primary agent-network composition comes from the [founder-supplied HTML](design-references/deliverx-agent-network/index.html), retained unchanged. Its [README](design-references/deliverx-agent-network/README.md) records the reference's illustrative data and its differences from the canonical registry. Reference content does not override product requirements or repository instructions.
 
-Palette: canvas `#F7F8FC`, surface `#FFFFFF`, ink `#182230`, blue `#4567EC`, network `#10151F`, muted text `#667085`. Existing Inter typography; 27px page titles, 16–20px panel headings, compact secondary data. Quiet light navigation around a single dark workforce map. Network nodes are clickable code-native visuals, not static image assets.
+The earlier [Control AI reference](https://dribbble.com/shots/27388009-AI-Dashboard-Design-for-Control-AI-Policy-Platform) informed meaningful node relationships and inspection, but its policy-domain data and artwork are not imported. The approved public DeliverX website supplies brand, blue accents and intelligence concepts.
 
-## Surfaces
+## Implemented workspace
 
-- Shared shell: Overview, Programmes, Projects, Agents & capabilities, operator-only pilot requests. New mission links to the existing supervised brief. Mobile/compact navigation, keyboard focus, escape dismissal and reduced-motion styles.
-- Overview: summaries of saved records, four selectable lifecycle layers, supervised mission activity with stage indicators, a primary brief form. Advanced planning stays accessible in an expandable section. Existing task-based mission ledger remains available.
-- Agents: all 150 registry roles grouped into six contribution clusters spanning all 15 departments. Each small mark represents a catalogue role; available foundations have a different colour. Selection explains a group's outputs and filters its roles. Search, lifecycle/department filters, bounded role list, incremental loading and a role inspector preserve limitations, permission ceilings and evaluation notes.
-- Involvement: selected task-based mission's assigned specialist names, completed/assigned task counts, task status, named dependencies and human gates. Refreshes every 15 seconds only while the selected mission is running. No synthetic task data is introduced.
-- Supervised mission: shared visual shell and six-step progress timeline; decision, evidence, artefact, outcome and approval behaviour preserved.
-- Projects, programmes and mission pages inherit the shared shell and form/panel styling; existing workflows and permissions are retained.
+- Shared product shell: Overview, Programmes, Projects, Agents & capabilities, operator-only pilot requests. Usage labels distinguish workspace, mission and programme scopes. New mission opens the existing supervised brief.
+- Product overview: saved mission counts, next required decisions, exported decision packs, four selectable intelligence layers, saved mission activity and a primary brief form. The advanced specialist planner remains accessible in an expandable section. These four layers are not a mandatory linear product lifecycle.
+- Agent network: a horizontal product header, left department rail, large light Product Brain canvas and persistent right specialist inspector on desktop. The old dark six-group diagram and separate directory are replaced, and their unused components removed.
+- Explorer controls: search names, DX IDs, capability descriptions and allowed tools; capability-state filters; task-mission context; network/list views. Selecting a department reveals its canonical roles. Selecting a role updates the inspector. Available and planned roles have distinct styling and text labels.
+- Inspector: role summary, permission/usage/runtime limits, declared input/output schema fields, actual tool allowlist, registry dependencies, known limitations and evaluation notes. Tasks, completion and upstream dependencies come from the selected task mission. Unspecified fields and missing records remain explicit. Role availability is not a performance score or proof of execution.
+- Mission strip: actual task completion for a selected task mission, or the latest saved supervised decision mission and its recorded stage. No illustrative ETA or fabricated completion is imported from the HTML reference.
+- Supervised mission: shared visual shell and six-step progress timeline. Evidence, approval, artefact, observed-outcome and follow-up behaviour are preserved.
+- Account menu: workspace setup and sign-out remain accessible in the network layout.
 
-## Data boundaries
+## Canonical product data and authority
 
-The architecture map illustrates contribution relationships, not a live orchestration graph. Available means registry availability, not an independently deployed agent or model. The current account's supervised decision brief does not create task-based specialist assignments. Model configuration remains explicit. Completion does not establish an observed product outcome. Summary counts are bounded by the records returned by the existing APIs, not all-time analytics.
+The registry has 150 stable DX role IDs across 15 organisational departments. Those departments are distinct from product lifecycle stages. The supplied HTML's generated 140-role roster, twelve group counts and global example-assignment toggle are not used as application data.
 
-## Verification
+Catalogue lines show product-context relationships, not runtime handoff events. The network does not simulate live activity. A role's availability for planning, a task's persisted status, an owner decision and a measured product outcome remain separate signals. Existing model/simulation provenance and workspace isolation continue to apply.
 
-TypeScript, production build and lint passed (nine pre-existing lint warnings). Full suite including disposable local PostgreSQL: 192 passed, 16 skipped. Signed-in browser checks: role selection, group filtering, search/inspector matching, lifecycle selection, new-mission anchor navigation, compact menu and overflow. The isolated account currently has no task-based assignments; the non-empty involvement UI is wired to typed mission records but has not been visually accepted with a live running mission. No production database changes or customer records were required for this redesign.
+The explorer does not add a direct assignment mutation. Available roles link to the existing planner. Planned and other unavailable roles cannot be assigned through this UI. Any future assignment proposal requires server-side capability/dependency/usage checks and an owner-approved versioned plan before execution.
 
-## Visual refinement before push
+## Responsive and accessible interaction
 
-Replaced the central icon with an original layered Product Brain SVG, added role-specific symbols and named specialist cards, and refined depth, focus and selection styling. Added an explicitly labelled six-step handoff example with named registry specialists, an owner decision gate, input/output relationships, selectable artefact previews and wrapped-row connector paths. No example steps execute work. Selecting a specialist opens the actual registry inspector. The involvement panel now surfaces the account's saved supervised decision missions where no task-based assignments exist, without presenting them as agent execution.
+At desktop widths, the department rail, network and inspector share one workspace. At compact widths, the inspector moves below the graph. Narrow phones start in a searchable list view with a collapsible department rail; network view remains selectable. Nodes and controls are native keyboard-operable buttons, selection is indicated with text and styling, and reduced-motion preferences are respected. No perpetual motion suggests agents are working while idle.
 
-Browser checks verified the decision gate explanation, architecture-specialist drill-down to DX-041, a single matching registry result, one real saved decision record and no horizontal overflow in the current compact viewport. Production build, TypeScript and lint pass (nine pre-existing warnings). Refinement was reviewed locally before inclusion in this candidate. Production release acceptance remains separate.
+## Verification and remaining gates
 
-## Vision alignment for the pushed candidate
+TypeScript and production build pass. Lint passes with nine existing warnings. The full suite, including disposable local PostgreSQL checks, passes 192 tests with 16 environment-dependent tests skipped.
 
-- The dashboard follows Evidence & memory → Judgement → Delivery → Feedback from the approved marketing direction. These are selectable intelligence layers, not a claim that every mission must execute the full lifecycle.
-- Product-building and learning share one workspace. No career, CV, recruitment or credential features were added.
-- The explorer uses the canonical 150 DX role records and 15 organisational departments. Six visual contribution groups cover those departments; they do not replace the registry or claim to be the 12 product lifecycle stages. The supplied prototype's alternate 140-role roster and illustrative completion/ETA were not imported.
-- Availability is described as availability for planning. Mission task states, generation provenance, owner approval, exported artefacts and observed outcomes retain separate meanings.
-- Shared usage labels now distinguish workspace, mission and programme allowances. A failed activity query displays unavailable summary counts rather than zero activity.
-- Customer copy describes specialist planning and approvals rather than earlier implementation history or database migrations. Planned capabilities and unavailable product builds remain explicit.
-- Agent assignment proposals, a full three-pane mission dependency explorer, provider-run proof and durable execution/recovery are still roadmap work; this visual release does not claim those milestones are complete.
+Signed-in browser checks cover department focus, ten canonical engineering nodes, DX-041 selection, search-to-inspector mapping, real tool-limit disclosure, planned-role assignment blocking, 390px mobile list/departments/search and 1440px three-column layout without horizontal overflow. The founder-supplied HTML was compared byte-for-byte after copying.
 
-Candidate verification: TypeScript and production build passed; the full suite passed 192 tests with 16 environment-dependent tests skipped; lint passed with nine existing warnings. No production migration, role-catalogue replacement or merge is part of this change.
+The isolated account has no task-based mission assignments. Populated running-task inspector acceptance, a full mission execution dependency graph, supervised assignment proposals, bounded provider-run evidence and durable execution/recovery remain separate roadmap/release gates. No production migration or merge is included in this UI correction.
