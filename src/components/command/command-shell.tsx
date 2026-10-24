@@ -23,7 +23,7 @@ const NAV = [
   { to: "/command", label: "Overview", icon: LayoutDashboard },
   { to: "/command/programmes", label: "Programmes", icon: Rocket },
   { to: "/command/projects", label: "Projects", icon: FolderKanban },
-  { to: "/command/capabilities", label: "Agents & capabilities", icon: UsersRound },
+  { to: "/command/capabilities", label: "Specialists", icon: UsersRound },
 ] as const;
 
 export function CommandShell({

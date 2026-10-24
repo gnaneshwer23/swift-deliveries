@@ -190,7 +190,7 @@ export function AgentNetworkExplorer() {
             Overview
           </Link>
           <Link to="/command/capabilities" aria-current="page">
-            Agent network
+            Specialists
           </Link>
           <Link to="/command/projects">Projects</Link>
           <Link to="/command/programmes">Programmes</Link>

@@ -340,7 +340,7 @@ function AttentionPanel({
               <strong>{d.key}</strong> — {d.question}{" "}
               <span className="cc-chip">
                 {d.outcome === "adopted"
-                  ? `panel adopted (${Math.round(d.confidence * 100)}%)`
+                  ? `panel recommendation · ${Math.round(d.confidence * 100)}% weighted support`
                   : "panel split — your call"}
               </span>
             </legend>
@@ -576,7 +576,7 @@ function DecisionDetail({ d }: { d: DecisionRecord }) {
                     <div className="cc-muted">{member(p.capabilityId).department}</div>
                   </td>
                   <td className="text-xs">
-                    {label(r1.optionId)} ({Math.round(r1.confidence * 100)}%)
+                    {label(r1.optionId)} (preference strength: {Math.round(r1.confidence * 100)}%)
                   </td>
                   <td className="text-xs">
                     {p.revisedFrom ? <strong>{label(p.optionId)}</strong> : label(p.optionId)}

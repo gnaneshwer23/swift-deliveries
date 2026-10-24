@@ -1,3 +1,4 @@
+import { PSI_LAYER_LABELS, PSI_RECORD_LINKS } from "@/lib/psi-journey";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
@@ -18,33 +19,37 @@ import { WAVE1_AVAILABLE_IDS } from "@/lib/workforce/registry";
 
 const FLOW = [
   {
-    title: "Evidence & memory",
+    id: "evidence",
+    title: PSI_LAYER_LABELS.evidence,
     detail: "Keep supplied sources, assumptions and gaps attached to the product question.",
     icon: BrainCircuit,
     output: "Evidence with context",
   },
   {
-    title: "Judgement",
+    id: "judgement",
+    title: PSI_LAYER_LABELS.judgement,
     detail:
       "Compare options against the saved evidence. The owner records a decision bound to the proposal version.",
     icon: Fingerprint,
     output: "Your decision, with its reasoning",
   },
   {
-    title: "Delivery",
+    id: "delivery",
+    title: PSI_LAYER_LABELS.delivery,
     detail:
       "Prepare a reviewable decision and experiment brief. A download is not permission to deploy or act externally.",
     icon: Layers3,
     output: "A reviewable artefact",
   },
   {
-    title: "Feedback",
+    id: "feedback",
+    title: PSI_LAYER_LABELS.feedback,
     detail:
       "Supply an observed result, review it against the hypothesis, and approve any proposed follow-up separately.",
     icon: GitBranch,
     output: "An evidence-led next question",
   },
-];
+] as const;
 const STAGES = ["brief", "evidence", "alternatives", "decision", "artefact", "exported"];
 export function WorkspaceOverview() {
   const home = useQuery({
@@ -53,6 +58,7 @@ export function WorkspaceOverview() {
   });
   const legacy = useQuery(commandCentreBootstrapQuery);
   const [step, setStep] = useState(0);
+  const [recordId, setRecordId] = useState("");
   const missions = home.data?.missions ?? [];
   const old = legacy.data?.recentMissions ?? [];
   const waiting =
@@ -60,6 +66,12 @@ export function WorkspaceOverview() {
     old.filter((m) => m.status === "awaiting_approval").length;
   const exported = missions.filter((m) => m.stage === "exported").length;
   const flow = FLOW[step]!;
+  const records = [...missions].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  const record =
+    records.find((m) => m.id === recordId) ??
+    records.find((m) => m.stage !== "cancelled") ??
+    records[0];
+  const destination = PSI_RECORD_LINKS[flow.id];
   const countsReady = !!home.data?.ready && !!legacy.data && !home.isError && !legacy.isError;
   return (
     <>
@@ -103,7 +115,7 @@ export function WorkspaceOverview() {
       <section className="ps-journey">
         <div className="ps-section-heading">
           <div>
-            <h2>Your product, from question to learning</h2>
+            <h2>Product Brain · your connected product record</h2>
             <p>
               Build a product, learn from the work, and keep the reasoning behind each decision.
             </p>
@@ -112,6 +124,23 @@ export function WorkspaceOverview() {
             Explore the workforce <ArrowUpRight size={13} />
           </Link>
         </div>
+        {records.length > 0 && (
+          <div className="ps-record-selector">
+            <label htmlFor="product-record">Product question</label>
+            <select
+              id="product-record"
+              value={record?.id ?? ""}
+              onChange={(event) => setRecordId(event.target.value)}
+            >
+              {records.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.question}
+                </option>
+              ))}
+            </select>
+            <span>Saved mission record</span>
+          </div>
+        )}
         <div className="ps-flow">
           {FLOW.map((item, i) => (
             <button key={item.title} aria-pressed={step === i} onClick={() => setStep(i)}>
@@ -125,7 +154,17 @@ export function WorkspaceOverview() {
           <p>
             <strong>{flow.title}.</strong> {flow.detail}
           </p>
-          <a href="#supervised-brief">Start with a question →</a>
+          {record ? (
+            <Link
+              to="/command/supervised/$missionId"
+              params={{ missionId: record.id }}
+              hash={destination.hash}
+            >
+              {destination.label} →
+            </Link>
+          ) : (
+            <a href="#supervised-brief">Start with a question →</a>
+          )}
         </div>
       </section>
       <div className="ps-mission-grid">

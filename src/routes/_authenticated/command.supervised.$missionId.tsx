@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
 import { SupervisedLearningLoop } from "@/components/command/supervised-learning-loop";
 import {
@@ -24,12 +24,31 @@ export const Route = createFileRoute("/_authenticated/command/supervised/$missio
 
 function SupervisedMissionPage() {
   const { missionId } = Route.useParams();
+  const recordSection = useRouterState({ select: (state) => state.location.hash }).replace(
+    /^#/,
+    "",
+  );
   const queryClient = useQueryClient();
   const query = useQuery({
     queryKey: ["supervised", "mission", missionId],
     queryFn: () => getSupervisedMission({ data: { id: missionId } }),
   });
   const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    if (
+      !query.data ||
+      !["mission-evidence", "mission-judgement", "mission-delivery", "mission-feedback"].includes(
+        recordSection,
+      )
+    )
+      return;
+    const frame = requestAnimationFrame(() =>
+      document
+        .getElementById(recordSection)
+        ?.scrollIntoView({ block: "start", behavior: "instant" }),
+    );
+    return () => cancelAnimationFrame(frame);
+  }, [query.data, recordSection]);
   const [consentedScope, setConsentedScope] = useState<string | null>(null);
   const invalidate = async () => {
     setError(null);
@@ -142,7 +161,7 @@ function SupervisedMissionPage() {
           );
         })}
       </ol>
-      <section className="cc-panel" aria-label="Next action">
+      <section className="cc-panel" id="mission-next-action" aria-label="Next action">
         <h2 className="cc-panel-title">{next.title}</h2>
         <p className="cc-muted">{next.detail}</p>
         {usageWarning ? <p className="cc-error mt-2">{usageWarning}</p> : null}
@@ -201,13 +220,35 @@ function SupervisedMissionPage() {
           <ExportButton missionId={missionId} existing={mission.exportBody} onError={onError} />
         ) : null}
       </section>
-      <EvidenceEditor
-        missionId={missionId}
-        initial={mission.evidence}
-        locked={!open}
-        onDone={invalidate}
-        onError={onError}
-      />
+      <div
+        id="mission-evidence"
+        className="ps-record-anchor"
+        data-active={recordSection === "mission-evidence"}
+      >
+        <EvidenceEditor
+          missionId={missionId}
+          initial={mission.evidence}
+          locked={!open}
+          onDone={invalidate}
+          onError={onError}
+        />
+        {mission.evidence.length ? (
+          <section className="cc-panel" aria-label="Evidence">
+            <h2 className="cc-panel-title">Evidence</h2>
+            <ul className="mt-3 grid gap-2">
+              {mission.evidence.map((item) => (
+                <li key={item.id}>
+                  <strong>
+                    {item.id} · {item.classification}
+                  </strong>
+                  <p>{item.statement}</p>
+                  {item.source ? <p className="cc-muted text-sm">Source: {item.source}</p> : null}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+      </div>
       <BriefEditor
         missionId={missionId}
         initial={mission.brief}
@@ -215,97 +256,123 @@ function SupervisedMissionPage() {
         onDone={invalidate}
         onError={onError}
       />
-      {mission.proposal ? (
-        <section className="cc-panel" aria-label="Alternatives">
-          <h2 className="cc-panel-title">Alternatives</h2>
-          <p className="cc-muted text-sm">
-            Proposal version {mission.proposal.version}. Scope{" "}
-            {mission.proposal.scopeHash.slice(0, 12)}.
-          </p>
-          <ul className="mt-3 grid gap-3">
-            {mission.proposal.options.map((option) => (
-              <li key={option.id} className="cc-panel">
-                <strong>{option.title}</strong>
-                <p className="cc-muted">{option.tradeoff}</p>
-                <p className="cc-muted text-sm">Basis: {option.basis}</p>
-              </li>
-            ))}
-          </ul>
-          {mission.proposal.generation.gaps.length ? (
-            <p className="cc-muted mt-3 text-sm">
-              Gaps: {mission.proposal.generation.gaps.join(" · ")}
+      <div
+        id="mission-judgement"
+        className="ps-record-anchor"
+        data-active={recordSection === "mission-judgement"}
+      >
+        {!mission.proposal && (
+          <RecordStepPending
+            title="Options and decision"
+            detail="No comparison is stored yet. Follow the next required action to add evidence and compare options."
+          />
+        )}
+        {mission.proposal ? (
+          <section className="cc-panel" aria-label="Alternatives">
+            <h2 className="cc-panel-title">Alternatives</h2>
+            <p className="cc-muted text-sm">
+              Proposal version {mission.proposal.version}. Scope{" "}
+              {mission.proposal.scopeHash.slice(0, 12)}.
             </p>
-          ) : null}
-          {mission.stage === "alternatives" ||
-          (mission.stage === "decision" && !mission.artefact) ? (
-            <DecisionForm
-              key={mission.proposal.scopeHash}
-              missionId={missionId}
-              action={mission.proposal.action}
-              version={mission.proposal.version}
-              scopeHash={mission.proposal.scopeHash}
-              options={mission.proposal.options.map((option) => ({
-                id: option.id,
-                title: option.title,
-              }))}
-              onDone={invalidate}
-              onError={onError}
-            />
-          ) : null}
-        </section>
-      ) : null}
-      {mission.evidence.length ? (
-        <section className="cc-panel" aria-label="Evidence">
-          <h2 className="cc-panel-title">Evidence</h2>
-          <ul className="mt-3 grid gap-2">
-            {mission.evidence.map((item) => (
-              <li key={item.id}>
-                <strong>
-                  {item.id} · {item.classification}
-                </strong>
-                <p>{item.statement}</p>
-                {item.source ? <p className="cc-muted text-sm">Source: {item.source}</p> : null}
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
-      {mission.approval ? (
-        <section className="cc-panel" id="decision" aria-label="Decision">
-          <h2 className="cc-panel-title">Owner decision</h2>
-          <p>
-            {mission.approval.choice === "accept" ? "Accepted" : "More evidence requested"}:{" "}
-            {mission.approval.optionId}
-          </p>
-          {mission.approval.note ? <p className="cc-muted">{mission.approval.note}</p> : null}
-          <p className="cc-muted text-sm">
-            Bound to {mission.approval.action} version {mission.approval.version}.
-          </p>
-        </section>
-      ) : null}
-      {mission.invalidatedApprovals.length ? (
-        <section className="cc-panel" aria-label="Cleared approvals">
-          <h2 className="cc-panel-title">Cleared approvals</h2>
-          <ul className="mt-2 grid gap-2">
-            {mission.invalidatedApprovals.map((approval) => (
-              <li key={`${approval.scopeHash}-${approval.decidedAt}`}>
-                <p>{approval.reason}</p>
-                <p className="cc-muted text-sm">
-                  Version {approval.version} · {approval.optionId}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
-      {mission.artefact ? (
-        <section className="cc-panel" aria-label="Decision pack">
-          <h2 className="cc-panel-title">{mission.artefact.title}</h2>
-          <pre className="mt-3 whitespace-pre-wrap text-sm">{mission.artefact.decisionBrief}</pre>
-          <pre className="mt-3 whitespace-pre-wrap text-sm">{mission.artefact.experimentBrief}</pre>
-        </section>
-      ) : null}
-      <SupervisedLearningLoop mission={mission} onDone={invalidate} onError={onError} />
+            <ul className="mt-3 grid gap-3">
+              {mission.proposal.options.map((option) => (
+                <li key={option.id} className="cc-panel">
+                  <strong>{option.title}</strong>
+                  <p className="cc-muted">{option.tradeoff}</p>
+                  <p className="cc-muted text-sm">Basis: {option.basis}</p>
+                </li>
+              ))}
+            </ul>
+            {mission.proposal.generation.gaps.length ? (
+              <p className="cc-muted mt-3 text-sm">
+                Gaps: {mission.proposal.generation.gaps.join(" · ")}
+              </p>
+            ) : null}
+            {mission.stage === "alternatives" ||
+            (mission.stage === "decision" && !mission.artefact) ? (
+              <DecisionForm
+                key={mission.proposal.scopeHash}
+                missionId={missionId}
+                action={mission.proposal.action}
+                version={mission.proposal.version}
+                scopeHash={mission.proposal.scopeHash}
+                options={mission.proposal.options.map((option) => ({
+                  id: option.id,
+                  title: option.title,
+                }))}
+                onDone={invalidate}
+                onError={onError}
+              />
+            ) : null}
+          </section>
+        ) : null}
+        {mission.approval ? (
+          <section className="cc-panel" id="decision" aria-label="Decision">
+            <h2 className="cc-panel-title">Owner decision</h2>
+            <p>
+              {mission.approval.choice === "accept" ? "Accepted" : "More evidence requested"}:{" "}
+              {mission.approval.optionId}
+            </p>
+            {mission.approval.note ? <p className="cc-muted">{mission.approval.note}</p> : null}
+            <p className="cc-muted text-sm">
+              Bound to {mission.approval.action} version {mission.approval.version}.
+            </p>
+          </section>
+        ) : null}
+        {mission.invalidatedApprovals.length ? (
+          <section className="cc-panel" aria-label="Cleared approvals">
+            <h2 className="cc-panel-title">Cleared approvals</h2>
+            <ul className="mt-2 grid gap-2">
+              {mission.invalidatedApprovals.map((approval) => (
+                <li key={`${approval.scopeHash}-${approval.decidedAt}`}>
+                  <p>{approval.reason}</p>
+                  <p className="cc-muted text-sm">
+                    Version {approval.version} · {approval.optionId}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+      </div>
+      <div
+        id="mission-delivery"
+        className="ps-record-anchor"
+        data-active={recordSection === "mission-delivery"}
+      >
+        {!mission.artefact && (
+          <RecordStepPending
+            title="Decision pack"
+            detail="No decision pack is stored yet. Record the owner decision and measurement plan before preparing reviewable work."
+          />
+        )}
+        {mission.artefact ? (
+          <section className="cc-panel" aria-label="Decision pack">
+            <h2 className="cc-panel-title">{mission.artefact.title}</h2>
+            <pre className="mt-3 whitespace-pre-wrap text-sm">{mission.artefact.decisionBrief}</pre>
+            <pre className="mt-3 whitespace-pre-wrap text-sm">
+              {mission.artefact.experimentBrief}
+            </pre>
+          </section>
+        ) : null}
+      </div>
+      <div
+        id="mission-feedback"
+        className="ps-record-anchor"
+        data-active={recordSection === "mission-feedback"}
+      >
+        {((!mission.approval && !mission.origin) || mission.stage === "cancelled") && (
+          <RecordStepPending
+            title="Outcome review"
+            detail={
+              mission.stage === "cancelled"
+                ? "This mission is cancelled. Its saved record is retained; no follow-up is started."
+                : "Record a decision before planning what to measure. Later, supply an observed result and review it before proposing another mission."
+            }
+          />
+        )}
+        <SupervisedLearningLoop mission={mission} onDone={invalidate} onError={onError} />
+      </div>
     </CommandShell>
   );
 }
@@ -607,4 +674,16 @@ function download(body: string) {
   link.download = "decision-pack.md";
   link.click();
   URL.revokeObjectURL(url);
+}
+
+function RecordStepPending({ title, detail }: { title: string; detail: string }) {
+  return (
+    <section className="cc-panel ps-record-pending">
+      <h2 className="cc-panel-title">{title}</h2>
+      <p className="cc-muted">{detail}</p>
+      <a className="cc-btn cc-btn-secondary mt-3 inline-flex" href="#mission-next-action">
+        See the next required action
+      </a>
+    </section>
+  );
 }
