@@ -1,22 +1,142 @@
 import { useId, useState } from "react";
+import { ArrowRight, Download, FileText, GitBranch, Search, FlaskConical } from "lucide-react";
 import { downloadText } from "@/lib/marketing/product-resources";
 
-const RECORDS = [
+type Field = { label: string; value: string; tone?: "gap" | "proposal" };
+type RecordDocument = {
+  id: string;
+  title: string;
+  subtitle: string;
+  status: string;
+  icon: typeof FileText;
+  fields: Field[];
+  next: string;
+};
+const RECORDS: RecordDocument[] = [
   {
+    id: "B-01",
     title: "Mission brief",
-    body: "# Mission brief · onboarding improvement\n\nIllustrative sample. No customer research was performed.\n\nQuestion: Which onboarding change should we investigate first?\nAudience: New users setting up a small software product.\nDesired outcome: Identify a bounded experiment worth investigating.\nConstraints: Do not contact users, modify the live product or deploy.\nEvidence required: Authorised setup notes and a description of the current flow.\nAcceptance: Compare alternatives, preserve evidence gaps and obtain an owner decision.",
+    subtitle: "Define the question before choosing a solution.",
+    status: "Example scope",
+    icon: FileText,
+    next: "Research Synthesis receives the brief and keeps missing evidence visible.",
+    fields: [
+      { label: "Product question", value: "Which onboarding change should we investigate first?" },
+      { label: "Audience", value: "New users setting up a small software product." },
+      { label: "Objective", value: "Identify a bounded experiment worth investigating." },
+      { label: "Constraints", value: "Do not contact users, modify the live product or deploy." },
+      {
+        label: "Inputs required",
+        value: "Authorised setup notes and a description of the current flow.",
+        tone: "gap",
+      },
+      {
+        label: "Acceptance criteria",
+        value: "Compare alternatives, preserve evidence gaps and obtain an owner decision.",
+      },
+    ],
   },
   {
+    id: "E-01 / E-02",
     title: "Evidence register",
-    body: "# Evidence register\n\nHypothetical teaching material, not genuine customer evidence.\n\nE-01 · Sample owner assertion: setup asks for several details before the first useful action. Source: illustrative setup description. Not independently observed.\nE-02 · Agent inference: some details might be deferred. Derived from E-01; not a validated user need.\nG-01 · Missing: actual abandonment location and baseline completion data.\nG-02 · Missing: authorised customer notes explaining why people leave.\n\nNext recipient: Product Discovery. Do not convert these assumptions into findings.",
+    subtitle: "Separate the source, the inference and what is still missing.",
+    status: "Evidence gaps open",
+    icon: Search,
+    next: "Product Discovery receives the evidence brief, including its limitations.",
+    fields: [
+      {
+        label: "E-01 · Sample assertion",
+        value:
+          "Setup asks for several details before the first useful action. Source: illustrative setup description. Not independently observed.",
+      },
+      {
+        label: "E-02 · Agent inference",
+        value: "Some details might be deferred. Derived from E-01; not a validated user need.",
+        tone: "proposal",
+      },
+      {
+        label: "G-01 · Missing measurement",
+        value: "Actual abandonment location and baseline completion data.",
+        tone: "gap",
+      },
+      {
+        label: "G-02 · Missing explanation",
+        value: "Authorised customer notes explaining why people leave.",
+        tone: "gap",
+      },
+    ],
   },
   {
+    id: "D-01",
     title: "Decision record",
-    body: "# Decision record · D-01\n\nIllustrative recommendation. No real owner approval or mission is recorded.\n\nQuestion: Which onboarding change should we investigate first?\nOption A: Shorten setup by removing fields. Risk: useful information may be lost.\nOption B: Defer optional details until after the first useful action. Risk: later completion may suffer.\nOption C: Explain why each detail is needed. Risk: extra explanation may not address the actual cause.\n\nProvisional recommendation: Investigate B, subject to evidence and owner review.\nBasis: Hypothesis E-02 from the sample evidence register, not measured behaviour.\nReviewer objection: Without abandonment data, the cause is unknown. Gather evidence before approving implementation.\nOwner decision: Pending. Approve investigation only, request more evidence, or reject.\nNext recipient: Experiment planning after the owner's scoped decision.\nNo weighted vote is a probability that this will work.",
+    subtitle: "The recommendation travels with alternatives and dissent.",
+    status: "Owner decision pending",
+    icon: GitBranch,
+    next: "Experiment planning follows only after the owner's scoped decision.",
+    fields: [
+      {
+        label: "Option A · Remove fields",
+        value: "Shorten setup. Risk: useful information may be lost.",
+      },
+      {
+        label: "Option B · Defer optional details",
+        value: "Ask after the first useful action. Risk: later completion may suffer.",
+      },
+      {
+        label: "Option C · Explain each field",
+        value:
+          "Explain why details are needed. Risk: explanation may not address the actual cause.",
+      },
+      {
+        label: "Provisional recommendation",
+        value:
+          "Investigate B, subject to evidence and owner review. Basis: hypothesis E-02, not measured behaviour.",
+        tone: "proposal",
+      },
+      {
+        label: "Reviewer's objection",
+        value:
+          "Without abandonment data, the cause is unknown. Gather evidence before approving implementation.",
+        tone: "gap",
+      },
+      {
+        label: "Owner decision",
+        value:
+          "Pending: approve investigation only, request more evidence, or reject. No real approval is recorded.",
+      },
+    ],
   },
   {
+    id: "A-01",
     title: "Experiment brief",
-    body: "# Experiment brief · A-01\n\nIllustrative planning document. No experiment has run and no result is claimed.\n\nHypothesis: Deferring optional details could help users reach the first useful action.\nProposed change: Explore a staged setup flow; do not change the live product.\nMeasure: Setup completion and time to first useful action, with later profile completion as a guardrail.\nBaseline: Not supplied; establish before any experiment.\nObservation window: To be agreed with the owner based on traffic and measurement quality.\nApproval: Required for the specific experiment scope and any external action.\nActual outcome: Not observed.\nNext review: Compare an owner-supplied observation with the hypothesis and keep the uncertainty in words.\nLinked record: D-01. This sample has no observed result and approves no follow-up.",
+    subtitle: "Make the hypothesis testable before claiming an outcome.",
+    status: "Not run",
+    icon: FlaskConical,
+    next: "An owner-supplied observation informs a review. No follow-up is approved in this sample.",
+    fields: [
+      {
+        label: "Hypothesis",
+        value: "Deferring optional details could help users reach the first useful action.",
+        tone: "proposal",
+      },
+      {
+        label: "Proposed investigation",
+        value: "Explore a staged setup flow. Do not change the live product.",
+      },
+      { label: "Primary measures", value: "Setup completion and time to first useful action." },
+      { label: "Guardrail", value: "Later profile completion must also be considered." },
+      {
+        label: "Baseline & window",
+        value:
+          "Baseline not supplied. Agree the observation window with the owner based on traffic and measurement quality.",
+        tone: "gap",
+      },
+      {
+        label: "Approval & outcome",
+        value:
+          "Approval is required for the specific experiment scope and any external action. No experiment has run; no result is observed.",
+      },
+    ],
   },
 ];
 
@@ -24,40 +144,96 @@ export function MissionSampleRecord() {
   const [active, setActive] = useState(0);
   const id = useId();
   const record = RECORDS[active]!;
+  const Icon = record.icon;
+  const markdown = `# ${record.title} · ${record.id}\n\nHypothetical DeliverX sample. No customer research, real owner approval or experiment was performed.\n\n${record.fields.map((field) => `## ${field.label}\n${field.value}`).join("\n\n")}\n\n## Next handoff\n${record.next}\n\nLinked records: B-01 → E-01 / E-02 → D-01 → A-01. This sample records no observed improvement.\n`;
   return (
-    <div className="mission-record">
-      <p className="psi-fine-print">
-        Illustrative sample · hypothetical material · no customer results or real approvals
+    <div className="sample-record-reader">
+      <div className="sample-reader-banner">
+        <span>Onboarding investigation</span>
+        <span>Hypothetical sample · no real approvals</span>
+      </div>
+      <div className="sample-reader-layout">
+        <div className="sample-reader-directory" role="group" aria-label="Inspect sample documents">
+          <span className="sample-directory-label">Mission documents</span>
+          {RECORDS.map((item, index) => {
+            const ItemIcon = item.icon;
+            return (
+              <button
+                key={item.title}
+                type="button"
+                aria-pressed={active === index}
+                aria-controls={id}
+                onClick={() => setActive(index)}
+              >
+                <ItemIcon aria-hidden="true" size={18} />
+                <span>
+                  <strong>{item.title}</strong>
+                  <small>{item.id}</small>
+                </span>
+                <ArrowRight aria-hidden="true" size={14} />
+              </button>
+            );
+          })}
+          <p>
+            Fixed example records. Choices in the decision exercise do not change these documents.
+          </p>
+        </div>
+        <article id={id} className="sample-reader-document" aria-label={`Sample ${record.title}`}>
+          <header aria-live="polite">
+            <div className="sample-document-icon">
+              <Icon size={23} aria-hidden="true" />
+            </div>
+            <div>
+              <span className="sample-document-reference">{record.id}</span>
+              <h4>{record.title}</h4>
+            </div>
+            <span className="sample-document-status">{record.status}</span>
+          </header>
+          <p className="sample-document-subtitle">{record.subtitle}</p>
+          <dl className="sample-document-fields">
+            {record.fields.map((field) => (
+              <div key={field.label} data-tone={field.tone}>
+                <dt>{field.label}</dt>
+                <dd>{field.value}</dd>
+              </div>
+            ))}
+          </dl>
+          <div className="sample-record-provenance">
+            <span>Trace the reasoning</span>
+            <div role="group" aria-label="Follow linked sample records">
+              {RECORDS.map((item, index) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  aria-pressed={active === index}
+                  onClick={() => setActive(index)}
+                >
+                  {item.id}
+                  {index < RECORDS.length - 1 && <ArrowRight aria-hidden="true" size={12} />}
+                </button>
+              ))}
+            </div>
+          </div>
+          <footer>
+            <div>
+              <span>Next handoff</span>
+              <p>{record.next}</p>
+            </div>
+            <button
+              type="button"
+              className="dxl-btn dxl-btn-ghost"
+              onClick={() => downloadText(`deliverx-onboarding-sample-${active + 1}.md`, markdown)}
+            >
+              <Download aria-hidden="true" size={15} />
+              Download sample {record.title.toLowerCase()}
+            </button>
+          </footer>
+        </article>
+      </div>
+      <p className="sample-reader-footnote">
+        Downloads are local documents. They grant no permission to contact customers, run an
+        experiment or deploy.
       </p>
-      <div className="mission-record-selector" role="group" aria-label="Inspect sample documents">
-        {RECORDS.map((item, index) => (
-          <button
-            key={item.title}
-            type="button"
-            aria-pressed={active === index}
-            aria-controls={id}
-            onClick={() => setActive(index)}
-          >
-            {item.title}
-          </button>
-        ))}
-      </div>
-      <div
-        id={id}
-        className="mission-record-body"
-        role="region"
-        aria-label={record.title}
-        tabIndex={0}
-      >
-        <pre>{record.body}</pre>
-      </div>
-      <button
-        type="button"
-        className="dxl-btn dxl-btn-ghost"
-        onClick={() => downloadText(`deliverx-onboarding-sample-${active + 1}.md`, record.body)}
-      >
-        Download sample {record.title.toLowerCase()}
-      </button>
     </div>
   );
 }

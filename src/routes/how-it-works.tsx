@@ -118,19 +118,18 @@ function ExampleMission() {
               output="Evidence references that travel with the recommendation"
             />
             <div className="mission-document-shelf" id="sample-documents">
-              <div>
-                <p className="dxl-eyebrow">Open the record</p>
-                <h3>
-                  Four documents.
-                  <br />
-                  One inspectable example.
-                </h3>
+              <div className="mission-record-section-heading">
+                <div>
+                  <p className="dxl-eyebrow">Inside the mission pack</p>
+                  <h3>
+                    Follow the evidence.
+                    <br />
+                    Inspect the decision.
+                  </h3>
+                </div>
                 <p>
-                  Read the brief, evidence register, decision and experiment plan. These fixed
-                  samples keep the owner decision pending.
-                </p>
-                <p className="mission-example-label">
-                  Local downloads authorise no experiment, external action or deployment.
+                  Open a document or follow a record reference. Sources, assumptions, objections and
+                  missing inputs stay visible together.
                 </p>
               </div>
               <MissionSampleRecord />
