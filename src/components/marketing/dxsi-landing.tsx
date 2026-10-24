@@ -123,12 +123,22 @@ const MOBILE_STEPS = [
   "Launch",
 ];
 
-export function LiveProgrammeFlow() {
+export function LiveProgrammeFlow({
+  onSelectStage,
+  selectedStage,
+}: { onSelectStage?: (id: string) => void; selectedStage?: string } = {}) {
   const reduced = useReducedMotion();
   const [ref, inView] = useInView<HTMLDivElement>();
-  const [step, setStep] = useState(ORDER.length - 1);
-  const [playing, setPlaying] = useState(true);
+  const [step, setStep] = useState(onSelectStage ? 0 : ORDER.length - 1);
+  const [playing, setPlaying] = useState(!onSelectStage);
   const byId = useMemo(() => new Map(NODES.map((n) => [n.id, n])), []);
+
+  const displayStep = selectedStage
+    ? Math.max(
+        0,
+        ORDER.findIndex((group) => group.includes(selectedStage)),
+      )
+    : step;
 
   const agentsPerPhase = useMemo(() => {
     const r = generateRoadmap(SAMPLE_CASE, "landing");
@@ -140,17 +150,56 @@ export function LiveProgrammeFlow() {
   }, []);
 
   useEffect(() => {
-    if (reduced || !inView || !playing) return;
-    setStep(0);
-    const t = window.setInterval(() => setStep((s) => (s + 1) % (ORDER.length + 2)), 1100);
-    return () => window.clearInterval(t);
-  }, [reduced, inView, playing]);
+    if ((reduced && !onSelectStage) || !inView || !playing) return;
+    if (onSelectStage) {
+      const timer = window.setTimeout(() => {
+        const next = displayStep + 1;
+        if (next >= ORDER.length) {
+          setPlaying(false);
+          return;
+        }
+        setStep(next);
+        const nodeId = ORDER[next]?.[0];
+        if (nodeId) {
+          onSelectStage(nodeId);
+          if (byId.get(nodeId)?.gate) setPlaying(false);
+        }
+      }, 1800);
+      return () => window.clearTimeout(timer);
+    }
+    const timer = window.setInterval(
+      () => setStep((value) => (value + 1) % (ORDER.length + 2)),
+      1100,
+    );
+    return () => window.clearInterval(timer);
+  }, [reduced, inView, playing, onSelectStage, displayStep, byId]);
+  const inspectNode = (nodeId: string) => {
+    if (!onSelectStage) return;
+    setPlaying(false);
+    setStep(ORDER.findIndex((group) => group.includes(nodeId)));
+    onSelectStage(nodeId);
+  };
+  const nodeControls = (nodeId: string) =>
+    onSelectStage
+      ? {
+          role: "button",
+          tabIndex: 0,
+          "aria-label": `Inspect lifecycle ${byId.get(nodeId)?.gate ? "approval " + nodeId.slice(1) : byId.get(nodeId)?.label}`,
+          onClick: () => inspectNode(nodeId),
+          onKeyDown: (event: React.KeyboardEvent<SVGGElement>) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              inspectNode(nodeId);
+            }
+          },
+        }
+      : {};
 
   const stateOf = (id: string) => {
     const idx = ORDER.findIndex((g) => g.includes(id));
-    return idx < step ? "done" : idx === step ? "active" : "idle";
+    return idx < displayStep ? "done" : idx === displayStep ? "active" : "idle";
   };
-  const activeGate = ORDER[step]?.find((id) => byId.get(id)?.gate);
+  const activeGate = ORDER[displayStep]?.find((id) => byId.get(id)?.gate);
 
   return (
     <div
@@ -162,14 +211,24 @@ export function LiveProgrammeFlow() {
         type="button"
         className="psi-flow-toggle"
         aria-pressed={playing}
-        onClick={() => setPlaying(!playing)}
+        onClick={() => {
+          if (onSelectStage && displayStep >= ORDER.length - 1) {
+            setStep(0);
+            onSelectStage("idea");
+          }
+          setPlaying(!playing);
+        }}
       >
-        {playing ? "Pause example flow" : "Play example flow"}
+        {playing
+          ? "Pause example flow"
+          : onSelectStage && activeGate
+            ? "Continue example past this gate"
+            : "Play example flow"}
       </button>
       <svg
         viewBox="0 0 1550 380"
         className="dxl-flow-svg"
-        role="img"
+        role={onSelectStage ? "group" : "img"}
         aria-label="Example lifecycle with parallel discovery and design, joined by human approval gates"
       >
         <defs>
@@ -199,14 +258,24 @@ export function LiveProgrammeFlow() {
         {NODES.map((n) => {
           const st = stateOf(n.id);
           return n.gate ? (
-            <g key={n.id} className={`dxl-gate is-${st}`} transform={`translate(${n.x},${n.y})`}>
+            <g
+              key={n.id}
+              {...nodeControls(n.id)}
+              className={`dxl-gate is-${st}`}
+              transform={`translate(${n.x},${n.y})`}
+            >
               <rect x="-22" y="-22" width="44" height="44" rx="6" transform="rotate(45)" />
               <text y="5" textAnchor="middle">
                 You
               </text>
             </g>
           ) : (
-            <g key={n.id} className={`dxl-node is-${st}`} transform={`translate(${n.x},${n.y})`}>
+            <g
+              key={n.id}
+              {...nodeControls(n.id)}
+              className={`dxl-node is-${st}`}
+              transform={`translate(${n.x},${n.y})`}
+            >
               <rect x="-58" y="-24" width="116" height="48" rx="12" />
               <text y="-1" textAnchor="middle" className="dxl-node-label">
                 {n.label}
@@ -223,7 +292,7 @@ export function LiveProgrammeFlow() {
       <div className="dxl-flow-caption">
         {activeGate ? (
           <span className="dxl-pill is-gate">Example: human approval gate</span>
-        ) : step >= ORDER.length - 1 ? (
+        ) : displayStep >= ORDER.length - 1 ? (
           <span className="dxl-pill is-done">Example: release planning & export</span>
         ) : (
           <span className="dxl-pill">Example: specialist handoff</span>
@@ -233,9 +302,15 @@ export function LiveProgrammeFlow() {
         {MOBILE_STEPS.map((label, i) => (
           <li
             key={i}
-            className={`${label === "You approve" ? "is-gate" : ""} ${i < step ? "is-done" : i === step ? "is-active" : ""}`}
+            className={`${label === "You approve" ? "is-gate" : ""} ${i < displayStep ? "is-done" : i === displayStep ? "is-active" : ""}`}
           >
-            {label}
+            {onSelectStage ? (
+              <button type="button" onClick={() => inspectNode(ORDER[i]![0]!)}>
+                {label}
+              </button>
+            ) : (
+              label
+            )}
           </li>
         ))}
       </ol>
