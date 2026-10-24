@@ -18,3 +18,7 @@ No database, authentication, billing, provider, execution or production schema c
 ## Validation
 
 TypeScript and production build; lint (existing warnings only). Browser review at desktop and 390px mobile. Check each of the three decision responses and reset, illustration hotspots, document selection/download, and in-page navigation. Reduced-motion behaviour is preserved by the illustration and no new automatic animation is added.
+
+## Full illustration-led redesign
+
+The final page uses five visible chapters: frame the mission, connect context, develop a direction, choose the next step and bring learning back. All five original workbench illustrations remain directly visible: mission, record, team, trust and learning. Chapter navigation, concise handoff summaries, a sample brief in the opening, the document shelf and the owner decision desk connect them into one journey. No illustration is hidden behind a disclosure. The page retains honest capability and provenance boundaries.
