@@ -1,221 +1,287 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useRef, useState } from "react";
+import { Bot, ChevronRight, ShieldCheck } from "lucide-react";
 import { CommandShell } from "@/components/command/command-shell";
+import { WorkforceMap } from "@/components/command/workforce-map";
+import { WorkforceInvolvement } from "@/components/command/workforce-involvement";
 import {
-  isOperational,
   listCapabilities,
   listDepartments,
   listInfrastructureServices,
-  WAVE1_AVAILABLE_IDS,
 } from "@/lib/workforce/registry";
-import type { LifecycleStatus } from "@/lib/workforce/registry";
 
 export const Route = createFileRoute("/_authenticated/command/capabilities")({
   head: () => ({
     meta: [
-      { title: "Capability registry — Command Centre — DeliverX" },
+      { title: "Agents & capabilities — DeliverX" },
       {
         name: "description",
         content:
-          "Browse specialist roles. Only roles marked available can run. The rest of the catalogue is planned.",
+          "Explore specialist contributions, capability availability and recorded mission involvement.",
       },
     ],
   }),
   component: CapabilitiesBrowser,
 });
-
-const STATUS_FILTERS: Array<{ id: LifecycleStatus | "all"; label: string }> = [
-  { id: "all", label: "All" },
-  { id: "available", label: "Available" },
-  { id: "planned", label: "Planned" },
-  { id: "testing", label: "Testing" },
-  { id: "draft", label: "Draft" },
-];
-
-function statusLabel(status: LifecycleStatus): string {
-  if (status === "available") return "Available";
-  if (status === "testing") return "Testing";
-  if (status === "planned") return "Planned — not operational";
-  if (status === "draft") return "Draft — not operational";
-  return status;
-}
-
 function CapabilitiesBrowser() {
-  const departments = listDepartments();
   const capabilities = listCapabilities();
+  const departments = listDepartments();
   const infra = listInfrastructureServices();
-  const [status, setStatus] = useState<LifecycleStatus | "all">("all");
-  const [deptNumber, setDeptNumber] = useState<number | "all">("all");
   const [query, setQuery] = useState("");
-
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return capabilities.filter((c) => {
-      if (status !== "all" && c.lifecycle_status !== status) return false;
-      if (deptNumber !== "all" && c.department_number !== deptNumber) return false;
-      if (!q) return true;
-      return (
-        c.capability_id.toLowerCase().includes(q) ||
-        c.name.toLowerCase().includes(q) ||
-        c.description.toLowerCase().includes(q) ||
-        c.department.toLowerCase().includes(q)
-      );
-    });
-  }, [capabilities, status, deptNumber, query]);
-
-  const availableCount = capabilities.filter((c) => c.lifecycle_status === "available").length;
-
+  const [visibleCount, setVisibleCount] = useState(24);
+  const [status, setStatus] = useState("all");
+  const [dept, setDept] = useState("all");
+  const [group, setGroup] = useState<number[] | null>(null);
+  const [selected, setSelected] = useState(capabilities[0]!.capability_id);
+  const directory = useRef<HTMLElement>(null);
+  const detail = useRef<HTMLElement>(null);
+  const filtered = useMemo(
+    () =>
+      capabilities.filter(
+        (c) =>
+          (status === "all" || c.lifecycle_status === status) &&
+          (dept === "all" || c.department_number === Number(dept)) &&
+          (!group || group.includes(c.department_number)) &&
+          `${c.capability_id} ${c.name} ${c.department} ${c.description}`
+            .toLowerCase()
+            .includes(query.toLowerCase().trim()),
+      ),
+    [capabilities, status, dept, group, query],
+  );
+  const role = filtered.find((c) => c.capability_id === selected) ?? filtered[0];
+  const available = capabilities.filter((c) => c.lifecycle_status === "available").length;
   return (
     <CommandShell
-      title="Capability registry"
-      subtitle={`${capabilities.length} roles · ${availableCount} Available (Wave 1) · ${departments.length} departments`}
+      title="Agents & capabilities"
+      subtitle="See how specialists contribute, what is available, and where work stands."
     >
-      <section className="cc-panel cc-cap-banner">
-        <p className="cc-kicker">Workforce Architecture v1.0</p>
-        <p className="text-sm leading-relaxed">
-          The catalogue describes what the workforce can eventually do. The registry describes what
-          is <strong>Available</strong> now. Planned roles are catalogue entries only — they are
-          never presented as operational and cannot be assigned to missions.
-        </p>
-        <p className="cc-muted mt-2">
-          Wave 1 Available: {WAVE1_AVAILABLE_IDS.join(", ")}. Spec:{" "}
-          <Link to="/command" className="underline">
-            Command Centre
-          </Link>{" "}
-          · docs/workforce-architecture-and-agent-catalogue.md
-        </p>
+      <section className="ps-stat-row" aria-label="Capability registry summary">
+        <div className="ps-stat">
+          <span>Specialist roles</span>
+          <strong>{capabilities.length}</strong>
+          <small>A lifecycle-wide catalogue</small>
+        </div>
+        <div className="ps-stat">
+          <span>Available for planning</span>
+          <strong>{available}</strong>
+          <small>Execution mode is configured per environment</small>
+        </div>
+        <div className="ps-stat">
+          <span>Planned roles</span>
+          <strong>{capabilities.filter((c) => c.lifecycle_status === "planned").length}</strong>
+          <small>Cannot be assigned to missions</small>
+        </div>
+        <div className="ps-stat">
+          <span>Departments</span>
+          <strong>{departments.length}</strong>
+          <small>Connected by shared product context</small>
+        </div>
       </section>
-
-      <section className="cc-panel">
-        <h2 className="cc-panel-title">Deterministic infrastructure (non-agent)</h2>
-        <p className="cc-muted mb-3">
-          Budget, permissions, and audit ceilings are services — not agents. DX-148 / DX-149 may
-          advise; these services enforce.
-        </p>
-        <ul className="cc-infra-list">
-          {infra.map((s) => (
-            <li key={s.service_id}>
-              <strong>{s.name}</strong>
-              <span className="cc-chip cc-chip-infra">deterministic service</span>
-              <p className="cc-muted">{s.description}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="cc-panel">
-        <div className="cc-cap-filters">
+      <WorkforceMap
+        onSelectRole={(id) => {
+          setSelected(id);
+          setGroup(null);
+          setDept("all");
+          setQuery(id);
+          setStatus("all");
+          directory.current?.scrollIntoView({ behavior: "instant", block: "start" });
+        }}
+        onExplore={(numbers) => {
+          setGroup(numbers);
+          setDept("all");
+          setQuery("");
+          setStatus("all");
+          directory.current?.scrollIntoView({ behavior: "instant", block: "start" });
+        }}
+      />
+      <WorkforceInvolvement />
+      <section ref={directory} id="role-directory" style={{ scrollMarginTop: 20 }}>
+        <div className="ps-section-heading">
           <div>
-            <label className="cc-label" htmlFor="cap-q">
-              Search
-            </label>
+            <h2>Specialist directory</h2>
+            <p>Select a role to inspect its purpose, limits and permissions.</p>
+          </div>
+          <span className="ps-pill">
+            {filtered.length} of {capabilities.length} roles
+          </span>
+        </div>
+        <div className="ps-filterbar">
+          <div style={{ flex: 2 }}>
+            <label htmlFor="cap-q">Search specialists</label>
             <input
               id="cap-q"
-              className="cc-input"
-              placeholder="DX-091, healthcare, PRD…"
+              placeholder="Search role, department or DX identifier"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
           </div>
           <div>
-            <label className="cc-label" htmlFor="cap-status">
-              Lifecycle status
-            </label>
-            <select
-              id="cap-status"
-              className="cc-input"
-              value={status}
-              onChange={(e) => setStatus(e.target.value as LifecycleStatus | "all")}
-            >
-              {STATUS_FILTERS.map((f) => (
-                <option key={f.id} value={f.id}>
-                  {f.label}
+            <label htmlFor="cap-status">Capability status</label>
+            <select id="cap-status" value={status} onChange={(e) => setStatus(e.target.value)}>
+              {[
+                "all",
+                "available",
+                "planned",
+                "testing",
+                "draft",
+                "implementing",
+                "suspended",
+                "retired",
+              ].map((s) => (
+                <option key={s} value={s}>
+                  {s === "all" ? "All statuses" : s[0]!.toUpperCase() + s.slice(1)}
                 </option>
               ))}
             </select>
           </div>
           <div>
-            <label className="cc-label" htmlFor="cap-dept">
-              Department
-            </label>
+            <label htmlFor="cap-dept">Department</label>
             <select
               id="cap-dept"
-              className="cc-input"
-              value={deptNumber === "all" ? "all" : String(deptNumber)}
-              onChange={(e) =>
-                setDeptNumber(e.target.value === "all" ? "all" : Number(e.target.value))
-              }
+              value={dept}
+              onChange={(e) => {
+                setDept(e.target.value);
+                setGroup(null);
+              }}
             >
-              <option value="all">All 15 departments</option>
+              <option value="all">All departments</option>
               {departments.map((d) => (
                 <option key={d.number} value={d.number}>
-                  {String(d.number).padStart(2, "0")} — {d.name}
+                  {d.name}
                 </option>
               ))}
             </select>
           </div>
         </div>
-        {(status !== "all" || deptNumber !== "all" || query.trim() !== "") && (
-          <div className="mt-3 flex items-center justify-between gap-2">
-            <span className="cc-muted text-xs">
-              Showing {filtered.length} of {capabilities.length} roles
-            </span>
-            <button
-              type="button"
-              className="cc-btn cc-btn-secondary"
-              onClick={() => {
-                setStatus("all");
-                setDeptNumber("all");
-                setQuery("");
-              }}
-            >
-              Reset filters
-            </button>
-          </div>
+        {(group || query || status !== "all" || dept !== "all") && (
+          <button
+            className="cc-btn cc-btn-secondary"
+            style={{ marginBottom: 15 }}
+            onClick={() => {
+              setGroup(null);
+              setQuery("");
+              setStatus("all");
+              setDept("all");
+            }}
+          >
+            Reset filters{group ? " · contribution group selected" : ""}
+          </button>
         )}
-      </section>
-
-      <div className="cc-dept-grid">
-        {departments.map((dept) => {
-          const caps = filtered.filter((c) => c.department_number === dept.number);
-          if (caps.length === 0) return null;
-          return (
-            <section key={dept.number} className="cc-panel cc-dept-panel">
-              <h2 className="cc-panel-title">
-                Department {String(dept.number).padStart(2, "0")} — {dept.name}
-              </h2>
-              <ul className="cc-cap-list">
-                {caps.map((c) => {
-                  const operational = isOperational(c.lifecycle_status);
-                  return (
-                    <li key={c.capability_id} className={operational ? "" : "cc-cap-planned"}>
-                      <div className="cc-cap-row">
-                        <code>{c.capability_id}</code>
-                        <strong>{c.name}</strong>
-                        <span
-                          className={`cc-chip ${operational ? "cc-chip-available" : "cc-chip-planned"}`}
-                        >
-                          {statusLabel(c.lifecycle_status)}
-                        </span>
-                      </div>
-                      <p className="cc-muted">{c.description}</p>
-                      {!operational ? (
-                        <p className="cc-cap-warn">
-                          Not operational — catalogue entry only. Will not be assigned to missions.
-                        </p>
-                      ) : null}
-                    </li>
-                  );
-                })}
+        <div className="ps-directory-layout">
+          <div className="ps-role-list">
+            {filtered.length === 0 ? (
+              <div className="ps-empty">
+                No roles match these filters. Try another term or reset the filters.
+              </div>
+            ) : (
+              filtered.slice(0, visibleCount).map((c) => (
+                <button
+                  key={c.capability_id}
+                  className="ps-role-row"
+                  aria-pressed={role?.capability_id === c.capability_id}
+                  onClick={() => {
+                    setSelected(c.capability_id);
+                    if (window.innerWidth < 961)
+                      detail.current?.scrollIntoView({ behavior: "instant", block: "start" });
+                  }}
+                >
+                  <span className="ps-role-avatar">
+                    <Bot size={17} />
+                  </span>
+                  <div>
+                    <strong>{c.name}</strong>
+                    <small>
+                      {c.capability_id} · {c.department}
+                    </small>
+                  </div>
+                  <span className="ps-pill" data-state={c.lifecycle_status}>
+                    {c.lifecycle_status}
+                  </span>
+                  <ChevronRight size={13} />
+                </button>
+              ))
+            )}
+            {filtered.length > visibleCount && (
+              <button className="ps-load-more" onClick={() => setVisibleCount((n) => n + 24)}>
+                Show more roles ({filtered.length - visibleCount} remaining)
+              </button>
+            )}
+          </div>
+          {role && (
+            <aside
+              ref={detail}
+              className="ps-role-detail"
+              aria-label="Selected specialist details"
+              style={{ scrollMarginTop: 20 }}
+            >
+              <span className="ps-role-avatar">
+                <Bot size={22} />
+              </span>
+              <h3>{role.name}</h3>
+              <span className="ps-pill" data-state={role.lifecycle_status}>
+                {role.lifecycle_status === "available"
+                  ? "Available for planning"
+                  : role.lifecycle_status}
+              </span>
+              <p style={{ marginTop: 15 }}>{role.description}</p>
+              <dl>
+                <div>
+                  <dt>Identifier</dt>
+                  <dd>{role.capability_id}</dd>
+                </div>
+                <div>
+                  <dt>Permission ceiling</dt>
+                  <dd>{role.permission_profile.replaceAll("_", " ")}</dd>
+                </div>
+                <div>
+                  <dt>Implementation</dt>
+                  <dd>{role.implementation_type.replaceAll("_", " ")}</dd>
+                </div>
+                <div>
+                  <dt>Maximum runtime</dt>
+                  <dd>{role.limits.max_runtime_seconds}s</dd>
+                </div>
+                <div>
+                  <dt>Maximum usage</dt>
+                  <dd>{role.limits.max_usage_credits} units</dd>
+                </div>
+              </dl>
+              <h4>Known limitations</h4>
+              <ul>
+                {role.known_limitations.map((l) => (
+                  <li key={l}>{l}</li>
+                ))}
               </ul>
-            </section>
-          );
-        })}
-      </div>
-
-      {filtered.length === 0 ? (
-        <p className="cc-muted">No capabilities match these filters.</p>
-      ) : null}
+              <h4>Evaluation notes</h4>
+              <p>{role.evaluation_notes}</p>
+              <p style={{ marginTop: 18 }}>
+                {role.lifecycle_status === "available"
+                  ? "Availability permits planning. It does not confirm a live model or current activity."
+                  : "Catalogue entry only. This role cannot be assigned until it is available."}
+              </p>
+            </aside>
+          )}
+        </div>
+      </section>
+      <details className="ps-legacy">
+        <summary>
+          <ShieldCheck size={14} style={{ display: "inline", marginRight: 8 }} />
+          Permission, budget and audit services
+        </summary>
+        <section className="cc-panel">
+          <p className="ps-subtle">
+            These deterministic services enforce controls. They are not specialist agents.
+          </p>
+          <div className="ps-service-grid">
+            {infra.map((s) => (
+              <div key={s.service_id}>
+                <h3>{s.name}</h3>
+                <p>{s.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </details>
     </CommandShell>
   );
 }

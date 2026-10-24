@@ -102,7 +102,13 @@ function SupervisedMissionPage() {
       title={mission.brief.question}
       subtitle={next.detail}
       {...(mission.usageCeiling > 0
-        ? { usage: { consumed: mission.usageConsumed, ceiling: mission.usageCeiling } }
+        ? {
+            usage: {
+              consumed: mission.usageConsumed,
+              ceiling: mission.usageCeiling,
+              scope: "mission" as const,
+            },
+          }
         : {})}
     >
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -120,13 +126,14 @@ function SupervisedMissionPage() {
           </button>
         ) : null}
       </div>
-      <ol className="mb-4 flex flex-wrap gap-2" aria-label="Mission progress">
+      <ol className="ps-mission-progress" aria-label="Mission progress">
         {PROGRESS_STEPS.map((step, index) => {
           const state = stepState(mission.stage, index);
           return (
             <li
               key={step.id}
-              className="cc-chip"
+              className="ps-progress-step"
+              data-state={state}
               aria-current={state === "current" ? "step" : undefined}
             >
               {state === "done" ? "Done · " : state === "current" ? "Now · " : ""}

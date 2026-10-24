@@ -3,24 +3,27 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
+  ArrowUpRight,
   FolderKanban,
   Inbox,
   LayoutDashboard,
   Menu,
   Rocket,
-  Shield,
+  ShieldCheck,
   UsersRound,
+  X,
 } from "lucide-react";
 import { getPilotOperatorAccess } from "@/lib/pilot/enquiry.functions";
 import { useSignOut } from "@/hooks/use-sign-out";
 import { useSession } from "@/hooks/use-session";
 import { BrandLogo } from "@/components/brand-logo";
+import "@/styles/psi-workspace.css";
 
 const NAV = [
-  { to: "/command", label: "Command Centre", icon: LayoutDashboard },
+  { to: "/command", label: "Overview", icon: LayoutDashboard },
   { to: "/command/programmes", label: "Programmes", icon: Rocket },
   { to: "/command/projects", label: "Projects", icon: FolderKanban },
-  { to: "/command/capabilities", label: "Capabilities", icon: UsersRound },
+  { to: "/command/capabilities", label: "Agents & capabilities", icon: UsersRound },
 ] as const;
 
 export function CommandShell({
@@ -32,7 +35,9 @@ export function CommandShell({
   title: string;
   subtitle?: string;
   children: ReactNode;
-  usage?: { consumed: number; ceiling: number } | undefined;
+  usage?:
+    | { consumed: number; ceiling: number; scope?: "workspace" | "mission" | "programme" }
+    | undefined;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const signOut = useSignOut();
@@ -43,125 +48,131 @@ export function CommandShell({
     queryFn: () => getPilotOperatorAccess(),
     staleTime: 60_000,
   });
-
-  const displayName =
-    (user?.user_metadata?.["full_name"] as string | undefined) ?? user?.email ?? "Operator";
-  const initials = displayName
-    .split(/[\s@]/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase())
-    .join("");
-
+  const name = user?.user_metadata.full_name ?? user?.email ?? "Workspace owner";
   const remaining = usage ? Math.max(0, usage.ceiling - usage.consumed) : null;
-
   return (
-    <div className="dxa cc-shell min-h-screen">
-      <div className="mobile-topbar">
-        <BrandLogo to="/command" inverse />
+    <div
+      className="dxa cc-shell psi-workspace"
+      onKeyDown={(event) => {
+        if (event.key === "Escape") setOpen(false);
+      }}
+    >
+      <header className="ps-mobile">
+        <BrandLogo to="/command" />
         <button
-          type="button"
-          aria-label="Toggle menu"
-          onClick={() => setOpen((v) => !v)}
-          className="rounded-md border border-white/20 p-2 text-white"
+          aria-label={open ? "Close navigation" : "Open navigation"}
+          aria-expanded={open}
+          aria-controls="workspace-navigation"
+          onClick={() => setOpen(!open)}
         >
-          <Menu className="size-4" />
+          {open ? <X size={20} /> : <Menu size={20} />}
         </button>
-      </div>
-      <div className="app-wrap">
-        <aside className={`sidebar${open ? " open" : ""}`}>
-          <div onClick={() => setOpen(false)}>
-            <BrandLogo to="/command" inverse className="brand-logo sidebar-logo" />
+      </header>
+      {open && (
+        <button className="ps-scrim" aria-label="Close navigation" onClick={() => setOpen(false)} />
+      )}
+      <aside id="workspace-navigation" className={`ps-sidebar ${open ? "is-open" : ""}`}>
+        <BrandLogo to="/command" className="ps-brand" />
+        <div className="ps-workspace-switch">
+          <span className="ps-product-mark">P</span>
+          <div>
+            <strong>Product workspace</strong>
+            <small>Product Super Intelligence</small>
           </div>
-          <div className="sidebar-section">
-            <div className="sidebar-label">Product workspace</div>
-            {NAV.map((item) => {
-              const active =
-                item.to === "/command" ? pathname === "/command" : pathname.startsWith(item.to);
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  onClick={() => setOpen(false)}
-                  className={`sidebar-link${active ? " active" : ""}`}
-                >
-                  <Icon />
-                  {item.label}
-                </Link>
-              );
-            })}
-            {operatorAccess.data?.authorised ? (
-              <Link
-                to="/command/pilot-requests"
-                onClick={() => setOpen(false)}
-                className={`sidebar-link${pathname.startsWith("/command/pilot-requests") ? " active" : ""}`}
-              >
-                <Inbox />
-                Pilot requests
-              </Link>
-            ) : null}
-          </div>
-          {usage ? (
-            <div className="cc-usage-rail">
-              <div className="sidebar-label">Usage ceiling</div>
-              <div className="cc-usage-meter">
-                <div
-                  className="cc-usage-fill"
-                  style={{
-                    width: `${Math.min(100, (usage.consumed / usage.ceiling) * 100)}%`,
-                  }}
-                />
-              </div>
-              <p className="cc-usage-copy">
-                {usage.consumed} / {usage.ceiling} credits
-                {remaining === 0 ? " · hard stop" : ` · ${remaining} left`}
-              </p>
-            </div>
-          ) : null}
-          <div className="sidebar-bottom">
-            <div className="sidebar-user">
-              <div className="sidebar-avatar">{initials || "·"}</div>
-              <div className="min-w-0">
-                <div className="sidebar-user-name truncate">{displayName}</div>
-                <div className="sidebar-user-stage">Operator</div>
-              </div>
-            </div>
-            <button type="button" className="sidebar-signout" onClick={() => void signOut()}>
-              Sign out
-            </button>
-          </div>
-        </aside>
-
-        <div className="main">
-          <div className="main-header">
-            <div>
-              <div className="cc-header-eyebrow">DeliverX Command Centre</div>
-              <h1 className="main-header-title">{title}</h1>
-              {subtitle ? (
-                <p className="mt-0.5 text-xs" style={{ color: "var(--x-slate-light)" }}>
-                  {subtitle}
-                </p>
-              ) : null}
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <div
-                className="cc-sim-pill"
-                role="note"
-                title="Deterministic planner and executor enforce real permission and budget gates."
-              >
-                <span className="cc-sim-dot" />
-                <span>Supervised Execution · Budget &amp; Approval Gates Active</span>
-              </div>
-              <div className="cc-permission-chip" title="Permission ladder">
-                <Shield className="size-3.5" />
-                Plan → Create → Execute → Act externally
-              </div>
-            </div>
-          </div>
-          <div className="app-content">{children}</div>
         </div>
-      </div>
+        <nav aria-label="Workspace navigation">
+          {NAV.map(({ to, label, icon: Icon }) => {
+            const active =
+              to === "/command"
+                ? pathname === "/command" ||
+                  pathname.startsWith("/command/supervised") ||
+                  pathname.startsWith("/command/missions")
+                : pathname.startsWith(to);
+            return (
+              <Link
+                key={to}
+                to={to}
+                aria-current={active ? "page" : undefined}
+                className={`ps-nav-link ${active ? "is-active" : ""}`}
+                onClick={() => setOpen(false)}
+              >
+                <Icon size={18} />
+                {label}
+              </Link>
+            );
+          })}
+          {operatorAccess.data?.authorised && (
+            <Link to="/command/pilot-requests" className="ps-nav-link">
+              <Inbox size={18} />
+              Pilot requests
+            </Link>
+          )}
+        </nav>
+        <div className="ps-sidebar-note">
+          <ShieldCheck size={18} />
+          <strong>You stay in control.</strong>
+          <p>Specialists contribute. You decide what moves forward.</p>
+        </div>
+        <div className="ps-sidebar-bottom">
+          {usage && (
+            <div className="ps-budget">
+              <div>
+                <span>
+                  {usage.scope === "mission"
+                    ? "Mission usage"
+                    : usage.scope === "programme"
+                      ? "Programme usage"
+                      : "Workspace usage"}
+                </span>
+                <strong>
+                  {usage.consumed} / {usage.ceiling}
+                </strong>
+              </div>
+              <progress
+                aria-label={`${usage.scope ?? "workspace"} usage`}
+                max={Math.max(1, usage.ceiling)}
+                value={usage.consumed}
+              />
+              <small>
+                {remaining === 0 ? "Usage ceiling reached" : `${remaining} units remaining`}
+              </small>
+            </div>
+          )}
+          <Link to="/" className="ps-site-link">
+            Explore DeliverX
+            <ArrowUpRight size={14} />
+          </Link>
+          <div className="ps-user">
+            <span>{name.slice(0, 1).toUpperCase()}</span>
+            <div>
+              <strong>{name}</strong>
+              <small>Workspace owner</small>
+            </div>
+            <button onClick={() => void signOut()}>Sign out</button>
+          </div>
+        </div>
+      </aside>
+      <main className="ps-main" inert={open}>
+        <div className="ps-topbar">
+          <span>
+            Workspace <span>/</span> {title}
+          </span>
+          <Link to="/command" hash="supervised-brief" className="ps-new-mission">
+            + New mission
+          </Link>
+        </div>
+        <header className="ps-page-heading">
+          <div>
+            <h1>{title}</h1>
+            {subtitle && <p>{subtitle}</p>}
+          </div>
+          <span className="ps-supervision">
+            <ShieldCheck size={15} />
+            Human supervised
+          </span>
+        </header>
+        <div className="ps-content">{children}</div>
+      </main>
     </div>
   );
 }
