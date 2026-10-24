@@ -6407,3 +6407,20 @@ html:has(.marketing-page) {
   outline: 3px solid #4865e9;
   outline-offset: 4px;
 }
+
+/* Secondary pages: visible input, work and output instead of repeated platform diagrams. */
+.use-case-flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; list-style: none; padding: 0; margin: 32px 0; }
+.use-case-flow li { position: relative; padding: 24px; background: #fff; border: 1px solid #dce1ed; border-radius: 14px; }
+.use-case-flow li:not(:last-child)::after { content: "→"; position: absolute; right: -26px; top: 40%; color: #4865e9; font-size: 22px; }
+.use-case-flow span { display: block; color: #536077; margin-bottom: 12px; }
+.use-case-flow strong { display: block; font-size: 20px; line-height: 1.5; }
+.trust-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 40px; margin: 32px 0; }
+.trust-controls article { border-top: 1px solid #dce1ed; padding: 24px 0; }
+.trust-controls h3 { font-size: 23px; margin-bottom: 12px; }
+.resource-starts { display: flex; flex-direction: column; gap: 16px; margin: 28px 0; }
+.resource-starts a[aria-current="page"] { color: #101319; text-decoration: underline; text-underline-offset: 5px; }
+.resource-document-mark { margin: 28px; padding: 24px; border: 1px solid #cbd4ef; border-radius: 8px; background: #f3f5ff; }
+.resource-document-mark span { display: block; color: #4865e9; font-size: 28px; font-weight: 600; margin-bottom: 20px; }
+.resource-document-mark i { display: block; height: 2px; background: #cbd4ef; margin: 12px 0; }
+.resource-document-mark i:last-child { width: 65%; }
+@media (max-width: 700px) { .use-case-flow, .trust-controls { grid-template-columns: 1fr; } .use-case-flow li:not(:last-child)::after { content: "↓"; right: auto; left: 45%; top: auto; bottom: -31px; } }

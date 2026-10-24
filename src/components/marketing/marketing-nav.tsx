@@ -11,7 +11,7 @@ export const MARKETING_LINKS = [
   { to: "/how-it-works", label: "Example mission" },
   { to: "/ai-agents", label: "Specialists" },
   { to: "/product-brain", label: "Product Brain" },
-  { to: "/solutions", label: "Solutions" },
+  { to: "/solutions", label: "Use cases" },
   { to: "/security", label: "Security & Trust" },
   { to: "/pricing", label: "Pricing & Pilot" },
 ] as const;

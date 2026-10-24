@@ -21,7 +21,7 @@ export const PLANS = [
       "1 product · 1 owner",
       "1 scoped mission per month",
       "Brief, evidence review and decision record",
-      "Prototype planning and project export",
+      "Experiment planning and project export",
     ],
     budget: "Up to £5 of model usage included",
   },
@@ -33,7 +33,7 @@ export const PLANS = [
     features: [
       "3 products · up to 3 collaborators",
       "4 scoped missions per month",
-      "Research-to-prototype mission scope",
+      "Evidence-to-decision mission scope",
       "Decision reviews and pilot onboarding",
     ],
     budget: "Up to £20 of model usage included",
@@ -64,19 +64,19 @@ function Pricing() {
             <span className="dxl-grad">A defined investment.</span>
           </h1>
           <p className="psi-lead">
-            Choose a paid pilot for the work you want to move forward. Each plan has a clear scope
-            and a usage ceiling.
+            Compare proposed paid pilot scopes. Prepare your question first; availability, included
+            capabilities and billing must be agreed before paid work starts.
           </p>
           <p className="psi-fine-print">
-            Pilot offers. Access is confirmed before billing; self-service checkout and automatic
-            plan enforcement are not yet live. Prices exclude applicable taxes. No annual
-            commitment.
+            Pilot offers, not active subscriptions. Enquiry submission, self-service checkout and
+            automatic plan enforcement are not live. These buttons open preparation, not a purchase
+            or submitted request. Prices exclude applicable taxes. No annual commitment.
           </p>
           <div className="psi-price-grid">
             {PLANS.map((plan) => (
               <article className="psi-plan" key={plan.id}>
                 <p className="dxl-eyebrow">
-                  {plan.id === "founder" ? "For your first product launch" : "Paid pilot"}
+                  {plan.id === "founder" ? "For your next product decision" : "Paid pilot"}
                 </p>
                 <h2>{plan.name}</h2>
                 <p>{plan.audience}</p>
@@ -85,7 +85,7 @@ function Pricing() {
                   <small> / month</small>
                 </div>
                 <Link to="/pilot" search={{ plan: plan.id }} className="dxl-btn dxl-btn-primary">
-                  Request {plan.name} access
+                  Prepare for {plan.name}
                 </Link>
                 <ul>
                   {plan.features.map((f) => (
@@ -104,12 +104,18 @@ function Pricing() {
       </section>
       <section className="psi-section psi-tinted">
         <div className="dxl-wrap">
-          <p className="dxl-eyebrow">What you are paying for</p>
-          <h2 className="dxl-h2">Product continuity, not 150 chat windows.</h2>
+          <p className="dxl-eyebrow">Proposed pilot deliverables</p>
+          <h2 className="dxl-h2">One bounded question. A record you can inspect.</h2>
           <p className="psi-lead">
             A mission connects the brief, evidence, specialist contributions, decisions and
             reviewable deliverables. The 150-role catalogue describes disciplines; only enabled
             capabilities can run.
+          </p>
+          <p className="journey-status">
+            A first pilot is proposed to deliver a mission brief, evidence register, alternatives
+            and owner decision, experiment brief and export. A prototype is an agreed extension.
+            Seat, product and mission quotas are proposed offer limits, not currently enforced
+            entitlements.
           </p>
           <div className="psi-feature-grid">
             {[
@@ -133,7 +139,7 @@ function Pricing() {
           },
           {
             q: "What happens at the usage ceiling?",
-            a: "Work pauses. You choose whether to reduce scope or explicitly approve additional usage and its price. Model allowances are GBP cost budgets, not a promise of a fixed number of tokens or autonomous agents.",
+            a: "The proposed pilot rule is to pause and agree reduced scope or additional usage before continuing. Model allowances are GBP cost budgets; measured provider-cost enforcement still requires release verification. No automatic overage is offered.",
           },
           {
             q: "When do I pay?",

@@ -1,14 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { pageHead } from "@/components/marketing/page-head";
 import { capabilityRegistryData as registry } from "@/lib/workforce/registry/data";
-import { JudgementFlow } from "@/components/marketing/judgement-flow";
 export const Route = createFileRoute("/ai-agents")({
   head: () =>
     pageHead(
       "/ai-agents",
-      "150 AI Agents — DeliverX",
+      "Specialist catalogue — Roles and current limitations | DeliverX",
       "Search the DeliverX specialist catalogue, explore lifecycle departments and inspect capability status and limitations.",
     ),
   component: Agents,
@@ -30,7 +29,11 @@ const GROUPS = [
 function Agents() {
   const [q, setQ] = useState("");
   const [group, setGroup] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("available");
+  const foundationCount = registry.capabilities.filter(
+    (c) => c.lifecycle_status === "available",
+  ).length;
+  const plannedCount = registry.capabilities.filter((c) => c.lifecycle_status === "planned").length;
   const selected = GROUPS.find((g) => g.name === group);
   const roles = registry.capabilities.filter(
     (c) =>
@@ -44,20 +47,27 @@ function Agents() {
         <div className="dxl-wrap">
           <p className="dxl-eyebrow">Specialist workforce · capability directory</p>
           <h1 className="dxl-h1">
-            150 roles.
+            Specialists with
             <br />
-            <span className="dxl-grad">Every capability visible.</span>
+            <span className="dxl-grad">a defined contribution.</span>
           </h1>
           <p className="psi-lead">
             Explore the disciplines behind a product mission. A role in the catalogue is not a
             guarantee that an autonomous agent is live.
           </p>
-          <p className="psi-fine-print">
-            12 navigation groups organise the existing 15 registry departments without changing
-            execution rules. Foresight and analytics use the current PSI catalogue. Availability
-            below is catalogue status; runtime also depends on configured providers, tools and
-            permissions.
+          <p className="journey-status">
+            {foundationCount} role foundations have deterministic-stub limitations. {plannedCount}{" "}
+            roles are planned. None of these labels establishes evaluated live execution. Provider
+            integration, tools and permissions require separate verification.
           </p>
+          <details className="journey-detail">
+            <summary>How the catalogue is organised</summary>
+            <p>
+              Twelve browsing groups organise the specialist disciplines. They are navigation
+              categories, not teams that automatically run together. A mission should select only
+              capabilities evaluated for its scope.
+            </p>
+          </details>
           <div className="psi-wheel" aria-label="Lifecycle department explorer">
             {GROUPS.map((g, i) => (
               <button
@@ -99,7 +109,13 @@ function Agents() {
               <select value={status} onChange={(e) => setStatus(e.target.value)}>
                 <option value="">All statuses</option>
                 {[...new Set(registry.capabilities.map((c) => c.lifecycle_status))].map((s) => (
-                  <option key={s}>{s}</option>
+                  <option key={s} value={s}>
+                    {s === "available"
+                      ? "Role foundations (stub limitations)"
+                      : s === "planned"
+                        ? "Planned roles"
+                        : s}
+                  </option>
                 ))}
               </select>
             </label>
@@ -108,19 +124,26 @@ function Agents() {
               onClick={() => {
                 setQ("");
                 setGroup("");
-                setStatus("");
+                setStatus("available");
               }}
             >
-              Reset filters
+              Reset to foundations
             </button>
           </div>
           <p role="status">
-            {roles.length} of {registry.capabilities.length} roles{group ? ` · ${group}` : ""}
+            {roles.length} matching roles · {registry.capabilities.length} total catalogue entries
+            {group ? ` · ${group}` : ""}
           </p>
           <div className="psi-directory">
             {roles.map((c) => (
               <article className="psi-role" key={c.capability_id}>
-                <span className="psi-role-status">{c.lifecycle_status}</span>
+                <span className="psi-role-status">
+                  {c.lifecycle_status === "available"
+                    ? "Role foundation · stub limitations"
+                    : c.lifecycle_status === "planned"
+                      ? "Planned role"
+                      : c.lifecycle_status}
+                </span>
                 <h3>{c.name}</h3>
                 <small>
                   {c.capability_id} · {c.department}
@@ -139,12 +162,23 @@ function Agents() {
               </article>
             ))}
           </div>
-          {roles.length === 0 && <p>No matching roles. Reset filters or try another discipline.</p>}
+          {roles.length === 0 && (
+            <p>No matching roles. Reset to foundations or try another discipline.</p>
+          )}
         </div>
       </section>
-      <div className="dxl-wrap">
-        <JudgementFlow />
-      </div>
+      <section className="psi-section psi-tinted">
+        <div className="dxl-wrap">
+          <h2 className="dxl-h2">See a contribution in context.</h2>
+          <p>
+            A catalogue is useful when you can see what moves from one role to the next. Follow the
+            onboarding example and inspect its hypothetical outputs.
+          </p>
+          <Link to="/how-it-works" className="dxl-btn dxl-btn-primary">
+            Explore the example mission
+          </Link>
+        </div>
+      </section>
     </MarketingLayout>
   );
 }

@@ -1,54 +1,82 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { PlatformPage } from "@/components/marketing/platform-pages";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { pageHead } from "@/components/marketing/page-head";
+import { BRIEF_PRESETS, type BriefPreset } from "@/lib/marketing/brief-presets";
 export const Route = createFileRoute("/solutions")({
   head: () =>
     pageHead(
       "/solutions",
-      "Solutions \u2014 DeliverX",
-      "Use the same evidence-to-decision workflow whether you are learning to build, validating an idea or improving an existing product.",
+      "Use cases — Find your first product question | DeliverX",
+      "Choose a starting brief for founder validation, product improvement or learning by building. Inspect the input, work and proposed output for each.",
     ),
-  component: Page,
+  component: UseCases,
 });
-function Page() {
+function UseCases() {
   return (
-    <PlatformPage
-      eyebrow="Solutions"
-      title="Different teams. One product thread."
-      lead="Use the same evidence-to-decision workflow whether you are learning to build, validating an idea or improving an existing product."
-      sections={[
-        {
-          title: "Founders & startups: choose what to build.",
-          body: "Turn a broad idea into a bounded question and inspect the evidence before expanding scope.",
-          art: "evidence-decision",
-          steps: [
-            "Input: audience, problem and constraints",
-            "Mission: compare target segments or MVP options",
-            "Output: decision brief and next experiment",
-          ],
-        },
-        {
-          title: "Product managers & teams: explain the trade-off.",
-          body: "Bring the product objective and available research into a mission your team can inspect.",
-          art: "specialist-team",
-          steps: [
-            "Input: a product problem and real evidence",
-            "Mission: evaluate an onboarding improvement",
-            "Output: alternatives, decision record and prototype brief",
-          ],
-        },
-        {
-          title: "Students & builders: learn through the work.",
-          body: "Build a product while seeing how research, design and engineering judgements connect. Agent output supports learning; it does not replace your responsibility to inspect it.",
-          art: "product-delivery",
-          steps: [
-            "Input: a learning goal and product idea",
-            "Mission: scope and prototype a useful workflow",
-            "Output: reviewable artefacts and a reflection on decisions",
-          ],
-        },
-      ]}
-      flow={false}
-    />
+    <MarketingLayout>
+      <section className="psi-page-hero">
+        <div className="dxl-wrap">
+          <p className="dxl-eyebrow">Use cases</p>
+          <h1 className="dxl-h1">
+            Start with the question
+            <br />
+            in front of you.
+          </h1>
+          <p className="psi-lead">
+            Validate an idea, improve a product or learn through the work. Each starting point opens
+            an editable brief with its own question and boundaries.
+          </p>
+          <p className="journey-status">
+            Illustrative starting points, not customer success stories. Pilot delivery scope and
+            capability availability must be agreed before work starts.
+          </p>
+        </div>
+      </section>
+      {(Object.keys(BRIEF_PRESETS) as BriefPreset[]).map((key, index) => {
+        const item = BRIEF_PRESETS[key];
+        return (
+          <section key={key} className={`psi-section ${index % 2 === 0 ? "psi-tinted" : ""}`}>
+            <div className="dxl-wrap">
+              <p className="dxl-eyebrow">{item.audience}</p>
+              <h2 className="dxl-h2">{item.label}</h2>
+              <p className="psi-lead">“{item.question}”</p>
+              <ol className="use-case-flow" aria-label={`${item.label}: input to output`}>
+                <li>
+                  <span>You bring</span>
+                  <strong>{item.input}</strong>
+                </li>
+                <li>
+                  <span>The work</span>
+                  <strong>{item.work}</strong>
+                </li>
+                <li>
+                  <span>Proposed output</span>
+                  <strong>{item.output}</strong>
+                </li>
+              </ol>
+              <div className="psi-actions">
+                <Link
+                  to="/resources"
+                  search={{ useCase: key }}
+                  hash="brief-builder"
+                  className="dxl-btn dxl-btn-primary"
+                >
+                  Prepare this brief
+                </Link>
+                {key === "team" ? (
+                  <Link to="/how-it-works" className="dxl-link">
+                    Inspect the onboarding example
+                  </Link>
+                ) : (
+                  <Link to="/pricing" className="dxl-link">
+                    Compare pilot offers
+                  </Link>
+                )}
+              </div>
+            </div>
+          </section>
+        );
+      })}
+    </MarketingLayout>
   );
 }

@@ -1,43 +1,40 @@
-# Website, Landing Pages & UX/UI Design Specification
+# DeliverX public website specification
 
-Companion chapter for the DeliverX master development guide. Public marketing and the authenticated `/command` application share brand foundations but have separate navigation and purposes.
+Updated 24 October 2026 after Phase 2. The Phase 1 customer-story document defines positioning and first pilot scope. The public website and authenticated /command workspace share a design system but have different jobs.
 
-## Required public order
+## Navigation
 
-Page architecture: Home → PSI Platform → How It Works → 150 AI Agents → Product Brain → Solutions → Security & Trust → Pricing & Pilot. Header is reduced to PSI Platform, How It Works, Agents and Pricing; the logo links Home. Product Brain, Solutions and Security & Trust remain accessible in the footer. Authenticated users have a persistent Launch PSI Workspace entry. Resources and About remain in secondary navigation. Retired career routes retain their existing redirects.
+Header: Product (/psi), Example mission (/how-it-works), Pricing & Pilot (/pricing), Sign in and Prepare your brief (/resources#brief-builder). Authenticated users retain their workspace entry. Footer and contextual links expose Specialists, Product Brain, Use cases, Trust, Resources, About and legal. Existing /product-brain URLs permanently redirect to /psi#product-brain; the redirect is excluded from the sitemap.
 
-| Page | Purpose and sections | Primary destination |
+## Page ownership
+
+| Page | Distinct purpose | Useful next step |
 | --- | --- | --- |
-| Home `/` | Hero and illustrative product interface; disconnected context problem; Product Brain; specialist workforce; lifecycle; example judgement handoffs; learning; governance; paid pilot conversion | Platform and example mission |
-| PSI `/psi` | Shared context; orchestration and task contracts; human governance; interactive judgement sequence | Example mission and pricing |
-| How `/how-it-works` | Concrete onboarding mission; named specialist handoffs; six-step walkthrough; responsibilities and deliverable limits | Product brief and workspace |
-| Agents `/ai-agents` | Interactive department wheel; text search; department and status filters; capability details and limitations | Directory exploration |
-| Brain `/product-brain` | Source → decision → versioned artefact; observed feedback → next hypothesis | Mission and pilot |
-| Solutions `/solutions` | Founder/startup validation; PM/team improvement; student/builder learning; inputs, mission and outputs for each | Example mission and pilot |
-| Trust `/security` | Human approvals; server ownership checks; permissions and budget limits; evidence and review labels | Inspect safeguards and pilot |
-| Pricing `/pricing` | Three paid monthly offers; included scope; GBP model allowances; pause rules and billing availability | Plan-specific pilot preparation |
+| Home | Audience, handoff problem, flagship interactive scene and useful first outputs | Example mission or brief builder |
+| Product | Product record, specialist handoffs and human controls; expandable lifecycle/learning | Inspect linked sample records |
+| Example mission | One hypothetical onboarding journey and inspectable sample documents | Prepare own brief |
+| Specialists | Searchable catalogue; role foundations with stub limitations versus planned roles | Understand contribution in example |
+| Use cases | Different inputs/work/outputs for founders, product teams and students | Open corresponding editable starter brief |
+| Trust | Action authority, permission/spend boundaries, evidence labels and verification gaps | Review sample decision or product scope |
+| Pricing | Three scoped pilot offers with availability and commercial limits | Plan-specific preparation, not a purchase/request submission |
+| Resources | Editable starter or blank brief, download and evidence/decision/experiment templates | Keep downloaded work and compare offers |
 
-## Visual rules
+## Illustration and interaction rules
 
-Interface previews carry the core product explanation. Following founder review, clean code-native process diagrams replace decorative glass raster images in the public pages. Each diagram has readable stage/role labels, branching arrow paths, moving handoff particles, pause/play controls, an accessible description and a static reduced-motion view. Mobile uses text cards that explicitly name incoming stages, preserving branch semantics. The example judgement flow names senders, recipients, outputs and escalation rules. Do not use unreadable labels baked into raster artwork. Do not imply a concept image is a live screenshot.
+Preserve the approved isometric layered scenes and real HTML labels. Home holds the flagship scene and context comparison; Product contains deeper record/team/trust scenes and expandable lifecycle/planned learning. Example mission has one illustrated mission stepper. Use cases and Trust use readable directional input/action/output flows rather than repeating general system scenes. Resources uses document motifs, not another platform tutorial.
 
-The 150-role directory uses the current generated capability registry. Twelve public browsing groups merge strategy/orchestration, trust/finance governance and growth/commercial from the existing fifteen execution departments. This does not change execution taxonomy. Foresight and analytics remain explicit groups. Search, wheel and status filters compose and have a reset and zero-results state. Catalogue availability is not runtime certification.
+Every diagram must make direction and handoff meaning understandable without motion. Preserve keyboard/touch controls, visible focus, reduced-motion behaviour and explicit human gates. Sample approval changes no real workspace state. Sample documents are hypothetical and do not represent real customer observations. No weighted vote is presented as outcome probability.
 
-## Paid pilot commercial assumptions
+## Capability and commercial boundaries
 
-Builder £29/month: one owner, one product, one bounded mission, up to £5 model cost. Founder £99/month: three collaborators/products, four missions, up to £20 model cost. Studio £299/month: ten collaborators/products, twelve missions, up to £60 model cost. Scope, seats and access are pilot offers to be confirmed before billing; they are not yet automatically enforced subscription entitlements. No automatic overage billing. Applicable taxes excluded; no annual commitment advertised.
+The directory defaults to role foundations. Registry lifecycle status is not execution certification; available entries have deterministic-stub limitations. Counts derive from the registry; 12 browsing groups do not mean 12 operational teams. Live provider execution, authenticated isolation, durable runtime and the complete outcome loop require later release verification.
 
-These are positioning hypotheses, not validated willingness-to-pay or proven margins. Benchmarking on 22 October 2026: Taskade lists $10/$25/$100 monthly equivalents billed annually; Lindy lists $49.99/month with 5,000 credits and higher usage options; Relevance AI's current pricing emphasises custom enterprise actions and vendor credits. Sources: https://www.taskade.com/pricing , https://www.lindy.ai/pricing , https://relevanceai.com/pricing . Do not compare GBP offers to USD prices as currency equivalents. Allowances cap included model costs to roughly 17–20% of revenue; hosting, support, payment fees and acquisition costs still need measured unit economics. No claim of unlimited execution.
+Builder £29, Founder £99 and Studio £299 monthly are proposed paid pilot offers. Quotas/allowances are not active enforced entitlements. Preparation buttons do not submit requests or take payment. Account creation does not activate paid access. Pilot request handling, saved brief/plan continuity, auth verification and billing belong to later phases. Do not claim free paid-pilot access. No price/market or margin validation is established by this specification.
 
-## Responsive, accessibility and SEO criteria
+## Brief starters and public data handling
 
-- Desktop navigation uses the reduced four-link set. At smaller widths use the same ordered mobile menu and avoid horizontal overflow.
-- Department wheel becomes a readable button grid on phones. All controls have visible names, keyboard focus and pressed state. Search and filters have labels; result counts announce updates.
-- Art labels remain real text, wrap on mobile and have sufficient contrast. SVG diagrams have titles and descriptions; retained original WebP artwork is no longer the default public explanation. Reduced-motion preference disables decorative movement.
-- Example handoff controls update the named receiving team, output and escalation rule. Never silently advance a real mission or a human gate.
-- Each page has its own title, description and canonical URL; all public product pages appear in sitemap.xml. No invented testimonials or customer outcomes.
-- Plans show GBP, billing period, scope, included usage and availability together. Pilot preparation must preserve the chosen plan and must not imply a request was submitted or a payment made.
+/resources?useCase=founder|team|student opens the corresponding editable hypothetical starter. Invalid values fall back to a blank brief. These public identifiers contain no user-entered brief text. Entered fields remain page-local, are not submitted, and are lost on navigation unless downloaded. Switching starters replaces the page-local draft; the page explicitly advises downloading before navigation. Phase 3 will add reviewed persistence/continuity, not silent URL transport of private content.
 
-## Release limits
+## Acceptance
 
-Pilot preparation currently links to brief creation and account setup; automated request submission, checkout, paid entitlement enforcement and pilot approval are not implemented. The page discloses this. Workspace auth and production agent execution require separate verification. Connected outcome collection, a full interactive knowledge graph and autonomous learning remain planned.
+TypeScript, lint and production build; inspect desktop/mobile direction and overflow; compose catalogue filters and zero-results/reset; verify all three use-case starters, edits and downloaded Markdown; verify legacy Brain redirect, truthful pricing preparation and accessible footer paths. Passing public checks does not establish authenticated production readiness.

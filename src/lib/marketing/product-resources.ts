@@ -15,12 +15,13 @@ export const EMPTY_BRIEF: ProductBrief = {
   evidence: "",
 };
 export const EXAMPLE_BRIEF: ProductBrief = {
-  product: "A booking tool for independent tutors",
-  audience: "Independent tutors managing their own weekly schedule",
-  problem: "Booking changes are scattered across messages and calendar entries.",
-  objective: "Help a tutor review and confirm a booking change in one place.",
-  constraints: "Web prototype first. No payments or real student data.",
-  evidence: "Not yet collected. Interview tutors before treating this problem as established.",
+  product: "Onboarding improvement",
+  audience: "New users setting up a small software product",
+  problem: "Which onboarding change should we investigate first?",
+  objective: "Choose a bounded experiment and define what we would measure.",
+  constraints: "Hypothetical example. Do not contact users, change the live product or deploy.",
+  evidence:
+    "No customer evidence supplied. Establish baseline data and genuine observations before treating assumptions as findings.",
 };
 
 export function briefMarkdown(brief: ProductBrief): string {
