@@ -132,7 +132,7 @@ const INTENTS: Array<{
     tag: "End-to-End Product Mission",
     blurb:
       "Take one objective through all eight lifecycle stages — parallel discovery, PRD, design, sandboxed build, verification and release — with human gates at scope, design and release.",
-    deliverable: "Charter → PRD → Design → Prototype → Verified Release Pack",
+    deliverable: "Charter → PRD → Design → Prototype → Inspectable release pack",
     placeholder:
       "Build a subscription meal-planning app for busy parents that turns pantry photos into weekly plans and shopping lists…",
     samples: [
@@ -311,7 +311,7 @@ function CommandHome() {
       <section className="cc-kpi-strip" aria-label="Workspace operational summary">
         <div className="cc-kpi-card">
           <div className="flex items-center justify-between gap-2">
-            <span className="cc-kpi-label">Credits Remaining</span>
+            <span className="cc-kpi-label">Usage remaining</span>
           </div>
           <strong className="cc-kpi-value">
             {remainingCredits} <small>/ {data.workspace.usageCeiling}</small>
@@ -358,7 +358,7 @@ function CommandHome() {
       <section
         id="mission-composer"
         className="cc-composer-card"
-        aria-label="Commission a supervised mission"
+        aria-label="Draft an earlier product mission"
       >
         <div className="cc-composer-head">
           <div>
@@ -367,8 +367,9 @@ function CommandHome() {
             </p>
             <h2 className="cc-hero-title">Investigate one question</h2>
             <p className="cc-muted text-sm">
+              This is the earlier product-mission draft, not the supervised mission above.
               Specialist contributions draft the work. You approve the plan before anything
-              proceeds. Missing evidence stays visible.
+              proceeds. Missing evidence stays visible. It does not start a follow-up mission.
             </p>
           </div>
 
@@ -527,7 +528,7 @@ function CommandHome() {
               {startMission.isPending ? "Generating plan…" : "Draft mission plan →"}
             </button>
             <span className="cc-muted text-xs">
-              Zero credits spent during planning. Execution waits for your approval.
+              Drafting the plan does not record usage. Execution waits for your approval.
             </span>
           </div>
           <div className="cc-lifecycle-mini" aria-label="Supervision sequence">

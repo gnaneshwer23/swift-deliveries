@@ -276,7 +276,7 @@ const LEARNING: Point[] = [
   {
     id: "compare",
     name: "Outcome review",
-    role: "Planned learning workflow",
+    role: "Outcome review",
     input: "Expected result and supplied observation",
     output: "Comparison, limitations and open questions",
     explanation:
