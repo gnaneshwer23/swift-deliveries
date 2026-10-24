@@ -16,7 +16,7 @@ const RECORDS = [
   },
   {
     title: "Experiment brief",
-    body: "# Experiment brief · A-01\n\nIllustrative planning document. No experiment has run and no result is claimed.\n\nHypothesis: Deferring optional details could help users reach the first useful action.\nProposed change: Explore a staged setup flow; do not change the live product.\nMeasure: Setup completion and time to first useful action, with later profile completion as a guardrail.\nBaseline: Not supplied; establish before any experiment.\nObservation window: To be agreed with the owner based on traffic and measurement quality.\nApproval: Required for the specific experiment scope and any external action.\nActual outcome: Not observed.\nNext review: Compare actual observations with the hypothesis; retain uncertainty.\nLinked record: D-01. Connected outcome review remains planned.",
+    body: "# Experiment brief · A-01\n\nIllustrative planning document. No experiment has run and no result is claimed.\n\nHypothesis: Deferring optional details could help users reach the first useful action.\nProposed change: Explore a staged setup flow; do not change the live product.\nMeasure: Setup completion and time to first useful action, with later profile completion as a guardrail.\nBaseline: Not supplied; establish before any experiment.\nObservation window: To be agreed with the owner based on traffic and measurement quality.\nApproval: Required for the specific experiment scope and any external action.\nActual outcome: Not observed.\nNext review: Compare an owner-supplied observation with the hypothesis and keep the uncertainty in words.\nLinked record: D-01. This sample has no observed result and approves no follow-up.",
   },
 ];
 

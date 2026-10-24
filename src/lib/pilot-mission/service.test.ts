@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { notConfiguredGeneration } from "./generate";
 import { generationPlan } from "./generate.server";
+import { learningLinks } from "./learning";
 import {
   ApprovalMismatchError,
   MemoryStore,
@@ -12,6 +13,7 @@ import {
 import {
   LEASE_MS,
   NOT_RUN_LABEL,
+  OWNER_SUPPLIED_OBSERVATION_LABEL,
   workspaceAllowsSpend,
   type GenerationResult,
   type SupervisedMission,
@@ -396,5 +398,311 @@ describe("supervised mission isolation, approval and recovery", () => {
         "The contact number is 123-45-6789.",
       ).mode,
     ).toBe("withheld");
+  });
+});
+
+const measurementPlan = {
+  hypothesis: "A shorter setup could help people finish account creation.",
+  expectedMetric: "More people reach the first useful action in the window.",
+  baseline: "No completion count was available on 24 Oct 2026.",
+  observationWindow: "The first seven days after the owner makes the change.",
+};
+
+const suppliedResult = {
+  result: "The owner counted 4 of 10 people reaching the first useful action.",
+  evidence: "A tally the owner kept beside the setup screen that week.",
+  source: "Owner tally, 24 Oct 2026",
+};
+
+const firstUncertainty = "One owner tally over seven days cannot show why people left.";
+const laterUncertainty = "The same tally still leaves the cause of leaving unknown.";
+
+async function exportedMission(service: SupervisedMissionService): Promise<SupervisedMission> {
+  const mission = await readyMission(service);
+  const compared = await service.runAlternatives({
+    workspaceId: "alpha",
+    id: mission.id,
+    workerId: "worker-a",
+    nowMs: 3_000,
+    generator: { cost: 0, run: async () => notConfiguredGeneration() },
+  });
+  const proposal = compared.mission.proposal;
+  if (!proposal) throw new Error("expected a proposal");
+  await service.decide({
+    workspaceId: "alpha",
+    id: mission.id,
+    claim: {
+      action: proposal.action,
+      version: proposal.version,
+      scopeHash: proposal.scopeHash,
+      optionId: proposal.options[0]!.id,
+    },
+    choice: "accept",
+    note: "Investigate the shorter setup.",
+    actorId: "owner",
+    nowMs: 4_000,
+  });
+  await service.recordExpectation({
+    workspaceId: "alpha",
+    id: mission.id,
+    ...measurementPlan,
+    actorId: "owner",
+    nowMs: 4_500,
+  });
+  await service.prepareArtefact({ workspaceId: "alpha", id: mission.id, nowMs: 5_000 });
+  return service.exportMission({ workspaceId: "alpha", id: mission.id, nowMs: 6_000 });
+}
+
+describe("supervised mission outcome review", () => {
+  it("labels an owner-supplied observation and keeps review versions", async () => {
+    const service = new SupervisedMissionService(new MemoryStore());
+    const exported = await exportedMission(service);
+    expect(exported.exportBody).toContain(measurementPlan.hypothesis);
+    expect(exported.exportBody).toContain("not measured by DeliverX");
+    expect(exported.expectation).toMatchObject(measurementPlan);
+    await expect(
+      service.recordObservation({
+        workspaceId: "alpha",
+        id: exported.id,
+        ...suppliedResult,
+        actorId: "owner",
+        nowMs: 6_100,
+      }),
+    ).resolves.toBeTruthy();
+    const observed = await service.get("alpha", exported.id);
+    expect(observed?.observation?.label).toBe(OWNER_SUPPLIED_OBSERVATION_LABEL);
+    expect(observed?.observation?.provenance).toBe("owner-supplied");
+    expect(observed?.observation?.label).toContain("DeliverX did not measure");
+    expect(learningLinks(observed!).find((link) => link.step === "observation")?.detail).toBe(
+      OWNER_SUPPLIED_OBSERVATION_LABEL,
+    );
+
+    await expect(
+      service.recordReview({
+        workspaceId: "alpha",
+        id: exported.id,
+        reading: "uncertain",
+        uncertainty: "87%",
+        followUp: {
+          question: "Which setup step should we inspect next?",
+          audience: "Founders setting up a workspace",
+          outcome: "A narrower question grounded in the owner tally.",
+          constraints: "No customer contact.",
+        },
+        actorId: "owner",
+        nowMs: 7_000,
+      }),
+    ).rejects.toThrow(/confidence score/);
+    expect((await service.get("alpha", exported.id))?.reviews).toHaveLength(0);
+
+    const first = await service.recordReview({
+      workspaceId: "alpha",
+      id: exported.id,
+      reading: "uncertain",
+      uncertainty: firstUncertainty,
+      followUp: {
+        question: "Which setup step should we inspect next?",
+        audience: "Founders setting up a workspace",
+        outcome: "A narrower question grounded in the owner tally.",
+        constraints: "No customer contact.",
+      },
+      actorId: "owner",
+      nowMs: 7_000,
+    });
+    const revisedObservation = await service.recordObservation({
+      workspaceId: "alpha",
+      id: exported.id,
+      result: "A later recount by the same owner still showed 4 of 10.",
+      evidence: suppliedResult.evidence,
+      source: suppliedResult.source,
+      actorId: "owner",
+      nowMs: 7_500,
+    });
+    expect(revisedObservation.reviews[0]?.observedResult).toBe(suppliedResult.result);
+    const second = await service.recordReview({
+      workspaceId: "alpha",
+      id: exported.id,
+      reading: "different",
+      uncertainty: laterUncertainty,
+      followUp: {
+        question: "What should we ask about the setup step people leave?",
+        audience: "Founders setting up a workspace",
+        outcome: "One follow-up question the owner can approve.",
+        constraints: "No customer contact.",
+      },
+      actorId: "owner",
+      nowMs: 8_000,
+    });
+    expect(second.reviews).toHaveLength(2);
+    expect(second.reviews[0]).toEqual(first.reviews[0]);
+    expect(second.reviews[1]?.version).toBe(2);
+    expect(second.reviews[1]?.uncertainty).toBe(laterUncertainty);
+    expect(second.reviews[1]?.observedResult).toContain("later recount");
+    expect(second.reviews[0]).not.toHaveProperty("confidence");
+    expect(second.reviews[1]).not.toHaveProperty("confidence");
+    expect(JSON.stringify(second.reviews)).not.toMatch(/confidence/i);
+    expect(second.reviews[1]?.decision.optionId).toBe(exported.approval?.optionId);
+    expect(second.reviews[1]?.artefactTitle).toBe(exported.artefact?.title);
+    expect(second.followUp).toMatchObject({
+      status: "proposed",
+      missionId: null,
+      reviewVersion: 2,
+    });
+  });
+
+  it("does not start a follow-up mission until the owner approves it", async () => {
+    const service = new SupervisedMissionService(new MemoryStore());
+    const exported = await exportedMission(service);
+    await service.recordObservation({
+      workspaceId: "alpha",
+      id: exported.id,
+      ...suppliedResult,
+      actorId: "owner",
+      nowMs: 7_000,
+    });
+    const before = (await service.list("alpha")).map((mission) => mission.id);
+    const proposed = await service.recordReview({
+      workspaceId: "alpha",
+      id: exported.id,
+      reading: "uncertain",
+      uncertainty: firstUncertainty,
+      followUp: {
+        question: "Which setup step should we inspect next?",
+        audience: "Founders setting up a workspace",
+        outcome: "A narrower question grounded in the owner tally.",
+        constraints: "No customer contact.",
+      },
+      actorId: "owner",
+      nowMs: 8_000,
+    });
+    expect((await service.list("alpha")).map((mission) => mission.id)).toEqual(before);
+    expect(proposed.followUp?.status).toBe("proposed");
+    expect(proposed.followUp?.missionId).toBeNull();
+    expect(proposed.stage).toBe("exported");
+    const childId = crypto.randomUUID();
+    const approved = await service.approveFollowUp({
+      workspaceId: "alpha",
+      id: exported.id,
+      actorId: "owner",
+      followUpMissionId: childId,
+      usageCeiling: 4,
+      nowMs: 9_000,
+    });
+    const missions = await service.list("alpha");
+    expect(missions).toHaveLength(2);
+    expect(approved.followUp).toMatchObject({
+      status: "approved",
+      missionId: childId,
+      approvedBy: "owner",
+    });
+    const child = await service.get("alpha", childId);
+    expect(child?.stage).toBe("brief");
+    expect(child?.approval).toBeNull();
+    expect(child?.proposal).toBeNull();
+    expect(child?.origin).toMatchObject({
+      parentMissionId: exported.id,
+      reviewVersion: 1,
+      artefactTitle: exported.artefact?.title,
+    });
+    await service.approveFollowUp({
+      workspaceId: "alpha",
+      id: exported.id,
+      actorId: "owner",
+      followUpMissionId: crypto.randomUUID(),
+      usageCeiling: 4,
+      nowMs: 10_000,
+    });
+    expect(await service.list("alpha")).toHaveLength(2);
+    expect((await service.get("alpha", childId))?.stage).toBe("brief");
+    const extra = await service.recordReview({
+      workspaceId: "alpha",
+      id: exported.id,
+      reading: "uncertain",
+      uncertainty: laterUncertainty,
+      followUp: {
+        question: "Should we look at one setup field only?",
+        audience: "Founders setting up a workspace",
+        outcome: "A second note that must not open another mission.",
+        constraints: "No customer contact.",
+      },
+      actorId: "owner",
+      nowMs: 11_000,
+    });
+    expect(extra.reviews).toHaveLength(2);
+    expect(extra.followUp?.missionId).toBe(childId);
+    expect(extra.followUp?.status).toBe("approved");
+    expect(await service.list("alpha")).toHaveLength(2);
+  });
+
+  it("stops a second workspace from reading the review", async () => {
+    const service = new SupervisedMissionService(new MemoryStore());
+    const exported = await exportedMission(service);
+    await service.recordObservation({
+      workspaceId: "alpha",
+      id: exported.id,
+      ...suppliedResult,
+      actorId: "owner",
+      nowMs: 7_000,
+    });
+    const reviewed = await service.recordReview({
+      workspaceId: "alpha",
+      id: exported.id,
+      reading: "uncertain",
+      uncertainty: firstUncertainty,
+      followUp: {
+        question: "Which setup step should we inspect next?",
+        audience: "Founders setting up a workspace",
+        outcome: "A narrower question grounded in the owner tally.",
+        constraints: "No customer contact.",
+      },
+      actorId: "owner",
+      nowMs: 8_000,
+    });
+    expect(reviewed.reviews).toHaveLength(1);
+    expect(await service.get("beta", exported.id)).toBeNull();
+    expect((await service.list("beta")).map((mission) => mission.id)).not.toContain(exported.id);
+    await expect(
+      service.recordReview({
+        workspaceId: "beta",
+        id: exported.id,
+        reading: "consistent",
+        uncertainty: laterUncertainty,
+        followUp: {
+          question: "Which setup step should we inspect next?",
+          audience: "Founders setting up a workspace",
+          outcome: "A narrower question grounded in the owner tally.",
+          constraints: "No customer contact.",
+        },
+        actorId: "intruder",
+        nowMs: 9_000,
+      }),
+    ).rejects.toBeInstanceOf(MissionNotFoundError);
+    expect((await service.get("alpha", exported.id))?.reviews).toHaveLength(1);
+    expect(
+      missionFromRow(
+        {
+          id: exported.id,
+          workspace_id: "alpha",
+          version: reviewed.version,
+          usage_ceiling: 4,
+          usage_consumed: 0,
+          document: reviewed,
+        },
+        "beta",
+      ),
+    ).toBeNull();
+    const restored = missionFromRow(
+      {
+        id: exported.id,
+        workspace_id: "alpha",
+        version: reviewed.version,
+        usage_ceiling: 4,
+        usage_consumed: 0,
+        document: { ...reviewed, reviews: undefined },
+      },
+      "alpha",
+    );
+    expect(restored?.reviews).toEqual([]);
+    expect(restored?.workspaceId).toBe("alpha");
   });
 });

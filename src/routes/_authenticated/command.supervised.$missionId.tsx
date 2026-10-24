@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
+import { SupervisedLearningLoop } from "@/components/command/supervised-learning-loop";
 import {
   cancelSupervisedMission,
   decideSupervisedMission,
@@ -239,7 +240,7 @@ function SupervisedMissionPage() {
         </section>
       ) : null}
       {mission.approval ? (
-        <section className="cc-panel" aria-label="Decision">
+        <section className="cc-panel" id="decision" aria-label="Decision">
           <h2 className="cc-panel-title">Owner decision</h2>
           <p>
             {mission.approval.choice === "accept" ? "Accepted" : "More evidence requested"}:{" "}
@@ -273,6 +274,7 @@ function SupervisedMissionPage() {
           <pre className="mt-3 whitespace-pre-wrap text-sm">{mission.artefact.experimentBrief}</pre>
         </section>
       ) : null}
+      <SupervisedLearningLoop mission={mission} onDone={invalidate} onError={onError} />
     </CommandShell>
   );
 }

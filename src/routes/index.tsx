@@ -169,7 +169,10 @@ function HomePage() {
           <div className="psi-feature-grid">
             <div className="psi-feature">
               <h3>Keep the reasoning</h3>
-              <p>Product Brain connects sources, decisions and artefacts.</p>
+              <p>
+                Product Brain keeps the order on a supervised mission: decision, owner-supplied
+                observation, review, then a proposed next mission.
+              </p>
               <Link to="/psi" hash="product-brain" className="dxl-link">
                 Explore the product record
               </Link>
@@ -195,9 +198,9 @@ function HomePage() {
             </div>
           </div>
           <p className="journey-status">
-            Current scope: interactive examples and supervised mission foundations requiring release
-            verification. Connected outcome tracking, automatic learning and production deployment
-            remain planned.
+            Current scope: a supervised mission can keep a decision, an owner-supplied observation,
+            a versioned review and a proposed next mission. Connected analytics, automatic approval
+            and production deployment are not included. Release verification is still required.
           </p>
           <Link to="/psi" className="dxl-link">
             See the system and its current scope

@@ -91,9 +91,9 @@ function ExampleMission() {
             </div>
           </div>
           <p className="journey-status">
-            Product status: supervised mission foundations require authenticated runtime and release
-            verification. Outcome review and a human-approved follow-up mission are planned; no
-            improvement has been observed in this example.
+            Product status: a supervised mission can store an owner-supplied result, a versioned
+            review and a follow-up that stays proposed until you approve it. This example does not
+            record an observation or approve a mission. No improvement has been observed here.
           </p>
           <Link to="/psi" className="dxl-link">
             Explore capabilities and current limitations

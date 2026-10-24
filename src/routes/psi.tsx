@@ -48,12 +48,21 @@ function ProductPage() {
             <p className="dxl-eyebrow">Product Brain</p>
             <h2 className="dxl-h2">A record of what you know—and why.</h2>
             <p>
-              Connect a source to an observation, an observation to a decision, and that decision to
-              an artefact. Preserve assumptions and gaps so the next mission can question them.
+              On a supervised mission the record runs in this order: decision, owner-supplied
+              observation, outcome review, then one proposed next mission. The follow-up stays a
+              proposal until you approve it.
             </p>
+            <ol className="mt-3 grid gap-2" aria-label="Learning record">
+              <li>Decision — the choice you recorded and the decision pack.</li>
+              <li>Observation — a result you supply. DeliverX does not measure it.</li>
+              <li>
+                Review — expected and observed kept side by side, with the uncertainty in words.
+              </li>
+              <li>Proposed next mission — inactive until you approve it.</li>
+            </ol>
             <p>
-              The current foundation includes source references, decision records and export
-              history. A full interactive knowledge graph is planned.
+              Source references, decision records and export history are the current foundation. A
+              full interactive knowledge graph is not part of this page.
             </p>
             <Link to="/how-it-works" hash="sample-record" className="dxl-link">
               Inspect linked sample records
@@ -89,7 +98,7 @@ function ProductPage() {
           <h2 className="dxl-h2">Explore the wider lifecycle.</h2>
           <p>
             The first pilot focuses on evidence, decisions and experiment planning. The wider
-            lifecycle includes planned build, release and outcome capabilities.
+            lifecycle includes planned build and release capabilities.
           </p>
           <details className="journey-detail">
             <summary>Explore lifecycle stages and human gates</summary>
@@ -118,12 +127,15 @@ function ProductPage() {
         <div className="dxl-wrap">
           <h2 className="dxl-h2">The next loop starts with an observed result.</h2>
           <p>
-            Planned: compare an expected outcome with supplied observations, retain the uncertainty
-            and propose a next mission for human approval. Automatic learning and connected outcome
-            tracking are not live.
+            On a supervised mission you record the hypothesis, expected metric, baseline and
+            observation window before the change. Later you supply the result and its evidence. The
+            review keeps that result beside what you expected, and proposes one next mission. The
+            proposal does not become active until you approve it. This page does not measure a
+            result or approve a mission. Connected analytics and automatic learning are not
+            included.
           </p>
           <details className="journey-detail">
-            <summary>Explore the planned learning loop</summary>
+            <summary>See how the learning loop is organised</summary>
             <SectionExplorer kind="learning" />
           </details>
         </div>

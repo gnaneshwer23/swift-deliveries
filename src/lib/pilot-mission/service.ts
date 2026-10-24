@@ -1,6 +1,13 @@
 import { draftOptions, parseModelOptions } from "./generate";
 import {
+  assertOutcomeReading,
+  assertProseUncertainty,
+  expectationLines,
+  withLearningDefaults,
+} from "./learning";
+import {
   LEASE_MS,
+  OWNER_SUPPLIED_OBSERVATION_LABEL,
   nextRequiredAction,
   scopeHash,
   spendKey,
@@ -8,12 +15,18 @@ import {
   type ApprovalRecord,
   type ArtefactPack,
   type Brief,
+  type DecisionBinding,
   type DecisionChoice,
   type EvidenceClassification,
   type EvidenceItem,
+  type FollowUpProposal,
   type GenerationResult,
   type JobState,
+  type MissionOrigin,
   type OptionDraft,
+  type OutcomeExpectation,
+  type OutcomeObservation,
+  type OutcomeReview,
   type SupervisedMission,
 } from "./types";
 
@@ -163,8 +176,19 @@ function invalidateForScope(mission: SupervisedMission, hash: string): Supervise
     invalidatedApprovals: invalidated,
     artefact: null,
     exportBody: null,
+    expectation: null,
     job: idleJob(mission.job.attempts),
     stage: "evidence",
+  };
+}
+
+function decisionBinding(approval: ApprovalRecord): DecisionBinding {
+  return {
+    action: approval.action,
+    version: approval.version,
+    scopeHash: approval.scopeHash,
+    optionId: approval.optionId,
+    decidedAt: approval.decidedAt,
   };
 }
 
@@ -203,7 +227,7 @@ function buildPack(mission: SupervisedMission): ArtefactPack {
       : "Gaps: none recorded",
     `Proposal action ${proposal.action}, version ${proposal.version}, scope ${proposal.scopeHash}.`,
     "Human decision recorded by the workspace owner. This pack is not externally attested.",
-    "No observed product result is claimed.",
+    "No observed product result is claimed in this pack.",
   ]
     .filter(Boolean)
     .join("\n");
@@ -238,11 +262,8 @@ function buildPack(mission: SupervisedMission): ArtefactPack {
     inconclusive
       ? `Proposed change: do not change the product until the missing evidence is supplied.`
       : `Proposed change: ${option.title}`,
-    `What would be measured: ${mission.brief.outcome}`,
-    `Baseline requirement: no baseline has been observed in this mission.`,
-    `Observation window: not started.`,
+    ...expectationLines(mission, option.tradeoff),
     `Review question: ${mission.brief.question}`,
-    `Hypothesis: ${option.tradeoff}`,
     `This expected result is a hypothesis. It is not an observed outcome.`,
   ].join("\n");
   return {
@@ -271,13 +292,13 @@ export class MemoryStore implements MissionStore {
   async get(workspaceId: string, id: string): Promise<SupervisedMission | null> {
     const row = this.rows.get(id);
     if (!row || row.workspaceId !== workspaceId) return null;
-    return clone(row);
+    return clone(withLearningDefaults(row));
   }
 
   async list(workspaceId: string): Promise<SupervisedMission[]> {
     return [...this.rows.values()]
       .filter((row) => row.workspaceId === workspaceId)
-      .map((row) => clone(row));
+      .map((row) => clone(withLearningDefaults(row)));
   }
 
   async save(mission: SupervisedMission, expectedVersion: number): Promise<SupervisedMission> {
@@ -287,7 +308,7 @@ export class MemoryStore implements MissionStore {
     }
     if (existing && existing.version !== expectedVersion) throw new MissionConflictError();
     if (!existing && expectedVersion !== 0) throw new MissionConflictError();
-    const stored = clone(mission);
+    const stored = clone(withLearningDefaults(mission));
     this.rows.set(stored.id, stored);
     return clone(stored);
   }
@@ -303,14 +324,14 @@ export function missionFromRow(
   const document =
     typeof raw === "string" ? (JSON.parse(raw) as SupervisedMission) : (raw as SupervisedMission);
   if (!document || typeof document !== "object") return null;
-  return {
+  return withLearningDefaults({
     ...document,
     id: String(row["id"]),
     workspaceId,
     version: Number(row["version"]),
     usageCeiling: Number(row["usage_ceiling"]),
     usageConsumed: Number(row["usage_consumed"]),
-  };
+  });
 }
 
 export class SupervisedMissionService {
@@ -331,6 +352,7 @@ export class SupervisedMissionService {
     brief: Brief;
     usageCeiling: number;
     nowMs: number;
+    origin?: MissionOrigin | null;
   }): Promise<SupervisedMission> {
     if (!Number.isInteger(input.usageCeiling) || input.usageCeiling < 0) {
       throw new Error("Usage ceiling must be a whole number.");
@@ -352,6 +374,11 @@ export class SupervisedMissionService {
       usageCeiling: input.usageCeiling,
       usageConsumed: 0,
       spendRecords: [],
+      expectation: null,
+      observation: null,
+      reviews: [],
+      followUp: null,
+      origin: input.origin ?? null,
       updatedAt: new Date(input.nowMs).toISOString(),
     };
     return this.store.save(mission, 0);
@@ -364,7 +391,7 @@ export class SupervisedMissionService {
     nowMs: number;
   }): Promise<SupervisedMission> {
     const current = await this.must(input.workspaceId, input.id);
-    this.assertOpen(current);
+    this.assertMutable(current);
     const evidence = normaliseEvidence(input.items);
     const hashed = invalidateForScope({ ...current, evidence }, scopeHash(current.brief, evidence));
     const next: SupervisedMission = {
@@ -385,7 +412,7 @@ export class SupervisedMissionService {
     nowMs: number;
   }): Promise<SupervisedMission> {
     const current = await this.must(input.workspaceId, input.id);
-    this.assertOpen(current);
+    this.assertMutable(current);
     const brief = normaliseBrief(input.brief);
     const hashed = invalidateForScope({ ...current, brief }, scopeHash(brief, current.evidence));
     const next: SupervisedMission = {
@@ -585,6 +612,7 @@ export class SupervisedMissionService {
       version: current.version + 1,
       stage: "decision",
       approval,
+      expectation: null,
       artefact: null,
       exportBody: null,
       updatedAt: approval.decidedAt,
@@ -629,6 +657,190 @@ export class SupervisedMissionService {
     return this.store.save(next, current.version);
   }
 
+  async recordExpectation(input: {
+    workspaceId: string;
+    id: string;
+    hypothesis: string;
+    expectedMetric: string;
+    baseline: string;
+    observationWindow: string;
+    actorId: string;
+    nowMs: number;
+  }): Promise<SupervisedMission> {
+    const current = await this.must(input.workspaceId, input.id);
+    if (current.stage === "cancelled") throw new Error("Mission is cancelled.");
+    if (!current.approval) throw new Error("Record a decision before the measurement plan.");
+    if (current.observation || current.reviews.length > 0) {
+      throw new Error("The measurement plan stays as it was when the result was supplied.");
+    }
+    const recordedAt = new Date(input.nowMs).toISOString();
+    const expectation: OutcomeExpectation = {
+      hypothesis: requireText(input.hypothesis, "Hypothesis", 8, 2000),
+      expectedMetric: requireText(input.expectedMetric, "Expected metric", 3, 500),
+      baseline: requireText(input.baseline, "Baseline", 3, 500),
+      observationWindow: requireText(input.observationWindow, "Observation window", 3, 500),
+      recordedAt,
+      actorId: input.actorId,
+      decision: decisionBinding(current.approval),
+    };
+    const next: SupervisedMission = {
+      ...current,
+      version: current.version + 1,
+      expectation,
+      updatedAt: recordedAt,
+    };
+    return this.store.save(next, current.version);
+  }
+
+  async recordObservation(input: {
+    workspaceId: string;
+    id: string;
+    result: string;
+    evidence: string;
+    source: string;
+    actorId: string;
+    nowMs: number;
+  }): Promise<SupervisedMission> {
+    const current = await this.must(input.workspaceId, input.id);
+    if (current.stage === "cancelled") throw new Error("Mission is cancelled.");
+    if (!current.expectation) throw new Error("Record the measurement plan before a result.");
+    if (!current.exportBody || !current.artefact || !current.approval) {
+      throw new Error("Export the decision pack before recording a result.");
+    }
+    const suppliedAt = new Date(input.nowMs).toISOString();
+    const observation: OutcomeObservation = {
+      id: `obs-${input.nowMs}`,
+      result: requireText(input.result, "Observed result", 3, 2000),
+      evidence: requireText(input.evidence, "Observation evidence", 3, 2000),
+      source: requireText(input.source, "Observation source", 2, 500),
+      provenance: "owner-supplied",
+      label: OWNER_SUPPLIED_OBSERVATION_LABEL,
+      suppliedAt,
+      actorId: input.actorId,
+    };
+    const next: SupervisedMission = {
+      ...current,
+      version: current.version + 1,
+      observation,
+      updatedAt: suppliedAt,
+    };
+    return this.store.save(next, current.version);
+  }
+
+  async recordReview(input: {
+    workspaceId: string;
+    id: string;
+    reading: string;
+    uncertainty: string;
+    followUp: Brief;
+    actorId: string;
+    nowMs: number;
+  }): Promise<SupervisedMission> {
+    const current = await this.must(input.workspaceId, input.id);
+    if (current.stage === "cancelled") throw new Error("Mission is cancelled.");
+    if (!current.expectation || !current.observation || !current.approval || !current.artefact) {
+      throw new Error("A review needs the decision, the pack and an owner-supplied result.");
+    }
+    const reading = assertOutcomeReading(input.reading);
+    const uncertainty = assertProseUncertainty(input.uncertainty);
+    const proposedFollowUp = normaliseBrief(input.followUp);
+    const createdAt = new Date(input.nowMs).toISOString();
+    const review: OutcomeReview = {
+      version: (current.reviews.at(-1)?.version ?? 0) + 1,
+      observationId: current.observation.id,
+      decision: decisionBinding(current.approval),
+      artefactTitle: current.artefact.title,
+      hypothesis: current.expectation.hypothesis,
+      expectedMetric: current.expectation.expectedMetric,
+      baseline: current.expectation.baseline,
+      observationWindow: current.expectation.observationWindow,
+      observedResult: current.observation.result,
+      observationLabel: current.observation.label,
+      reading,
+      uncertainty,
+      proposedFollowUp,
+      createdAt,
+      actorId: input.actorId,
+    };
+    const followUp: FollowUpProposal =
+      current.followUp?.status === "approved"
+        ? current.followUp
+        : {
+            reviewVersion: review.version,
+            brief: proposedFollowUp,
+            status: "proposed",
+            missionId: null,
+            proposedAt: createdAt,
+            approvedAt: null,
+            approvedBy: null,
+          };
+    const next: SupervisedMission = {
+      ...current,
+      version: current.version + 1,
+      reviews: [...current.reviews, review],
+      followUp,
+      updatedAt: createdAt,
+    };
+    return this.store.save(next, current.version);
+  }
+
+  async approveFollowUp(input: {
+    workspaceId: string;
+    id: string;
+    actorId: string;
+    followUpMissionId: string;
+    usageCeiling: number;
+    nowMs: number;
+  }): Promise<SupervisedMission> {
+    const current = await this.must(input.workspaceId, input.id);
+    if (current.stage === "cancelled") throw new Error("Mission is cancelled.");
+    if (current.followUp?.status === "approved" && current.followUp.missionId) {
+      const existing = await this.store.get(input.workspaceId, current.followUp.missionId);
+      if (!existing) throw new MissionNotFoundError();
+      return current;
+    }
+    if (!current.followUp || current.followUp.status !== "proposed" || current.followUp.missionId) {
+      throw new Error("Record a review before approving a follow-up mission.");
+    }
+    const latest = current.reviews.at(-1);
+    if (
+      !latest ||
+      latest.version !== current.followUp.reviewVersion ||
+      !current.approval ||
+      !current.artefact
+    ) {
+      throw new Error("The follow-up proposal does not match the latest review.");
+    }
+    const child = await this.create({
+      id: input.followUpMissionId,
+      workspaceId: input.workspaceId,
+      ownerUserId: input.actorId,
+      brief: current.followUp.brief,
+      usageCeiling: input.usageCeiling,
+      nowMs: input.nowMs,
+      origin: {
+        parentMissionId: current.id,
+        reviewVersion: latest.version,
+        decision: decisionBinding(current.approval),
+        artefactTitle: current.artefact.title,
+      },
+    });
+    const approvedAt = new Date(input.nowMs).toISOString();
+    const next: SupervisedMission = {
+      ...current,
+      version: current.version + 1,
+      followUp: {
+        ...current.followUp,
+        status: "approved",
+        missionId: child.id,
+        approvedAt,
+        approvedBy: input.actorId,
+      },
+      updatedAt: approvedAt,
+    };
+    return this.store.save(next, current.version);
+  }
+
   private prepareComparison(
     mission: SupervisedMission,
     generation: GenerationResult,
@@ -660,6 +872,15 @@ export class SupervisedMissionService {
   private assertOpen(mission: SupervisedMission): void {
     if (mission.stage === "cancelled") throw new Error("Mission is cancelled.");
     if (mission.stage === "exported") throw new Error("This mission is already exported.");
+  }
+
+  private assertMutable(mission: SupervisedMission): void {
+    this.assertOpen(mission);
+    if (mission.observation || mission.reviews.length > 0 || mission.followUp) {
+      throw new Error(
+        "The outcome record cites this decision, so the brief and evidence stay fixed.",
+      );
+    }
   }
 }
 

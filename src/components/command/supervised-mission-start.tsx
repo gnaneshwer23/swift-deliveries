@@ -77,6 +77,9 @@ export function SupervisedMissionStart() {
                   <span className="cc-muted">
                     {mission.nextTitle} · {mission.stage}
                   </span>
+                  <span className="cc-muted">
+                    {mission.links.map((link) => `${link.title} ${link.state}`).join(" → ")}
+                  </span>
                 </div>
                 <span className="cc-chip">{mission.nextTitle}</span>
               </Link>

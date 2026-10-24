@@ -33,7 +33,7 @@ const LAYERS = [
     name: "Feedback loop",
     subtitle: "Bring what happened into the next decision.",
     description:
-      "You supply observed results. They inform the next question; connected measurement and automatic learning remain planned.",
+      "You supply an observed result on a supervised mission. It is not measured here. A follow-up stays proposed until you approve it.",
     path: "/product-brain",
   },
 ] as const;
@@ -78,8 +78,8 @@ const OBJECTS = [
     label: "Observed results",
     role: "Product owner",
     detail:
-      "Supply the baseline, observation window and actual measured result. No result is invented when data is missing.",
-    output: "Outcome evidence · planned workflow",
+      "The owner supplies the result and its evidence on the supervised mission. This illustration does not store a measurement.",
+    output: "Owner-supplied result",
     x: 1175,
     y: 832,
   },

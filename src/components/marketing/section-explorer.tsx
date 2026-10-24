@@ -268,7 +268,7 @@ const LEARNING: Point[] = [
     input: "Genuine feedback or measured observations",
     output: "Source-linked outcome material",
     explanation:
-      "Bring the real result into the review. Connected analytics ingestion is planned; this illustration does not collect telemetry or invent measurements.",
+      "Bring a result you actually saw. DeliverX does not measure it. This illustration does not collect telemetry or invent a result.",
     x: 82,
     y: 48,
     path: "M 82 48 C 82 70 78 78 67 78",
@@ -280,7 +280,7 @@ const LEARNING: Point[] = [
     input: "Expected result and supplied observation",
     output: "Comparison, limitations and open questions",
     explanation:
-      "Compare what you expected with what happened, retaining limitations and uncertainty. Outcome review is a planned capability.",
+      "On a supervised mission the owner compares the expected metric with a result they supplied. The review is versioned and keeps the uncertainty in words. This scene does not store that review.",
     x: 67,
     y: 78,
     path: "M 67 78 L 30 78",
@@ -292,7 +292,7 @@ const LEARNING: Point[] = [
     input: "Review findings and unresolved assumptions",
     output: "A proposed next mission",
     explanation:
-      "Propose another question for human review. Automatic belief updates and autonomous replanning are planned capabilities, not something this public scene executes.",
+      "A review can propose one next question. On a supervised mission that proposal stays inactive until a person approves it. This scene does not start a mission.",
     x: 30,
     y: 78,
     path: "M 30 78 C 12 78 17 65 17 48",
@@ -371,7 +371,7 @@ const SCENES = {
     alt: "A central archive connects sources, decisions, artefacts and observations.",
     to: "/product-brain",
     link: "Explore Product Brain",
-    note: "Connected outcome tracking remains planned.",
+    note: "The mission record lists decision, observation, review and proposed next mission. This page is not a knowledge graph.",
   },
   team: {
     points: TEAM,
@@ -398,7 +398,7 @@ const SCENES = {
     alt: "A circular workbench links a measurement plan, change, supplied observations, outcome comparison and a human-reviewed next question.",
     to: "/product-brain",
     link: "Explore the learning direction",
-    note: "Learning concept. Connected tracking, complete outcome reviews and automatic learning remain planned.",
+    note: "Illustration only. A supervised mission stores the owner-supplied result and a follow-up that stays proposed until you approve it. This page does not measure a result or start a mission.",
   },
   trust: {
     points: TRUST,

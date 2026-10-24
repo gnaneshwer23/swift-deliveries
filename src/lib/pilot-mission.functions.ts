@@ -15,6 +15,7 @@ import {
   SupervisedMissionService,
   UsageLimitError,
 } from "./pilot-mission/service";
+import { learningLinks } from "./pilot-mission/learning";
 import {
   nextRequiredAction,
   scopeHash,
@@ -108,6 +109,7 @@ export const getSupervisedMissionHome = createServerFn({ method: "GET" })
           updatedAt: mission.updatedAt,
           usageConsumed: mission.usageConsumed,
           usageCeiling: mission.usageCeiling,
+          links: learningLinks(mission),
         })),
       };
     } catch (error) {
@@ -288,6 +290,100 @@ export const cancelSupervisedMission = createServerFn({ method: "POST" })
     const mission = await service.cancel({
       workspaceId: workspace.id,
       id: data.id,
+      nowMs: Date.now(),
+    });
+    return view(mission, null);
+  });
+
+const expectationSchema = z.object({
+  id: z.string().uuid(),
+  hypothesis: z.string().max(2000),
+  expectedMetric: z.string().max(500),
+  baseline: z.string().max(500),
+  observationWindow: z.string().max(500),
+});
+
+const observationSchema = z.object({
+  id: z.string().uuid(),
+  result: z.string().max(2000),
+  evidence: z.string().max(2000),
+  source: z.string().max(500),
+});
+
+const reviewSchema = z.object({
+  id: z.string().uuid(),
+  reading: z.enum(["consistent", "different", "uncertain"]),
+  uncertainty: z.string().max(2000),
+  followUp: briefSchema,
+});
+
+export const recordSupervisedExpectation = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) => expectationSchema.parse(data))
+  .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
+    const workspace = await workspaceFor(context.supabase, context.userId);
+    const { service } = await serviceFor();
+    const mission = await service.recordExpectation({
+      workspaceId: workspace.id,
+      id: data.id,
+      hypothesis: data.hypothesis,
+      expectedMetric: data.expectedMetric,
+      baseline: data.baseline,
+      observationWindow: data.observationWindow,
+      actorId: context.userId,
+      nowMs: Date.now(),
+    });
+    return view(mission, null);
+  });
+
+export const recordSupervisedObservation = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) => observationSchema.parse(data))
+  .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
+    const workspace = await workspaceFor(context.supabase, context.userId);
+    const { service } = await serviceFor();
+    const mission = await service.recordObservation({
+      workspaceId: workspace.id,
+      id: data.id,
+      result: data.result,
+      evidence: data.evidence,
+      source: data.source,
+      actorId: context.userId,
+      nowMs: Date.now(),
+    });
+    return view(mission, null);
+  });
+
+export const recordSupervisedReview = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) => reviewSchema.parse(data))
+  .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
+    const workspace = await workspaceFor(context.supabase, context.userId);
+    const { service } = await serviceFor();
+    const mission = await service.recordReview({
+      workspaceId: workspace.id,
+      id: data.id,
+      reading: data.reading,
+      uncertainty: data.uncertainty,
+      followUp: data.followUp,
+      actorId: context.userId,
+      nowMs: Date.now(),
+    });
+    return view(mission, null);
+  });
+
+export const approveSupervisedFollowUp = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
+    const workspace = await workspaceFor(context.supabase, context.userId);
+    const { service } = await serviceFor();
+    const mission = await service.approveFollowUp({
+      workspaceId: workspace.id,
+      id: data.id,
+      actorId: context.userId,
+      followUpMissionId: crypto.randomUUID(),
+      usageCeiling: Math.max(0, workspace.usageCeiling - workspace.usageConsumed),
       nowMs: Date.now(),
     });
     return view(mission, null);

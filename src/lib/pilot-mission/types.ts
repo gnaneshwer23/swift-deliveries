@@ -68,6 +68,84 @@ export type ArtefactPack = {
   provenance: string;
 };
 
+/** Stored on every owner-supplied result. DeliverX does not measure it. */
+export const OWNER_SUPPLIED_OBSERVATION_LABEL =
+  "Owner-supplied. DeliverX did not measure this result.";
+
+export type DecisionBinding = {
+  action: "compare_options";
+  version: number;
+  scopeHash: string;
+  optionId: string;
+  decidedAt: string;
+};
+
+export type OutcomeExpectation = {
+  hypothesis: string;
+  expectedMetric: string;
+  baseline: string;
+  observationWindow: string;
+  recordedAt: string;
+  actorId: string;
+  decision: DecisionBinding;
+};
+
+export type OutcomeObservation = {
+  id: string;
+  result: string;
+  evidence: string;
+  source: string;
+  provenance: "owner-supplied";
+  label: typeof OWNER_SUPPLIED_OBSERVATION_LABEL;
+  suppliedAt: string;
+  actorId: string;
+};
+
+/** Qualitative reading. There is no numeric confidence. */
+export type OutcomeReading = "consistent" | "different" | "uncertain";
+
+export type OutcomeReview = {
+  version: number;
+  observationId: string;
+  decision: DecisionBinding;
+  artefactTitle: string;
+  hypothesis: string;
+  expectedMetric: string;
+  baseline: string;
+  observationWindow: string;
+  observedResult: string;
+  observationLabel: typeof OWNER_SUPPLIED_OBSERVATION_LABEL;
+  reading: OutcomeReading;
+  uncertainty: string;
+  proposedFollowUp: Brief;
+  createdAt: string;
+  actorId: string;
+};
+
+export type FollowUpProposal = {
+  reviewVersion: number;
+  brief: Brief;
+  status: "proposed" | "approved";
+  missionId: string | null;
+  proposedAt: string;
+  approvedAt: string | null;
+  approvedBy: string | null;
+};
+
+export type MissionOrigin = {
+  parentMissionId: string;
+  reviewVersion: number;
+  decision: DecisionBinding;
+  artefactTitle: string;
+};
+
+export type LearningLink = {
+  step: "decision" | "observation" | "review" | "follow_up";
+  title: string;
+  state: "waiting" | "recorded" | "proposed" | "approved";
+  detail: string;
+};
+
 export type SpendRecord = {
   key: string;
   units: number;
@@ -103,6 +181,11 @@ export type SupervisedMission = {
   usageCeiling: number;
   usageConsumed: number;
   spendRecords: SpendRecord[];
+  expectation: OutcomeExpectation | null;
+  observation: OutcomeObservation | null;
+  reviews: OutcomeReview[];
+  followUp: FollowUpProposal | null;
+  origin: MissionOrigin | null;
   updatedAt: string;
 };
 
@@ -211,6 +294,14 @@ export function nextRequiredAction(mission: SupervisedMission): {
     };
   }
   if (mission.stage === "decision") {
+    if (!mission.expectation) {
+      return {
+        id: "expectation",
+        title: "Record what you expect",
+        detail:
+          "Write the hypothesis, expected metric, baseline and observation window before preparing the pack.",
+      };
+    }
     return {
       id: "artefact",
       title: "Prepare the decision pack",
@@ -225,9 +316,48 @@ export function nextRequiredAction(mission: SupervisedMission): {
       detail: "The export is stored on the mission. Opening it again does not add a usage record.",
     };
   }
+  return learningNext(mission);
+}
+
+function learningNext(mission: SupervisedMission): {
+  id: string;
+  title: string;
+  detail: string;
+} {
+  if (!mission.expectation) {
+    return {
+      id: "expectation",
+      title: "Record what you expect",
+      detail:
+        "Write the hypothesis, expected metric, baseline and observation window before treating a later result as a review of this decision.",
+    };
+  }
+  if (!mission.observation) {
+    return {
+      id: "observation",
+      title: "Supply the observed result",
+      detail: "When you have a genuine result, record it here. DeliverX does not measure it.",
+    };
+  }
+  if (!mission.reviews.length) {
+    return {
+      id: "review",
+      title: "Review expected against observed",
+      detail:
+        "Keep what you expected beside what you supplied. Saving a review proposes one follow-up and does not start it.",
+    };
+  }
+  if (mission.followUp?.status !== "approved") {
+    return {
+      id: "approve_follow_up",
+      title: "Approve the follow-up mission",
+      detail: "The next mission stays a proposal until you approve it.",
+    };
+  }
   return {
-    id: "done",
-    title: "Exported",
-    detail: "Reload keeps this export. No further usage is recorded for it.",
+    id: "follow_up_approved",
+    title: "Follow-up approved",
+    detail:
+      "The next mission exists because you approved it. This review history stays on the record.",
   };
 }
