@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Play, Pause, RotateCcw } from "lucide-react";
-import { LiveDecision } from "./dxsi-landing";
+import { MissionSampleRecord } from "./mission-sample-record";
 
 const LAYERS = [
   {
@@ -498,10 +498,10 @@ export function ProductBrainExplorer() {
         <div className="brain-engine-panel">
           <h3>A decision you can inspect</h3>
           <p>
-            These tabs run the existing DeliverX decision engine on a sample business case. Explore
-            alternatives, specialist positions and dissent.
+            Inspect the same onboarding example: supplied material, alternatives, a pending owner
+            decision and an experiment plan. These are hypothetical sample documents.
           </p>
-          <LiveDecision />
+          <MissionSampleRecord />
         </div>
       )}
     </section>

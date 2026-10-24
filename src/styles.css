@@ -6325,3 +6325,85 @@ html:has(.marketing-page) {
 .ob-actions { gap: 12px; }
 @media (max-width: 420px) { .ob-actions { align-items: stretch; flex-direction: column-reverse; } .ob-btn { justify-content: center; height: auto; min-height: 44px; padding: 12px 18px; } }
 @media (prefers-reduced-motion: reduce) { .ob-chips button, .ob-btn { transition: none; } }
+
+/* Shared customer-journey documents and progressive detail. */
+.journey-output-list {
+  border-top: 1px solid #dce1ed;
+}
+.journey-output-list > p {
+  padding: 18px 0;
+  margin: 0;
+  border-bottom: 1px solid #dce1ed;
+}
+.journey-output-list strong,
+.journey-output-list span {
+  display: block;
+}
+.journey-output-list span {
+  margin-top: 6px;
+  color: #536077;
+}
+.journey-status {
+  max-width: 78ch;
+  padding: 18px 20px;
+  margin-top: 28px;
+  background: #f1f3fc;
+  border-left: 3px solid #4865e9;
+  color: #45516a;
+  line-height: 1.65;
+}
+.journey-detail {
+  margin-top: 24px;
+  border-top: 1px solid #dce1ed;
+  padding-top: 20px;
+}
+.journey-detail summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 12px 0;
+}
+.mission-record {
+  margin-top: 28px;
+}
+.mission-record-selector {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+.mission-record-selector button {
+  border: 1px solid #dce1ed;
+  border-radius: 24px;
+  padding: 11px 18px;
+  background: white;
+  color: #39445c;
+  cursor: pointer;
+  min-height: 44px;
+}
+.mission-record-selector button[aria-pressed="true"] {
+  background: #101319;
+  color: white;
+  border-color: #101319;
+}
+.mission-record-body {
+  background: #f7f8fc;
+  border: 1px solid #dce1ed;
+  border-radius: 16px;
+  padding: clamp(18px, 4vw, 36px);
+  margin-bottom: 20px;
+}
+.mission-record-body pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: inherit;
+  line-height: 1.8;
+  max-width: 78ch;
+  margin: 0;
+  color: #263249;
+}
+.mission-record button:focus-visible,
+.mission-record-body:focus-visible,
+.journey-detail summary:focus-visible {
+  outline: 3px solid #4865e9;
+  outline-offset: 4px;
+}
