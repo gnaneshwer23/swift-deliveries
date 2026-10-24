@@ -1,41 +1,51 @@
 import { Link } from "@tanstack/react-router";
 import { BrandLogo } from "@/components/brand-logo";
-import { MARKETING_LINKS } from "./marketing-nav";
-import { CAREER_SUITE_ENABLED } from "@/lib/features";
+
+const FOOTER_GROUPS = [
+  {
+    label: "Product",
+    links: [
+      { to: "/psi", label: "Product" },
+      { to: "/how-it-works", label: "Example mission" },
+      { to: "/pricing", label: "Pricing" },
+      { to: "/ai-agents", label: "Specialists" },
+    ],
+  },
+  {
+    label: "Resources",
+    links: [
+      { to: "/resources", label: "Resources" },
+      { to: "/about", label: "About" },
+    ],
+  },
+  {
+    label: "Legal",
+    links: [
+      { to: "/privacy", label: "Privacy" },
+      { to: "/terms", label: "Terms" },
+      { to: "/cookies", label: "Cookies" },
+    ],
+  },
+] as const;
 
 export function MarketingFooter() {
   return (
     <footer className="dxf">
       <div className="dxf-inner">
-        <div className="dxf-brand">
-          <BrandLogo />
-          <p>Your idea, run like a product company.</p>
-        </div>
-        <nav className="dxf-cols" aria-label="Footer navigation">
-          <div>
-            <h2>Product</h2>
-            {MARKETING_LINKS.map((l) => (
-              <Link key={l.to} to={l.to}>
-                {l.label}
-              </Link>
-            ))}
-            <Link to="/login">Sign in</Link>
-          </div>
-          <div>
-            <h2>Company</h2>
-            <Link to="/about">About</Link>
-            <Link to="/resources">Resources</Link>
-            {CAREER_SUITE_ENABLED ? <Link to="/experience">Career suite</Link> : null}
-          </div>
-          <div>
-            <h2>Legal</h2>
-            <Link to="/privacy">Privacy</Link>
-            <Link to="/terms">Terms</Link>
-            <Link to="/cookies">Cookies</Link>
-          </div>
+        <BrandLogo />
+        <nav className="dxf-nav" aria-label="Footer">
+          {FOOTER_GROUPS.map((group) => (
+            <div key={group.label} role="group" aria-label={group.label}>
+              {group.links.map((link) => (
+                <Link key={link.to} to={link.to}>
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          ))}
         </nav>
       </div>
-      <div className="dxf-base">© {new Date().getFullYear()} DeliverX</div>
+      <p className="dxf-base">© {new Date().getFullYear()} DeliverX</p>
     </footer>
   );
 }

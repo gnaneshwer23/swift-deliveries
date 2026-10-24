@@ -4,6 +4,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { OnboardingGate } from "@/components/onboarding-gate";
+import { ACCOUNT_DOES_NOT_ACTIVATE } from "@/lib/pilot/commercial-copy";
 
 const TITLE = "DeliverX — From product idea to continuous intelligence";
 const DESCRIPTION =
@@ -207,29 +208,47 @@ function HomePage() {
           </Link>
         </div>
       </section>
-      <section className="psi-section">
-        <div className="dxl-wrap psi-split">
-          <div>
-            <p className="dxl-eyebrow">Build with purpose</p>
-            <h2 className="dxl-h2">Bring a question worth investigating.</h2>
-            <p>
-              Founders validate a direction. Product teams investigate an improvement. Students
-              learn by building and inspecting the same work.
-            </p>
+      <section className="home-close" aria-labelledby="home-close-title">
+        <div className="dxl-wrap">
+          <div className="home-close-head">
+            <h2 id="home-close-title" className="dxl-h2">
+              Build with purpose
+            </h2>
+            <p>Bring one product question.</p>
           </div>
-          <div>
-            <p>
-              Prepare your brief without an account, or explore the three scoped paid pilot offers.
-              Pilot scope and availability are confirmed before billing.
-            </p>
-            <div className="psi-actions">
-              <Link to="/resources" hash="brief-builder" className="dxl-btn dxl-btn-primary">
-                Prepare your brief
-              </Link>
-              <Link to="/pricing" className="dxl-btn dxl-btn-ghost">
-                Explore paid pilots
-              </Link>
+          <div className="home-close-bench">
+            <div className="home-close-top">
+              <figure className="home-close-scene">
+                <img
+                  src="/illustrations/role-builder.webp"
+                  width={1152}
+                  height={864}
+                  alt="Blocks assembled inside a frame, next to a blank interface."
+                  loading="lazy"
+                />
+              </figure>
+              <ul className="home-close-cards">
+                <li className="home-close-plinth">
+                  <Link to="/pilot" search={{ plan: "founder" }} className="home-close-card">
+                    <span className="home-close-mark" aria-hidden="true" />
+                    Request a pilot
+                  </Link>
+                </li>
+                <li className="home-close-plinth">
+                  <Link to="/resources" hash="brief-builder" className="home-close-card">
+                    <span className="home-close-mark" aria-hidden="true" />
+                    Prepare your brief
+                  </Link>
+                </li>
+                <li className="home-close-plinth">
+                  <Link to="/login" className="home-close-card">
+                    <span className="home-close-mark" aria-hidden="true" />
+                    Sign in
+                  </Link>
+                </li>
+              </ul>
             </div>
+            <p className="home-close-note">{ACCOUNT_DOES_NOT_ACTIVATE}</p>
           </div>
         </div>
       </section>
