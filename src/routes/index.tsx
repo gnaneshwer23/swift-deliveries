@@ -4,9 +4,7 @@ import { ProductBrainExplorer } from "@/components/marketing/product-brain-explo
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
-import { JudgementFlow } from "@/components/marketing/judgement-flow";
 import { OnboardingGate } from "@/components/onboarding-gate";
-import { ProductIllustration } from "@/components/marketing/product-illustration";
 import { LiveDecision } from "@/components/marketing/dxsi-landing";
 
 const TITLE = "DeliverX — From product idea to continuous intelligence";
@@ -182,7 +180,8 @@ function HomePage() {
       <section className="psi-section psi-tinted" id="decisions">
         <div className="dxl-wrap">
           <p className="dxl-eyebrow">05 · A mission in action</p>
-          <JudgementFlow />
+          <h2 className="dxl-h2">Follow the work. Inspect the judgement.</h2>
+          <SectionExplorer kind="mission" />
           <details>
             <summary>Inspect the sample decision engine</summary>
             <LiveDecision />
@@ -206,7 +205,7 @@ function HomePage() {
               Follow the learning loop →
             </Link>
           </div>
-          <ProductIllustration name="learning-loop" />
+          <SectionExplorer kind="learning" />
         </div>
       </section>
       <section className="psi-section psi-tinted">
@@ -222,7 +221,7 @@ function HomePage() {
               View safeguards →
             </Link>
           </div>
-          <ProductIllustration name="human-direction" />
+          <SectionExplorer kind="trust" />
         </div>
       </section>
       <section className="psi-section">
