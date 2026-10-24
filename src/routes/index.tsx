@@ -99,7 +99,7 @@ function HomePage() {
   return (
     <MarketingLayout>
       <OnboardingGate />
-      <section className="dxl-hero">
+      <section className="dxl-hero dxl-hero-home">
         <div className="dxl-wrap">
           <p className="dxl-eyebrow">DeliverX · Product Super Intelligence</p>
           <h1 className="dxl-h1">
@@ -108,8 +108,8 @@ function HomePage() {
             <span className="dxl-grad">to continuous intelligence.</span>
           </h1>
           <p className="dxl-lead">
-            For founders and product builders. Turn your product question into an evidence brief,
-            compared options and a clear next step. Keep the reasoning together and approve the
+            For founders and product builders, turn a product question into an evidence brief,
+            compared options and a clear next step, then keep the reasoning together and approve the
             decisions that matter.
           </p>
           <div className="dxl-ctas">

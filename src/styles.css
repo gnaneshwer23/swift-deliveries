@@ -6273,13 +6273,53 @@ html:has(.marketing-page) {
 .dxs .dxn .nav-links a:hover, .dxs .dxn .nav-links a.active { color: #0b0d12; }
 .dxs .dxn-cta { display: inline-flex; align-items: center; height: 38px; padding: 0 16px; border-radius: 999px; background: #0b0d12; color: #fff; font-size: 14px; font-weight: 600; text-decoration: none; }
 .dxs .dxn-cta:hover { background: #1a1f2e; }
-.dxs .dxn-signin { display: inline-flex; align-items: center; height: 38px; padding: 0 14px; border-radius: 999px; color: #0b0d12; font-size: 14px; font-weight: 600; text-decoration: none; border: 1px solid transparent; }
-.dxs .dxn-signin:hover { border-color: #d0d5dd; }
-.dxs .dxn-mobile { position: absolute; inset-inline: 0; top: 64px; background: #fff; border-bottom: 1px solid #eaecf0; padding: 8px 16px 20px; box-shadow: 0 16px 32px -16px rgba(16, 24, 40, .2); z-index: 50; }
-.dxs .dxn-mobile nav > a:not(.dxn-cta):not(.dxn-signin) { padding: 14px 0; border-bottom: 1px solid #f2f4f7; font-size: 15px; font-weight: 550; color: #101828; text-decoration: none; }
-.dxs .dxn-mobile .dxn-signin { border-color: #d0d5dd; height: 44px; }
-.dxs .dxn-mobile .dxn-cta { height: 44px; }
-@media (max-width: 767px) { .dxs .dxn { padding: 0 16px; } }
+.dxs .dxn-signin { display: inline-flex; align-items: center; height: auto; padding: 0 2px; border: 0; border-radius: 0; background: transparent; color: #344054; font-size: 14px; font-weight: 550; text-decoration: none; }
+.dxs .dxn-signin:hover { color: #0b0d12; }
+.dxs .dxn-toggle { display: none; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 0; border-radius: 10px; border: 1px solid #d0d5dd; background: #fff; color: #0b0d12; cursor: pointer; flex: none; }
+.dxs .dxn-toggle:hover { background: #f8fafc; }
+.dxs .dxn a:focus-visible, .dxs .dxn button:focus-visible { outline: 3px solid #3e63dd; outline-offset: 3px; }
+.dxs .dxn-mobile { position: absolute; inset-inline: 0; top: 100%; background: #fff; border-bottom: 1px solid #eaecf0; padding: 8px 16px 20px; box-shadow: 0 16px 32px -16px rgba(16, 24, 40, .2); z-index: 50; }
+.dxs .dxn-mobile[hidden] { display: none; }
+.dxs .dxn-mobile nav > a { display: block; padding: 14px 0; border-bottom: 1px solid #f2f4f7; font-size: 15px; font-weight: 550; color: #101828; text-decoration: none; }
+.dxs .dxn-mobile .dxn-signin { display: flex; justify-content: flex-start; height: auto; padding: 14px 0; border: 0; border-bottom: 1px solid #f2f4f7; border-radius: 0; color: #101828; }
+@media (max-width: 959px) {
+  .dxs .dxn { padding: 0 16px; gap: 12px; }
+  .dxs .dxn .nav-links,
+  .dxs .dxn .nav-right .dxn-signin,
+  .dxs .dxn .dxn-desktop-cta { display: none; }
+  .dxs .dxn-toggle { display: inline-flex; }
+}
+@media (min-width: 960px) {
+  .dxs .dxn { flex-wrap: nowrap; }
+  .dxs .dxn .nav-links { display: flex; }
+  .dxs .dxn-toggle,
+  .dxs .dxn-mobile { display: none; }
+}
+@media (max-width: 420px) {
+  .dxs .dxn-cta { padding: 0 12px; font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dxs .dxn-toggle,
+  .dxs .dxn-cta,
+  .dxs .dxn-signin { transition: none; }
+}
+
+/* Homepage first section: one reading order, with room around it. */
+.dxl-hero-home { padding: 120px 0 88px; }
+.dxl-hero-home .dxl-eyebrow { margin-bottom: 22px; }
+.dxl-hero-home .dxl-lead { max-width: 40rem; margin-top: 28px; line-height: 1.6; }
+.dxl-hero-home .dxl-ctas { margin-top: 40px; }
+.dxl-hero-home .brain-explorer { margin-top: 80px; }
+@media (max-width: 640px) {
+  .dxl-hero-home { padding: 76px 0 56px; }
+  .dxl-hero-home .dxl-lead { margin-top: 22px; }
+  .dxl-hero-home .dxl-ctas { margin-top: 32px; flex-direction: column; align-items: center; }
+  .dxl-hero-home .brain-explorer { margin-top: 56px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dxl-hero-home .dxl-btn { transition: none; }
+  .dxl-hero-home .dxl-btn-primary:hover { transform: none; }
+}
 
 .dxf { border-top: 1px solid #eaecf0; background: #fff; padding: 56px 24px 28px; }
 .dxf-inner { max-width: 1120px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 40px; }

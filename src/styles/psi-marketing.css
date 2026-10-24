@@ -655,20 +655,10 @@
     transform: none;
   }
 }
-/* Marketing nav must not let its component rules override responsive hiding. */
 .dxs .dxn-cta,
 .dxs .dxn-signin {
   white-space: nowrap;
   flex-shrink: 0;
-}
-.dxs .dxn-left {
-  flex-shrink: 0;
-}
-@media (max-width: 639px) {
-  .dxs .nav-right > .dxn-signin.hidden,
-  .dxs .nav-right > .dxn-cta.hidden {
-    display: none;
-  }
 }
 
 /* Labelled conceptual handoffs remain readable text at every screen size. */
@@ -866,24 +856,6 @@
 .psi-dept-wheel button[aria-pressed="true"] {
   background: #26204c;
   color: white;
-}
-.dxs .nav-links {
-  gap: 15px;
-}
-.dxs .nav-links a {
-  font-size: 12px;
-  white-space: nowrap;
-}
-@media (min-width: 768px) and (max-width: 1230px) {
-  .dxs .nav-links {
-    display: none;
-  }
-  .dxs .btn-nav {
-    display: inline-flex;
-  }
-  .dxs .dxn-mobile {
-    display: block;
-  }
 }
 @media (max-width: 720px) {
   .psi-price-grid,
@@ -1167,23 +1139,6 @@
 .psi-flow-toggle {
   display: block;
   margin: 0 0 10px auto;
-}
-.dxs .nav-links {
-  gap: 24px;
-}
-.dxs .nav-links a {
-  font-size: 14px;
-}
-@media (min-width: 960px) and (max-width: 1230px) {
-  .dxs .nav-links {
-    display: flex;
-  }
-  .dxs .btn-nav {
-    display: none;
-  }
-  .dxs .dxn-mobile {
-    display: none;
-  }
 }
 @media (max-width: 720px) {
   .psi-process-svg {

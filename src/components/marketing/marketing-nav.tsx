@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { AccountMenu } from "./account-menu";
@@ -17,16 +17,46 @@ export const MARKETING_LINKS = [
 ] as const;
 const LINKS = MARKETING_LINKS.filter((l) => ["/psi", "/how-it-works", "/pricing"].includes(l.to));
 
+const DESKTOP_NAV = "(min-width: 960px)";
+
 export function MarketingNav() {
   const [open, setOpen] = useState(false);
   const { user, loading } = useSession();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const menuId = useId();
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const desktop = window.matchMedia(DESKTOP_NAV);
+    const closeOnDesktop = () => {
+      if (desktop.matches) setOpen(false);
+    };
+    closeOnDesktop();
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, []);
+
+  useEffect(() => {
+    if (!open || window.matchMedia(DESKTOP_NAV).matches) return;
+    menuRef.current?.querySelector<HTMLElement>("a")?.focus();
+  }, [open]);
+
+  const close = () => {
+    setOpen(false);
+    toggleRef.current?.focus();
+  };
 
   return (
-    <header className="nav motion-nav dxn">
+    <header
+      className="nav motion-nav dxn"
+      onKeyDown={(event) => {
+        if (event.key === "Escape" && open) close();
+      }}
+    >
       <div className="dxn-left">
         <BrandLogo />
-        <nav className="nav-links motion-nav-links" aria-label="Primary navigation">
+        <nav className="nav-links motion-nav-links" aria-label="Primary">
           {LINKS.map((l) => (
             <Link
               key={l.to}
@@ -43,14 +73,14 @@ export function MarketingNav() {
       <div className="nav-right">
         {!loading && user ? (
           <>
-            <Link to="/command" className="dxn-cta hidden sm:inline-flex">
+            <Link to="/command" className="dxn-cta dxn-desktop-cta">
               Launch PSI Workspace
             </Link>
             <AccountMenu user={user} />
           </>
         ) : (
           <>
-            <Link to="/login" className="dxn-signin hidden sm:inline-flex">
+            <Link to="/login" className="dxn-signin">
               Sign in
             </Link>
             <Link to="/pilot" search={{ plan: "founder" }} className="dxn-cta">
@@ -59,54 +89,36 @@ export function MarketingNav() {
           </>
         )}
         <button
+          ref={toggleRef}
           type="button"
-          onClick={() => setOpen((v) => !v)}
-          className="btn-nav inline-flex md:hidden"
+          className="dxn-toggle"
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
+          aria-controls={menuId}
+          onClick={() => setOpen((value) => !value)}
         >
           {open ? <X className="size-4" /> : <Menu className="size-4" />}
         </button>
       </div>
 
-      {open && (
-        <div className="dxn-mobile md:hidden">
-          <nav className="flex flex-col" aria-label="Mobile navigation">
-            {LINKS.map((l) => (
-              <Link key={l.to} to={l.to} onClick={() => setOpen(false)}>
-                {l.label}
-              </Link>
-            ))}
-            {user ? (
-              <Link
-                to="/command"
-                onClick={() => setOpen(false)}
-                className="dxn-cta mt-3 justify-center"
-              >
-                Launch PSI Workspace
-              </Link>
-            ) : (
-              <div className="mt-3 flex flex-col gap-2">
-                <Link
-                  to="/login"
-                  onClick={() => setOpen(false)}
-                  className="dxn-signin justify-center"
-                >
-                  Sign in
-                </Link>
-                <Link
-                  to="/pilot"
-                  search={{ plan: "founder" }}
-                  onClick={() => setOpen(false)}
-                  className="dxn-cta justify-center"
-                >
-                  Request a pilot
-                </Link>
-              </div>
-            )}
-          </nav>
-        </div>
-      )}
+      <div className="dxn-mobile" id={menuId} ref={menuRef} hidden={!open}>
+        <nav className="flex flex-col" aria-label="Menu">
+          {LINKS.map((l) => (
+            <Link key={l.to} to={l.to} onClick={() => setOpen(false)}>
+              {l.label}
+            </Link>
+          ))}
+          {user ? (
+            <Link to="/command" onClick={() => setOpen(false)}>
+              Launch PSI Workspace
+            </Link>
+          ) : (
+            <Link to="/login" className="dxn-signin" onClick={() => setOpen(false)}>
+              Sign in
+            </Link>
+          )}
+        </nav>
+      </div>
     </header>
   );
 }
