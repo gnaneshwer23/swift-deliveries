@@ -2,15 +2,15 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { SectionExplorer } from "@/components/marketing/section-explorer";
 import { MissionSampleRecord } from "@/components/marketing/mission-sample-record";
-import { ProductBench, ProductCards } from "@/components/marketing/product-reading";
+import { MissionDecisionExample } from "@/components/marketing/mission-decision-example";
 import { pageHead } from "@/components/marketing/page-head";
 
 export const Route = createFileRoute("/how-it-works")({
   head: () =>
     pageHead(
       "/how-it-works",
-      "Example mission — Investigate onboarding | DeliverX",
-      "One example: why people leave during setup. Follow the question through evidence, options, a challenge, the owner's decision, and a held export.",
+      "How DeliverX works — One question, a traceable decision",
+      "Follow an onboarding question through evidence, specialist contributions, your decision, a reviewable pack and an outcome review.",
     ),
   component: ExampleMission,
 });
@@ -18,194 +18,156 @@ export const Route = createFileRoute("/how-it-works")({
 function ExampleMission() {
   return (
     <MarketingLayout>
-      <section className="psi-page-hero">
+      <section className="psi-page-hero mission-journey-hero">
         <div className="dxl-wrap">
-          <p className="dxl-eyebrow">Example mission · why people leave during setup</p>
+          <p className="dxl-eyebrow">How DeliverX works</p>
           <h1 className="dxl-h1">
-            Which change should
-            <br />
-            we investigate first?
+            One question.
+            <br />A decision you can explain.
           </h1>
-          <div className="psi-hero-reading">
-            <ProductBench
-              label="This page is one onboarding example"
-              source="People reach setup, and you do not yet know why some leave."
-              known="This page follows that one question. You hand it to Evidence. Evidence hands a brief to Options. Options hands a comparison to Challenge. Challenge hands the objection to you. Export holds the pack until you approve."
-              open="The sample is hypothetical. No abandonment evidence is supplied here, no approval is recorded, and nothing is exported."
-              note="Example reading only. One question, one stepper, one sample. This is not a live mission."
-            />
-            <div className="psi-actions">
-              <a href="#walkthrough" className="dxl-btn dxl-btn-primary">
-                Follow the handoffs
-              </a>
-              <a href="#sample-record" className="dxl-btn dxl-btn-ghost">
-                Inspect sample documents
-              </a>
-            </div>
-            <p className="journey-status">
-              Interactive example, not a running customer mission. All sample material is
-              hypothetical. No research, approval, experiment or deployment takes place here.
-            </p>
+          <p className="mission-intro">
+            Follow a product question as specialists organise evidence, compare options and
+            challenge a recommendation. You choose what happens next.
+          </p>
+          <div className="psi-actions">
+            <a href="#walkthrough" className="dxl-btn dxl-btn-primary">
+              Explore the mission
+            </a>
+            <a href="#sample-record" className="dxl-btn dxl-btn-ghost">
+              Open the decision pack
+            </a>
           </div>
+          <p className="mission-example-label">
+            Hypothetical onboarding example. No customer research, live agent execution or real
+            approval takes place here.
+          </p>
+          <nav className="mission-page-nav" aria-label="On this page">
+            <a href="#walkthrough">Follow the work</a>
+            <a href="#your-decision">Make an example decision</a>
+            <a href="#sample-record">Inspect the record</a>
+            <a href="#outcome-review">Close the loop</a>
+          </nav>
         </div>
       </section>
-      <section className="psi-section psi-reading psi-mission" id="walkthrough">
+      <section className="psi-section" id="walkthrough">
         <div className="dxl-wrap">
-          <div className="psi-reading-head">
-            <p className="dxl-eyebrow">The handoff</p>
-            <h2 className="dxl-h2">The question moves. You decide before export.</h2>
+          <div className="mission-section-heading">
+            <div>
+              <p className="dxl-eyebrow">Evidence & memory → Judgement → Delivery</p>
+              <h2 className="dxl-h2">
+                Which onboarding change
+                <br />
+                should we investigate first?
+              </h2>
+            </div>
+            <p>
+              Sample context: setup asks for several details before the first useful action. Where
+              people leave, and why, is still unknown.
+            </p>
           </div>
-          <ProductBench
-            label="How this onboarding example moves"
-            source="The question is why people leave during setup."
-            known="Each step names what moves and who receives it. Challenge keeps the objection beside the recommendation. The picture pauses at your decision. The experiment brief is a document inside the pack, not a second walkthrough."
-            open="You have not approved an investigation. Export stays held. No one on this page fills in the missing reason people leave."
-            note="The picture below is the same example. Selecting a station does not run the mission."
-          />
-          <ProductCards
-            label="Steps in this onboarding example"
-            cards={[
-              {
-                name: "Question",
-                status: "You hand it on",
-                meta: "To Evidence",
-                source: "People reach setup and some leave",
-                known:
-                  "The question that moves is which change to investigate first. You hand that question to Evidence.",
-                open: "The question is not a finding, and it is not an approval.",
-              },
-              {
-                name: "Evidence",
-                status: "Hands the brief on",
-                meta: "To Options",
-                source: "Sample setup notes, not interviews",
-                known:
-                  "What moves is the note that setup asks for several details before the first useful action. Evidence hands that brief to Options.",
-                open: "Where people leave, and why, is missing. The gap stays open.",
-              },
-              {
-                name: "Options",
-                status: "Hands the comparison on",
-                meta: "To Challenge",
-                source: "The brief, including the gap",
-                known:
-                  "Three options move forward: shorten the fields, defer optional details until after the first useful action, or explain why each detail is needed.",
-                open: "No option is chosen here. No change in completion is claimed.",
-              },
-              {
-                name: "Challenge",
-                status: "Hands the case to you",
-                meta: "The objection stays visible",
-                source: "The suggestion to investigate deferring optional details",
-                known:
-                  "The reviewer objects: without abandonment evidence, the cause is unknown, so implementation is not justified. Challenge hands that case to you.",
-                open: "Challenge does not approve the next step.",
-              },
-              {
-                name: "Owner decision",
-                status: "You decide",
-                meta: "Before Export",
-                source: "The options, the objection, and the missing evidence",
-                known:
-                  "You approve a scoped investigation, ask for the missing evidence, or reject the recommendation. The sample leaves the decision pending.",
-                open: "Approving this page does not approve a mission. Export waits.",
-              },
-              {
-                name: "Export",
-                status: "Held for you",
-                meta: "Leaves only after you approve",
-                source: "The brief, the register, the decision, and the experiment brief",
-                known:
-                  "Export packs those documents and holds them. The experiment brief states a hypothesis and a measure. It does not report a result.",
-                open: "This page does not release the pack. No experiment has run.",
-              },
-            ]}
-          />
           <SectionExplorer kind="mission" />
         </div>
       </section>
-      <section className="psi-section psi-reading psi-mission" id="sample-record">
+      <section className="psi-section mission-decision-section" id="your-decision">
         <div className="dxl-wrap">
-          <div className="psi-reading-head">
-            <p className="dxl-eyebrow">Inside the sample record</p>
-            <h2 className="dxl-h2">Open the reasons behind the recommendation.</h2>
+          <div className="mission-section-heading">
+            <div>
+              <p className="dxl-eyebrow">Your decision</p>
+              <h2 className="dxl-h2">
+                A recommendation needs
+                <br />
+                your judgement.
+              </h2>
+            </div>
+            <p>
+              The evidence gap travels with the recommendation. Explore three possible responses
+              without changing a workspace mission.
+            </p>
           </div>
-          <ProductBench
-            label="What the sample record holds"
-            source="The sample links hypothesis E-02 to decision D-01 and experiment brief A-01."
-            known="The reviewer's objection stays in the record: without real abandonment evidence, implementation is not justified. The owner decision is written as pending, so the pack is not cleared for export."
-            open="You can read and download the sample. Downloading it does not approve the mission, start an experiment, or record what happened in setup."
-            note="One sample. These documents are hypothetical teaching material."
-          />
-          <MissionSampleRecord />
+          <MissionDecisionExample />
         </div>
       </section>
-      <section className="psi-section psi-reading psi-mission">
+      <section className="psi-section" id="sample-record">
         <div className="dxl-wrap">
-          <div className="psi-reading-head">
-            <h2 className="dxl-h2">What you bring. What stays your call.</h2>
+          <div className="mission-section-heading">
+            <div>
+              <p className="dxl-eyebrow">The product record</p>
+              <h2 className="dxl-h2">
+                Take the reasoning
+                <br />
+                with the work.
+              </h2>
+            </div>
+            <p>
+              Inspect the brief, evidence, alternatives and experiment plan. These fixed sample
+              documents keep the owner decision pending, regardless of your example choice above.
+            </p>
           </div>
-          <ProductBench
-            label="What stays with the owner in this example"
-            source="You bring the setup question, the notes you are allowed to use, and the outcome you want to investigate."
-            known="You decide after Challenge has handed you the objection. A scoped investigation can be approved, sent back for the missing abandonment evidence, or rejected. The pack you would receive is the brief, the register, the decision, and the experiment plan."
-            open="This example records no approval. A prototype needs an agreed extension. Deployment is not part of the pack."
-            note="Owner reading only. Nothing on this page is an observed improvement."
-          />
-          <ProductCards
-            label="Your part of this example"
-            cards={[
-              {
-                name: "You bring",
-                status: "Starting point",
-                meta: "A gap is allowed",
-                source: "Your setup question and authorised notes",
-                known:
-                  "You hand Evidence the question, the constraints, and the outcome you want to investigate.",
-                open: "Missing abandonment evidence is an acceptable start. It is not filled in for you.",
-              },
-              {
-                name: "You decide",
-                status: "Before export",
-                meta: "Challenge has handed you the case",
-                source: "The options and the objection",
-                known:
-                  "You approve a scoped investigation, ask for more evidence, or reject the recommendation.",
-                open: "This example records no real approval.",
-              },
-              {
-                name: "You receive",
-                status: "Only after you approve",
-                meta: "The held pack",
-                source: "Export, still held",
-                known:
-                  "The pack is a brief, an evidence register, a decision record, and an experiment plan.",
-                open: "A prototype needs an agreed extension. Deployment is not included.",
-              },
-            ]}
-          />
-          <p className="journey-status">
-            Product status: a supervised mission can store an owner-supplied result, a versioned
-            review and a follow-up that stays proposed until you approve it. This example does not
-            record an observation or approve a mission. No improvement has been observed here.
+          <MissionSampleRecord />
+          <p className="mission-example-label">
+            Downloading a sample is a local document action. It authorises no experiment, external
+            action or deployment.
+          </p>
+        </div>
+      </section>
+      <section className="psi-section mission-learning-section" id="outcome-review">
+        <div className="dxl-wrap">
+          <p className="dxl-eyebrow">Feedback loop</p>
+          <h2 className="dxl-h2">
+            A plan becomes learning
+            <br />
+            when you bring a result.
+          </h2>
+          <ol className="mission-learning-flow">
+            <li>
+              <span>01 · Plan</span>
+              <h3>Define the measure</h3>
+              <p>
+                Setup completion and time to first useful action. Track later profile completion as
+                a guardrail.
+              </p>
+              <strong>Baseline still needed</strong>
+            </li>
+            <li>
+              <span>02 · Observe</span>
+              <h3>Supply what happened</h3>
+              <p>
+                After separately approved work, bring an actual result, source and observation
+                window.
+              </p>
+              <strong>No result supplied in this example</strong>
+            </li>
+            <li>
+              <span>03 · Review</span>
+              <h3>Compare with the hypothesis</h3>
+              <p>
+                Keep limitations in the review. Propose the next question; the owner decides whether
+                it becomes a mission.
+              </p>
+              <strong>Next mission requires your approval</strong>
+            </li>
+          </ol>
+          <p className="mission-learning-return">
+            ↶ The next approved question returns to Evidence & memory.
           </p>
           <Link to="/psi" className="dxl-link">
-            Explore capabilities and current limitations
+            Explore current capabilities and limitations
           </Link>
         </div>
       </section>
-      <section className="psi-section psi-reading psi-mission">
-        <div className="dxl-wrap">
-          <div className="psi-reading-head">
-            <h2 className="dxl-h2">Bring your own product question.</h2>
+      <section className="psi-section">
+        <div className="dxl-wrap mission-final">
+          <div>
+            <h2 className="dxl-h2">
+              What question is
+              <br />
+              your product facing?
+            </h2>
+            <p>
+              Start with your audience, constraints and the evidence you have. An honest gap is a
+              useful starting point.
+            </p>
           </div>
-          <ProductBench
-            label="Prepare a brief without starting this example"
-            source="The brief builder asks for your audience, the problem, the outcome you want, and the evidence you already have."
-            known="You can download that brief without creating an account. It is your question, not this onboarding sample."
-            open="Downloading a brief does not open a paid pilot, approve a mission, or export this sample."
-            note="Brief reading only. The onboarding sample stays on this page."
-          />
           <div className="psi-actions">
             <Link to="/resources" hash="brief-builder" className="dxl-btn dxl-btn-primary">
               Prepare your brief

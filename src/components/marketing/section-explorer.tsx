@@ -163,7 +163,7 @@ const MISSION: Point[] = [
   {
     id: "question",
     name: "Question",
-    role: "You hand this to Evidence",
+    role: "Product owner → Research Synthesis",
     input: "Why people leave during setup, and the constraints you set",
     output: "One bounded question for this sample",
     explanation:
@@ -171,12 +171,11 @@ const MISSION: Point[] = [
     x: 14,
     y: 50,
     path: "M 14 50 C 14 26 26 26 37 26",
-    capability: "DX-002",
   },
   {
     id: "evidence",
     name: "Evidence",
-    role: "Evidence hands this to Options",
+    role: "Research Synthesis → Product Discovery",
     input: "The question, plus the setup notes you actually supplied",
     output: "A brief that keeps the gap open",
     explanation:
@@ -189,7 +188,7 @@ const MISSION: Point[] = [
   {
     id: "options",
     name: "Options",
-    role: "Options hands this to Challenge",
+    role: "Product Discovery → Review challenge",
     input: "The brief, including the abandonment gap",
     output: "Three options, and no chosen change",
     explanation:
@@ -201,11 +200,11 @@ const MISSION: Point[] = [
   {
     id: "approval",
     name: "Owner decision",
-    role: "You decide. Export stays held.",
+    role: "Product owner · consequential scope stays with you",
     input: "The options, the challenge, and the missing abandonment evidence",
     output: "Approve a scoped investigation, ask for evidence, or reject",
     explanation:
-      "Challenge hands you the objection: without abandonment evidence, the cause is unknown, so implementation is not justified. You decide. Export does not leave before that. Approving here changes this example only.",
+      "Challenge hands you the objection: without abandonment evidence, the cause is unknown, so implementation is not justified. You choose the scope of the next investigation. Continuing here only explores the illustration; it records no real approval.",
     x: 86,
     y: 50,
     path: "M 86 50 C 86 76 76 76 65 76",
@@ -214,7 +213,7 @@ const MISSION: Point[] = [
   {
     id: "experiment",
     name: "Experiment brief",
-    role: "Packed for Export. Not a result.",
+    role: "Experiment planning · proposed artefact",
     input: "The investigation you would allow",
     output: "A hypothesis and a measure, with no observed outcome",
     explanation:
@@ -225,12 +224,12 @@ const MISSION: Point[] = [
   },
   {
     id: "record",
-    name: "Export",
-    role: "Export holds the pack until you approve",
+    name: "Decision pack",
+    role: "Product record → your local copy",
     input: "The brief, the register, the decision, and the experiment brief",
-    output: "A pack that stays held",
+    output: "Traceable sample documents",
     explanation:
-      "Export assembles those sample documents and holds them. The pack leaves only after you approve. This page does not release it, and it does not record what happened in setup.",
+      "The record connects the brief, evidence, decision and proposed experiment. Inspect or download the fixed sample documents below. A local download authorises no experiment or external action.",
     x: 37,
     y: 76,
     path: "M 37 76 L 37 76",
@@ -390,7 +389,7 @@ const SCENES = {
     to: "/how-it-works",
     hash: "sample-record",
     link: "Open the sample documents",
-    note: "One sample mission. The owner approves before export. No research, experiment, or deployment runs here.",
+    note: "One hypothetical mission. You control consequential scope; downloading a sample records no approval.",
   },
   learning: {
     points: LEARNING,
@@ -507,7 +506,20 @@ export function SectionExplorer({ kind }: { kind: SceneKind }) {
             loading="lazy"
           />
           <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <path d={point.path} className="section-active-path" />
+            <defs>
+              <marker
+                id={`${id}-arrow`}
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="5"
+                markerHeight="5"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#795bc9" />
+              </marker>
+            </defs>
+            <path d={point.path} className="section-active-path" markerEnd={`url(#${id}-arrow)`} />
             {playing && visible && !reduced && !(index === points.length - 1) && (
               <circle r=".8" fill="#795bc9">
                 <animateMotion dur="2.3s" repeatCount="indefinite" path={point.path} />
@@ -564,7 +576,7 @@ export function SectionExplorer({ kind }: { kind: SceneKind }) {
                 setPlaying(true);
               }}
             >
-              Approve example handoff <ArrowRight size={14} />
+              Explore next handoff <ArrowRight size={14} />
             </button>
           ) : (
             <button
@@ -576,7 +588,9 @@ export function SectionExplorer({ kind }: { kind: SceneKind }) {
             </button>
           )}
           {approved && (
-            <small className="section-example-approved">Approved for this example only.</small>
+            <small className="section-example-approved">
+              Example handoff explored. No workspace approval recorded.
+            </small>
           )}
           {"hash" in scene ? (
             <Link to={scene.to} hash={scene.hash} className="section-explorer-destination">
