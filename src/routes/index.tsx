@@ -1,3 +1,4 @@
+import { ProductBrainExplorer } from "@/components/marketing/product-brain-explorer";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
@@ -113,47 +114,14 @@ function HomePage() {
             delivery and learning.
           </p>
           <div className="dxl-ctas">
-            <Link to="/psi" className="dxl-btn dxl-btn-primary">
+            <Link to="/" hash="explore-product" className="dxl-btn dxl-btn-primary">
               Explore the platform <ArrowRight size={16} />
             </Link>
             <Link to="/how-it-works" className="dxl-btn dxl-btn-ghost">
               View example mission
             </Link>
           </div>
-          <div className="psi-product-preview">
-            <div className="psi-preview-sidebar">
-              <strong>DeliverX / Product Brain</strong>
-              <span>Overview</span>
-              <span>Missions</span>
-              <span>Evidence</span>
-              <span>Decisions</span>
-            </div>
-            <div className="psi-preview-main">
-              <p className="dxl-eyebrow">Example mission · illustrative interface</p>
-              <h2>Improve onboarding</h2>
-              <div className="psi-preview-metrics">
-                <span>
-                  Objective<strong>Reduce first-step friction</strong>
-                </span>
-                <span>
-                  Specialists<strong>Research + Product + QA</strong>
-                </span>
-                <span>
-                  Stage<strong>Decision ready</strong>
-                </span>
-              </div>
-              <p className="psi-preview-chain">
-                Evidence brief → Specialist positions → Your approval → Prototype brief
-              </p>
-              <p>
-                Recommendation: compare a shorter first session with the current onboarding flow.
-              </p>
-              <small>Hypothetical scenario. No customer result or live execution is claimed.</small>
-            </div>
-          </div>
-          <p className="psi-fine-print">
-            Illustrative interface composition, not a verified live product screenshot.
-          </p>
+          <ProductBrainExplorer />
         </div>
       </section>
       <section className="psi-section psi-tinted">

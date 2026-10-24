@@ -1,0 +1,35 @@
+Create a new DeliverX illustration design proof, landscape 1536x1024. Sophisticated editorial isometric illustration, exceptionally clean, mostly black and white with sparse muted violet accents, on a very pale lavender background #F5F5FF. NOT glossy 3D product photography. No glass pipes, neon tubing, shiny metal, photorealistic documents, floating separate machines, flat flowchart boxes, or excessive UI cards.
+
+The subject is ONE cohesive Product Brain, built as THREE separated vertically stacked isometric platforms sharing exactly the same diamond-shaped footprint, aligned to one central spine. Each platform is white with a narrow black edge. Crisp black outlines, flat shading, minimal grey shadows, sculptural but graphic, like a beautifully crafted architectural cutaway. Strong clear silhouette. Enough vertical separation to distinguish the layers. Original objects and arrangement: do not use Alta's chess pieces, checkerboard, avatars, sales channels or logos.
+
+Composition: the complete three-layer tower sits in the centre/right 65% of canvas, fully visible with breathing room. Left 30% has three concise label groups aligned to corresponding layers, with fine leader lines ending at their platform. Small discreet header at top-left: "DeliverX Product Brain". No website header or browser frame.
+
+BOTTOM PLATFORM — EVIDENCE:
+A tidy library of solid dark rectangular knowledge blocks. On top are four original monochrome miniature symbols: a source document, interview-notes notebook, research folder, and simple measurement chart. Short readable horizontal labels beside these objects: "Sources", "Interview notes", "Research", "Observed results".
+Left layer annotation exactly:
+"01  Evidence & memory"
+"Research Synthesis"
+"Sources, context and observed results"
+
+MIDDLE PLATFORM — JUDGEMENT:
+Three deliberate large objects, not many tiny symbols: a branched decision model with two routes, a review magnifying lens beside a risk flag, and an upright approval hand in a restrained soft green outline. Label the objects horizontally and clearly:
+"Product Strategy"
+"Security & Engineering"
+"You approve"
+Connect the two options into review, then to the human approval point using thin violet directional arrows drawn on the platform. This layer conveys alternatives, challenge, human decision.
+Left layer annotation exactly:
+"02  Judgement"
+"Compare → challenge → decide"
+"Human approval before delivery"
+
+TOP PLATFORM — DELIVERY:
+A simple miniature product interface panel, prototype model, and project folio, arranged across a calm dark modular surface with white line icons. Label them horizontally: "Design", "Engineering", "QA review". A small prominent dossier labelled "Reviewable artefacts" at the exit. A violet highlighted route on this platform should visibly connect design to engineering to QA; no crowded grid.
+Left layer annotation exactly:
+"03  Delivery"
+"Design → Engineering → QA"
+"Inspect the work and keep the record"
+
+WORK DIRECTION:
+On the LEFT of the tower a thin, elegant dotted violet rising route goes from BOTTOM evidence to MIDDLE judgement, and then to TOP delivery, with clear upward arrowheads and two small artefact tokens along the route. The transfer at the human gate is labelled "After your approval". On the RIGHT, a thin dark dotted curved descending route loops from TOP delivery back to BOTTOM evidence, with clearly downward arrowheads and two understated document/result tokens. Label this return path "Observed feedback". Do not turn these into pipes. The endpoints must meet the correct layers. Keep all directions and labels readable, uncrossed and spatially intentional.
+
+Typography is flat horizontal contemporary sans-serif; dark charcoal, legible, not perspective-skewed. Every label must be spelled correctly and positioned outside clutter. Use restrained violet #7860CF only for the active handoff route, and muted green solely for the human approval object. Small footer: "Illustrated concept · Connected outcome tracking is planned". No claims of actual running agents or measured outcomes. No paragraphs beyond the exact annotations. The physical layered system is the centrepiece; the text should quietly explain it. This is one finished polished still illustration that can later be built as a layered interactive web scene.
