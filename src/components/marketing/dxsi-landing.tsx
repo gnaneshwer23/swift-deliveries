@@ -1,7 +1,6 @@
 /**
- * DeliverX landing visuals. Every "live" visual runs the real engine in the
- * browser (blueprint + deliberation) — the motion shows actual behaviour,
- * not a mock-up. Animations respect prefers-reduced-motion.
+ * Sample programme visuals use the blueprint and deliberation engine.
+ * These are demonstrations, not evidence of a real mission or deployment.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { generateRoadmap, allStaffed } from "@/lib/programme/blueprint";
@@ -70,9 +69,9 @@ const NODES: FlowNode[] = [
   { id: "arch", label: "Architecture", x: 835, y: 260, phase: "design" },
   { id: "g3", label: "You", x: 950, y: 190, gate: true },
   { id: "build", label: "Sprints", x: 1060, y: 190, phase: "build" },
-  { id: "verify", label: "Verify", x: 1170, y: 190, phase: "verification" },
-  { id: "g4", label: "You", x: 1280, y: 190, gate: true },
-  { id: "launch", label: "Launch", x: 1385, y: 190, phase: "launch" },
+  { id: "verify", label: "Verify", x: 1190, y: 190, phase: "verification" },
+  { id: "g4", label: "You", x: 1320, y: 190, gate: true },
+  { id: "launch", label: "Launch", x: 1450, y: 190, phase: "launch" },
 ];
 const EDGES: Array<[string, string]> = [
   ["idea", "market"],
@@ -128,6 +127,7 @@ export function LiveProgrammeFlow() {
   const reduced = useReducedMotion();
   const [ref, inView] = useInView<HTMLDivElement>();
   const [step, setStep] = useState(ORDER.length - 1);
+  const [playing, setPlaying] = useState(true);
   const byId = useMemo(() => new Map(NODES.map((n) => [n.id, n])), []);
 
   const agentsPerPhase = useMemo(() => {
@@ -140,11 +140,11 @@ export function LiveProgrammeFlow() {
   }, []);
 
   useEffect(() => {
-    if (reduced || !inView) return;
+    if (reduced || !inView || !playing) return;
     setStep(0);
     const t = window.setInterval(() => setStep((s) => (s + 1) % (ORDER.length + 2)), 1100);
     return () => window.clearInterval(t);
-  }, [reduced, inView]);
+  }, [reduced, inView, playing]);
 
   const stateOf = (id: string) => {
     const idx = ORDER.findIndex((g) => g.includes(id));
@@ -155,11 +155,23 @@ export function LiveProgrammeFlow() {
   return (
     <div
       ref={ref}
-      className="dxl-flow"
-      role="img"
+      className={`dxl-flow${!playing ? " is-paused" : ""}`}
       aria-label="A programme flows from idea through parallel discovery, a team decision, four founder approval gates, design, build sprints and verification to launch."
     >
-      <svg viewBox="0 0 1460 380" className="dxl-flow-svg">
+      <button
+        type="button"
+        className="psi-flow-toggle"
+        aria-pressed={playing}
+        onClick={() => setPlaying(!playing)}
+      >
+        {playing ? "Pause example flow" : "Play example flow"}
+      </button>
+      <svg
+        viewBox="0 0 1550 380"
+        className="dxl-flow-svg"
+        role="img"
+        aria-label="Example lifecycle with parallel discovery and design, joined by human approval gates"
+      >
         <defs>
           <linearGradient id="dxlEdge" x1="0" x2="1">
             <stop offset="0" stopColor="#3e63dd" />
@@ -170,13 +182,13 @@ export function LiveProgrammeFlow() {
           const s = byId.get(a)!;
           const t = byId.get(b)!;
           const mx = (s.x + t.x) / 2;
-          const d = `M${s.x + 34},${s.y} C${mx},${s.y} ${mx},${t.y} ${t.x - 34},${t.y}`;
+          const d = `M${s.x + (s.gate ? 32 : 58)},${s.y} C${mx},${s.y} ${mx},${t.y} ${t.x - (t.gate ? 32 : 58)},${t.y}`;
           const live = stateOf(a) === "done";
           return (
             <g key={`${a}-${b}`}>
               <path d={d} className="dxl-edge" />
               {live ? <path d={d} className="dxl-edge-live" /> : null}
-              {live && stateOf(b) === "active" && !reduced ? (
+              {live && stateOf(b) === "active" && !reduced && playing ? (
                 <circle r="4" className="dxl-particle">
                   <animateMotion dur="1.1s" repeatCount="indefinite" path={d} />
                 </circle>
@@ -201,20 +213,20 @@ export function LiveProgrammeFlow() {
               </text>
               {n.phase && agentsPerPhase[n.phase] ? (
                 <text y="15" textAnchor="middle" className="dxl-node-sub">
-                  {agentsPerPhase[n.phase]} agents
+                  {agentsPerPhase[n.phase]} catalogue roles
                 </text>
               ) : null}
             </g>
           );
         })}
       </svg>
-      <div className="dxl-flow-caption" aria-live="polite">
+      <div className="dxl-flow-caption">
         {activeGate ? (
-          <span className="dxl-pill is-gate">Waiting for your approval</span>
+          <span className="dxl-pill is-gate">Example: human approval gate</span>
         ) : step >= ORDER.length - 1 ? (
-          <span className="dxl-pill is-done">Launched · full project ready to download</span>
+          <span className="dxl-pill is-done">Example: release planning & export</span>
         ) : (
-          <span className="dxl-pill">Workforce running</span>
+          <span className="dxl-pill">Example: specialist handoff</span>
         )}
       </div>
       <ol className="dxl-flow-mobile">
