@@ -1,3 +1,4 @@
+import { SectionExplorer } from "@/components/marketing/section-explorer";
 import { ProductBrainExplorer } from "@/components/marketing/product-brain-explorer";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
@@ -158,7 +159,7 @@ function HomePage() {
               Explore Product Brain →
             </Link>
           </div>
-          <ProductIllustration name="product-brain" />
+          <SectionExplorer kind="record" />
         </div>
       </section>
       <section className="psi-section psi-tinted">
@@ -178,7 +179,7 @@ function HomePage() {
               Explore agents →
             </Link>
           </div>
-          <ProductIllustration name="specialist-team" />
+          <SectionExplorer kind="team" />
         </div>
       </section>
       <section className="psi-section">

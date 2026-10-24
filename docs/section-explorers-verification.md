@@ -1,0 +1,9 @@
+# Home sections 2 and 3: illustrated explorers
+
+Section 2 replaces its simple process graphic with an original connected-record illustration: sources, central product record, decision, artefacts and supplied observations. Section 3 uses a separate original specialist workbench: research, strategy, parallel design/architecture, independent review, human approval and reviewable output. The images were generated with the built-in image generator; prompts are saved in section-explorer-image-prompts.json and production assets are WebP.
+
+All labels are real HTML controls. Selection updates contributor, input, output, explanation and the highlighted handoff path. The inspector uses current registry availability where a specific DX role is named. Each stage downloads an actual Markdown handoff template, clearly labelled as a template with placeholders rather than fabricated customer data. Related product pages are directly reachable.
+
+Playback pauses when the section leaves view and at the team human gate. Example approval only changes local presentation state. Reduced-motion preference suppresses moving markers. Stage buttons provide an alternative to picture hotspots on phones and keyboards; edge labels stay within the picture. No real mission, provider call or database write occurs. Outcome collection remains explicitly planned.
+
+Checks: TypeScript and lint passed (10 existing warnings); 152 tests passed and 16 skipped; production build passed. Browser checks verified decision and strategy inspection, registry status, keyboard activation, team playback stopping at Your approval and explicit continuation. A Sources handoff template downloaded to the browser Downloads directory and its contents were checked. At 390px the homepage had no horizontal overflow and the specialist labels/inspector were usable; edge labels were adjusted after visual inspection.
