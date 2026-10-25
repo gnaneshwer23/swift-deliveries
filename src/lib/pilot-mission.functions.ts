@@ -168,7 +168,13 @@ export const getSupervisedMission = createServerFn({ method: "GET" })
 export const saveSupervisedEvidence = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .validator((data: unknown) =>
-    z.object({ id: z.string().uuid(), items: evidenceSchema }).parse(data),
+    z
+      .object({
+        id: z.string().uuid(),
+        expectedVersion: z.number().int().positive(),
+        items: evidenceSchema,
+      })
+      .parse(data),
   )
   .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
     const workspace = await workspaceFor(context.supabase, context.userId);
@@ -176,6 +182,7 @@ export const saveSupervisedEvidence = createServerFn({ method: "POST" })
     const mission = await service.saveEvidence({
       workspaceId: workspace.id,
       id: data.id,
+      expectedVersion: data.expectedVersion,
       items: data.items,
       nowMs: Date.now(),
     });
@@ -184,13 +191,22 @@ export const saveSupervisedEvidence = createServerFn({ method: "POST" })
 
 export const reviseSupervisedBrief = createServerFn({ method: "POST" })
   .middleware([requireAuth])
-  .validator((data: unknown) => z.object({ id: z.string().uuid(), brief: briefSchema }).parse(data))
+  .validator((data: unknown) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        expectedVersion: z.number().int().positive(),
+        brief: briefSchema,
+      })
+      .parse(data),
+  )
   .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
     const workspace = await workspaceFor(context.supabase, context.userId);
     const { service } = await serviceFor();
     const mission = await service.reviseBrief({
       workspaceId: workspace.id,
       id: data.id,
+      expectedVersion: data.expectedVersion,
       brief: data.brief,
       nowMs: Date.now(),
     });
@@ -203,6 +219,7 @@ export const runSupervisedComparison = createServerFn({ method: "POST" })
     z
       .object({
         id: z.string().uuid(),
+        expectedVersion: z.number().int().positive(),
         expectedScope: z.string().min(16).max(128),
         allowModel: z.boolean(),
       })
@@ -221,7 +238,9 @@ export const runSupervisedComparison = createServerFn({ method: "POST" })
     const outcome = await service.runAlternatives({
       workspaceId: workspace.id,
       id: data.id,
+      expectedVersion: data.expectedVersion,
       workerId: `${context.userId}:${crypto.randomUUID()}`,
+      expectedScope: data.expectedScope,
       nowMs: Date.now(),
       generator: {
         cost: plan.cost,
@@ -240,6 +259,7 @@ export const decideSupervisedMission = createServerFn({ method: "POST" })
     z
       .object({
         id: z.string().uuid(),
+        expectedVersion: z.number().int().positive(),
         action: z.literal("compare_options"),
         version: z.number().int(),
         scopeHash: z.string().min(16).max(128),
@@ -255,6 +275,7 @@ export const decideSupervisedMission = createServerFn({ method: "POST" })
     const mission = await service.decide({
       workspaceId: workspace.id,
       id: data.id,
+      expectedVersion: data.expectedVersion,
       claim: {
         action: data.action,
         version: data.version,
@@ -271,13 +292,16 @@ export const decideSupervisedMission = createServerFn({ method: "POST" })
 
 export const prepareSupervisedArtefact = createServerFn({ method: "POST" })
   .middleware([requireAuth])
-  .validator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .validator((data: unknown) =>
+    z.object({ id: z.string().uuid(), expectedVersion: z.number().int().positive() }).parse(data),
+  )
   .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
     const workspace = await workspaceFor(context.supabase, context.userId);
     const { service } = await serviceFor();
     const mission = await service.prepareArtefact({
       workspaceId: workspace.id,
       id: data.id,
+      expectedVersion: data.expectedVersion,
       nowMs: Date.now(),
     });
     return view(mission, null);
@@ -285,13 +309,16 @@ export const prepareSupervisedArtefact = createServerFn({ method: "POST" })
 
 export const exportSupervisedMission = createServerFn({ method: "POST" })
   .middleware([requireAuth])
-  .validator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .validator((data: unknown) =>
+    z.object({ id: z.string().uuid(), expectedVersion: z.number().int().positive() }).parse(data),
+  )
   .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
     const workspace = await workspaceFor(context.supabase, context.userId);
     const { service } = await serviceFor();
     const mission = await service.exportMission({
       workspaceId: workspace.id,
       id: data.id,
+      expectedVersion: data.expectedVersion,
       nowMs: Date.now(),
     });
     return view(mission, null);
@@ -299,13 +326,16 @@ export const exportSupervisedMission = createServerFn({ method: "POST" })
 
 export const cancelSupervisedMission = createServerFn({ method: "POST" })
   .middleware([requireAuth])
-  .validator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .validator((data: unknown) =>
+    z.object({ id: z.string().uuid(), expectedVersion: z.number().int().positive() }).parse(data),
+  )
   .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
     const workspace = await workspaceFor(context.supabase, context.userId);
     const { service } = await serviceFor();
     const mission = await service.cancel({
       workspaceId: workspace.id,
       id: data.id,
+      expectedVersion: data.expectedVersion,
       nowMs: Date.now(),
     });
     return view(mission, null);
@@ -313,6 +343,7 @@ export const cancelSupervisedMission = createServerFn({ method: "POST" })
 
 const expectationSchema = z.object({
   id: z.string().uuid(),
+  expectedVersion: z.number().int().positive(),
   hypothesis: z.string().max(2000),
   expectedMetric: z.string().max(500),
   baseline: z.string().max(500),
@@ -321,6 +352,7 @@ const expectationSchema = z.object({
 
 const observationSchema = z.object({
   id: z.string().uuid(),
+  expectedVersion: z.number().int().positive(),
   result: z.string().max(2000),
   evidence: z.string().max(2000),
   source: z.string().max(500),
@@ -328,6 +360,7 @@ const observationSchema = z.object({
 
 const reviewSchema = z.object({
   id: z.string().uuid(),
+  expectedVersion: z.number().int().positive(),
   reading: z.enum(["consistent", "different", "uncertain"]),
   uncertainty: z.string().max(2000),
   followUp: briefSchema,
@@ -342,6 +375,7 @@ export const recordSupervisedExpectation = createServerFn({ method: "POST" })
     const mission = await service.recordExpectation({
       workspaceId: workspace.id,
       id: data.id,
+      expectedVersion: data.expectedVersion,
       hypothesis: data.hypothesis,
       expectedMetric: data.expectedMetric,
       baseline: data.baseline,
@@ -361,6 +395,7 @@ export const recordSupervisedObservation = createServerFn({ method: "POST" })
     const mission = await service.recordObservation({
       workspaceId: workspace.id,
       id: data.id,
+      expectedVersion: data.expectedVersion,
       result: data.result,
       evidence: data.evidence,
       source: data.source,
@@ -379,6 +414,7 @@ export const recordSupervisedReview = createServerFn({ method: "POST" })
     const mission = await service.recordReview({
       workspaceId: workspace.id,
       id: data.id,
+      expectedVersion: data.expectedVersion,
       reading: data.reading,
       uncertainty: data.uncertainty,
       followUp: data.followUp,
@@ -390,13 +426,16 @@ export const recordSupervisedReview = createServerFn({ method: "POST" })
 
 export const approveSupervisedFollowUp = createServerFn({ method: "POST" })
   .middleware([requireAuth])
-  .validator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .validator((data: unknown) =>
+    z.object({ id: z.string().uuid(), expectedVersion: z.number().int().positive() }).parse(data),
+  )
   .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
     const workspace = await workspaceFor(context.supabase, context.userId);
     const { service } = await serviceFor();
     const mission = await service.approveFollowUp({
       workspaceId: workspace.id,
       id: data.id,
+      expectedVersion: data.expectedVersion,
       actorId: context.userId,
       followUpMissionId: crypto.randomUUID(),
       usageCeiling: Math.max(0, workspace.usageCeiling - workspace.usageConsumed),

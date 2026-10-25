@@ -1,3 +1,4 @@
+import { useVersionedDraft } from "@/hooks/use-versioned-draft";
 import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -62,6 +63,7 @@ function SupervisedMissionPage() {
       runSupervisedComparison({
         data: {
           id: missionId,
+          expectedVersion: query.data?.mission.version ?? 0,
           expectedScope: query.data?.comparisonScope ?? "",
           allowModel: consentedScope === query.data?.comparisonScope,
         },
@@ -73,7 +75,10 @@ function SupervisedMissionPage() {
     onError,
   });
   const prepare = useMutation({
-    mutationFn: () => prepareSupervisedArtefact({ data: { id: missionId } }),
+    mutationFn: () =>
+      prepareSupervisedArtefact({
+        data: { id: missionId, expectedVersion: query.data?.mission.version ?? 0 },
+      }),
     onSuccess: async () => {
       setError(null);
       await invalidate();
@@ -81,7 +86,10 @@ function SupervisedMissionPage() {
     onError,
   });
   const cancel = useMutation({
-    mutationFn: () => cancelSupervisedMission({ data: { id: missionId } }),
+    mutationFn: () =>
+      cancelSupervisedMission({
+        data: { id: missionId, expectedVersion: query.data?.mission.version ?? 0 },
+      }),
     onSuccess: async () => {
       setError(null);
       await invalidate();
@@ -217,7 +225,12 @@ function SupervisedMissionPage() {
           </button>
         ) : null}
         {next.id === "export" || mission.exportBody ? (
-          <ExportButton missionId={missionId} existing={mission.exportBody} onError={onError} />
+          <ExportButton
+            recordVersion={mission.version}
+            missionId={missionId}
+            existing={mission.exportBody}
+            onError={onError}
+          />
         ) : null}
       </section>
       <div
@@ -226,6 +239,7 @@ function SupervisedMissionPage() {
         data-active={recordSection === "mission-evidence"}
       >
         <EvidenceEditor
+          recordVersion={mission.version}
           missionId={missionId}
           initial={mission.evidence}
           locked={!open}
@@ -250,6 +264,7 @@ function SupervisedMissionPage() {
         ) : null}
       </div>
       <BriefEditor
+        recordVersion={mission.version}
         missionId={missionId}
         initial={mission.brief}
         locked={!open}
@@ -291,6 +306,7 @@ function SupervisedMissionPage() {
             {mission.stage === "alternatives" ||
             (mission.stage === "decision" && !mission.artefact) ? (
               <DecisionForm
+                recordVersion={mission.version}
                 key={mission.proposal.scopeHash}
                 missionId={missionId}
                 action={mission.proposal.action}
@@ -355,6 +371,24 @@ function SupervisedMissionPage() {
             </pre>
           </section>
         ) : null}
+        {mission.archivedPacks?.length ? (
+          <section className="cc-panel" aria-label="Archived decision packs">
+            <h2 className="cc-panel-title">Previous pack versions</h2>
+            <p className="cc-muted text-sm">
+              Earlier packs remain attached to this mission when a measurement plan changes.
+            </p>
+            <div className="mt-3 grid gap-3">
+              {mission.archivedPacks.map((entry) => (
+                <details key={`${entry.recordVersion}-${entry.archivedAt}`} className="cc-card">
+                  <summary className="cursor-pointer font-medium">
+                    Version {entry.recordVersion} · {entry.reason}
+                  </summary>
+                  <pre className="mt-3 whitespace-pre-wrap text-sm">{entry.pack.decisionBrief}</pre>
+                </details>
+              ))}
+            </div>
+          </section>
+        ) : null}
       </div>
       <div
         id="mission-feedback"
@@ -378,19 +412,21 @@ function SupervisedMissionPage() {
 }
 
 function EvidenceEditor({
+  recordVersion,
   missionId,
   initial,
   locked,
   onDone,
   onError,
 }: {
+  recordVersion: number;
   missionId: string;
   initial: Array<{ statement: string; source: string; classification: string }>;
   locked: boolean;
   onDone: () => Promise<void>;
   onError: (error: unknown) => void;
 }) {
-  const [items, setItems] = useState(
+  const draft = useVersionedDraft(
     initial.length
       ? initial.map((item) => ({
           statement: item.statement,
@@ -398,10 +434,17 @@ function EvidenceEditor({
           classification: item.classification,
         }))
       : [{ statement: "", source: "", classification: "supplied" }],
+    recordVersion,
   );
+  const items = draft.value;
+  const setItems = draft.setValue;
   const save = useMutation({
-    mutationFn: () => saveSupervisedEvidence({ data: { id: missionId, items } }),
-    onSuccess: async () => {
+    mutationFn: () =>
+      saveSupervisedEvidence({
+        data: { id: missionId, expectedVersion: draft.expectedVersion, items },
+      }),
+    onSuccess: async (result) => {
+      draft.saved(result.mission.version);
       await onDone();
     },
     onError,
@@ -409,6 +452,14 @@ function EvidenceEditor({
   if (locked) return null;
   return (
     <section className="cc-panel" aria-label="Edit evidence">
+      {draft.stale && (
+        <div role="alert" className="cc-error">
+          The saved record changed. Your edits are kept here.{" "}
+          <button className="cc-btn cc-btn-secondary" onClick={draft.reset}>
+            Discard these edits and load saved values
+          </button>
+        </div>
+      )}
       <h2 className="cc-panel-title">Evidence</h2>
       <p className="cc-muted text-sm">
         Saving a different brief or evidence clears the current proposal and any approval of it.
@@ -491,27 +542,45 @@ function EvidenceEditor({
 }
 
 function BriefEditor({
+  recordVersion,
   missionId,
   initial,
   locked,
   onDone,
   onError,
 }: {
+  recordVersion: number;
   missionId: string;
   initial: { question: string; audience: string; outcome: string; constraints: string };
   locked: boolean;
   onDone: () => Promise<void>;
   onError: (error: unknown) => void;
 }) {
-  const [brief, setBrief] = useState(initial);
+  const draft = useVersionedDraft(initial, recordVersion);
+  const brief = draft.value;
+  const setBrief = draft.setValue;
   const save = useMutation({
-    mutationFn: () => reviseSupervisedBrief({ data: { id: missionId, brief } }),
-    onSuccess: onDone,
+    mutationFn: () =>
+      reviseSupervisedBrief({
+        data: { id: missionId, expectedVersion: draft.expectedVersion, brief },
+      }),
+    onSuccess: async (result) => {
+      draft.saved(result.mission.version);
+      await onDone();
+    },
     onError,
   });
   if (locked) return null;
   return (
     <section className="cc-panel" aria-label="Edit brief">
+      {draft.stale && (
+        <div role="alert" className="cc-error">
+          The saved record changed. Your edits are kept here.{" "}
+          <button className="cc-btn cc-btn-secondary" onClick={draft.reset}>
+            Discard these edits and load saved values
+          </button>
+        </div>
+      )}
       <h2 className="cc-panel-title">Brief</h2>
       <div className="mt-3 grid gap-2">
         <textarea
@@ -553,6 +622,7 @@ function BriefEditor({
 }
 
 function DecisionForm({
+  recordVersion,
   missionId,
   action,
   version,
@@ -561,6 +631,7 @@ function DecisionForm({
   onDone,
   onError,
 }: {
+  recordVersion: number;
   missionId: string;
   action: "compare_options";
   version: number;
@@ -575,7 +646,16 @@ function DecisionForm({
   const decide = useMutation({
     mutationFn: () =>
       decideSupervisedMission({
-        data: { id: missionId, action, version, scopeHash, optionId, choice, note },
+        data: {
+          id: missionId,
+          expectedVersion: recordVersion,
+          action,
+          version,
+          scopeHash,
+          optionId,
+          choice,
+          note,
+        },
       }),
     onSuccess: onDone,
     onError,
@@ -634,17 +714,20 @@ function DecisionForm({
 }
 
 function ExportButton({
+  recordVersion,
   missionId,
   existing,
   onError,
 }: {
+  recordVersion: number;
   missionId: string;
   existing: string | null;
   onError: (error: unknown) => void;
 }) {
   const queryClient = useQueryClient();
   const save = useMutation({
-    mutationFn: () => exportSupervisedMission({ data: { id: missionId } }),
+    mutationFn: () =>
+      exportSupervisedMission({ data: { id: missionId, expectedVersion: recordVersion } }),
     onSuccess: async (result) => {
       const body = result.mission.exportBody;
       if (body) download(body);

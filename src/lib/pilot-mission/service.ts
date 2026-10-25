@@ -115,6 +115,21 @@ function requireText(value: string, label: string, min: number, max: number): st
   return text;
 }
 
+function archivePack(mission: SupervisedMission, reason: string, nowMs: number) {
+  const history = mission.archivedPacks ?? [];
+  return mission.artefact
+    ? [
+        ...history,
+        {
+          recordVersion: mission.version,
+          pack: mission.artefact,
+          archivedAt: new Date(nowMs).toISOString(),
+          reason,
+        },
+      ]
+    : history;
+}
+
 export function normaliseBrief(input: Brief): Brief {
   return {
     question: requireText(input.question, "Question", 8, 2000),
@@ -163,7 +178,11 @@ export function assertApprovalBinding(
   }
 }
 
-function invalidateForScope(mission: SupervisedMission, hash: string): SupervisedMission {
+function invalidateForScope(
+  mission: SupervisedMission,
+  hash: string,
+  nowMs: number,
+): SupervisedMission {
   if (!mission.proposal || mission.proposal.scopeHash === hash) return mission;
   const invalidated = mission.approval
     ? [
@@ -179,6 +198,7 @@ function invalidateForScope(mission: SupervisedMission, hash: string): Supervise
     proposal: null,
     approval: null,
     invalidatedApprovals: invalidated,
+    archivedPacks: archivePack(mission, "Brief or evidence scope changed", nowMs),
     artefact: null,
     exportBody: null,
     expectation: null,
@@ -423,14 +443,24 @@ export class SupervisedMissionService {
 
   async saveEvidence(input: {
     workspaceId: string;
+    expectedVersion?: number;
     id: string;
     items: Array<{ statement: string; source: string; classification: string }>;
     nowMs: number;
   }): Promise<SupervisedMission> {
     const current = await this.must(input.workspaceId, input.id);
+    if (input.expectedVersion !== undefined && current.version !== input.expectedVersion) {
+      throw new MissionConflictError(
+        "This mission changed in another session. Your edits were not saved. Review the latest record before trying again.",
+      );
+    }
     this.assertMutable(current);
     const evidence = normaliseEvidence(input.items);
-    const hashed = invalidateForScope({ ...current, evidence }, scopeHash(current.brief, evidence));
+    const hashed = invalidateForScope(
+      { ...current, evidence },
+      scopeHash(current.brief, evidence),
+      input.nowMs,
+    );
     const next: SupervisedMission = {
       ...hashed,
       evidence,
@@ -444,14 +474,24 @@ export class SupervisedMissionService {
 
   async reviseBrief(input: {
     workspaceId: string;
+    expectedVersion?: number;
     id: string;
     brief: Brief;
     nowMs: number;
   }): Promise<SupervisedMission> {
     const current = await this.must(input.workspaceId, input.id);
+    if (input.expectedVersion !== undefined && current.version !== input.expectedVersion) {
+      throw new MissionConflictError(
+        "This mission changed in another session. Your edits were not saved. Review the latest record before trying again.",
+      );
+    }
     this.assertMutable(current);
     const brief = normaliseBrief(input.brief);
-    const hashed = invalidateForScope({ ...current, brief }, scopeHash(brief, current.evidence));
+    const hashed = invalidateForScope(
+      { ...current, brief },
+      scopeHash(brief, current.evidence),
+      input.nowMs,
+    );
     const next: SupervisedMission = {
       ...hashed,
       brief,
@@ -469,10 +509,16 @@ export class SupervisedMissionService {
 
   async cancel(input: {
     workspaceId: string;
+    expectedVersion?: number;
     id: string;
     nowMs: number;
   }): Promise<SupervisedMission> {
     const current = await this.must(input.workspaceId, input.id);
+    if (input.expectedVersion !== undefined && current.version !== input.expectedVersion) {
+      throw new MissionConflictError(
+        "This mission changed in another session. Your edits were not saved. Review the latest record before trying again.",
+      );
+    }
     if (current.stage === "cancelled") return current;
     const next: SupervisedMission = {
       ...current,
@@ -491,12 +537,26 @@ export class SupervisedMissionService {
 
   async runAlternatives(input: {
     workspaceId: string;
+    expectedVersion?: number;
     id: string;
     workerId: string;
+    expectedScope?: string;
     nowMs: number;
     generator: ComparisonGenerator;
   }): Promise<{ mission: SupervisedMission; chargedUnits: number }> {
     const current = await this.must(input.workspaceId, input.id);
+    if (input.expectedVersion !== undefined && current.version !== input.expectedVersion) {
+      throw new MissionConflictError(
+        "This mission changed in another session. Your edits were not saved. Review the latest record before trying again.",
+      );
+    }
+    if (
+      input.expectedScope !== undefined &&
+      input.expectedScope !== scopeHash(current.brief, current.evidence)
+    )
+      throw new ApprovalMismatchError(
+        "The comparison scope changed. Review the current evidence before allowing provider use.",
+      );
     if (current.stage === "cancelled" || current.job.status === "cancelled") {
       throw new Error("Mission is cancelled.");
     }
@@ -617,6 +677,7 @@ export class SupervisedMissionService {
 
   async decide(input: {
     workspaceId: string;
+    expectedVersion?: number;
     id: string;
     claim: ApprovalClaim;
     choice: DecisionChoice;
@@ -625,6 +686,11 @@ export class SupervisedMissionService {
     nowMs: number;
   }): Promise<SupervisedMission> {
     const current = await this.must(input.workspaceId, input.id);
+    if (input.expectedVersion !== undefined && current.version !== input.expectedVersion) {
+      throw new MissionConflictError(
+        "This mission changed in another session. Your edits were not saved. Review the latest record before trying again.",
+      );
+    }
     this.assertOpen(current);
     assertApprovalBinding(current.proposal, input.claim);
     if (current.artefact)
@@ -663,10 +729,16 @@ export class SupervisedMissionService {
 
   async prepareArtefact(input: {
     workspaceId: string;
+    expectedVersion?: number;
     id: string;
     nowMs: number;
   }): Promise<SupervisedMission> {
     const current = await this.must(input.workspaceId, input.id);
+    if (input.expectedVersion !== undefined && current.version !== input.expectedVersion) {
+      throw new MissionConflictError(
+        "This mission changed in another session. Your edits were not saved. Review the latest record before trying again.",
+      );
+    }
     if (current.artefact && current.stage !== "cancelled") return current;
     this.assertOpen(current);
     const pack = buildPack(current);
@@ -682,10 +754,16 @@ export class SupervisedMissionService {
 
   async exportMission(input: {
     workspaceId: string;
+    expectedVersion?: number;
     id: string;
     nowMs: number;
   }): Promise<SupervisedMission> {
     const current = await this.must(input.workspaceId, input.id);
+    if (input.expectedVersion !== undefined && current.version !== input.expectedVersion) {
+      throw new MissionConflictError(
+        "This mission changed in another session. Your edits were not saved. Review the latest record before trying again.",
+      );
+    }
     if (current.stage === "cancelled") throw new Error("Mission is cancelled.");
     if (current.exportBody) return current;
     if (!current.artefact) throw new Error("Prepare the decision pack before export.");
@@ -701,6 +779,7 @@ export class SupervisedMissionService {
 
   async recordExpectation(input: {
     workspaceId: string;
+    expectedVersion?: number;
     id: string;
     hypothesis: string;
     expectedMetric: string;
@@ -710,10 +789,17 @@ export class SupervisedMissionService {
     nowMs: number;
   }): Promise<SupervisedMission> {
     const current = await this.must(input.workspaceId, input.id);
+    if (input.expectedVersion !== undefined && current.version !== input.expectedVersion) {
+      throw new MissionConflictError(
+        "This mission changed in another session. Your edits were not saved. Review the latest record before trying again.",
+      );
+    }
     if (current.stage === "cancelled") throw new Error("Mission is cancelled.");
     if (!current.approval) throw new Error("Record a decision before the measurement plan.");
-    if (current.observation || current.reviews.length > 0) {
-      throw new Error("The measurement plan stays as it was when the result was supplied.");
+    if (current.exportBody || current.observation || current.reviews.length > 0) {
+      throw new Error(
+        "The measurement plan is fixed after export. Create a follow-up for a revised plan.",
+      );
     }
     const recordedAt = new Date(input.nowMs).toISOString();
     const expectation: OutcomeExpectation = {
@@ -729,6 +815,10 @@ export class SupervisedMissionService {
       ...current,
       version: current.version + 1,
       expectation,
+      archivedPacks: archivePack(current, "Measurement plan changed", input.nowMs),
+      artefact: null,
+      exportBody: null,
+      stage: "decision",
       updatedAt: recordedAt,
     };
     return this.store.save(next, current.version);
@@ -736,6 +826,7 @@ export class SupervisedMissionService {
 
   async recordObservation(input: {
     workspaceId: string;
+    expectedVersion?: number;
     id: string;
     result: string;
     evidence: string;
@@ -744,6 +835,11 @@ export class SupervisedMissionService {
     nowMs: number;
   }): Promise<SupervisedMission> {
     const current = await this.must(input.workspaceId, input.id);
+    if (input.expectedVersion !== undefined && current.version !== input.expectedVersion) {
+      throw new MissionConflictError(
+        "This mission changed in another session. Your edits were not saved. Review the latest record before trying again.",
+      );
+    }
     if (current.stage === "cancelled") throw new Error("Mission is cancelled.");
     if (!current.expectation) throw new Error("Record the measurement plan before a result.");
     if (!current.exportBody || !current.artefact || !current.approval) {
@@ -751,7 +847,7 @@ export class SupervisedMissionService {
     }
     const suppliedAt = new Date(input.nowMs).toISOString();
     const observation: OutcomeObservation = {
-      id: `obs-${input.nowMs}`,
+      id: `obs-${current.version + 1}-${input.nowMs}`,
       result: requireText(input.result, "Observed result", 3, 2000),
       evidence: requireText(input.evidence, "Observation evidence", 3, 2000),
       source: requireText(input.source, "Observation source", 2, 500),
@@ -771,6 +867,7 @@ export class SupervisedMissionService {
 
   async recordReview(input: {
     workspaceId: string;
+    expectedVersion?: number;
     id: string;
     reading: string;
     uncertainty: string;
@@ -779,6 +876,11 @@ export class SupervisedMissionService {
     nowMs: number;
   }): Promise<SupervisedMission> {
     const current = await this.must(input.workspaceId, input.id);
+    if (input.expectedVersion !== undefined && current.version !== input.expectedVersion) {
+      throw new MissionConflictError(
+        "This mission changed in another session. Your edits were not saved. Review the latest record before trying again.",
+      );
+    }
     if (current.stage === "cancelled") throw new Error("Mission is cancelled.");
     if (!current.expectation || !current.observation || !current.approval || !current.artefact) {
       throw new Error("A review needs the decision, the pack and an owner-supplied result.");
@@ -828,6 +930,7 @@ export class SupervisedMissionService {
 
   async approveFollowUp(input: {
     workspaceId: string;
+    expectedVersion?: number;
     id: string;
     actorId: string;
     followUpMissionId: string;
@@ -835,6 +938,11 @@ export class SupervisedMissionService {
     nowMs: number;
   }): Promise<SupervisedMission> {
     const current = await this.must(input.workspaceId, input.id);
+    if (input.expectedVersion !== undefined && current.version !== input.expectedVersion) {
+      throw new MissionConflictError(
+        "This mission changed in another session. Your edits were not saved. Review the latest record before trying again.",
+      );
+    }
     if (current.stage === "cancelled") throw new Error("Mission is cancelled.");
     if (current.followUp?.status === "approved" && current.followUp.missionId) {
       const existing = await this.store.get(input.workspaceId, current.followUp.missionId);
@@ -847,6 +955,7 @@ export class SupervisedMissionService {
     const latest = current.reviews.at(-1);
     if (
       !latest ||
+      latest.observationId !== current.observation?.id ||
       latest.version !== current.followUp.reviewVersion ||
       !current.approval ||
       !current.artefact
