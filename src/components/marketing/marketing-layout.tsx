@@ -3,7 +3,7 @@ import { MarketingFooter } from "./marketing-footer";
 
 export function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="dxs marketing-page">
+    <div className="dxs marketing-page" id="top">
       <MarketingNav />
       <main>{children}</main>
       <MarketingFooter />

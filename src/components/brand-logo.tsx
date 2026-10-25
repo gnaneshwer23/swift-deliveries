@@ -20,10 +20,12 @@ export function BrandLogo({
   to = "/",
   inverse = false,
   className = "brand-logo",
+  tagline,
 }: {
   to?: string;
   inverse?: boolean;
   className?: string;
+  tagline?: string;
 }) {
   return (
     <Link
@@ -32,8 +34,11 @@ export function BrandLogo({
       aria-label="DeliverX home"
     >
       <BrandMark className="brand-logo-mark" />
-      <span className={inverse ? "brand-logo-word brand-logo-word-inverse" : "brand-logo-word"}>
-        Deliver<span>X</span>
+      <span className={tagline ? "brand-logo-copy" : undefined}>
+        <span className={inverse ? "brand-logo-word brand-logo-word-inverse" : "brand-logo-word"}>
+          Deliver<span>X</span>
+        </span>
+        {tagline && <span className="brand-logo-tagline">{tagline}</span>}
       </span>
     </Link>
   );

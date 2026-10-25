@@ -330,26 +330,40 @@ function ProductPage() {
             </Link>
           </div>
         </section>
-        <section className="platform-closing">
+        <section className="platform-next-step" aria-labelledby="platform-next-title">
           <div className="dxl-wrap">
-            <div>
-              <h2>
-                Start with a question
-                <br />
-                worth investigating.
+            <div className="platform-next-intro">
+              <p className="dxl-eyebrow">Your next product decision</p>
+              <h2 id="platform-next-title">
+                A clear question.
+                <br />A useful next step.
               </h2>
-              <p>
-                Prepare the brief first, or compare the proposed paid pilot scopes. Creating an
-                account does not activate a paid pilot.
-              </p>
+              <p>Start with the context you have. Choose the path that fits where you are.</p>
             </div>
-            <div className="psi-actions">
-              <Link to="/resources" hash="brief-builder" className="dxl-btn dxl-btn-primary">
-                Prepare your brief
+            <div className="platform-next-paths">
+              <Link to="/resources" hash="brief-builder">
+                <span>Shape the question</span>
+                <h3>
+                  Prepare your brief
+                  <ArrowRight size={19} aria-hidden="true" />
+                </h3>
+                <p>
+                  Capture your audience, objective and constraints. Download the brief before
+                  committing to a pilot.
+                </p>
               </Link>
-              <Link to="/pricing" className="dxl-btn dxl-btn-ghost">
-                Compare paid pilots
+              <Link to="/pricing">
+                <span>Discuss the scope</span>
+                <h3>
+                  Compare paid pilots
+                  <ArrowRight size={19} aria-hidden="true" />
+                </h3>
+                <p>
+                  Explore Builder, Founder and Studio. Scope, availability and billing are agreed
+                  before paid work starts.
+                </p>
               </Link>
+              <small>Creating an account does not activate a paid pilot.</small>
             </div>
           </div>
         </section>
