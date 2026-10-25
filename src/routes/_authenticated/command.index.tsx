@@ -309,15 +309,18 @@ function CommandHome() {
         ceiling: data.workspace.usageCeiling,
       }}
     >
-      <MissionPipelineStage
-        missions={data.recentMissions}
-        usage={{ consumed: data.workspace.usageConsumed, ceiling: data.workspace.usageCeiling }}
-        onShowWaiting={() => {
-          setMissionFilter("awaiting");
-          document.getElementById("cc-missions")?.scrollIntoView({ behavior: "smooth" });
-        }}
+      <WorkspaceOverview
+        pipeline={
+          <MissionPipelineStage
+            missions={data.recentMissions}
+            usage={{ consumed: data.workspace.usageConsumed, ceiling: data.workspace.usageCeiling }}
+            onShowWaiting={() => {
+              setMissionFilter("awaiting");
+              document.getElementById("cc-missions")?.scrollIntoView({ behavior: "smooth" });
+            }}
+          />
+        }
       />
-      <WorkspaceOverview />
       <SupervisedMissionStart />
 
       <details className="ps-legacy">

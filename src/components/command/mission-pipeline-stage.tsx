@@ -47,7 +47,7 @@ export function MissionPipelineStage({
     <section className="ix hp-stage cc-pipeline" aria-label="Mission pipeline">
       <div className="hp-input">
         <div>
-          <small>Recent missions</small>
+          <small>Specialist missions</small>
           <strong>
             {total === 0
               ? "No missions yet"

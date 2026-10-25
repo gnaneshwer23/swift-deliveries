@@ -18,3 +18,10 @@ Rules kept by the copy and art: catalogue roles are never shown as live (12 avai
 
 - **Onboarding** (`components/onboarding/onboarding-stage.tsx`): the left panel follows the three setup steps — you at the centre, the typical starting team for the chosen goal (from the registry intent map, labelled as typical; the real plan is proposed and approved later), and the first step of the build record carrying the user's question.
 - **Command Centre** (`components/command/mission-pipeline-stage.tsx`): recent missions grouped by status into vessels (waiting for you, in progress, in review, delivered, stopped), workspace usage against its ceiling, and a link to the decisions waiting on the user. All counts come from the bootstrap query.
+
+## Pages rebuilt to the same standard
+
+- **How it works** (`components/marketing/mission-walkthrough-live.tsx`): one live walkthrough of a real mission — describe, clarify, plan, approve, run, deliver — following the mission status machine. Questions, tasks, team, usage and permission come from `lib/marketing/sample-mission.ts`, tested against the planner. The page then shows the sample pack and a plain list of what is live today and what is coming.
+- **Specialists** (`components/marketing/specialist-directory.tsx`): the registry as a directory — headline numbers, a department rail, search, an availability filter and uniform cards saying what each specialist does and which missions it joins.
+- **Onboarding**: goal cards with the outcome each leads to, and a first-mission preview on the review step (`lib/onboarding-intent.ts` shares the goal-to-mission mapping).
+- **Command Centre**: ordered by what needs you — decision queue, the mission pipeline, operational signals, then mission activity. The duplicate stat row and the four-layer explainer (already on the homepage) are removed.
