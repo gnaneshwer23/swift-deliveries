@@ -15,7 +15,10 @@ function mapProfile(row: any): DxProfile | null {
   };
 }
 
-export type DxProfileDraft = Omit<DxProfile, "completedAt"> & { completedAt: string | null };
+export type DxProfileDraft = Omit<DxProfile, "completedAt"> & {
+  completedAt: string | null;
+  updatedAt?: string;
+};
 
 function mapDraft(row: any): DxProfileDraft | null {
   if (!row) return null;
@@ -26,6 +29,7 @@ function mapDraft(row: any): DxProfileDraft | null {
     goal: row.goal ?? "",
     firstIdea: row.first_idea ?? "",
     completedAt: row.completed_at ?? null,
+    updatedAt: row.updated_at ?? undefined,
   };
 }
 

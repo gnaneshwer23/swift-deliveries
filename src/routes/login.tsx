@@ -5,7 +5,7 @@ import { waitForSession } from "@/lib/auth-session";
 import { formatAuthError } from "@/lib/auth-errors";
 import { authCallbackUrl, isGoogleAuthEnabled, signInWithGoogle } from "@/lib/auth-oauth";
 import { Loader2 } from "lucide-react";
-import { BrandLogo } from "@/components/brand-logo";
+import { AuthFrame } from "@/components/auth/auth-frame";
 import { GoogleButton } from "@/components/auth/google-button";
 
 import { safeProductRedirect as sanitizeRedirect } from "@/lib/product-journey";
@@ -91,93 +91,98 @@ function LoginPage() {
   };
 
   return (
-    <div className="dxs psi-auth flex min-h-screen flex-col">
-      <header className="nav">
-        <BrandLogo />
-        <div className="nav-right">
-          <Link to="/signup" search={{ redirect: targetPath }} className="btn-nav btn-nav-primary">
-            Get started
-          </Link>
+    <AuthFrame
+      action={
+        <Link to="/signup" search={{ redirect: targetPath }} className="btn-nav btn-nav-primary">
+          Create account
+        </Link>
+      }
+    >
+      <h1 className="heading-1" style={{ fontSize: 24 }}>
+        Sign in
+      </h1>
+      <p className="body" style={{ marginTop: 6, marginBottom: 24 }}>
+        Pick up where your product team left off.
+      </p>
+
+      {googleEnabled && (
+        <>
+          <GoogleButton loading={loading} onClick={handleGoogle} label="Continue with Google" />
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t" style={{ borderColor: "var(--x-border)" }} />
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="caption bg-[var(--x-paper-raised)] px-2">or</span>
+            </div>
+          </div>
+        </>
+      )}
+
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label className="form-label" htmlFor="login-email">
+            Email
+          </label>
+          <input
+            id="login-email"
+            type="email"
+            autoComplete="email"
+            className="form-input"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
-      </header>
-      <main className="flex flex-1 items-center justify-center px-4 py-16">
-        <div className="card w-full max-w-sm" style={{ padding: 32 }}>
-          <h1 className="heading-1" style={{ fontSize: 24 }}>
-            Sign in
-          </h1>
-          <p className="body" style={{ marginTop: 6, marginBottom: 24 }}>
-            Pick up where your product team left off.
+        <div className="form-group">
+          <label className="form-label" htmlFor="login-pass">
+            Password
+          </label>
+          <input
+            id="login-pass"
+            type="password"
+            autoComplete="current-password"
+            className="form-input"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        {error && (
+          <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600" role="alert">
+            {error}
           </p>
-
-          {googleEnabled && (
+        )}
+        <button type="submit" className="form-submit" disabled={loading}>
+          {loading ? (
             <>
-              <GoogleButton loading={loading} onClick={handleGoogle} label="Continue with Google" />
-              <div className="relative my-6">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t" style={{ borderColor: "var(--x-border)" }} />
-                </div>
-                <div className="relative flex justify-center text-xs">
-                  <span className="caption bg-[var(--x-paper-raised)] px-2">or</span>
-                </div>
-              </div>
+              <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+              <span>Signing in…</span>
             </>
+          ) : (
+            "Sign in →"
           )}
+        </button>
+      </form>
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label className="form-label" htmlFor="login-email">
-                Email
-              </label>
-              <input
-                id="login-email"
-                type="email"
-                autoComplete="email"
-                className="form-input"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label" htmlFor="login-pass">
-                Password
-              </label>
-              <input
-                id="login-pass"
-                type="password"
-                autoComplete="current-password"
-                className="form-input"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            {error && (
-              <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600" role="alert">
-                {error}
-              </p>
-            )}
-            <button type="submit" className="form-submit" disabled={loading}>
-              {loading ? <Loader2 className="size-4 animate-spin" /> : "Sign in →"}
-            </button>
-          </form>
+      <div className="mt-4 text-center text-xs">
+        <Link
+          to="/forgot-password"
+          search={{ redirect: targetPath }}
+          style={{ color: "var(--x-slate)" }}
+        >
+          Forgot your password?
+        </Link>
+      </div>
 
-          <div className="mt-4 text-center text-xs">
-            <Link to="/forgot-password" style={{ color: "var(--x-slate)" }}>
-              Forgot your password?
-            </Link>
-          </div>
-
-          <div className="form-signin">
-            New here?{" "}
-            <Link to="/signup" search={{ redirect: targetPath }}>
-              Create an account →
-            </Link>
-          </div>
-        </div>
-      </main>
-    </div>
+      <div className="form-signin">
+        New here?{" "}
+        <Link to="/signup" search={{ redirect: targetPath }}>
+          Create an account →
+        </Link>
+      </div>
+    </AuthFrame>
   );
 }

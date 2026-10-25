@@ -2,12 +2,18 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { auth } from "@/lib/auth/client";
 import { Loader2 } from "lucide-react";
-import { BrandLogo } from "@/components/brand-logo";
+import { AuthFrame } from "@/components/auth/auth-frame";
+
+import { safeProductRedirect } from "@/lib/product-journey";
 
 export const Route = createFileRoute("/reset-password")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    redirect: safeProductRedirect(search["redirect"]),
+  }),
   head: () => ({
     meta: [
       { title: "Choose a new password — DeliverX" },
+      { name: "robots", content: "noindex, nofollow" },
       { name: "description", content: "Set a new password for your DeliverX account." },
       { property: "og:title", content: "Choose a new password — DeliverX" },
       { property: "og:description", content: "Set a new password for your DeliverX account." },
@@ -19,6 +25,7 @@ export const Route = createFileRoute("/reset-password")({
 });
 
 function ResetPasswordPage() {
+  const { redirect: targetPath } = Route.useSearch();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,8 +41,13 @@ function ResetPasswordPage() {
     const t = params.get("token");
     setToken(t);
     setReady(Boolean(t) && !params.get("error"));
-    if (t) window.history.replaceState({}, document.title, window.location.pathname);
-  }, []);
+    if (t)
+      window.history.replaceState(
+        {},
+        document.title,
+        `${window.location.pathname}?redirect=${encodeURIComponent(targetPath)}`,
+      );
+  }, [targetPath]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,67 +68,87 @@ function ResetPasswordPage() {
   };
 
   return (
-    <div className="dxs psi-auth flex min-h-screen flex-col">
-      <header className="nav">
-        <BrandLogo />
-      </header>
-      <main className="flex flex-1 items-center justify-center px-4 py-16">
-        <div className="card w-full max-w-sm" style={{ padding: 32 }}>
-          <h1 className="heading-1" style={{ fontSize: 24 }}>
-            Choose a new password
-          </h1>
+    <AuthFrame
+      recovery
+      action={
+        <Link to="/login" search={{ redirect: targetPath }} className="btn-nav">
+          Sign in
+        </Link>
+      }
+    >
+      <h1 className="heading-1" style={{ fontSize: 24 }}>
+        Choose a new password
+      </h1>
 
-          {done ? (
-            <p className="body" style={{ marginTop: 12 }}>
-              Password updated. <Link to="/login">Sign in with your new password →</Link>
+      {done ? (
+        <p className="body" style={{ marginTop: 12 }}>
+          Password updated.{" "}
+          <Link to="/login" search={{ redirect: targetPath }}>
+            Sign in with your new password →
+          </Link>
+        </p>
+      ) : ready === false ? (
+        <p className="body" style={{ marginTop: 12 }}>
+          This reset link is invalid or has expired.{" "}
+          <Link to="/forgot-password" search={{ redirect: targetPath }}>
+            Request a new one →
+          </Link>
+        </p>
+      ) : ready === null ? (
+        <p className="body" role="status">
+          Checking your reset link…
+        </p>
+      ) : (
+        <form onSubmit={handleSubmit} style={{ marginTop: 20 }}>
+          <div className="form-group">
+            <label className="form-label" htmlFor="rp-pass">
+              New password
+            </label>
+            <input
+              id="rp-pass"
+              type="password"
+              autoComplete="new-password"
+              className="form-input"
+              placeholder="Minimum 8 characters"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={8}
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label" htmlFor="rp-confirm">
+              Confirm password
+            </label>
+            <input
+              id="rp-confirm"
+              type="password"
+              autoComplete="new-password"
+              className="form-input"
+              placeholder="Repeat it"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              required
+              minLength={8}
+            />
+          </div>
+          {error && (
+            <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600" role="alert">
+              {error}
             </p>
-          ) : ready === false ? (
-            <p className="body" style={{ marginTop: 12 }}>
-              This reset link is invalid or has expired.{" "}
-              <Link to="/forgot-password">Request a new one →</Link>
-            </p>
-          ) : (
-            <form onSubmit={handleSubmit} style={{ marginTop: 20 }}>
-              <div className="form-group">
-                <label className="form-label" htmlFor="rp-pass">
-                  New password
-                </label>
-                <input
-                  id="rp-pass"
-                  type="password"
-                  className="form-input"
-                  placeholder="Minimum 8 characters"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={8}
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label" htmlFor="rp-confirm">
-                  Confirm password
-                </label>
-                <input
-                  id="rp-confirm"
-                  type="password"
-                  className="form-input"
-                  placeholder="Repeat it"
-                  value={confirm}
-                  onChange={(e) => setConfirm(e.target.value)}
-                  required
-                  minLength={8}
-                />
-              </div>
-              {error && (
-                <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600">{error}</p>
-              )}
-              <button type="submit" className="form-submit" disabled={loading || ready !== true}>
-                {loading ? <Loader2 className="size-4 animate-spin" /> : "Save new password →"}
-              </button>
-            </form>
           )}
-        </div>
-      </main>
-    </div>
+          <button type="submit" className="form-submit" disabled={loading || ready !== true}>
+            {loading ? (
+              <>
+                <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                <span>Saving password…</span>
+              </>
+            ) : (
+              "Save new password →"
+            )}
+          </button>
+        </form>
+      )}
+    </AuthFrame>
   );
 }

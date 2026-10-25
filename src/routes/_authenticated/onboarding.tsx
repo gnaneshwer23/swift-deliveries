@@ -1,6 +1,6 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
+import { ArrowLeft, ArrowRight, Check, FileSearch, GitBranch, UserRoundCheck } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { auth, type AppUser as User } from "@/lib/auth/client";
 import { getMyProfileDraft, saveMyProfile, saveMyProfileDraft } from "@/lib/profile.functions";
@@ -23,9 +23,19 @@ import { claimStoredPilotRequest } from "@/lib/pilot/continuity";
 import { getMyPilotContinuity } from "@/lib/pilot/enquiry.functions";
 import { PILOT_PLAN_LABELS, type PilotPlan } from "@/lib/pilot/model";
 import { loadPilotBrief, loadPilotClaim, loadPilotPlan } from "@/lib/pilot/storage";
+import {
+  contextComplete,
+  directionComplete,
+  EMPTY_SETUP,
+  parseSetupDraft,
+  restoreSetup,
+  safeSetupStep,
+  type SetupFields,
+} from "@/lib/onboarding-draft";
+import type { ProductBrief } from "@/lib/marketing/product-resources";
 import { firstActionFor, safeProductRedirect } from "@/lib/product-journey";
 
-const STEPS = ["About you", "Your goal", "Question"] as const;
+const STEPS = ["Your context", "Product direction", "Review & enter"] as const;
 
 function Chips({
   options,
@@ -59,7 +69,7 @@ function Chips({
 function Onboarding() {
   const { user, profile } = Route.useRouteContext() as { user: User; profile: DxProfile | null };
   const { redirect } = Route.useSearch();
-  return <OnboardingForm user={user} existing={profile} redirectTo={redirect} />;
+  return <OnboardingForm key={user.id} user={user} existing={profile} redirectTo={redirect} />;
 }
 
 export function OnboardingForm({
@@ -73,279 +83,411 @@ export function OnboardingForm({
 }) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const [fields, setFields] = useState<SetupFields>(EMPTY_SETUP);
   const [step, setStep] = useState(0);
-  const [name, setName] = useState(existing?.fullName || user.user_metadata.full_name || "");
-  const [role, setRole] = useState(existing?.role ?? "");
-  const [teamSize, setTeamSize] = useState(existing?.teamSize ?? "");
-  const [goal, setGoal] = useState(existing?.goal ?? "");
-  const [firstIdea, setFirstIdea] = useState(existing?.firstIdea ?? "");
+  const [ready, setReady] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [saveNote, setSaveNote] = useState("");
+  const [storageAvailable, setStorageAvailable] = useState(true);
+  const [prepared, setPrepared] = useState<ProductBrief | null>(null);
   const [chosenPlan, setChosenPlan] = useState<PilotPlan | null>(null);
   const [requestReference, setRequestReference] = useState<string | null>(null);
-
-  const [draftReady, setDraftReady] = useState(false);
+  const inFlight = useRef(false);
+  const heading = useRef<HTMLHeadingElement>(null);
   const draftKey = `dx-product-setup:${user.id}`;
-  useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem(draftKey);
-      if (raw && !existing) {
-        const draft = JSON.parse(raw) as Record<string, unknown>;
-        if (typeof draft["name"] === "string") setName(draft["name"].slice(0, 80));
-        if (DX_ROLES.includes(draft["role"] as (typeof DX_ROLES)[number]))
-          setRole(draft["role"] as string);
-        if (DX_TEAM_SIZES.includes(draft["teamSize"] as (typeof DX_TEAM_SIZES)[number]))
-          setTeamSize(draft["teamSize"] as string);
-        if (DX_GOALS.includes(draft["goal"] as (typeof DX_GOALS)[number]))
-          setGoal(draft["goal"] as string);
-        if (typeof draft["firstIdea"] === "string") setFirstIdea(draft["firstIdea"].slice(0, 1000));
-      }
-      const storedBrief = loadPilotBrief();
-      const storedPlan = loadPilotPlan();
-      const storedClaim = loadPilotClaim();
-      if (storedPlan) setChosenPlan(storedPlan);
-      if (storedClaim) setRequestReference(storedClaim.reference);
-      if (storedBrief?.problem.trim()) {
-        setFirstIdea((current) => current || storedBrief.problem.slice(0, 1000));
-      }
-    } catch {
-      /* Setup remains usable without browser storage. */
-    }
-    setDraftReady(true);
-  }, [draftKey, existing]);
+
   useEffect(() => {
     let active = true;
-    void (async () => {
-      await claimStoredPilotRequest();
-      const saved = await getMyPilotContinuity().catch(() => null);
-      if (!active) return;
-      if (saved && !existing) {
-        setChosenPlan(saved.plan);
-        setRequestReference(saved.reference);
-        setFirstIdea((current) => current || saved.brief.problem.slice(0, 1000));
-      }
-      const draft = await getMyProfileDraft().catch(() => null);
-      if (!active || !draft || existing || draft.completedAt) return;
-      setName((current) => current || draft.fullName);
-      if (DX_ROLES.includes(draft.role as (typeof DX_ROLES)[number])) {
-        setRole((current) => current || draft.role);
-      }
-      if (DX_TEAM_SIZES.includes(draft.teamSize as (typeof DX_TEAM_SIZES)[number])) {
-        setTeamSize((current) => current || draft.teamSize);
-      }
-      if (DX_GOALS.includes(draft.goal as (typeof DX_GOALS)[number])) {
-        setGoal((current) => current || draft.goal);
-      }
-      setFirstIdea((current) => current || draft.firstIdea.slice(0, 1000));
-    })();
+    let local = null;
+    try {
+      local = parseSetupDraft(sessionStorage.getItem(draftKey));
+    } catch {
+      setStorageAvailable(false);
+    }
+    const brief = loadPilotBrief();
+    setPrepared(brief);
+    setChosenPlan(loadPilotPlan());
+    setRequestReference(loadPilotClaim()?.reference ?? null);
+    const account = Promise.allSettled([
+      existing ? Promise.resolve(null) : getMyProfileDraft(),
+      existing
+        ? Promise.resolve(null)
+        : claimStoredPilotRequest().then(() => getMyPilotContinuity()),
+    ]);
+    let timeout: ReturnType<typeof setTimeout>;
+    const deadline = new Promise<null>((resolve) => {
+      timeout = setTimeout(() => resolve(null), 8000);
+    });
+    void Promise.race([account, deadline])
+      .then((results) => {
+        if (!active) return;
+        const server = results?.[0].status === "fulfilled" ? results[0].value : null;
+        const continuity = results?.[1].status === "fulfilled" ? results[1].value : null;
+        const restored = restoreSetup({
+          existing,
+          local,
+          server,
+          brief: brief ?? continuity?.brief ?? null,
+          accountName: user.user_metadata.full_name ?? "",
+        });
+        setFields(restored.fields);
+        setStep(restored.step);
+        if (continuity) {
+          setChosenPlan(continuity.plan);
+          setRequestReference(continuity.reference);
+          setPrepared((current) => current ?? continuity.brief);
+        }
+        const failed = !results || results.some((r) => r.status === "rejected");
+        setSaveNote(
+          failed
+            ? "Account draft could not be loaded. Review your answers; nothing has been submitted."
+            : restored.source === "browser"
+              ? "Your unfinished setup is restored from this tab."
+              : restored.source === "account"
+                ? "Your unfinished setup is restored from your account."
+                : restored.source === "brief"
+                  ? "Your prepared product question is carried forward."
+                  : existing
+                    ? "Review or update your saved setup."
+                    : "Your answers shape the starting point. No mission runs during setup.",
+        );
+        setReady(true);
+      })
+      .finally(() => clearTimeout(timeout));
     return () => {
       active = false;
+      clearTimeout(timeout);
     };
-  }, [existing]);
+  }, [draftKey, existing, user.user_metadata.full_name]);
+
   useEffect(() => {
-    if (!draftReady || existing) return;
+    if (!ready || existing) return;
     try {
-      sessionStorage.setItem(draftKey, JSON.stringify({ name, role, teamSize, goal, firstIdea }));
+      sessionStorage.setItem(
+        draftKey,
+        JSON.stringify({ ...fields, step, savedAt: new Date().toISOString() }),
+      );
+      setStorageAvailable(true);
     } catch {
-      /* Browser storage is optional. */
+      setStorageAvailable(false);
     }
-  }, [draftReady, draftKey, existing, name, role, teamSize, goal, firstIdea]);
-  const firstAction = firstActionFor({ goal, firstIdea: firstIdea.trim() });
+  }, [ready, existing, draftKey, fields, step]);
+  useEffect(() => {
+    if (ready) heading.current?.focus();
+  }, [step, ready]);
+  const update = (key: keyof SetupFields, value: string) => {
+    setFields((current) => ({ ...current, [key]: value }));
+    setError(null);
+  };
+  const firstAction = firstActionFor(fields);
+  const canNext = step === 0 ? contextComplete(fields) : directionComplete(fields);
 
-  const canNext =
-    step === 0 ? name.trim().length >= 2 && !!role : step === 1 ? !!teamSize && !!goal : true;
-
-  async function persistDraft() {
-    try {
-      await saveMyProfileDraft({
-        data: {
-          fullName: name.trim().slice(0, 80),
-          role,
-          teamSize,
-          goal,
-          firstIdea: firstIdea.trim().slice(0, 1000),
-        },
-      });
-    } catch {
-      /* The browser draft remains if the account draft cannot be saved. */
-    }
-  }
-
-  async function finish() {
+  async function advance() {
+    if (inFlight.current || !ready || !canNext) return;
+    inFlight.current = true;
     setSaving(true);
     setError(null);
-    let profile: DxProfile;
     try {
-      profile = await saveMyProfile({
-        data: {
-          fullName: name.trim().slice(0, 80),
-          role,
-          teamSize,
-          goal,
-          firstIdea: firstIdea.trim().slice(0, 1000),
-        },
-      });
+      if (!existing) {
+        await saveMyProfileDraft({ data: fields });
+        setSaveNote("Your setup draft is saved to your account.");
+      }
+      setStep((current) => Math.min(2, current + 1));
     } catch {
+      setSaveNote(
+        "Account draft could not be saved. Your answers remain here; retry before leaving this device.",
+      );
+      setStep((current) => Math.min(2, current + 1));
+    } finally {
+      inFlight.current = false;
       setSaving(false);
-      setError("We couldn't save your setup. Check your connection and try again.");
+    }
+  }
+  async function finish() {
+    if (inFlight.current || !ready) return;
+    if (!contextComplete(fields) || !directionComplete(fields)) {
+      setStep(safeSetupStep(2, fields));
+      setError("Complete your context and product direction before continuing.");
       return;
     }
-    // Display name on the auth account; a failure here doesn't block setup.
-    await auth.updateName(profile.fullName);
-    queryClient.setQueryData(myProfileQuery.queryKey, profile);
-    setSaving(false);
+    inFlight.current = true;
+    setSaving(true);
+    setError(null);
     try {
-      sessionStorage.removeItem(draftKey);
+      const profile = await saveMyProfile({ data: fields });
+      void auth.updateName(profile.fullName).catch(() => null);
+      queryClient.setQueryData(myProfileQuery.queryKey, profile);
+      try {
+        sessionStorage.removeItem(draftKey);
+      } catch {
+        /* Optional browser draft. */
+      }
+      const requested = safeProductRedirect(redirectTo);
+      const target =
+        requested !== "/command" && requested !== "/command/programmes"
+          ? requested
+          : firstActionFor(profile).href;
+      await navigate({ to: target, replace: true });
     } catch {
-      /* optional storage */
+      setError(
+        "We couldn’t finish setup. Your answers remain here. Check your connection or sign in again, then retry.",
+      );
+    } finally {
+      inFlight.current = false;
+      setSaving(false);
     }
-    const requested = safeProductRedirect(redirectTo);
-    const target =
-      requested !== "/command" && requested !== "/command/programmes"
-        ? requested
-        : firstActionFor(profile).href;
-    void navigate({ to: target, replace: true });
   }
 
   return (
-    <div className="dxs ob-page">
-      <header className="ob-top">
-        <BrandLogo to="/" />
-        <ol className="ob-steps" aria-label="Setup progress">
-          {STEPS.map((s, i) => (
-            <li
-              key={s}
-              aria-current={i === step ? "step" : undefined}
-              className={i < step ? "done" : i === step ? "active" : ""}
-            >
-              <span>{i < step ? <Check className="size-3" aria-hidden="true" /> : i + 1}</span>
-              {s}
-            </li>
-          ))}
-        </ol>
+    <div className="dxs ob-page setup-page">
+      <header className="setup-header">
+        <BrandLogo to="/" tagline="Product Super Intelligence" />
+        <Link to="/" className="setup-home-link">
+          Back to DeliverX <ArrowRight size={14} />
+        </Link>
       </header>
-
-      <main className="ob-card">
-        {step === 0 ? (
-          <>
-            <h1 className="ob-h1">Welcome to DeliverX.</h1>
-            <p className="ob-sub">
-              Tell us who is asking the product question. A paid pilot stays a separate agreement.
-            </p>
-            <label className="ob-label" htmlFor="ob-name">
-              Your name
-            </label>
-            <input
-              id="ob-name"
-              className="ob-input"
-              autoComplete="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              maxLength={80}
-            />
-            <p className="ob-label">Your role</p>
-            <Chips options={DX_ROLES} value={role} onChange={setRole} label="Your role" />
-          </>
-        ) : null}
-
-        {step === 1 ? (
-          <>
-            <h1 className="ob-h1">What question are you bringing?</h1>
-            <p className="ob-sub">
-              The workspace starts from a product question, then evidence, your decision and
-              reviewable work.
-            </p>
-            <p className="ob-label">Team size</p>
-            <Chips
-              options={DX_TEAM_SIZES}
-              value={teamSize}
-              onChange={setTeamSize}
-              label="Team size"
-            />
-            <p className="ob-label">Main goal</p>
-            <Chips options={DX_GOALS} value={goal} onChange={setGoal} label="Main goal" />
-          </>
-        ) : null}
-
-        {step === 2 ? (
-          <>
-            <h1 className="ob-h1">What product question should we investigate?</h1>
-            <p className="ob-sub">
-              This stays on your account. It is not added to the address. You can change it before
-              any mission starts.
-            </p>
-            {chosenPlan ? (
-              <p className="ob-hint">
-                Chosen offer: {PILOT_PLAN_LABELS[chosenPlan]}
-                {requestReference ? ` · Request ${requestReference}` : ""}. Creating this account
-                does not activate a paid pilot.
-              </p>
-            ) : null}
-            <label className="ob-label" htmlFor="ob-idea">
-              Product question (optional)
-            </label>
-            <textarea
-              id="ob-idea"
-              className="ob-input"
-              rows={4}
-              maxLength={1000}
-              placeholder="Which onboarding change should we investigate first?"
-              value={firstIdea}
-              onChange={(e) => setFirstIdea(e.target.value)}
-            />
-            <p className="ob-hint">Please don't include personal data about real people.</p>
-            <aside className="ob-next" aria-label="Your next step">
-              <p className="dxl-eyebrow">Your first step</p>
-              <h2>{firstAction.label}</h2>
-              <p>{firstAction.reason}</p>
-              <small>You review the brief before any work starts.</small>
-            </aside>
-          </>
-        ) : null}
-
-        {error ? (
-          <p className="ob-error" role="alert">
-            {error}
+      <div className="setup-layout">
+        <aside className="setup-story">
+          <p className="dxl-eyebrow">Your product starts here</p>
+          <h2>
+            A clear question.
+            <br /> A connected next step.
+          </h2>
+          <p>
+            Bring your context into one workspace. Specialists contribute; you decide what becomes
+            work.
           </p>
-        ) : null}
-
-        <div className="ob-actions">
-          {step > 0 ? (
-            <button
-              type="button"
-              className="ob-btn ob-btn-ghost"
-              onClick={() => setStep((s) => s - 1)}
-            >
-              <ArrowLeft className="size-4" /> Back
-            </button>
-          ) : (
-            <span />
-          )}
-          {step < STEPS.length - 1 ? (
-            <button
-              type="button"
-              className="ob-btn ob-btn-primary"
-              disabled={!canNext}
-              onClick={() => {
-                void persistDraft();
-                setStep((s) => s + 1);
-              }}
-            >
-              Continue <ArrowRight className="size-4" />
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="ob-btn ob-btn-primary"
-              disabled={saving || !draftReady}
-              onClick={() => void finish()}
-            >
-              {saving ? "Setting up…" : "Open my product workspace"}
-              <ArrowRight className="size-4" />
-            </button>
-          )}
-        </div>
-      </main>
+          <img
+            src="/illustrations/role-evidence.webp"
+            width="1536"
+            height="1024"
+            alt="Research documents and a magnifying glass, representing the evidence behind a product question."
+          />
+          <ol aria-label="Your product journey">
+            <li>
+              <FileSearch size={17} aria-hidden="true" />
+              <span>Supply context</span>
+            </li>
+            <li>
+              <GitBranch size={17} aria-hidden="true" />
+              <span>Compare options</span>
+            </li>
+            <li>
+              <UserRoundCheck size={17} aria-hidden="true" />
+              <span>Decide the next step</span>
+            </li>
+          </ol>
+          <small>
+            Illustrative workflow. Setup does not run agents, approve a mission or activate a paid
+            pilot.
+          </small>
+        </aside>
+        <main className="setup-main">
+          <ol className="setup-progress" aria-label="Setup progress">
+            {STEPS.map((label, i) => (
+              <li
+                key={label}
+                aria-current={i === step ? "step" : undefined}
+                className={i === step ? "is-current" : i < step ? "is-done" : ""}
+              >
+                <span>{i < step ? <Check size={13} /> : i + 1}</span>
+                {label}
+              </li>
+            ))}
+          </ol>
+          <form
+            className="setup-card"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void (step === 2 ? finish() : advance());
+            }}
+            aria-busy={!ready || saving}
+          >
+            {!ready ? (
+              <div className="setup-loading" role="status">
+                <h1>Restoring your starting point…</h1>
+                <p>Checking your account and this browser for an unfinished setup.</p>
+              </div>
+            ) : (
+              <>
+                <p className="setup-step-number">Step {step + 1} of 3</p>
+                <h1 ref={heading} tabIndex={-1}>
+                  {step === 0
+                    ? "Make the workspace yours."
+                    : step === 1
+                      ? "What are you building towards?"
+                      : "Review your starting point."}
+                </h1>
+                <p className="setup-description">
+                  {step === 0
+                    ? "A little context helps us guide your first product question."
+                    : step === 1
+                      ? "Choose your intent and bring one question. You can refine it before saving a mission."
+                      : "Check what you’re carrying into the workspace. Opening it saves your setup, not a running mission."}
+                </p>
+                <fieldset disabled={saving} className="setup-fields">
+                  {step === 0 && (
+                    <>
+                      <label className="ob-label" htmlFor="ob-name">
+                        Your name
+                      </label>
+                      <input
+                        id="ob-name"
+                        className="ob-input"
+                        autoComplete="name"
+                        required
+                        minLength={2}
+                        maxLength={80}
+                        value={fields.fullName}
+                        onChange={(e) => update("fullName", e.target.value)}
+                      />
+                      <p className="ob-label">Your role</p>
+                      <Chips
+                        options={DX_ROLES}
+                        value={fields.role}
+                        onChange={(value) => update("role", value)}
+                        label="Your role"
+                      />
+                      <p className="ob-label">Team size</p>
+                      <Chips
+                        options={DX_TEAM_SIZES}
+                        value={fields.teamSize}
+                        onChange={(value) => update("teamSize", value)}
+                        label="Team size"
+                      />
+                    </>
+                  )}
+                  {step === 1 && (
+                    <>
+                      <p className="ob-label">Your main goal</p>
+                      <Chips
+                        options={DX_GOALS}
+                        value={fields.goal}
+                        onChange={(value) => update("goal", value)}
+                        label="Main goal"
+                      />
+                      <label className="ob-label" htmlFor="ob-idea">
+                        Your product question <span>(optional)</span>
+                      </label>
+                      <textarea
+                        id="ob-idea"
+                        className="ob-input"
+                        rows={4}
+                        maxLength={1000}
+                        value={fields.firstIdea}
+                        onChange={(e) => update("firstIdea", e.target.value)}
+                        placeholder="Which onboarding change should we investigate first?"
+                        aria-describedby="setup-question-help"
+                      />
+                      <p className="setup-help" id="setup-question-help">
+                        Keep it specific. Leave out personal data about real people. The question
+                        stays out of the address.
+                      </p>
+                      {fields.goal === "Learn by building a product" && (
+                        <p className="setup-learning-note">
+                          You’ll learn through the same evidence, decisions and reviewable work as a
+                          product team. Explanations can help you reflect; evidence standards stay
+                          the same.
+                        </p>
+                      )}
+                    </>
+                  )}
+                  {step === 2 && (
+                    <>
+                      <div className="setup-review">
+                        <div>
+                          <span>Your context</span>
+                          <strong>
+                            {fields.fullName} · {fields.role} · {fields.teamSize}
+                          </strong>
+                          <button type="button" onClick={() => setStep(0)}>
+                            Edit context
+                          </button>
+                        </div>
+                        <div>
+                          <span>Product direction</span>
+                          <strong>{fields.goal}</strong>
+                          <p>
+                            {fields.firstIdea.trim() ||
+                              "No question yet. You can write one in the workspace."}
+                          </p>
+                          <button type="button" onClick={() => setStep(1)}>
+                            Edit direction
+                          </button>
+                        </div>
+                      </div>
+                      {prepared && (
+                        <div className="setup-prepared">
+                          <Check size={17} aria-hidden="true" />
+                          <div>
+                            <strong>Prepared brief available</strong>
+                            <p>
+                              Your audience, objective and constraints can prefill the mission
+                              intake. Supplied evidence is reviewed after the brief is saved.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      <aside className="setup-next">
+                        <span>Your next step</span>
+                        <h2>{firstAction.label}</h2>
+                        <p>{firstAction.reason}</p>
+                      </aside>
+                      {chosenPlan && (
+                        <p className="setup-help">
+                          Chosen offer: {PILOT_PLAN_LABELS[chosenPlan]}
+                          {requestReference ? ` · Request ${requestReference}` : ""}. Account setup
+                          does not activate a paid pilot.
+                        </p>
+                      )}
+                    </>
+                  )}
+                </fieldset>
+                <p className="setup-save-note" role="status">
+                  {saveNote}
+                </p>
+                {!storageAvailable && (
+                  <p className="setup-storage-warning" role="status">
+                    This browser cannot keep a draft. Continue to save each completed step to your
+                    account; unsaved edits may be lost on refresh.
+                  </p>
+                )}
+                {error && (
+                  <div className="setup-error" role="alert">
+                    <p>{error}</p>
+                    <Link to="/login" search={{ redirect: safeProductRedirect(redirectTo) }}>
+                      Return to sign-in
+                    </Link>
+                  </div>
+                )}
+                <div className="setup-actions">
+                  {step > 0 ? (
+                    <button
+                      type="button"
+                      className="ob-btn ob-btn-ghost"
+                      disabled={saving}
+                      onClick={() => setStep((s) => s - 1)}
+                    >
+                      <ArrowLeft size={15} /> Back
+                    </button>
+                  ) : (
+                    <span />
+                  )}
+                  <button
+                    type="submit"
+                    className="ob-btn ob-btn-primary"
+                    disabled={saving || !canNext}
+                  >
+                    {saving ? "Saving…" : step === 2 ? "Open my workspace" : "Continue"}
+                    <ArrowRight size={15} />
+                  </button>
+                </div>
+              </>
+            )}
+          </form>
+        </main>
+      </div>
     </div>
   );
 }

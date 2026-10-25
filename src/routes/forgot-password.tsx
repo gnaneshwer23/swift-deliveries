@@ -3,9 +3,14 @@ import { useState } from "react";
 import { auth } from "@/lib/auth/client";
 import { formatAuthError } from "@/lib/auth-errors";
 import { Loader2 } from "lucide-react";
-import { BrandLogo } from "@/components/brand-logo";
+import { AuthFrame } from "@/components/auth/auth-frame";
+
+import { safeProductRedirect } from "@/lib/product-journey";
 
 export const Route = createFileRoute("/forgot-password")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    redirect: safeProductRedirect(search["redirect"]),
+  }),
   head: () => ({
     meta: [
       { title: "Reset your password — DeliverX" },
@@ -27,6 +32,7 @@ export const Route = createFileRoute("/forgot-password")({
 });
 
 function ForgotPasswordPage() {
+  const { redirect: targetPath } = Route.useSearch();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +44,7 @@ function ForgotPasswordPage() {
     setError(null);
     const resetError = await auth.requestPasswordReset(
       email,
-      `${window.location.origin}/reset-password`,
+      `${window.location.origin}/reset-password?redirect=${encodeURIComponent(targetPath)}`,
     );
     setLoading(false);
     if (resetError) {
@@ -49,62 +55,70 @@ function ForgotPasswordPage() {
   };
 
   return (
-    <div className="dxs psi-auth flex min-h-screen flex-col">
-      <header className="nav">
-        <BrandLogo />
-        <div className="nav-right">
-          <Link to="/login" className="btn-nav">
-            Sign in
-          </Link>
+    <AuthFrame
+      recovery
+      action={
+        <Link to="/login" search={{ redirect: targetPath }} className="btn-nav">
+          Sign in
+        </Link>
+      }
+    >
+      <h1 className="heading-1" style={{ fontSize: 24 }}>
+        Reset your password
+      </h1>
+      <p className="body" style={{ marginTop: 6, marginBottom: 24 }}>
+        We'll email you a link to choose a new one.
+      </p>
+
+      {sent ? (
+        <div
+          className="rounded-lg px-4 py-6 text-center text-sm"
+          style={{ background: "var(--x-teal-light)", color: "var(--x-teal-text)" }}
+        >
+          If an account exists for {email}, a reset link is on its way. Check your inbox and spam
+          folder.
         </div>
-      </header>
-      <main className="flex flex-1 items-center justify-center px-4 py-16">
-        <div className="card w-full max-w-sm" style={{ padding: 32 }}>
-          <h1 className="heading-1" style={{ fontSize: 24 }}>
-            Reset your password
-          </h1>
-          <p className="body" style={{ marginTop: 6, marginBottom: 24 }}>
-            We'll email you a link to choose a new one.
-          </p>
-
-          {sent ? (
-            <div
-              className="rounded-lg px-4 py-6 text-center text-sm"
-              style={{ background: "var(--x-teal-light)", color: "var(--x-teal-text)" }}
-            >
-              If an account exists for {email}, a reset link is on its way. Check your inbox and
-              spam folder.
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label className="form-label" htmlFor="fp-email">
-                  Email
-                </label>
-                <input
-                  id="fp-email"
-                  type="email"
-                  className="form-input"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              {error && (
-                <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600">{error}</p>
-              )}
-              <button type="submit" className="form-submit" disabled={loading}>
-                {loading ? <Loader2 className="size-4 animate-spin" /> : "Send reset link →"}
-              </button>
-            </form>
-          )}
-
-          <div className="form-signin">
-            Remembered it? <Link to="/login">Sign in →</Link>
+      ) : (
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label className="form-label" htmlFor="fp-email">
+              Email
+            </label>
+            <input
+              id="fp-email"
+              type="email"
+              className="form-input"
+              autoComplete="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
-        </div>
-      </main>
-    </div>
+          {error && (
+            <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600" role="alert">
+              {error}
+            </p>
+          )}
+          <button type="submit" className="form-submit" disabled={loading}>
+            {loading ? (
+              <>
+                <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                <span>Sending link…</span>
+              </>
+            ) : (
+              "Send reset link →"
+            )}
+          </button>
+        </form>
+      )}
+
+      <div className="form-signin">
+        Remembered it?{" "}
+        <Link to="/login" search={{ redirect: targetPath }}>
+          Sign in →
+        </Link>
+      </div>
+    </AuthFrame>
   );
 }

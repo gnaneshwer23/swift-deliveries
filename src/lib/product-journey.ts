@@ -8,8 +8,19 @@ export function safeProductRedirect(raw: unknown): string {
     const url = new URL(raw, "https://deliverx.invalid");
     if (url.origin !== "https://deliverx.invalid" || !/^\/command(?:\/|$)/.test(url.pathname))
       return "/command";
-    url.searchParams.delete("prompt");
-    url.searchParams.delete("idea");
+    const privateFields = new Set([
+      "prompt",
+      "idea",
+      "question",
+      "audience",
+      "outcome",
+      "constraints",
+      "evidence",
+      "brief",
+    ]);
+    for (const key of [...url.searchParams.keys()]) {
+      if (privateFields.has(key.toLowerCase())) url.searchParams.delete(key);
+    }
     const search = url.searchParams.toString();
     return `${url.pathname}${search ? `?${search}` : ""}${url.hash}`;
   } catch {
