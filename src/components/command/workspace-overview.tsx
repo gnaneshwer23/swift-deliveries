@@ -70,6 +70,12 @@ export function WorkspaceOverview() {
     (m) => !["cancelled", "follow_up_approved"].includes(m.next.id),
   );
   const exported = missions.filter((m) => m.stage === "exported").length;
+  const running = missions.filter((m) => ["leased", "running"].includes(m.jobStatus)).length;
+  const blocked = missions.filter(
+    (m) => m.jobStatus === "failed" || ["decide", "approve_follow_up"].includes(m.next.id),
+  ).length;
+  const outcomes = missions.filter((m) => m.observationRecorded).length;
+  const followUps = missions.filter((m) => m.hasFollowUp).length;
   const flow = FLOW[step]!;
   const records = [...missions].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   const record =
@@ -210,6 +216,52 @@ export function WorkspaceOverview() {
             <small> / 150</small>
           </strong>
           <small>Execution depends on tools and configuration</small>
+        </div>
+      </section>
+      <section className="po-ops-board" aria-labelledby="ops-board-title">
+        <div className="ps-section-heading">
+          <div>
+            <span className="po-overline">Operational view</span>
+            <h2 id="ops-board-title">Know what needs a human next.</h2>
+            <p>Every number below is projected from a saved mission record.</p>
+          </div>
+          <span className="ps-pill">Live record status</span>
+        </div>
+        <div className="po-ops-grid">
+          <div className="po-ops-card" data-state={running ? "active" : "quiet"}>
+            <small>Running comparisons</small>
+            <strong>{running}</strong>
+            <span>
+              {running ? "Provider work has an active lease." : "No provider work is running."}
+            </span>
+          </div>
+          <div className="po-ops-card" data-state={blocked ? "attention" : "quiet"}>
+            <small>Needs attention</small>
+            <strong>{blocked}</strong>
+            <span>
+              {blocked
+                ? "Open the queue to resolve a gate or failure."
+                : "No blocked approvals or failures."}
+            </span>
+          </div>
+          <div className="po-ops-card" data-state={outcomes ? "complete" : "quiet"}>
+            <small>Observed outcomes</small>
+            <strong>{outcomes}</strong>
+            <span>
+              {outcomes
+                ? "Owner-supplied results are attached."
+                : "No result has been supplied yet."}
+            </span>
+          </div>
+          <div className="po-ops-card" data-state={followUps ? "complete" : "quiet"}>
+            <small>Approved follow-ups</small>
+            <strong>{followUps}</strong>
+            <span>
+              {followUps
+                ? "Next questions are linked to their review."
+                : "Follow-ups stay pending until approved."}
+            </span>
+          </div>
         </div>
       </section>
       <section className="ps-journey">
