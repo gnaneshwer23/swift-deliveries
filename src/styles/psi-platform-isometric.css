@@ -1,0 +1,216 @@
+.platform-isometric-scene {
+  position: relative;
+  aspect-ratio: 3/2;
+  background: #f6f8fd;
+}
+.platform-isometric-scene > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.platform-isometric-motion {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.platform-isometric-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.platform-art-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid #d5def0;
+  border-radius: 8px;
+  padding: 10px 13px;
+  background: #fffffff2;
+  box-shadow: 0 3px 0 #dce3f044;
+  cursor: pointer;
+  color: #586d98;
+  pointer-events: auto;
+  white-space: nowrap;
+  transition:
+    background 150ms,
+    border-color 150ms;
+}
+.platform-art-label > span {
+  font-size: 10px;
+  color: #91a2c4;
+}
+.platform-art-label > strong {
+  font-size: 12px;
+  font-weight: 500;
+}
+.platform-art-label[aria-pressed="true"] {
+  background: #eef2ff;
+  border-color: #6e86d0;
+  color: #304b9d;
+  box-shadow: 0 0 0 4px #d6e1fb66;
+}
+.platform-art-evidence {
+  left: 19%;
+  top: 42%;
+}
+.platform-art-judgement {
+  left: 78%;
+  top: 41%;
+}
+.platform-art-delivery {
+  left: 78%;
+  top: 94%;
+}
+.platform-art-feedback {
+  left: 20%;
+  top: 94%;
+}
+.platform-art-brain {
+  position: absolute;
+  left: 50%;
+  top: 72%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  padding: 9px 14px;
+  background: #f6f8fdee;
+  border: 1px solid #dce4f2;
+  border-radius: 8px;
+}
+.platform-art-brain strong {
+  display: block;
+  font-size: 17px;
+  letter-spacing: -0.02em;
+  font-weight: 550;
+  color: #536ca9;
+}
+.platform-art-brain span {
+  display: block;
+  font-size: 10px;
+  color: #8496b8;
+  margin-top: 5px;
+}
+.platform-art-human {
+  position: absolute;
+  left: 88%;
+  top: 64%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f0fcf5e8;
+  border: 1px solid #bde2cf;
+  border-radius: 6px;
+  padding: 7px 9px;
+  font-size: 10px;
+  color: #4d8c72;
+  white-space: nowrap;
+}
+.platform-isometric-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 15px 24px;
+  border-top: 1px solid #e2e8f3;
+  background: #fafbff;
+}
+.platform-isometric-controls > span {
+  font-size: 10px;
+  color: #8394b2;
+  line-height: 1.8;
+}
+.platform-isometric-controls > button {
+  background: #fff;
+  border: 1px solid #d7e0f2;
+  border-radius: 7px;
+  padding: 8px 12px;
+  font-size: 11px;
+  color: #657db6;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.platform-isometric-controls > button:disabled {
+  color: #8795ad;
+  cursor: default;
+}
+.platform-map .platform-map-inspector {
+  border-top: 1px solid #e0e7f2;
+}
+@media (max-width: 760px) {
+  .platform-isometric-scene {
+    aspect-ratio: auto;
+    padding-bottom: 0;
+  }
+  .platform-isometric-scene > img {
+    height: auto;
+    aspect-ratio: 3/2;
+  }
+  .platform-isometric-motion {
+    height: auto;
+    aspect-ratio: 3/2;
+  }
+  .platform-isometric-labels {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+    padding: 16px;
+    background: #f8faff;
+    border-top: 1px solid #e2e8f3;
+  }
+  .platform-art-label {
+    position: static;
+    transform: none;
+    white-space: normal;
+    padding: 12px 10px;
+    box-shadow: none;
+    min-height: 47px;
+  }
+  .platform-art-label > strong {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  .platform-art-brain {
+    top: 45%;
+    padding: 4px 8px;
+    border-radius: 5px;
+  }
+  .platform-art-brain strong {
+    font-size: 11px;
+  }
+  .platform-art-brain span {
+    display: none;
+  }
+  .platform-art-human {
+    left: 88%;
+    top: 27%;
+    padding: 4px;
+    gap: 0;
+    font-size: 0;
+  }
+  .platform-art-human > svg {
+    width: 13px;
+    height: 13px;
+  }
+  .platform-isometric-controls {
+    padding: 14px 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .platform-isometric-controls > span {
+    font-size: 10px;
+  }
+  .platform-isometric-controls > button {
+    font-size: 10px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .platform-art-label {
+    transition: none;
+  }
+}

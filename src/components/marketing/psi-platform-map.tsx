@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { ArrowRight, Database, GitBranch, Layers, RefreshCw, ShieldCheck } from "lucide-react";
 import { PSI_LAYER_LABELS } from "@/lib/psi-journey";
 
@@ -54,6 +54,15 @@ const LAYERS = [
 ] as const;
 export function PsiPlatformMap() {
   const [active, setActive] = useState(0);
+  const [animate, setAnimate] = useState(false);
+  const [reduced, setReduced] = useState(true);
+  useEffect(() => {
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReduced(preference.matches);
+    update();
+    preference.addEventListener("change", update);
+    return () => preference.removeEventListener("change", update);
+  }, []);
   const id = useId().replaceAll(":", "");
   const layer = LAYERS[active]!;
   const ActiveIcon = layer.icon;
@@ -63,65 +72,74 @@ export function PsiPlatformMap() {
         <span>Product Super Intelligence</span>
         <span>Interactive concept · select a layer</span>
       </div>
-      <div className="platform-map-canvas">
-        <svg viewBox="0 0 1000 440" preserveAspectRatio="none" aria-hidden="true">
-          <defs>
-            <marker
-              id={`${id}-arrow`}
-              viewBox="0 0 10 10"
-              refX="8"
-              refY="5"
-              markerWidth="5"
-              markerHeight="5"
-              orient="auto-start-reverse"
-            >
-              <path d="M0 0 L10 5 L0 10z" fill="#8c9ed0" />
-            </marker>
-          </defs>
-          <path
-            d="M 270 100 L 730 100 M 835 160 L 835 280 M 730 340 L 270 340 M 165 280 L 165 160"
-            className="platform-map-orbit"
-            markerEnd={`url(#${id}-arrow)`}
-          />
-          <path
-            d="M 270 100 L 440 185 M 730 100 L 560 185 M 730 340 L 560 255 M 270 340 L 440 255"
-            className="platform-map-spokes"
-          />
+      <div className="platform-isometric-scene">
+        <img
+          src="/illustrations/psi-intelligence-isometric-v1.webp"
+          width={1536}
+          height={1024}
+          alt="Isometric Product Brain: source documents feed a shared reasoning cube; specialist judgement, a human checkpoint, reviewable outputs and observations connect around it."
+        />
+        <svg
+          className="platform-isometric-motion"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          {animate && !reduced && (
+            <circle r=".55" fill="#536fd4">
+              <animateMotion
+                dur="3s"
+                repeatCount="indefinite"
+                path={
+                  [
+                    "M31 24 C42 24 38 30 43 33",
+                    "M58 31 C59 23 61 24 66 24",
+                    "M89 60 C85 59 89 66 84 68",
+                    "M33 73 C42 73 37 65 41 61",
+                  ][active]
+                }
+              />
+            </circle>
+          )}
         </svg>
-        <div className="platform-brain-core">
-          <Database size={25} aria-hidden="true" />
-          <strong>Product Brain</strong>
-          <span>Shared product record</span>
-          <small>Evidence · decisions · artefacts</small>
-        </div>
         <div
-          className="platform-layer-nodes"
+          className="platform-isometric-labels"
           role="group"
           aria-label="Explore PSI intelligence layers"
         >
-          {LAYERS.map((item, index) => {
-            const Icon = item.icon;
-            return (
-              <button
-                type="button"
-                key={item.key}
-                className={`platform-layer-node platform-layer-${item.key}`}
-                aria-pressed={active === index}
-                aria-controls={`${id}-inspector`}
-                onClick={() => setActive(index)}
-              >
-                <span className="platform-layer-number">{item.step}</span>
-                <Icon size={22} aria-hidden="true" />
-                <strong>{PSI_LAYER_LABELS[item.key]}</strong>
-                <small>{item.short}</small>
-              </button>
-            );
-          })}
+          {LAYERS.map((item, index) => (
+            <button
+              key={item.key}
+              type="button"
+              className={`platform-art-label platform-art-${item.key}`}
+              aria-pressed={active === index}
+              aria-controls={`${id}-inspector`}
+              onClick={() => setActive(index)}
+            >
+              <span>{item.step}</span>
+              <strong>{PSI_LAYER_LABELS[item.key]}</strong>
+            </button>
+          ))}
         </div>
-        <span className="platform-flow-caption platform-caption-top">Context → comparison</span>
-        <span className="platform-flow-caption platform-caption-bottom">
-          Learning → next question
-        </span>
+        <div className="platform-art-brain">
+          <strong>Product Brain</strong>
+          <span>Shared product record</span>
+        </div>
+        <div className="platform-art-human">
+          <ShieldCheck size={13} aria-hidden="true" />
+          Human approval
+        </div>
+      </div>
+      <div className="platform-isometric-controls">
+        <span>Evidence → Product Brain → judgement → human checkpoint → work → feedback</span>
+        <button
+          type="button"
+          disabled={reduced}
+          aria-pressed={animate}
+          onClick={() => setAnimate(!animate)}
+        >
+          {reduced ? "Reduced motion enabled" : animate ? "Pause flow" : "Animate selected flow"}
+        </button>
       </div>
       <div className="platform-map-inspector" id={`${id}-inspector`} aria-live="polite">
         <div>

@@ -1,0 +1,277 @@
+.brand-logo-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-start;
+}
+.brand-logo-tagline {
+  font-size: 9px;
+  line-height: 1.2;
+  letter-spacing: 0.015em;
+  color: #65738d;
+  font-weight: 400;
+  white-space: nowrap;
+}
+.dxn .brand-logo-copy .brand-logo-word {
+  font-size: 16px;
+}
+.dxn .brand-logo {
+  gap: 9px;
+}
+.dxn .brand-logo-mark {
+  width: 32px;
+  height: 32px;
+}
+.marketing-footer {
+  border-top: 1px solid #e1e7f1;
+  background: #fff;
+  color: #52617b;
+  padding: 56px 0 0;
+}
+.marketing-footer-main {
+  display: grid;
+  grid-template-columns: 1.15fr 1.6fr;
+  gap: 95px;
+  padding-bottom: 44px;
+}
+.marketing-footer-brand .brand-logo-mark {
+  width: 36px;
+  height: 36px;
+}
+.marketing-footer-brand .brand-logo-word {
+  font-size: 20px;
+}
+.marketing-footer-brand .brand-logo-tagline {
+  font-size: 10px;
+}
+.marketing-footer-tagline {
+  font-size: 23px;
+  line-height: 1.35;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  margin: 25px 0 15px;
+  color: #354663;
+}
+.marketing-footer-description {
+  font-size: 13px;
+  color: #65738d;
+  line-height: 1.8;
+  max-width: 330px;
+}
+.marketing-footer-example {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  font-size: 12px;
+  color: #647cb9;
+  margin-top: 20px;
+}
+.marketing-footer-navigation {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  padding-top: 8px;
+}
+.marketing-footer-navigation h2 {
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: 550;
+  color: #3a4c6a;
+  margin: 0 0 20px;
+}
+.marketing-footer-navigation a {
+  display: block;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #65738d;
+  padding: 7px 0;
+  width: fit-content;
+}
+.marketing-footer-navigation a:hover,
+.marketing-footer-bottom a:hover {
+  color: #4565b8;
+}
+.marketing-footer-bottom {
+  display: flex;
+  align-items: center;
+  gap: 35px;
+  justify-content: space-between;
+  border-top: 1px solid #e7ebf3;
+  padding: 23px 0;
+  color: #65738d;
+  font-size: 11px;
+}
+.marketing-footer-bottom nav {
+  display: flex;
+  gap: 24px;
+  margin-left: auto;
+}
+.marketing-footer-bottom > a {
+  color: #65738d;
+  margin-left: 25px;
+}
+.marketing-footer :is(a, button):focus-visible {
+  outline: 3px solid #4965d6;
+  outline-offset: 4px;
+}
+.platform-next-step {
+  padding: 55px 0;
+  background: #f5f7fc;
+  border-top: 1px solid #e1e7f2;
+}
+.platform-next-step > .dxl-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  gap: 85px;
+}
+.platform-next-intro h2 {
+  font-size: clamp(31px, 3.2vw, 43px);
+  line-height: 1.18;
+  letter-spacing: -0.035em;
+  font-weight: 550;
+  color: #283953;
+  margin: 18px 0 22px;
+}
+.platform-next-intro > p:not(.dxl-eyebrow) {
+  font-size: 14px;
+  color: #65738d;
+  line-height: 1.8;
+  max-width: 370px;
+}
+.platform-next-paths {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+.platform-next-paths > a {
+  display: block;
+  padding-top: 16px;
+  border-top: 2px solid #cdd8ef;
+}
+.platform-next-paths > a > span {
+  font-size: 11px;
+  color: #65738d;
+}
+.platform-next-paths h3 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  font-size: 17px;
+  font-weight: 500;
+  color: #455c80;
+  margin: 13px 0;
+  line-height: 1.4;
+}
+.platform-next-paths h3 > svg {
+  flex-shrink: 0;
+  color: #8097cd;
+}
+.platform-next-paths a:hover h3 {
+  color: #3c5bb1;
+}
+.platform-next-paths p {
+  font-size: 12px;
+  line-height: 1.85;
+  color: #65738d;
+}
+.platform-next-paths > small {
+  grid-column: 1/-1;
+  color: #65738d;
+  font-size: 10px;
+  line-height: 1.7;
+  border-top: 1px solid #e0e7f3;
+  padding-top: 15px;
+  margin-top: 4px;
+}
+.platform-next-step a:focus-visible {
+  outline: 3px solid #4965d6;
+  outline-offset: 5px;
+}
+@media (max-width: 960px) {
+  .marketing-footer-main {
+    gap: 45px;
+    grid-template-columns: 1fr 1.4fr;
+  }
+  .platform-next-step > .dxl-wrap {
+    gap: 40px;
+  }
+  .platform-next-paths {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+@media (max-width: 620px) {
+  .dxn .brand-logo-word {
+    font-size: 14px;
+  }
+  .dxn .brand-logo-mark {
+    width: 28px;
+    height: 28px;
+  }
+  .dxn .brand-logo-copy .brand-logo-word {
+    font-size: 14px;
+  }
+  .dxn .brand-logo-tagline {
+    font-size: 8px;
+  }
+  .dxn .brand-logo-copy {
+    gap: 4px;
+  }
+  .marketing-footer {
+    padding-top: 38px;
+  }
+  .marketing-footer-main {
+    grid-template-columns: 1fr;
+    gap: 35px;
+    padding-bottom: 30px;
+  }
+  .marketing-footer-navigation {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+  .marketing-footer-navigation h2 {
+    font-size: 11px;
+    margin-bottom: 13px;
+  }
+  .marketing-footer-navigation a {
+    font-size: 11px;
+    padding: 7px 0;
+  }
+  .marketing-footer-tagline {
+    font-size: 22px;
+  }
+  .marketing-footer-bottom {
+    flex-wrap: wrap;
+    gap: 20px;
+    font-size: 10px;
+  }
+  .marketing-footer-bottom nav {
+    margin: 0;
+    gap: 18px;
+  }
+  .marketing-footer-bottom > a {
+    margin: 0;
+  }
+  .platform-next-step {
+    padding: 40px 0;
+  }
+  .platform-next-step > .dxl-wrap {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .platform-next-paths {
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+  }
+  .platform-next-paths h3 {
+    font-size: 15px;
+  }
+  .platform-next-paths p {
+    font-size: 11px;
+  }
+  .platform-next-intro h2 {
+    font-size: 33px;
+  }
+}

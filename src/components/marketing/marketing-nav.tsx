@@ -55,7 +55,7 @@ export function MarketingNav() {
       }}
     >
       <div className="dxn-left">
-        <BrandLogo />
+        <BrandLogo tagline="Product Super Intelligence" />
         <nav className="nav-links motion-nav-links" aria-label="Primary">
           {LINKS.map((l) => (
             <Link
