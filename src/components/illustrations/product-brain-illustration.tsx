@@ -1,3 +1,4 @@
+import { Check, Hourglass, Lock } from "lucide-react";
 import { useId, type ReactNode } from "react";
 import { Agent, Card, Cube, FloatIcon, Glass, IsoDefs, Particles, Plate } from "./iso";
 import { iso, pathOf, topMatrix, type P3, type Pt } from "./iso-geometry";
@@ -177,6 +178,21 @@ export function ProductBrainIllustration({
     delivery: `M${d0[0]} ${d0[1]} L${d1[0]} ${d1[1]}`,
     feedback: `M${d1[0]} ${d1[1]} C${d1[0] + 150} ${d1[1] + 40} ${results[0] + 330} ${results[1] - 90} ${results[0]} ${results[1]}`,
   };
+  const cp = [j1, [j1[0] - 90, j1[1] - 10], [d0[0] - 70, d0[1] + 80], d0] as const;
+  // the checkpoint sits on the open stretch of the handoff, clear of both decks
+  const bez = (t: number, i: 0 | 1) =>
+    (1 - t) ** 3 * cp[0][i] +
+    3 * (1 - t) ** 2 * t * cp[1][i] +
+    3 * (1 - t) * t ** 2 * cp[2][i] +
+    t ** 3 * cp[3][i];
+  const onLine: Pt = [bez(0.62, 0), bez(0.62, 1)];
+  const gateAt: Pt = [onLine[0] + 18, onLine[1] - 92];
+  const gateState = waiting ? "waiting" : hold ? "locked" : "approved";
+  const GATE = {
+    locked: { icon: Lock, text: "Needs your approval", w: 150 },
+    waiting: { icon: Hourglass, text: "Waiting for you", w: 124 },
+    approved: { icon: Check, text: "Approved by you", w: 128 },
+  }[gateState];
   const segs: Array<{
     key: keyof typeof paths;
     layer: BrainTier | "feedback";
@@ -224,7 +240,7 @@ export function ProductBrainIllustration({
               data-on={on || undefined}
               data-gate={gate || undefined}
               data-waiting={(gate && waiting) || undefined}
-              data-approved={(gate && approved) || undefined}
+              data-approved={(gate && (approved || gateState === "approved")) || undefined}
             >
               <Plate
                 id={pid}
@@ -282,6 +298,7 @@ export function ProductBrainIllustration({
               data-focus={focus || undefined}
               data-held={!open || undefined}
               data-gate={seg.key === "toDelivery" || undefined}
+              data-cleared={(seg.key === "toDelivery" && open) || undefined}
             >
               <path d={paths[seg.key]} className="ix-lane" />
               {live && open && (
@@ -296,6 +313,31 @@ export function ProductBrainIllustration({
           );
         })}
         <circle cx={results[0]} cy={results[1]} r={4} className="ix-lane-end" />
+      </g>
+      <g
+        className="ix-gate-badge"
+        data-state={gateState}
+        transform={`translate(${gateAt[0] - GATE.w / 2} ${gateAt[1] - 14})`}
+      >
+        <line
+          x1={GATE.w / 2}
+          y1={28}
+          x2={onLine[0] - gateAt[0] + GATE.w / 2}
+          y2={onLine[1] - gateAt[1] + 14}
+          className="ix-gate-badge-stem"
+        />
+        <circle
+          cx={onLine[0] - gateAt[0] + GATE.w / 2}
+          cy={onLine[1] - gateAt[1] + 14}
+          r={3.5}
+          className="ix-gate-badge-dot"
+        />
+        <rect width={GATE.w} height={28} rx={14} />
+        <circle cx={14} cy={14} r={9} className="ix-gate-badge-dot" />
+        <GATE.icon x={8} y={8} width={12} height={12} strokeWidth={2.6} aria-hidden="true" />
+        <text x={30} y={18} fontSize={11}>
+          {GATE.text}
+        </text>
       </g>
       <text
         x={results[0] + 250}
