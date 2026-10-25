@@ -1,5 +1,5 @@
 .platform-page {
-  color: #202b43;
+  color: var(--psi-ink);
 }
 .platform-opening {
   padding: 64px 0 44px;
@@ -21,7 +21,7 @@
 .platform-intro > div > p:not(.dxl-eyebrow) {
   font-size: 16px;
   line-height: 1.8;
-  color: #65738e;
+  color: var(--psi-muted);
 }
 .platform-intro .psi-actions {
   margin-top: 24px;

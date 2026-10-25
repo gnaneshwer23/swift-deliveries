@@ -1,5 +1,6 @@
 # DeliverX PSI production readiness plan
 
+> Historical snapshot (22 October 2026). Later implementation has superseded parts of this document. Use [the current Phase 1 baseline](psi-design-foundation.md) and its linked evidence for present status; retain the original findings below as history.
 22 October 2026. Status: implementation plan, not a production certification.
 
 ## Product decision

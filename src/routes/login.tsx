@@ -91,7 +91,7 @@ function LoginPage() {
   };
 
   return (
-    <div className="dxs flex min-h-screen flex-col">
+    <div className="dxs psi-auth flex min-h-screen flex-col">
       <header className="nav">
         <BrandLogo />
         <div className="nav-right">

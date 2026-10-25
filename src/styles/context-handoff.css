@@ -3,7 +3,7 @@
   border-radius: 24px;
   overflow: hidden;
   background: #fafaff;
-  color: #222c46;
+  color: var(--psi-ink);
 }
 .handoff-toolbar {
   display: flex;

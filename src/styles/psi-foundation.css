@@ -1,0 +1,83 @@
+/* Shared PSI identity. Status colours describe state, never decoration. */
+:root {
+  --psi-canvas: #f7f8fc;
+  --psi-surface: #ffffff;
+  --psi-ink: #202b43;
+  --psi-action: #171923;
+  --psi-action-hover: #2c3040;
+  --psi-text: #4e5b73;
+  --psi-muted: #647089;
+  --psi-border: #dce2ee;
+  --psi-indigo: #4c56c9;
+  --psi-indigo-hover: #3c45af;
+  --psi-indigo-soft: #eef0ff;
+  --psi-lavender: #f2effb;
+  --psi-success: #16724e;
+  --psi-success-soft: #eaf6ef;
+  --psi-warning: #8b570b;
+  --psi-warning-soft: #fff5df;
+  --psi-danger: #b42318;
+  --psi-danger-soft: #fff0ee;
+  --psi-font:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --psi-radius-control: 10px;
+  --psi-radius-panel: 18px;
+}
+/* Specific shell selectors avoid changing artefacts or embedded HTML previews. */
+.dxs.marketing-page {
+  color: var(--psi-ink);
+  font-family: var(--psi-font);
+}
+.dxs.marketing-page .dxl-btn-primary {
+  background: var(--psi-action);
+  color: var(--psi-surface);
+}
+.dxs.marketing-page .dxl-btn-primary:hover {
+  background: var(--psi-action-hover);
+}
+.dxs.marketing-page .dxl-eyebrow {
+  color: var(--psi-indigo);
+}
+.dxs.marketing-page :is(a, button, input, textarea, select, summary):focus-visible,
+.psi-workspace :is(a, button, input, textarea, select, summary):focus-visible,
+.ob-page :is(a, button, input, textarea, select):focus-visible,
+.dxs.psi-auth :is(a, button, input, textarea, select):focus-visible {
+  outline: 3px solid var(--psi-indigo);
+  outline-offset: 4px;
+}
+.dxs.marketing-page :is(input, textarea, select),
+.psi-workspace :is(input, textarea, select) {
+  accent-color: var(--psi-indigo);
+}
+@media (prefers-reduced-motion: reduce) {
+  .dxs.marketing-page,
+  .psi-workspace,
+  .ob-page {
+    scroll-behavior: auto;
+  }
+}
+
+.dxs.psi-auth {
+  --x-ink: var(--psi-action);
+  --x-ink-soft: var(--psi-action-hover);
+  --x-paper: var(--psi-surface);
+  --x-paper-raised: var(--psi-surface);
+  --x-slate: var(--psi-text);
+  --x-slate-light: var(--psi-muted);
+  --x-border: var(--psi-border);
+  --x-radius: var(--psi-radius-panel);
+  --x-radius-sm: var(--psi-radius-control);
+  background: var(--psi-canvas);
+  font-family: var(--psi-font);
+}
+.dxs.psi-auth .form-input:focus {
+  border-color: var(--psi-indigo);
+  box-shadow: 0 0 0 3px var(--psi-indigo-soft);
+}
+.dxs.psi-auth .btn-nav-primary {
+  background: var(--psi-action);
+  border-color: var(--psi-action);
+}
+.dxs.psi-auth .btn-nav-primary:hover {
+  background: var(--psi-action-hover);
+}
