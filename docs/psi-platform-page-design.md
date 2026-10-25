@@ -9,3 +9,9 @@ Below it: a linked evidence/decision/artefact chain, a concise specialist sectio
 No new runtime, entitlement or production-readiness claims. Only enabled capabilities can run; the full knowledge graph, broader lifecycle execution and connected analytics remain future direction. No customer outcomes, real approvals or observed results are invented.
 
 Validation: TypeScript/build passed; lint has nine existing warnings. Desktop/mobile browser review, all four architecture selections, all three audience scenarios, anchor navigation, page width and contained scope-table scrolling. No backend, database, auth or billing changes.
+
+## Isometric architecture revision
+
+Replace the flat layer boxes with a generated isometric concept illustration, styled in DeliverX's white/lavender/periwinkle palette. Source evidence, a central Product Brain, specialist judgement, a human checkpoint, reviewable artefacts and observations form one connected scene. Code-rendered labels remain accessible, clickable and independent of the bitmap. The inspector continues to use the canonical four layer names.
+
+Optional flow animation follows the selected illustrated connector and can be paused. It is disabled for reduced-motion preferences. Mobile uses a two-column selector beneath the artwork. The image is illustrative, not a live product screenshot or proof of agent execution. The optimised versioned WebP is approximately 95KB and stored with the project.
