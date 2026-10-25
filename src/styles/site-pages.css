@@ -60,8 +60,39 @@
 }
 .plt-layers {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 240px;
-  gap: 14px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 32px;
+  align-items: center;
+}
+.plt-stack {
+  border-radius: 24px;
+  border: 1px solid #e3e1f0;
+  background:
+    radial-gradient(circle at 1px 1px, #ddd9ee 1px, transparent 0) 0 0 / 22px 22px,
+    linear-gradient(180deg, #fbfaff, #f4f2fb);
+  padding: 12px;
+}
+.plt-stack svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.plt-layer-list {
+  display: grid;
+  gap: 10px;
+}
+.plt-see {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  color: #5b3fd0;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.plt-see:hover {
+  text-decoration: underline;
 }
 .plt-layers ol {
   list-style: none;
@@ -72,7 +103,8 @@
 }
 .plt-layers li {
   display: grid;
-  grid-template-columns: 40px 180px minmax(0, 1fr);
+  grid-template-columns: 32px minmax(0, 1fr);
+  row-gap: 4px;
   gap: 12px;
   align-items: center;
   padding: 18px 20px;
@@ -88,6 +120,7 @@
   font-size: 16px;
 }
 .plt-layers li p {
+  grid-column: 2;
   margin: 0;
   color: #525a74;
   font-size: 15px;

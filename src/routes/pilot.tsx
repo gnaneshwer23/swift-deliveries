@@ -61,8 +61,8 @@ function Pilot() {
           <div className="psi-section-copy">
             <h2 className="dxl-h2">What happens after you submit</h2>
             <ol className="psi-check-list">
-              <li>You receive a request reference on this page if the save succeeds.</li>
-              <li>An authorised operator can read the request and record follow-up.</li>
+              <li>You get a request reference on this page once it is saved.</li>
+              <li>We review your question, then follow up to agree the scope with you.</li>
               <li>
                 {MANUAL_ACTIVATION_COPY} {CHECKOUT_NOT_LIVE_COPY}
               </li>
@@ -74,7 +74,7 @@ function Pilot() {
             <p className="psi-fine-print">{SUPPORT_RECOVERY_COPY}</p>
             <p>
               <a className="dxl-link" href={`mailto:${PUBLISHED_OPERATOR_EMAIL}`}>
-                Email {PUBLISHED_OPERATOR_EMAIL}
+                Email the pilot team
               </a>
             </p>
             <Link to="/resources" hash="brief-builder" className="dxl-link">

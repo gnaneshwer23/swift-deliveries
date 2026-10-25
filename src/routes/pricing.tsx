@@ -249,10 +249,10 @@ function Pricing() {
             <div className="pricing-budget-note">
               <ShieldCheck aria-hidden="true" />
               <div>
-                <h3>A used allowance pauses the next billable comparison.</h3>
+                <h3>When your allowance is used, billable work stops.</h3>
                 <p>
-                  Your mission record stays readable and the work is not deleted. Further usage
-                  requires a new agreement.
+                  Nothing is charged on top. Your missions stay readable and nothing is deleted. To
+                  do more, you agree a new allowance with us.
                 </p>
               </div>
             </div>

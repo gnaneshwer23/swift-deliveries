@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { useId } from "react";
 import { Agent, Card, Cube, FloatIcon, Glass, IsoDefs, Particles, Plate } from "./iso";
-import { iso, pathOf, type P3 } from "./iso-geometry";
+import { iso, pathOf, prism, roundRect, type P3 } from "./iso-geometry";
 
 const useIxId = (prefix: string) => `${prefix}${useId().replaceAll(":", "")}`;
 const add = (a: P3, b: P3): P3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
@@ -460,6 +460,95 @@ export function CountVessel({ count, attention = false }: { count: number; atten
             />
           ))}
         </Glass>
+      </g>
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Platform: four layers stacked top to bottom, governance wrapped round all
+// ---------------------------------------------------------------------------
+export function PlatformStackIllustration({
+  layers,
+  governance,
+}: {
+  layers: ReadonlyArray<{ name: string; icon: LucideIcon }>;
+  governance: { name: string; icon: LucideIcon };
+}) {
+  const id = useIxId("ps");
+  const GAP = 118;
+  const HW = 100;
+  const HD = 64;
+  const zOf = (i: number) => (layers.length - 1 - i) * GAP;
+  const top = zOf(0);
+  // work drops through the centre of every layer, top to bottom
+  const drop = pathOf([iso([0, 0, top + 40]), iso([0, 0, -6])], false);
+  const shell = prism(roundRect(0, 0, HW + 34, HD + 34, 34), -30, top + 46);
+  const gate = iso([HW + 34, -HD - 34, top + 46]);
+  return (
+    <svg
+      viewBox="-370 -545 720 710"
+      role="img"
+      aria-label={`${layers.length} stacked layers: ${layers.map((l) => l.name).join(", ")}. Work moves down through each layer. ${governance.name} surrounds all of them.`}
+    >
+      <IsoDefs id={id} />
+      <path d={shell.side} className="ix-gov-shell" />
+      <path d={shell.top} className="ix-gov-shell" />
+      {[...layers]
+        .map((l, i) => ({ ...l, i }))
+        .reverse()
+        .map(({ name, icon, i }) => {
+          const z = zOf(i);
+          const [lx, ly] = iso([-HW, HD, z]);
+          return (
+            <g key={name} className="ix-stack-layer">
+              <Plate
+                id={id}
+                at={[0, 0, z]}
+                size={HW}
+                depth={HD}
+                height={14}
+                radius={22}
+                glow={i === 0}
+              />
+              {i === 0 && <Agent id={id} at={[-40, 10, z]} lit />}
+              {i === 1 && (
+                <>
+                  <Agent id={id} at={[-60, 20, z]} scale={0.8} />
+                  <Agent id={id} at={[-30, 30, z]} scale={0.8} lit />
+                  <Agent id={id} at={[60, -24, z]} scale={0.8} />
+                </>
+              )}
+              {i === 2 && (
+                <>
+                  <Cube at={[-60, 24, z]} s={18} tone="dim" />
+                  <Cube at={[-26, 24, z]} s={18} tone="mid" />
+                  <Cube at={[56, -24, z]} s={18} tone="lit" />
+                </>
+              )}
+              {i === 3 && (
+                <>
+                  <Card at={[-50, 22, z + 2]} w={40} d={28} />
+                  <Card at={[56, -22, z + 2]} w={40} d={28} lines={2} />
+                </>
+              )}
+              <FloatIcon at={[60, 24, z + 6]} icon={icon} size={15} />
+              <text x={lx - 18} y={ly + 8} className="ix-label" fontSize={16} textAnchor="end">
+                <tspan className="ix-stack-num">{String(i + 1).padStart(2, "0")}</tspan> {name}
+              </text>
+            </g>
+          );
+        })}
+      <path d={drop} className="ix-lane" />
+      <Particles d={drop} count={4} dur={4.6} />
+      <g transform={`translate(${gate[0] - 10} ${gate[1] - 16})`} className="ix-gov-tag">
+        <rect x={-6} y={-14} width={136} height={30} rx={15} />
+        <g transform="translate(4 -7)">
+          <governance.icon width={14} height={14} strokeWidth={2} />
+        </g>
+        <text x={24} y={4} fontSize={13}>
+          {governance.name}
+        </text>
       </g>
     </svg>
   );

@@ -8,13 +8,17 @@ import {
   Gavel,
   GitBranch,
   KeyRound,
+  Layers3,
   ListChecks,
+  MessageSquareText,
+  ShieldCheck,
   PlugZap,
   Users,
   type LucideIcon,
 } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { pageHead } from "@/components/marketing/page-head";
+import { PlatformStackIllustration } from "@/components/illustrations/platform-illustrations";
 import { WORKFORCE_AVAILABLE_IDS, WORKFORCE_TOTAL } from "@/lib/marketing/workforce-summary";
 
 export const Route = createFileRoute("/psi")({
@@ -29,21 +33,25 @@ export const Route = createFileRoute("/psi")({
 
 type Status = "live" | "opt-in" | "planned";
 
-const LAYERS: Array<{ name: string; does: string }> = [
+const LAYERS: Array<{ name: string; icon: LucideIcon; does: string }> = [
   {
     name: "Command",
+    icon: MessageSquareText,
     does: "Understands your objective, asks what is missing and plans the mission.",
   },
   {
     name: "Departments",
+    icon: Users,
     does: "Groups specialists by discipline and assembles the team a mission needs.",
   },
   {
     name: "Execution",
+    icon: Layers3,
     does: "Runs bounded tasks in order; a task never starts on failed upstream work.",
   },
   {
     name: "Quality & evidence",
+    icon: ShieldCheck,
     does: "Checks each handoff and labels how every artefact was produced and reviewed.",
   },
 ];
@@ -56,6 +64,7 @@ const CAPABILITIES: Array<{
   does: string;
   control: string;
   next?: string;
+  see?: { to: string; hash?: string; label: string };
 }> = [
   {
     id: "product-brain",
@@ -65,6 +74,7 @@ const CAPABILITIES: Array<{
     does: "Keeps one record per product: the brief, supplied sources, evidence, decisions, artefacts and what you observed after.",
     control: "You choose what goes in. Missing evidence stays visible as a gap, never filled in.",
     next: "A connected knowledge graph across products is planned.",
+    see: { to: "/", hash: "explore-product", label: "Explore the Product Brain" },
   },
   {
     id: "missions",
@@ -73,6 +83,7 @@ const CAPABILITIES: Array<{
     status: "live",
     does: "Turns one sentence into a plan with tasks, a team, checks and a usage estimate, then runs the tasks in order.",
     control: "Nothing runs until you approve the plan. You can change or cancel it first.",
+    see: { to: "/how-it-works", label: "Watch a mission run" },
   },
   {
     id: "specialists",
@@ -81,6 +92,7 @@ const CAPABILITIES: Array<{
     status: "live",
     does: `${WORKFORCE_TOTAL} roles across 15 departments, each with one job and a limit on what it may do.`,
     control: `${WORKFORCE_AVAILABLE_IDS.length} roles can be assigned today; the rest stay unavailable until they pass their checks.`,
+    see: { to: "/ai-agents", label: "Browse the specialists" },
   },
   {
     id: "deliberation",
@@ -169,23 +181,31 @@ function Platform() {
               </p>
             </div>
             <div className="plt-layers">
-              <ol>
-                {LAYERS.map((l, i) => (
-                  <li key={l.name}>
-                    <span>{String(i + 1).padStart(2, "0")}</span>
-                    <strong>{l.name}</strong>
-                    <p>{l.does}</p>
-                  </li>
-                ))}
-              </ol>
-              <aside>
-                <KeyRound size={20} aria-hidden="true" />
-                <strong>Governance</strong>
-                <p>
-                  Workspace isolation, permissions, usage ceilings, approvals and the audit trail,
-                  across every layer.
-                </p>
-              </aside>
+              <div className="plt-stack ix">
+                <PlatformStackIllustration
+                  layers={LAYERS}
+                  governance={{ name: "Governance", icon: KeyRound }}
+                />
+              </div>
+              <div className="plt-layer-list">
+                <ol>
+                  {LAYERS.map((l, i) => (
+                    <li key={l.name}>
+                      <span>{String(i + 1).padStart(2, "0")}</span>
+                      <strong>{l.name}</strong>
+                      <p>{l.does}</p>
+                    </li>
+                  ))}
+                </ol>
+                <aside>
+                  <KeyRound size={20} aria-hidden="true" />
+                  <strong>Governance</strong>
+                  <p>
+                    Workspace isolation, permissions, usage ceilings, approvals and the audit trail,
+                    across every layer.
+                  </p>
+                </aside>
+              </div>
             </div>
           </div>
         </section>
@@ -216,6 +236,15 @@ function Platform() {
                     {c.control}
                   </div>
                   {c.next && <p className="plt-next">{c.next}</p>}
+                  {c.see && (
+                    <Link
+                      to={c.see.to}
+                      {...(c.see.hash ? { hash: c.see.hash } : {})}
+                      className="plt-see"
+                    >
+                      {c.see.label} <ArrowRight size={14} aria-hidden="true" />
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

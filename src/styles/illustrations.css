@@ -572,3 +572,25 @@
     animation: none;
   }
 }
+
+/* platform stack */
+.ix-gov-shell {
+  fill: none;
+  stroke: var(--ix-glow);
+  stroke-opacity: 0.45;
+  stroke-width: 1.4;
+  stroke-dasharray: 5 6;
+}
+.ix-gov-tag rect {
+  fill: #34294d;
+}
+.ix-gov-tag text,
+.ix-gov-tag svg {
+  fill: #fff;
+  color: #fff;
+  font-weight: 600;
+}
+.ix-stack-num {
+  fill: #8a85a0;
+  font-variant-numeric: tabular-nums;
+}
