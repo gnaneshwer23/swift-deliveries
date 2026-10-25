@@ -700,7 +700,9 @@ function MissionDetail() {
           {/* Artefacts & Operator Sign-off */}
           <section className="cc-panel">
             <div className="flex items-center justify-between gap-2">
-              <h2 className="cc-panel-title mb-0">Artefacts ({artefacts.length})</h2>
+              <h2 id="mission-outputs" className="cc-panel-title mb-0">
+                Artefacts ({artefacts.length})
+              </h2>
             </div>
             {!artefacts.length ? (
               <p className="cc-muted mt-2">Artefacts appear as tasks complete.</p>
