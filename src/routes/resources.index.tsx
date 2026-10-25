@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowRight, Download, FileText, ShieldCheck } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { pageHead } from "@/components/marketing/page-head";
 import { BriefBuilder } from "@/components/marketing/brief-builder";
 import { RESOURCE_TEMPLATES, downloadText } from "@/lib/marketing/product-resources";
 import { BRIEF_PRESETS, parseBriefPreset, type BriefPreset } from "@/lib/marketing/brief-presets";
-
 export const Route = createFileRoute("/resources/")({
   validateSearch: (search: Record<string, unknown>): { useCase?: BriefPreset | undefined } => ({
     useCase: parseBriefPreset(search["useCase"]),
@@ -12,8 +12,8 @@ export const Route = createFileRoute("/resources/")({
   head: () =>
     pageHead(
       "/resources",
-      "Prepare your product brief — DeliverX resources",
-      "Write and download a product brief, or start with an editable founder, product-team or student example. Keep evidence, decisions and experiments inspectable.",
+      "Resources — Frame your next product question | DeliverX",
+      "Write a browser-local product brief, preview and download it, or use evidence, decision and experiment templates to keep the reasoning with your work.",
     ),
   component: Resources,
 });
@@ -22,134 +22,181 @@ function Resources() {
   const preset = useCase ? BRIEF_PRESETS[useCase] : undefined;
   return (
     <MarketingLayout>
-      <section className="psi-page-hero">
-        <div className="dxl-wrap">
-          <p className="dxl-eyebrow">Resources</p>
-          <h1 className="dxl-h1">
-            Prepare a question
-            <br />
-            worth investigating.
-          </h1>
-          <p className="psi-lead">
-            Write a brief you can download and keep. Use the evidence, decision and experiment
-            templates as the work develops.
-          </p>
-          <a href="#brief-builder" className="dxl-btn dxl-btn-primary">
-            Write your brief
-          </a>
-          <p className="journey-status">
-            These tools need no account. The brief stays in this browser so a pilot enquiry on this
-            device can use it. It is not put in the address, and nothing is submitted until you send
-            the enquiry. Downloading does not activate paid access.
-          </p>
-        </div>
-      </section>
-      <section className="psi-section psi-tinted">
-        <div className="dxl-wrap psi-builder-layout">
-          <div className="psi-section-copy">
-            <h2 className="dxl-h2">
-              Start specific.
-              <br />
-              Keep room to learn.
-            </h2>
-            <p>
-              Name the audience, the difficulty and the outcome you want to investigate. Record what
-              you do not yet know.
-            </p>
-            {preset ? (
-              <div className="journey-status">
-                <strong>Starting point: {preset.label}</strong>
-                <p>
-                  This editable starter is hypothetical, not validated research. Replace its
-                  assumptions with your own context before downloading.
-                </p>
-              </div>
-            ) : (
+      <div className="resources-page">
+        <section className="resource-opening">
+          <div className="dxl-wrap">
+            <div>
+              <p className="dxl-eyebrow">Resources for product work</p>
+              <h1>
+                A better starting point
+                <br />
+                for your next decision.
+              </h1>
               <p>
-                Use a blank brief below, load the onboarding example, or choose a starting point:
+                Frame the question, make uncertainty visible and carry the reasoning into the work.
+                Start with a brief you can edit, preview and keep.
+              </p>
+              <div className="psi-actions">
+                <a href="#brief-builder" className="dxl-btn dxl-btn-primary">
+                  Write your brief
+                  <ArrowRight size={15} aria-hidden="true" />
+                </a>
+                <a href="#templates" className="dxl-btn dxl-btn-ghost">
+                  Explore templates
+                </a>
+              </div>
+            </div>
+            <div className="resource-opening-visual">
+              <FileText aria-hidden="true" />
+              <span>Your first product brief</span>
+              <h2>
+                Context → question
+                <br />→ boundaries
+              </h2>
+              <p>Audience, objective, constraints and the evidence you have.</p>
+              <div>
+                <ShieldCheck size={15} aria-hidden="true" />
+                No account needed · browser-local draft
+              </div>
+            </div>
+          </div>
+        </section>
+        <section className="resource-workspace-section">
+          <div className="dxl-wrap">
+            <div className="resource-section-heading">
+              <div>
+                <p className="dxl-eyebrow">Brief builder</p>
+                <h2>
+                  Start specific.
+                  <br />
+                  Leave room to learn.
+                </h2>
+              </div>
+              <p>
+                Three short stages create one inspectable brief. The preview updates as you write.
+                Missing evidence can be part of the question.
+              </p>
+            </div>
+            <div className="resource-starter-strip">
+              <span>Choose a starting point</span>
+              <div>
+                <Link
+                  to="/resources"
+                  hash="brief-builder"
+                  aria-current={!useCase ? "page" : undefined}
+                >
+                  Your draft
+                </Link>
+                {Object.entries(BRIEF_PRESETS).map(([key, item]) => (
+                  <Link
+                    key={key}
+                    to="/resources"
+                    search={{ useCase: parseBriefPreset(key) }}
+                    hash="brief-builder"
+                    aria-current={useCase === key ? "page" : undefined}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+            {preset && (
+              <p className="resource-starter-notice">
+                Selected starter: <strong>{preset.label}</strong>. Hypothetical, editable context.
+                An existing saved draft is kept until you explicitly load this starter.
               </p>
             )}
-            <div className="resource-starts">
-              {Object.entries(BRIEF_PRESETS).map(([key, item]) => (
-                <Link
-                  key={key}
-                  to="/resources"
-                  search={{ useCase: parseBriefPreset(key) }}
-                  hash="brief-builder"
-                  aria-current={useCase === key ? "page" : undefined}
-                  className="dxl-link"
-                >
-                  {item.label}
-                </Link>
+            <BriefBuilder
+              key={useCase ?? "blank"}
+              initialBrief={preset?.brief}
+              initialLabel={preset?.label}
+            />
+          </div>
+        </section>
+        <section className="resource-template-section" id="templates">
+          <div className="dxl-wrap">
+            <div className="resource-section-heading">
+              <div>
+                <p className="dxl-eyebrow">Keep the record connected</p>
+                <h2>
+                  Useful structure.
+                  <br />
+                  Your evidence and judgement.
+                </h2>
+              </div>
+              <p>
+                Blank Markdown templates for the work after your brief. They help organise thinking;
+                they do not create findings or approve an action.
+              </p>
+            </div>
+            <div className="resource-template-library">
+              {RESOURCE_TEMPLATES.map((template, index) => (
+                <article key={template.key}>
+                  <figure>
+                    <img
+                      src={`/illustrations/${template.image}-small.webp`}
+                      width={768}
+                      height={512}
+                      alt={
+                        template.key === "evidence"
+                          ? "Illustrated evidence and decision objects."
+                          : template.key === "decision"
+                            ? "Illustration of human direction and review."
+                            : "Illustrated learning loop."
+                      }
+                      loading="lazy"
+                    />
+                  </figure>
+                  <div>
+                    <span>0{index + 1} · Planning template</span>
+                    <h3>{template.title}</h3>
+                    <p>{template.description}</p>
+                    <button
+                      type="button"
+                      aria-label={`Download ${template.title.toLowerCase()} template`}
+                      onClick={() =>
+                        downloadText(`deliverx-${template.key}-template.md`, template.body)
+                      }
+                    >
+                      <Download size={14} aria-hidden="true" />
+                      Download Markdown
+                    </button>
+                  </div>
+                </article>
               ))}
             </div>
-            <Link to="/how-it-works" hash="sample-record" className="dxl-link">
-              Inspect completed sample documents
+            <Link to="/how-it-works" hash="sample-documents" className="dxl-link">
+              Inspect a filled-in hypothetical example
+              <ArrowRight size={14} aria-hidden="true" />
             </Link>
           </div>
-          <BriefBuilder key={useCase ?? "blank"} initialBrief={preset?.brief} />
-        </div>
-      </section>
-      <section className="psi-section" id="templates">
-        <div className="dxl-wrap">
-          <h2 className="dxl-h2">Keep the reasons alongside the work.</h2>
-          <p>
-            Blank Markdown templates, editable in any text editor. These are planning tools, not
-            generated findings.
-          </p>
-          <div className="psi-template-grid">
-            {RESOURCE_TEMPLATES.map((template, index) => (
-              <article className="psi-template" key={template.key}>
-                <div className="resource-document-mark" aria-hidden="true">
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <i />
-                  <i />
-                  <i />
-                </div>
-                <div>
-                  <h3>{template.title}</h3>
-                  <p>{template.description}</p>
-                  <button
-                    type="button"
-                    className="psi-text-button"
-                    onClick={() =>
-                      downloadText(`deliverx-${template.key}-template.md`, template.body)
-                    }
-                  >
-                    Download {template.title.toLowerCase()}
-                  </button>
-                </div>
-              </article>
-            ))}
+        </section>
+        <section className="resource-next-section">
+          <div className="dxl-wrap">
+            <div>
+              <p className="dxl-eyebrow">Before commissioning work</p>
+              <h2>
+                Review the question.
+                <br />
+                Agree the next step.
+              </h2>
+              <p>
+                Keep a downloaded copy. If you choose to make an enquiry on this device, your
+                browser draft can carry forward for you to review before submitting.
+              </p>
+            </div>
+            <div>
+              <Link to="/pricing" className="dxl-btn dxl-btn-primary">
+                Compare paid pilots
+              </Link>
+              <p>
+                An enquiry does not take payment or activate a pilot. Availability, scope and
+                billing are agreed separately.
+              </p>
+            </div>
           </div>
-        </div>
-      </section>
-      <section className="psi-section psi-tinted">
-        <div className="dxl-wrap">
-          <h2 className="dxl-h2">Before your next step.</h2>
-          <ol className="use-case-flow" aria-label="Prepare for pilot discussion">
-            <li>
-              <span>Review</span>
-              <strong>Check scope, evidence gaps and non-goals.</strong>
-            </li>
-            <li>
-              <span>Download</span>
-              <strong>Keep a copy. This browser can carry it into the enquiry.</strong>
-            </li>
-            <li>
-              <span>Compare</span>
-              <strong>Explore a paid pilot offer for the bounded work.</strong>
-            </li>
-          </ol>
-          <Link to="/pilot" search={{ plan: "founder" }} className="dxl-btn dxl-btn-primary">
-            Request a pilot
-          </Link>
-          <p className="psi-fine-print">
-            The enquiry stores the request and gives you a reference. It does not take payment or
-            start a paid pilot. Availability and billing are agreed separately.
-          </p>
-        </div>
-      </section>
+        </section>
+      </div>
     </MarketingLayout>
   );
 }
