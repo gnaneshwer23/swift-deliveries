@@ -129,7 +129,7 @@
 }
 .brain-world {
   position: relative;
-  aspect-ratio: 1046/1024;
+  aspect-ratio: 1010/700;
 }
 .brain-world svg {
   display: block;
@@ -464,4 +464,24 @@
     width: 100%;
     margin: 12px 0 18px;
   }
+}
+.brain-world.ix .brain-hotspot-dot {
+  width: 30px;
+  height: 22px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.brain-world.ix .brain-hotspot.is-selected .brain-hotspot-dot,
+.brain-world.ix .brain-hotspot:focus-visible .brain-hotspot-dot {
+  background: transparent;
+  box-shadow: none;
+  outline: 1.5px solid #8fd6ff;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+.brain-world.ix .brain-hotspot-name {
+  background: #0d2148;
+  border: 1px solid #2d5a92;
+  color: #e3f1ff;
 }

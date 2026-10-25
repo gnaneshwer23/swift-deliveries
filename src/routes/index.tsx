@@ -1,4 +1,4 @@
-import { HomeProductStory } from "@/components/marketing/home-product-story";
+import { HomePlatformStory } from "@/components/marketing/home-platform-story";
 import { ProductBrainExplorer } from "@/components/marketing/product-brain-explorer";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
@@ -108,22 +108,22 @@ function HomePage() {
             <span className="dxl-grad">to continuous intelligence.</span>
           </h1>
           <p className="dxl-lead">
-            For founders and product builders, turn a product question into an evidence brief,
-            compared options and a clear next step, then keep the reasoning together and approve the
-            decisions that matter.
+            Describe a product. A team of specialist AI agents researches it, debates the options,
+            designs and builds it, while you approve every decision that matters and keep a record
+            of how it was made.
           </p>
           <div className="dxl-ctas">
-            <Link to="/how-it-works" className="dxl-btn dxl-btn-primary">
-              Explore the example <ArrowRight size={16} />
+            <Link to="/onboarding" className="dxl-btn dxl-btn-primary">
+              Start building <ArrowRight size={16} />
             </Link>
-            <Link to="/resources" hash="brief-builder" className="dxl-btn dxl-btn-ghost">
-              Prepare your brief
-            </Link>
+            <a href="#hp-record" className="dxl-btn dxl-btn-ghost">
+              See how a product is built
+            </a>
           </div>
           <ProductBrainExplorer />
         </div>
       </section>
-      <HomeProductStory />
+      <HomePlatformStory />
     </MarketingLayout>
   );
 }

@@ -14,6 +14,8 @@
 @import "./styles/context-and-impact.css";
 @import "./styles/section-explorer.css";
 @import "./styles/product-brain-explorer.css";
+@import "./styles/illustrations.css";
+@import "./styles/home-platform.css";
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
