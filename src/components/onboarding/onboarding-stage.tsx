@@ -14,20 +14,8 @@ import {
   WorkforceIllustration,
 } from "@/components/illustrations/platform-illustrations";
 import type { SetupFields } from "@/lib/onboarding-draft";
-import {
-  WORKFORCE_DEPARTMENTS,
-  WORKFORCE_INTENTS,
-  type WorkforceIntent,
-} from "@/lib/marketing/workforce-summary";
-
-/** The mission type a goal usually starts with. The real plan is always proposed and approved later. */
-const INTENT_FOR_GOAL: Record<string, WorkforceIntent> = {
-  "Validate a new idea": "investigate",
-  "Build an MVP": "build",
-  "Improve an existing product": "improve",
-  "Explore what's possible": "investigate",
-  "Learn by building a product": "prototype",
-};
+import { intentForGoal } from "@/lib/onboarding-intent";
+import { WORKFORCE_DEPARTMENTS, WORKFORCE_INTENTS } from "@/lib/marketing/workforce-summary";
 
 const PATH = [
   { id: "prompt", label: "Prompt", icon: MessageSquareText },
@@ -40,7 +28,7 @@ const PATH = [
 ];
 
 export function OnboardingStage({ step, fields }: { step: number; fields: SetupFields }) {
-  const intent = INTENT_FOR_GOAL[fields.goal] ?? "investigate";
+  const intent = intentForGoal(fields.goal);
   const team = WORKFORCE_INTENTS[intent];
   const active = useMemo(() => {
     const m = new Map<number, number>();

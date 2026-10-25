@@ -1,6 +1,19 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Compass,
+  GraduationCap,
+  Lightbulb,
+  Rocket,
+  TrendingUp,
+  type LucideIcon,
+} from "lucide-react";
+import { INTENT_LABELS } from "@/lib/workforce/types";
+import { WORKFORCE_INTENTS } from "@/lib/marketing/workforce-summary";
+import { intentForGoal } from "@/lib/onboarding-intent";
 import { OnboardingStage } from "@/components/onboarding/onboarding-stage";
 import { useQueryClient } from "@tanstack/react-query";
 import { auth, type AppUser as User } from "@/lib/auth/client";
@@ -37,6 +50,20 @@ import type { ProductBrief } from "@/lib/marketing/product-resources";
 import { firstActionFor, safeProductRedirect } from "@/lib/product-journey";
 
 const STEPS = ["Your context", "Product direction", "Review & enter"] as const;
+
+const GOAL_META: Record<(typeof DX_GOALS)[number], { icon: LucideIcon; line: string }> = {
+  "Validate a new idea": { icon: Lightbulb, line: "Check the evidence before you build." },
+  "Build an MVP": { icon: Rocket, line: "Go from a question to a prototype you can review." },
+  "Improve an existing product": {
+    icon: TrendingUp,
+    line: "Find what holds users back, then fix it.",
+  },
+  "Explore what's possible": { icon: Compass, line: "Compare directions before choosing one." },
+  "Learn by building a product": {
+    icon: GraduationCap,
+    line: "Practise product craft on a real idea.",
+  },
+};
 
 function Chips({
   options,
@@ -251,13 +278,9 @@ export function OnboardingForm({
       <div className="setup-layout">
         <aside className="setup-story">
           <p className="dxl-eyebrow">Your product starts here</p>
-          <h2>
-            Tell us where you are.
-            <br /> We assemble the team.
-          </h2>
+          <h2>Three questions. Then your team.</h2>
           <p>
-            Three short steps. Your answers shape the first mission we propose; nothing runs until
-            you approve a plan.
+            Your answers shape the first mission we propose. Nothing runs until you approve a plan.
           </p>
           <OnboardingStage step={step} fields={fields} />
           <small>
@@ -343,12 +366,27 @@ export function OnboardingForm({
                   {step === 1 && (
                     <>
                       <p className="ob-label">Your main goal</p>
-                      <Chips
-                        options={DX_GOALS}
-                        value={fields.goal}
-                        onChange={(value) => update("goal", value)}
-                        label="Main goal"
-                      />
+                      <div className="setup-goals" role="radiogroup" aria-label="Main goal">
+                        {DX_GOALS.map((goal) => {
+                          const meta = GOAL_META[goal];
+                          return (
+                            <button
+                              key={goal}
+                              type="button"
+                              role="radio"
+                              aria-checked={fields.goal === goal}
+                              onClick={() => update("goal", goal)}
+                            >
+                              <meta.icon size={20} aria-hidden="true" />
+                              <span>
+                                <strong>{goal}</strong>
+                                <small>{meta.line}</small>
+                              </span>
+                              {fields.goal === goal && <Check size={16} aria-hidden="true" />}
+                            </button>
+                          );
+                        })}
+                      </div>
                       <label className="ob-label" htmlFor="ob-idea">
                         Your product question <span>(optional)</span>
                       </label>
@@ -412,9 +450,23 @@ export function OnboardingForm({
                         </div>
                       )}
                       <aside className="setup-next">
-                        <span>Your next step</span>
+                        <span>Your first mission</span>
                         <h2>{firstAction.label}</h2>
                         <p>{firstAction.reason}</p>
+                        <ul className="setup-next-facts">
+                          <li>
+                            <small>Mission type</small>
+                            {INTENT_LABELS[intentForGoal(fields.goal)]}
+                          </li>
+                          <li>
+                            <small>Starting team</small>
+                            {WORKFORCE_INTENTS[intentForGoal(fields.goal)].length} specialists
+                          </li>
+                          <li>
+                            <small>Before it runs</small>
+                            You approve the plan
+                          </li>
+                        </ul>
                       </aside>
                       {chosenPlan && (
                         <p className="setup-help">

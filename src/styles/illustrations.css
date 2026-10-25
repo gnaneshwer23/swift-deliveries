@@ -424,12 +424,7 @@
   align-items: center;
   animation: hp-in 360ms ease both;
 }
-.ob-stage[data-step="2"] .ob-stage-art {
-  overflow-x: auto;
-}
-.ob-stage[data-step="2"] .ob-stage-art svg[role="img"] {
-  min-width: 620px;
-}
+
 .ob-stage-foot {
   padding: 12px 14px;
   border: 1px solid #e3e1f0;
