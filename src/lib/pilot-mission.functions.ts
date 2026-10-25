@@ -122,6 +122,8 @@ export const getSupervisedMissionHome = createServerFn({ method: "GET" })
           decisionRecorded: !!mission.approval,
           outputReady: !!mission.artefact,
           observationRecorded: !!mission.observation,
+          jobStatus: mission.job.status,
+          hasFollowUp: mission.followUp?.status === "approved",
           updatedAt: mission.updatedAt,
           usageConsumed: mission.usageConsumed,
           usageCeiling: mission.usageCeiling,
