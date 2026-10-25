@@ -17,6 +17,7 @@
 @import "./styles/illustrations.css";
 @import "./styles/home-platform.css";
 @import "./styles/mission-walkthrough-live.css";
+@import "./styles/specialist-directory.css";
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
