@@ -19,6 +19,7 @@ import {
   ProductImproveIcon,
 } from "@/components/marketing/motion-product-visuals";
 import { FlaskConical, Rocket, Search, ShieldCheck, Wrench } from "lucide-react";
+import { MissionPipelineStage } from "@/components/command/mission-pipeline-stage";
 
 export const Route = createFileRoute("/_authenticated/command/")({
   head: () => ({
@@ -308,6 +309,14 @@ function CommandHome() {
         ceiling: data.workspace.usageCeiling,
       }}
     >
+      <MissionPipelineStage
+        missions={data.recentMissions}
+        usage={{ consumed: data.workspace.usageConsumed, ceiling: data.workspace.usageCeiling }}
+        onShowWaiting={() => {
+          setMissionFilter("awaiting");
+          document.getElementById("cc-missions")?.scrollIntoView({ behavior: "smooth" });
+        }}
+      />
       <WorkspaceOverview />
       <SupervisedMissionStart />
 
@@ -505,7 +514,7 @@ function CommandHome() {
         </section>
       </details>
       {/* Recent Missions & Supervision Ledger */}
-      <section className="cc-panel">
+      <section className="cc-panel" id="cc-missions">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="cc-panel-title mb-0">Specialist missions</h2>

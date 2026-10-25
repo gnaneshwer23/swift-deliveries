@@ -14,4 +14,7 @@ The homepage tells one story with no repeated concept. Each chapter owns one ide
 
 Rules kept by the copy and art: catalogue roles are never shown as live (12 available, 138 in development); sample data is labelled as sample; outcomes are only those the owner supplies; quality labels never say "verified".
 
-Next: carry the same illustration language into onboarding and the Command Centre dashboard.
+## Onboarding and dashboard
+
+- **Onboarding** (`components/onboarding/onboarding-stage.tsx`): the left panel follows the three setup steps — you at the centre, the typical starting team for the chosen goal (from the registry intent map, labelled as typical; the real plan is proposed and approved later), and the first step of the build record carrying the user's question.
+- **Command Centre** (`components/command/mission-pipeline-stage.tsx`): recent missions grouped by status into vessels (waiting for you, in progress, in review, delivered, stopped), workspace usage against its ceiling, and a link to the decisions waiting on the user. All counts come from the bootstrap query.

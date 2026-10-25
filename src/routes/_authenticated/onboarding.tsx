@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Check, FileSearch, GitBranch, UserRoundCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { OnboardingStage } from "@/components/onboarding/onboarding-stage";
 import { useQueryClient } from "@tanstack/react-query";
 import { auth, type AppUser as User } from "@/lib/auth/client";
 import { getMyProfileDraft, saveMyProfile, saveMyProfileDraft } from "@/lib/profile.functions";
@@ -251,36 +252,17 @@ export function OnboardingForm({
         <aside className="setup-story">
           <p className="dxl-eyebrow">Your product starts here</p>
           <h2>
-            A clear question.
-            <br /> A connected next step.
+            Tell us where you are.
+            <br /> We assemble the team.
           </h2>
           <p>
-            Bring your context into one workspace. Specialists contribute; you decide what becomes
-            work.
+            Three short steps. Your answers shape the first mission we propose; nothing runs until
+            you approve a plan.
           </p>
-          <img
-            src="/illustrations/role-evidence.webp"
-            width="1536"
-            height="1024"
-            alt="Research documents and a magnifying glass, representing the evidence behind a product question."
-          />
-          <ol aria-label="Your product journey">
-            <li>
-              <FileSearch size={17} aria-hidden="true" />
-              <span>Supply context</span>
-            </li>
-            <li>
-              <GitBranch size={17} aria-hidden="true" />
-              <span>Compare options</span>
-            </li>
-            <li>
-              <UserRoundCheck size={17} aria-hidden="true" />
-              <span>Decide the next step</span>
-            </li>
-          </ol>
+          <OnboardingStage step={step} fields={fields} />
           <small>
-            Illustrative workflow. Setup does not run agents, approve a mission or activate a paid
-            pilot.
+            Setup saves your context only. It does not run agents, approve a mission or activate a
+            paid pilot.
           </small>
         </aside>
         <main className="setup-main">
@@ -314,17 +296,17 @@ export function OnboardingForm({
                 <p className="setup-step-number">Step {step + 1} of 3</p>
                 <h1 ref={heading} tabIndex={-1}>
                   {step === 0
-                    ? "Make the workspace yours."
+                    ? "Who is building?"
                     : step === 1
                       ? "What are you building towards?"
-                      : "Review your starting point."}
+                      : "Review and open your workspace."}
                 </h1>
                 <p className="setup-description">
                   {step === 0
-                    ? "A little context helps us guide your first product question."
+                    ? "Your role and team size decide how much the specialists explain and which decisions come to you first."
                     : step === 1
-                      ? "Choose your intent and bring one question. You can refine it before saving a mission."
-                      : "Check what you’re carrying into the workspace. Opening it saves your setup, not a running mission."}
+                      ? "Pick a goal and, if you have one, the product question. You can refine both before any mission is planned."
+                      : "This is what the workspace will start from. Opening it saves your setup, not a running mission."}
                 </p>
                 <fieldset disabled={saving} className="setup-fields">
                   {step === 0 && (
