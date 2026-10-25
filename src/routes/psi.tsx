@@ -1,381 +1,378 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+  ArrowRight,
+  FileSearch,
+  GitBranch,
+  FolderArchive,
+  ShieldCheck,
+  RefreshCw,
+} from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
-import { SectionExplorer } from "@/components/marketing/section-explorer";
-import { SpecialistHandoff } from "@/components/marketing/specialist-handoff";
-import { ImpactExplorer } from "@/components/marketing/context-and-impact";
-import { ProductBench, ProductCards } from "@/components/marketing/product-reading";
+import { PsiPlatformMap } from "@/components/marketing/psi-platform-map";
+import { PsiAudienceExplorer } from "@/components/marketing/psi-audience-explorer";
 import { pageHead } from "@/components/marketing/page-head";
-
 export const Route = createFileRoute("/psi")({
   head: () =>
     pageHead(
       "/psi",
-      "The DeliverX product: who it is for, and what it keeps",
-      "Founders, product teams, and students turn a product question into evidence, compared options, a human decision, and an export. Product Brain keeps that record. See what is present and what is still planned.",
+      "PSI Platform — Connected product intelligence | DeliverX",
+      "Explore how DeliverX connects evidence, specialist judgement, reviewable delivery and feedback through one Product Brain, with human authority at every consequential step.",
     ),
   component: ProductPage,
 });
 function ProductPage() {
   return (
     <MarketingLayout>
-      <section className="psi-page-hero">
-        <div className="dxl-wrap">
-          <p className="dxl-eyebrow">The DeliverX product</p>
-          <h1 className="dxl-h1">
-            For founders, product teams,
-            <br />
-            and students.
-          </h1>
-          <div className="psi-hero-reading">
-            <ProductBench
-              label="Who the product is for"
-              source="This page describes the product as it stands."
-              known="Founders and product teams use it to decide what to build. Students learn by building the same work. A product question becomes evidence, compared options, a human decision, and an export."
-              open="The pictures are examples. They are not a completed live mission. Release checks are still required before that mission is offered as working software."
-              note="Page reading only. These cards are not a completed live mission."
+      <div className="platform-page">
+        <section className="platform-opening">
+          <div className="dxl-wrap">
+            <div className="platform-intro">
+              <div>
+                <p className="dxl-eyebrow">Product Super Intelligence</p>
+                <h1>
+                  One product context.
+                  <br />
+                  Connected intelligence.
+                </h1>
+              </div>
+              <div>
+                <p>
+                  PSI connects the evidence behind a question, the specialists considering it and
+                  the decision that moves it forward. Product Brain keeps the reasoning with the
+                  work.
+                </p>
+                <div className="psi-actions">
+                  <a href="#platform-architecture" className="dxl-btn dxl-btn-primary">
+                    Explore the system
+                  </a>
+                  <Link to="/how-it-works" className="dxl-btn dxl-btn-ghost">
+                    See a mission
+                  </Link>
+                </div>
+              </div>
+            </div>
+            <div id="platform-architecture">
+              <PsiPlatformMap />
+            </div>
+          </div>
+        </section>
+        <nav className="platform-page-nav" aria-label="Platform sections">
+          <div className="dxl-wrap">
+            <a href="#product-brain">Product Brain</a>
+            <a href="#specialists">Specialists</a>
+            <a href="#capabilities">Scope & availability</a>
+            <a href="#who-its-for">Who it’s for</a>
+            <a href="#controls">Human control</a>
+            <a href="#learning">Learning</a>
+          </div>
+        </nav>
+        <section className="platform-section" id="product-brain">
+          <div className="dxl-wrap">
+            <PlatformHeading
+              label="The shared foundation"
+              title="Trace the work back to the reason."
+              description="The product record connects what you supplied, which alternatives were considered and why the owner chose a direction. A full interactive knowledge graph remains planned."
             />
-            <ProductCards
-              label="Who it is for"
-              cards={[
+            <div className="platform-record-chain">
+              {[
                 {
-                  name: "Founders",
-                  status: "Who it is for",
-                  meta: "Decide what to build",
-                  source: "This page",
-                  known: "Founders use DeliverX to decide what to build.",
-                  open: "Release checks are still required before a live mission is offered.",
+                  icon: FileSearch,
+                  ref: "E-01 / E-02",
+                  title: "Evidence",
+                  text: "Source references, assertions, inferences and open gaps.",
                 },
                 {
-                  name: "Product teams",
-                  status: "Who it is for",
-                  meta: "Same record of the work",
-                  source: "This page",
-                  known: "Product teams decide what to build in the same record.",
-                  open: "The pictures on this page are examples.",
+                  icon: GitBranch,
+                  ref: "D-01",
+                  title: "Decision",
+                  text: "Alternatives, reviewer objections and a scoped owner choice.",
                 },
                 {
-                  name: "Students",
-                  status: "Who it is for",
-                  meta: "Learning by building",
-                  source: "This page",
-                  known: "Students learn by building the same work.",
-                  open: "This page does not start a mission.",
+                  icon: FolderArchive,
+                  ref: "A-01",
+                  title: "Artefact",
+                  text: "An experiment brief linked to its decision and measurement plan.",
                 },
-              ]}
-            />
-            <div className="psi-actions">
-              <Link to="/how-it-works" className="dxl-btn dxl-btn-primary">
-                Inspect an example mission
+              ].map((item, index) => (
+                <div key={item.title}>
+                  <item.icon aria-hidden="true" />
+                  <span>{item.ref}</span>
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                  {index < 2 && <ArrowRight className="platform-chain-arrow" aria-hidden="true" />}
+                </div>
+              ))}
+            </div>
+            <div className="platform-section-foot">
+              <span>Illustrative record references, not customer evidence.</span>
+              <Link to="/how-it-works" hash="sample-documents" className="dxl-link">
+                Inspect the linked example
+                <ArrowRight size={14} aria-hidden="true" />
               </Link>
-              <Link to="/resources" hash="brief-builder" className="dxl-btn dxl-btn-ghost">
+            </div>
+          </div>
+        </section>
+        <section className="platform-section platform-specialists" id="specialists">
+          <div className="dxl-wrap platform-specialist-layout">
+            <div>
+              <p className="dxl-eyebrow">Bounded contributions</p>
+              <h2>
+                A specialist needs context.
+                <br />
+                The next role needs a handoff.
+              </h2>
+              <p>
+                Roles describe product disciplines, not a promise of 150 autonomous agents. Each
+                enabled capability has a bounded contribution; its output should explain what the
+                next step can rely on.
+              </p>
+              <div className="platform-catalogue-count">
+                <strong>
+                  150 <span>catalogue roles</span>
+                </strong>
+                <strong>
+                  15 <span>departments</span>
+                </strong>
+              </div>
+              <Link to="/ai-agents" className="dxl-link">
+                Inspect roles and capability status
+                <ArrowRight size={14} aria-hidden="true" />
+              </Link>
+            </div>
+            <figure className="platform-team-figure">
+              <img
+                src="/illustrations/specialist-workbench-v1.webp"
+                width={1536}
+                height={1024}
+                alt="Conceptual specialist workbench connecting research, strategy, design, review and human approval."
+                loading="lazy"
+              />
+              <figcaption>
+                <span>Research</span>
+                <ArrowRight size={14} aria-hidden="true" />
+                <span>Options & review</span>
+                <ArrowRight size={14} aria-hidden="true" />
+                <span>Your decision</span>
+              </figcaption>
+              <p>Conceptual collaboration. Catalogue status does not certify live execution.</p>
+            </figure>
+          </div>
+        </section>
+        <section className="platform-section" id="capabilities">
+          <div className="dxl-wrap">
+            <PlatformHeading
+              label="Scope & availability"
+              title="Understand what the platform supports."
+              description="A supervised mission starts with agreed scope and enabled capabilities. Workspace access, configuration and release checks must be confirmed for a paid pilot."
+            />
+            <div
+              className="platform-capability-table"
+              role="region"
+              aria-label="Platform scope comparison"
+              tabIndex={0}
+            >
+              <table>
+                <thead>
+                  <tr>
+                    <th>Product area</th>
+                    <th>Supervised workflow</th>
+                    <th>Boundary</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    [
+                      "Product record",
+                      "Briefs, source references, options and decisions",
+                      "A full interactive knowledge graph is planned.",
+                    ],
+                    [
+                      "Specialist contributions",
+                      "Enabled capabilities with disclosed model or simulated provenance",
+                      "A catalogue role is not proof of execution or independent verification.",
+                    ],
+                    [
+                      "Owner decisions",
+                      "Scoped human decisions and reviewable history",
+                      "This public page grants no approval or tool access.",
+                    ],
+                    [
+                      "Reviewable delivery",
+                      "Decision pack, experiment planning and portable documents",
+                      "Prototypes need an agreed extension; automatic deployment is not promised.",
+                    ],
+                    [
+                      "Outcome review",
+                      "Owner-supplied observations, versioned review and proposed follow-up",
+                      "Connected analytics collection remains planned; follow-up requires approval.",
+                    ],
+                  ].map((row) => (
+                    <tr key={row[0]}>
+                      {row.map((cell, index) =>
+                        index === 0 ? (
+                          <th scope="row" key={cell}>
+                            {cell}
+                          </th>
+                        ) : (
+                          <td key={cell}>{cell}</td>
+                        ),
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="platform-roadmap-note">
+              <span>Future direction</span>
+              <p>
+                Broader design and engineering execution, verification, release and connected
+                learning extend the lifecycle. Their availability is not implied by the
+                illustrations.
+              </p>
+              <Link to="/" hash="home-lifecycle" className="dxl-link">
+                Explore the lifecycle direction
+                <ArrowRight size={14} aria-hidden="true" />
+              </Link>
+            </div>
+          </div>
+        </section>
+        <section className="platform-section platform-audience-section" id="who-its-for">
+          <div className="dxl-wrap">
+            <PlatformHeading
+              label="One environment, different starting points"
+              title="Build a product. Learn through the work."
+              description="Founders, product teams and students can bring different questions into the same evidence-to-decision workflow. These are example use cases, not customer outcome claims."
+            />
+            <PsiAudienceExplorer />
+          </div>
+        </section>
+        <section className="platform-section" id="controls">
+          <div className="dxl-wrap platform-control-layout">
+            <div>
+              <p className="dxl-eyebrow">Human authority</p>
+              <h2>
+                Keep the consequential
+                <br />
+                decisions in your hands.
+              </h2>
+              <p>
+                Review the evidence, scope and uncertainty before approving the next step. A
+                specialist can prepare the case; it cannot pass a human lifecycle gate.
+              </p>
+              <Link to="/security" className="dxl-link">
+                Explore the safeguards
+                <ArrowRight size={14} aria-hidden="true" />
+              </Link>
+            </div>
+            <ol className="platform-control-flow">
+              {[
+                {
+                  title: "Define the scope",
+                  text: "Name the intended action, target and constraints.",
+                },
+                {
+                  title: "Inspect the case",
+                  text: "Review the recommendation, dissent and evidence gaps.",
+                },
+                {
+                  title: "Record your decision",
+                  text: "Approve a bounded step, reject it or request more evidence.",
+                },
+              ].map((step, index) => (
+                <li key={step.title}>
+                  <span>0{index + 1}</span>
+                  <div>
+                    <h3>{step.title}</h3>
+                    <p>{step.text}</p>
+                  </div>
+                </li>
+              ))}
+              <li className="platform-control-end">
+                <ShieldCheck aria-hidden="true" />
+                <p>Permissions and usage controls must be verified for the enabled workspace.</p>
+              </li>
+            </ol>
+          </div>
+        </section>
+        <section className="platform-section platform-learning-section" id="learning">
+          <div className="dxl-wrap">
+            <PlatformHeading
+              label="Feedback loop"
+              title="Carry the observation into the next decision."
+              description="Compare the expected metric with a result you actually observed. The review keeps limitations visible and may propose the next question; you decide whether it becomes work."
+            />
+            <div className="platform-feedback-loop">
+              <div>
+                <span>Expected</span>
+                <h3>Hypothesis & measure</h3>
+                <p>Baseline, metric and observation window.</p>
+              </div>
+              <ArrowRight aria-hidden="true" />
+              <div>
+                <span>Observed</span>
+                <h3>You supply the result</h3>
+                <p>Genuine evidence with its source and limits.</p>
+              </div>
+              <ArrowRight aria-hidden="true" />
+              <div>
+                <span>Reviewed</span>
+                <h3>A proposed next question</h3>
+                <p>Owner approval before a follow-up mission.</p>
+              </div>
+            </div>
+            <p className="platform-feedback-return">
+              <RefreshCw size={16} aria-hidden="true" />
+              The approved next question returns to Evidence & memory.
+            </p>
+            <Link to="/how-it-works" hash="outcome-review" className="dxl-link">
+              See the example feedback loop
+              <ArrowRight size={14} aria-hidden="true" />
+            </Link>
+          </div>
+        </section>
+        <section className="platform-closing">
+          <div className="dxl-wrap">
+            <div>
+              <h2>
+                Start with a question
+                <br />
+                worth investigating.
+              </h2>
+              <p>
+                Prepare the brief first, or compare the proposed paid pilot scopes. Creating an
+                account does not activate a paid pilot.
+              </p>
+            </div>
+            <div className="psi-actions">
+              <Link to="/resources" hash="brief-builder" className="dxl-btn dxl-btn-primary">
                 Prepare your brief
               </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section className="psi-section psi-reading" id="product-brain">
-        <div className="dxl-wrap">
-          <div className="psi-reading-head">
-            <p className="dxl-eyebrow">Product Brain</p>
-            <h2 className="dxl-h2">Where the reasoning is kept.</h2>
-          </div>
-          <SectionExplorer kind="record" />
-          <div className="psi-reading-stage">
-            <ProductBench
-              label="Where the reasoning is kept"
-              source="Product Brain is the persistent record of that work: the question, the evidence, the options, the decision, and the export."
-              known="Source references, decision records, and export history are present. A later step can cite why it exists."
-              open="A full interactive knowledge graph is still planned, and it is not part of this page."
-              note="Record reading only. The diagram above is an example, not a live knowledge graph."
-            />
-            <div className="psi-reading-follow">
-              <ProductCards
-                label="What the record holds"
-                cards={[
-                  {
-                    name: "Sources",
-                    status: "In the record",
-                    meta: "Gaps stay visible",
-                    source: "The question you brought",
-                    known: "Each source stays attached, and gaps are left visible.",
-                    open: "A missing source is not filled in on this page.",
-                  },
-                  {
-                    name: "Options",
-                    status: "In the record",
-                    meta: "Compared, including dissent",
-                    source: "The evidence already recorded",
-                    known: "Approaches are compared, including dissent.",
-                    open: "The comparison is not itself the decision.",
-                  },
-                  {
-                    name: "Decision and export",
-                    status: "In the record",
-                    meta: "A person records the choice",
-                    source: "The options and the dissent",
-                    known: "A person records the decision, and the export follows.",
-                    open: "An interactive knowledge graph is still planned.",
-                  },
-                ]}
-              />
-              <Link to="/how-it-works" hash="sample-record" className="dxl-link">
-                Inspect linked sample records
+              <Link to="/pricing" className="dxl-btn dxl-btn-ghost">
+                Compare paid pilots
               </Link>
             </div>
           </div>
-        </div>
-      </section>
-      <section className="psi-section psi-reading" id="specialists">
-        <div className="dxl-wrap">
-          <div className="psi-reading-head">
-            <p className="dxl-eyebrow">Specialist contributions</p>
-            <h2 className="dxl-h2">Each role finishes one piece.</h2>
-          </div>
-          <SectionExplorer kind="team" />
-          <div className="psi-reading-stage">
-            <div className="psi-reading-follow">
-              <ProductBench
-                label="Each role finishes one piece"
-                source="The six illustrated contributions are Evidence, Options, Challenge, Decision, Builder, and Export."
-                known="Evidence starts from what you supplied. Options compares approaches. Challenge tests the recommendation. Decision prepares the choice for the owner to record. Builder drafts inside that choice. Export packs the work and waits."
-                open="The picture is an example of work moving forward. The wider catalogue describes further roles. It is not a live team of 150."
-                note="Role reading only. The control below shows one role at a time. It does not run a live team."
-              />
-              <Link to="/ai-agents" className="dxl-link">
-                Inspect the specialist catalogue
-              </Link>
-            </div>
-          </div>
-          <SpecialistHandoff />
-        </div>
-      </section>
-      <section className="psi-section psi-reading">
-        <div className="dxl-wrap">
-          <div className="psi-reading-head">
-            <h2 className="dxl-h2">Later stages are drawn, not running.</h2>
-          </div>
-          <ProductBench
-            label="Later stages are drawn, not running"
-            source="The map below continues into design, build, verification, and release."
-            known="The first pilot stops at a decision and an experiment brief."
-            open="Those later stages are still planned. Opening one does not build, test, or ship software."
-            note="Stage reading only. Opening a drawn stage does not build, test, or ship software."
-          />
-          <ProductCards
-            label="Planned stages"
-            cards={[
-              {
-                name: "Design",
-                status: "Drawn, not running",
-                meta: "After the experiment brief",
-                planned: true,
-                source: "The map in this section",
-                known: "Design is drawn after the first pilot stops.",
-                open: "Opening it does not design software.",
-              },
-              {
-                name: "Build",
-                status: "Drawn, not running",
-                meta: "After the experiment brief",
-                planned: true,
-                source: "The map in this section",
-                known: "Build is drawn on the same map.",
-                open: "Opening it does not build software.",
-              },
-              {
-                name: "Verification",
-                status: "Drawn, not running",
-                meta: "After the experiment brief",
-                planned: true,
-                source: "The map in this section",
-                known: "Verification is drawn on the same map.",
-                open: "Opening it does not test software.",
-              },
-              {
-                name: "Release",
-                status: "Drawn, not running",
-                meta: "After the experiment brief",
-                planned: true,
-                source: "The map in this section",
-                known: "Release is drawn on the same map.",
-                open: "Opening it does not ship software.",
-              },
-            ]}
-          />
-          <details className="journey-detail">
-            <summary>Open the planned stages and the human gates</summary>
-            <ImpactExplorer />
-          </details>
-        </div>
-      </section>
-      <section className="psi-section psi-reading" id="controls">
-        <div className="dxl-wrap">
-          <div className="psi-reading-head">
-            <p className="dxl-eyebrow">Human control</p>
-            <h2 className="dxl-h2">The owner approves the consequential step.</h2>
-          </div>
-          <SectionExplorer kind="trust" />
-          <div className="psi-reading-stage">
-            <ProductBench
-              label="The owner approves the consequential step"
-              source="A specialist can prepare the case."
-              known="A specialist does not approve their own step. You read the scope, the uncertainty, and the dissent, then approve, reject, or ask for more evidence. That rule is part of the product."
-              open="Binding the approval to live permissions and measured usage still needs release verification, alongside the mission runtime."
-              note="Control reading only. Approval on this page is not bound to live permissions."
-            />
-            <div className="psi-reading-follow">
-              <ProductCards
-                label="Owner actions"
-                cards={[
-                  {
-                    name: "Approve",
-                    status: "Owner step",
-                    meta: "The consequential step",
-                    source: "The case a specialist prepared",
-                    known: "You approve the step. A specialist does not.",
-                    open: "Live permissions are not bound on this page.",
-                  },
-                  {
-                    name: "Reject",
-                    status: "Owner step",
-                    meta: "The same case",
-                    source: "Scope, uncertainty, and dissent",
-                    known: "You can reject the step.",
-                    open: "Measured usage limits are not bound on this page.",
-                  },
-                  {
-                    name: "Ask for more evidence",
-                    status: "Owner step",
-                    meta: "Send the case back",
-                    source: "What is still uncertain",
-                    known: "You can ask for more evidence before the step proceeds.",
-                    open: "Release verification is still required for the mission runtime.",
-                  },
-                ]}
-              />
-              <Link to="/security" className="dxl-link">
-                Read safeguards and limitations
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section className="psi-section psi-reading" id="learning">
-        <div className="dxl-wrap">
-          <div className="psi-reading-head">
-            <h2 className="dxl-h2">A result counts only if you supply it.</h2>
-          </div>
-          <ProductBench
-            label="A result counts only if you supply it"
-            source="Before a change, record the hypothesis, the metric you expect, a baseline, and the observation window."
-            known="Afterwards, add the result you actually saw and the evidence for it. DeliverX does not measure that result. The review keeps it beside the expectation and may propose one next mission. The proposal stays inactive until you approve it."
-            open="Connected analytics and automatic learning are still planned. This page does not store a result or start a mission."
-            note="Result reading only. This page does not store a result or start a mission."
-          />
-          <ProductCards
-            label="What you supply"
-            cards={[
-              {
-                name: "Before the change",
-                status: "You record it",
-                meta: "Expectation",
-                source: "Your hypothesis",
-                known: "The metric, a baseline, and the observation window sit with it.",
-                open: "This page does not store that record.",
-              },
-              {
-                name: "The result you saw",
-                status: "You supply it",
-                meta: "Observed, not inferred",
-                source: "What you actually observed",
-                known: "The review keeps the result beside the expectation.",
-                open: "DeliverX does not measure that result.",
-              },
-              {
-                name: "One next mission",
-                status: "Inactive until you approve",
-                meta: "Proposal only",
-                planned: true,
-                source: "The review of what you supplied",
-                known: "The review may propose one next mission.",
-                open: "The proposal stays inactive until you approve it.",
-              },
-            ]}
-          />
-          <details className="journey-detail">
-            <summary>See how a supplied result is reviewed</summary>
-            <SectionExplorer kind="learning" />
-          </details>
-        </div>
-      </section>
-      <section className="psi-section psi-reading">
-        <div className="dxl-wrap">
-          <div className="psi-reading-head">
-            <h2 className="dxl-h2">An account is not a paid pilot.</h2>
-          </div>
-          <ProductBench
-            label="An account is not a paid pilot"
-            source="A useful first scope is an evidence register, compared options, your decision, an experiment brief, and a portable record."
-            known="You can prepare the brief in this browser."
-            open="Creating an account does not activate a paid pilot. Scope and availability are confirmed before any billing."
-            note="Offer reading only. Creating an account does not activate a paid pilot."
-          />
-          <ProductCards
-            label="A useful first scope"
-            cards={[
-              {
-                name: "Evidence register",
-                status: "First scope",
-                meta: "Named, not billed",
-                source: "This page",
-                known: "It is part of a useful first scope.",
-                open: "An account does not activate a paid pilot.",
-              },
-              {
-                name: "Compared options",
-                status: "First scope",
-                meta: "Named, not billed",
-                source: "This page",
-                known: "Compared options belong in that first scope.",
-                open: "Scope is confirmed before any billing.",
-              },
-              {
-                name: "Your decision",
-                status: "First scope",
-                meta: "Named, not billed",
-                source: "This page",
-                known: "The decision in that scope is yours.",
-                open: "Availability is confirmed before any billing.",
-              },
-              {
-                name: "Experiment brief",
-                status: "First scope",
-                meta: "Prepare it in this browser",
-                source: "This page",
-                known: "You can prepare the brief in this browser.",
-                open: "Preparing the brief does not start a paid pilot.",
-              },
-              {
-                name: "Portable record",
-                status: "First scope",
-                meta: "Named, not billed",
-                source: "This page",
-                known: "A portable record is part of that first scope.",
-                open: "Creating an account does not activate a paid pilot.",
-              },
-            ]}
-          />
-          <div className="psi-actions">
-            <Link to="/resources" hash="brief-builder" className="dxl-btn dxl-btn-primary">
-              Prepare your brief
-            </Link>
-            <Link to="/pricing" className="dxl-btn dxl-btn-ghost">
-              Read the pilot offers
-            </Link>
-          </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </MarketingLayout>
+  );
+}
+function PlatformHeading({
+  label,
+  title,
+  description,
+}: {
+  label: string;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="platform-section-heading">
+      <div>
+        <p className="dxl-eyebrow">{label}</p>
+        <h2>{title}</h2>
+      </div>
+      <p>{description}</p>
+    </div>
   );
 }
