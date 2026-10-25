@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://deliverx.dev/sitemap.xml
+Sitemap: https://www.deliverx.dev/sitemap.xml
