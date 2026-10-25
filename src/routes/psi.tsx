@@ -244,6 +244,9 @@ function ProductPage() {
               description="Founders, product teams and students can bring different questions into the same evidence-to-decision workflow. These are example use cases, not customer outcome claims."
             />
             <PsiAudienceExplorer />
+            <Link to="/solutions" className="dxl-link">
+              Choose an editable starting brief <ArrowRight size={14} aria-hidden="true" />
+            </Link>
           </div>
         </section>
         <section className="platform-section" id="controls">

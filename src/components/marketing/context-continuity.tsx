@@ -142,7 +142,7 @@ export function ContextContinuity() {
             </strong>
           </div>
           {connected ? (
-            <Link to="/product-brain" className="handoff-cta">
+            <Link to="/psi" hash="product-brain" className="handoff-cta">
               Explore Product Brain <ArrowRight size={16} />
             </Link>
           ) : (

@@ -33,7 +33,8 @@ const ROLES = [
     id: "decision",
     label: "Decision",
     task: "Decision record finished, stating the recommendation and why.",
-    reason: "The record explains the choice. It does not approve the export.",
+    reason:
+      "The record explains a recommendation. A real mission still needs its owner’s scoped decision.",
     evidence: "The options, the objections, and the uncertainty that remains.",
     artefact: "Decision record handed to Builder.",
     scene: "A record of why, with the approval seal left empty.",
@@ -51,9 +52,9 @@ const ROLES = [
     id: "export",
     label: "Export",
     task: "Pack assembled and held.",
-    reason: "This specialist cannot approve the step that lets the pack leave.",
+    reason: "Packaging brings the documents together. You choose whether to download the example.",
     evidence: "The decision record and the versions of each artefact.",
-    artefact: "Pack held until you approve the export.",
+    artefact: "Sample pack ready for your local download choice.",
     scene: "A bound pack with the latch closed.",
   },
 ] as const;
@@ -72,14 +73,14 @@ function packMarkdown(approvedAt: string) {
     "Production: simulated draft assembled in the browser. No model call was made.",
     "No product was observed, no customer evidence was collected, and no live agent ran this pack.",
     "",
-    `Owner approval: recorded in this browser session at ${approvedAt}.`,
-    "A specialist did not approve this step. This approval is not a stored mission decision and does not authorise external action.",
+    `Example download chosen in this browser session at ${approvedAt}.`,
+    "This local download choice is not a stored owner decision and does not authorise spending, contact or deployment.",
     "",
     handoffs,
     "",
     "## Export",
     "",
-    "The Export specialist assembled the pack and held it. The file left only after the owner approved.",
+    "The sample pack was assembled in the browser and downloaded by the visitor. No live mission was approved.",
   ].join("\n");
 }
 
@@ -127,17 +128,17 @@ export function SpecialistWorkforce() {
   }
 
   const artefact =
-    role.id === "export" && approved ? "Pack released after your approval." : role.artefact;
+    role.id === "export" && approved ? "Sample pack available for download." : role.artefact;
   const hint = approved
-    ? "You approved this export. The Export specialist could not approve it."
+    ? "You chose to allow a local example download. No workspace decision was recorded."
     : role.id === "export"
-      ? "The pack is held. Your approval is what releases the export."
-      : "Open Export when you are ready. Approval stays with you.";
+      ? "Inspect the sample before allowing its download. This does not authorise real work."
+      : "Open Export to inspect the sample pack and choose a local download.";
   const status = exported
     ? "Sample pack exported. It is a simulated walkthrough, not an observed product."
     : approved
-      ? "You approved the export. The pack can leave."
-      : "Export is held until you approve it.";
+      ? "Example download allowed in this browser session."
+      : "Review the sample pack before choosing a local download.";
 
   return (
     <div className="psi-walkthrough psi-workforce">
@@ -215,7 +216,7 @@ export function SpecialistWorkforce() {
               ? "Example download allowed"
               : role.id === "export"
                 ? "Allow example download"
-                : "Review the held export"}
+                : "Review the sample pack"}
           </button>
           <button
             type="button"
@@ -264,11 +265,11 @@ const SCENE_ART: Record<RoleId, { src: string; alt: string }> = {
 
 const RELEASED_EXPORT = {
   src: "/illustrations/role-export-released.webp",
-  alt: "The pack latch is open after the owner approved the export.",
+  alt: "The example pack latch is open after the visitor chose to allow a local download.",
 };
 
 function sceneCaption(role: RoleId, released = false) {
-  if (role === "export" && released) return "The latch is open after your approval.";
+  if (role === "export" && released) return "The sample is ready for your local download.";
   return ROLES.find((item) => item.id === role)?.scene ?? "";
 }
 

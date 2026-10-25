@@ -1,25 +1,21 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
+import { PRODUCT_LINKS, EXPLORE_LINKS } from "./marketing-navigation";
 import { BrandLogo } from "@/components/brand-logo";
 
 const FOOTER_GROUPS = [
   {
     label: "Product",
     links: [
-      { to: "/psi", label: "PSI Platform" },
+      PRODUCT_LINKS[0],
       { to: "/how-it-works", label: "How it works" },
-      { to: "/ai-agents", label: "Specialists" },
-      { to: "/product-brain", label: "Product Brain" },
+      PRODUCT_LINKS[1],
+      PRODUCT_LINKS[2],
     ],
   },
   {
     label: "Explore",
-    links: [
-      { to: "/solutions", label: "Use cases" },
-      { to: "/security", label: "Security & Trust" },
-      { to: "/resources", label: "Resources" },
-      { to: "/about", label: "About DeliverX" },
-    ],
+    links: [PRODUCT_LINKS[3], ...EXPLORE_LINKS],
   },
   {
     label: "Get started",
@@ -56,7 +52,11 @@ export function MarketingFooter() {
               <div key={group.label} role="group" aria-label={group.label}>
                 <h2>{group.label}</h2>
                 {group.links.map((link) => (
-                  <Link key={link.to} to={link.to} {...("hash" in link ? { hash: link.hash } : {})}>
+                  <Link
+                    key={link.label}
+                    to={link.to}
+                    {...("hash" in link ? { hash: link.hash } : {})}
+                  >
                     {link.label}
                   </Link>
                 ))}

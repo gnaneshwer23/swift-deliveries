@@ -8,8 +8,8 @@ export const Route = createFileRoute("/ai-agents")({
   head: () =>
     pageHead(
       "/ai-agents",
-      "Specialist workforce — Six example contributions and the wider catalogue | DeliverX",
-      "Follow six specialists from evidence to a held export. The wider catalogue is not 150 live working agents.",
+      "AI specialists — Roles and contributions | DeliverX",
+      "Explore specialist contributions and a searchable catalogue of 150 roles across 15 departments. Inspect availability separately from live mission activity.",
     ),
   component: Agents,
 });
@@ -29,9 +29,9 @@ function Agents() {
             <span className="dxl-grad">a defined contribution.</span>
           </h1>
           <p className="psi-lead">
-            Explore six example contributions: evidence, options, challenge, decision, a bounded
-            draft and packaging. This public simulation does not run agents or record a real mission
-            approval.
+            Find the discipline your question needs. Inspect six example contributions below, then
+            search the wider role catalogue. Availability describes a capability foundation—not
+            participation in a live mission.
           </p>
           <p className="journey-status">
             The wider catalogue lists {registry.capabilities.length} roles. {foundationCount} are
