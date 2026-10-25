@@ -1,10 +1,10 @@
 # Platform illustrations and homepage story
 
-The homepage tells one story with no repeated concept. Each chapter owns one idea and one illustration, drawn in code from `src/components/illustrations/` (isometric SVG: glass vessels on rounded pedestals, agent figures, icon chips, glowing links on a dark navy stage).
+The homepage tells one story with no repeated concept. Each chapter owns one idea and one illustration, drawn in code from `src/components/illustrations/` in the same light language as the original artwork: white platforms with dark slab sides, violet accents, glass vessels, agent figures and icon chips, with particles flowing along every link.
 
 | Section | Concept it owns | Illustration | Data source |
 | --- | --- | --- | --- |
-| Hero · Product Brain | The whole loop at a glance: evidence → judgement → delivery → observed feedback | Three tiers rising as a staircase, linked by conduits; a feedback arc returns to evidence | Existing explorer state machine (`product-brain-explorer.tsx`) |
+| Hero · Product Brain | The whole loop at a glance: evidence → judgement → delivery → observed feedback | The original Product Brain artwork with a live flow layer (`product-brain-live-flow.tsx`): work moves through each layer, holds at the owner gate until the example approval, then flows into delivery and back as feedback | Existing explorer state machine (`product-brain-explorer.tsx`) |
 | 01 Specialists | 150 catalogue roles; a mission assembles only the ones it needs | 15 department pedestals; departments on the mission hold vessels with their agents | `lib/marketing/workforce-summary.ts`, tested against the capability registry |
 | 02 Decisions | Independent positions, critique, vetoes, 60% weighted supermajority, human ratification | One vessel per option, one figure per vote, support bars with the threshold | `lib/marketing/sample-deliberation.ts`, tested against `programme/deliberation.ts` |
 | 03 Build record | Ask how a product was built and get the whole pathway | Seven pedestals from prompt to release; each step shows who, used, decided, left open, how produced | Sample record, labelled; respects quality labels and simulated-draft disclosure |

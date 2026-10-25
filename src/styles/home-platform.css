@@ -86,14 +86,14 @@
   gap: 16px;
   flex-wrap: wrap;
   padding: 12px 16px;
-  border: 1px solid #23477a;
+  border: 1px solid #e3e1f0;
   border-radius: 12px;
-  background: #0a1834cc;
+  background: #ffffffd9;
 }
 .hp-input small,
 .hp-stagebar small {
   display: block;
-  color: #48c3f2;
+  color: #6b4fd6;
   font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -101,7 +101,7 @@
 .hp-input strong {
   display: block;
   margin-top: 2px;
-  color: #e3edf7;
+  color: #1f1b2e;
   font-weight: 500;
   font-size: 15px;
 }
@@ -113,9 +113,9 @@
 .hp-chips button {
   padding: 7px 14px;
   border-radius: 8px;
-  border: 1px solid #2c5288;
+  border: 1px solid #d9d5ed;
   background: transparent;
-  color: #cfd8dd;
+  color: #3d3852;
   font-size: 13px;
   cursor: pointer;
   transition:
@@ -123,12 +123,12 @@
     border-color 160ms ease;
 }
 .hp-chips button:hover:not(:disabled) {
-  border-color: #48c3f2;
+  border-color: #6b4fd6;
 }
 .hp-chips button[aria-pressed="true"] {
-  background: #1356bc;
-  border-color: #6fcfff;
-  color: #fff;
+  background: #34294d;
+  border-color: #34294d;
+  color: #ffffff;
 }
 .hp-chips button:disabled {
   opacity: 0.4;
@@ -139,7 +139,7 @@
   align-items: center;
   gap: 14px;
   margin: 22px 4px 4px;
-  color: #cfd8dd;
+  color: #3d3852;
   font-size: 12px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -149,7 +149,7 @@
   content: "";
   flex: 1;
   height: 1px;
-  background: #23477a;
+  background: #e3e1f0;
 }
 .hp-stagebar {
   display: flex;
@@ -159,20 +159,20 @@
   flex-wrap: wrap;
   margin-top: 18px;
   padding: 14px 16px;
-  border: 1px solid #23477a;
+  border: 1px solid #e3e1f0;
   border-radius: 12px;
-  background: #0a1834cc;
+  background: #ffffffd9;
 }
 .hp-stagebar strong {
   display: block;
   margin-top: 2px;
-  color: #e3edf7;
+  color: #1f1b2e;
   font-weight: 500;
 }
 .hp-stagebar p {
   margin: 0;
   max-width: 520px;
-  color: #8ea3bd;
+  color: #706a88;
   font-size: 13px;
   line-height: 1.6;
 }
@@ -180,7 +180,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #6fd0ff;
+  color: #6b4fd6;
   font-size: 14px;
 }
 
@@ -204,14 +204,14 @@
   align-items: baseline;
   padding: 8px 12px;
   border-radius: 8px;
-  background: #0d2148;
-  border: 1px solid #1f3f70;
-  color: #dce8f4;
+  background: #ffffff;
+  border: 1px solid #e6e3f2;
+  color: #2a2638;
   font-size: 13px;
   animation: hp-in 360ms ease both;
 }
 .hp-roster li span {
-  color: #48c3f2;
+  color: #6b4fd6;
   font-size: 11px;
   font-variant-numeric: tabular-nums;
 }
@@ -223,7 +223,7 @@
 }
 .ix-wf-link {
   fill: none;
-  stroke: #2face6;
+  stroke: #7860cf;
   stroke-opacity: 0.35;
   stroke-width: 1.2;
   stroke-dasharray: 3 4;
@@ -255,7 +255,7 @@
 }
 .hp-option h3 {
   margin: 4px 0 4px;
-  color: #e9f1f8;
+  color: #1f1b2e;
   font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -264,7 +264,7 @@
 .hp-option > p {
   margin: 0 auto 12px;
   max-width: 240px;
-  color: #8ea3bd;
+  color: #706a88;
   font-size: 13px;
   line-height: 1.5;
   min-height: 40px;
@@ -276,13 +276,13 @@
 .hp-support-row {
   display: flex;
   justify-content: space-between;
-  color: #cfd8dd;
+  color: #3d3852;
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 .hp-support-row strong {
-  color: #48c3f2;
+  color: #6b4fd6;
   font-weight: 600;
 }
 .hp-bar {
@@ -290,7 +290,7 @@
   height: 10px;
   margin-top: 8px;
   border-radius: 3px;
-  background: #1a2a44;
+  background: #e9e6f5;
   overflow: visible;
 }
 .hp-bar i {
@@ -298,8 +298,8 @@
   inset: 0 auto 0 0;
   width: var(--share);
   border-radius: 3px;
-  background: linear-gradient(90deg, #1f7fd8, #2face6);
-  box-shadow: 0 0 12px #2face680;
+  background: linear-gradient(90deg, #9178e6, #7860cf);
+  box-shadow: 0 0 12px #7860cf40;
   transition: width 600ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .hp-bar b {
@@ -307,7 +307,7 @@
   top: -4px;
   bottom: -4px;
   width: 2px;
-  background: #ffd27a;
+  background: #c7a24a;
   border-radius: 1px;
 }
 .hp-veto {
@@ -316,10 +316,10 @@
   align-items: flex-start;
   max-width: 240px;
   padding: 8px 10px;
-  border: 1px solid #6b5426;
+  border: 1px solid #ecd9a8;
   border-radius: 8px;
-  background: #2a2312;
-  color: #ffd27a;
+  background: #fdf6e6;
+  color: #c7a24a;
   font-size: 12px;
   line-height: 1.45;
   text-align: left;
@@ -333,7 +333,7 @@
 }
 .ix-veto ellipse {
   fill: none;
-  stroke: #ffd27a;
+  stroke: #c7a24a;
   stroke-width: 2;
   stroke-dasharray: 6 5;
 }
@@ -348,25 +348,26 @@
   outline: none;
 }
 .ix-step:focus-visible .ix-chip-bg {
-  stroke: #fff;
+  stroke: #1f1b2e;
   stroke-width: 2;
 }
 .ix-step:hover .ix-chip-bg {
-  stroke: #6fd0ff;
+  stroke: #6b4fd6;
 }
 .ix-step[data-on] .ix-chip {
-  color: #fff;
+  color: #ffffff;
 }
 .ix-step[data-on] .ix-chip-bg {
-  fill: #1356bc;
-  stroke: #9fe0ff;
-  filter: drop-shadow(0 0 8px #2face6);
+  fill: #34294d;
+  stroke: #34294d;
+  filter: drop-shadow(0 0 6px #7860cf80);
 }
 .ix-step-label {
-  fill: #8ea3bd;
+  fill: #706a88;
 }
 .ix-step[data-on] .ix-step-label {
-  fill: #fff;
+  fill: #1f1b2e;
+  font-weight: 700;
 }
 .ix-path-pulse {
   stroke-dasharray: 16 240;
@@ -378,25 +379,25 @@
   gap: 28px;
   margin-top: 8px;
   padding: 20px;
-  border: 1px solid #23477a;
+  border: 1px solid #e3e1f0;
   border-radius: 14px;
-  background: #081530;
+  background: #ffffff;
 }
 .hp-record-title small {
-  color: #48c3f2;
+  color: #6b4fd6;
   font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 .hp-record-title h3 {
   margin: 6px 0;
-  color: #fff;
+  color: #1f1b2e;
   font-size: 22px;
   font-weight: 600;
 }
 .hp-record-title p {
   margin: 0;
-  color: #9fb5cf;
+  color: #5d5874;
   font-size: 13px;
   line-height: 1.5;
 }
@@ -407,14 +408,14 @@
   gap: 16px 28px;
 }
 .hp-record dt {
-  color: #6f86a6;
+  color: #8a85a0;
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 .hp-record dd {
   margin: 4px 0 0;
-  color: #dce8f4;
+  color: #2a2638;
   font-size: 14px;
   line-height: 1.55;
 }
@@ -453,30 +454,30 @@
   line-height: 1.6;
 }
 .ix-rung[data-locked] .ix-chip {
-  color: #ffd27a;
+  color: #c7a24a;
 }
 .ix-rung[data-locked] .ix-chip-bg {
-  stroke: #ffd27a;
+  stroke: #c7a24a;
 }
 .ix-usage-fill path:first-child {
-  fill: #2face6;
+  fill: #7860cf;
   fill-opacity: 0.28;
 }
 .ix-usage-top {
-  fill: #6fd0ff;
+  fill: #6b4fd6;
   fill-opacity: 0.35;
   stroke: #bfeaff;
   stroke-width: 1;
 }
 .ix-ceiling {
   fill: none;
-  stroke: #ffd27a;
+  stroke: #c7a24a;
   stroke-width: 1.6;
   stroke-dasharray: 5 4;
 }
 .ix-learner .ix-agent-body,
 .ix-learner .ix-agent-head {
-  stroke: #ffd27a;
+  stroke: #c7a24a;
 }
 
 /* close */
@@ -507,9 +508,9 @@
   margin: 32px auto 14px;
   padding: 8px;
   border-radius: 16px;
-  background: #0a1834;
+  background: #ffffff;
   box-shadow:
-    0 0 0 1px #23477a,
+    0 0 0 1px #e3e1f0,
     0 24px 50px -24px #1356bc80;
 }
 .hp-prompt input {
@@ -518,12 +519,12 @@
   padding: 12px 14px;
   border: 0;
   background: transparent;
-  color: #fff;
+  color: #1f1b2e;
   font-size: 16px;
   outline: none;
 }
 .hp-prompt input::placeholder {
-  color: #6f86a6;
+  color: #8a85a0;
 }
 .hp-prompt button {
   display: inline-flex;
@@ -532,15 +533,15 @@
   padding: 12px 18px;
   border: 0;
   border-radius: 10px;
-  background: linear-gradient(180deg, #2a8fe6, #1356bc);
-  color: #fff;
+  background: linear-gradient(180deg, #4a3f72, #34294d);
+  color: #ffffff;
   font-weight: 600;
   font-size: 15px;
   cursor: pointer;
 }
 .hp-prompt:focus-within {
   box-shadow:
-    0 0 0 2px #48c3f2,
+    0 0 0 2px #6b4fd6,
     0 24px 50px -24px #1356bc80;
 }
 .hp-close-note {
@@ -582,8 +583,8 @@
   }
 }
 .ix-wf-tag rect {
-  fill: #0c2452;
-  stroke: #3d7cc7;
+  fill: #ffffff;
+  stroke: #d9d5ed;
   stroke-width: 1;
 }
 .hp-option .hp-veto {
@@ -626,14 +627,14 @@
 .cc-pipeline-col > strong {
   margin-top: 8px;
   display: block;
-  color: #fff;
+  color: #1f1b2e;
   font-size: 26px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 .cc-pipeline-col h3 {
   margin: 2px 0;
-  color: #e3edf7;
+  color: #1f1b2e;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -641,7 +642,7 @@
 }
 .cc-pipeline-col p {
   margin: 0;
-  color: #8ea3bd;
+  color: #706a88;
   font-size: 12px;
 }
 .cc-pipeline-col[data-empty] svg {

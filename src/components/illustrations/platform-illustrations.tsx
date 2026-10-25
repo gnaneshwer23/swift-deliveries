@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { useId } from "react";
-import { Agent, Card, Cube, FloatIcon, Glass, IsoDefs, Plate } from "./iso";
+import { Agent, Card, Cube, FloatIcon, Glass, IsoDefs, Particles, Plate } from "./iso";
 import { iso, pathOf, type P3 } from "./iso-geometry";
 
 const useIxId = (prefix: string) => `${prefix}${useId().replaceAll(":", "")}`;
@@ -46,6 +46,16 @@ export function WorkforceIllustration({
       aria-label="Fifteen department pedestals. Departments with specialists on the selected mission glow and hold glass vessels with their agents."
     >
       <IsoDefs id={id} />
+      {order.map((c) => {
+        const n = active.get(c.n) ?? 0;
+        if (!n) return null;
+        const d = pathOf([iso(add(c.at, [0, 0, 2])), iso(add(hub, [0, 0, 2]))], false);
+        return (
+          <g key={`l${c.n}`}>
+            <Particles d={d} count={2} dur={2.6 + (c.n % 3) * 0.4} r={2.6} />
+          </g>
+        );
+      })}
       {order.map((c) => {
         const n = active.get(c.n) ?? 0;
         if (!n) return null;
@@ -172,7 +182,7 @@ export function BuildPathIllustration({
   const pts = steps.map((_, i) => [i * D, -i * D + (i % 2 ? 30 : -30), i * 10] as P3);
   return (
     <svg
-      viewBox="-70 -150 1010 250"
+      viewBox="-70 -150 1080 260"
       role="img"
       aria-label="A pathway of connected pedestals, one for each step the product took from prompt to release."
     >
@@ -190,6 +200,14 @@ export function BuildPathIllustration({
           false,
         )}
         className="ix-flow-pulse ix-path-pulse"
+      />
+      <Particles
+        d={pathOf(
+          pts.map((p) => iso(add(p, [0, 0, 1]))),
+          false,
+        )}
+        count={4}
+        dur={9}
       />
       {steps.map((s, i) => {
         const at = pts[i]!;
@@ -374,6 +392,15 @@ export function LearningIllustration() {
           key={`f${i}`}
           d={pathOf([iso(add(p, [0, 0, 2])), iso(add(centre, [0, 0, 2]))], false)}
           className="ix-wf-link"
+        />
+      ))}
+      {around.map((p, i) => (
+        <Particles
+          key={`p${i}`}
+          d={pathOf([iso(add(p, [0, 0, 2])), iso(add(centre, [0, 0, 2]))], false)}
+          count={2}
+          dur={2.4 + i * 0.3}
+          r={2.6}
         />
       ))}
       {[...around.slice(0, 3)].map((p, i) => (

@@ -377,3 +377,39 @@ export function Label({
     </text>
   );
 }
+
+/** Particles travelling along a screen path: work moving between parts. */
+export function Particles({
+  d,
+  count = 3,
+  dur = 3,
+  r = 3.2,
+  className,
+}: {
+  d: string;
+  count?: number;
+  dur?: number;
+  r?: number;
+  className?: string;
+}) {
+  return (
+    <g className={["ix-particles", className].filter(Boolean).join(" ")} aria-hidden="true">
+      {Array.from({ length: count }, (_, i) => {
+        const begin = `${(-dur / count) * i}s`;
+        return (
+          <circle key={i} r={r} className="ix-particle">
+            <animateMotion dur={`${dur}s`} begin={begin} repeatCount="indefinite" path={d} />
+            <animate
+              attributeName="opacity"
+              values="0;1;1;0"
+              keyTimes="0;0.15;0.85;1"
+              dur={`${dur}s`}
+              begin={begin}
+              repeatCount="indefinite"
+            />
+          </circle>
+        );
+      })}
+    </g>
+  );
+}
