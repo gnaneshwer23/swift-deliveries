@@ -96,20 +96,29 @@ export function WorkspaceOverview() {
         ) : home.isError || !home.data?.ready ? (
           <div role="alert">
             <p>{home.data?.reason || "Saved work could not load."}</p>
-            <button className="cc-btn cc-btn-secondary" onClick={() => void home.refetch()}>
-              Retry saved work
+            <button
+              className="cc-btn cc-btn-secondary"
+              disabled={home.isFetching}
+              onClick={() => void home.refetch()}
+            >
+              {home.isFetching ? "Retrying…" : "Retry saved work"}
             </button>
           </div>
         ) : attention.length === 0 ? (
           <div className="po-first">
             <BrainCircuit size={36} />
             <div>
-              <h3>Start with one product question.</h3>
+              <h3>
+                {missions.length ? "No open decision actions." : "Start with one product question."}
+              </h3>
               <p>
-                Your brief becomes the shared record for evidence, options, your decision and a
-                reviewable output.
+                {missions.length
+                  ? "Your saved records remain available below. Start another question when you are ready."
+                  : "Your brief becomes the shared record for evidence, options, your decision and a reviewable output."}
               </p>
-              <a href="#supervised-brief">Prepare your first brief</a>
+              <a href="#supervised-brief">
+                {missions.length ? "Prepare another brief" : "Prepare your first brief"}
+              </a>
             </div>
           </div>
         ) : (
@@ -293,7 +302,11 @@ export function WorkspaceOverview() {
           {home.isError ? (
             <div role="alert">
               <p className="ps-error">Mission activity could not load.</p>
-              <button className="cc-btn cc-btn-secondary" onClick={() => void home.refetch()}>
+              <button
+                className="cc-btn cc-btn-secondary"
+                disabled={home.isFetching}
+                onClick={() => void home.refetch()}
+              >
                 Retry
               </button>
             </div>
@@ -329,8 +342,10 @@ export function WorkspaceOverview() {
                     ))}
                   </div>
                   <p>
-                    {m.stage === "cancelled" ? "Cancelled" : `Saved stage: ${m.stage}`} ·{" "}
-                    {m.nextTitle} · {m.usageConsumed} usage units
+                    {m.stage === "cancelled"
+                      ? "Cancelled"
+                      : `Saved stage: ${m.stage} · ${m.nextTitle}`}{" "}
+                    · {m.usageConsumed} usage units
                   </p>
                 </Link>
               );

@@ -231,3 +231,7 @@
     scroll-margin-top: 20px;
   }
 }
+
+.psi-workspace .po-queue-item:focus-visible {
+  outline-offset: -4px;
+}

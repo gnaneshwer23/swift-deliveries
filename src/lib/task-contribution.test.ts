@@ -24,7 +24,7 @@ it("preserves missing upstream records and excludes other mission/workspace hand
   expect(result.recipients.map((item) => item.id)).toEqual(["t3"]);
   expect(result.outputs.map((item) => item.id)).toEqual(["a"]);
 });
-it("does not infer generation provenance from completion or review labels", () => {
+it("derives provenance only from generation-prefixed evidence sources", () => {
   expect(outputProvenance({ evidenceItems: [] })).toBe("Generation provenance not recorded");
   expect(
     outputProvenance({

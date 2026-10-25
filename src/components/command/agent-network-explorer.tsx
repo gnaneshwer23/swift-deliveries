@@ -298,7 +298,7 @@ export function AgentNetworkExplorer() {
           <button
             className="cc-btn cc-btn-secondary"
             aria-pressed={assignedOnly}
-            disabled={!mission.data || mission.isError}
+            disabled={!mission.data && !assignedOnly}
             onClick={() => {
               setAssignedOnly(!assignedOnly);
               setFocused(false);

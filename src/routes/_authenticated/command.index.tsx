@@ -150,7 +150,9 @@ const INTENTS: Array<{
 ];
 
 function CommandHome() {
-  const { data, isError, error, isLoading, refetch } = useQuery(commandCentreBootstrapQuery);
+  const { data, isError, error, isLoading, isFetching, refetch } = useQuery(
+    commandCentreBootstrapQuery,
+  );
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [intent, setIntent] = useState<MissionIntent>("investigate");
@@ -262,8 +264,12 @@ function CommandHome() {
               ? error.message
               : "Check that workforce migrations are applied and you are signed in."}
           </p>
-          <button className="cc-btn cc-btn-primary mt-4" onClick={() => void refetch()}>
-            Retry workspace
+          <button
+            className="cc-btn cc-btn-primary mt-4"
+            disabled={isFetching}
+            onClick={() => void refetch()}
+          >
+            {isFetching ? "Retrying…" : "Retry workspace"}
           </button>
           <Link to="/login" className="cc-btn cc-btn-secondary mt-4 inline-flex">
             Sign in again

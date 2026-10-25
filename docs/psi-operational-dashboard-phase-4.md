@@ -19,7 +19,7 @@ The network task inspector is backed by workforce task missions. The supervised 
 ## Verification
 
 - TypeScript and production build pass.
-- Local tests: 198 passed, 25 environment-dependent tests skipped. CI runs the configured isolated database suite separately.
+- Local tests: 199 passed, 25 environment-dependent tests skipped. CI runs the configured isolated database suite separately.
 - Lint: zero errors, nine existing React refresh warnings.
 - Added tests cover attention priority, exported-record semantics, missing dependency records, cross-mission/workspace exclusion and explicit generation provenance.
 - Signed-in isolated Neon preview: existing brief and exported record show correct objective, provenance, decision and absent observed outcome; changing the product selector updates its destination.
@@ -30,3 +30,5 @@ The network task inspector is backed by workforce task missions. The supervised 
 ## Remaining release gates
 
 Live provider output, failure recovery under real provider load, session-expiry, second-workspace browser isolation and paid-pilot operational acceptance remain separate checks. This phase does not certify the complete product as production-ready. Existing new-account/email-recovery acceptance gaps from Phase 3 remain open.
+
+Review follow-up: queue focus rings are inset and keyboard-checked; active assignment filters can be cleared after refresh failures; closed-only workspaces have distinct empty-state copy; retries show pending feedback; equal timestamps use a record-ID tie-break.
