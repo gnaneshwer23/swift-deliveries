@@ -758,6 +758,83 @@ describe("supervised mission outcome review", () => {
 });
 
 describe("phase-one scope and cancellation regression", () => {
+  it("rejects a stale editor without overwriting the saved record", async () => {
+    const service = new SupervisedMissionService(new MemoryStore());
+    const mission = await readyMission(service);
+    const saved = await service.saveEvidence({
+      workspaceId: "alpha",
+      id: mission.id,
+      expectedVersion: mission.version,
+      items: [
+        ...evidence,
+        { statement: "A second owner note exists.", source: "Fixture", classification: "supplied" },
+      ],
+      nowMs: 2_500,
+    });
+    await expect(
+      service.saveEvidence({
+        workspaceId: "alpha",
+        id: mission.id,
+        expectedVersion: mission.version,
+        items: evidence,
+        nowMs: 3_000,
+      }),
+    ).rejects.toThrow("changed in another session");
+    expect((await service.get("alpha", mission.id))?.version).toBe(saved.version);
+  });
+
+  it("keeps a prepared pack in history when its measurement plan changes", async () => {
+    const service = new SupervisedMissionService(new MemoryStore());
+    const mission = await readyMission(service);
+    const compared = await service.runAlternatives({
+      workspaceId: "alpha",
+      id: mission.id,
+      workerId: "worker-a",
+      nowMs: 3_000,
+      generator: { cost: 0, run: async () => notConfiguredGeneration() },
+    });
+    const proposal = compared.mission.proposal!;
+    await service.decide({
+      workspaceId: "alpha",
+      id: mission.id,
+      claim: {
+        action: proposal.action,
+        version: proposal.version,
+        scopeHash: proposal.scopeHash,
+        optionId: proposal.options[0]!.id,
+      },
+      choice: "accept",
+      note: "Investigate the shorter setup.",
+      actorId: "owner",
+      nowMs: 4_000,
+    });
+    await service.recordExpectation({
+      workspaceId: "alpha",
+      id: mission.id,
+      ...measurementPlan,
+      actorId: "owner",
+      nowMs: 4_500,
+    });
+    const prepared = await service.prepareArtefact({
+      workspaceId: "alpha",
+      id: mission.id,
+      nowMs: 5_000,
+    });
+    const revised = await service.recordExpectation({
+      workspaceId: "alpha",
+      id: mission.id,
+      expectedVersion: prepared.version,
+      ...measurementPlan,
+      hypothesis: "A revised setup prompt could help people finish account creation.",
+      actorId: "owner",
+      nowMs: 7_000,
+    });
+    expect(revised.artefact).toBeNull();
+    expect(revised.exportBody).toBeNull();
+    expect(revised.archivedPacks).toHaveLength(1);
+    expect(revised.archivedPacks?.[0]?.pack.title).toBe(prepared.artefact?.title);
+  });
+
   it("does not bind an old generation to evidence changed during the call", async () => {
     const service = new SupervisedMissionService(new MemoryStore());
     const m = await readyMission(service);

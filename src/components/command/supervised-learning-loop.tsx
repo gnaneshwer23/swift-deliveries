@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useVersionedDraft } from "@/hooks/use-versioned-draft";
 import {
   approveSupervisedFollowUp,
   recordSupervisedExpectation,
@@ -91,27 +91,51 @@ function ExpectationForm({
   onError: (error: unknown) => void;
 }) {
   const existing = mission.expectation;
-  const [hypothesis, setHypothesis] = useState(existing?.hypothesis ?? "");
-  const [expectedMetric, setExpectedMetric] = useState(existing?.expectedMetric ?? "");
-  const [baseline, setBaseline] = useState(existing?.baseline ?? "");
-  const [observationWindow, setObservationWindow] = useState(existing?.observationWindow ?? "");
+  const draft = useVersionedDraft(
+    {
+      hypothesis: existing?.hypothesis ?? "",
+      expectedMetric: existing?.expectedMetric ?? "",
+      baseline: existing?.baseline ?? "",
+      observationWindow: existing?.observationWindow ?? "",
+    },
+    mission.version,
+  );
+  const { hypothesis, expectedMetric, baseline, observationWindow } = draft.value;
+  const setHypothesis = (value: string) => draft.setValue({ ...draft.value, hypothesis: value });
+  const setExpectedMetric = (value: string) =>
+    draft.setValue({ ...draft.value, expectedMetric: value });
+  const setBaseline = (value: string) => draft.setValue({ ...draft.value, baseline: value });
+  const setObservationWindow = (value: string) =>
+    draft.setValue({ ...draft.value, observationWindow: value });
   const save = useMutation({
     mutationFn: () =>
       recordSupervisedExpectation({
         data: {
           id: mission.id,
+          expectedVersion: draft.expectedVersion,
           hypothesis,
           expectedMetric,
           baseline,
           observationWindow,
         },
       }),
-    onSuccess: onDone,
+    onSuccess: async (result) => {
+      draft.saved(result.mission.version);
+      await onDone();
+    },
     onError,
   });
-  if (mission.observation) {
+  if (mission.exportBody || mission.observation) {
     return existing ? (
       <div className="mt-4">
+        {draft.stale && (
+          <div role="alert" className="cc-error">
+            The saved record changed. Your edits are kept.{" "}
+            <button type="button" className="cc-btn cc-btn-secondary" onClick={draft.reset}>
+              Discard these edits and load saved values
+            </button>
+          </div>
+        )}
         <h3 className="font-medium">Measurement plan</h3>
         <p>{existing.hypothesis}</p>
         <p className="cc-muted text-sm">
@@ -193,15 +217,27 @@ function ObservationForm({
   onError: (error: unknown) => void;
 }) {
   const existing = mission.observation;
-  const [result, setResult] = useState(existing?.result ?? "");
-  const [evidence, setEvidence] = useState(existing?.evidence ?? "");
-  const [source, setSource] = useState(existing?.source ?? "");
+  const draft = useVersionedDraft(
+    {
+      result: existing?.result ?? "",
+      evidence: existing?.evidence ?? "",
+      source: existing?.source ?? "",
+    },
+    mission.version,
+  );
+  const { result, evidence, source } = draft.value;
+  const setResult = (value: string) => draft.setValue({ ...draft.value, result: value });
+  const setEvidence = (value: string) => draft.setValue({ ...draft.value, evidence: value });
+  const setSource = (value: string) => draft.setValue({ ...draft.value, source: value });
   const save = useMutation({
     mutationFn: () =>
       recordSupervisedObservation({
-        data: { id: mission.id, result, evidence, source },
+        data: { id: mission.id, expectedVersion: draft.expectedVersion, result, evidence, source },
       }),
-    onSuccess: onDone,
+    onSuccess: async (result) => {
+      draft.saved(result.mission.version);
+      await onDone();
+    },
     onError,
   });
   if (!mission.expectation || !mission.exportBody) return null;
@@ -213,6 +249,14 @@ function ObservationForm({
         save.mutate();
       }}
     >
+      {draft.stale && (
+        <div role="alert" className="cc-error">
+          The saved record changed. Your edits are kept.{" "}
+          <button type="button" className="cc-btn cc-btn-secondary" onClick={draft.reset}>
+            Discard these edits and load saved values
+          </button>
+        </div>
+      )}
       <h3 className="font-medium">Observed result</h3>
       <p className="cc-muted text-sm">{OWNER_SUPPLIED_OBSERVATION_LABEL}</p>
       <label className="cc-label" htmlFor="observation-result">
@@ -299,28 +343,37 @@ function ReviewForm({
   onError: (error: unknown) => void;
 }) {
   const latest = mission.reviews.at(-1);
-  const [reading, setReading] = useState<OutcomeReading>(latest?.reading ?? "uncertain");
-  const [uncertainty, setUncertainty] = useState("");
-  const [question, setQuestion] = useState(latest?.proposedFollowUp.question ?? "");
-  const [audience, setAudience] = useState(
-    latest?.proposedFollowUp.audience ?? mission.brief.audience,
+  const draft = useVersionedDraft(
+    {
+      reading: (latest?.reading ?? "uncertain") as OutcomeReading,
+      uncertainty: "",
+      question: latest?.proposedFollowUp.question ?? "",
+      audience: latest?.proposedFollowUp.audience ?? mission.brief.audience,
+      outcome: latest?.proposedFollowUp.outcome ?? "",
+      constraints: latest?.proposedFollowUp.constraints ?? mission.brief.constraints,
+    },
+    mission.version,
   );
-  const [outcome, setOutcome] = useState(latest?.proposedFollowUp.outcome ?? "");
-  const [constraints, setConstraints] = useState(
-    latest?.proposedFollowUp.constraints ?? mission.brief.constraints,
-  );
+  const { reading, uncertainty, question, audience, outcome, constraints } = draft.value;
+  const setReading = (value: OutcomeReading) => draft.setValue({ ...draft.value, reading: value });
+  const setUncertainty = (value: string) => draft.setValue({ ...draft.value, uncertainty: value });
+  const setQuestion = (value: string) => draft.setValue({ ...draft.value, question: value });
+  const setAudience = (value: string) => draft.setValue({ ...draft.value, audience: value });
+  const setOutcome = (value: string) => draft.setValue({ ...draft.value, outcome: value });
+  const setConstraints = (value: string) => draft.setValue({ ...draft.value, constraints: value });
   const save = useMutation({
     mutationFn: () =>
       recordSupervisedReview({
         data: {
           id: mission.id,
+          expectedVersion: draft.expectedVersion,
           reading,
           uncertainty,
           followUp: { question, audience, outcome, constraints },
         },
       }),
-    onSuccess: async () => {
-      setUncertainty("");
+    onSuccess: async (result) => {
+      draft.saved(result.mission.version);
       await onDone();
     },
     onError,
@@ -335,6 +388,14 @@ function ReviewForm({
         save.mutate();
       }}
     >
+      {draft.stale && (
+        <div role="alert" className="cc-error">
+          The saved record changed. Your edits are kept.{" "}
+          <button type="button" className="cc-btn cc-btn-secondary" onClick={draft.reset}>
+            Discard these edits and load saved values
+          </button>
+        </div>
+      )}
       <h3 className="font-medium">Compare expected and observed</h3>
       <p className="text-sm">Expected metric: {mission.expectation?.expectedMetric}</p>
       <p className="text-sm">Observed result: {mission.observation.result}</p>
@@ -433,7 +494,8 @@ function FollowUpApproval({
 }) {
   const followUp = mission.followUp;
   const approve = useMutation({
-    mutationFn: () => approveSupervisedFollowUp({ data: { id: mission.id } }),
+    mutationFn: () =>
+      approveSupervisedFollowUp({ data: { id: mission.id, expectedVersion: mission.version } }),
     onSuccess: onDone,
     onError,
   });
@@ -459,6 +521,11 @@ function FollowUpApproval({
   return (
     <div className="mt-4">
       <h3 className="font-medium">Approve the follow-up</h3>
+      {mission.reviews.at(-1)?.observationId !== mission.observation?.id && (
+        <p className="cc-error">
+          The observation changed. Save a new review before approving this follow-up.
+        </p>
+      )}
       <p>{followUp.brief.question}</p>
       <p className="cc-muted text-sm">
         This is a proposal, not an active mission. Nothing starts until you approve it.
@@ -466,7 +533,9 @@ function FollowUpApproval({
       <button
         type="button"
         className="cc-btn cc-btn-primary mt-2"
-        disabled={approve.isPending}
+        disabled={
+          approve.isPending || mission.reviews.at(-1)?.observationId !== mission.observation?.id
+        }
         onClick={() => approve.mutate()}
       >
         {approve.isPending ? "Approving…" : "Approve follow-up mission"}

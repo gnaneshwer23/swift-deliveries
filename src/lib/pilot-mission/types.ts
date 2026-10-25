@@ -174,6 +174,12 @@ export type SupervisedMission = {
   approval: ApprovalRecord | null;
   invalidatedApprovals: InvalidatedApproval[];
   artefact: ArtefactPack | null;
+  archivedPacks?: Array<{
+    recordVersion: number;
+    pack: ArtefactPack;
+    archivedAt: string;
+    reason: string;
+  }>;
   exportBody: string | null;
   job: JobState;
   usageCeiling: number;
