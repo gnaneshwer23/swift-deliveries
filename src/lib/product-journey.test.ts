@@ -18,6 +18,13 @@ describe("product entry journey", () => {
       "/command?intent=improve#brief",
     );
   });
+  it("keeps recovery destinations free of private brief fields", () => {
+    expect(
+      safeProductRedirect(
+        "/command?intent=improve&Question=private&Audience=people&evidence=notes&outcome=goal&constraints=scope&brief=text#supervised-brief",
+      ),
+    ).toBe("/command?intent=improve#supervised-brief");
+  });
   it("sends improvements to the supervised brief without putting the brief in the URL", () => {
     const action = firstActionFor({
       goal: "Improve an existing product",
