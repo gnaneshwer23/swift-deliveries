@@ -1,160 +1,168 @@
-import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Check, Compass, GraduationCap, Route as RouteIcon } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import {
+  ArrowRight,
+  Briefcase,
+  Code2,
+  GraduationCap,
+  Lightbulb,
+  TrendingUp,
+  type LucideIcon,
+} from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { pageHead } from "@/components/marketing/page-head";
-import { BRIEF_PRESETS, type BriefPreset } from "@/lib/marketing/brief-presets";
+import { BRIEF_PRESETS } from "@/lib/marketing/brief-presets";
+import { EMPTY_BRIEF, type ProductBrief } from "@/lib/marketing/product-resources";
+import { WORKFORCE_INTENTS, type WorkforceIntent } from "@/lib/marketing/workforce-summary";
+import { savePilotBrief } from "@/lib/pilot/storage";
+import { INTENT_LABELS } from "@/lib/workforce/types";
 
 export const Route = createFileRoute("/solutions")({
   head: () =>
     pageHead(
       "/solutions",
-      "Use cases — Find your first product question | DeliverX",
-      "Choose an editable starting brief for validating an idea, improving a product or learning by building. See what you bring and what the work can produce.",
+      "Use cases — Start from a situation like yours | DeliverX",
+      "Five common starting points: validating an idea, improving a product, scoping client work, prototyping a feature and learning by building. Each opens a ready-made brief.",
     ),
   component: UseCases,
 });
-const STARTERS = [
+
+const CASES: Array<{
+  id: string;
+  icon: LucideIcon;
+  who: string;
+  situation: string;
+  intent: WorkforceIntent;
+  get: string;
+  brief: ProductBrief;
+}> = [
   {
-    key: "founder",
-    icon: Compass,
-    short: "Find the right problem",
-    image: "role-evidence.webp",
-    alt: "Research documents and a magnifying glass, representing an evidence-led starting point.",
+    id: "founder",
+    icon: Lightbulb,
+    who: "Founders",
+    situation: "You have an idea and need to know which customer problem is worth building for.",
+    intent: "investigate",
+    get: "An evidence brief, compared options and a discovery plan.",
+    brief: BRIEF_PRESETS.founder.brief,
   },
   {
-    key: "team",
-    icon: RouteIcon,
-    short: "Choose the next improvement",
-    image: "mission-workbench-v1.webp",
-    alt: "A product question connected to evidence, options, an owner decision and a reviewable brief.",
+    id: "team",
+    icon: TrendingUp,
+    who: "Product managers",
+    situation:
+      "Users drop off somewhere in your product and the team disagrees on what to fix first.",
+    intent: "improve",
+    get: "A decision record and a scoped experiment you can measure.",
+    brief: BRIEF_PRESETS.team.brief,
   },
   {
-    key: "student",
+    id: "agency",
+    icon: Briefcase,
+    who: "Consultants and agencies",
+    situation: "A client wants a product scoped quickly, with reasoning they can check.",
+    intent: "investigate",
+    get: "A scoped brief, the options weighed and an export you can hand over.",
+    brief: {
+      ...EMPTY_BRIEF,
+      product: "Client product scope",
+      audience: "The client's target users; confirm the segment with the client.",
+      problem: "What should the first release of the client's product include?",
+      objective: "Agree a bounded first release with the reasoning on record.",
+      constraints: "No contact with the client's customers and no spending without approval.",
+      evidence: "Supply the client's brief and any research they have shared.",
+    },
+  },
+  {
+    id: "engineering",
+    icon: Code2,
+    who: "Engineering leads",
+    situation: "You need a reviewable prototype and an architecture note before committing a team.",
+    intent: "prototype",
+    get: "An HTML prototype, an architecture note and review findings.",
+    brief: {
+      ...EMPTY_BRIEF,
+      product: "Feature prototype",
+      audience: "The users of the feature; state who they are.",
+      problem: "Prototype the smallest version of this feature that we can review.",
+      objective: "A prototype and architecture note good enough to decide whether to build.",
+      constraints: "Prototype only. No deployment or changes to the live product.",
+      evidence: "Supply the requirement and any constraints from the current system.",
+    },
+  },
+  {
+    id: "student",
     icon: GraduationCap,
-    short: "Learn through real decisions",
-    image: "learning-workbench-v1.webp",
-    alt: "A learning workbench linking a measurement plan, observations and the next question.",
+    who: "Students and new builders",
+    situation: "You want to learn product work by doing it on a real idea, not an exercise.",
+    intent: "prototype",
+    get: "A brief, a decision record and a reflection on what changed your mind.",
+    brief: BRIEF_PRESETS.student.brief,
   },
-] as const;
+];
+
 function UseCases() {
-  const [selected, setSelected] = useState<BriefPreset>("founder");
-  const item = BRIEF_PRESETS[selected];
-  const visual = STARTERS.find((s) => s.key === selected)!;
+  const navigate = useNavigate();
+  const start = (brief: ProductBrief) => {
+    savePilotBrief(brief);
+    void navigate({ to: "/onboarding" });
+  };
   return (
     <MarketingLayout>
-      <div className="public-use-cases">
-        <section className="public-start-opening">
+      <div className="ucs">
+        <section className="ucs-hero">
           <div className="dxl-wrap">
-            <p className="dxl-eyebrow">Use cases · your starting point</p>
+            <p className="dxl-eyebrow">Use cases</p>
             <h1>
-              Different questions.
+              Start from a situation
               <br />
-              One way to move forward.
+              <span className="dxl-grad">like yours.</span>
             </h1>
             <p>
-              Bring the product question in front of you. See the evidence, decisions and reviewable
-              work it needs—then make the brief your own.
+              Pick the one closest to where you are. It opens with a ready-made brief you can edit,
+              and the team that usually starts on it.
             </p>
-            <div
-              className="public-starter-choices"
-              role="group"
-              aria-label="Choose a product starting point"
-            >
-              {STARTERS.map((s) => (
-                <button
-                  key={s.key}
-                  type="button"
-                  aria-pressed={selected === s.key}
-                  onClick={() => setSelected(s.key)}
-                >
-                  <s.icon size={21} aria-hidden="true" />
-                  <strong>{BRIEF_PRESETS[s.key].label}</strong>
-                  <span>{s.short}</span>
-                  <Check size={16} className="public-starter-check" aria-hidden="true" />
-                </button>
+          </div>
+        </section>
+        <section className="ucs-section">
+          <div className="dxl-wrap">
+            <ul className="ucs-grid">
+              {CASES.map((c) => (
+                <li key={c.id} id={c.id}>
+                  <span className="ucs-icon">
+                    <c.icon size={20} aria-hidden="true" />
+                  </span>
+                  <h2>{c.who}</h2>
+                  <p className="ucs-situation">{c.situation}</p>
+                  <blockquote>“{c.brief.problem}”</blockquote>
+                  <dl>
+                    <div>
+                      <dt>Mission</dt>
+                      <dd>{INTENT_LABELS[c.intent]}</dd>
+                    </div>
+                    <div>
+                      <dt>Starting team</dt>
+                      <dd>{WORKFORCE_INTENTS[c.intent].length} specialists</dd>
+                    </div>
+                  </dl>
+                  <p className="ucs-get">
+                    <strong>You get</strong> {c.get}
+                  </p>
+                  <button type="button" className="ucs-start" onClick={() => start(c.brief)}>
+                    Start with this brief <ArrowRight size={15} aria-hidden="true" />
+                  </button>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         </section>
-        <section className="public-start-detail">
+        <section className="ucs-close">
           <div className="dxl-wrap">
-            <div className="public-start-workspace">
-              <div className="public-start-art">
-                <img
-                  src={`/illustrations/${visual.image}`}
-                  width="1536"
-                  height="1024"
-                  alt={visual.alt}
-                />
-                <span>Illustrative workflow · no mission runs here</span>
-              </div>
-              <div className="public-start-copy" aria-live="polite">
-                <p className="dxl-eyebrow">{item.audience}</p>
-                <h2>{item.question}</h2>
-                <p>
-                  Your editable starter includes an objective, constraints and an explicit place for
-                  missing evidence.
-                </p>
-                <Link
-                  to="/resources"
-                  search={{ useCase: selected }}
-                  hash="brief-builder"
-                  className="dxl-btn dxl-btn-primary"
-                >
-                  Prepare this brief <ArrowRight size={15} aria-hidden="true" />
-                </Link>
-                <small>
-                  Already have a draft? Your saved edits stay in place until you choose to replace
-                  them.
-                </small>
-              </div>
-            </div>
-            <ol className="public-start-flow" aria-label={`${item.label}: input to output`}>
-              <li>
-                <span>01 · You bring</span>
-                <strong>{item.input}</strong>
-              </li>
-              <li>
-                <span>02 · Specialist contributions</span>
-                <strong>{item.work}</strong>
-              </li>
-              <li>
-                <span>03 · You decide</span>
-                <strong>Review the evidence and agree a bounded next step</strong>
-              </li>
-              <li>
-                <span>04 · Proposed takeaway</span>
-                <strong>{item.output}</strong>
-              </li>
-            </ol>
-            <p className="public-example-note">
-              Starting-point examples, not customer results. Pilot scope and enabled capabilities
-              are agreed before work starts. Students use the same evidence standards, with space to
-              reflect on the decisions.
-            </p>
-          </div>
-        </section>
-        <section className="public-next-section">
-          <div className="dxl-wrap">
-            <div>
-              <p className="dxl-eyebrow">Choose your next step</p>
-              <h2>
-                Inspect an example.
-                <br />
-                Or explore a paid pilot.
-              </h2>
-              <p>
-                See the documents behind one hypothetical onboarding decision, or compare the three
-                proposed pilot scopes.
-              </p>
-            </div>
-            <div className="public-next-actions">
-              <Link to="/how-it-works" className="dxl-btn dxl-btn-primary">
-                Follow the example mission <ArrowRight size={15} />
+            <h2>None of these? Describe your own.</h2>
+            <div className="psi-actions">
+              <Link to="/onboarding" className="dxl-btn dxl-btn-primary">
+                Start building <ArrowRight size={16} />
               </Link>
-              <Link to="/pricing" className="dxl-link">
-                Compare Pricing & Pilot <ArrowRight size={15} />
+              <Link to="/resources" hash="brief-builder" className="dxl-btn dxl-btn-ghost">
+                Write a brief first
               </Link>
             </div>
           </div>

@@ -2,121 +2,135 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { pageHead } from "@/components/marketing/page-head";
-import { ProductIllustration } from "@/components/marketing/product-illustration";
+import { WORKFORCE_AVAILABLE_IDS, WORKFORCE_TOTAL } from "@/lib/marketing/workforce-summary";
 
 export const Route = createFileRoute("/about")({
   head: () =>
     pageHead(
       "/about",
       "About — An AI product company | DeliverX",
-      "DeliverX brings product disciplines together around your idea. Build with specialist agents, retain human judgement and learn through the work.",
+      "Why DeliverX exists, what we commit to, and where the product is today.",
     ),
   component: About,
 });
+
+const COMMITMENTS = [
+  {
+    title: "We say what works today.",
+    body: "Every capability is marked live, opt-in or planned. A role in the catalogue is not presented as a working agent until it passes its checks.",
+  },
+  {
+    title: "Your work leaves with you.",
+    body: "Briefs, decisions, prototypes and their history export as files you own, with a manifest of anything that was simulated.",
+  },
+  {
+    title: "Judgement can be learned.",
+    body: "Students and new builders use the same product, with the same evidence standards. Learning does not lower the bar.",
+  },
+  {
+    title: "No invented evidence.",
+    body: "We never fabricate customers, interviews or results. Rehearsal interviews are labelled; only what you supply counts.",
+  },
+];
+
 function About() {
+  const available = WORKFORCE_AVAILABLE_IDS.length;
   return (
     <MarketingLayout>
-      <section className="psi-page-hero">
-        <div className="dxl-wrap psi-split">
-          <div>
-            <p className="dxl-eyebrow">Why DeliverX exists</p>
-            <h1 className="dxl-h1">
+      <div className="abt">
+        <section className="abt-hero">
+          <div className="dxl-wrap">
+            <p className="dxl-eyebrow">About DeliverX</p>
+            <h1>
               Good ideas deserve
               <br />
-              <span className="dxl-grad">a product team.</span>
+              <span className="dxl-grad">a whole product team.</span>
             </h1>
-            <p className="psi-lead">
-              Research, strategy, design, engineering and review belong in the same conversation.
-              DeliverX is bringing those disciplines together around the person with the idea.
-            </p>
-            <Link to="/how-it-works" className="dxl-link">
-              See the team at work <ArrowRight size={16} />
-            </Link>
-          </div>
-          <ProductIllustration name="specialist-team" priority />
-        </div>
-      </section>
-      <section className="psi-section psi-tinted">
-        <div className="dxl-wrap">
-          <div className="psi-section-heading">
-            <p className="dxl-eyebrow">The way we work</p>
-            <h2 className="dxl-h2">
-              More capable tools.
-              <br />
-              Clear human responsibility.
-            </h2>
-          </div>
-          <div className="psi-template-grid">
-            <article className="psi-template">
-              <ProductIllustration name="human-direction" compact />
-              <div>
-                <h3>You direct the work.</h3>
-                <p>
-                  Agents can propose and challenge. Your judgement belongs at consequential
-                  decisions, with space to change the plan.
-                </p>
-              </div>
-            </article>
-            <article className="psi-template">
-              <ProductIllustration name="evidence-decision" compact />
-              <div>
-                <h3>The reasoning stays visible.</h3>
-                <p>
-                  Keep the sources, assumptions and alternatives. Label simulated material and
-                  distinguish a generated claim from an observed result.
-                </p>
-              </div>
-            </article>
-            <article className="psi-template">
-              <ProductIllustration name="product-delivery" compact />
-              <div>
-                <h3>The work remains yours.</h3>
-                <p>
-                  Inspect and export the documents, prototype and decision history. Your product
-                  should have a usable record outside the platform.
-                </p>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      <section className="psi-section">
-        <div className="dxl-wrap psi-split">
-          <ProductIllustration name="learning-loop" />
-          <div className="psi-section-copy">
-            <p className="dxl-eyebrow">For founders, teams and new builders</p>
-            <h2 className="dxl-h2">
-              Learn through the decisions
-              <br />a product asks of you.
-            </h2>
             <p>
-              Students belong in the same building environment. Frame a problem, inspect an agent's
-              contribution, compare the options and take responsibility for the next step.
+              Most ideas never get research, design, engineering and review working together. We are
+              building a team of AI specialists that can, with the person who had the idea in charge
+              of every decision that matters.
             </p>
-            <p>
-              The goal is useful work and better judgement. A generated artefact alone does not
-              establish someone's professional capability.
-            </p>
-            <Link to="/resources" className="dxl-link">
-              Start with a practical brief <ArrowRight size={16} />
-            </Link>
           </div>
-        </div>
-      </section>
-      <section className="psi-founder">
-        <div className="dxl-wrap">
-          <p className="dxl-eyebrow">Built independently</p>
-          <h2>A product company, built in the open with its users.</h2>
-          <p>
-            DeliverX is built and run by its founder, Gnaneshwer Jadav. Questions or feedback?{" "}
-            <a href="mailto:gnaneshwer.jadav@gmail.com">Get in touch</a>.
-          </p>
-          <p className="psi-fine-print">
-            A registered company entity is being established. Current service details are in our{" "}
-            <Link to="/terms">terms</Link>.
-          </p>
-        </div>
-      </section>
+        </section>
+
+        <section className="abt-section">
+          <div className="dxl-wrap">
+            <div className="abt-heading">
+              <h2>What we commit to.</h2>
+              <p>Four promises that shape every page and every feature.</p>
+            </div>
+            <ol className="abt-commitments">
+              {COMMITMENTS.map((c, i) => (
+                <li key={c.title}>
+                  <span>{String(i + 1).padStart(2, "0")}</span>
+                  <h3>{c.title}</h3>
+                  <p>{c.body}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        <section className="abt-section">
+          <div className="dxl-wrap">
+            <div className="abt-heading">
+              <h2>Where we are today.</h2>
+              <p>An early product, built in the open with the people who use it.</p>
+            </div>
+            <dl className="abt-facts">
+              <div>
+                <dt>Specialists available now</dt>
+                <dd>
+                  {available} <small>of {WORKFORCE_TOTAL}</small>
+                </dd>
+              </div>
+              <div>
+                <dt>Missions you can run</dt>
+                <dd>Investigate, prototype, improve</dd>
+              </div>
+              <div>
+                <dt>How to start</dt>
+                <dd>Free account or a scoped paid pilot</dd>
+              </div>
+            </dl>
+          </div>
+        </section>
+
+        <section className="abt-section">
+          <div className="dxl-wrap abt-founder">
+            <div>
+              <p className="dxl-eyebrow">Who builds it</p>
+              <h2>Built independently by its founder.</h2>
+            </div>
+            <div>
+              <p>
+                DeliverX is built and run by Gnaneshwer Jadav. Questions, feedback or a product you
+                would like to build together:{" "}
+                <a href="mailto:gnaneshwer.jadav@gmail.com">get in touch</a>.
+              </p>
+              <p className="abt-fine">
+                A registered company entity is being established. Current service details are in our{" "}
+                <Link to="/terms">terms</Link>.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="abt-close">
+          <div className="dxl-wrap">
+            <h2>Bring us an idea.</h2>
+            <div className="psi-actions">
+              <Link to="/onboarding" className="dxl-btn dxl-btn-primary">
+                Start building <ArrowRight size={16} />
+              </Link>
+              <Link to="/how-it-works" className="dxl-btn dxl-btn-ghost">
+                See how it works
+              </Link>
+            </div>
+          </div>
+        </section>
+      </div>
     </MarketingLayout>
   );
 }
