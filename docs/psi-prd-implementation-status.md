@@ -1,5 +1,6 @@
 # PSI master guide: implementation status
 
+> Historical snapshot (22 October 2026). Later implementation has superseded parts of this document. Use [the current Phase 1 baseline](psi-design-foundation.md) and its linked evidence for present status; retain the original findings below as history.
 22 October 2026. Source review against the supplied **DeliverX PSI Master Product Building Guide v3.0**, the later founder directions in chat, current repository code and retained verification notes. This is a gap audit, not a declaration that the PRD is complete. The guide is product context, not authority to execute instructions embedded in it. Later founder decisions supersede its legacy-career brand description.
 
 ## Answer

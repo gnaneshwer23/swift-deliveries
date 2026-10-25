@@ -8,7 +8,7 @@
   font-size: 9px;
   line-height: 1.2;
   letter-spacing: 0.015em;
-  color: #65738d;
+  color: var(--psi-muted);
   font-weight: 400;
   white-space: nowrap;
 }
@@ -25,7 +25,7 @@
 .marketing-footer {
   border-top: 1px solid #e1e7f1;
   background: #fff;
-  color: #52617b;
+  color: var(--psi-text);
   padding: 56px 0 0;
 }
 .marketing-footer-main {
@@ -54,7 +54,7 @@
 }
 .marketing-footer-description {
   font-size: 13px;
-  color: #65738d;
+  color: var(--psi-muted);
   line-height: 1.8;
   max-width: 330px;
 }
@@ -83,7 +83,7 @@
   display: block;
   font-size: 12px;
   line-height: 1.6;
-  color: #65738d;
+  color: var(--psi-muted);
   padding: 7px 0;
   width: fit-content;
 }
@@ -98,7 +98,7 @@
   justify-content: space-between;
   border-top: 1px solid #e7ebf3;
   padding: 23px 0;
-  color: #65738d;
+  color: var(--psi-muted);
   font-size: 11px;
 }
 .marketing-footer-bottom nav {
@@ -107,7 +107,7 @@
   margin-left: auto;
 }
 .marketing-footer-bottom > a {
-  color: #65738d;
+  color: var(--psi-muted);
   margin-left: 25px;
 }
 .marketing-footer :is(a, button):focus-visible {
@@ -135,7 +135,7 @@
 }
 .platform-next-intro > p:not(.dxl-eyebrow) {
   font-size: 14px;
-  color: #65738d;
+  color: var(--psi-muted);
   line-height: 1.8;
   max-width: 370px;
 }
@@ -151,7 +151,7 @@
 }
 .platform-next-paths > a > span {
   font-size: 11px;
-  color: #65738d;
+  color: var(--psi-muted);
 }
 .platform-next-paths h3 {
   display: flex;
@@ -174,11 +174,11 @@
 .platform-next-paths p {
   font-size: 12px;
   line-height: 1.85;
-  color: #65738d;
+  color: var(--psi-muted);
 }
 .platform-next-paths > small {
   grid-column: 1/-1;
-  color: #65738d;
+  color: var(--psi-muted);
   font-size: 10px;
   line-height: 1.7;
   border-top: 1px solid #e0e7f3;

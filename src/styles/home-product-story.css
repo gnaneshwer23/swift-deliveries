@@ -1,5 +1,5 @@
 .home-product-story {
-  color: #202b43;
+  color: var(--psi-ink);
 }
 .home-story-problem {
   padding: 76px 0 48px;
