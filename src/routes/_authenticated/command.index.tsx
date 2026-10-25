@@ -150,7 +150,7 @@ const INTENTS: Array<{
 ];
 
 function CommandHome() {
-  const { data, isError, error, isLoading } = useQuery(commandCentreBootstrapQuery);
+  const { data, isError, error, isLoading, refetch } = useQuery(commandCentreBootstrapQuery);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [intent, setIntent] = useState<MissionIntent>("investigate");
@@ -256,12 +256,15 @@ function CommandHome() {
     return (
       <CommandShell title="Command Centre" subtitle="Could not load workspace">
         <div className="cc-panel">
-          <h2 className="cc-panel-title">Something went wrong</h2>
+          <h2 className="cc-panel-title">Workspace could not load</h2>
           <p className="cc-muted">
             {error instanceof Error
               ? error.message
               : "Check that workforce migrations are applied and you are signed in."}
           </p>
+          <button className="cc-btn cc-btn-primary mt-4" onClick={() => void refetch()}>
+            Retry workspace
+          </button>
           <Link to="/login" className="cc-btn cc-btn-secondary mt-4 inline-flex">
             Sign in again
           </Link>
@@ -521,10 +524,11 @@ function CommandHome() {
               <button
                 key={tab.id}
                 type="button"
+                aria-pressed={missionFilter === tab.id}
                 onClick={() => setMissionFilter(tab.id)}
                 className={`rounded-full px-3 py-1 text-xs font-semibold border transition cursor-pointer ${
                   missionFilter === tab.id
-                    ? "border-[#2C77E7] bg-[#EEF5FF] text-[#2C77E7]"
+                    ? "border-[var(--psi-indigo)] bg-[var(--psi-indigo-soft)] text-[var(--psi-indigo)]"
                     : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                 }`}
               >

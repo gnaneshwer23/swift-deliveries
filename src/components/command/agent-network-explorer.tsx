@@ -1,3 +1,4 @@
+import { TaskContribution } from "./task-contribution";
 import { useEffect, useId, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -118,6 +119,7 @@ export function AgentNetworkExplorer() {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
   const [missionId, setMissionId] = useState("");
+  const [assignedOnly, setAssignedOnly] = useState(false);
   const [railOpen, setRailOpen] = useState(false);
   const bootstrap = useQuery(commandCentreBootstrapQuery);
   const decisionHome = useQuery({
@@ -130,6 +132,10 @@ export function AgentNetworkExplorer() {
     enabled: !!missionId,
     refetchInterval: (q) => (q.state.data?.mission.status === "running" ? 15000 : false),
   });
+  const assigned = useMemo(
+    () => new Set((mission.data?.tasks ?? []).flatMap((t) => t.capabilityIds)),
+    [mission.data?.tasks],
+  );
   const role = getCapability(selected) ?? capabilities[0]!;
   const dept = departments.find((d) => d.number === department)!;
   const color = COLORS[department - 1]!;
@@ -138,16 +144,18 @@ export function AgentNetworkExplorer() {
       capabilities.filter(
         (c) =>
           (!focused || c.department_number === department) &&
+          (!assignedOnly || assigned.has(c.capability_id)) &&
           (status === "all" || c.lifecycle_status === status) &&
           `${c.name} ${c.capability_id} ${c.department} ${c.description} ${c.tool_allowlist.join(" ")}`
             .toLowerCase()
             .includes(query.trim().toLowerCase()),
       ),
-    [capabilities, focused, department, status, query],
+    [capabilities, focused, department, status, query, assignedOnly, assigned],
   );
   const members = capabilities.filter((c) => c.department_number === department);
   const graphRoles = members.filter(
     (c) =>
+      (!assignedOnly || assigned.has(c.capability_id)) &&
       (status === "all" || c.lifecycle_status === status) &&
       (!query.trim() ||
         `${c.name} ${c.capability_id} ${c.department} ${c.description} ${c.tool_allowlist.join(" ")}`
@@ -157,7 +165,6 @@ export function AgentNetworkExplorer() {
   const tasks = mission.data?.tasks ?? [];
   const roleTasks = tasks.filter((t) => t.capabilityIds.includes(role.capability_id));
   const done = tasks.filter((t) => t.status === "completed").length;
-  const assigned = new Set(tasks.flatMap((t) => t.capabilityIds));
   const latestDecision = decisionHome.data?.missions[0];
   const stage = latestDecision ? STAGES.indexOf(latestDecision.stage) : -1;
   function selectRole(c: CapabilityRecord) {
@@ -275,7 +282,10 @@ export function AgentNetworkExplorer() {
         <select
           aria-label="Mission context"
           value={missionId}
-          onChange={(e) => setMissionId(e.target.value)}
+          onChange={(e) => {
+            setMissionId(e.target.value);
+            setAssignedOnly(false);
+          }}
         >
           <option value="">Catalogue · no task mission selected</option>
           {missions.map((m) => (
@@ -284,6 +294,22 @@ export function AgentNetworkExplorer() {
             </option>
           ))}
         </select>
+        {missionId && (
+          <button
+            className="cc-btn cc-btn-secondary"
+            aria-pressed={assignedOnly}
+            disabled={!mission.data || mission.isError}
+            onClick={() => {
+              setAssignedOnly(!assignedOnly);
+              setFocused(false);
+              setView("list");
+              setQuery("");
+              setStatus("all");
+            }}
+          >
+            Assigned specialists{mission.data ? ` (${assigned.size})` : ""}
+          </button>
+        )}
         <div className="an-view-switch" aria-label="Network display">
           <button
             aria-label="Network view"
@@ -304,6 +330,9 @@ export function AgentNetworkExplorer() {
           </button>
         </div>
       </div>
+      <a className="po-inspector-shortcut" href="#specialist-inspector">
+        Inspect {role.name}
+      </a>
       <div className="an-layout">
         <aside className={`an-departments ${railOpen ? "is-open" : ""}`}>
           <button
@@ -573,7 +602,7 @@ export function AgentNetworkExplorer() {
             <p>Catalogue relationships · task activity comes from mission records</p>
           </footer>
         </section>
-        <aside className="an-inspector" aria-label="Specialist inspector">
+        <aside id="specialist-inspector" className="an-inspector" aria-label="Specialist inspector">
           <div className="an-inspector-meta">
             <span>{role.capability_id}</span>
             <span className="an-state" data-state={role.lifecycle_status}>
@@ -604,9 +633,17 @@ export function AgentNetworkExplorer() {
                 <h3>{tab}</h3>
                 <p>
                   {mission.isError
-                    ? "Could not load the selected mission. Choose another mission or refresh to try again."
+                    ? "Could not load the selected mission."
                     : "Loading the selected mission records…"}
                 </p>
+                {mission.isError && (
+                  <button
+                    className="cc-btn cc-btn-secondary"
+                    onClick={() => void mission.refetch()}
+                  >
+                    Retry mission
+                  </button>
+                )}
               </section>
             ) : tab === "Overview" ? (
               <>
@@ -687,6 +724,11 @@ export function AgentNetworkExplorer() {
                       </span>
                       <p>{t.description}</p>
                       <small>{t.actualUsage} usage units recorded</small>
+                      <TaskContribution
+                        task={t}
+                        tasks={tasks}
+                        artefacts={mission.data?.artefacts ?? []}
+                      />
                     </div>
                   ))
                 )}
@@ -739,7 +781,7 @@ export function AgentNetworkExplorer() {
                       {t.dependsOn.length
                         ? t.dependsOn
                             .map((k) => tasks.find((upstream) => upstream.key === k)?.title ?? k)
-                            .join(" → ")
+                            .join(" + ")
                         : "No upstream task dependency recorded."}
                     </p>
                   ))

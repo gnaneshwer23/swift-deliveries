@@ -1,3 +1,5 @@
+import { attentionLabel, orderAttention } from "@/lib/workspace-attention";
+import "@/styles/psi-operations.css";
 import { PSI_LAYER_LABELS, PSI_RECORD_LINKS } from "@/lib/psi-journey";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -62,8 +64,11 @@ export function WorkspaceOverview() {
   const missions = home.data?.missions ?? [];
   const old = legacy.data?.recentMissions ?? [];
   const waiting =
-    missions.filter((m) => m.nextTitle === "Record your decision").length +
+    missions.filter((m) => ["decide", "approve_follow_up"].includes(m.next.id)).length +
     old.filter((m) => m.status === "awaiting_approval").length;
+  const attention = orderAttention(missions).filter(
+    (m) => !["cancelled", "follow_up_approved"].includes(m.next.id),
+  );
   const exported = missions.filter((m) => m.stage === "exported").length;
   const flow = FLOW[step]!;
   const records = [...missions].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
@@ -75,6 +80,92 @@ export function WorkspaceOverview() {
   const countsReady = !!home.data?.ready && !!legacy.data && !home.isError && !legacy.isError;
   return (
     <>
+      <section className="po-attention" aria-labelledby="attention-title">
+        <div className="po-attention-heading">
+          <div>
+            <span className="po-overline">Your product workspace</span>
+            <h2 id="attention-title">Move the next decision forward.</h2>
+            <p>Pick up a saved question, inspect the work, and decide what happens next.</p>
+          </div>
+          <a href="#supervised-brief" className="cc-btn cc-btn-primary">
+            New product question
+          </a>
+        </div>
+        {home.isPending ? (
+          <p role="status">Loading your saved work…</p>
+        ) : home.isError || !home.data?.ready ? (
+          <div role="alert">
+            <p>{home.data?.reason || "Saved work could not load."}</p>
+            <button className="cc-btn cc-btn-secondary" onClick={() => void home.refetch()}>
+              Retry saved work
+            </button>
+          </div>
+        ) : attention.length === 0 ? (
+          <div className="po-first">
+            <BrainCircuit size={36} />
+            <div>
+              <h3>Start with one product question.</h3>
+              <p>
+                Your brief becomes the shared record for evidence, options, your decision and a
+                reviewable output.
+              </p>
+              <a href="#supervised-brief">Prepare your first brief</a>
+            </div>
+          </div>
+        ) : (
+          <div className="po-queue">
+            {attention.slice(0, 3).map((m, index) => (
+              <Link
+                key={m.id}
+                to="/command/supervised/$missionId"
+                params={{ missionId: m.id }}
+                className="po-queue-item"
+                data-priority={index === 0 ? "first" : undefined}
+              >
+                <span className="po-queue-state" data-state={m.next.id}>
+                  {attentionLabel(m.next.id)}
+                </span>
+                <h3>{m.question}</h3>
+                <p>{m.objective}</p>
+                <strong>
+                  {m.nextTitle}
+                  <ArrowUpRight size={17} />
+                </strong>
+              </Link>
+            ))}
+          </div>
+        )}
+        {old.some((m) =>
+          ["awaiting_approval", "needs_clarification", "blocked", "failed"].includes(m.status),
+        ) && (
+          <div className="po-task-attention">
+            <h3>Specialist work needing attention</h3>
+            {old
+              .filter((m) =>
+                ["awaiting_approval", "needs_clarification", "blocked", "failed"].includes(
+                  m.status,
+                ),
+              )
+              .map((m) => (
+                <Link key={m.id} to="/command/missions/$missionId" params={{ missionId: m.id }}>
+                  <span>{m.title}</span>
+                  <strong>
+                    {m.status.replaceAll("_", " ")} <ArrowUpRight size={14} />
+                  </strong>
+                </Link>
+              ))}
+          </div>
+        )}
+        <div className="po-workspace-state">
+          <span>Model configuration: {home.data?.providerLabel ?? "Checking…"}</span>
+          <span>
+            Usage units:{" "}
+            {home.data?.usage
+              ? `${home.data.usage.consumed} / ${home.data.usage.ceiling}`
+              : "Unavailable"}
+          </span>
+        </div>
+      </section>
       <section className="ps-stat-row" aria-label="Recorded workspace summary">
         <div className="ps-stat">
           <span>
@@ -138,7 +229,30 @@ export function WorkspaceOverview() {
                 </option>
               ))}
             </select>
-            <span>Saved mission record</span>
+            <span>{record ? attentionLabel(record.next.id) : "Saved mission record"}</span>
+          </div>
+        )}
+        {record && (
+          <div className="po-record-facts" aria-label="Selected product record">
+            <div>
+              <small>Objective</small>
+              <strong>{record.objective}</strong>
+            </div>
+            <div>
+              <small>Comparison provenance</small>
+              <span>{record.generation}</span>
+            </div>
+            <div>
+              <small>Owner decision</small>
+              <span>{record.decisionRecorded ? "Recorded · inspect scope" : "Not recorded"}</span>
+            </div>
+            <div>
+              <small>Output / observed result</small>
+              <span>
+                {record.outputReady ? "Decision pack saved" : "No decision pack"} /{" "}
+                {record.observationRecorded ? "Owner-supplied result" : "No observed result"}
+              </span>
+            </div>
           </div>
         )}
         <div className="ps-flow">
@@ -177,7 +291,12 @@ export function WorkspaceOverview() {
             <span className="ps-pill">Saved records</span>
           </div>
           {home.isError ? (
-            <p className="ps-error">Mission activity could not load. Refresh to try again.</p>
+            <div role="alert">
+              <p className="ps-error">Mission activity could not load.</p>
+              <button className="cc-btn cc-btn-secondary" onClick={() => void home.refetch()}>
+                Retry
+              </button>
+            </div>
           ) : home.isPending ? (
             <p className="ps-busy">Loading saved missions…</p>
           ) : !home.data?.ready ? (
@@ -191,7 +310,7 @@ export function WorkspaceOverview() {
               </p>
             </div>
           ) : (
-            missions.slice(0, 5).map((m) => {
+            orderAttention(missions).map((m) => {
               const index = STAGES.indexOf(m.stage);
               return (
                 <Link
@@ -206,10 +325,11 @@ export function WorkspaceOverview() {
                   </div>
                   <div className="ps-stage-track" aria-label={`Recorded stage: ${m.stage}`}>
                     {STAGES.map((s, i) => (
-                      <span key={s} className={index >= i ? "is-done" : ""} />
+                      <span key={s} className={index >= i ? "is-done" : ""} title={s} />
                     ))}
                   </div>
                   <p>
+                    {m.stage === "cancelled" ? "Cancelled" : `Saved stage: ${m.stage}`} ·{" "}
                     {m.nextTitle} · {m.usageConsumed} usage units
                   </p>
                 </Link>
