@@ -336,6 +336,7 @@ export function ProductBrainExplorer() {
               selected={selected}
               waiting={waiting}
               approved={approved}
+              hold={!approved && (playing || waiting)}
               live={visible && !reduced}
             />
             <div

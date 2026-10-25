@@ -148,12 +148,15 @@ export function ProductBrainIllustration({
   selected,
   waiting = false,
   approved = false,
+  hold = false,
   live = true,
 }: {
   layer: BrainTier | "feedback";
   selected: BrainObject;
   waiting?: boolean;
   approved?: boolean;
+  /** Stop work past the owner gate; the loop runs end to end otherwise. */
+  hold?: boolean;
   live?: boolean;
 }) {
   const pid = `pb${useId().replaceAll(":", "")}`;
@@ -271,7 +274,7 @@ export function ProductBrainIllustration({
       {tier(2, "delivery")}
       <g className="ix-brain-flow">
         {segs.map((seg) => {
-          const open = !seg.gated || approved;
+          const open = !seg.gated || !hold;
           const focus = seg.layer === layer;
           return (
             <g
