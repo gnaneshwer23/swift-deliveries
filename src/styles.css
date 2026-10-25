@@ -16,6 +16,7 @@
 @import "./styles/product-brain-explorer.css";
 @import "./styles/illustrations.css";
 @import "./styles/home-platform.css";
+@import "./styles/mission-walkthrough-live.css";
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
