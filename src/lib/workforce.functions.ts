@@ -1,35 +1,42 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth/middleware";
-import { wfDb, isMissingRelationError } from "@/lib/workforce/db";
+import { wfDb } from "@/lib/workforce/db";
+import {
+  adminDb,
+  audit,
+  ensureWorkspace,
+  loadMissionBundle,
+  mapApproval,
+  mapMission,
+  mapPlan,
+  mapProject,
+  mapTask,
+  mapWorkspace,
+  type DbClient,
+} from "@/lib/workforce/access.server";
 import { generateMissionPlan, deriveMissionTitle } from "@/lib/workforce/planner";
 import {
   buildDeliveryReport,
   executeTaskStep,
+  isStructureCheck,
   nextMissionStatusAfterRun,
   type UpstreamArtefact,
 } from "@/lib/workforce/executor";
 import { runnableTasks, unreachableTasks } from "@/lib/workforce/graph";
 import { canAfford } from "@/lib/workforce/usage";
 import {
-  decodePlanCapabilityMeta,
-  decodeTaskCapabilityIds,
   encodePlanAcceptanceCriteria,
   encodeTaskDescription,
   type TaskMeta,
 } from "@/lib/workforce/capability-persistence";
 import type {
-  ClarificationQuestion,
   DeliveryReport,
-  EvidenceItem,
   MissionBundle,
   MissionIntent,
   PermissionLevel,
   PlannedTask,
   QualityLabel,
-  WfApproval,
-  WfArtefact,
-  WfAuditEvent,
   WfMission,
   WfMissionPlan,
   WfMissionTask,
@@ -65,287 +72,6 @@ async function productMissionSupported(): Promise<boolean> {
   return productMission;
 }
 
-type DbClient = { from: (table: string) => any };
-
-/**
- * Service-role accessor for writes that must not be forgeable by workspace members
- * (usage, approvals, audit, permission/approval flags). Callers MUST authorise the
- * request via the user-scoped client first. Loaded lazily: *.functions.ts is bundled
- * for the client, so the service-role module must never be imported at top level.
- */
-async function adminDb() {
-  const { neonDb } = await import("@/lib/db/neon.server");
-  return wfDb(neonDb());
-}
-
-function mapWorkspace(row: any): WfWorkspace {
-  return {
-    id: row.id,
-    ownerId: row.owner_id,
-    name: row.name,
-    usageCeiling: row.usage_ceiling,
-    usageConsumed: row.usage_consumed,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  };
-}
-
-function mapProject(row: any): WfProject {
-  return {
-    id: row.id,
-    workspaceId: row.workspace_id,
-    name: row.name,
-    description: row.description ?? null,
-    createdBy: row.created_by,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  };
-}
-
-function mapMission(row: any): WfMission {
-  return {
-    id: row.id,
-    workspaceId: row.workspace_id,
-    projectId: row.project_id,
-    intent: row.intent,
-    title: row.title,
-    requestText: row.request_text,
-    status: row.status,
-    clarificationAnswers: (row.clarification_answers ?? {}) as Record<string, string>,
-    permissionCeiling: row.permission_ceiling,
-    externalActionsApproved: Boolean(row.external_actions_approved),
-    deliveryReport: (row.delivery_report as DeliveryReport | null) ?? null,
-    createdBy: row.created_by,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  };
-}
-
-function mapPlan(row: any): WfMissionPlan {
-  const rawCriteria = (row.acceptance_criteria ?? []) as string[];
-  const fromColumns = {
-    assigned: (row.assigned_capabilities ?? null) as WfMissionPlan["assignedCapabilities"] | null,
-    limitations: (row.capability_limitations ?? null) as
-      WfMissionPlan["capabilityLimitations"] | null,
-  };
-  const decoded = decodePlanCapabilityMeta(rawCriteria);
-  return {
-    id: row.id,
-    missionId: row.mission_id,
-    workspaceId: row.workspace_id,
-    summary: row.summary,
-    estimatedUsage: row.estimated_usage,
-    requiredPermission: row.required_permission,
-    includesExternalActions: Boolean(row.includes_external_actions),
-    clarificationQuestions: (row.clarification_questions ?? []) as ClarificationQuestion[],
-    acceptanceCriteria: decoded.criteria,
-    assignedCapabilities: fromColumns.assigned ?? decoded.assignedCapabilities,
-    capabilityLimitations: fromColumns.limitations ?? decoded.capabilityLimitations,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  };
-}
-
-function mapTask(row: any): WfMissionTask {
-  const rawDescription = row.description ?? "";
-  const fromColumn = (row.capability_ids ?? null) as string[] | null;
-  const decoded = decodeTaskCapabilityIds(rawDescription);
-  return {
-    id: row.id,
-    missionId: row.mission_id,
-    workspaceId: row.workspace_id,
-    planId: row.plan_id ?? null,
-    sortOrder: row.sort_order,
-    title: row.title,
-    description: decoded.description,
-    acceptanceCriteria: row.acceptance_criteria ?? "",
-    status: row.status,
-    permissionRequired: row.permission_required,
-    isExternal: Boolean(row.is_external),
-    estimatedUsage: row.estimated_usage,
-    actualUsage: row.actual_usage,
-    evidenceNotes: (row.evidence_notes ?? []) as EvidenceItem[],
-    capabilityIds: fromColumn ?? decoded.capabilityIds,
-    key: decoded.meta?.key ?? `t${row.sort_order}`,
-    dependsOn: decoded.meta?.dependsOn ?? [],
-    stage: decoded.meta?.stage ?? null,
-    gate: Boolean(decoded.meta?.gate),
-    requiredSections: decoded.meta?.requiredSections ?? [],
-    produces: decoded.meta?.produces ?? null,
-    startedAt: row.started_at ?? null,
-    completedAt: row.completed_at ?? null,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  };
-}
-
-function mapArtefact(row: any): WfArtefact {
-  return {
-    id: row.id,
-    missionId: row.mission_id,
-    workspaceId: row.workspace_id,
-    taskId: row.task_id ?? null,
-    kind: row.kind,
-    title: row.title,
-    content: row.content,
-    contentFormat: row.content_format,
-    qualityLabels: (row.quality_labels ?? []) as QualityLabel[],
-    evidenceItems: (row.evidence_items ?? []) as EvidenceItem[],
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  };
-}
-
-function mapApproval(row: any): WfApproval {
-  return {
-    id: row.id,
-    missionId: row.mission_id,
-    workspaceId: row.workspace_id,
-    kind: row.kind,
-    status: row.status,
-    decidedBy: row.decided_by ?? null,
-    decidedAt: row.decided_at ?? null,
-    note: row.note ?? null,
-    createdAt: row.created_at,
-  };
-}
-
-function mapAuditEvent(row: any): WfAuditEvent {
-  return {
-    id: row.id,
-    workspaceId: row.workspace_id,
-    missionId: row.mission_id ?? null,
-    actorId: row.actor_id ?? null,
-    eventType: row.event_type,
-    entityType: row.entity_type,
-    entityId: row.entity_id ?? null,
-    createdAt: row.created_at,
-  };
-}
-
-async function audit(
-  _db: ReturnType<typeof wfDb>,
-  input: {
-    workspaceId: string;
-    missionId?: string | null;
-    actorId: string;
-    eventType: string;
-    entityType: string;
-    entityId?: string | null;
-    metadata?: Record<string, unknown>;
-  },
-) {
-  await (await adminDb()).from("wf_audit_events").insert({
-    workspace_id: input.workspaceId,
-    mission_id: input.missionId ?? null,
-    actor_id: input.actorId,
-    event_type: input.eventType,
-    entity_type: input.entityType,
-    entity_id: input.entityId ?? null,
-    metadata: input.metadata ?? {},
-  });
-}
-
-async function loadMissionBundle(
-  supabase: DbClient,
-  workspaceId: string,
-  missionId: string,
-): Promise<MissionBundle> {
-  const db = wfDb(supabase);
-  const missionRes = await db
-    .from("wf_missions")
-    .select("*")
-    .eq("id", missionId)
-    .eq("workspace_id", workspaceId)
-    .maybeSingle();
-  if (missionRes.error) throw new Error(missionRes.error.message);
-  if (!missionRes.data) throw new Error("Mission not found.");
-
-  const [planRes, tasksRes, artefactsRes, approvalsRes, auditRes] = await Promise.all([
-    db.from("wf_mission_plans").select("*").eq("mission_id", missionId).maybeSingle(),
-    db
-      .from("wf_mission_tasks")
-      .select("*")
-      .eq("mission_id", missionId)
-      .order("sort_order", { ascending: true }),
-    db
-      .from("wf_artefacts")
-      .select("*")
-      .eq("mission_id", missionId)
-      .order("created_at", { ascending: true }),
-    db.from("wf_approvals").select("*").eq("mission_id", missionId),
-    db
-      .from("wf_audit_events")
-      .select("*")
-      .eq("mission_id", missionId)
-      .order("created_at", { ascending: false })
-      .limit(20),
-  ]);
-  if (planRes.error) throw new Error(planRes.error.message);
-  if (tasksRes.error) throw new Error(tasksRes.error.message);
-  if (artefactsRes.error) throw new Error(artefactsRes.error.message);
-  if (approvalsRes.error) throw new Error(approvalsRes.error.message);
-
-  return {
-    mission: mapMission(missionRes.data),
-    plan: planRes.data ? mapPlan(planRes.data) : null,
-    tasks: (tasksRes.data ?? []).map(mapTask),
-    artefacts: (artefactsRes.data ?? []).map(mapArtefact),
-    approvals: (approvalsRes.data ?? []).map(mapApproval),
-    auditEvents: (auditRes.data ?? []).map(mapAuditEvent),
-  };
-}
-
-async function ensureWorkspace(
-  supabase: DbClient,
-  userId: string,
-): Promise<{ workspace: WfWorkspace; storage: "supabase" }> {
-  const db = wfDb(supabase);
-  const existing = await db.from("wf_workspaces").select("*").eq("owner_id", userId).maybeSingle();
-
-  if (existing.error && isMissingRelationError(existing.error)) {
-    throw new Error(
-      "Workforce tables are not available. Apply migration `workforce_command_centre` (see docs/prd-gap-analysis.md).",
-    );
-  }
-  if (existing.error) throw new Error(existing.error.message);
-
-  if (existing.data) {
-    return { workspace: mapWorkspace(existing.data), storage: "supabase" };
-  }
-
-  const created = await (
-    await adminDb()
-  )
-    .from("wf_workspaces")
-    .insert({
-      owner_id: userId,
-      name: "Personal workspace",
-      usage_ceiling: 100,
-      usage_consumed: 0,
-    })
-    .select("*")
-    .single();
-  if (created.error) throw new Error(created.error.message);
-
-  const member = await (await adminDb()).from("wf_workspace_members").insert({
-    workspace_id: created.data.id,
-    user_id: userId,
-    role: "operator",
-  });
-  if (member.error) throw new Error(member.error.message);
-
-  await audit(db, {
-    workspaceId: created.data.id,
-    actorId: userId,
-    eventType: "workspace.created",
-    entityType: "workspace",
-    entityId: created.data.id,
-  });
-
-  return { workspace: mapWorkspace(created.data), storage: "supabase" };
-}
-
 export type CommandCentreBootstrap = {
   workspace: WfWorkspace;
   projects: WfProject[];
@@ -358,7 +84,12 @@ export type CommandCentreBootstrap = {
   permissionLadder: PermissionLevel[];
   features: {
     productMission: boolean;
-    modelMode: { enabled: boolean; provider: string | null; model: string | null };
+    modelMode: {
+      enabled: boolean;
+      provider: string | null;
+      model: string | null;
+      problem: string | null;
+    };
   };
 };
 
@@ -1116,6 +847,20 @@ async function finaliseMission(
 }
 
 /** Upstream artefacts for a task: outputs of its transitive dependencies (all prior work for verify). */
+/** Prototypes this mission has saved, for the legacy check task (legacy plans have no dependencies). */
+function savedPrototypes(bundle: MissionBundle): UpstreamArtefact[] {
+  return bundle.artefacts
+    .filter((a) => a.kind === "prototype_html")
+    .map((a) => ({
+      kind: a.kind,
+      title: a.title,
+      content: a.content,
+      contentFormat: a.contentFormat,
+      taskKey: bundle.tasks.find((t) => t.id === a.taskId)?.key ?? null,
+      requiredSections: [],
+    }));
+}
+
 function upstreamFor(task: WfMissionTask, bundle: MissionBundle): UpstreamArtefact[] {
   const byKey = new Map(bundle.tasks.map((t) => [t.key, t]));
   const byId = new Map(bundle.tasks.map((t) => [t.id, t]));
@@ -1274,7 +1019,11 @@ export const runMissionStep = createServerFn({ method: "POST" })
       consumed: liveWorkspace?.usage_consumed ?? workspace.usageConsumed,
     };
     const task = tasks.find((t) => t.id === next.id)!;
-    const upstream = task.produces ? upstreamFor(task, bundle) : [];
+    const upstream = task.produces
+      ? upstreamFor(task, bundle)
+      : isStructureCheck(task)
+        ? savedPrototypes(bundle)
+        : [];
 
     // Only spend a model call when the step is affordable and permitted.
     const generated =

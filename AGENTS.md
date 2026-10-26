@@ -16,6 +16,7 @@ Source: docs/prd-deliverx-supervised-ai-workforce.md. Gap analysis: docs/prd-gap
 - Quality labels are Agent-reviewed / Automatically tested / Human-reviewed / Externally attested — never a generic “Verified”.
 - Usage ceilings hard-stop further billable steps. Stage 1 uses deterministic planner/executor stubs unless model keys exist.
 - New persistence uses additive `wf_*` tables with server-enforced workspace isolation; do not mutate legacy Delivery-OS `projects`/`tasks`/`artefacts`.
+- New migrations go only in `drizzle/migrations/` and follow `docs/migrations-and-rollback.md` (additive, re-runnable, ledger and rollback section, production only with owner approval).
 - Mission tasks form a DAG (`src/lib/workforce/graph.ts`); a task never runs on a failed, blocked or unapproved upstream — why: errors cascade through handoffs.
 - Lifecycle gates are human-only: agents and the scheduler can block on a gate but never pass one.
 - Every stage artefact must pass its handoff contract (`contracts.ts`) before downstream stages consume it; failures are persisted and reported, never dropped.

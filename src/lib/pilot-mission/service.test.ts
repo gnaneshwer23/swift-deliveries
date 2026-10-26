@@ -436,15 +436,34 @@ describe("supervised mission isolation, approval and recovery", () => {
     expect(generationPlan({}, "Which setup change should we investigate?").mode).toBe(
       "not_configured",
     );
+    // switched on without an allowed model: reported as not run, never a guessed default
     expect(
       generationPlan(
         { DXSI_MODEL_ENABLED: "true", DXSI_PROVIDER: "openai", OPENAI_API_KEY: "test-key" },
         "Which setup change should we investigate?",
       ).mode,
+    ).toBe("not_configured");
+    expect(
+      generationPlan(
+        {
+          DXSI_MODEL_ENABLED: "true",
+          DXSI_PROVIDER: "openai",
+          OPENAI_API_KEY: "test-key",
+          DXSI_MODEL: "openai-test-model",
+          DXSI_MODEL_ALLOWLIST: "openai-test-model",
+        },
+        "Which setup change should we investigate?",
+      ).mode,
     ).toBe("model");
     expect(
       generationPlan(
-        { DXSI_MODEL_ENABLED: "true", DXSI_PROVIDER: "openai", OPENAI_API_KEY: "test-key" },
+        {
+          DXSI_MODEL_ENABLED: "true",
+          DXSI_PROVIDER: "openai",
+          OPENAI_API_KEY: "test-key",
+          DXSI_MODEL: "openai-test-model",
+          DXSI_MODEL_ALLOWLIST: "openai-test-model",
+        },
         "The contact number is 123-45-6789.",
       ).mode,
     ).toBe("withheld");

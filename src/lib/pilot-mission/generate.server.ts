@@ -22,7 +22,13 @@ export function generationPlan(
   if (containsLikelyPersonalIdentifiers(text)) {
     return { mode: "withheld", cost: 0, provider: null, model: null };
   }
-  const provider = resolveProvider(env);
+  let provider: ReturnType<typeof resolveProvider> = null;
+  try {
+    provider = resolveProvider(env);
+  } catch {
+    // a model that is not configured or not allowed is reported as not run, never guessed
+    provider = null;
+  }
   if (!provider) return { mode: "not_configured", cost: 0, provider: null, model: null };
   return { mode: "model", cost: 1, provider: provider.name, model: provider.model };
 }

@@ -13,11 +13,14 @@ Use Node 24 and the Vercel Nitro preset. Never repoint production while preview 
 - DXSI_MODEL_ENABLED: keep false for initial UX verification. True permits billable provider calls.
 - DXSI_PROVIDER: openai, vercel-ai-gateway or openrouter. Explicit selection requires that provider's credentials.
 - OPENAI_API_KEY: server-side deployment secret only. Never use a VITE_ prefix.
-- DXSI_OPENAI_MODEL: direct OpenAI model ID; defaults to DXSI_MODEL or gpt-4.1. Gateway prefixes are rejected.
+- DXSI_MODEL: the model ID to use. There is no built-in default: with model mode on and no model set, nothing is sent and outputs are labelled simulated drafts.
+- DXSI_OPENAI_MODEL: optional direct OpenAI model ID that overrides DXSI_MODEL for OpenAI. Gateway prefixes are rejected.
+- DXSI_DECISION_MODEL: optional separate model for decision options.
+- DXSI_MODEL_ALLOWLIST: comma-separated exact model IDs this deployment may call. Every model above must be listed; anything else is refused with a clear reason. Confirm each ID is available to the account before listing it.
 
 Vercel preview URLs must be included in Auth trusted origins using the provider's supported configuration. Verify signup, confirmation, recovery, session refresh and sign-out with an authorised test account.
 
-No model key, database credential or auth session belongs in tracked files. The sample variable names above are not a request to share secrets in chat.
+Every variable name is listed in `.env.example` without values. No model key, database credential or auth session belongs in tracked files. The sample variable names above are not a request to share secrets in chat.
 
 ## Verification boundaries
 

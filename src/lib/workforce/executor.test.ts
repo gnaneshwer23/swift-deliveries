@@ -112,3 +112,90 @@ describe("delivery status", () => {
     expect(report.qualitySummary).toEqual(["agent_reviewed"]);
   });
 });
+
+describe("structure checks (legacy plan)", () => {
+  const checkTask = baseTask({
+    key: "auto_test",
+    title: "Run automatic structure checks",
+    estimatedUsage: 4,
+  });
+  const prototype = (content: string) => ({
+    kind: "prototype_html" as const,
+    title: "Lightweight interactive prototype (HTML)",
+    content,
+    contentFormat: "html" as const,
+    taskKey: "html",
+    requiredSections: [],
+  });
+  const good = `<!DOCTYPE html><html lang="en"><head><meta name="viewport" content="width=device-width"><title>T</title></head><body><main><button>Go</button></main></body></html>`;
+
+  it("fails, and claims no test, when there is no prototype to check", () => {
+    const result = executeTaskStep({
+      mission,
+      task: checkTask,
+      budget: { ceiling: 100, consumed: 0 },
+      upstream: [],
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.task.status).toBe("failed");
+      expect(result.artefact).toBeUndefined();
+      expect(result.detail).toMatch(/nothing to check/);
+    }
+  });
+
+  it("records each check that ran against the saved prototype", () => {
+    const result = executeTaskStep({
+      mission,
+      task: checkTask,
+      budget: { ceiling: 100, consumed: 0 },
+      upstream: [prototype(good)],
+    });
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.artefact?.qualityLabels).toEqual(["automatically_tested"]);
+      expect(result.artefact?.content).toMatch(/\| pass \|/);
+      expect(result.artefact?.content).not.toMatch(/\| fail \|/);
+      expect(result.artefact?.content).toMatch(/not run in a browser/);
+    }
+  });
+
+  it("fails the task and reports which checks failed", () => {
+    const result = executeTaskStep({
+      mission,
+      task: checkTask,
+      budget: { ceiling: 100, consumed: 0 },
+      upstream: [prototype("<div>no document</div>")],
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.task.status).toBe("failed");
+      expect(result.artefact?.content).toMatch(/\| fail \|/);
+      expect(result.detail).toMatch(/static checks? failed/);
+      expect(result.artefact?.qualityLabels).toEqual([]);
+    }
+  });
+
+  it("never labels a prototype tested just because its task title mentions tests", () => {
+    const result = executeTaskStep({
+      mission,
+      task: baseTask({ title: "Build and test the HTML prototype", key: "html" }),
+      budget: { ceiling: 100, consumed: 0 },
+    });
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.artefact?.kind).toBe("prototype_html");
+      expect(result.artefact?.qualityLabels).not.toContain("automatically_tested");
+    }
+  });
+
+  it("recognises the check task on older rows saved without a stored key", () => {
+    const result = executeTaskStep({
+      mission,
+      task: baseTask({ key: "t3", title: "Run automatic structure checks" }),
+      budget: { ceiling: 100, consumed: 0 },
+      upstream: [],
+    });
+    expect(result.ok).toBe(false);
+  });
+});
