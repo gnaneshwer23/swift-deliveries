@@ -350,6 +350,8 @@ export type CommandCentreBootstrap = {
   workspace: WfWorkspace;
   projects: WfProject[];
   recentMissions: WfMission[];
+  /** Tasks of `recentMissions`, for the agents office: who is working on what. */
+  recentTasks: WfMissionTask[];
   storage: "supabase";
   permissionLadder: PermissionLevel[];
   features: {
@@ -381,10 +383,22 @@ export const getCommandCentreBootstrap = createServerFn({ method: "GET" })
     if (projectsRes.error) throw new Error(projectsRes.error.message);
     if (missionsRes.error) throw new Error(missionsRes.error.message);
 
+    const missionIds = (missionsRes.data ?? []).map((m: { id: string }) => m.id);
+    const tasksRes = missionIds.length
+      ? await db
+          .from("wf_mission_tasks")
+          .select("*")
+          .eq("workspace_id", workspace.id)
+          .in("mission_id", missionIds)
+          .order("sort_order", { ascending: true })
+      : { data: [], error: null };
+    if (tasksRes.error) throw new Error(tasksRes.error.message);
+
     return {
       workspace,
       projects: (projectsRes.data ?? []).map(mapProject),
       recentMissions: (missionsRes.data ?? []).map(mapMission),
+      recentTasks: (tasksRes.data ?? []).map(mapTask),
       storage,
       permissionLadder: ["plan", "create", "execute_internally", "act_externally"],
       features: {
