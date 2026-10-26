@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Check, FileText, FolderArchive, GitBranch, Search, ShieldCheck } from "lucide-react";
+import { Check, ShieldCheck } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { pageHead } from "@/components/marketing/page-head";
 import {
@@ -63,28 +63,6 @@ export const PLANS = [
   },
 ] as const;
 
-const PACK = [
-  {
-    icon: FileText,
-    name: "Mission brief",
-    detail: "Question, constraints and agreed acceptance criteria",
-  },
-  {
-    icon: Search,
-    name: "Evidence register",
-    detail: "Sources, assumptions and the gaps still open",
-  },
-  {
-    icon: GitBranch,
-    name: "Decision record",
-    detail: "Alternatives, objections and your scoped decision",
-  },
-  {
-    icon: FolderArchive,
-    name: "Experiment brief & export",
-    detail: "Hypothesis, measurement plan and portable documents",
-  },
-];
 const QUESTIONS = [
   {
     q: "What counts as one mission?",
@@ -214,46 +192,12 @@ function Pricing() {
               <p>No automatic overage charges. Additional usage needs a new agreement.</p>
             </div>
             <nav className="pricing-page-links" aria-label="Pricing details">
-              <a href="#mission-pack">What a mission delivers</a>
+              <Link to="/how-it-works" hash="sample-documents">
+                What a mission delivers
+              </Link>
               <a href="#pilot-process">From request to pilot</a>
               <a href="#pricing-questions">Questions before you start</a>
             </nav>
-          </div>
-        </section>
-        <section className="pricing-pack-section" id="mission-pack">
-          <div className="dxl-wrap pricing-pack-layout">
-            <div>
-              <p className="dxl-eyebrow">The common foundation</p>
-              <h2>
-                A decision you can inspect.
-                <br />
-                Work you can take with you.
-              </h2>
-              <p>
-                A first pilot is proposed to connect your question, evidence and specialist
-                contributions into a reviewable pack. The exact outputs are agreed before work
-                starts.
-              </p>
-              <Link to="/how-it-works" className="dxl-link">
-                Explore the illustrated mission
-              </Link>
-            </div>
-            <div className="pricing-pack-visual" aria-label="Proposed mission pack">
-              {PACK.map((item, index) => (
-                <div className="pricing-pack-document" key={item.name}>
-                  <span className="pricing-pack-sequence">0{index + 1}</span>
-                  <item.icon aria-hidden="true" />
-                  <div>
-                    <h3>{item.name}</h3>
-                    <p>{item.detail}</p>
-                  </div>
-                </div>
-              ))}
-              <div className="pricing-pack-approval">
-                <ShieldCheck aria-hidden="true" />
-                <span>Your decision controls consequential work.</span>
-              </div>
-            </div>
           </div>
         </section>
         <section className="pricing-process-section" id="pilot-process">
@@ -305,10 +249,10 @@ function Pricing() {
             <div className="pricing-budget-note">
               <ShieldCheck aria-hidden="true" />
               <div>
-                <h3>A used allowance pauses the next billable comparison.</h3>
+                <h3>When your allowance is used, billable work stops.</h3>
                 <p>
-                  Your mission record stays readable and the work is not deleted. Further usage
-                  requires a new agreement.
+                  Nothing is charged on top. Your missions stay readable and nothing is deleted. To
+                  do more, you agree a new allowance with us.
                 </p>
               </div>
             </div>

@@ -1,14 +1,16 @@
 /** One destination inventory for public navigation and footer. */
 export const PRODUCT_LINKS = [
-  { to: "/psi", label: "PSI Platform", description: "How the intelligence layers connect" },
-  { to: "/ai-agents", label: "Specialists", description: "Roles, contributions and availability" },
+  {
+    to: "/ai-agents",
+    label: "Specialists",
+    description: "Who does the work, and what is available now",
+  },
   {
     to: "/psi",
-    hash: "product-brain",
-    label: "Product Brain",
-    description: "Evidence, decisions and traceability",
+    label: "Platform",
+    description: "Every capability, marked live, opt-in or planned",
   },
-  { to: "/solutions", label: "Use cases", description: "Find a starting point for your product" },
+  { to: "/solutions", label: "Use cases", description: "Start from a situation like yours" },
 ] as const;
 export const EXPLORE_LINKS = [
   { to: "/security", label: "Security & Trust" },

@@ -19,6 +19,10 @@ import {
   ProductImproveIcon,
 } from "@/components/marketing/motion-product-visuals";
 import { FlaskConical, Rocket, Search, ShieldCheck, Wrench } from "lucide-react";
+import {
+  MissionPipelineStage,
+  WAITING_STATUSES,
+} from "@/components/command/mission-pipeline-stage";
 
 export const Route = createFileRoute("/_authenticated/command/")({
   head: () => ({
@@ -280,14 +284,13 @@ function CommandHome() {
   }
 
   const selectedProjectId = projectId || data.projects[0]?.id || "";
-  const awaitingCount = data.recentMissions.filter(
-    (m) => m.status === "awaiting_approval" || m.status === "needs_clarification",
+  const awaitingCount = data.recentMissions.filter((m) =>
+    WAITING_STATUSES.includes(m.status),
   ).length;
   const completedCount = data.recentMissions.filter((m) => m.status === "completed").length;
 
   const filteredMissions = data.recentMissions.filter((m) => {
-    if (missionFilter === "awaiting")
-      return m.status === "awaiting_approval" || m.status === "needs_clarification";
+    if (missionFilter === "awaiting") return WAITING_STATUSES.includes(m.status);
     if (missionFilter === "completed") return m.status === "completed";
     if (
       missionFilter === "investigate" ||
@@ -308,7 +311,18 @@ function CommandHome() {
         ceiling: data.workspace.usageCeiling,
       }}
     >
-      <WorkspaceOverview />
+      <WorkspaceOverview
+        pipeline={
+          <MissionPipelineStage
+            missions={data.recentMissions}
+            usage={{ consumed: data.workspace.usageConsumed, ceiling: data.workspace.usageCeiling }}
+            onShowWaiting={() => {
+              setMissionFilter("awaiting");
+              document.getElementById("cc-missions")?.scrollIntoView({ behavior: "smooth" });
+            }}
+          />
+        }
+      />
       <SupervisedMissionStart />
 
       <details className="ps-legacy">
@@ -505,7 +519,7 @@ function CommandHome() {
         </section>
       </details>
       {/* Recent Missions & Supervision Ledger */}
-      <section className="cc-panel">
+      <section className="cc-panel" id="cc-missions">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="cc-panel-title mb-0">Specialist missions</h2>

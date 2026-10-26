@@ -129,7 +129,7 @@
 }
 .brain-world {
   position: relative;
-  aspect-ratio: 1046/1024;
+  aspect-ratio: 930/572;
 }
 .brain-world svg {
   display: block;
@@ -463,5 +463,94 @@
     order: 6;
     width: 100%;
     margin: 12px 0 18px;
+  }
+}
+
+/* live flow over the artwork */
+.brain-live-track {
+  fill: none;
+  stroke: #7860cf;
+  stroke-opacity: 0.18;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.brain-live-dash {
+  fill: none;
+  stroke: #7860cf;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-dasharray: 2 6;
+  stroke-opacity: 0.55;
+  animation: brain-march 2.4s linear infinite;
+}
+.brain-live-seg[data-focus] .brain-live-track {
+  stroke-opacity: 0.32;
+  stroke-width: 5;
+}
+.brain-live-seg[data-focus] .brain-live-dash {
+  stroke-opacity: 0.95;
+  stroke-width: 3;
+}
+.brain-live-dot {
+  fill: #7860cf;
+  filter: drop-shadow(0 0 6px #7860cf);
+}
+.brain-live-seg:not([data-focus]) .brain-live-dot {
+  fill: #a796e6;
+  filter: none;
+}
+.brain-live[data-boost] .brain-live-dash {
+  animation-duration: 1.2s;
+}
+.brain-live-seg[data-held] .brain-live-track {
+  stroke: #c7a24a;
+  stroke-dasharray: 4 6;
+}
+.brain-gate-ring {
+  fill: none;
+  stroke: #c7a24a;
+  stroke-width: 2.5;
+  stroke-opacity: 0.8;
+}
+.brain-gate[data-open] .brain-gate-ring {
+  stroke: #3fae7a;
+}
+.brain-gate-pulse {
+  fill: none;
+  stroke: #c7a24a;
+  stroke-width: 2;
+}
+@keyframes brain-march {
+  to {
+    stroke-dashoffset: -32;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brain-live-dash {
+    animation: none;
+  }
+}
+.brain-world.ix {
+  border-radius: 20px;
+}
+.brain-world.ix .brain-hotspot-dot {
+  width: 34px;
+  height: 34px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.brain-world.ix .brain-hotspot.is-selected .brain-hotspot-dot,
+.brain-world.ix .brain-hotspot:focus-visible .brain-hotspot-dot {
+  background: transparent;
+  box-shadow: none;
+  outline: 2px solid #7860cf;
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+@media (max-width: 640px) {
+  .brain-world.ix .brain-hotspot-dot {
+    width: 26px;
+    height: 26px;
   }
 }

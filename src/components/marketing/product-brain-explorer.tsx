@@ -2,6 +2,8 @@ import { PSI_LAYER_LABELS } from "@/lib/psi-journey";
 import { useEffect, useId, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Play, Pause, RotateCcw } from "lucide-react";
+import { ProductBrainIllustration } from "@/components/illustrations/product-brain-illustration";
+import { BRAIN_ANCHORS } from "@/components/illustrations/product-brain-layout";
 import { MissionSampleRecord } from "./mission-sample-record";
 
 const LAYERS = [
@@ -48,8 +50,6 @@ const OBJECTS = [
     detail:
       "Connect source references to the evidence brief. A missing source remains a gap, not a fact.",
     output: "Evidence register",
-    x: 705,
-    y: 793,
   },
   {
     id: "notes",
@@ -59,8 +59,6 @@ const OBJECTS = [
     detail:
       "Use genuine notes supplied by the product owner. Synthetic personas are rehearsal, never customer evidence.",
     output: "Supported observations",
-    x: 850,
-    y: 814,
   },
   {
     id: "research",
@@ -70,8 +68,6 @@ const OBJECTS = [
     detail:
       "Frame the research question, constraints and source requirements before comparing options.",
     output: "Research brief",
-    x: 1000,
-    y: 819,
   },
   {
     id: "results",
@@ -81,8 +77,6 @@ const OBJECTS = [
     detail:
       "The owner supplies the result and its evidence on the supervised mission. This illustration does not store a measurement.",
     output: "Owner-supplied result",
-    x: 1175,
-    y: 832,
   },
   {
     id: "strategy",
@@ -92,8 +86,6 @@ const OBJECTS = [
     detail:
       "Compare shorter setup with guided onboarding. Keep assumptions, alternatives and trade-offs visible.",
     output: "Recommendation and alternatives",
-    x: 760,
-    y: 490,
   },
   {
     id: "review",
@@ -103,8 +95,6 @@ const OBJECTS = [
     detail:
       "Inspect risks, feasibility and dissent before the recommendation reaches you. A hard veto cannot be outvoted.",
     output: "Review findings",
-    x: 970,
-    y: 505,
   },
   {
     id: "human",
@@ -114,8 +104,6 @@ const OBJECTS = [
     detail:
       "Approve, reject or request more evidence. The example pauses here; it cannot approve a real mission.",
     output: "Your decision",
-    x: 1185,
-    y: 505,
   },
   {
     id: "design",
@@ -125,8 +113,6 @@ const OBJECTS = [
     detail:
       "Translate approved scope into the proposed journey and interface. Planned capabilities are not represented as live agents.",
     output: "UX specification",
-    x: 700,
-    y: 175,
   },
   {
     id: "engineering",
@@ -136,8 +122,6 @@ const OBJECTS = [
     detail:
       "Shape the architecture and inspectable prototype within approved scope. This example does not execute code.",
     output: "Prototype and architecture",
-    x: 865,
-    y: 188,
   },
   {
     id: "qa",
@@ -147,8 +131,6 @@ const OBJECTS = [
     detail:
       "Distinguish static checks, executed tests and human review. Only retained execution evidence can support a tested claim.",
     output: "Review record",
-    x: 1025,
-    y: 185,
   },
   {
     id: "export",
@@ -158,8 +140,6 @@ const OBJECTS = [
     detail:
       "Inspect what was produced, its generation mode and its known limitations. Keep the decision record with the work.",
     output: "Portable project record",
-    x: 1190,
-    y: 190,
   },
 ] as const;
 const JOURNEY = [
@@ -248,7 +228,6 @@ export function ProductBrainExplorer() {
     setWaiting(false);
     setPlaying(true);
   };
-  const moving = playing && visible && !reduced;
   return (
     <section
       className="brain-explorer"
@@ -332,7 +311,7 @@ export function ProductBrainExplorer() {
         </div>
         <div className="brain-world-area" id={`${id}-world`}>
           <div
-            className="brain-world"
+            className="brain-world ix"
             data-layer={layer}
             ref={worldRef}
             onPointerMove={(event) => {
@@ -352,73 +331,14 @@ export function ProductBrainExplorer() {
               worldRef.current?.style.setProperty("--brain-y", "0px");
             }}
           >
-            <svg
-              viewBox="490 0 1046 1024"
-              role="img"
-              aria-label="Three illustrated Product Brain layers: evidence feeds judgement, human approval leads to delivery, observed feedback returns to evidence."
-            >
-              <defs>
-                {["delivery", "judgement", "evidence"].map((l, i) => (
-                  <clipPath id={`${id}-${l}`} key={l}>
-                    <rect
-                      x="500"
-                      y={i === 0 ? 0 : i === 1 ? 400 : 680}
-                      width="850"
-                      height={i === 0 ? 400 : i === 1 ? 280 : 344}
-                    />
-                  </clipPath>
-                ))}
-              </defs>
-              {(["delivery", "judgement", "evidence"] as const).map((l) => (
-                <g
-                  key={l}
-                  className={`brain-art-layer ${layer === l || layer === "feedback" ? "is-selected" : ""}`}
-                >
-                  <image
-                    href="/illustrations/product-brain-explorer-v1.webp"
-                    width="1536"
-                    height="1024"
-                    clipPath={`url(#${id}-${l})`}
-                  />
-                </g>
-              ))}
-              <path
-                d="M 1285 220 C 1510 250 1510 790 1300 850"
-                className={`brain-return-path ${layer === "feedback" ? "is-highlighted" : ""}`}
-              />
-              <text x="1380" y="530" textAnchor="middle" className="brain-return-label">
-                Observed
-              </text>
-              <text x="1380" y="552" textAnchor="middle" className="brain-return-label">
-                feedback
-              </text>
-              {layer === "feedback" && !reduced && visible && (
-                <circle r="5" fill="#7860cf">
-                  <animateMotion
-                    dur="4s"
-                    repeatCount="indefinite"
-                    path="M 1285 220 C 1510 250 1510 790 1300 850"
-                  />
-                </circle>
-              )}
-              {moving && (
-                <g>
-                  <circle r="6" fill="#7860cf">
-                    <animateMotion
-                      dur="2.2s"
-                      repeatCount="indefinite"
-                      path={
-                        layer === "evidence"
-                          ? "M 690 780 C 510 760 510 550 720 490"
-                          : layer === "judgement"
-                            ? "M 760 490 C 825 425 900 445 970 505 L 1160 505"
-                            : "M 700 180 L 870 190 L 1025 185 L 1190 190"
-                      }
-                    />
-                  </circle>
-                </g>
-              )}
-            </svg>
+            <ProductBrainIllustration
+              layer={layer}
+              selected={selected}
+              waiting={waiting}
+              approved={approved}
+              hold={!approved && (playing || waiting)}
+              live={visible && !reduced}
+            />
             <div
               className="brain-hotspots"
               aria-label="Inspect illustrated specialists and artefacts"
@@ -428,7 +348,10 @@ export function ProductBrainExplorer() {
                   key={o.id}
                   type="button"
                   className={`brain-hotspot ${selected === o.id ? "is-selected" : ""}`}
-                  style={{ left: `${((o.x - 490) / 1046) * 100}%`, top: `${(o.y / 1024) * 100}%` }}
+                  style={{
+                    left: `${BRAIN_ANCHORS[o.id].x * 100}%`,
+                    top: `${BRAIN_ANCHORS[o.id].y * 100}%`,
+                  }}
                   onClick={() => choose(o.id)}
                   aria-label={`Inspect ${o.label}`}
                   aria-pressed={selected === o.id}

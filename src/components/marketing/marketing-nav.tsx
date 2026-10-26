@@ -91,12 +91,7 @@ export function MarketingNav() {
             </button>
             <div className="public-product-panel" id={productMenuId} hidden={!productOpen}>
               {PRODUCT_LINKS.map((link) => (
-                <Link
-                  key={link.label}
-                  to={link.to}
-                  {...("hash" in link ? { hash: link.hash } : {})}
-                  onClick={() => setProductOpen(false)}
-                >
+                <Link key={link.label} to={link.to} onClick={() => setProductOpen(false)}>
                   <strong>{link.label}</strong>
                   <span>{link.description}</span>
                 </Link>
@@ -160,12 +155,7 @@ export function MarketingNav() {
           <div className="public-mobile-group">
             <span>Product</span>
             {PRODUCT_LINKS.map((link) => (
-              <Link
-                key={link.label}
-                to={link.to}
-                {...("hash" in link ? { hash: link.hash } : {})}
-                onClick={() => setOpen(false)}
-              >
+              <Link key={link.label} to={link.to} onClick={() => setOpen(false)}>
                 {link.label}
               </Link>
             ))}

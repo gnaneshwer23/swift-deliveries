@@ -1,6 +1,20 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Check, FileSearch, GitBranch, UserRoundCheck } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Compass,
+  GraduationCap,
+  Lightbulb,
+  Rocket,
+  TrendingUp,
+  type LucideIcon,
+} from "lucide-react";
+import { INTENT_LABELS } from "@/lib/workforce/types";
+import { WORKFORCE_INTENTS } from "@/lib/marketing/workforce-summary";
+import { intentForGoal } from "@/lib/onboarding-intent";
+import { OnboardingStage } from "@/components/onboarding/onboarding-stage";
 import { useQueryClient } from "@tanstack/react-query";
 import { auth, type AppUser as User } from "@/lib/auth/client";
 import { getMyProfileDraft, saveMyProfile, saveMyProfileDraft } from "@/lib/profile.functions";
@@ -36,6 +50,20 @@ import type { ProductBrief } from "@/lib/marketing/product-resources";
 import { firstActionFor, safeProductRedirect } from "@/lib/product-journey";
 
 const STEPS = ["Your context", "Product direction", "Review & enter"] as const;
+
+const GOAL_META: Record<(typeof DX_GOALS)[number], { icon: LucideIcon; line: string }> = {
+  "Validate a new idea": { icon: Lightbulb, line: "Check the evidence before you build." },
+  "Build an MVP": { icon: Rocket, line: "Go from a question to a prototype you can review." },
+  "Improve an existing product": {
+    icon: TrendingUp,
+    line: "Find what holds users back, then fix it.",
+  },
+  "Explore what's possible": { icon: Compass, line: "Compare directions before choosing one." },
+  "Learn by building a product": {
+    icon: GraduationCap,
+    line: "Practise product craft on a real idea.",
+  },
+};
 
 function Chips({
   options,
@@ -250,37 +278,14 @@ export function OnboardingForm({
       <div className="setup-layout">
         <aside className="setup-story">
           <p className="dxl-eyebrow">Your product starts here</p>
-          <h2>
-            A clear question.
-            <br /> A connected next step.
-          </h2>
+          <h2>Three questions. Then your team.</h2>
           <p>
-            Bring your context into one workspace. Specialists contribute; you decide what becomes
-            work.
+            Your answers shape the first mission we propose. Nothing runs until you approve a plan.
           </p>
-          <img
-            src="/illustrations/role-evidence.webp"
-            width="1536"
-            height="1024"
-            alt="Research documents and a magnifying glass, representing the evidence behind a product question."
-          />
-          <ol aria-label="Your product journey">
-            <li>
-              <FileSearch size={17} aria-hidden="true" />
-              <span>Supply context</span>
-            </li>
-            <li>
-              <GitBranch size={17} aria-hidden="true" />
-              <span>Compare options</span>
-            </li>
-            <li>
-              <UserRoundCheck size={17} aria-hidden="true" />
-              <span>Decide the next step</span>
-            </li>
-          </ol>
+          <OnboardingStage step={step} fields={fields} />
           <small>
-            Illustrative workflow. Setup does not run agents, approve a mission or activate a paid
-            pilot.
+            Setup saves your context only. It does not run agents, approve a mission or activate a
+            paid pilot.
           </small>
         </aside>
         <main className="setup-main">
@@ -314,17 +319,17 @@ export function OnboardingForm({
                 <p className="setup-step-number">Step {step + 1} of 3</p>
                 <h1 ref={heading} tabIndex={-1}>
                   {step === 0
-                    ? "Make the workspace yours."
+                    ? "Who is building?"
                     : step === 1
                       ? "What are you building towards?"
-                      : "Review your starting point."}
+                      : "Review and open your workspace."}
                 </h1>
                 <p className="setup-description">
                   {step === 0
-                    ? "A little context helps us guide your first product question."
+                    ? "Your role and team size decide how much the specialists explain and which decisions come to you first."
                     : step === 1
-                      ? "Choose your intent and bring one question. You can refine it before saving a mission."
-                      : "Check what you’re carrying into the workspace. Opening it saves your setup, not a running mission."}
+                      ? "Pick a goal and, if you have one, the product question. You can refine both before any mission is planned."
+                      : "This is what the workspace will start from. Opening it saves your setup, not a running mission."}
                 </p>
                 <fieldset disabled={saving} className="setup-fields">
                   {step === 0 && (
@@ -361,12 +366,27 @@ export function OnboardingForm({
                   {step === 1 && (
                     <>
                       <p className="ob-label">Your main goal</p>
-                      <Chips
-                        options={DX_GOALS}
-                        value={fields.goal}
-                        onChange={(value) => update("goal", value)}
-                        label="Main goal"
-                      />
+                      <div className="setup-goals" role="radiogroup" aria-label="Main goal">
+                        {DX_GOALS.map((goal) => {
+                          const meta = GOAL_META[goal];
+                          return (
+                            <button
+                              key={goal}
+                              type="button"
+                              role="radio"
+                              aria-checked={fields.goal === goal}
+                              onClick={() => update("goal", goal)}
+                            >
+                              <meta.icon size={20} aria-hidden="true" />
+                              <span>
+                                <strong>{goal}</strong>
+                                <small>{meta.line}</small>
+                              </span>
+                              {fields.goal === goal && <Check size={16} aria-hidden="true" />}
+                            </button>
+                          );
+                        })}
+                      </div>
                       <label className="ob-label" htmlFor="ob-idea">
                         Your product question <span>(optional)</span>
                       </label>
@@ -430,9 +450,23 @@ export function OnboardingForm({
                         </div>
                       )}
                       <aside className="setup-next">
-                        <span>Your next step</span>
+                        <span>Your first mission</span>
                         <h2>{firstAction.label}</h2>
                         <p>{firstAction.reason}</p>
+                        <ul className="setup-next-facts">
+                          <li>
+                            <small>Mission type</small>
+                            {INTENT_LABELS[intentForGoal(fields.goal)]}
+                          </li>
+                          <li>
+                            <small>Starting team</small>
+                            {WORKFORCE_INTENTS[intentForGoal(fields.goal)].length} specialists
+                          </li>
+                          <li>
+                            <small>Before it runs</small>
+                            You approve the plan
+                          </li>
+                        </ul>
                       </aside>
                       {chosenPlan && (
                         <p className="setup-help">

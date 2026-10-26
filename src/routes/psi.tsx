@@ -1,395 +1,270 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
-  FileSearch,
+  BrainCircuit,
+  Cpu,
+  FileCheck2,
+  Gauge,
+  Gavel,
   GitBranch,
-  FolderArchive,
+  KeyRound,
+  Layers3,
+  ListChecks,
+  MessageSquareText,
   ShieldCheck,
-  RefreshCw,
+  PlugZap,
+  Users,
+  type LucideIcon,
 } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
-import { PsiPlatformMap } from "@/components/marketing/psi-platform-map";
-import { PsiAudienceExplorer } from "@/components/marketing/psi-audience-explorer";
 import { pageHead } from "@/components/marketing/page-head";
+import { PlatformStackIllustration } from "@/components/illustrations/platform-illustrations";
+import { WORKFORCE_AVAILABLE_IDS, WORKFORCE_TOTAL } from "@/lib/marketing/workforce-summary";
+
 export const Route = createFileRoute("/psi")({
   head: () =>
     pageHead(
       "/psi",
-      "PSI Platform — Connected product intelligence | DeliverX",
-      "Explore how DeliverX connects evidence, specialist judgement, reviewable delivery and feedback through one Product Brain, with human authority at every consequential step.",
+      "Platform — What DeliverX can do today | DeliverX",
+      "The DeliverX platform layer by layer: Product Brain, the mission engine, specialists, deliberation, approvals, usage limits, provenance and model mode, each marked live, opt-in or planned.",
     ),
-  component: ProductPage,
+  component: Platform,
 });
-function ProductPage() {
+
+type Status = "live" | "opt-in" | "planned";
+
+const LAYERS: Array<{ name: string; icon: LucideIcon; does: string }> = [
+  {
+    name: "Command",
+    icon: MessageSquareText,
+    does: "Understands your objective, asks what is missing and plans the mission.",
+  },
+  {
+    name: "Departments",
+    icon: Users,
+    does: "Groups specialists by discipline and assembles the team a mission needs.",
+  },
+  {
+    name: "Execution",
+    icon: Layers3,
+    does: "Runs bounded tasks in order; a task never starts on failed upstream work.",
+  },
+  {
+    name: "Quality & evidence",
+    icon: ShieldCheck,
+    does: "Checks each handoff and labels how every artefact was produced and reviewed.",
+  },
+];
+
+const CAPABILITIES: Array<{
+  id: string;
+  icon: LucideIcon;
+  name: string;
+  status: Status;
+  does: string;
+  control: string;
+  next?: string;
+  see?: { to: string; hash?: string; label: string };
+}> = [
+  {
+    id: "product-brain",
+    icon: BrainCircuit,
+    name: "Product Brain",
+    status: "live",
+    does: "Keeps one record per product: the brief, supplied sources, evidence, decisions, artefacts and what you observed after.",
+    control: "You choose what goes in. Missing evidence stays visible as a gap, never filled in.",
+    next: "A connected knowledge graph across products is planned.",
+    see: { to: "/", hash: "explore-product", label: "Explore the Product Brain" },
+  },
+  {
+    id: "missions",
+    icon: ListChecks,
+    name: "Mission engine",
+    status: "live",
+    does: "Turns one sentence into a plan with tasks, a team, checks and a usage estimate, then runs the tasks in order.",
+    control: "Nothing runs until you approve the plan. You can change or cancel it first.",
+    see: { to: "/how-it-works", label: "Watch a mission run" },
+  },
+  {
+    id: "specialists",
+    icon: Users,
+    name: "Specialist workforce",
+    status: "live",
+    does: `${WORKFORCE_TOTAL} roles across 15 departments, each with one job and a limit on what it may do.`,
+    control: `${WORKFORCE_AVAILABLE_IDS.length} roles can be assigned today; the rest stay unavailable until they pass their checks.`,
+    see: { to: "/ai-agents", label: "Browse the specialists" },
+  },
+  {
+    id: "deliberation",
+    icon: GitBranch,
+    name: "Decision panels",
+    status: "live",
+    does: "Specialists score options independently, then critique. Security, QA and Finance hold hard vetoes; an option needs 60% weighted support.",
+    control:
+      "High-impact decisions and weak evidence always come to you. Dissent stays on the record.",
+  },
+  {
+    id: "approvals",
+    icon: Gavel,
+    name: "Approvals and gates",
+    status: "live",
+    does: "Plans, lifecycle gates and anything that would act outside DeliverX each need an explicit human approval.",
+    control: "Agents can stop at a gate. Only a person can pass one.",
+  },
+  {
+    id: "usage",
+    icon: Gauge,
+    name: "Usage limits",
+    status: "live",
+    does: "Every billable step is counted against the workspace ceiling before it runs.",
+    control: "When the ceiling is reached, further billable steps stop. Nothing runs on credit.",
+  },
+  {
+    id: "provenance",
+    icon: FileCheck2,
+    name: "Provenance and quality labels",
+    status: "live",
+    does: "Every artefact says whether it is a model output or a simulated draft, and is labelled Agent-reviewed, Automatically tested, Human-reviewed or Externally attested.",
+    control: "Exports include project-manifest.json, which lists what was simulated.",
+  },
+  {
+    id: "model-mode",
+    icon: Cpu,
+    name: "Model mode",
+    status: "opt-in",
+    does: "Uses a configured model provider instead of deterministic drafts.",
+    control:
+      "Off unless you switch it on. Text that looks like personal identifiers is never sent.",
+  },
+  {
+    id: "integrations",
+    icon: PlugZap,
+    name: "Connected tools and deployment",
+    status: "planned",
+    does: "Pull evidence from your tools, keep runtime test logs and publish approved previews.",
+    control: "Each will need its own permission and approval before it can act.",
+  },
+];
+
+const STATUS_LABEL: Record<Status, string> = {
+  live: "Live",
+  "opt-in": "Opt-in",
+  planned: "Planned",
+};
+
+function Platform() {
   return (
     <MarketingLayout>
-      <div className="platform-page">
-        <section className="platform-opening">
+      <div className="plt">
+        <section className="plt-hero">
           <div className="dxl-wrap">
-            <div className="platform-intro">
-              <div>
-                <p className="dxl-eyebrow">Product Super Intelligence</p>
-                <h1>
-                  One product context.
-                  <br />
-                  Connected intelligence.
-                </h1>
-              </div>
-              <div>
-                <p>
-                  PSI connects the evidence behind a question, the specialists considering it and
-                  the decision that moves it forward. Product Brain keeps the reasoning with the
-                  work.
-                </p>
-                <div className="psi-actions">
-                  <a href="#platform-architecture" className="dxl-btn dxl-btn-primary">
-                    Explore the system
-                  </a>
-                  <Link to="/how-it-works" className="dxl-btn dxl-btn-ghost">
-                    See a mission
-                  </Link>
-                </div>
-              </div>
-            </div>
-            <div id="platform-architecture">
-              <PsiPlatformMap />
-            </div>
+            <p className="dxl-eyebrow">Platform</p>
+            <h1>
+              What DeliverX can do,
+              <br />
+              <span className="dxl-grad">and what it can’t yet.</span>
+            </h1>
+            <p>
+              A plain reference to the platform behind every mission: how it is layered, what each
+              capability does, what you control, and whether it is live today.
+            </p>
           </div>
         </section>
-        <nav className="platform-page-nav" aria-label="Platform sections">
+
+        <section className="plt-section" id="platform-architecture">
           <div className="dxl-wrap">
-            <a href="#product-brain">Product Brain</a>
-            <a href="#specialists">Specialists</a>
-            <a href="#capabilities">Scope & availability</a>
-            <a href="#who-its-for">Who it’s for</a>
-            <a href="#controls">Human control</a>
-            <a href="#learning">Learning</a>
-          </div>
-        </nav>
-        <section className="platform-section" id="product-brain">
-          <div className="dxl-wrap">
-            <PlatformHeading
-              label="The shared foundation"
-              title="Trace the work back to the reason."
-              description="The product record connects what you supplied, which alternatives were considered and why the owner chose a direction. A full interactive knowledge graph remains planned."
-            />
-            <div className="platform-record-chain">
-              {[
-                {
-                  icon: FileSearch,
-                  ref: "E-01 / E-02",
-                  title: "Evidence",
-                  text: "Source references, assertions, inferences and open gaps.",
-                },
-                {
-                  icon: GitBranch,
-                  ref: "D-01",
-                  title: "Decision",
-                  text: "Alternatives, reviewer objections and a scoped owner choice.",
-                },
-                {
-                  icon: FolderArchive,
-                  ref: "A-01",
-                  title: "Artefact",
-                  text: "An experiment brief linked to its decision and measurement plan.",
-                },
-              ].map((item, index) => (
-                <div key={item.title}>
-                  <item.icon aria-hidden="true" />
-                  <span>{item.ref}</span>
-                  <h3>{item.title}</h3>
-                  <p>{item.text}</p>
-                  {index < 2 && <ArrowRight className="platform-chain-arrow" aria-hidden="true" />}
-                </div>
-              ))}
-            </div>
-            <div className="platform-section-foot">
-              <span>Illustrative record references, not customer evidence.</span>
-              <Link to="/how-it-works" hash="sample-documents" className="dxl-link">
-                Inspect the linked example
-                <ArrowRight size={14} aria-hidden="true" />
-              </Link>
-            </div>
-          </div>
-        </section>
-        <section className="platform-section platform-specialists" id="specialists">
-          <div className="dxl-wrap platform-specialist-layout">
-            <div>
-              <p className="dxl-eyebrow">Bounded contributions</p>
-              <h2>
-                A specialist needs context.
-                <br />
-                The next role needs a handoff.
-              </h2>
+            <div className="plt-heading">
+              <h2>Five layers, one rule.</h2>
               <p>
-                Roles describe product disciplines, not a promise of 150 autonomous agents. Each
-                enabled capability has a bounded contribution; its output should explain what the
-                next step can rely on.
+                Work moves down through four layers. Governance wraps all of them, so permissions,
+                limits and approvals apply everywhere, not as a final check.
               </p>
-              <div className="platform-catalogue-count">
-                <strong>
-                  150 <span>catalogue roles</span>
-                </strong>
-                <strong>
-                  15 <span>departments</span>
-                </strong>
-              </div>
-              <Link to="/ai-agents" className="dxl-link">
-                Inspect roles and capability status
-                <ArrowRight size={14} aria-hidden="true" />
-              </Link>
             </div>
-            <figure className="platform-team-figure">
-              <img
-                src="/illustrations/specialist-workbench-v1.webp"
-                width={1536}
-                height={1024}
-                alt="Conceptual specialist workbench connecting research, strategy, design, review and human approval."
-                loading="lazy"
-              />
-              <figcaption>
-                <span>Research</span>
-                <ArrowRight size={14} aria-hidden="true" />
-                <span>Options & review</span>
-                <ArrowRight size={14} aria-hidden="true" />
-                <span>Your decision</span>
-              </figcaption>
-              <p>Conceptual collaboration. Catalogue status does not certify live execution.</p>
-            </figure>
-          </div>
-        </section>
-        <section className="platform-section" id="capabilities">
-          <div className="dxl-wrap">
-            <PlatformHeading
-              label="Scope & availability"
-              title="Understand what the platform supports."
-              description="A supervised mission starts with agreed scope and enabled capabilities. Workspace access, configuration and release checks must be confirmed for a paid pilot."
-            />
-            <div
-              className="platform-capability-table"
-              role="region"
-              aria-label="Platform scope comparison"
-              tabIndex={0}
-            >
-              <table>
-                <thead>
-                  <tr>
-                    <th>Product area</th>
-                    <th>Supervised workflow</th>
-                    <th>Boundary</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    [
-                      "Product record",
-                      "Briefs, source references, options and decisions",
-                      "A full interactive knowledge graph is planned.",
-                    ],
-                    [
-                      "Specialist contributions",
-                      "Enabled capabilities with disclosed model or simulated provenance",
-                      "A catalogue role is not proof of execution or independent verification.",
-                    ],
-                    [
-                      "Owner decisions",
-                      "Scoped human decisions and reviewable history",
-                      "This public page grants no approval or tool access.",
-                    ],
-                    [
-                      "Reviewable delivery",
-                      "Decision pack, experiment planning and portable documents",
-                      "Prototypes need an agreed extension; automatic deployment is not promised.",
-                    ],
-                    [
-                      "Outcome review",
-                      "Owner-supplied observations, versioned review and proposed follow-up",
-                      "Connected analytics collection remains planned; follow-up requires approval.",
-                    ],
-                  ].map((row) => (
-                    <tr key={row[0]}>
-                      {row.map((cell, index) =>
-                        index === 0 ? (
-                          <th scope="row" key={cell}>
-                            {cell}
-                          </th>
-                        ) : (
-                          <td key={cell}>{cell}</td>
-                        ),
-                      )}
-                    </tr>
+            <div className="plt-layers">
+              <div className="plt-stack ix">
+                <PlatformStackIllustration
+                  layers={LAYERS}
+                  governance={{ name: "Governance", icon: KeyRound }}
+                />
+              </div>
+              <div className="plt-layer-list">
+                <ol>
+                  {LAYERS.map((l, i) => (
+                    <li key={l.name}>
+                      <span>{String(i + 1).padStart(2, "0")}</span>
+                      <strong>{l.name}</strong>
+                      <p>{l.does}</p>
+                    </li>
                   ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="platform-roadmap-note">
-              <span>Future direction</span>
-              <p>
-                Broader design and engineering execution, verification, release and connected
-                learning extend the lifecycle. Their availability is not implied by the
-                illustrations.
-              </p>
-              <Link to="/" hash="home-lifecycle" className="dxl-link">
-                Explore the lifecycle direction
-                <ArrowRight size={14} aria-hidden="true" />
-              </Link>
+                </ol>
+                <aside>
+                  <KeyRound size={20} aria-hidden="true" />
+                  <strong>Governance</strong>
+                  <p>
+                    Workspace isolation, permissions, usage ceilings, approvals and the audit trail,
+                    across every layer.
+                  </p>
+                </aside>
+              </div>
             </div>
           </div>
         </section>
-        <section className="platform-section platform-audience-section" id="who-its-for">
+
+        <section className="plt-section" id="capabilities">
           <div className="dxl-wrap">
-            <PlatformHeading
-              label="One environment, different starting points"
-              title="Build a product. Learn through the work."
-              description="Founders, product teams and students can bring different questions into the same evidence-to-decision workflow. These are example use cases, not customer outcome claims."
-            />
-            <PsiAudienceExplorer />
-            <Link to="/solutions" className="dxl-link">
-              Choose an editable starting brief <ArrowRight size={14} aria-hidden="true" />
-            </Link>
-          </div>
-        </section>
-        <section className="platform-section" id="controls">
-          <div className="dxl-wrap platform-control-layout">
-            <div>
-              <p className="dxl-eyebrow">Human authority</p>
-              <h2>
-                Keep the consequential
-                <br />
-                decisions in your hands.
-              </h2>
+            <div className="plt-heading">
+              <h2>Capabilities.</h2>
               <p>
-                Review the evidence, scope and uncertainty before approving the next step. A
-                specialist can prepare the case; it cannot pass a human lifecycle gate.
+                Each one marked live, opt-in or planned. Nothing planned is presented as working.
               </p>
-              <Link to="/security" className="dxl-link">
-                Explore the safeguards
-                <ArrowRight size={14} aria-hidden="true" />
-              </Link>
             </div>
-            <ol className="platform-control-flow">
-              {[
-                {
-                  title: "Define the scope",
-                  text: "Name the intended action, target and constraints.",
-                },
-                {
-                  title: "Inspect the case",
-                  text: "Review the recommendation, dissent and evidence gaps.",
-                },
-                {
-                  title: "Record your decision",
-                  text: "Approve a bounded step, reject it or request more evidence.",
-                },
-              ].map((step, index) => (
-                <li key={step.title}>
-                  <span>0{index + 1}</span>
-                  <div>
-                    <h3>{step.title}</h3>
-                    <p>{step.text}</p>
+            <ul className="plt-caps">
+              {CAPABILITIES.map((c) => (
+                <li key={c.id} id={c.id} data-status={c.status}>
+                  <div className="plt-cap-top">
+                    <span className="plt-cap-icon">
+                      <c.icon size={18} aria-hidden="true" />
+                    </span>
+                    <span className="plt-badge" data-status={c.status}>
+                      {STATUS_LABEL[c.status]}
+                    </span>
                   </div>
+                  <h3>{c.name}</h3>
+                  <p>{c.does}</p>
+                  <div className="plt-control">
+                    <small>You control</small>
+                    {c.control}
+                  </div>
+                  {c.next && <p className="plt-next">{c.next}</p>}
+                  {c.see && (
+                    <Link
+                      to={c.see.to}
+                      {...(c.see.hash ? { hash: c.see.hash } : {})}
+                      className="plt-see"
+                    >
+                      {c.see.label} <ArrowRight size={14} aria-hidden="true" />
+                    </Link>
+                  )}
                 </li>
               ))}
-              <li className="platform-control-end">
-                <ShieldCheck aria-hidden="true" />
-                <p>Permissions and usage controls must be verified for the enabled workspace.</p>
-              </li>
-            </ol>
+            </ul>
           </div>
         </section>
-        <section className="platform-section platform-learning-section" id="learning">
+
+        <section className="plt-close">
           <div className="dxl-wrap">
-            <PlatformHeading
-              label="Feedback loop"
-              title="Carry the observation into the next decision."
-              description="Compare the expected metric with a result you actually observed. The review keeps limitations visible and may propose the next question; you decide whether it becomes work."
-            />
-            <div className="platform-feedback-loop">
-              <div>
-                <span>Expected</span>
-                <h3>Hypothesis & measure</h3>
-                <p>Baseline, metric and observation window.</p>
-              </div>
-              <ArrowRight aria-hidden="true" />
-              <div>
-                <span>Observed</span>
-                <h3>You supply the result</h3>
-                <p>Genuine evidence with its source and limits.</p>
-              </div>
-              <ArrowRight aria-hidden="true" />
-              <div>
-                <span>Reviewed</span>
-                <h3>A proposed next question</h3>
-                <p>Owner approval before a follow-up mission.</p>
-              </div>
-            </div>
-            <p className="platform-feedback-return">
-              <RefreshCw size={16} aria-hidden="true" />
-              The approved next question returns to Evidence & memory.
-            </p>
-            <Link to="/how-it-works" hash="outcome-review" className="dxl-link">
-              See the example feedback loop
-              <ArrowRight size={14} aria-hidden="true" />
-            </Link>
-          </div>
-        </section>
-        <section className="platform-next-step" aria-labelledby="platform-next-title">
-          <div className="dxl-wrap">
-            <div className="platform-next-intro">
-              <p className="dxl-eyebrow">Your next product decision</p>
-              <h2 id="platform-next-title">
-                A clear question.
-                <br />A useful next step.
-              </h2>
-              <p>Start with the context you have. Choose the path that fits where you are.</p>
-            </div>
-            <div className="platform-next-paths">
-              <Link to="/resources" hash="brief-builder">
-                <span>Shape the question</span>
-                <h3>
-                  Prepare your brief
-                  <ArrowRight size={19} aria-hidden="true" />
-                </h3>
-                <p>
-                  Capture your audience, objective and constraints. Download the brief before
-                  committing to a pilot.
-                </p>
+            <h2>See the platform run a mission.</h2>
+            <div className="psi-actions">
+              <Link to="/how-it-works" className="dxl-btn dxl-btn-primary">
+                Watch a mission <ArrowRight size={16} />
               </Link>
-              <Link to="/pricing">
-                <span>Discuss the scope</span>
-                <h3>
-                  Compare paid pilots
-                  <ArrowRight size={19} aria-hidden="true" />
-                </h3>
-                <p>
-                  Explore Builder, Founder and Studio. Scope, availability and billing are agreed
-                  before paid work starts.
-                </p>
+              <Link to="/security" className="dxl-btn dxl-btn-ghost">
+                Security details
               </Link>
-              <small>Creating an account does not activate a paid pilot.</small>
             </div>
           </div>
         </section>
       </div>
     </MarketingLayout>
-  );
-}
-function PlatformHeading({
-  label,
-  title,
-  description,
-}: {
-  label: string;
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="platform-section-heading">
-      <div>
-        <p className="dxl-eyebrow">{label}</p>
-        <h2>{title}</h2>
-      </div>
-      <p>{description}</p>
-    </div>
   );
 }
