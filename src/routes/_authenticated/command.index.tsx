@@ -19,10 +19,8 @@ import {
   ProductImproveIcon,
 } from "@/components/marketing/motion-product-visuals";
 import { FlaskConical, Rocket, Search, ShieldCheck, Wrench } from "lucide-react";
-import {
-  MissionPipelineStage,
-  WAITING_STATUSES,
-} from "@/components/command/mission-pipeline-stage";
+import { AgentOffice } from "@/components/command/agent-office";
+import { OWNER_WAITING } from "@/lib/agent-office";
 
 export const Route = createFileRoute("/_authenticated/command/")({
   head: () => ({
@@ -284,13 +282,11 @@ function CommandHome() {
   }
 
   const selectedProjectId = projectId || data.projects[0]?.id || "";
-  const awaitingCount = data.recentMissions.filter((m) =>
-    WAITING_STATUSES.includes(m.status),
-  ).length;
+  const awaitingCount = data.recentMissions.filter((m) => OWNER_WAITING.includes(m.status)).length;
   const completedCount = data.recentMissions.filter((m) => m.status === "completed").length;
 
   const filteredMissions = data.recentMissions.filter((m) => {
-    if (missionFilter === "awaiting") return WAITING_STATUSES.includes(m.status);
+    if (missionFilter === "awaiting") return OWNER_WAITING.includes(m.status);
     if (missionFilter === "completed") return m.status === "completed";
     if (
       missionFilter === "investigate" ||
@@ -313,13 +309,11 @@ function CommandHome() {
     >
       <WorkspaceOverview
         pipeline={
-          <MissionPipelineStage
+          <AgentOffice
             missions={data.recentMissions}
+            tasks={data.recentTasks}
+            tasksUnavailable={data.recentTasksUnavailable}
             usage={{ consumed: data.workspace.usageConsumed, ceiling: data.workspace.usageCeiling }}
-            onShowWaiting={() => {
-              setMissionFilter("awaiting");
-              document.getElementById("cc-missions")?.scrollIntoView({ behavior: "smooth" });
-            }}
           />
         }
       />

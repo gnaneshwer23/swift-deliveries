@@ -427,46 +427,6 @@ export function LearningIllustration() {
 }
 
 // ---------------------------------------------------------------------------
-// A vessel holding one cube per item, for live counts on the dashboard
-// ---------------------------------------------------------------------------
-const CUBE_SLOTS: Array<[number, number, number]> = [
-  [-11, -11, 0],
-  [11, -11, 0],
-  [-11, 11, 0],
-  [11, 11, 0],
-  [-11, -11, 20],
-  [11, -11, 20],
-  [-11, 11, 20],
-  [11, 11, 20],
-  [0, 0, 40],
-];
-
-export function CountVessel({ count, attention = false }: { count: number; attention?: boolean }) {
-  const id = useIxId("cv");
-  const shown = CUBE_SLOTS.slice(0, Math.min(count, CUBE_SLOTS.length)).sort(
-    (a, b) => a[2] - b[2] || a[0] + a[1] - (b[0] + b[1]),
-  );
-  return (
-    <svg viewBox="-100 -150 200 195" role="img" aria-label={`${count} missions`}>
-      <IsoDefs id={id} />
-      <g className="ix-count" data-attention={attention || undefined}>
-        <Plate id={id} at={[0, 0, 0]} size={50} height={12} radius={15} glow={attention} />
-        <Glass id={id} at={[0, 0, 0]} r={38} h={92}>
-          {shown.map(([x, y, z], i) => (
-            <Cube
-              key={i}
-              at={[x, y, z + 2]}
-              s={19}
-              tone={attention && i === shown.length - 1 ? "lit" : "mid"}
-            />
-          ))}
-        </Glass>
-      </g>
-    </svg>
-  );
-}
-
-// ---------------------------------------------------------------------------
 // Platform: four layers stacked top to bottom, governance wrapped round all
 // ---------------------------------------------------------------------------
 export function PlatformStackIllustration({

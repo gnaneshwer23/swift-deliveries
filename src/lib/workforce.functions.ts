@@ -350,6 +350,10 @@ export type CommandCentreBootstrap = {
   workspace: WfWorkspace;
   projects: WfProject[];
   recentMissions: WfMission[];
+  /** Tasks of `recentMissions`, for the agents office: who is working on what. */
+  recentTasks: WfMissionTask[];
+  /** True when the task read failed; the rest of the bootstrap is still valid. */
+  recentTasksUnavailable: boolean;
   storage: "supabase";
   permissionLadder: PermissionLevel[];
   features: {
@@ -381,10 +385,43 @@ export const getCommandCentreBootstrap = createServerFn({ method: "GET" })
     if (projectsRes.error) throw new Error(projectsRes.error.message);
     if (missionsRes.error) throw new Error(missionsRes.error.message);
 
+    const missionIds = (missionsRes.data ?? []).map((m: { id: string }) => m.id);
+    const tasksRes = missionIds.length
+      ? await db
+          .from("wf_mission_tasks")
+          .select("*")
+          .eq("workspace_id", workspace.id)
+          .in("mission_id", missionIds)
+          .order("sort_order", { ascending: true })
+      : { data: [], error: null };
+    // the office is secondary: a failed task read must not take down the workspace
+    if (tasksRes.error) {
+      const { recordMonitoringEvent } = await import("@/lib/monitoring.server");
+      await recordMonitoringEvent({
+        kind: "server_error",
+        severity: "warning",
+        source: "command-bootstrap",
+        message: `Task read failed: ${tasksRes.error.message}`,
+        route: "/command",
+        userId,
+      });
+    }
+
     return {
       workspace,
       projects: (projectsRes.data ?? []).map(mapProject),
       recentMissions: (missionsRes.data ?? []).map(mapMission),
+      // newest mission first, then plan order, so the newest work leads the office
+      recentTasks: tasksRes.error
+        ? []
+        : (tasksRes.data ?? [])
+            .map(mapTask)
+            .sort(
+              (a: WfMissionTask, b: WfMissionTask) =>
+                missionIds.indexOf(a.missionId) - missionIds.indexOf(b.missionId) ||
+                a.sortOrder - b.sortOrder,
+            ),
+      recentTasksUnavailable: Boolean(tasksRes.error),
       storage,
       permissionLadder: ["plan", "create", "execute_internally", "act_externally"],
       features: {

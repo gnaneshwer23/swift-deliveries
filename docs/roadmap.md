@@ -13,6 +13,10 @@ Status is what this repository can show today. It is not a production-readiness 
 | 5     | Outcome review: expected result, supplied observation, comparison and a human-approved next mission                                                                   | Implemented in this repository on the supervised mission. See the Phase 5 boundary. It is not connected analytics, automatic approval, or production certification.                                                                                                    |
 | 6     | Controlled paid release: manual activation of one scoped plan, an explicit mission allowance, and a block on the next billable comparison when that allowance is used | Implemented in this repository. See the Phase 6 boundary. Self-service checkout is not live. This is not production certification.                                                                                                                                     |
 
+## Live database: migrations applied
+
+26 October 2026. Migrations `0020`–`0023` (supervised missions and spend, pilot activations, comparison reservations, comparison reconciliations) were applied to the production Neon branch in one transaction, after `0020`–`0023` were applied to the preview branch. Row-level security was also enabled on `psi_pilot_requests`. All six `psi_*` tables are owned by the server role, have no client grants, and have row-level security on. The notes below that say a migration is unapplied describe the state when each phase landed. A signed-in run on production and the release checks in `docs/psi-production-readiness-plan.md` have still not been run, so no production-readiness claim is made.
+
 ## Forward PSI roadmap: Phase 1 acceptance
 
 The newer illustrated-product roadmap begins with reliability, not another website redesign. See `docs/psi-phase-one-reliability.md` for implemented fixes and exact verification. Code implementation, isolated environment verification and release acceptance are separate statuses. Existing phases 3–6 below are implementation history, not production acceptance.
