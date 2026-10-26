@@ -1,11 +1,20 @@
 import { useId } from "react";
-import type { OfficeDepartment } from "@/lib/agent-office";
+import type { OfficeDepartment, OfficeSpecialist } from "@/lib/agent-office";
 import { Agent, Glass, IsoDefs, Particles, Plate } from "./iso";
 import { iso, pathOf, prism, roundRect, topMatrix, type P3 } from "./iso-geometry";
 import { OFFICE_VIEWBOX, POD_D, POD_W, deskSpots, podAt } from "./agent-office-layout";
 
 const add = (a: P3, b: P3): P3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
 const BRAIN: P3 = [0, 0, 0];
+const SAYS: Record<OfficeSpecialist["state"], string> = {
+  idle: "free",
+  waiting: "waiting for you",
+  doing: "working",
+  next: "up next",
+  later: "queued behind earlier work",
+  done: "finished its recent work",
+  stopped: "stopped",
+};
 
 function Desk({
   pid,
@@ -18,7 +27,7 @@ function Desk({
   pid: string;
   at: P3;
   name: string;
-  state: string;
+  state: OfficeSpecialist["state"];
   selected: boolean;
   onSelect: (() => void) | undefined;
 }) {
@@ -33,7 +42,7 @@ function Desk({
       data-selected={selected || undefined}
       role={onSelect ? "button" : undefined}
       tabIndex={onSelect ? 0 : undefined}
-      aria-label={onSelect ? `${name}: ${state}` : undefined}
+      aria-label={onSelect ? `${name}: ${SAYS[state]}` : undefined}
       aria-pressed={onSelect ? selected : undefined}
       onClick={onSelect}
       onKeyDown={(e) => {
@@ -153,7 +162,7 @@ export function AgentOfficeIllustration({
               {String(d.n).padStart(2, "0")} {d.short.toUpperCase()}
             </text>
             {d.specialists.map((s, i) => {
-              const [dx, dy] = spots[i] ?? [0, 0];
+              const [dx, dy] = spots[i]!;
               return (
                 <Desk
                   key={s.id}

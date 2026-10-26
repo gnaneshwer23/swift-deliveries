@@ -411,7 +411,16 @@ export const getCommandCentreBootstrap = createServerFn({ method: "GET" })
       workspace,
       projects: (projectsRes.data ?? []).map(mapProject),
       recentMissions: (missionsRes.data ?? []).map(mapMission),
-      recentTasks: tasksRes.error ? [] : (tasksRes.data ?? []).map(mapTask),
+      // newest mission first, then plan order, so the newest work leads the office
+      recentTasks: tasksRes.error
+        ? []
+        : (tasksRes.data ?? [])
+            .map(mapTask)
+            .sort(
+              (a: WfMissionTask, b: WfMissionTask) =>
+                missionIds.indexOf(a.missionId) - missionIds.indexOf(b.missionId) ||
+                a.sortOrder - b.sortOrder,
+            ),
       recentTasksUnavailable: Boolean(tasksRes.error),
       storage,
       permissionLadder: ["plan", "create", "execute_internally", "act_externally"],

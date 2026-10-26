@@ -13,7 +13,7 @@ export function podAt(k: number, n: number): P3 {
   return [Math.cos(a) * OFFICE_RING, Math.sin(a) * OFFICE_RING, 0];
 }
 
-/** Desk offsets on a floor for one to four specialists, back row first. */
+/** Desk offsets on a floor, back row first. Up to four fit the floor's layout; more go in rows of two. */
 export function deskSpots(n: number): Array<[number, number]> {
   if (n <= 1) return [[0, 4]];
   if (n === 2)
@@ -27,12 +27,18 @@ export function deskSpots(n: number): Array<[number, number]> {
       [0, 24],
       [56, -18],
     ];
-  return [
-    [-58, -34],
-    [58, -34],
-    [-58, 36],
-    [58, 36],
-  ];
+  if (n === 4)
+    return [
+      [-58, -34],
+      [58, -34],
+      [-58, 36],
+      [58, 36],
+    ];
+  const rows = Math.ceil(n / 2);
+  return Array.from({ length: n }, (_, i): [number, number] => [
+    i % 2 ? 58 : -58,
+    -50 + (Math.floor(i / 2) * 100) / Math.max(1, rows - 1),
+  ]);
 }
 
 /**

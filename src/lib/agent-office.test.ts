@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { WORKFORCE_AVAILABLE_IDS } from "@/lib/marketing/workforce-summary";
 import type { MissionStatus, TaskStatus, WfMission, WfMissionTask } from "@/lib/workforce/types";
+import { deskSpots } from "@/components/illustrations/agent-office-layout";
 import { buildAgentOffice, taskState } from "./agent-office";
 
 const mission = (id: string, status: MissionStatus): WfMission =>
@@ -32,6 +33,7 @@ describe("agent office", () => {
     expect(taskState(task("t", "m", "running", []), mission("m", "running"))).toBe("doing");
     expect(taskState(task("t", "m", "skipped", []), mission("m", "running"))).toBe("done");
     expect(taskState(task("t", "m", "failed", []), mission("m", "running"))).toBe("stopped");
+    expect(taskState(task("t", "m", "running", []), mission("m", "cancelled"))).toBe("stopped");
   });
 
   it("treats a gate or an unapproved outside action as waiting on the owner", () => {
@@ -86,5 +88,13 @@ describe("agent office", () => {
     const office = buildAgentOffice([mission("p", "awaiting_approval")], []);
     expect(office.items[0]).toMatchObject({ missionId: "p", state: "stopped" });
     expect(office.totals.waiting).toBe(0);
+  });
+
+  it("gives every desk its own spot, however many a floor holds", () => {
+    for (let n = 1; n <= 8; n++) {
+      const spots = deskSpots(n);
+      expect(spots).toHaveLength(n);
+      expect(new Set(spots.map((p) => p.join(","))).size).toBe(n);
+    }
   });
 });

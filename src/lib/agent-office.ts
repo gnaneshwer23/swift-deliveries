@@ -41,6 +41,7 @@ export function taskState(
   mission: WfMission | undefined,
   siblings: readonly WfMissionTask[] = [],
 ): OfficeState {
+  if (mission?.status === "cancelled") return finished(task) ? "done" : "stopped";
   if (task.status === "running") return "doing";
   if (finished(task)) return "done";
   if (task.status === "failed") return "stopped";
@@ -67,7 +68,7 @@ export type OfficeItem = {
   title: string;
   mission: string;
   who: string;
-  /** Specialist ids on the task; empty when the next step is the owner's. */
+  /** Specialist ids on the task; empty for a mission-level step that is the owner's own. */
   specialists: string[];
   state: OfficeState;
 };

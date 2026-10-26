@@ -65,7 +65,10 @@ export function AgentOffice({
     <section className="ao" ref={ref} aria-labelledby="ao-title">
       <header className="ao-head">
         <div>
-          <span className="ao-overline">Your agents office</span>
+          <span className="ao-overline">
+            Your agents office · {missions.length} most recent mission
+            {missions.length === 1 ? "" : "s"}
+          </span>
           <h2 id="ao-title">
             {office.totals.waiting > 0
               ? `${office.totals.waiting} ${office.totals.waiting === 1 ? "item waits" : "items wait"} for you`
@@ -171,7 +174,7 @@ export function AgentOffice({
             </p>
           ) : (
             <ol className="ao-list">
-              {items.slice(0, 40).map((i) => (
+              {items.map((i) => (
                 <li key={i.key} data-state={i.state}>
                   <Link to="/command/missions/$missionId" params={{ missionId: i.missionId }}>
                     <span className="ao-pill">{STATE_LABEL[i.state]}</span>
