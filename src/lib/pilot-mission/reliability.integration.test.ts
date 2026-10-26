@@ -4,6 +4,8 @@ import { createDb, type ColumnTypes, type Executor } from "@/lib/db/builder";
 import type { DbTransaction } from "@/lib/db/neon.server";
 import { createMissionStore, postWorkspaceSpend } from "./repository.server";
 import { reservedComparison } from "./reservations.server";
+import { runAccountedComparison } from "./comparison.server";
+import { reconcileComparison } from "./reconciliation.server";
 import { SupervisedMissionService } from "./service";
 import { notConfiguredGeneration } from "./generate";
 import type { GenerationResult, SupervisedMission } from "./types";
@@ -82,13 +84,269 @@ describe.skipIf(!url)("isolated PostgreSQL transaction and recovery checks", () 
     }
   });
   beforeEach(async () => {
-    await sql!`truncate psi_comparison_reservations,psi_supervised_spend,psi_supervised_missions,psi_pilot_activations,psi_pilot_requests,wf_workspaces cascade`;
+    await sql!`truncate psi_comparison_reconciliations,psi_comparison_reservations,psi_supervised_spend,psi_supervised_missions,psi_pilot_activations,psi_pilot_requests,wf_workspaces cascade`;
     workspaceId = crypto.randomUUID();
     await sql!`insert into wf_workspaces(id,owner_id,usage_ceiling) values(${workspaceId},'test-owner',10)`;
     service = new SupervisedMissionService(createMissionStore(db, transact));
   });
   afterAll(async () => {
     await sql?.end();
+  });
+
+  async function readyMission() {
+    const created = await mission();
+    return service.saveEvidence({
+      workspaceId,
+      id: created.id,
+      nowMs: Date.now(),
+      items: [
+        {
+          statement: "Synthetic fixture for product setup.",
+          source: "Test fixture",
+          classification: "supplied",
+        },
+      ],
+    });
+  }
+  const validGeneration: GenerationResult = {
+    ...generated,
+    output: JSON.stringify({
+      options: [
+        { id: "test-a", title: "Investigate setup", tradeoff: "Needs more evidence", basis: "gap" },
+        { id: "test-b", title: "Keep current setup", tradeoff: "Leaves uncertainty", basis: "gap" },
+      ],
+      citations: [],
+      gaps: ["Synthetic fixture only"],
+    }),
+  };
+  async function pilotConsumed() {
+    return Number(
+      (
+        await sql!`select missions_consumed from psi_pilot_activations where workspace_id=${workspaceId}`
+      )[0]!["missions_consumed"],
+    );
+  }
+  function compare(m: SupervisedMission, run = async () => validGeneration, target = service) {
+    return runAccountedComparison(
+      target,
+      {
+        workspaceId,
+        id: m.id,
+        workerId: crypto.randomUUID(),
+        nowMs: Date.now(),
+        generator: { cost: 1, run },
+      },
+      transact,
+    );
+  }
+
+  it("charges exactly once through the production orchestration on completion and retry", async () => {
+    await activate(5);
+    const m = await readyMission();
+    let calls = 0;
+    const run = async () => {
+      calls++;
+      return validGeneration;
+    };
+    await compare(m, run);
+    await compare(m, run);
+    expect(calls).toBe(1);
+    expect(await consumed()).toBe(1);
+    expect(await pilotConsumed()).toBe(1);
+  });
+
+  it("recovers a saved provider result at exhausted allowance after a mission save failure", async () => {
+    await activate(1);
+    await sql!`update wf_workspaces set usage_ceiling=1 where id=${workspaceId}`;
+    const m = await readyMission();
+    const store = createMissionStore(db, transact);
+    let fail = true,
+      calls = 0;
+    const failingService = new SupervisedMissionService({
+      ...store,
+      async save(next, version) {
+        if (next.proposal && fail) {
+          fail = false;
+          throw new Error("injected mission save failure");
+        }
+        return store.save(next, version);
+      },
+    });
+    const run = async () => {
+      calls++;
+      return validGeneration;
+    };
+    await expect(compare(m, run, failingService)).rejects.toThrow("injected mission save failure");
+    const recovered = await compare(m, run);
+    expect(recovered.mission.stage).toBe("alternatives");
+    expect(calls).toBe(1);
+    expect(await consumed()).toBe(1);
+    expect(await pilotConsumed()).toBe(1);
+  });
+
+  it("serializes final allowance across concurrent complete workflows", async () => {
+    await activate(1);
+    const a = await readyMission(),
+      b = await readyMission();
+    let calls = 0;
+    const run = async () => {
+      calls++;
+      return validGeneration;
+    };
+    const results = await Promise.allSettled([compare(a, run), compare(b, run)]);
+    expect(results.filter((r) => r.status === "fulfilled")).toHaveLength(1);
+    expect(calls).toBe(1);
+    expect(await consumed()).toBe(1);
+    expect(await pilotConsumed()).toBe(1);
+  });
+
+  it("does not redispatch when the same mission is retried while its provider call runs", async () => {
+    await activate(5);
+    const m = await readyMission();
+    let release!: () => void;
+    let started!: () => void;
+    const running = new Promise<void>((resolve) => {
+      started = resolve;
+    });
+    const finish = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    let calls = 0;
+    const first = compare(m, async () => {
+      calls++;
+      started();
+      await finish;
+      return validGeneration;
+    });
+    await running;
+    try {
+      await expect(compare(m)).rejects.toThrow("already running");
+    } finally {
+      release();
+    }
+    await first;
+    expect(calls).toBe(1);
+    expect(await consumed()).toBe(1);
+    expect(await pilotConsumed()).toBe(1);
+  });
+
+  it("rolls back both counters and prevents dispatch if reservation commit fails", async () => {
+    await activate(5);
+    const m = await readyMission();
+    let calls = 0;
+    const failing: DbTransaction = (work) =>
+      transact(async (tx, q) => {
+        await work(tx, q);
+        throw new Error("injected reservation commit failure");
+      });
+    await expect(
+      runAccountedComparison(
+        service,
+        {
+          workspaceId,
+          id: m.id,
+          workerId: "worker",
+          nowMs: Date.now(),
+          generator: {
+            cost: 1,
+            run: async () => {
+              calls++;
+              return validGeneration;
+            },
+          },
+        },
+        failing,
+      ),
+    ).rejects.toThrow("injected reservation commit failure");
+    expect(calls).toBe(0);
+    expect(await consumed()).toBe(0);
+    expect(await pilotConsumed()).toBe(0);
+    expect(await sql!`select * from psi_comparison_reservations`).toHaveLength(0);
+  });
+
+  async function uncertainAttempt() {
+    await activate(3);
+    const m = await readyMission();
+    await expect(
+      compare(m, async () => {
+        throw new Error("provider timeout");
+      }),
+    ).rejects.toThrow("provider timeout");
+    const row = (
+      await sql!`select spend_key from psi_comparison_reservations where mission_id=${m.id}`
+    )[0]!;
+    return {
+      workspaceId,
+      missionId: m.id,
+      spendKey: String(row["spend_key"]),
+      outcome: "not_dispatched" as const,
+      evidenceNote: "Provider request log confirms this attempt never dispatched.",
+    };
+  }
+  const operator = { authorised: true, id: "operator-fixture" };
+  it("requires operator authority and refuses recent or wrong-workspace reconciliation", async () => {
+    const input = await uncertainAttempt();
+    await expect(
+      reconcileComparison(input, { authorised: false, id: "visitor" }, transact),
+    ).rejects.toThrow("Not authorised");
+    await expect(reconcileComparison(input, operator, transact)).rejects.toThrow("ten minutes");
+    await expect(
+      reconcileComparison({ ...input, workspaceId: crypto.randomUUID() }, operator, transact),
+    ).rejects.toThrow("Workspace not found");
+    expect(await consumed()).toBe(1);
+    expect(await pilotConsumed()).toBe(1);
+  });
+  it("releases both counters exactly once under concurrent operator reconciliation", async () => {
+    const input = await uncertainAttempt();
+    await sql!`update psi_comparison_reservations set updated_at=now()-interval '11 minutes'`;
+    await Promise.all([
+      reconcileComparison(input, operator, transact),
+      reconcileComparison(input, operator, transact),
+    ]);
+    expect(await consumed()).toBe(0);
+    expect(await pilotConsumed()).toBe(0);
+    expect(await sql!`select * from psi_comparison_reconciliations`).toHaveLength(1);
+    await expect(
+      reconcileComparison({ ...input, outcome: "charged" }, operator, transact),
+    ).rejects.toThrow("differently");
+    const m = (await service.get(workspaceId, input.missionId))!;
+    let calls = 0;
+    await compare(m, async () => {
+      calls++;
+      return validGeneration;
+    });
+    expect(calls).toBe(0);
+    expect(await consumed()).toBe(0);
+  });
+  it("retains confirmed provider charges and prevents redispatch", async () => {
+    const input = await uncertainAttempt();
+    await sql!`update psi_comparison_reservations set updated_at=now()-interval '11 minutes'`;
+    await reconcileComparison({ ...input, outcome: "charged" }, operator, transact);
+    expect(await consumed()).toBe(1);
+    expect(await pilotConsumed()).toBe(1);
+    await expect(compare((await service.get(workspaceId, input.missionId))!)).rejects.toThrow(
+      "reconciliation",
+    );
+  });
+  it("rolls back refunds if writing the operator audit record fails", async () => {
+    const input = await uncertainAttempt();
+    await sql!`update psi_comparison_reservations set updated_at=now()-interval '11 minutes'`;
+    const failing: DbTransaction = (work) =>
+      transact((tx, q) =>
+        work(tx, async (text, params) => {
+          if (text.startsWith("insert into psi_comparison_reconciliations"))
+            throw new Error("audit insert failed");
+          return q(text, params);
+        }),
+      );
+    await expect(reconcileComparison(input, operator, failing)).rejects.toThrow(
+      "audit insert failed",
+    );
+    expect(await consumed()).toBe(1);
+    expect(await pilotConsumed()).toBe(1);
+    expect((await sql!`select status from psi_comparison_reservations`)[0]!["status"]).toBe(
+      "uncertain",
+    );
   });
 
   it("reserves the final activated allowance before either of two missions can dispatch", async () => {

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
+import { ComparisonReviews } from "@/components/command/comparison-reviews";
 import { MANUAL_ACTIVATION_COPY, ALLOWANCE_EXHAUSTED_COPY } from "@/lib/pilot/commercial-copy";
 import {
   activatePilotRequest,
@@ -60,6 +61,7 @@ function PilotRequestsPage() {
           ? queue.data.requests.map((request) => <RequestCard key={request.id} request={request} />)
           : null}
       </ul>
+      {queue.data?.authorised && <ComparisonReviews />}
     </CommandShell>
   );
 }

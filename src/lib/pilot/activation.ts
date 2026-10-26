@@ -46,10 +46,6 @@ export type ActivationRepository = {
   findByRequest(requestId: string): Promise<PilotActivation | null>;
   findByWorkspace(workspaceId: string): Promise<PilotActivation | null>;
   insert(row: PilotActivation): Promise<PilotActivation>;
-  advanceConsumption(
-    workspaceId: string,
-    expectedConsumed: number,
-  ): Promise<PilotActivation | null>;
 };
 
 export function isPilotOperator(input: {
@@ -65,35 +61,6 @@ export function isPilotOperator(input: {
   const email = input.email?.trim().toLowerCase() ?? "";
   if (email && allow.includes(email)) return true;
   return input.roles.some((role) => role === "admin" || role === "moderator");
-}
-
-export function billableComparisonGate(
-  activation: PilotActivation | null,
-  workspaceId: string,
-  billable: boolean,
-): { ok: true } | { ok: false; message: string } {
-  if (!billable) return { ok: true };
-  if (!activation || activation.workspaceId !== workspaceId) return { ok: true };
-  if (activation.missionsConsumed >= activation.missionAllowance) {
-    return { ok: false, message: ALLOWANCE_EXHAUSTED_MESSAGE };
-  }
-  return { ok: true };
-}
-
-export async function recordBillableComparison(
-  repo: ActivationRepository,
-  workspaceId: string,
-): Promise<{ recorded: boolean; activation: PilotActivation | null }> {
-  const current = await repo.findByWorkspace(workspaceId);
-  if (!current || current.workspaceId !== workspaceId) return { recorded: false, activation: null };
-  if (current.missionsConsumed >= current.missionAllowance) {
-    return { recorded: false, activation: current };
-  }
-  const next = await repo.advanceConsumption(workspaceId, current.missionsConsumed);
-  if (!next || next.workspaceId !== workspaceId) {
-    return { recorded: false, activation: await repo.findByWorkspace(workspaceId) };
-  }
-  return { recorded: true, activation: next };
 }
 
 function cleanWorkspaceId(value: string): string | null {
