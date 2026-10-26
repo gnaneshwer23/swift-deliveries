@@ -356,6 +356,7 @@ describe("model mode safeguards", () => {
         DXSI_MODEL_ENABLED: "true",
         OPENAI_API_KEY: "secret",
         DXSI_MODEL: "gpt-test",
+        DXSI_MODEL_ALLOWLIST: "gpt-test",
       }),
     ).toMatchObject({
       name: "openai",
@@ -364,7 +365,12 @@ describe("model mode safeguards", () => {
       model: "gpt-test",
     });
     expect(
-      resolveProvider({ DXSI_MODEL_ENABLED: "true", OPENROUTER_API_KEY: "k", DXSI_MODEL: "m" }),
+      resolveProvider({
+        DXSI_MODEL_ENABLED: "true",
+        OPENROUTER_API_KEY: "k",
+        DXSI_MODEL: "m",
+        DXSI_MODEL_ALLOWLIST: "m",
+      }),
     ).toMatchObject({
       name: "openrouter",
       model: "m",
@@ -374,6 +380,8 @@ describe("model mode safeguards", () => {
         DXSI_MODEL_ENABLED: "true",
         OPENAI_API_KEY: "openai",
         AI_GATEWAY_API_KEY: "gateway",
+        DXSI_MODEL: "gpt-test",
+        DXSI_MODEL_ALLOWLIST: "gpt-test",
       }),
     ).toMatchObject({ name: "openai" });
   });

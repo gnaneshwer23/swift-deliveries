@@ -16,11 +16,33 @@ import type { WfMission, WfMissionTask } from "./types";
 
 type Provider = { name: string; url: string; apiKey: string; model: string };
 
-const DEFAULT_OPENAI_MODEL = "gpt-4.1";
-const DEFAULT_GATEWAY_MODEL = "anthropic/claude-sonnet-5.5";
 const TIMEOUT_MS = 90_000;
 const MAX_UPSTREAM_CHARS = 6_000;
 const MAX_CONTEXT_CHARS = 24_000;
+
+/**
+ * Model IDs come only from configuration, never from defaults in code, and
+ * every model this deployment may call is listed in DXSI_MODEL_ALLOWLIST
+ * (comma-separated exact IDs). Anything else fails with a clear reason.
+ */
+export function allowedModel(
+  model: string | undefined,
+  env: Record<string, string | undefined>,
+  setting: string,
+): string {
+  if (!model) throw new Error(`Model mode is on but ${setting} is not set.`);
+  const allowed = (env["DXSI_MODEL_ALLOWLIST"] ?? "")
+    .split(",")
+    .map((m) => m.trim())
+    .filter(Boolean);
+  if (allowed.length === 0)
+    throw new Error(
+      "Model mode is on but DXSI_MODEL_ALLOWLIST is empty. List the allowed model IDs.",
+    );
+  if (!allowed.includes(model))
+    throw new Error(`Model "${model}" from ${setting} is not in DXSI_MODEL_ALLOWLIST.`);
+  return model;
+}
 
 export function resolveProvider(
   env: Record<string, string | undefined> = process.env,
@@ -33,8 +55,8 @@ export function resolveProvider(
   // Direct OpenAI credentials take precedence so the configured provider choice is deterministic.
   // API keys are read only in this server-only module and must be deployment secrets.
   if ((!selected || selected === "openai") && env["OPENAI_API_KEY"]?.trim()) {
-    const model =
-      env["DXSI_OPENAI_MODEL"]?.trim() || env["DXSI_MODEL"]?.trim() || DEFAULT_OPENAI_MODEL;
+    const setting = env["DXSI_OPENAI_MODEL"]?.trim() ? "DXSI_OPENAI_MODEL" : "DXSI_MODEL";
+    const model = allowedModel(env[setting]?.trim(), env, setting);
     if (model.includes("/"))
       throw new Error(
         "Direct OpenAI requires an OpenAI model ID without a gateway prefix. Set DXSI_OPENAI_MODEL.",
@@ -46,14 +68,14 @@ export function resolveProvider(
       model,
     };
   }
-  const model = env["DXSI_MODEL"]?.trim() || DEFAULT_GATEWAY_MODEL;
+  const gatewayModel = () => allowedModel(env["DXSI_MODEL"]?.trim(), env, "DXSI_MODEL");
   const gatewayKey = env["AI_GATEWAY_API_KEY"] || env["VERCEL_OIDC_TOKEN"];
   if ((!selected || selected === "vercel-ai-gateway") && gatewayKey?.trim()) {
     return {
       name: "vercel-ai-gateway",
       url: "https://ai-gateway.vercel.sh/v1/chat/completions",
       apiKey: gatewayKey,
-      model,
+      model: gatewayModel(),
     };
   }
   if ((!selected || selected === "openrouter") && env["OPENROUTER_API_KEY"]?.trim()) {
@@ -61,7 +83,7 @@ export function resolveProvider(
       name: "openrouter",
       url: "https://openrouter.ai/api/v1/chat/completions",
       apiKey: env["OPENROUTER_API_KEY"],
-      model,
+      model: gatewayModel(),
     };
   }
   if (selected) throw new Error(`The selected ${selected} provider has no configured credentials.`);
@@ -72,9 +94,25 @@ export function modelModeStatus(): {
   enabled: boolean;
   provider: string | null;
   model: string | null;
+  /** Why model mode is configured but unusable; null when fine or off. */
+  problem: string | null;
 } {
-  const p = resolveProvider();
-  return { enabled: !!p, provider: p?.name ?? null, model: p?.model ?? null };
+  try {
+    const p = resolveProvider();
+    return { enabled: !!p, provider: p?.name ?? null, model: p?.model ?? null, problem: null };
+  } catch (error) {
+    return { enabled: false, provider: null, model: null, problem: (error as Error).message };
+  }
+}
+
+/** The configured provider, or the configuration problem as a reason not to run. */
+function providerOrReason(): { provider: Provider | null; reason: string | null } {
+  try {
+    const provider = resolveProvider();
+    return { provider, reason: provider ? null : "model mode not enabled" };
+  } catch (error) {
+    return { provider: null, reason: `model not run: ${(error as Error).message}` };
+  }
 }
 
 function upstreamContext(upstream: UpstreamArtefact[]): string {
@@ -138,8 +176,9 @@ export async function generateStageContent(input: {
   /** Additional acceptance check; a returned string triggers the corrective retry. */
   extraCheck?: (content: string) => string | null;
 }): Promise<GeneratedContent> {
-  const provider = resolveProvider();
-  if (!provider) return { content: "", mode: "simulated", note: "model mode not enabled" };
+  const { provider, reason } = providerOrReason();
+  if (!provider)
+    return { content: "", mode: "simulated", note: reason ?? "model mode not enabled" };
 
   const screened = `${input.mission.requestText} ${Object.values(input.mission.clarificationAnswers).join(" ")}`;
   if (containsLikelyPersonalIdentifiers(screened)) {
@@ -267,15 +306,33 @@ export async function generateJson<T>(input: {
   screenText: string;
   validate: (text: string) => { ok: true; value: T } | { ok: false; error: string };
 }): Promise<{ ok: true; value: T; model: string } | { ok: false; reason: string }> {
-  const base = resolveProvider();
-  if (!base) return { ok: false, reason: "model mode not enabled" };
+  const { provider: base, reason } = providerOrReason();
+  if (!base) return { ok: false, reason: reason ?? "model mode not enabled" };
   if (containsLikelyPersonalIdentifiers(input.screenText)) {
     return {
       ok: false,
       reason: "possible personal identifiers detected; not sent to an external model",
     };
   }
-  const provider = { ...base, model: process.env["DXSI_DECISION_MODEL"]?.trim() || base.model };
+  let model = base.model;
+  if (process.env["DXSI_DECISION_MODEL"]?.trim()) {
+    try {
+      const decisionModel = allowedModel(
+        process.env["DXSI_DECISION_MODEL"].trim(),
+        process.env,
+        "DXSI_DECISION_MODEL",
+      );
+      // same provider rule as resolveProvider: direct OpenAI takes no gateway prefix
+      if (base.name === "openai" && decisionModel.includes("/"))
+        throw new Error(
+          "Direct OpenAI requires an OpenAI model ID without a gateway prefix in DXSI_DECISION_MODEL.",
+        );
+      model = decisionModel;
+    } catch (error) {
+      return { ok: false, reason: `model not run: ${(error as Error).message}` };
+    }
+  }
+  const provider = { ...base, model };
   let user = input.user;
   for (let attempt = 0; attempt < 2; attempt++) {
     const res = await callModel(provider, input.system, user, false);

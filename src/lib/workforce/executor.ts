@@ -1,3 +1,4 @@
+import { checkPrototypeHtml } from "./contracts";
 import { requiresExternalApproval } from "./permissions";
 import { stageArtefact } from "./stage-artefacts";
 import { canAfford, chargeUsage, type UsageBudget } from "./usage";
@@ -311,9 +312,8 @@ function artefactForTask(
           : "Lightweight interactive prototype (HTML)",
       content: prototypeHtml(mission),
       contentFormat: "html",
-      qualityLabels: (key.includes("auto") || key.includes("test")
-        ? ["automatically_tested"]
-        : ["agent_reviewed"]) as QualityLabel[],
+      // Being built is not being tested: only the check task's own log can say tested.
+      qualityLabels: ["agent_reviewed"],
       evidenceItems: evidence,
     };
   }
@@ -337,27 +337,6 @@ function artefactForTask(
     };
   }
 
-  if (key.includes("auto") || key.includes("structure check")) {
-    return {
-      missionId: mission.id,
-      workspaceId: mission.workspaceId,
-      taskId: task.id,
-      kind: "note",
-      title: "Automatic structure check log",
-      content:
-        "## Automatic checks\n- Required sections present: yes\n- Primary CTA present: yes\n- External publish absent (correct for Stage 1): yes\n\nLabel: **Automatically tested**",
-      contentFormat: "markdown",
-      qualityLabels: ["automatically_tested"],
-      evidenceItems: [
-        {
-          classification: "sourced_facts",
-          statement: "Static structure checks executed against the HTML prototype artefact.",
-          source: "executor.auto_test",
-        },
-      ],
-    };
-  }
-
   if (key.includes("agent review")) {
     return {
       missionId: mission.id,
@@ -374,6 +353,80 @@ function artefactForTask(
   }
 
   return null;
+}
+
+/**
+ * The legacy plan's check task: by its stable key, or by the planner's exact
+ * title for older rows saved before task keys were stored.
+ */
+export function isStructureCheck(task: Pick<WfMissionTask, "key" | "produces" | "title">): boolean {
+  return (
+    !task.produces && (task.key === "auto_test" || task.title === "Run automatic structure checks")
+  );
+}
+
+/**
+ * Runs the static HTML checks on the prototypes this mission has saved and
+ * records each result. Nothing to check is a failure, never a pass: the
+ * "Automatically tested" label is only earned by checks that actually ran.
+ */
+export function structureCheckLog(
+  mission: ExecuteStepInput["mission"],
+  task: Pick<WfMissionTask, "id">,
+  upstream: UpstreamArtefact[],
+): {
+  passed: boolean;
+  detail: string;
+  artefact: Omit<WfArtefact, "id" | "createdAt" | "updatedAt"> | null;
+} {
+  const prototypes = upstream.filter((u) => u.kind === "prototype_html");
+  if (prototypes.length === 0) {
+    return {
+      passed: false,
+      detail: "No prototype has been saved for this mission, so there was nothing to check.",
+      artefact: null,
+    };
+  }
+  const rows = prototypes.flatMap((p) =>
+    checkPrototypeHtml(p.content).map((c) => ({
+      check: `${p.title}: ${c.label}`,
+      passed: c.passed,
+    })),
+  );
+  const failed = rows.filter((r) => !r.passed);
+  const content = [
+    "## Static structure checks",
+    "",
+    "| Check | Result |",
+    "| --- | --- |",
+    ...rows.map((r) => `| ${r.check} | ${r.passed ? "pass" : "fail"} |`),
+    "",
+    `${rows.length - failed.length} of ${rows.length} checks passed. These are static checks of the HTML file; the prototype was not run in a browser.`,
+  ].join("\n");
+  return {
+    passed: failed.length === 0,
+    detail: failed.length
+      ? `${failed.length} static check${failed.length === 1 ? "" : "s"} failed.`
+      : "All static checks passed.",
+    artefact: {
+      missionId: mission.id,
+      workspaceId: mission.workspaceId,
+      taskId: task.id,
+      kind: "note",
+      title: "Static structure check log",
+      content,
+      contentFormat: "markdown",
+      // same rule as stage verification: the label marks checks that ran and passed
+      qualityLabels: failed.length ? [] : ["automatically_tested"],
+      evidenceItems: [
+        {
+          classification: "sourced_facts",
+          statement: `${rows.length} static checks ran against ${prototypes.length} saved prototype${prototypes.length === 1 ? "" : "s"}; ${failed.length} failed.`,
+          source: "executor.structure_check",
+        },
+      ],
+    },
+  };
 }
 
 /**
@@ -477,6 +530,36 @@ export function executeTaskStep(input: ExecuteStepInput): ExecuteStepResult {
         completedAt: now,
         updatedAt: now,
       },
+    };
+  }
+
+  if (isStructureCheck(task)) {
+    const checked = structureCheckLog(mission, task, input.upstream ?? []);
+    const done = {
+      ...task,
+      actualUsage: charged.charged,
+      evidenceNotes: checked.artefact?.evidenceItems.slice(0, 2) ?? [],
+      startedAt: task.startedAt ?? now,
+      completedAt: now,
+      updatedAt: now,
+    };
+    if (!checked.passed) {
+      return {
+        ok: false,
+        reason: "contract_failed",
+        task: { ...done, status: "failed" },
+        nextBudget,
+        usageCharged: charged.charged,
+        ...(checked.artefact ? { artefact: checked.artefact } : {}),
+        detail: checked.detail,
+      };
+    }
+    return {
+      ok: true,
+      usageCharged: charged.charged,
+      nextBudget,
+      artefact: checked.artefact,
+      task: { ...done, status: "completed" },
     };
   }
 
