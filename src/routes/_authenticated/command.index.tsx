@@ -312,6 +312,7 @@ function CommandHome() {
           <AgentOffice
             missions={data.recentMissions}
             tasks={data.recentTasks}
+            tasksUnavailable={data.recentTasksUnavailable}
             usage={{ consumed: data.workspace.usageConsumed, ceiling: data.workspace.usageCeiling }}
           />
         }

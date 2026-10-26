@@ -352,6 +352,8 @@ export type CommandCentreBootstrap = {
   recentMissions: WfMission[];
   /** Tasks of `recentMissions`, for the agents office: who is working on what. */
   recentTasks: WfMissionTask[];
+  /** True when the task read failed; the rest of the bootstrap is still valid. */
+  recentTasksUnavailable: boolean;
   storage: "supabase";
   permissionLadder: PermissionLevel[];
   features: {
@@ -392,13 +394,25 @@ export const getCommandCentreBootstrap = createServerFn({ method: "GET" })
           .in("mission_id", missionIds)
           .order("sort_order", { ascending: true })
       : { data: [], error: null };
-    if (tasksRes.error) throw new Error(tasksRes.error.message);
+    // the office is secondary: a failed task read must not take down the workspace
+    if (tasksRes.error) {
+      const { recordMonitoringEvent } = await import("@/lib/monitoring.server");
+      await recordMonitoringEvent({
+        kind: "server_error",
+        severity: "warning",
+        source: "command-bootstrap",
+        message: `Task read failed: ${tasksRes.error.message}`,
+        route: "/command",
+        userId,
+      });
+    }
 
     return {
       workspace,
       projects: (projectsRes.data ?? []).map(mapProject),
       recentMissions: (missionsRes.data ?? []).map(mapMission),
-      recentTasks: (tasksRes.data ?? []).map(mapTask),
+      recentTasks: tasksRes.error ? [] : (tasksRes.data ?? []).map(mapTask),
+      recentTasksUnavailable: Boolean(tasksRes.error),
       storage,
       permissionLadder: ["plan", "create", "execute_internally", "act_externally"],
       features: {

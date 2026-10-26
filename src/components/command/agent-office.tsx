@@ -11,19 +11,31 @@ const STATE_LABEL: Record<OfficeState, string> = {
   waiting: "Waiting for you",
   doing: "Working",
   next: "Up next",
+  later: "Later",
   done: "Done",
   stopped: "Stopped",
 };
-const FILTERS: Array<"all" | OfficeState> = ["all", "waiting", "doing", "next", "done", "stopped"];
+const FILTERS: Array<"all" | OfficeState> = [
+  "all",
+  "waiting",
+  "doing",
+  "stopped",
+  "next",
+  "later",
+  "done",
+];
 
 export function AgentOffice({
   missions,
   tasks,
   usage,
+  tasksUnavailable = false,
 }: {
   missions: readonly WfMission[];
   tasks: readonly WfMissionTask[];
   usage: { consumed: number; ceiling: number };
+  /** The task read failed; the office shows missions only and says so. */
+  tasksUnavailable?: boolean;
 }) {
   const office = useMemo(() => buildAgentOffice(missions, tasks), [missions, tasks]);
   const [filter, setFilter] = useState<"all" | OfficeState>("all");
@@ -57,9 +69,11 @@ export function AgentOffice({
           <h2 id="ao-title">
             {office.totals.waiting > 0
               ? `${office.totals.waiting} ${office.totals.waiting === 1 ? "item waits" : "items wait"} for you`
-              : office.totals.doing > 0
-                ? `${office.totals.doing} ${office.totals.doing === 1 ? "task is" : "tasks are"} being worked on`
-                : "Everyone is ready for the next mission"}
+              : office.totals.stopped > 0
+                ? `${office.totals.stopped} ${office.totals.stopped === 1 ? "item has" : "items have"} stopped`
+                : office.totals.doing > 0
+                  ? `${office.totals.doing} ${office.totals.doing === 1 ? "task is" : "tasks are"} being worked on`
+                  : "Everyone is ready for the next mission"}
           </h2>
         </div>
         <div className="ao-usage">
@@ -95,24 +109,25 @@ export function AgentOffice({
                   <small>
                     {d.specialists.length} specialist{d.specialists.length === 1 ? "" : "s"}
                   </small>
-                  <dl>
-                    <div>
-                      <dt>Doing</dt>
-                      <dd>{d.counts.doing}</dd>
-                    </div>
-                    <div>
-                      <dt>Next</dt>
-                      <dd>{d.counts.next + d.counts.waiting}</dd>
-                    </div>
-                    <div>
-                      <dt>Done</dt>
-                      <dd>{d.counts.done}</dd>
-                    </div>
-                  </dl>
+                  <DeptCounts counts={d.counts} />
                 </div>
               );
             })}
           </div>
+          <ul className="ao-dept-list" aria-label="Departments">
+            {office.departments.map((d) => (
+              <li key={d.n} data-waiting={d.counts.waiting > 0 || undefined}>
+                <strong>{d.short}</strong>
+                <DeptCounts counts={d.counts} />
+              </li>
+            ))}
+          </ul>
+          {tasksUnavailable && (
+            <p className="ao-dev" role="status">
+              Task details could not load, so desks and counts show missions only. Reload to try
+              again.
+            </p>
+          )}
           <p className="ao-dev">
             <span>
               {office.inDevelopment.length} more departments in development, not assignable yet:
@@ -173,5 +188,27 @@ export function AgentOffice({
         </aside>
       </div>
     </section>
+  );
+}
+
+function DeptCounts({ counts }: { counts: Record<OfficeState, number> }) {
+  return (
+    <>
+      <dl>
+        <div>
+          <dt>Doing</dt>
+          <dd>{counts.doing}</dd>
+        </div>
+        <div>
+          <dt>Next</dt>
+          <dd>{counts.next + counts.later}</dd>
+        </div>
+        <div>
+          <dt>Done</dt>
+          <dd>{counts.done}</dd>
+        </div>
+      </dl>
+      {counts.waiting > 0 && <p className="ao-card-wait">{counts.waiting} waiting for you</p>}
+    </>
   );
 }

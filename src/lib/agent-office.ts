@@ -19,17 +19,38 @@ export const OWNER_WAITING: readonly MissionStatus[] = [
 ];
 const MISSION_ACTIVE: readonly MissionStatus[] = ["queued", "running", "reviewing"];
 
-/** What a task means for the person reading the office. */
-export type OfficeState = "waiting" | "doing" | "next" | "done" | "stopped";
+/**
+ * What a task means for the person reading the office. `waiting` is any step
+ * that needs the owner (a plan to approve, questions, a gate or an outside
+ * action); `later` is runnable only after its upstream tasks finish.
+ */
+export type OfficeState = "waiting" | "doing" | "next" | "later" | "done" | "stopped";
 
-export function taskState(task: WfMissionTask, mission: WfMission | undefined): OfficeState {
+const finished = (t: Pick<WfMissionTask, "status">) =>
+  t.status === "completed" || t.status === "skipped";
+
+/** A blocked task the owner can release: a human gate, or an outside action to approve. */
+function waitsOnOwner(task: WfMissionTask, mission: WfMission | undefined) {
+  if (task.gate) return true;
+  const outside = task.isExternal || task.permissionRequired === "act_externally";
+  return outside && !mission?.externalActionsApproved;
+}
+
+export function taskState(
+  task: WfMissionTask,
+  mission: WfMission | undefined,
+  siblings: readonly WfMissionTask[] = [],
+): OfficeState {
   if (task.status === "running") return "doing";
-  if (task.status === "completed" || task.status === "skipped") return "done";
-  if (task.status === "blocked" || task.status === "failed") return "stopped";
-  // pending: it waits on the owner until the plan is approved, then it is next in line
+  if (finished(task)) return "done";
+  if (task.status === "failed") return "stopped";
+  if (task.status === "blocked") return waitsOnOwner(task, mission) ? "waiting" : "stopped";
+  // pending: before approval the whole plan waits on the owner
   if (!mission || OWNER_WAITING.includes(mission.status)) return "waiting";
-  if (MISSION_ACTIVE.includes(mission.status)) return "next";
-  return "stopped";
+  if (!MISSION_ACTIVE.includes(mission.status) && mission.status !== "blocked") return "stopped";
+  // a task never runs on unfinished upstream work (lib/workforce/graph.ts)
+  const upstream = siblings.filter((s) => (task.dependsOn ?? []).includes(s.key));
+  return upstream.every(finished) ? "next" : "later";
 }
 
 export type OfficeSpecialist = { id: string; name: string; state: OfficeState | "idle" };
@@ -63,11 +84,12 @@ const NAMES = new Map(
     .map((c) => [c.id, { name: c.name.replace(/ Agent$/, ""), department: c.department }]),
 );
 // a desk shows the most pressing thing its specialist is part of
-const PRIORITY: Array<OfficeState> = ["doing", "waiting", "stopped", "next", "done"];
+const PRIORITY: Array<OfficeState> = ["doing", "waiting", "stopped", "next", "later", "done"];
 const empty = (): Record<OfficeState, number> => ({
   waiting: 0,
   doing: 0,
   next: 0,
+  later: 0,
   done: 0,
   stopped: 0,
 });
@@ -77,6 +99,8 @@ export function buildAgentOffice(
   tasks: readonly WfMissionTask[],
 ): AgentOffice {
   const byId = new Map(missions.map((m) => [m.id, m]));
+  const byMission = new Map<string, WfMissionTask[]>();
+  for (const t of tasks) byMission.set(t.missionId, [...(byMission.get(t.missionId) ?? []), t]);
   const deskStates = new Map<string, Set<OfficeState>>();
   const deptCounts = new Map<number, Record<OfficeState, number>>();
   const totals = empty();
@@ -84,7 +108,7 @@ export function buildAgentOffice(
 
   for (const t of tasks) {
     const mission = byId.get(t.missionId);
-    const state = taskState(t, mission);
+    const state = taskState(t, mission, byMission.get(t.missionId));
     totals[state] += 1;
     const departments = new Set<number>();
     for (const id of t.capabilityIds) {
@@ -114,24 +138,37 @@ export function buildAgentOffice(
     });
   }
 
-  // a mission still being shaped has no tasks yet, but it is still waiting on the owner
-  const withTasks = new Set(tasks.map((t) => t.missionId));
+  // A mission still being shaped has no tasks yet but waits on the owner. A plan
+  // with no tasks is not ready for review: it is shown as stopped, to open.
   for (const m of missions) {
-    if (withTasks.has(m.id) || !OWNER_WAITING.includes(m.status)) continue;
-    totals.waiting += 1;
+    if (byMission.has(m.id) || !OWNER_WAITING.includes(m.status)) continue;
+    const shaping = m.status === "draft" || m.status === "needs_clarification";
+    const state: OfficeState = shaping ? "waiting" : "stopped";
+    totals[state] += 1;
     items.push({
       key: m.id,
       missionId: m.id,
       title:
-        m.status === "needs_clarification" ? "Answer the planner’s questions" : "Review the plan",
+        m.status === "draft"
+          ? "Finish the mission request"
+          : m.status === "needs_clarification"
+            ? "Answer the planner’s questions"
+            : "The plan has no tasks: open the mission",
       mission: m.title,
       who: "You",
       specialists: [],
-      state: "waiting",
+      state,
     });
   }
 
-  const order: Record<OfficeState, number> = { waiting: 0, doing: 1, stopped: 2, next: 3, done: 4 };
+  const order: Record<OfficeState, number> = {
+    waiting: 0,
+    doing: 1,
+    stopped: 2,
+    next: 3,
+    later: 4,
+    done: 5,
+  };
   items.sort((a, b) => order[a.state] - order[b.state]);
 
   const available = new Set<string>(WORKFORCE_AVAILABLE_IDS);
