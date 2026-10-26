@@ -108,9 +108,9 @@ function HomePage() {
             <span className="dxl-grad">to continuous intelligence.</span>
           </h1>
           <p className="dxl-lead">
-            Describe a product. A team of specialist AI agents researches it, debates the options,
-            designs and builds it, while you approve every decision that matters and keep a record
-            of how it was made.
+            Describe a product. Specialist AI agents research it, weigh the options and draft the
+            plan, prototype and checks, while you approve every decision that matters and keep a
+            record of how it was made.
           </p>
           <div className="dxl-ctas">
             <Link to="/onboarding" className="dxl-btn dxl-btn-primary">

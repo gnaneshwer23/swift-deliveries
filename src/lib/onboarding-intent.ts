@@ -10,5 +10,5 @@ const INTENT_FOR_GOAL: Record<string, WorkforceIntent> = {
 };
 
 export function intentForGoal(goal: string): WorkforceIntent {
-  return INTENT_FOR_GOAL[goal] ?? "investigate";
+  return Object.hasOwn(INTENT_FOR_GOAL, goal) ? INTENT_FOR_GOAL[goal]! : "investigate";
 }

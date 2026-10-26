@@ -2,12 +2,25 @@ import { ArrowRight } from "lucide-react";
 import { CountVessel } from "@/components/illustrations/platform-illustrations";
 import type { MissionStatus } from "@/lib/workforce/types";
 
-const GROUPS: Array<{ id: string; label: string; note: string; statuses: MissionStatus[] }> = [
+/** Missions that cannot move until the owner acts: drafts, questions and plans to approve. */
+export const WAITING_STATUSES: readonly MissionStatus[] = [
+  "draft",
+  "needs_clarification",
+  "planned",
+  "awaiting_approval",
+];
+
+const GROUPS: Array<{
+  id: string;
+  label: string;
+  note: string;
+  statuses: readonly MissionStatus[];
+}> = [
   {
     id: "you",
     label: "Waiting for you",
-    note: "Clarify or approve a plan",
-    statuses: ["needs_clarification", "planned", "awaiting_approval"],
+    note: "Finish a draft, answer questions or approve a plan",
+    statuses: WAITING_STATUSES,
   },
   {
     id: "progress",
@@ -51,7 +64,7 @@ export function MissionPipelineStage({
           <strong>
             {total === 0
               ? "No missions yet"
-              : `${total} mission${total === 1 ? "" : "s"} across your products`}
+              : `Your ${total} most recent mission${total === 1 ? "" : "s"}`}
           </strong>
         </div>
         <div className="cc-pipeline-usage">

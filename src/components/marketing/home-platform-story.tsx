@@ -32,7 +32,7 @@ import {
   type WorkforceIntent,
 } from "@/lib/marketing/workforce-summary";
 import { EMPTY_BRIEF } from "@/lib/marketing/product-resources";
-import { savePilotBrief } from "@/lib/pilot/storage";
+import { loadPilotBrief, savePilotBrief } from "@/lib/pilot/storage";
 
 const CHAPTERS = [
   { id: "hp-workforce", label: "Specialists" },
@@ -207,7 +207,9 @@ function DecisionSection() {
       (R.tally.find((t) => t.optionId === a.id)?.share ?? 0),
   );
   const chosen = SAMPLE_DECISION_SPEC.options.find((o) => o.id === R.chosenOptionId)!;
-  const veto = R.vetoes[0]!;
+  const chosenShare = Math.round(
+    (R.tally.find((t) => t.optionId === R.chosenOptionId)?.share ?? 0) * 100,
+  );
   return (
     <section className="hp-section" id="hp-decisions">
       <div className="dxl-wrap">
@@ -254,7 +256,9 @@ function DecisionSection() {
                   <p>{o.summary}</p>
                   {t.vetoed ? (
                     <div className="hp-veto">
-                      <Lock size={13} aria-hidden="true" /> Vetoed by {veto.role}: {veto.reason}
+                      <Lock size={13} aria-hidden="true" /> Vetoed by{" "}
+                      {R.vetoes.find((v) => v.optionId === o.id)?.role}:{" "}
+                      {R.vetoes.find((v) => v.optionId === o.id)?.reason}
                     </div>
                   ) : (
                     <div className="hp-support">
@@ -276,13 +280,13 @@ function DecisionSection() {
             label={round === 2 ? "Outcome" : "Round 1"}
             value={
               round === 2
-                ? `${chosen.label} reached ${Math.round(R.tally[0]!.share * 100)}% — waiting for your ratification`
+                ? `${chosen.label} reached ${chosenShare}% — waiting for your ratification`
                 : "Positions taken independently, before anyone sees the others"
             }
           >
             <p>
               {round === 2
-                ? `Two panellists changed their vote after critique; UX Research kept its dissent, and it stays on the record. Sample decision: the real tally rules running on template scores, not customer data.`
+                ? `Two panellists changed their vote after critique; UX Research kept its dissent, and it stays on the record. Sample decision: the real tally rules running on template scores, not customer data, with a panel drawn from the full catalogue, including roles still in development.`
                 : "Switch to “After critique” to see who changed their mind, and who persuaded them."}
             </p>
           </StageBar>
@@ -305,6 +309,13 @@ type Step = {
   open: string;
   how: string;
 };
+const SAMPLE_DECIDED = (() => {
+  const R = SAMPLE_DECISION_RESULT;
+  const label = (id: string) => SAMPLE_DECISION_SPEC.options.find((o) => o.id === id)?.label;
+  const share = R.tally.find((t) => t.optionId === R.chosenOptionId)?.share ?? 0;
+  const vetoes = R.vetoes.map((v) => `${label(v.optionId)} vetoed by ${v.role}.`).join(" ");
+  return `${label(R.chosenOptionId)}, ${Math.round(share * 100)}% weighted support. ${vetoes}`;
+})();
 const STEPS: Step[] = [
   {
     id: "prompt",
@@ -340,9 +351,9 @@ const STEPS: Step[] = [
     id: "decide",
     label: "Decide",
     icon: Gavel,
-    who: "Nine specialists, then you",
-    used: "The evidence register and three options.",
-    decided: "Shorter sign-up, 84% weighted support. Import existing work vetoed by Security.",
+    who: `${SAMPLE_DECISION_SPEC.panel.length + 1} specialists, then you`,
+    used: `The evidence register and ${SAMPLE_DECISION_SPEC.options.length} options.`,
+    decided: SAMPLE_DECIDED,
     open: "UX Research’s dissent on customer value, kept as a review condition.",
     how: "Deterministic tally rules; high impact, so it waits for your ratification.",
   },
@@ -578,7 +589,8 @@ function PromptSection() {
   const start = (event: React.FormEvent) => {
     event.preventDefault();
     const text = idea.trim();
-    if (text) savePilotBrief({ ...EMPTY_BRIEF, problem: text.slice(0, 1000) });
+    // keep anything already written in the brief builder; only the question changes
+    if (text) savePilotBrief({ ...EMPTY_BRIEF, ...loadPilotBrief(), problem: text.slice(0, 1000) });
     void navigate({ to: "/onboarding" });
   };
   return (

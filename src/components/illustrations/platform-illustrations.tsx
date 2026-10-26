@@ -183,7 +183,8 @@ export function BuildPathIllustration({
   return (
     <svg
       viewBox="-70 -150 1080 260"
-      role="img"
+      // interactive steps must stay reachable, so only a static path is one image
+      role={onSelect ? "group" : "img"}
       aria-label="A pathway of connected pedestals, one for each step the product took from prompt to release."
     >
       <IsoDefs id={id} />

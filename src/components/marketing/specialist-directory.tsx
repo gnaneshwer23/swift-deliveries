@@ -45,7 +45,6 @@ type Status = "available" | "planned" | "all";
 const MISSIONS_FOR = (() => {
   const m = new Map<string, MissionIntent[]>();
   for (const [intent, ids] of Object.entries(registry.intent_capability_map)) {
-    if (intent === "build") continue;
     for (const id of ids) m.set(id, [...(m.get(id) ?? []), intent as MissionIntent]);
   }
   return m;
@@ -139,7 +138,7 @@ export function SpecialistDirectory() {
           <div className="sd-status" role="group" aria-label="Availability">
             {(
               [
-                ["available", "Available now"],
+                ["available", "Available"],
                 ["planned", "In development"],
                 ["all", "All"],
               ] as const
@@ -178,7 +177,7 @@ export function SpecialistDirectory() {
                       <Icon size={16} aria-hidden="true" />
                     </span>
                     <span className="sd-badge" data-live={live || undefined}>
-                      {live ? "Available now" : "In development"}
+                      {live ? "Available" : "In development"}
                     </span>
                   </span>
                   <strong>{short(c.name)}</strong>

@@ -34,7 +34,9 @@ function Agents() {
             </h1>
             <p>
               Every specialist has one clear job and a limit on what it may do. Browse them by
-              department, see which missions they join, and check what is available today.
+              department, see which missions they join, and check which can be assigned today.
+              Without a configured model, assigned specialists produce clearly labelled simulated
+              drafts.
             </p>
             <dl className="sdp-stats">
               <div>
@@ -46,7 +48,7 @@ function Agents() {
                 <dd>{WORKFORCE_DEPARTMENTS.length}</dd>
               </div>
               <div data-live="">
-                <dt>Available now</dt>
+                <dt>Can be assigned today</dt>
                 <dd>{available}</dd>
               </div>
               <div>

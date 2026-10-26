@@ -548,3 +548,9 @@
   outline-offset: 2px;
   border-radius: 10px;
 }
+@media (max-width: 640px) {
+  .brain-world.ix .brain-hotspot-dot {
+    width: 26px;
+    height: 26px;
+  }
+}

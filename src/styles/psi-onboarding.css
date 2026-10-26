@@ -644,8 +644,10 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
-.setup-story h2 {
-  font-size: clamp(30px, 3vw, 40px);
+@media (min-width: 960px) {
+  .setup-story h2 {
+    font-size: clamp(30px, 3vw, 40px);
+  }
 }
 @media (max-width: 640px) {
   .setup-next-facts {

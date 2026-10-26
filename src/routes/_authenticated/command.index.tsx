@@ -19,7 +19,10 @@ import {
   ProductImproveIcon,
 } from "@/components/marketing/motion-product-visuals";
 import { FlaskConical, Rocket, Search, ShieldCheck, Wrench } from "lucide-react";
-import { MissionPipelineStage } from "@/components/command/mission-pipeline-stage";
+import {
+  MissionPipelineStage,
+  WAITING_STATUSES,
+} from "@/components/command/mission-pipeline-stage";
 
 export const Route = createFileRoute("/_authenticated/command/")({
   head: () => ({
@@ -281,14 +284,13 @@ function CommandHome() {
   }
 
   const selectedProjectId = projectId || data.projects[0]?.id || "";
-  const awaitingCount = data.recentMissions.filter(
-    (m) => m.status === "awaiting_approval" || m.status === "needs_clarification",
+  const awaitingCount = data.recentMissions.filter((m) =>
+    WAITING_STATUSES.includes(m.status),
   ).length;
   const completedCount = data.recentMissions.filter((m) => m.status === "completed").length;
 
   const filteredMissions = data.recentMissions.filter((m) => {
-    if (missionFilter === "awaiting")
-      return m.status === "awaiting_approval" || m.status === "needs_clarification";
+    if (missionFilter === "awaiting") return WAITING_STATUSES.includes(m.status);
     if (missionFilter === "completed") return m.status === "completed";
     if (
       missionFilter === "investigate" ||

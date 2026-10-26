@@ -14,6 +14,9 @@ describe("workforce summary", () => {
       R.departments.map((d) => [d.number, d.name, d.capability_ids.length]),
     );
     expect([...WORKFORCE_AVAILABLE_IDS]).toEqual(R.wave1_available_ids);
+    expect(Object.keys(WORKFORCE_INTENTS).sort()).toEqual(
+      Object.keys(R.intent_capability_map).sort(),
+    );
     for (const [intent, ids] of Object.entries(R.intent_capability_map)) {
       const summary = WORKFORCE_INTENTS[intent as keyof typeof WORKFORCE_INTENTS];
       expect(summary.map((c) => c.id)).toEqual(ids);

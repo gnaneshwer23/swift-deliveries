@@ -319,7 +319,7 @@
   border: 1px solid #ecd9a8;
   border-radius: 8px;
   background: #fdf6e6;
-  color: #c7a24a;
+  color: #7a5a10;
   font-size: 12px;
   line-height: 1.45;
   text-align: left;
@@ -596,7 +596,7 @@
   scrollbar-width: thin;
 }
 @media (max-width: 900px) {
-  .hp-path-scroll svg[role="img"] {
+  .hp-path-scroll svg {
     min-width: 760px;
   }
 }

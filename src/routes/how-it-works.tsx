@@ -11,7 +11,7 @@ export const Route = createFileRoute("/how-it-works")({
     pageHead(
       "/how-it-works",
       "How DeliverX works — From one sentence to a result you can inspect",
-      "Follow a real mission: describe it, answer what the planner needs, review the plan and its cost, approve it, watch the work move and receive results that say how they were made.",
+      "Follow a sample mission: describe it, answer what the planner needs, review the plan and its cost, approve it, watch the work move and receive results that say how they were made.",
     ),
   component: HowItWorks,
 });

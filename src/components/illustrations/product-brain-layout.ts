@@ -14,10 +14,11 @@ import {
 } from "lucide-react";
 import { iso, type P3 } from "./iso-geometry";
 
-/** Plate half-size, step between tiers in the plane and in height. */
+/** Plate half-size along the deck. */
 export const A = 136;
 /** Half-depth of each deck: decks are long and shallow so stations read clearly. */
 export const AD = 72;
+/** Step between tiers in the plane (D) and in height (H). */
 export const D = 150;
 export const H = 140;
 export const TH = 14;
@@ -43,26 +44,32 @@ export const add = (a: P3, b: P3): P3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]]
 
 export const TIER_K: Record<BrainTier, number> = { evidence: 0, judgement: 1, delivery: 2 };
 
+type Station = { tier: BrainTier; x: number; icon: LucideIcon; label: string };
+
+/**
+ * Every BrainObject has exactly one station; `satisfies` makes the compiler
+ * reject a missing or extra one. Key order is the serpentine path order.
+ */
+const STATION_DEFS = {
+  sources: { tier: "evidence", x: -98, icon: FileStack, label: "Sources" },
+  notes: { tier: "evidence", x: -33, icon: BookOpen, label: "Notes" },
+  research: { tier: "evidence", x: 33, icon: Microscope, label: "Research" },
+  results: { tier: "evidence", x: 98, icon: LineChart, label: "Results" },
+  strategy: { tier: "judgement", x: 92, icon: Users, label: "Strategy" },
+  review: { tier: "judgement", x: 4, icon: ShieldCheck, label: "Review" },
+  human: { tier: "judgement", x: -88, icon: Hand, label: "You approve" },
+  design: { tier: "delivery", x: -98, icon: PenTool, label: "Design" },
+  engineering: { tier: "delivery", x: -33, icon: Code2, label: "Engineering" },
+  qa: { tier: "delivery", x: 33, icon: CheckCheck, label: "QA" },
+  export: { tier: "delivery", x: 98, icon: Package, label: "Artefacts" },
+} satisfies Record<BrainObject, Station>;
+
+export const stationById = (id: BrainObject) => STATION_DEFS[id];
+
 /** Work snakes through the tiers: evidence left to right, judgement right to left, delivery left to right. */
-export const STATIONS: Array<{
-  id: BrainObject;
-  tier: BrainTier;
-  x: number;
-  icon: LucideIcon;
-  label: string;
-}> = [
-  { id: "sources", tier: "evidence", x: -98, icon: FileStack, label: "Sources" },
-  { id: "notes", tier: "evidence", x: -33, icon: BookOpen, label: "Notes" },
-  { id: "research", tier: "evidence", x: 33, icon: Microscope, label: "Research" },
-  { id: "results", tier: "evidence", x: 98, icon: LineChart, label: "Results" },
-  { id: "strategy", tier: "judgement", x: 92, icon: Users, label: "Strategy" },
-  { id: "review", tier: "judgement", x: 4, icon: ShieldCheck, label: "Review" },
-  { id: "human", tier: "judgement", x: -88, icon: Hand, label: "You approve" },
-  { id: "design", tier: "delivery", x: -98, icon: PenTool, label: "Design" },
-  { id: "engineering", tier: "delivery", x: -33, icon: Code2, label: "Engineering" },
-  { id: "qa", tier: "delivery", x: 33, icon: CheckCheck, label: "QA" },
-  { id: "export", tier: "delivery", x: 98, icon: Package, label: "Artefacts" },
-];
+export const STATIONS: Array<Station & { id: BrainObject }> = (
+  Object.keys(STATION_DEFS) as BrainObject[]
+).map((id) => ({ id, ...STATION_DEFS[id] }));
 /** Stations sit on a line towards the back of each deck; labels and the lane run in front. */
 export const ROW_Y = -14;
 

@@ -119,16 +119,17 @@ export function MissionWalkthroughLive() {
     return () => observer.disconnect();
   }, []);
 
-  // A fine-grained clock drives the animation inside each step.
+  // A fine-grained clock animates each step while playing; paused or
+  // chosen by hand, the step shows its finished state.
   useEffect(() => {
-    setTick(0);
-    if (reduced.current) {
+    if (reduced.current || !playing) {
       setTick(99);
       return;
     }
+    setTick(0);
     const id = window.setInterval(() => setTick((t) => t + 1), 120);
     return () => window.clearInterval(id);
-  }, [step]);
+  }, [step, playing]);
 
   useEffect(() => {
     if (!playing) return;
@@ -173,7 +174,10 @@ export function MissionWalkthroughLive() {
         </li>
       </ol>
 
-      <div className="mw-window" aria-live="polite">
+      <p className="sr-only" aria-live="polite">
+        Step {step + 1} of {STEPS.length}: {current.label}. {current.title}
+      </p>
+      <div className="mw-window">
         <div className="mw-chrome">
           <span className="mw-dots" aria-hidden="true">
             <i />

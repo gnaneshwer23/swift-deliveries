@@ -13,6 +13,7 @@ import {
   TH,
   add,
   stationAt,
+  stationById,
   tierAt,
   type BrainObject,
   type BrainTier,
@@ -169,7 +170,7 @@ export function ProductBrainIllustration({
   const [e0, e1] = lane(0, -122, 122);
   const [j1, j0] = lane(1, -112, 122);
   const [d0, d1] = lane(2, -122, 122);
-  const results = iso(add(stationAt(STATIONS[3]!), [POD + 4, 0, -2]));
+  const results = iso(add(stationAt(stationById("results")), [POD + 4, 0, -2]));
   const paths = {
     evidence: `M${e0[0]} ${e0[1]} L${e1[0]} ${e1[1]}`,
     toJudgement: `M${e1[0]} ${e1[1]} C${e1[0] + 90} ${e1[1] - 10} ${j0[0] + 40} ${j0[1] + 90} ${j0[0]} ${j0[1]}`,
