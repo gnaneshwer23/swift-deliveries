@@ -13,6 +13,8 @@ export type GenerationPlan = {
   cost: 0 | 1;
   provider: string | null;
   model: string | null;
+  /** Why a switched-on model cannot run (not set or not allowed); null otherwise. */
+  reason: string | null;
 };
 
 export function generationPlan(
@@ -20,28 +22,25 @@ export function generationPlan(
   text: string,
 ): GenerationPlan {
   if (containsLikelyPersonalIdentifiers(text)) {
-    return { mode: "withheld", cost: 0, provider: null, model: null };
+    return { mode: "withheld", cost: 0, provider: null, model: null, reason: null };
   }
   let provider: ReturnType<typeof resolveProvider> = null;
+  let reason: string | null = null;
   try {
     provider = resolveProvider(env);
-  } catch {
+  } catch (error) {
     // a model that is not configured or not allowed is reported as not run, never guessed
-    provider = null;
+    reason = error instanceof Error ? error.message : "Provider configuration is invalid.";
   }
-  if (!provider) return { mode: "not_configured", cost: 0, provider: null, model: null };
-  return { mode: "model", cost: 1, provider: provider.name, model: provider.model };
+  if (!provider) return { mode: "not_configured", cost: 0, provider: null, model: null, reason };
+  return { mode: "model", cost: 1, provider: provider.name, model: provider.model, reason: null };
 }
 
 export function providerLabel(env: Record<string, string | undefined> = process.env): string {
-  try {
-    const plan = generationPlan(env, "");
-    if (plan.mode === "model") return `Provider configured: ${plan.provider} / ${plan.model}`;
-    if (plan.mode === "withheld") return WITHHELD_LABEL;
-    return "not run — provider not configured";
-  } catch (error) {
-    return error instanceof Error ? error.message : "Provider configuration is invalid.";
-  }
+  const plan = generationPlan(env, "");
+  if (plan.mode === "model") return `Provider configured: ${plan.provider} / ${plan.model}`;
+  if (plan.mode === "withheld") return WITHHELD_LABEL;
+  return plan.reason ? `not run — ${plan.reason}` : "not run — provider not configured";
 }
 
 export function missionScreenText(mission: Pick<SupervisedMission, "brief" | "evidence">): string {

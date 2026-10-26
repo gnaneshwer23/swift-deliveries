@@ -16,7 +16,7 @@ Use Node 24 and the Vercel Nitro preset. Never repoint production while preview 
 - DXSI_MODEL: the model ID to use. There is no built-in default: with model mode on and no model set, nothing is sent and outputs are labelled simulated drafts.
 - DXSI_OPENAI_MODEL: optional direct OpenAI model ID that overrides DXSI_MODEL for OpenAI. Gateway prefixes are rejected.
 - DXSI_DECISION_MODEL: optional separate model for decision options.
-- DXSI_MODEL_ALLOWLIST: comma-separated exact model IDs this deployment may call. Every model above must be listed; anything else is refused with a clear reason. Confirm each ID is available to the account before listing it.
+- DXSI_MODEL_ALLOWLIST: comma-separated exact model IDs this deployment may call. Every model that is set and used (DXSI_MODEL, DXSI_OPENAI_MODEL or DXSI_DECISION_MODEL) must be listed; anything else is refused with a clear reason. Confirm each ID is available to the account before listing it.
 
 Vercel preview URLs must be included in Auth trusted origins using the provider's supported configuration. Verify signup, confirmation, recovery, session refresh and sign-out with an authorised test account.
 

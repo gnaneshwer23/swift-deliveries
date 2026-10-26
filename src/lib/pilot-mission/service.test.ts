@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { notConfiguredGeneration } from "./generate";
-import { generationPlan } from "./generate.server";
+import { generationPlan, providerLabel } from "./generate.server";
 import { learningLinks } from "./learning";
 import {
   ApprovalMismatchError,
@@ -436,6 +436,9 @@ describe("supervised mission isolation, approval and recovery", () => {
     expect(generationPlan({}, "Which setup change should we investigate?").mode).toBe(
       "not_configured",
     );
+    expect(
+      providerLabel({ DXSI_MODEL_ENABLED: "true", DXSI_PROVIDER: "openai", OPENAI_API_KEY: "k" }),
+    ).toMatch(/not run — Model mode is on but DXSI_MODEL is not set/);
     // switched on without an allowed model: reported as not run, never a guessed default
     expect(
       generationPlan(

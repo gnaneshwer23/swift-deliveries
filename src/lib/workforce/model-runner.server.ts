@@ -317,11 +317,17 @@ export async function generateJson<T>(input: {
   let model = base.model;
   if (process.env["DXSI_DECISION_MODEL"]?.trim()) {
     try {
-      model = allowedModel(
+      const decisionModel = allowedModel(
         process.env["DXSI_DECISION_MODEL"].trim(),
         process.env,
         "DXSI_DECISION_MODEL",
       );
+      // same provider rule as resolveProvider: direct OpenAI takes no gateway prefix
+      if (base.name === "openai" && decisionModel.includes("/"))
+        throw new Error(
+          "Direct OpenAI requires an OpenAI model ID without a gateway prefix in DXSI_DECISION_MODEL.",
+        );
+      model = decisionModel;
     } catch (error) {
       return { ok: false, reason: `model not run: ${(error as Error).message}` };
     }

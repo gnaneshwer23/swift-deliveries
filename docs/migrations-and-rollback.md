@@ -40,27 +40,39 @@ Migrations 0020–0023 were applied to production in a single transaction. The s
 
 1. Get the owner's explicit approval for the specific reason.
 2. Take a Neon snapshot of the production branch, or create a branch from it, and record its ID here.
-3. Check whether the tables hold data:
+3. Deploy application code that no longer reads or writes these tables, and confirm the deployment is live. This stops new writes before anything is checked.
+4. Check whether the tables hold data:
    ```sql
-   select 'psi_comparison_reconciliations' t, count(*) from psi_comparison_reconciliations
-   union all select 'psi_comparison_reservations', count(*) from psi_comparison_reservations
-   union all select 'psi_pilot_activations', count(*) from psi_pilot_activations
-   union all select 'psi_supervised_spend', count(*) from psi_supervised_spend
-   union all select 'psi_supervised_missions', count(*) from psi_supervised_missions;
+   select 'psi_comparison_reconciliations' t, count(*) from public.psi_comparison_reconciliations
+   union all select 'psi_comparison_reservations', count(*) from public.psi_comparison_reservations
+   union all select 'psi_pilot_activations', count(*) from public.psi_pilot_activations
+   union all select 'psi_supervised_spend', count(*) from public.psi_supervised_spend
+   union all select 'psi_supervised_missions', count(*) from public.psi_supervised_missions;
    ```
    If any count is not zero, stop: those are customer records. Export them under the owner's data-handling instructions before going further, or keep the tables.
-4. Deploy application code that no longer reads these tables.
-5. Drop the tables in reverse dependency order, in one transaction:
+5. Drop the tables in reverse dependency order, in one transaction. The transaction locks every table and checks again that each is empty, so a write that arrived after step 4 aborts the drop instead of being lost:
    ```sql
    begin;
-   drop table if exists public.psi_comparison_reconciliations;
-   drop table if exists public.psi_comparison_reservations;
-   drop table if exists public.psi_pilot_activations;
-   drop table if exists public.psi_supervised_spend;
-   drop table if exists public.psi_supervised_missions;
+   lock table public.psi_comparison_reconciliations, public.psi_comparison_reservations,
+     public.psi_pilot_activations, public.psi_supervised_spend, public.psi_supervised_missions
+     in access exclusive mode;
+   do $$ begin
+     if exists (select 1 from public.psi_comparison_reconciliations)
+       or exists (select 1 from public.psi_comparison_reservations)
+       or exists (select 1 from public.psi_pilot_activations)
+       or exists (select 1 from public.psi_supervised_spend)
+       or exists (select 1 from public.psi_supervised_missions) then
+       raise exception 'A table is not empty; nothing was dropped.';
+     end if;
+   end $$;
+   drop table public.psi_comparison_reconciliations;
+   drop table public.psi_comparison_reservations;
+   drop table public.psi_pilot_activations;
+   drop table public.psi_supervised_spend;
+   drop table public.psi_supervised_missions;
    commit;
    ```
 6. Row-level security on `psi_pilot_requests` needs no rollback. The server role owns the table, so it is unaffected. If it must be reverted, run `alter table public.psi_pilot_requests disable row level security;`.
 7. Update the ledger above with the date, the reason and the snapshot ID.
 
-Restoring from the snapshot taken in step 2 reverses steps 4–6. Rehearse the full sequence on a branch before running it on production.
+Restoring the snapshot from step 2 reverses only the database changes (steps 5–6). To undo step 3, redeploy the application version you want separately. The step 5 SQL was rehearsed on 27 October 2026 against a local test database built from these migrations: with one row present it aborted and dropped nothing; with the tables empty it dropped all five and left `psi_pilot_requests`. Rehearse the full sequence on a Neon branch before running it on production.

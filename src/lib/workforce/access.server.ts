@@ -198,7 +198,7 @@ export async function audit(
     metadata?: Record<string, unknown>;
   },
 ) {
-  await (await adminDb()).from("wf_audit_events").insert({
+  const { error } = await (await adminDb()).from("wf_audit_events").insert({
     workspace_id: input.workspaceId,
     mission_id: input.missionId ?? null,
     actor_id: input.actorId,
@@ -207,6 +207,7 @@ export async function audit(
     entity_id: input.entityId ?? null,
     metadata: input.metadata ?? {},
   });
+  if (error) throw new Error(error.message);
 }
 
 export async function loadMissionBundle(
@@ -286,34 +287,48 @@ export async function ensureWorkspace(
     return { workspace: mapWorkspace(existing.data), storage: "supabase" };
   }
 
-  const created = await (
-    await adminDb()
-  )
-    .from("wf_workspaces")
-    .insert({
-      owner_id: userId,
-      name: "Personal workspace",
-      usage_ceiling: 100,
-      usage_consumed: 0,
-    })
-    .select("*")
-    .single();
-  if (created.error) throw new Error(created.error.message);
-
-  const member = await (await adminDb()).from("wf_workspace_members").insert({
-    workspace_id: created.data.id,
-    user_id: userId,
-    role: "operator",
+  // Workspace and owner membership commit together. A per-user advisory lock and a
+  // second look inside the transaction stop two first visits creating two
+  // workspaces (production has no UNIQUE on owner_id).
+  const { neonTransaction } = await import("@/lib/db/neon.server");
+  const { row, created } = await neonTransaction(async (tx, query) => {
+    await query("select pg_advisory_xact_lock(hashtext($1))", [`wf_workspace:${userId}`]);
+    const twice = await wfDb(tx)
+      .from("wf_workspaces")
+      .select("*")
+      .eq("owner_id", userId)
+      .maybeSingle();
+    if (twice.error) throw new Error(twice.error.message);
+    if (twice.data) return { row: twice.data, created: false };
+    const ws = await wfDb(tx)
+      .from("wf_workspaces")
+      .insert({
+        owner_id: userId,
+        name: "Personal workspace",
+        usage_ceiling: 100,
+        usage_consumed: 0,
+      })
+      .select("*")
+      .single();
+    if (ws.error) throw new Error(ws.error.message);
+    const member = await wfDb(tx).from("wf_workspace_members").insert({
+      workspace_id: ws.data.id,
+      user_id: userId,
+      role: "operator",
+    });
+    if (member.error) throw new Error(member.error.message);
+    return { row: ws.data, created: true };
   });
-  if (member.error) throw new Error(member.error.message);
 
-  await audit(db, {
-    workspaceId: created.data.id,
-    actorId: userId,
-    eventType: "workspace.created",
-    entityType: "workspace",
-    entityId: created.data.id,
-  });
+  if (created) {
+    await audit(db, {
+      workspaceId: row.id,
+      actorId: userId,
+      eventType: "workspace.created",
+      entityType: "workspace",
+      entityId: row.id,
+    });
+  }
 
-  return { workspace: mapWorkspace(created.data), storage: "supabase" };
+  return { workspace: mapWorkspace(row), storage: "supabase" };
 }

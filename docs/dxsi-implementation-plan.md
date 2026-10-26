@@ -78,7 +78,7 @@ Total cost is 82 credits, which fits the default 100-credit ceiling.
 2. **Optional — enable direct OpenAI model mode** (Vercel project environment variables / deployment secrets):
    - `DXSI_MODEL_ENABLED=true`
    - `OPENAI_API_KEY=<set as a deployment secret; never commit it or send it in chat>`
-   - `DXSI_MODEL=<a model ID available to your OpenAI project>` and `DXSI_MODEL_ALLOWLIST` listing it. There is no built-in default model (changed in Phase 0); without both, no model is called and outputs stay labelled simulated drafts.
+   - `DXSI_MODEL=<a model ID available to your OpenAI project>` (or `DXSI_OPENAI_MODEL` for direct OpenAI), and `DXSI_MODEL_ALLOWLIST` listing it. There is no built-in default model (changed in Phase 0); without a model and the allowlist, no model is called and outputs stay labelled simulated drafts.
    - OpenAI is selected ahead of gateway providers when `OPENAI_API_KEY` is present. If it is absent, the existing Vercel AI Gateway / OpenRouter provider selection remains available.
    - The provider key alone does not activate model calls: `DXSI_MODEL_ENABLED=true` remains an explicit opt-in. A failed or blocked model call falls back to a disclosed simulated draft.
    - Keep keys server-side only; do not use a `VITE_`-prefixed variable or expose them to browser code.

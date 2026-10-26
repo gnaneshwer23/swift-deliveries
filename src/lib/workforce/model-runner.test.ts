@@ -123,4 +123,21 @@ describe("direct model provider boundary", () => {
     });
     expect(fetch).not.toHaveBeenCalled();
   });
+
+  it("refuses a gateway-prefixed decision model on direct OpenAI", async () => {
+    vi.stubEnv("DXSI_MODEL_ENABLED", "true");
+    vi.stubEnv("OPENAI_API_KEY", "test");
+    vi.stubEnv("DXSI_MODEL", "openai-test-model");
+    vi.stubEnv("DXSI_DECISION_MODEL", "anthropic/example");
+    vi.stubEnv("DXSI_MODEL_ALLOWLIST", "openai-test-model,anthropic/example");
+    vi.stubGlobal("fetch", vi.fn());
+    const result = await generateJson({
+      system: "JSON only",
+      user: "Draft options",
+      screenText: "A product",
+      validate: () => ({ ok: true, value: "accepted" }),
+    });
+    expect(result).toMatchObject({ ok: false, reason: expect.stringMatching(/gateway prefix/) });
+    expect(fetch).not.toHaveBeenCalled();
+  });
 });

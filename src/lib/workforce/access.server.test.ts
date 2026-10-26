@@ -26,7 +26,7 @@ const TABLES = [
   "wf_audit_events",
 ];
 const sql = url
-  ? postgres(url, { prepare: false, max: 4, connection: { search_path: schema } })
+  ? postgres(url, { prepare: false, max: 10, connection: { search_path: schema } })
   : null;
 let types: ColumnTypes = new Map();
 const query: Executor = async (text, params) =>
@@ -34,7 +34,18 @@ const query: Executor = async (text, params) =>
 const db = createDb(query, async () => types);
 
 // The service-side writes in access.server use neonDb(); point it at the test database.
-vi.mock("@/lib/db/neon.server", () => ({ neonDb: () => db }));
+vi.mock("@/lib/db/neon.server", () => ({
+  neonDb: () => db,
+  neonTransaction: (work: (tx: typeof db, q: Executor) => Promise<unknown>) =>
+    sql!.begin(async (t) => {
+      const q: Executor = async (text, params) =>
+        (await t.unsafe(text, params)) as unknown as Record<string, unknown>[];
+      return work(
+        createDb(q, async () => types),
+        q,
+      );
+    }),
+}));
 
 const { ensureWorkspace, loadMissionBundle } = await import("./access.server");
 
@@ -65,6 +76,12 @@ describe.skipIf(!url)("workspace isolation against a real database", () => {
     await sql!.unsafe(`drop schema if exists ${schema} cascade; create schema ${schema}`);
     for (const t of TABLES)
       await sql!.unsafe(`create table ${schema}.${t} (like public.${t} including all)`);
+    // production has no UNIQUE on owner_id; drop the fixture's so the race test proves the lock
+    for (const c of await sql!`select conname from pg_constraint
+        where conrelid = ${`${schema}.wf_workspaces`}::regclass and contype = 'u'`)
+      await sql!.unsafe(
+        `alter table ${schema}.wf_workspaces drop constraint "${c["conname"] as string}"`,
+      );
     const rows =
       await sql!`select table_name, column_name, udt_name from information_schema.columns where table_schema = ${schema}`;
     types = new Map();
@@ -88,6 +105,17 @@ describe.skipIf(!url)("workspace isolation against a real database", () => {
     const b = await ensureWorkspace(db, "user-b");
     expect(a.workspace.id).not.toBe(b.workspace.id);
     expect((await ensureWorkspace(db, "user-a")).workspace.id).toBe(a.workspace.id);
+  });
+
+  it("creates one workspace and one membership when first visits race", async () => {
+    const results = await Promise.all(
+      Array.from({ length: 20 }, () => ensureWorkspace(db, "user-race")),
+    );
+    expect(new Set(results.map((r) => r.workspace.id)).size).toBe(1);
+    const [counts] = await sql!`select
+        (select count(*) from wf_workspaces where owner_id = 'user-race')::int as workspaces,
+        (select count(*) from wf_workspace_members where user_id = 'user-race')::int as members`;
+    expect(counts).toEqual({ workspaces: 1, members: 1 });
   });
 
   it("lets the owner read their mission and refuses it to another workspace", async () => {
