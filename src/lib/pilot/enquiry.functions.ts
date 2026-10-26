@@ -297,20 +297,6 @@ export function activationRepository(db: Db): ActivationRepository {
       if (!mapped) throw new Error("Insert failed");
       return mapped;
     },
-    async advanceConsumption(workspaceId, expectedConsumed) {
-      const res = await db
-        .from("psi_pilot_activations")
-        .update({ missions_consumed: expectedConsumed + 1 })
-        .eq("workspace_id", workspaceId)
-        .eq("missions_consumed", expectedConsumed)
-        .select("*")
-        .maybeSingle();
-      if (res.error) {
-        if (missingActivationStore(res.error)) throw new ActivationStoreUnavailableError();
-        throw new Error(res.error.message);
-      }
-      return mapActivation(res.data as Record<string, unknown> | null);
-    },
   };
 }
 
@@ -321,7 +307,11 @@ async function workspaceExists(db: Db, workspaceId: string): Promise<boolean> {
   return typeof row?.id === "string";
 }
 
-async function operatorAllowed(db: Db, userId: string, email: string | null): Promise<boolean> {
+export async function operatorAllowed(
+  db: Db,
+  userId: string,
+  email: string | null,
+): Promise<boolean> {
   const res = await db.from("user_roles").select("role").eq("user_id", userId);
   const roles =
     res.error || !Array.isArray(res.data)

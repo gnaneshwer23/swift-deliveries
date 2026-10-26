@@ -1,9 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   activateEnquiry,
-  billableComparisonGate,
   isPilotOperator,
-  recordBillableComparison,
   type ActivationRepository,
   type PilotActivation,
 } from "./activation";
@@ -79,14 +77,6 @@ function memoryRepo(seed: StoredPilotRequest[] = [request(requestA), request(req
       const stored = { ...row, paymentTaken: false as const };
       activations.push(stored);
       return stored;
-    },
-    async advanceConsumption(workspaceId, expectedConsumed) {
-      const row = activations.find(
-        (item) => item.workspaceId === workspaceId && item.missionsConsumed === expectedConsumed,
-      );
-      if (!row || row.missionsConsumed >= row.missionAllowance) return null;
-      row.missionsConsumed += 1;
-      return { ...row };
     },
   };
   return {
@@ -255,7 +245,7 @@ describe("manual pilot activation", () => {
     expect(clash.ok).toBe(false);
   });
 
-  it("blocks the next billable comparison at the allowance and leaves the other workspace free", async () => {
+  it("keeps activations isolated between workspaces without modifying missions", async () => {
     const { repo } = memoryRepo();
     const missions = [
       { id: "mission-a", workspaceId: alpha, body: "alpha work" },
@@ -285,22 +275,10 @@ describe("manual pilot activation", () => {
       repo,
       () => "2026-10-24T12:00:00.000Z",
     );
-    const first = await recordBillableComparison(repo, alpha);
-    expect(first.recorded).toBe(true);
-    expect(first.activation?.missionsConsumed).toBe(1);
     const alphaRow = await repo.findByWorkspace(alpha);
-    expect(billableComparisonGate(alphaRow, alpha, true).ok).toBe(false);
-    expect(billableComparisonGate(alphaRow, beta, true).ok).toBe(true);
-    expect(billableComparisonGate(alphaRow, alpha, false).ok).toBe(true);
-    const blocked = await recordBillableComparison(repo, alpha);
-    expect(blocked.recorded).toBe(false);
-    expect(blocked.activation?.missionsConsumed).toBe(1);
-    const betaGate = billableComparisonGate(await repo.findByWorkspace(beta), beta, true);
-    expect(betaGate.ok).toBe(true);
-    const betaUse = await recordBillableComparison(repo, beta);
-    expect(betaUse.recorded).toBe(true);
-    expect(betaUse.activation?.missionsConsumed).toBe(1);
-    expect((await repo.findByWorkspace(alpha))?.missionsConsumed).toBe(1);
+    expect(alphaRow?.missionAllowance).toBe(1);
+    expect(alphaRow?.missionsConsumed).toBe(0);
+    expect((await repo.findByWorkspace(beta))?.missionAllowance).toBe(2);
     expect(await repo.findByWorkspace(beta)).not.toMatchObject({ workspaceId: alpha });
     expect(missions).toEqual([
       { id: "mission-a", workspaceId: alpha, body: "alpha work" },

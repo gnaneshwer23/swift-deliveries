@@ -4,7 +4,7 @@ import { z } from "zod";
 import type { Db } from "@/lib/db/builder";
 import { requireAuth } from "@/lib/auth/middleware";
 import { wfDb } from "@/lib/workforce/db";
-import { reservedComparison } from "./pilot-mission/reservations.server";
+import { runAccountedComparison } from "./pilot-mission/comparison.server";
 import {
   generateComparison,
   generationPlan,
@@ -19,12 +19,6 @@ import {
 } from "./pilot-mission/service";
 import { learningLinks } from "./pilot-mission/learning";
 import { nextRequiredAction, type SupervisedMission } from "./pilot-mission/types";
-import {
-  ALLOWANCE_EXHAUSTED_MESSAGE,
-  billableComparisonGate,
-  recordBillableComparison,
-} from "./pilot/activation";
-import { activationRepository } from "./pilot/enquiry.functions";
 
 type DbClient = { from: (table: string) => unknown };
 
@@ -243,10 +237,7 @@ export const runSupervisedComparison = createServerFn({ method: "POST" })
       throw new Error("The brief or evidence changed. Review the current scope before comparing.");
     if (plan.cost > 0 && !data.allowModel)
       throw new Error("Confirm provider use and the allowance reservation before comparing.");
-    const activation = await activationRepository(db).findByWorkspace(workspace.id);
-    const allowance = billableComparisonGate(activation, workspace.id, plan.cost > 0);
-    if (!allowance.ok) throw new Error(allowance.message || ALLOWANCE_EXHAUSTED_MESSAGE);
-    const outcome = await service.runAlternatives({
+    const outcome = await runAccountedComparison(service, {
       workspaceId: workspace.id,
       id: data.id,
       expectedVersion: data.expectedVersion,
@@ -255,15 +246,9 @@ export const runSupervisedComparison = createServerFn({ method: "POST" })
       nowMs: Date.now(),
       generator: {
         cost: plan.cost,
-        run: (mission) =>
-          plan.cost > 0
-            ? reservedComparison(mission, () => generateComparison(mission))
-            : generateComparison(mission),
+        run: generateComparison,
       },
     });
-    if (plan.cost > 0 && outcome.chargedUnits > 0) {
-      await recordBillableComparison(activationRepository(db), workspace.id);
-    }
     return view(outcome.mission, await settleUsage(db, outcome.mission));
   });
 
