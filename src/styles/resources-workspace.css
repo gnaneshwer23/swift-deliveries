@@ -414,18 +414,21 @@
 }
 .resource-template-library {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 25px;
   margin: 35px 0 24px;
 }
 .resource-template-library article {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
   border: 1px solid #e0e7f3;
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
 }
 .resource-template-library figure {
   aspect-ratio: 3/2;
-  background: #f8faff;
+  background: #f5f4fc;
   margin: 0;
 }
 .resource-template-library img {
@@ -435,32 +438,53 @@
   display: block;
 }
 .resource-template-library article > div {
-  padding: 22px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px;
 }
 .resource-template-library article > div > span {
-  font-size: 10px;
-  color: #93a3bc;
+  font-size: 12px;
+  color: #586780;
 }
 .resource-template-library h3 {
   font-size: 20px;
   font-weight: 500;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
   margin: 12px 0;
 }
 .resource-template-library p {
-  font-size: 12px;
-  line-height: 1.8;
-  color: #788ba7;
-  min-height: 65px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #586780;
+  margin-bottom: 24px;
 }
 .resource-template-library button {
   display: flex;
   gap: 9px;
   align-items: center;
-  margin-top: 18px;
-  color: #6883b6;
-  font-size: 11px;
+  margin-top: auto;
+  min-height: 44px;
+  color: #4943aa;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
   cursor: pointer;
+}
+.resource-template-library button:active {
+  transform: scale(0.98);
+}
+@media (hover: hover) and (pointer: fine) {
+  .resource-template-library button:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+}
+.resource-template-section .resource-section-heading h2 {
+  font-size: 36px;
+  letter-spacing: 0;
+  max-width: 540px;
 }
 .resource-template-section .dxl-link {
   display: inline-flex;
@@ -554,6 +578,9 @@
   .resource-template-library {
     grid-template-columns: 1fr;
     gap: 20px;
+  }
+  .resource-template-section .resource-section-heading h2 {
+    font-size: 28px;
   }
   .resource-template-library p {
     min-height: 0;

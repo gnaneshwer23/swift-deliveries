@@ -5,6 +5,13 @@ import { pageHead } from "@/components/marketing/page-head";
 import { BriefBuilder } from "@/components/marketing/brief-builder";
 import { RESOURCE_TEMPLATES, downloadText } from "@/lib/marketing/product-resources";
 import { BRIEF_PRESETS, parseBriefPreset, type BriefPreset } from "@/lib/marketing/brief-presets";
+
+const templateIllustrations = {
+  evidence: "connected-record-v1",
+  decision: "mission-workbench-v1",
+  experiment: "learning-workbench-v1",
+};
+
 export const Route = createFileRoute("/resources/")({
   validateSearch: (search: Record<string, unknown>): { useCase?: BriefPreset | undefined } => ({
     useCase: parseBriefPreset(search["useCase"]),
@@ -134,9 +141,9 @@ function Resources() {
                 <article key={template.key}>
                   <figure>
                     <img
-                      src={`/illustrations/${template.image}-small.webp`}
-                      width={768}
-                      height={512}
+                      src={`/illustrations/${templateIllustrations[template.key]}.webp`}
+                      width={1536}
+                      height={1024}
                       alt={
                         template.key === "evidence"
                           ? "Illustrated evidence and decision objects."
