@@ -19,8 +19,12 @@ import {
 } from "./pilot-mission/service";
 import { projectShelfItems } from "./pilot-mission/build-beats";
 import { learningLinks } from "./pilot-mission/learning";
-import { planResearchMode } from "./pilot-mission/research-mode";
-import { RESEARCH_MODES, type ResearchMode } from "./pilot-mission/research-mode";
+import {
+  planResearchMode,
+  researchProviderReadiness,
+  RESEARCH_MODES,
+  type ResearchMode,
+} from "./pilot-mission/research-mode";
 import { nextRequiredAction, type SupervisedMission } from "./pilot-mission/types";
 
 type DbClient = { from: (table: string) => unknown };
@@ -116,10 +120,12 @@ export const getSupervisedMissionHome = createServerFn({ method: "GET" })
       const workspace = await workspaceFor(context.supabase, context.userId);
       const { service } = await serviceFor();
       const missions = await service.list(workspace.id);
+      const researchProvider = researchProviderReadiness();
       return {
         ready: true as const,
         reason: null,
         providerLabel: providerLabel(),
+        researchProvider,
         usage: { ceiling: workspace.usageCeiling, consumed: workspace.usageConsumed },
         missions: missions.map((mission) => ({
           id: mission.id,
@@ -146,6 +152,7 @@ export const getSupervisedMissionHome = createServerFn({ method: "GET" })
           ready: false as const,
           reason: error.message,
           providerLabel: providerLabel(),
+          researchProvider: researchProviderReadiness(),
           usage: null,
           missions: [],
         };

@@ -201,7 +201,7 @@ export function AgentNetworkExplorer() {
             Specialists
           </Link>
           <Link to="/command/projects">Projects</Link>
-          <Link to="/command/programmes">Programmes</Link>
+          <Link to="/command/programmes">Programmes Lab</Link>
         </nav>
         <div className="an-header-end">
           <ShieldCheck size={15} />

@@ -237,6 +237,12 @@ export type SupervisedMission = {
    * Null until plan approval triggers the pass. Additive document field — no SQL migration.
    */
   researchPassCompletedAt: string | null;
+  /**
+   * Search provider that returned cited findings on the research pass (`tavily` / `exa` / `brave`).
+   * Null when the pass ran without a configured provider or returned only gaps.
+   * Additive document field — no SQL migration.
+   */
+  researchProvider: string | null;
   /** Small Available Wave 1 specialist team for this pilot. */
   team: PilotTeamPlan | null;
   /** Persisted task events only — no fake chat or timer theatre. */

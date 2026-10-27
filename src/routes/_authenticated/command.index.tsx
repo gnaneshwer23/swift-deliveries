@@ -324,7 +324,7 @@ function CommandHome() {
       </details>
 
       <details className="ps-legacy mt-4">
-        <summary>Advanced mission planner · discovery, prototypes and product builds</summary>
+        <summary>Advanced tools · specialist planner & mission ledger (not the foyer)</summary>
         <details className="ps-legacy mt-3">
           <summary>Agents office (recent specialist missions — not the primary pilot path)</summary>
           <AgentOffice
@@ -528,83 +528,83 @@ function CommandHome() {
             </div>
           </div>
         </section>
-      </details>
-      {/* Recent Missions & Supervision Ledger */}
-      <section className="cc-panel" id="cc-missions">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h2 className="cc-panel-title mb-0">Specialist missions</h2>
-            <span className="cc-muted text-xs">
-              {filteredMissions.length} of {data.recentMissions.length} missions shown
-            </span>
-          </div>
 
-          {/* Filter Pills */}
-          <div className="flex flex-wrap gap-1.5">
-            {(
-              [
-                { id: "all", label: `All (${data.recentMissions.length})` },
-                { id: "awaiting", label: `Awaiting Gate (${awaitingCount})` },
-                { id: "completed", label: `Delivered (${completedCount})` },
-                { id: "investigate", label: "Investigate" },
-                { id: "prototype", label: "Prototype" },
-                { id: "improve", label: "Improve" },
-                { id: "build", label: "Product" },
-              ] as const
-            ).map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                aria-pressed={missionFilter === tab.id}
-                onClick={() => setMissionFilter(tab.id)}
-                className={`rounded-full px-3 py-1 text-xs font-semibold border transition cursor-pointer ${
-                  missionFilter === tab.id
-                    ? "border-[var(--psi-indigo)] bg-[var(--psi-indigo-soft)] text-[var(--psi-indigo)]"
-                    : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* Specialist mission ledger — demoted out of the foyer */}
+        <section className="cc-panel mt-4" id="cc-missions">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="cc-panel-title mb-0">Specialist missions</h2>
+              <span className="cc-muted text-xs">
+                {filteredMissions.length} of {data.recentMissions.length} missions shown
+              </span>
+            </div>
 
-        {filteredMissions.length === 0 ? (
-          <p className="cc-muted mt-4">
-            {data.recentMissions.length === 0 ? (
-              <>
-                No specialist missions yet. Use the advanced planner above. The plan waits for your
-                decision before downstream work runs.
-              </>
-            ) : (
-              "No missions match the selected filter."
-            )}
-          </p>
-        ) : (
-          <ul className="cc-mission-list mt-4">
-            {filteredMissions.map((m) => (
-              <li key={m.id}>
-                <Link
-                  to="/command/missions/$missionId"
-                  params={{ missionId: m.id }}
-                  className="cc-mission-row"
+            <div className="flex flex-wrap gap-1.5">
+              {(
+                [
+                  { id: "all", label: `All (${data.recentMissions.length})` },
+                  { id: "awaiting", label: `Awaiting Gate (${awaitingCount})` },
+                  { id: "completed", label: `Delivered (${completedCount})` },
+                  { id: "investigate", label: "Investigate" },
+                  { id: "prototype", label: "Prototype" },
+                  { id: "improve", label: "Improve" },
+                  { id: "build", label: "Product" },
+                ] as const
+              ).map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  aria-pressed={missionFilter === tab.id}
+                  onClick={() => setMissionFilter(tab.id)}
+                  className={`rounded-full px-3 py-1 text-xs font-semibold border transition cursor-pointer ${
+                    missionFilter === tab.id
+                      ? "border-[var(--psi-indigo)] bg-[var(--psi-indigo-soft)] text-[var(--psi-indigo)]"
+                      : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                  }`}
                 >
-                  <div>
-                    <strong>{m.title}</strong>
-                    <span className="cc-muted">
-                      {INTENT_LABELS[m.intent]} · {STATUS_LABELS[m.status]} · Ceiling:{" "}
-                      {PERMISSION_LABELS[m.permissionCeiling]}
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {filteredMissions.length === 0 ? (
+            <p className="cc-muted mt-4">
+              {data.recentMissions.length === 0 ? (
+                <>
+                  No specialist missions yet. Use the advanced planner above. The plan waits for your
+                  decision before downstream work runs.
+                </>
+              ) : (
+                "No missions match the selected filter."
+              )}
+            </p>
+          ) : (
+            <ul className="cc-mission-list mt-4">
+              {filteredMissions.map((m) => (
+                <li key={m.id}>
+                  <Link
+                    to="/command/missions/$missionId"
+                    params={{ missionId: m.id }}
+                    className="cc-mission-row"
+                  >
+                    <div>
+                      <strong>{m.title}</strong>
+                      <span className="cc-muted">
+                        {INTENT_LABELS[m.intent]} · {STATUS_LABELS[m.status]} · Ceiling:{" "}
+                        {PERMISSION_LABELS[m.permissionCeiling]}
+                      </span>
+                    </div>
+                    <span className={`cc-status cc-status-${m.status}`}>
+                      {STATUS_LABELS[m.status]}
                     </span>
-                  </div>
-                  <span className={`cc-status cc-status-${m.status}`}>
-                    {STATUS_LABELS[m.status]}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </details>
     </CommandShell>
   );
 }

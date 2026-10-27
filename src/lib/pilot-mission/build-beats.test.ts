@@ -49,6 +49,7 @@ function baseMission(overrides: Partial<SupervisedMission> = {}): SupervisedMiss
     researchMode: "combined",
     researchGaps: ["Web search not configured"],
     researchPassCompletedAt: null,
+    researchProvider: null,
     team,
     activity: [],
     updatedAt: new Date().toISOString(),

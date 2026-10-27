@@ -23,7 +23,7 @@ const NAV = [
   { to: "/command", label: "Overview", icon: Compass, lab: false },
   { to: "/command/projects", label: "Projects", icon: FolderKanban, lab: false },
   { to: "/command/capabilities", label: "Specialists", icon: UsersRound, lab: false },
-  { to: "/command/programmes", label: "Programmes", icon: FlaskConical, lab: true },
+  { to: "/command/programmes", label: "Programmes Lab", icon: FlaskConical, lab: true },
 ] as const;
 
 export function CommandShell({
@@ -102,7 +102,7 @@ export function CommandShell({
                 <Icon size={18} />
                 <span>
                   {label}
-                  {lab ? <small>Lab</small> : null}
+                  {lab ? <small>Not primary</small> : null}
                 </span>
               </Link>
             );

@@ -25,7 +25,7 @@ export type BeatHandoffStatus =
   | "handed_off"
   | "blocked";
 
-export type ArtefactHonestyMode = "simulated" | "model" | "human" | "gap";
+export type ArtefactHonestyMode = "simulated" | "model" | "human" | "gap" | "cited";
 
 export type ArtefactHonesty = {
   mode: ArtefactHonestyMode;
@@ -258,6 +258,7 @@ function focalArtefact(
     case "research": {
       if (!beatDone(mission, "frame")) return null;
       const findings = mission.evidence.filter((e) => e.classification === "supplied");
+      const citedFindings = findings.filter((e) => /^https?:\/\//i.test(e.source.trim()));
       const gaps = [
         ...mission.evidence.filter((e) => e.classification === "gap").map((e) => e.statement),
         ...(mission.researchGaps ?? []),
@@ -272,16 +273,28 @@ function focalArtefact(
         };
       }
       if (!beatDone(mission, "research") && findings.length === 0) return null;
+      const citedProvider = mission.researchProvider;
+      const researchHonesty: ArtefactHonesty =
+        citedFindings.length > 0
+          ? {
+              mode: "cited",
+              label: citedProvider ? `Cited · ${citedProvider}` : "Cited sources",
+              modelId: citedProvider,
+            }
+          : gaps.length > 0 && findings.length === 0
+            ? { mode: "gap", label: "Gap labelled", modelId: null }
+            : { ...honesty, mode: "simulated", label: "Simulated draft" };
       return {
         kind: "research",
-        title: findings.length ? "Research findings" : "Research register",
+        title: citedFindings.length
+          ? "Cited research findings"
+          : findings.length
+            ? "Research findings"
+            : "Research register",
         summary:
           findings[0]?.statement ??
           "Research pass recorded. Gaps stay labelled when providers are missing.",
-        honesty:
-          gaps.length > 0 && findings.length === 0
-            ? { mode: "gap", label: "Gap labelled", modelId: null }
-            : { ...honesty, mode: "simulated", label: "Simulated draft" },
+        honesty: researchHonesty,
         gaps: gaps.slice(0, 5),
       };
     }

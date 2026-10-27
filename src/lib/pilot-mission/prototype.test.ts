@@ -80,6 +80,7 @@ function mission(overrides: Partial<SupervisedMission> = {}): SupervisedMission 
     researchMode: "combined",
     researchGaps: [],
     researchPassCompletedAt: "2026-10-27T12:05:00.000Z",
+    researchProvider: null,
     team,
     activity: [],
     updatedAt: new Date().toISOString(),

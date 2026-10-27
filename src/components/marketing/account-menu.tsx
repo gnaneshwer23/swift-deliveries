@@ -54,7 +54,7 @@ export function AccountMenu({ user }: { user: User }) {
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link to="/command/programmes" className="flex items-center gap-2">
-            <LayoutDashboard className="size-4" /> Programmes
+            <LayoutDashboard className="size-4" /> Programmes Lab
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>

@@ -44,6 +44,40 @@ export function webResearchConfigured(
   return { configured: Boolean(provider), provider: provider?.name ?? null };
 }
 
+export type ResearchProviderReadiness = {
+  configured: boolean;
+  provider: string | null;
+  /** Short UI chip — e.g. "Web research ready · tavily" */
+  label: string;
+  /** One-line honesty for intake / theatre footnotes. */
+  detail: string;
+};
+
+/**
+ * UI readiness for Combined/Web research. Never claims live retrieval without a key.
+ * A raw API key is required (e.g. TAVILY_API_KEY); CLI OAuth alone does not count.
+ */
+export function researchProviderReadiness(
+  env: Record<string, string | undefined> = process.env,
+): ResearchProviderReadiness {
+  const web = webResearchConfigured(env);
+  if (web.configured && web.provider) {
+    return {
+      configured: true,
+      provider: web.provider,
+      label: `Web research ready · ${web.provider}`,
+      detail: `Combined/Web modes retrieve cited sources via ${web.provider}. URLs stay on the register; pages are not bundled.`,
+    };
+  }
+  return {
+    configured: false,
+    provider: null,
+    label: "Web research not configured",
+    detail:
+      "Set EXA_API_KEY, TAVILY_API_KEY or BRAVE_SEARCH_API_KEY (local + Vercel) for Combined/Web retrieval. Without a key, DeliverX records honest gaps and does not invent sources.",
+  };
+}
+
 /**
  * Disclose mode + tools before execution. Never claims live web research
  * without a configured provider key.

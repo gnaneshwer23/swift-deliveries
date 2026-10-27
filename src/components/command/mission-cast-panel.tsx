@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { getSupervisedMission, getSupervisedMissionHome } from "@/lib/pilot-mission.functions";
 import { buildSequence, castForMission } from "@/lib/pilot-mission/build-beats";
 import { buildPmBrief, STAFFING_BAND_LABELS } from "@/lib/pilot-mission/pm-brief";
-import { orderAttention } from "@/lib/workspace-attention";
+import { pickCurrentMission } from "@/lib/workspace-attention";
 
 /**
  * G3 / P2 — Specialists page opens on the active mission cast; catalogue stays secondary.
@@ -16,9 +16,7 @@ export function MissionCastPanel() {
   });
   const activeId =
     home.data?.ready && home.data.missions.length
-      ? orderAttention(home.data.missions).find(
-          (m) => !["cancelled", "follow_up_approved"].includes(m.next.id),
-        )?.id ?? home.data.missions[0]?.id
+      ? pickCurrentMission(home.data.missions)?.id ?? null
       : null;
   const mission = useQuery({
     queryKey: ["supervised", "mission", activeId],

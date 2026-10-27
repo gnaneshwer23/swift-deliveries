@@ -33,6 +33,7 @@ export function withLearningDefaults(mission: SupervisedMission): SupervisedMiss
     researchMode: mission.researchMode ?? "provided",
     researchGaps: Array.isArray(mission.researchGaps) ? mission.researchGaps : [],
     researchPassCompletedAt: mission.researchPassCompletedAt ?? null,
+    researchProvider: mission.researchProvider ?? null,
     team: mission.team
       ? {
           ...mission.team,

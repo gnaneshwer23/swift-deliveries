@@ -93,6 +93,11 @@ export async function runResearchPass(input: {
   if (wantsWeb && webTool?.available) {
     const queries = buildQueries(input.mission.brief.question);
     let anyHit = false;
+    const seenUrls = new Set(
+      evidence
+        .map((e) => e.source.trim().toLowerCase())
+        .filter((s) => s.startsWith("http")),
+    );
     for (const query of queries) {
       const result = await search(query, 3);
       provider = result.provider ?? provider;
@@ -108,16 +113,33 @@ export async function runResearchPass(input: {
         continue;
       }
       for (const hit of result.results.slice(0, 2)) {
-        if (!hit.url?.trim() || !hit.title?.trim()) continue;
-        const snippet = (hit.snippet || hit.title).trim().slice(0, 500);
+        const url = hit.url?.trim().slice(0, 500) ?? "";
+        const title = hit.title?.trim() ?? "";
+        if (!url || !title) continue;
+        const urlKey = url.toLowerCase();
+        if (seenUrls.has(urlKey)) continue;
+        seenUrls.add(urlKey);
+        const snippet = (hit.snippet || title).trim().slice(0, 500);
+        const via = result.provider ?? provider ?? "web";
         evidence = appendEvidence(evidence, {
-          statement: `${hit.title.trim()}: ${snippet}`,
-          source: hit.url.trim().slice(0, 500),
+          statement: `[Cited · ${via}] ${title}: ${snippet}`,
+          source: url,
           classification: "supplied",
         });
         findingsCount += 1;
         anyHit = true;
       }
+    }
+    if (anyHit && provider) {
+      events.push(
+        activityEvent({
+          at: input.at,
+          taskKey: "register_evidence",
+          kind: "research.cited",
+          summary: `Cited ${findingsCount} web finding(s) via ${provider}. Sources keep live URLs; pages are not bundled.`,
+          actor: evidenceActor,
+        }),
+      );
     }
     if (!anyHit && findingsCount === 0) {
       const gap =

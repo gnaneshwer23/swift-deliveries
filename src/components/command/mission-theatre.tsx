@@ -466,6 +466,24 @@ function ActWork({
 
         <details className="ps-theatre-footnote">
           <summary>Research mode & tools</summary>
+          {(() => {
+            const webTool = actions.research.tools.find((t) => t.id === "web_search");
+            const webReady = Boolean(webTool?.available);
+            return (
+              <p
+                className="ps-research-readiness-chip mt-2"
+                data-ready={webReady}
+                role="status"
+              >
+                {webReady
+                  ? webTool?.label ?? "Web research ready"
+                  : "Web research not configured"}
+                {mission.researchProvider
+                  ? ` · last pass cited via ${mission.researchProvider}`
+                  : ""}
+              </p>
+            );
+          })()}
           <div className="mt-2 flex flex-wrap gap-2">
             {(Object.keys(RESEARCH_MODE_LABELS) as ResearchMode[]).map((mode) => (
               <button

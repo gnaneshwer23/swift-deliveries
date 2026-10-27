@@ -497,6 +497,7 @@ export class SupervisedMissionService {
       researchMode,
       researchGaps: researchPlan.externalGaps,
       researchPassCompletedAt: null,
+      researchProvider: null,
       team,
       projectId: input.projectId ?? null,
       activity: [
@@ -585,6 +586,7 @@ export class SupervisedMissionService {
       evidence: pass.evidence,
       researchGaps: pass.researchGaps,
       researchPassCompletedAt: pass.researchPassCompletedAt,
+      researchProvider: pass.findingsCount > 0 ? pass.provider : null,
       activity: pushActivity(approvedBase, ...pass.activity),
       stage: pass.evidence.length
         ? approvedBase.stage === "brief"

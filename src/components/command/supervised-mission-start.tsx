@@ -114,12 +114,24 @@ function MissionStartForm({ userId }: { userId: string }) {
         for every field.
       </p>
       {home.data ? (
-        <p className="cc-muted text-sm">
-          {home.data.providerLabel}
-          {home.data.usage
-            ? ` · Workspace usage ${home.data.usage.consumed} / ${home.data.usage.ceiling}`
-            : ""}
-        </p>
+        <div className="ps-research-readiness" data-ready={home.data.researchProvider?.configured}>
+          <p className="cc-muted text-sm mb-0">
+            {home.data.providerLabel}
+            {home.data.usage
+              ? ` · Workspace usage ${home.data.usage.consumed} / ${home.data.usage.ceiling}`
+              : ""}
+          </p>
+          {home.data.researchProvider ? (
+            <p
+              className="ps-research-readiness-chip"
+              data-ready={home.data.researchProvider.configured}
+              role="status"
+              title={home.data.researchProvider.detail}
+            >
+              {home.data.researchProvider.label}
+            </p>
+          ) : null}
+        </div>
       ) : null}
       {home.isError && (
         <p className="cc-error" role="alert">
@@ -217,8 +229,10 @@ function MissionStartForm({ userId }: { userId: string }) {
               ))}
             </select>
             <p className="cc-muted text-xs">
-              Default is Combined: specialists research with available tools. Without a search
-              provider, web results are not invented — gaps are marked on the record.
+              Default is Combined: specialists research with available tools.
+              {home.data?.researchProvider?.configured
+                ? ` ${home.data.researchProvider.detail}`
+                : " Without a search provider key, web results are not invented — gaps are marked on the record."}
             </p>
           </div>
         </details>
