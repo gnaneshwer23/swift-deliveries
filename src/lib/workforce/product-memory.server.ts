@@ -5,7 +5,12 @@
  */
 import { createHash } from "node:crypto";
 import type { Executor } from "@/lib/db/builder";
-import { memoryMatchKey, type MemoryDraft, type ProductMemoryEntry } from "./product-memory";
+import {
+  memoryMatchKey,
+  type MemoryConflict,
+  type MemoryDraft,
+  type ProductMemoryEntry,
+} from "./product-memory";
 
 /** True once 0028 is applied. Checked rather than caught, so a caller's transaction survives. */
 export async function memoryAvailable(query: Executor): Promise<boolean> {
@@ -118,4 +123,110 @@ export async function retireEvidenceSource(
              and lower(e.title) = lower($3))`,
     [input.workspaceId, input.projectId, input.title] as never,
   );
+}
+
+/** True once 0029 is applied. */
+async function conflictsAvailable(query: Executor): Promise<boolean> {
+  const [probe] = await query(`select to_regclass('wf_memory_conflicts') is not null as ok`, []);
+  return Boolean(probe?.["ok"]);
+}
+
+function mapConflict(row: Record<string, unknown>): MemoryConflict {
+  const iso = (v: unknown) => (v == null ? null : new Date(v as string).toISOString());
+  return {
+    id: row["id"] as string,
+    projectId: row["project_id"] as string,
+    entryLow: row["entry_low"] as string,
+    entryHigh: row["entry_high"] as string,
+    note: (row["note"] as string | null) ?? null,
+    flaggedBy: row["flagged_by"] as string,
+    createdAt: iso(row["created_at"])!,
+    resolvedAt: iso(row["resolved_at"]),
+    resolvedBy: (row["resolved_by"] as string | null) ?? null,
+    resolution: (row["resolution"] as string | null) ?? null,
+  };
+}
+
+/** A product's conflicts, open and resolved. Empty before 0029 is applied. */
+export async function listConflicts(
+  query: Executor,
+  workspaceId: string,
+  projectId: string,
+): Promise<{ available: boolean; conflicts: MemoryConflict[] }> {
+  if (!(await conflictsAvailable(query))) return { available: false, conflicts: [] };
+  const rows = await query(
+    `select * from wf_memory_conflicts
+      where workspace_id = $1::uuid and project_id = $2::uuid
+      order by created_at, id`,
+    [workspaceId, projectId] as never,
+  );
+  return { available: true, conflicts: rows.map(mapConflict) };
+}
+
+/**
+ * Marks two current entries of the same product as conflicting. Both entries
+ * stay exactly as they are; the conflict is recorded beside them.
+ */
+export async function flagConflict(
+  query: Executor,
+  input: {
+    workspaceId: string;
+    projectId: string;
+    entryA: string;
+    entryB: string;
+    note?: string | null;
+    actorId: string;
+  },
+): Promise<MemoryConflict> {
+  if (input.entryA === input.entryB) throw new Error("Choose two different entries.");
+  if (!(await conflictsAvailable(query)))
+    throw new Error("Conflicts need a database update that has not been applied yet.");
+  const found = await query(
+    `select id from wf_product_memory
+      where workspace_id = $1::uuid and project_id = $2::uuid and retired_at is null
+        and id = any($3::uuid[])
+      for share`,
+    [input.workspaceId, input.projectId, `{${input.entryA},${input.entryB}}`] as never,
+  );
+  if (found.length !== 2) throw new Error("Both entries must be current entries of this product.");
+  const [low, high] = [input.entryA, input.entryB].sort();
+  const rows = await query(
+    `insert into wf_memory_conflicts (workspace_id, project_id, entry_low, entry_high, note, flagged_by)
+     values ($1::uuid, $2::uuid, $3::uuid, $4::uuid, $5, $6)
+     on conflict (entry_low, entry_high) where resolved_at is null do nothing
+     returning *`,
+    [
+      input.workspaceId,
+      input.projectId,
+      low,
+      high,
+      input.note?.trim() || null,
+      input.actorId,
+    ] as never,
+  );
+  if (!rows[0]) throw new Error("These entries are already marked as conflicting.");
+  return mapConflict(rows[0]);
+}
+
+/** Records the founder's resolution. Both entries stay; nothing is merged or deleted. */
+export async function resolveConflict(
+  query: Executor,
+  input: {
+    workspaceId: string;
+    projectId: string;
+    conflictId: string;
+    resolution: string;
+    actorId: string;
+  },
+): Promise<void> {
+  const resolution = input.resolution.trim();
+  if (resolution.length < 3) throw new Error("Say how the conflict was resolved.");
+  const rows = await query(
+    `update wf_memory_conflicts set resolved_at = now(), resolved_by = $4, resolution = $5
+      where id = $3::uuid and workspace_id = $1::uuid and project_id = $2::uuid
+        and resolved_at is null
+      returning id`,
+    [input.workspaceId, input.projectId, input.conflictId, input.actorId, resolution] as never,
+  );
+  if (!rows[0]) throw new Error("Open conflict not found.");
 }

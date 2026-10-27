@@ -34,6 +34,7 @@ The production Neon branch is `br-fancy-breeze-zatt9ocp` in project `spring-wind
 | 0026 run role and instruction version (`wf_task_runs`)             | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0027 founder evidence (`wf_mission_evidence`)                      | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0028 product memory (`wf_product_memory`) and 0027 constraints     | Not applied — needs owner approval          | Applied 27 Oct 2026                  |
+| 0029 conflicting evidence (`wf_memory_conflicts`)                  | Not applied — needs owner approval          | Applied 27 Oct 2026                  |
 
 Migrations 0020–0023 were applied to production in a single transaction. The six `psi_*` tables are owned by the server role, have no client grants, and have row-level security enabled. No table rows were read during or after the change.
 
@@ -207,3 +208,26 @@ commit;
 
 3. The 0027 constraints and the two unique indexes can stay; they only refuse rows that break workspace isolation or provenance. To remove them anyway: `alter table public.wf_mission_evidence drop constraint if exists wf_mission_evidence_mission_workspace_fkey, drop constraint if exists wf_mission_evidence_hash_check;` then `drop index if exists public.wf_missions_id_workspace_uidx, public.wf_projects_id_workspace_uidx, public.wf_missions_id_project_uidx;`. Drop `wf_missions_id_project_uidx` once `wf_product_memory` is gone, since nothing else uses it.
 4. Update the ledger with the date, the reason and the snapshot ID.
+
+## 0029 conflicting evidence
+
+Adds `wf_memory_conflicts`: a link between two product-memory entries that the founder has marked as unable to both be true. Neither entry is changed or merged. Resolving a conflict records the founder's reasoning, who resolved it and when, and both entries stay. Each pair is stored once, in a fixed order, and has at most one open conflict. Server role only, row-level security on. Additive and re-runnable; no existing data is changed.
+
+Safe in either order. Code from before 0029 never reads the table. Code after it checks for the table first: until it exists, the memory page does not offer conflicts and steps are shown none.
+
+Rollback: redeploy the earlier build and leave the table. Only if it must go, with the owner's approval, after the earlier build is live, take a Neon snapshot and record its ID here, then:
+
+```sql
+begin;
+lock table public.wf_memory_conflicts in access exclusive mode;
+do $$
+begin
+  if exists (select 1 from public.wf_memory_conflicts) then
+    raise exception 'wf_memory_conflicts holds the founder''s conflict decisions; export them first. Nothing was changed.';
+  end if;
+  drop table public.wf_memory_conflicts;
+end $$;
+commit;
+```
+
+Update the ledger with the date, the reason and the snapshot ID.

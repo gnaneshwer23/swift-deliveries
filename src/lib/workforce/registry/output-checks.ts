@@ -20,6 +20,8 @@ export type OutputCheckContext = {
    * them. The mission request and clarification answers are always inputs.
    */
   sources: readonly string[];
+  /** Unresolved conflicts from product memory the role was shown; it must say they conflict. */
+  conflictsGiven?: number;
 };
 
 /**
@@ -43,6 +45,9 @@ export function citableSources(
     ...upstreamTitles,
   ];
 }
+
+/** Stages whose output weighs evidence, and so must state any conflict it was shown. */
+const CONFLICT_STAGES: readonly StageKey[] = ["charter", "market", "research", "prd", "evolution"];
 
 export type OutputCheck = { ok: boolean; failures: string[] };
 
@@ -237,6 +242,11 @@ export function checkStageOutput(
     failures.push("claims an approval that only the founder can give");
   if (CLAIMS_DEPLOYMENT.test(markdown))
     failures.push("claims a deployment or release that has not happened");
+  // Conflicting evidence is kept and stated, never averaged away.
+  if (ctx.conflictsGiven && CONFLICT_STAGES.includes(stage) && !/\bconflict/i.test(markdown))
+    failures.push(
+      "does not state the conflicting evidence it was given; keep both sides and say they conflict",
+    );
   STAGE_RULES[stage]?.(markdown, failures, upstream, ctx);
   return { ok: failures.length === 0, failures };
 }

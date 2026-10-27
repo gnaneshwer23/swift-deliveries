@@ -213,3 +213,61 @@ describe("memory given to a model", () => {
     expect(m.text).not.toContain("</product_memory>");
   });
 });
+
+describe("conflicting entries in the prompt", () => {
+  const a = entry({
+    id: "a",
+    kind: "sourced_fact",
+    statement: "Tutors book on Sundays",
+    citation: "Call notes",
+  });
+  const b = entry({
+    id: "b",
+    kind: "sourced_fact",
+    statement: "Tutors book on Mondays",
+    citation: "Survey sheet",
+  });
+  const conflict = {
+    id: "c",
+    projectId: "p",
+    entryLow: "a",
+    entryHigh: "b",
+    note: "Different samples",
+    flaggedBy: "owner",
+    createdAt: new Date(now).toISOString(),
+    resolvedAt: null,
+    resolvedBy: null,
+    resolution: null,
+  };
+
+  it("shows both sides, marks each entry and counts the open conflict", () => {
+    const m = memoryForPrompt([a, b], "this", now, [conflict]);
+    expect(m.conflicts).toBe(1);
+    expect(m.text).toContain(
+      "Tutors book on Sundays (Source: Call notes) — last seen 2026-10-26 — in conflict, see below",
+    );
+    expect(m.text).toContain(
+      "- CONFLICT: [Sourced fact] Tutors book on Sundays (Source: Call notes) ⟂ [Sourced fact] Tutors book on Mondays (Source: Survey sheet) — founder's note: Different samples",
+    );
+    expect(m.text).toMatch(/do not average or merge them/);
+  });
+
+  it("carries the founder's resolution, and stops counting the conflict as open", () => {
+    const m = memoryForPrompt([a, b], "this", now, [
+      {
+        ...conflict,
+        resolvedAt: new Date(now).toISOString(),
+        resolution: "Sundays for new tutors",
+      },
+    ]);
+    expect(m.conflicts).toBe(0);
+    expect(m.text).toContain("RESOLVED CONFLICT:");
+    expect(m.text).toContain("the founder's resolution: Sundays for new tutors");
+  });
+
+  it("drops a conflict whose entry was retired", () => {
+    const m = memoryForPrompt([a, { ...b, retiredAt: "2026-10-01" }], "this", now, [conflict]);
+    expect(m.conflicts).toBe(0);
+    expect(m.text).not.toContain("CONFLICT");
+  });
+});

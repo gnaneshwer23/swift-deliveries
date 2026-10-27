@@ -49,10 +49,24 @@ PRDs now have to source or label every claim about the problem and its users. Un
 
 **Command Centre → Projects → Product memory**, or the link on any mission page. Entries are grouped by kind, with their origin, when they were first and last seen, and any stale reason. Retired entries can be shown on request.
 
-## Not in 3b
+## Conflicting evidence (Phase 3c)
 
-The rest of Phase 3 comes next:
+When two entries cannot both be true, the founder ticks both on the Product memory page and marks them as conflicting, with an optional note. Neither entry is changed or merged.
 
-- flags for conflicting evidence;
-- limits on what context each role can read;
-- approved web research.
+- Every later step on the product is shown both sides in a `CONFLICT:` line, with the note, and each entry is marked "in conflict". Room for conflicts is reserved, so the budget never squeezes them out.
+- A role-led step that weighs evidence (charter, market, research, PRD, evolution) and was shown an open conflict must say in its output that the evidence conflicts. Output that doesn't is rejected, then retried once with the reason. All role instructions now say to keep both sides and never average or merge them; every role moved up one instruction version.
+- Resolving a conflict records the founder's reasoning. Both entries stay, and later steps are shown the resolution alongside them.
+
+## What each role reads (Phase 3c)
+
+A model step gets only the context its lead role's definition allows (`contextScopes` in `registry/roles.ts`). The mission request is always given. The other scopes are clarification answers, upstream artefacts, founder evidence and product memory.
+
+- Research, synthesis and market roles get founder evidence; the charter, PRD and UX roles do not.
+- The UX role works from the requirements only.
+- A stage with no defined lead role gets everything except founder evidence.
+
+The `task.completed` event records which scopes the model was given.
+
+## Still to come
+
+Approved web research. It needs a research provider and key, and runs only for a mission where the founder approves it.

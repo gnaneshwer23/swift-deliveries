@@ -35,6 +35,7 @@ import {
   decisionMemory,
   staleness,
   withdrawnSourceTitles,
+  type MemoryConflict,
   type ProductMemoryEntry,
 } from "@/lib/workforce/product-memory";
 import type {
@@ -1141,6 +1142,9 @@ export type ProductMemoryView = {
   project: WfProject;
   available: boolean;
   entries: Array<ProductMemoryEntry & { staleReason: string | null }>;
+  /** False until migration 0029 is applied. */
+  conflictsAvailable: boolean;
+  conflicts: MemoryConflict[];
 };
 
 /** A product's memory, current and retired, with entries that may no longer hold marked. */
@@ -1160,8 +1164,13 @@ export const getProductMemory = createServerFn({ method: "GET" })
     if (!project.data) throw new Error("Project not found.");
     const { neonTransaction } = await import("@/lib/db/neon.server");
     const { listProductMemory } = await import("@/lib/workforce/product-memory.server");
-    const memory = await neonTransaction((_tx, query) =>
-      listProductMemory(query, workspace.id, data.projectId),
+    const { listConflicts } = await import("@/lib/workforce/product-memory.server");
+    const [memory, conflicts] = await neonTransaction(
+      async (_tx, query) =>
+        [
+          await listProductMemory(query, workspace.id, data.projectId),
+          await listConflicts(query, workspace.id, data.projectId),
+        ] as const,
     );
     const withdrawn = withdrawnSourceTitles(memory.entries);
     return {
@@ -1171,5 +1180,83 @@ export const getProductMemory = createServerFn({ method: "GET" })
         ...e,
         staleReason: e.retiredAt ? null : staleness(e, withdrawn).reason,
       })),
+      conflictsAvailable: conflicts.available,
+      conflicts: conflicts.conflicts,
     };
+  });
+
+/** Resolves the caller's project, or throws: every memory write is scoped through it. */
+async function ownedProject(
+  supabase: Parameters<typeof wfDb>[0],
+  workspaceId: string,
+  projectId: string,
+) {
+  const project = await wfDb(supabase)
+    .from("wf_projects")
+    .select("id")
+    .eq("id", projectId)
+    .eq("workspace_id", workspaceId)
+    .maybeSingle();
+  if (project.error) throw new Error(project.error.message);
+  if (!project.data) throw new Error("Project not found.");
+}
+
+/** Marks two current memory entries as conflicting. Both stay; nothing is merged. */
+export const flagMemoryConflict = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z
+      .object({
+        projectId: z.string().uuid(),
+        entryA: z.string().uuid(),
+        entryB: z.string().uuid(),
+        note: z.string().max(1000).optional(),
+      })
+      .parse(data),
+  )
+  .handler(async ({ context, data }): Promise<MemoryConflict> => {
+    const { supabase, userId } = context;
+    const { workspace } = await ensureWorkspace(supabase, userId);
+    await ownedProject(supabase, workspace.id, data.projectId);
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    const { flagConflict } = await import("@/lib/workforce/product-memory.server");
+    return neonTransaction((_tx, query) =>
+      flagConflict(query, {
+        workspaceId: workspace.id,
+        projectId: data.projectId,
+        entryA: data.entryA,
+        entryB: data.entryB,
+        note: data.note ?? null,
+        actorId: userId,
+      }),
+    );
+  });
+
+/** Records how the founder resolved a conflict. Both entries stay as history. */
+export const resolveMemoryConflict = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z
+      .object({
+        projectId: z.string().uuid(),
+        conflictId: z.string().uuid(),
+        resolution: z.string().min(3).max(1000),
+      })
+      .parse(data),
+  )
+  .handler(async ({ context, data }): Promise<void> => {
+    const { supabase, userId } = context;
+    const { workspace } = await ensureWorkspace(supabase, userId);
+    await ownedProject(supabase, workspace.id, data.projectId);
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    const { resolveConflict } = await import("@/lib/workforce/product-memory.server");
+    await neonTransaction((_tx, query) =>
+      resolveConflict(query, {
+        workspaceId: workspace.id,
+        projectId: data.projectId,
+        conflictId: data.conflictId,
+        resolution: data.resolution,
+        actorId: userId,
+      }),
+    );
   });

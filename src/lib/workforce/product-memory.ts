@@ -188,24 +188,77 @@ export function withdrawnSourceTitles(entries: readonly ProductMemoryEntry[]): S
   );
 }
 
-export type MemoryForPrompt = { text: string; citable: string[]; included: number };
+export type MemoryForPrompt = {
+  text: string;
+  citable: string[];
+  included: number;
+  /** Unresolved conflicts the model was shown; its output must acknowledge them. */
+  conflicts: number;
+};
+
+/** Two entries the founder has marked as unable to both be true. */
+export type MemoryConflict = {
+  id: string;
+  projectId: string;
+  entryLow: string;
+  entryHigh: string;
+  note: string | null;
+  flaggedBy: string;
+  createdAt: string;
+  resolvedAt: string | null;
+  resolvedBy: string | null;
+  resolution: string | null;
+};
+
+const entryText = (e: ProductMemoryEntry) => {
+  const label =
+    e.kind === "requirement" ? `Requirement ${e.refKey ?? ""}`.trim() : MEMORY_KIND_LABELS[e.kind];
+  return `[${label}] ${e.statement}${e.citation ? ` (Source: ${e.citation})` : ""}`;
+};
 
 /**
  * Memory from earlier missions for a step's prompt, newest first, within the
  * budget. Each line keeps its label and source and says when it was last seen;
  * possibly stale entries say so. Founder sources that are still current can be
  * cited, so a sourced fact can be carried forward with its original source.
+ * Conflicts the founder flagged always fit (their room is reserved), with both sides and the
+ * founder's resolution once there is one.
  */
 export function memoryForPrompt(
   entries: readonly ProductMemoryEntry[],
   missionId: string,
   now = Date.now(),
+  conflicts: readonly MemoryConflict[] = [],
 ): MemoryForPrompt {
   const withdrawn = withdrawnSourceTitles(entries);
+  const byId = new Map(entries.map((e) => [e.id, e]));
+  const safe = (t: string | null | undefined) => !containsLikelyPersonalIdentifiers(t ?? "");
+  // Conflicts come first so they always fit: both sides are shown, never merged.
+  const conflictLines: string[] = [];
+  let openConflicts = 0;
+  const inConflict = new Set<string>();
+  for (const c of conflicts) {
+    const a = byId.get(c.entryLow);
+    const b = byId.get(c.entryHigh);
+    if (!a || !b || a.retiredAt || b.retiredAt) continue;
+    if (![entryText(a), entryText(b)].every(safe)) continue;
+    if (c.resolvedAt) {
+      if (!safe(c.resolution)) continue;
+      conflictLines.push(
+        `- RESOLVED CONFLICT: ${entryText(a)} ⟂ ${entryText(b)} — the founder's resolution: ${c.resolution}`,
+      );
+      continue;
+    }
+    openConflicts += 1;
+    inConflict.add(a.id).add(b.id);
+    conflictLines.push(
+      `- CONFLICT: ${entryText(a)} ⟂ ${entryText(b)}${c.note && safe(c.note) ? ` — founder's note: ${c.note}` : ""}`,
+    );
+  }
   const current = entries
     .filter((e) => !e.retiredAt && e.firstMissionId !== missionId)
     .sort((a, b) => b.lastSeenAt.localeCompare(a.lastSeenAt));
-  let budget = MAX_MEMORY_PROMPT_CHARS;
+  let budget = MAX_MEMORY_PROMPT_CHARS - conflictLines.join("\n").length;
   const lines: string[] = [];
   const currentSources = new Map<string, string>();
   const cited = new Set<string>();
@@ -217,11 +270,7 @@ export function memoryForPrompt(
       if (!s.stale) currentSources.set(e.statement.toLowerCase(), e.statement);
       continue;
     }
-    const label =
-      e.kind === "requirement"
-        ? `Requirement ${e.refKey ?? ""}`.trim()
-        : MEMORY_KIND_LABELS[e.kind];
-    const line = `- [${label}] ${e.statement}${e.citation ? ` (Source: ${e.citation})` : ""} — last seen ${e.lastSeenAt.slice(0, 10)}${s.stale ? ` — possibly stale: ${s.reason}` : ""}`;
+    const line = `- ${entryText(e)} — last seen ${e.lastSeenAt.slice(0, 10)}${s.stale ? ` — possibly stale: ${s.reason}` : ""}${inConflict.has(e.id) ? " — in conflict, see below" : ""}`;
     if (line.length > budget) break;
     budget -= line.length;
     lines.push(line);
@@ -229,7 +278,14 @@ export function memoryForPrompt(
   }
   // A founder source can be cited again only where the model was shown a fact that cites it.
   const citable = [...currentSources].filter(([k]) => cited.has(k)).map(([, title]) => title);
+  const all = conflictLines.length
+    ? [
+        ...lines,
+        "Conflicting entries (keep both sides, say that they conflict, and do not average or merge them):",
+        ...conflictLines,
+      ]
+    : lines;
   // The block cannot be closed from inside; entries stay data however they are written.
-  const text = lines.join("\n").replace(/<\/product_memory/gi, "<\\/product_memory");
-  return { text, citable, included: lines.length };
+  const text = all.join("\n").replace(/<\/product_memory/gi, "<\\/product_memory");
+  return { text, citable, included: lines.length, conflicts: openConflicts };
 }

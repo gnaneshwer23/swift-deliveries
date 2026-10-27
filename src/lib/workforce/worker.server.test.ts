@@ -28,6 +28,7 @@ const TABLES = [
   "wf_mission_events",
   "wf_mission_evidence",
   "wf_product_memory",
+  "wf_memory_conflicts",
 ];
 const sql = url
   ? postgres(url, {
@@ -339,7 +340,7 @@ describe.skipIf(!url)("durable mission worker against a real database", () => {
       note: "model call timed out",
       failure: { class: "timeout", detail: "model call timed out" },
       calls: [call("timeout")],
-      instructionVersion: "DX-001@2",
+      instructionVersion: "DX-001@3",
     };
     expect((await step(ids)).note).toMatch(/tried again/);
     const { task, run } = await firstTaskRun(ids.missionId);
@@ -379,11 +380,11 @@ describe.skipIf(!url)("durable mission worker against a real database", () => {
       mode: "model",
       model: "fixture-model",
       calls: [call(null)],
-      instructionVersion: "DX-001@2",
+      instructionVersion: "DX-001@3",
     };
     await step(ids);
     expect(lastGenerationInput!["extraInstructions"]).toMatch(/DX-001/);
-    expect(lastGenerationInput!["instructionVersion"]).toBe("DX-001@2");
+    expect(lastGenerationInput!["instructionVersion"]).toBe("DX-001@3");
     const { task, run } = await firstTaskRun(ids.missionId);
     expect(task["status"]).toBe("completed");
     expect(run).toMatchObject({
@@ -395,7 +396,7 @@ describe.skipIf(!url)("durable mission worker against a real database", () => {
       output_tokens: 50,
       model_calls: 1,
       role_id: "DX-001",
-      instruction_version: "DX-001@2",
+      instruction_version: "DX-001@3",
     });
   });
 
@@ -410,25 +411,41 @@ describe.skipIf(!url)("durable mission worker against a real database", () => {
         (workspace_id, mission_id, kind, title, status, content, content_sha256, supplied_by, removed_at)
       values (${ids.workspaceId}, ${ids.missionId}, 'note', 'Old notes', 'readable', 'x', 'h',
               'owner', now())`;
+    // The charter's lead role does not read founder evidence, so its step is not given any.
+    await step(ids);
+    expect(lastGenerationInput!["task"]).toMatchObject({ key: "charter" });
+    expect(lastGenerationInput!["evidence"]).toEqual([]);
+    expect(lastGenerationInput!["mission"]).toMatchObject({ requestText: "req" });
+
+    // The market lead role does, and gets the current evidence only.
     nextGeneration = {
-      content: STAGE_FIXTURES.find((f) => f.stage === "charter")!.good,
+      content: STAGE_FIXTURES.find((f) => f.stage === "market")!.good,
       mode: "model",
       model: "fixture-model",
       calls: [call(null)],
-      instructionVersion: "DX-001@2",
       evidenceUsed: [{ id: kept!["id"], title: "Call notes", sha256: "abc" }],
     };
     await step(ids);
+    expect(lastGenerationInput!["task"]).toMatchObject({ key: "market" });
     // Removed evidence is not given to the step.
     const given = lastGenerationInput!["evidence"] as Array<{ title: string }>;
     expect(given.map((e) => e.title)).toEqual(["Call notes"]);
-    const [artefact] = await sql!`select evidence_items from wf_artefacts`;
+    const [artefact] = await sql!`select a.evidence_items from wf_artefacts a
+      join wf_mission_tasks t on t.id = a.task_id where t.task_key = 'market'`;
     expect(JSON.stringify(artefact!["evidence_items"])).toContain(
       `evidence:${kept!["id"] as string}@sha256:abc`,
     );
-    const [done] = await sql!`select data from wf_mission_events where type = 'task.completed'`;
+    const [done] = await sql!`select data from wf_mission_events
+      where type = 'task.completed' order by id desc limit 1`;
     expect(done!["data"]).toMatchObject({
       evidence: [{ id: kept!["id"], title: "Call notes" }],
+      context: [
+        "mission_request",
+        "clarification_answers",
+        "upstream_artefacts",
+        "founder_evidence",
+        "product_memory",
+      ],
     });
   });
 
@@ -473,6 +490,32 @@ describe.skipIf(!url)("durable mission worker against a real database", () => {
     );
     const [seen] = await sql!`select times_seen from wf_product_memory`;
     expect(seen!["times_seen"]).toBe(2);
+  });
+
+  it("shows a later mission both sides of a flagged conflict, never one merged view", async () => {
+    const first = await approvedMission(1000, buildPlan);
+    const [a] = await sql!`insert into wf_product_memory
+        (workspace_id, project_id, kind, statement, citation, statement_hash, origin_kind, origin_id)
+      values (${first.workspaceId}, ${first.projectId}, 'sourced_fact', 'Tutors book on Sundays',
+              'Call notes', 'h1', 'artefact', 'x') returning id`;
+    const [b] = await sql!`insert into wf_product_memory
+        (workspace_id, project_id, kind, statement, citation, statement_hash, origin_kind, origin_id)
+      values (${first.workspaceId}, ${first.projectId}, 'sourced_fact', 'Tutors book on Mondays',
+              'Survey sheet', 'h2', 'artefact', 'y') returning id`;
+    const [low, high] = [a!["id"] as string, b!["id"] as string].sort();
+    await sql!`insert into wf_memory_conflicts (workspace_id, project_id, entry_low, entry_high, flagged_by)
+      values (${first.workspaceId}, ${first.projectId}, ${low!}, ${high!}, 'owner')`;
+
+    const second = await approvedMission(1000, buildPlan, first);
+    nextGeneration = { content: "", mode: "simulated", note: "test" };
+    await step(second);
+    const memory = lastGenerationInput!["productMemory"] as string;
+    expect(memory).toContain("Tutors book on Sundays (Source: Call notes)");
+    expect(memory).toContain("Tutors book on Mondays (Source: Survey sheet)");
+    expect(memory).toMatch(/- CONFLICT: .*(Sundays.* ⟂ .*Mondays|Mondays.* ⟂ .*Sundays)/);
+    // Both entries are untouched.
+    const [n] = await sql!`select count(*)::int n from wf_product_memory where retired_at is null`;
+    expect(n!["n"]).toBe(2);
   });
 
   it("never remembers a simulated draft", async () => {

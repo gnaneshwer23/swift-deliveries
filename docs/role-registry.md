@@ -20,7 +20,7 @@ Each definition in `roles.ts` records:
 - when it escalates to the founder;
 - its execution mode.
 
-Model-workflow roles also have versioned instructions (`instructions.ts`, for example `DX-023@3`). Change the version whenever the text changes.
+Model-workflow roles also have versioned instructions (`instructions.ts`, for example `DX-023@4`). Change the version whenever the text changes.
 
 ## Output checks
 

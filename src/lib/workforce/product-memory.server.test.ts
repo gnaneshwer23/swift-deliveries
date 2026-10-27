@@ -4,7 +4,13 @@ import { POSTGRES_TYPES } from "@/lib/db/postgres-types";
 import type { Executor } from "@/lib/db/builder";
 import { readNote } from "./evidence";
 import { addEvidence, removeEvidence } from "./evidence.server";
-import { listProductMemory, recordMemory } from "./product-memory.server";
+import {
+  flagConflict,
+  listConflicts,
+  listProductMemory,
+  recordMemory,
+  resolveConflict,
+} from "./product-memory.server";
 
 const url = process.env["PSI_TEST_DATABASE_URL"];
 if (url) {
@@ -24,6 +30,7 @@ const TABLES = [
   "wf_mission_events",
   "wf_mission_evidence",
   "wf_product_memory",
+  "wf_memory_conflicts",
 ];
 const sql = url
   ? postgres(url, { prepare: false, types: POSTGRES_TYPES, connection: { search_path: schema } })
@@ -163,5 +170,60 @@ describe.skipIf(!url)("product memory against a real database", () => {
       "wf_product_memory_last_mission_fkey",
       "wf_product_memory_project_id_workspace_id_fkey",
     ]);
+  });
+
+  it("keeps both sides of a conflict, and resolving it keeps them too", async () => {
+    const m = await mission(await workspace());
+    await tx((q) =>
+      recordMemory(q, { ...m, originKind: "artefact", originId: "x" }, [
+        fact("Tutors book on Sundays."),
+        fact("Tutors book on Mondays."),
+      ]),
+    );
+    const [a, b] = (await tx((q) => listProductMemory(q, m.workspaceId, m.projectId))).entries;
+    const flag = (x: string, y: string) =>
+      tx((q) =>
+        flagConflict(q, { ...m, entryA: x, entryB: y, note: "Different samples", actorId: "o" }),
+      );
+    const c = await flag(a!.id, b!.id);
+    // One open conflict per pair, whichever way round it is marked.
+    await expect(flag(b!.id, a!.id)).rejects.toThrow(/already marked/);
+    await expect(flag(a!.id, a!.id)).rejects.toThrow(/two different entries/);
+
+    await tx((q) =>
+      resolveConflict(q, {
+        ...m,
+        conflictId: c.id,
+        resolution: "Sundays for new tutors",
+        actorId: "o",
+      }),
+    );
+    const { conflicts } = await tx((q) => listConflicts(q, m.workspaceId, m.projectId));
+    expect(conflicts).toMatchObject([{ resolution: "Sundays for new tutors", resolvedBy: "o" }]);
+    // Neither entry was changed or removed.
+    const after = (await tx((q) => listProductMemory(q, m.workspaceId, m.projectId))).entries;
+    expect(after.map((e) => [e.statement, e.retiredAt])).toEqual(
+      expect.arrayContaining([
+        ["Tutors book on Sundays.", null],
+        ["Tutors book on Mondays.", null],
+      ]),
+    );
+  });
+
+  it("never links entries across products or workspaces", async () => {
+    const mine = await mission(await workspace());
+    const theirs = await mission(await workspace());
+    await tx((q) =>
+      recordMemory(q, { ...mine, originKind: "artefact", originId: "x" }, [fact("Mine.")]),
+    );
+    await tx((q) =>
+      recordMemory(q, { ...theirs, originKind: "artefact", originId: "y" }, [fact("Theirs.")]),
+    );
+    const [own] = (await tx((q) => listProductMemory(q, mine.workspaceId, mine.projectId))).entries;
+    const [other] = (await tx((q) => listProductMemory(q, theirs.workspaceId, theirs.projectId)))
+      .entries;
+    await expect(
+      tx((q) => flagConflict(q, { ...mine, entryA: own!.id, entryB: other!.id, actorId: "o" })),
+    ).rejects.toThrow(/current entries of this product/);
   });
 });
