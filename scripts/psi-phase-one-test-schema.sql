@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS public.wf_workspaces (
 -- Workforce mission tables for the workspace-isolation tests
 -- (src/lib/workforce/access.server.test.ts). Columns, defaults, CHECKs, UNIQUEs
 -- and foreign keys follow the production Neon schema as read on 26 Oct 2026.
--- Reduced fixture: wf_usage_records and the programme tables are omitted, and
+-- Reduced fixture: the programme tables are omitted, and
 -- the wf_workspaces table above keeps its fixture-only UNIQUE (owner_id).
 ALTER TABLE public.wf_workspaces ADD COLUMN IF NOT EXISTS name text NOT NULL DEFAULT 'Personal workspace';
 
@@ -123,5 +123,15 @@ CREATE TABLE IF NOT EXISTS public.wf_audit_events (
   entity_type text NOT NULL,
   entity_id uuid,
   metadata jsonb NOT NULL DEFAULT '{}',
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS public.wf_usage_records (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id uuid NOT NULL REFERENCES public.wf_workspaces (id) ON DELETE CASCADE,
+  mission_id uuid REFERENCES public.wf_missions (id) ON DELETE SET NULL,
+  task_id uuid,
+  amount integer NOT NULL,
+  label text NOT NULL,
   created_at timestamptz NOT NULL DEFAULT now()
 );

@@ -37,8 +37,15 @@ export type DbClient = { from: (table: string) => any };
  * request via the user-scoped client first. Loaded lazily: *.functions.ts is bundled
  * for the client, so the service-role module must never be imported at top level.
  */
+let neonModule: Promise<typeof import("@/lib/db/neon.server")> | null = null;
+
+/** The database module, loaded once and shared by concurrent callers. */
+export function neonServer() {
+  return (neonModule ??= import("@/lib/db/neon.server"));
+}
+
 export async function adminDb() {
-  const { neonDb } = await import("@/lib/db/neon.server");
+  const { neonDb } = await neonServer();
   return wfDb(neonDb());
 }
 

@@ -7,19 +7,15 @@ import {
   audit,
   ensureWorkspace,
   loadMissionBundle,
-  mapApproval,
   mapMission,
-  mapPlan,
   mapProject,
   mapTask,
   mapWorkspace,
-  type DbClient,
 } from "@/lib/workforce/access.server";
 import {
   appendEvent,
   approveExternalForPlan,
   approvePlanVersion,
-  hasLivePlanApproval,
   lockMission,
   PAUSABLE,
   PRE_EXECUTION,
@@ -27,15 +23,6 @@ import {
   TERMINAL,
 } from "@/lib/workforce/plan-store.server";
 import { generateMissionPlan, deriveMissionTitle } from "@/lib/workforce/planner";
-import {
-  buildDeliveryReport,
-  executeTaskStep,
-  isStructureCheck,
-  nextMissionStatusAfterRun,
-  type UpstreamArtefact,
-} from "@/lib/workforce/executor";
-import { runnableTasks, unreachableTasks } from "@/lib/workforce/graph";
-import { canAfford } from "@/lib/workforce/usage";
 import type {
   DeliveryReport,
   MissionBundle,
@@ -43,7 +30,6 @@ import type {
   PermissionLevel,
   QualityLabel,
   WfMission,
-  WfMissionPlan,
   WfMissionTask,
   WfProject,
   WfWorkspace,
@@ -532,6 +518,9 @@ export const approveMissionPlan = createServerFn({ method: "POST" })
       entityId: data.missionId,
       metadata: { approveExternal, planVersion: data.planVersion },
     });
+    await (
+      await import("@/lib/workforce/worker.server")
+    ).kickWorker({ workspaceId: workspace.id, missionId: data.missionId });
     return loadMissionBundle(supabase, workspace.id, data.missionId);
   });
 
@@ -574,123 +563,13 @@ export const approveExternalActions = createServerFn({ method: "POST" })
       entityId: data.missionId,
     });
 
+    await (
+      await import("@/lib/workforce/worker.server")
+    ).kickWorker({ workspaceId: workspace.id, missionId: data.missionId });
     return loadMissionBundle(supabase, workspace.id, data.missionId);
   });
 
 type StepResult = MissionBundle & { workspace: WfWorkspace; done: boolean; note?: string };
-
-/** Persists the final status + delivery report once no task can make progress. */
-async function finaliseMission(
-  supabase: DbClient,
-  workspace: WfWorkspace,
-  bundle: MissionBundle,
-): Promise<StepResult> {
-  const writeDb = await adminDb();
-  const { mission, tasks } = bundle;
-  const finalStatus = nextMissionStatusAfterRun({ tasks, hitCeiling: false });
-  const report = buildDeliveryReport({
-    missionTitle: mission.title,
-    intent: mission.intent,
-    tasks,
-    artefacts: bundle.artefacts.filter((a) => a.kind !== "delivery_report"),
-    usageSpent: tasks.reduce((sum, t) => sum + t.actualUsage, 0),
-    partial: finalStatus !== "completed",
-  });
-  // Conditional on status so concurrent finalisers write the report once.
-  const updated = await writeDb
-    .from("wf_missions")
-    .update({ status: finalStatus, delivery_report: report, updated_at: new Date().toISOString() })
-    .eq("id", mission.id)
-    .eq("workspace_id", workspace.id)
-    .in("status", ["queued", "running", "blocked"])
-    .select("id");
-  if ((updated.data ?? []).length && finalStatus !== "blocked") {
-    await writeDb.from("wf_artefacts").insert({
-      mission_id: mission.id,
-      workspace_id: workspace.id,
-      kind: "delivery_report",
-      title: report.headline,
-      content: `# ${report.headline}\n\n${report.summary}\n\n## Outcomes\n${report.outcomes.map((o) => `- ${o}`).join("\n")}\n\n## Open risks\n${report.openRisks.map((r) => `- ${r}`).join("\n")}\n\n## Usage spent\n${report.usageSpent} credits`,
-      content_format: "markdown",
-      quality_labels: report.qualitySummary,
-      evidence_items: [],
-    });
-  }
-  const refreshed = await loadMissionBundle(supabase, workspace.id, mission.id);
-  return { ...refreshed, workspace, done: true };
-}
-
-/** Upstream artefacts for a task: outputs of its transitive dependencies (all prior work for verify). */
-/** Prototypes this mission has saved, for the legacy check task (legacy plans have no dependencies). */
-function savedPrototypes(bundle: MissionBundle): UpstreamArtefact[] {
-  return bundle.artefacts
-    .filter((a) => a.kind === "prototype_html")
-    .map((a) => ({
-      kind: a.kind,
-      title: a.title,
-      content: a.content,
-      contentFormat: a.contentFormat,
-      taskKey: bundle.tasks.find((t) => t.id === a.taskId)?.key ?? null,
-      requiredSections: [],
-    }));
-}
-
-function upstreamFor(task: WfMissionTask, bundle: MissionBundle): UpstreamArtefact[] {
-  const byKey = new Map(bundle.tasks.map((t) => [t.key, t]));
-  const byId = new Map(bundle.tasks.map((t) => [t.id, t]));
-  const wanted = new Set<string>();
-  const visit = (key: string) => {
-    for (const dep of byKey.get(key)?.dependsOn ?? []) {
-      if (!wanted.has(dep)) {
-        wanted.add(dep);
-        visit(dep);
-      }
-    }
-  };
-  visit(task.key);
-  return bundle.artefacts
-    .filter(
-      (a) => a.kind !== "delivery_report" && a.taskId && wanted.has(byId.get(a.taskId)?.key ?? ""),
-    )
-    .map((a) => {
-      const owner = byId.get(a.taskId!);
-      return {
-        kind: a.kind,
-        title: a.title,
-        content: a.content,
-        contentFormat: a.contentFormat,
-        taskKey: owner?.key ?? null,
-        requiredSections: owner?.requiredSections ?? [],
-      };
-    });
-}
-
-/** Optimistic-concurrency usage charge: never lets two parallel steps overspend the ceiling. */
-async function chargeWorkspaceUsage(
-  workspaceId: string,
-  amount: number,
-): Promise<{ ok: true; consumed: number } | { ok: false }> {
-  if (amount <= 0) return { ok: true, consumed: -1 };
-  const writeDb = await adminDb();
-  for (let attempt = 0; attempt < 4; attempt++) {
-    const live = await writeDb
-      .from("wf_workspaces")
-      .select("usage_ceiling, usage_consumed")
-      .eq("id", workspaceId)
-      .single();
-    if (live.error || !live.data) return { ok: false };
-    const consumed = live.data.usage_consumed as number;
-    if (consumed + amount > (live.data.usage_ceiling as number)) return { ok: false };
-    const upd = await writeDb
-      .from("wf_workspaces")
-      .update({ usage_consumed: consumed + amount, updated_at: new Date().toISOString() })
-      .eq("id", workspaceId)
-      .eq("usage_consumed", consumed)
-      .select("id");
-    if ((upd.data ?? []).length) return { ok: true, consumed: consumed + amount };
-  }
-  return { ok: false };
-}
 
 export const runMissionStep = createServerFn({ method: "POST" })
   .middleware([requireAuth])
@@ -698,318 +577,29 @@ export const runMissionStep = createServerFn({ method: "POST" })
   .handler(async ({ context, data }): Promise<StepResult> => {
     const { supabase, userId } = context;
     const { workspace } = await ensureWorkspace(supabase, userId);
-    const db = wfDb(supabase);
-    const writeDb = await adminDb();
+    // Scoped read first: a mission outside the caller's workspace is never advanced.
+    await loadMissionBundle(supabase, workspace.id, data.missionId);
 
-    const bundle = await loadMissionBundle(supabase, workspace.id, data.missionId);
-    const { mission, tasks } = bundle;
-    if (mission.workspaceId !== workspace.id) throw new Error("Mission not found.");
-    if (!["queued", "running", "blocked"].includes(mission.status)) {
-      return { ...bundle, workspace, done: true };
-    }
-    if (workspace.stoppedAt) {
-      return { ...bundle, workspace, done: true, note: "Workspace stopped: no new work starts." };
-    }
-    // Work runs only under a live approval bound to the current plan version.
-    if (!hasLivePlanApproval(bundle.plan, bundle.approvals)) {
-      return {
-        ...bundle,
-        workspace,
-        done: true,
-        note: "The current plan has no live approval. Review and approve it before work continues.",
-      };
-    }
-
-    // Approved external tasks re-enter the schedule; everything else follows the DAG.
-    const retryable = (t: WfMissionTask) =>
-      t.status === "blocked" && t.isExternal && mission.externalActionsApproved;
-    const nodes = tasks.map((t) => ({
-      ...t,
-      status: retryable(t) ? ("pending" as const) : t.status,
-    }));
-    const runnable = runnableTasks(nodes);
-    const next = runnable.find((t) => !t.gate) ?? null;
-
-    if (!next) {
-      const gate =
-        runnable.find((t) => t.gate) ?? tasks.find((t) => t.gate && t.status === "blocked");
-      if (gate) {
-        if (gate.status !== "blocked") {
-          await writeDb
-            .from("wf_mission_tasks")
-            .update({ status: "blocked", updated_at: new Date().toISOString() })
-            .eq("id", gate.id)
-            .eq("status", "pending");
-          await audit(db, {
-            workspaceId: workspace.id,
-            missionId: mission.id,
-            actorId: userId,
-            eventType: "mission.awaiting_gate",
-            entityType: "task",
-            entityId: gate.id,
-            metadata: { gate: gate.key },
-          });
-        }
-        await writeDb
-          .from("wf_missions")
-          .update({ status: "blocked", updated_at: new Date().toISOString() })
-          .eq("id", mission.id)
-          .eq("workspace_id", workspace.id)
-          .in("status", ["queued", "running", "blocked"]);
-        const refreshed = await loadMissionBundle(supabase, workspace.id, mission.id);
-        return { ...refreshed, workspace, done: true, note: `Awaiting human gate: ${gate.title}` };
-      }
-
-      // Tasks downstream of a failure can never run: report them as blocked, never drop them.
-      const dead = unreachableTasks(nodes);
-      if (dead.length) {
-        await writeDb
-          .from("wf_mission_tasks")
-          .update({ status: "blocked", updated_at: new Date().toISOString() })
-          .in(
-            "id",
-            dead.map((t) => t.id),
-          )
-          .eq("status", "pending");
-      }
-      return finaliseMission(
-        supabase,
-        workspace,
-        await loadMissionBundle(supabase, workspace.id, mission.id),
-      );
-    }
-
-    // Atomic claim against the locked mission and workspace rows, so a stop, pause or cancel
-    // that commits first always wins, and only one caller can take this task.
-    const { neonTransaction } = await import("@/lib/db/neon.server");
-    const claim = await neonTransaction(async (_tx, query) => {
-      const live = await query(
-        `select m.status, w.stopped_at from wf_missions m
-           join wf_workspaces w on w.id = m.workspace_id
-          where m.id = $1::uuid and m.workspace_id = $2::uuid
-          for update of m, w`,
-        [mission.id, workspace.id] as never,
-      );
-      const state = live[0];
-      if (!state) throw new Error("Mission not found.");
-      if (state["stopped_at"]) return "Workspace stopped: no new work starts.";
-      if (!["queued", "running", "blocked"].includes(state["status"] as string))
-        return `Mission is ${state["status"] as string}: no new work starts.`;
-      const taken = await query(
-        `update wf_mission_tasks set status = 'running', started_at = now(), attempt = attempt + 1
-          where id = $1::uuid and status in ('pending', 'blocked') returning attempt`,
-        [next.id] as never,
-      );
-      if (!taken.length) return "claimed";
-      await query(
-        `update wf_missions set status = 'running', updated_at = now() where id = $1::uuid`,
-        [mission.id] as never,
-      );
-      await appendEvent(query, {
-        workspaceId: workspace.id,
-        missionId: mission.id,
-        taskId: next.id,
-        type: "task.started",
-        actorKind: "user",
-        actorId: userId,
-        data: { attempt: Number(taken[0]!["attempt"]) },
-      });
-      return null;
-    });
-    if (claim && claim !== "claimed") {
-      const refreshed = await loadMissionBundle(supabase, workspace.id, mission.id);
-      return { ...refreshed, workspace, done: true, note: claim };
-    }
-    if (claim === "claimed") {
-      const refreshed = await loadMissionBundle(supabase, workspace.id, mission.id);
-      return { ...refreshed, workspace, done: false, note: "Task already claimed by another run." };
-    }
-
-    const liveWorkspace = (
-      await db.from("wf_workspaces").select("*").eq("id", workspace.id).single()
-    ).data;
-    const budget = {
-      ceiling: liveWorkspace?.usage_ceiling ?? workspace.usageCeiling,
-      consumed: liveWorkspace?.usage_consumed ?? workspace.usageConsumed,
-    };
-    const task = tasks.find((t) => t.id === next.id)!;
-    const upstream = task.produces
-      ? upstreamFor(task, bundle)
-      : isStructureCheck(task)
-        ? savedPrototypes(bundle)
-        : [];
-
-    // Only spend a model call when the step is affordable and permitted.
-    const generated =
-      task.produces &&
-      task.produces !== "test_report" &&
-      canAfford(budget, task.estimatedUsage) &&
-      !task.isExternal
-        ? await (
-            await import("@/lib/workforce/model-runner.server")
-          ).generateStageContent({
-            mission,
-            task,
-            upstream,
-          })
-        : undefined;
-
-    const result = executeTaskStep({
-      mission,
-      task: { ...task, status: "running" },
-      budget,
-      upstream,
-      ...(generated ? { generated } : {}),
-    });
-
-    const charge = result.ok ? result.usageCharged : (result.usageCharged ?? 0);
-    if (charge > 0) {
-      const charged = await chargeWorkspaceUsage(workspace.id, charge);
-      if (!charged.ok) {
-        // Lost a race for the last credits: release the task, nothing persisted.
-        await writeDb
-          .from("wf_mission_tasks")
-          .update({ status: "pending", started_at: null })
-          .eq("id", task.id);
-        const reportBundle = await loadMissionBundle(supabase, workspace.id, mission.id);
-        const report = buildDeliveryReport({
-          missionTitle: mission.title,
-          intent: mission.intent,
-          tasks: reportBundle.tasks,
-          artefacts: reportBundle.artefacts,
-          usageSpent: reportBundle.tasks.reduce((s, t) => s + t.actualUsage, 0),
-          partial: true,
-        });
-        await writeDb
-          .from("wf_missions")
-          .update({
-            status: "partially_completed",
-            delivery_report: report,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", mission.id)
-          .eq("workspace_id", workspace.id)
-          .in("status", ["queued", "running", "blocked"]);
-        const refreshed = await loadMissionBundle(supabase, workspace.id, mission.id);
-        return { ...refreshed, workspace, done: true, note: "Usage ceiling reached." };
-      }
-      await writeDb.from("wf_usage_records").insert({
-        workspace_id: workspace.id,
-        mission_id: mission.id,
-        task_id: task.id,
-        amount: charge,
-        label: task.title,
-      });
-    }
-
-    const persistArtefact = async (artefact: typeof result.artefact) => {
-      if (!artefact) return;
-      await writeDb.from("wf_artefacts").insert({
-        mission_id: artefact.missionId,
-        workspace_id: artefact.workspaceId,
-        task_id: artefact.taskId,
-        kind: artefact.kind,
-        title: artefact.title,
-        content: artefact.content,
-        content_format: artefact.contentFormat,
-        quality_labels: artefact.qualityLabels,
-        evidence_items: artefact.evidenceItems,
-      });
-    };
-
-    if (!result.ok) {
-      await persistArtefact(result.artefact ?? null);
-      const failed = result.reason === "contract_failed";
-      await writeDb
-        .from("wf_mission_tasks")
-        .update({
-          status: failed ? "failed" : "blocked",
-          actual_usage: charge,
-          completed_at: failed ? new Date().toISOString() : null,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", task.id);
-
-      if (result.reason === "ceiling_reached") {
-        const reportBundle = await loadMissionBundle(supabase, workspace.id, mission.id);
-        const report = buildDeliveryReport({
-          missionTitle: mission.title,
-          intent: mission.intent,
-          tasks: reportBundle.tasks,
-          artefacts: reportBundle.artefacts,
-          usageSpent: budget.consumed,
-          partial: true,
-        });
-        await writeDb
-          .from("wf_missions")
-          .update({
-            status: "partially_completed",
-            delivery_report: report,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", mission.id)
-          .eq("workspace_id", workspace.id)
-          .in("status", ["queued", "running", "blocked"]);
-      } else if (!failed) {
-        await writeDb
-          .from("wf_missions")
-          .update({ status: "blocked", updated_at: new Date().toISOString() })
-          .eq("id", mission.id)
-          .eq("workspace_id", workspace.id)
-          .in("status", ["queued", "running", "blocked"]);
-      }
-
-      await audit(db, {
-        workspaceId: workspace.id,
-        missionId: mission.id,
-        actorId: userId,
-        eventType: failed ? "task.contract_failed" : `mission.${result.reason}`,
-        entityType: "task",
-        entityId: task.id,
-        metadata: result.detail ? { detail: result.detail } : {},
-      });
-
-      const refreshed = await loadMissionBundle(supabase, workspace.id, mission.id);
-      const ws = await db.from("wf_workspaces").select("*").eq("id", workspace.id).single();
-      return {
-        ...refreshed,
-        workspace: ws.data ? mapWorkspace(ws.data) : workspace,
-        // A failed stage does not stop independent branches; the next call finalises.
-        done: !failed,
-        ...(result.detail ? { note: result.detail } : {}),
-      };
-    }
-
-    await writeDb
-      .from("wf_mission_tasks")
-      .update({
-        status: "completed",
-        actual_usage: result.usageCharged,
-        evidence_notes: result.task.evidenceNotes,
-        started_at: result.task.startedAt,
-        completed_at: result.task.completedAt,
-        updated_at: result.task.updatedAt,
-      })
-      .eq("id", task.id);
-    await persistArtefact(result.artefact);
-
-    await audit(db, {
+    const { advanceMission } = await import("@/lib/workforce/worker.server");
+    const result = await advanceMission({
       workspaceId: workspace.id,
-      missionId: mission.id,
-      actorId: userId,
-      eventType: "task.completed",
-      entityType: "task",
-      entityId: task.id,
-      metadata: {
-        usage: result.usageCharged,
-        ...(generated ? { generation: generated.mode, model: generated.model ?? null } : {}),
-      },
+      missionId: data.missionId,
+      actor: { kind: "user", id: userId },
+      workerId: `user:${userId}:${crypto.randomUUID()}`,
     });
 
-    // Completion is decided on the next call so gates and failures are evaluated on fresh state.
-    const refreshed = await loadMissionBundle(supabase, workspace.id, mission.id);
-    const ws = await db.from("wf_workspaces").select("*").eq("id", workspace.id).single();
-    return { ...refreshed, workspace: ws.data ? mapWorkspace(ws.data) : workspace, done: false };
+    const refreshed = await loadMissionBundle(supabase, workspace.id, data.missionId);
+    const ws = await wfDb(supabase)
+      .from("wf_workspaces")
+      .select("*")
+      .eq("id", workspace.id)
+      .single();
+    return {
+      ...refreshed,
+      workspace: ws.data ? mapWorkspace(ws.data) : workspace,
+      done: result.done,
+      ...(result.note ? { note: result.note } : {}),
+    };
   });
 
 const gateDecisionSchema = z.object({
@@ -1104,6 +694,9 @@ export const decideStageGate = createServerFn({ method: "POST" })
       entityId: gate.id,
       metadata: { gate: gate.key, note: data.note ?? null },
     });
+    await (
+      await import("@/lib/workforce/worker.server")
+    ).kickWorker({ workspaceId: workspace.id, missionId: data.missionId });
     return loadMissionBundle(supabase, workspace.id, data.missionId);
   });
 
@@ -1274,6 +867,9 @@ export const resumeMission = createServerFn({ method: "POST" })
         actorId: userId,
       });
     });
+    await (
+      await import("@/lib/workforce/worker.server")
+    ).kickWorker({ workspaceId: workspace.id, missionId: data.missionId });
     return loadMissionBundle(supabase, workspace.id, data.missionId);
   });
 
@@ -1313,5 +909,9 @@ export const setWorkspaceStopped = createServerFn({ method: "POST" })
       });
       return rows[0]!;
     });
+    if (!data.stopped)
+      await (
+        await import("@/lib/workforce/worker.server")
+      ).kickWorker({ workspaceId: workspace.id });
     return mapWorkspace(row as never);
   });

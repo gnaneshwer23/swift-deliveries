@@ -4,6 +4,7 @@
  */
 import postgres from "postgres";
 import { createDb, type ColumnTypes, type Db, type Executor } from "./builder";
+import { POSTGRES_TYPES } from "./postgres-types";
 
 let sql: ReturnType<typeof postgres> | null = null;
 let typesPromise: Promise<ColumnTypes> | null = null;
@@ -18,22 +19,7 @@ function client() {
     max: 5,
     idle_timeout: 20,
     connect_timeout: 15,
-    // Timestamps as ISO strings, matching what the app received from PostgREST.
-    types: {
-      jsonb: {
-        to: 3802,
-        from: [114, 3802],
-        serialize: (x: unknown) => (typeof x === "string" ? x : JSON.stringify(x)),
-        parse: (x: string) => JSON.parse(x),
-      },
-      timestamptz: {
-        to: 1184,
-        from: [1114, 1184],
-        serialize: (x: string) => x,
-        parse: (x: string) =>
-          new Date(x.includes("+") || x.endsWith("Z") ? x : `${x}Z`).toISOString(),
-      },
-    },
+    types: POSTGRES_TYPES,
   });
   return sql;
 }
