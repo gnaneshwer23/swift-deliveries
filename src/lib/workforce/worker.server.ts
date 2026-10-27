@@ -37,7 +37,12 @@ import { leadRole, roleInstructions, stageForTask } from "./registry/instruction
 import { DEFAULT_CONTEXT_SCOPES, getRoleSpec, type ContextScope } from "./registry/roles";
 import { checkStageOutput, citableSources } from "./registry/output-checks";
 import { canAfford } from "./usage";
-import type { MissionBundle, WfMissionTask } from "./types";
+import {
+  WORKER_ACTIVE_STATUSES,
+  type MissionBundle,
+  type MissionStatus,
+  type WfMissionTask,
+} from "./types";
 
 /** How long a claimed task stays leased to one worker. */
 export const LEASE_SECONDS = 300;
@@ -48,7 +53,7 @@ export const MAX_ATTEMPTS = 3;
 /** Work started within this many milliseconds of the deadline is not begun. */
 const STEP_HEADROOM_MS = 15_000;
 
-const ACTIVE = ["queued", "running", "blocked"];
+const ACTIVE = WORKER_ACTIVE_STATUSES;
 
 export type Actor = { kind: "user" | "worker"; id: string };
 
@@ -321,7 +326,7 @@ async function lockForWork(query: Executor, workspaceId: string, missionId: stri
   const row = rows[0];
   if (!row) return "Mission not found.";
   if (row["stopped_at"]) return "Workspace stopped: no new work starts.";
-  if (!ACTIVE.includes(row["status"] as string))
+  if (!ACTIVE.includes(row["status"] as MissionStatus))
     return `Mission is ${String(row["status"]).replace(/_/g, " ")}: no new work starts.`;
   return null;
 }

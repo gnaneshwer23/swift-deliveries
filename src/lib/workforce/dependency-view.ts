@@ -6,8 +6,9 @@
  */
 import { executionWaves, runnableTasks, validateTaskGraph } from "./graph";
 import {
+  PRE_EXECUTION_STATUSES,
   TERMINAL_MISSION_STATUSES,
-  type MissionStatus,
+  WORKER_ACTIVE_STATUSES,
   type WfMission,
   type WfMissionTask,
 } from "./types";
@@ -38,15 +39,6 @@ export const NODE_STATE_TEXT: Record<NodeState, string> = {
   cannot_run: "Can't run: earlier work failed",
   not_run: "Not run",
 };
-
-/** Mission statuses the worker advances (worker.server.ts). */
-const WORKER_ACTIVE: readonly MissionStatus[] = ["queued", "running", "blocked"];
-const BEFORE_APPROVAL: readonly MissionStatus[] = [
-  "draft",
-  "needs_clarification",
-  "planned",
-  "awaiting_approval",
-];
 
 type TaskLike = Pick<
   WfMissionTask,
@@ -132,11 +124,11 @@ export function dependencyView(
     if (failedUpstream(n.key)) return "cannot_run";
     if (TERMINAL_MISSION_STATUSES.includes(mission.status)) return "not_run";
     if (mission.status === "paused") return "paused";
-    if (BEFORE_APPROVAL.includes(mission.status)) return "waiting_plan";
+    if (PRE_EXECUTION_STATUSES.includes(mission.status)) return "waiting_plan";
     if (n.status === "blocked") return n.gate || needsApproval(n) ? "waiting_you" : "blocked";
     if (!ready.has(n.key)) return "waiting_upstream";
     if (n.gate || needsApproval(n)) return "waiting_you";
-    return WORKER_ACTIVE.includes(mission.status) ? "ready" : "waiting_upstream";
+    return WORKER_ACTIVE_STATUSES.includes(mission.status) ? "ready" : "waiting_upstream";
   };
   const title = (key: string) => byKey.get(key)?.title ?? key;
 

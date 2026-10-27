@@ -64,10 +64,11 @@ Every mission page with tasks shows its plan as a dependency graph under **Depen
 
 - **Built on the scheduler's own rules.** Waves come from `executionWaves`, and "Ready to run" comes from `runnableTasks`. "Can't run: earlier work failed" comes from `unreachableTasks`. So the view never calls a task ready when the worker wouldn't run it, and never hides one an upstream failure has stranded.
 - **States follow the worker and executor.**
-  - A gate reads "Waiting on your decision" whether it is runnable or already blocked. So does an outside action the mission hasn't approved yet.
+  - While the mission is active, a gate reads "Waiting on your decision" whether it is runnable or already blocked. So does an outside action the mission hasn't approved yet, unless earlier work failed.
   - Once acting externally is approved, a blocked outside task reads "Ready to run" again, because the worker re-runs it.
   - Work downstream of a failure reads "Can't run: earlier work failed", whether it is stored as pending or blocked.
-  - Nothing reads "Ready to run" while the mission is paused, before its plan is approved, or after it has ended.
+  - Nothing reads "Ready to run" or "Waiting on your decision" while the mission is paused, before its plan is approved, or after it has ended. Those read "Paused", "Starts once you approve the plan" or "Not run".
+  - The status lists behind this (`WORKER_ACTIVE_STATUSES`, `PRE_EXECUTION_STATUSES`) live in `types.ts` and are shared with the worker and plan store, so the view and the scheduler can't drift apart.
 - **Waits and unblocks.** Each card names what the task waits on and what it unblocks, and links to its row in the task graph.
 - **Refusing a broken plan.** If a plan has a loop, a missing dependency or a repeated key, the view says so instead of drawing it.
 - **Phones.** On a phone the waves stack top to bottom. Elsewhere they scroll sideways.

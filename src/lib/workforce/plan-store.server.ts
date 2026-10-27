@@ -11,6 +11,7 @@ import type { Executor } from "@/lib/db/builder";
 import { encodePlanAcceptanceCriteria, encodeTaskDescription } from "./capability-persistence";
 import { planHash } from "./plan-hash";
 import {
+  PRE_EXECUTION_STATUSES,
   TERMINAL_MISSION_STATUSES,
   type GeneratedPlan,
   type MissionStatus,
@@ -18,12 +19,7 @@ import {
 } from "./types";
 
 /** Statuses in which the plan may still be changed: nothing has run yet. */
-export const PRE_EXECUTION: readonly MissionStatus[] = [
-  "draft",
-  "needs_clarification",
-  "planned",
-  "awaiting_approval",
-];
+export const PRE_EXECUTION = PRE_EXECUTION_STATUSES;
 
 /** How long a pending plan approval stays usable. */
 export const APPROVAL_TTL_DAYS = 7;

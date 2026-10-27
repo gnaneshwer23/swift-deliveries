@@ -20,6 +20,17 @@ export const MISSION_STATUSES = [
 ] as const;
 export type MissionStatus = (typeof MISSION_STATUSES)[number];
 
+/** Mission statuses the worker advances. Shared by the worker and the UI. */
+export const WORKER_ACTIVE_STATUSES: readonly MissionStatus[] = ["queued", "running", "blocked"];
+
+/** Statuses in which the plan may still be changed: nothing has run yet. */
+export const PRE_EXECUTION_STATUSES: readonly MissionStatus[] = [
+  "draft",
+  "needs_clarification",
+  "planned",
+  "awaiting_approval",
+];
+
 /** Mission statuses from which nothing more can happen. Shared by the server guards and the UI. */
 export const TERMINAL_MISSION_STATUSES: readonly MissionStatus[] = [
   "completed",
