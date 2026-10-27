@@ -85,10 +85,14 @@ describe("dependency view", () => {
   });
 
   it("follows the worker for outside actions: blocked until approved, then runnable again", () => {
-    const tasks = [t("p", "blocked", [], { isExternal: true })];
-    expect(states(dependencyView(tasks, running))).toEqual({ p: "waiting_you" });
+    const tasks = [
+      t("p", "blocked", [], { isExternal: true }),
+      t("l", "blocked", [], { permissionRequired: "act_externally" }),
+    ];
+    expect(states(dependencyView(tasks, running))).toEqual({ p: "waiting_you", l: "waiting_you" });
     expect(states(dependencyView(tasks, { ...running, externalActionsApproved: true }))).toEqual({
       p: "ready",
+      l: "ready",
     });
   });
 

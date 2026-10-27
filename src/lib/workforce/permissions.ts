@@ -1,4 +1,4 @@
-import { PERMISSION_LEVELS, type PermissionLevel } from "./types";
+import { PERMISSION_LEVELS, type PermissionLevel, type TaskStatus } from "./types";
 
 /**
  * Deterministic permission ladder (infrastructure service — not an agent).
@@ -56,12 +56,15 @@ export function awaitsExternalApproval(
 }
 
 /**
- * A blocked outside task the worker puts back in the schedule once the owner
- * has approved acting externally.
+ * A blocked task the worker puts back in the schedule once the owner has
+ * approved acting externally: any task the executor would hold for that
+ * approval, by the same rule as `awaitsExternalApproval`.
  */
 export function rerunsAfterExternalApproval(
-  task: { status: string; isExternal: boolean },
+  task: { status: TaskStatus; isExternal: boolean; permissionRequired: PermissionLevel },
   externalActionsApproved: boolean,
 ): boolean {
-  return task.status === "blocked" && task.isExternal && externalActionsApproved;
+  return (
+    task.status === "blocked" && externalActionsApproved && awaitsExternalApproval(task, false)
+  );
 }

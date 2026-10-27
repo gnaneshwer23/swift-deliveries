@@ -38,10 +38,20 @@ describe("outside actions", () => {
     expect(awaitsExternalApproval(levelled, true)).toBe(false);
   });
 
-  it("re-enter the schedule only when blocked, flagged external and approved", () => {
-    expect(rerunsAfterExternalApproval({ status: "blocked", isExternal: true }, true)).toBe(true);
-    expect(rerunsAfterExternalApproval({ status: "blocked", isExternal: true }, false)).toBe(false);
-    expect(rerunsAfterExternalApproval({ status: "blocked", isExternal: false }, true)).toBe(false);
-    expect(rerunsAfterExternalApproval({ status: "pending", isExternal: true }, true)).toBe(false);
+  it("re-enter the schedule only when blocked, held for outside approval, and approved", () => {
+    const task = (
+      status: "blocked" | "pending",
+      isExternal: boolean,
+      permissionRequired: "create" | "act_externally" = "create",
+    ) => ({ status, isExternal, permissionRequired });
+    expect(rerunsAfterExternalApproval(task("blocked", true), true)).toBe(true);
+    expect(rerunsAfterExternalApproval(task("blocked", true), false)).toBe(false);
+    expect(rerunsAfterExternalApproval(task("blocked", false), true)).toBe(false);
+    expect(rerunsAfterExternalApproval(task("pending", true), true)).toBe(false);
+    // Held for approval by its permission level alone: re-runs once approved, like the executor.
+    expect(rerunsAfterExternalApproval(task("blocked", false, "act_externally"), true)).toBe(true);
+    expect(rerunsAfterExternalApproval(task("blocked", false, "act_externally"), false)).toBe(
+      false,
+    );
   });
 });
