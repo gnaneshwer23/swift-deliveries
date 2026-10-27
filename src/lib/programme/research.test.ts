@@ -96,6 +96,23 @@ describe("provider parsers", () => {
       })[0]!.snippet,
     ).toBe("c");
     expect(
+      parseTavily({
+        results: [
+          {
+            url: "https://t.com/sdk",
+            title: "SDK",
+            content: "snippet",
+            publishedDate: "2026-02-01",
+          },
+        ],
+      })[0],
+    ).toEqual({
+      url: "https://t.com/sdk",
+      title: "SDK",
+      snippet: "snippet",
+      publishedAt: "2026-02-01",
+    });
+    expect(
       parseBrave({
         web: {
           results: [

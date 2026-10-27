@@ -2,7 +2,12 @@
  * Web search providers (server only). Provider is chosen by whichever key is
  * configured: EXA_API_KEY, TAVILY_API_KEY or BRAVE_SEARCH_API_KEY.
  * Failures return no results and a reason — research never invents sources.
+ *
+ * Tavily uses the official `@tavily/core` SDK (Path B / tavily-best-practices).
+ * A raw `TAVILY_API_KEY` is required; CLI OAuth alone does not configure product
+ * search. Keyless mode is intentionally unused so availability stays honest.
  */
+import { tavily } from "@tavily/core";
 import type { RawResult } from "./research";
 
 type Env = Record<string, string | undefined>;
@@ -33,12 +38,18 @@ export function parseExa(json: unknown): RawResult[] {
 
 export function parseTavily(json: unknown): RawResult[] {
   const results = (json as { results?: Array<Record<string, unknown>> }).results ?? [];
-  return results.map((r) => ({
-    url: String(r["url"] ?? ""),
-    title: String(r["title"] ?? ""),
-    snippet: String(r["content"] ?? ""),
-    publishedAt: typeof r["published_date"] === "string" ? (r["published_date"] as string) : null,
-  }));
+  return results.map((r) => {
+    const published =
+      (typeof r["published_date"] === "string" && r["published_date"]) ||
+      (typeof r["publishedDate"] === "string" && r["publishedDate"]) ||
+      null;
+    return {
+      url: String(r["url"] ?? ""),
+      title: String(r["title"] ?? ""),
+      snippet: String(r["content"] ?? ""),
+      publishedAt: published,
+    };
+  });
 }
 
 export function parseBrave(json: unknown): RawResult[] {
@@ -70,6 +81,27 @@ async function fetchJson(url: string, init: RequestInit): Promise<unknown> {
   }
 }
 
+async function searchTavily(
+  query: string,
+  count: number,
+  apiKey: string,
+): Promise<RawResult[]> {
+  const client = tavily({
+    apiKey,
+    clientSource: "deliverx-supervised",
+  });
+  const response = await client.search(query.slice(0, 400), {
+    maxResults: Math.min(Math.max(count, 1), 20),
+    searchDepth: "basic",
+    topic: "general",
+    includeAnswer: false,
+    includeRawContent: false,
+    includeImages: false,
+    timeout: TIMEOUT_MS / 1000,
+  });
+  return parseTavily(response);
+}
+
 export async function searchWeb(
   query: string,
   count = 5,
@@ -91,17 +123,7 @@ export async function searchWeb(
       return { provider: p.name, results: parseExa(json) };
     }
     if (p.name === "tavily") {
-      const json = await fetchJson("https://api.tavily.com/search", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${p.key}` },
-        body: JSON.stringify({
-          query,
-          max_results: count,
-          search_depth: "basic",
-          include_published_date: true,
-        }),
-      });
-      return { provider: p.name, results: parseTavily(json) };
+      return { provider: p.name, results: await searchTavily(query, count, p.key) };
     }
     const json = await fetchJson(
       `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=${count}&extra_snippets=true`,
