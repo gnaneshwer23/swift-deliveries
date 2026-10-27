@@ -61,7 +61,7 @@ describe("memory extraction", () => {
       },
       {
         kind: "sourced_fact",
-        statement: "Bookings are arranged by message today",
+        statement: "Bookings are arranged by message today.",
         citation: "Tutor call notes",
         refKey: null,
       },
@@ -109,13 +109,13 @@ describe("memory extraction", () => {
     expect(extractMemory(md)).toEqual([
       {
         kind: "sourced_fact",
-        statement: "Tutors reschedule weekly , mostly on Sundays.",
+        statement: "Tutors reschedule weekly, mostly on Sundays.",
         citation: "Call notes",
         refKey: null,
       },
       {
         kind: "sourced_fact",
-        statement: "Tutors reschedule weekly",
+        statement: "Tutors reschedule weekly.",
         citation: "Survey sheet",
         refKey: null,
       },

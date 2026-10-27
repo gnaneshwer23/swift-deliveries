@@ -33,7 +33,7 @@ When a model writes a stage, the artefact's evidence items list each piece of fo
 - Evidence is given to the model as data, inside `<evidence>` tags that its own text cannot close. The system prompt tells the model to ignore any instructions inside it.
 - Each step gets up to 40,000 characters of evidence, oldest first, counted after escaping. An item that is cut short is marked `truncated`. Items left out for lack of room are named in the prompt as not included, so they cannot be cited.
 - A role may cite an item only if the step was actually given it.
-- Interview, survey or call claims are accepted only when the step was given evidence that affirmatively records such research. An unrelated note, a negated mention ("no interviews yet") or text cut off by the budget does not count.
+- Interview, survey or call claims are accepted only when the step was given evidence that affirmatively records such research. Only the text the model was actually shown counts: research mentioned before the cut-off of a truncated item counts, because the model saw it; anything past the cut-off, an unrelated note or a negated mention ("no interviews yet") does not.
 - A step reads the mission's evidence when it builds its prompt, just after it claims its task. A change made before then applies to that step; a later change applies from the next step.
 
 ## Product memory

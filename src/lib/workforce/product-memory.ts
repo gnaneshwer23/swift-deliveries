@@ -109,7 +109,9 @@ export function extractMemory(markdown: string): MemoryDraft[] {
         // A sourced fact without its source is kept only as what it can claim to be.
         push({
           kind: kind === "sourced_fact" && !citation ? "assumption" : kind,
-          statement: clip(text.replace(SOURCE, " ")).replace(/\s+([.;,])$/, ""),
+          // The citation is removed without leaving space before punctuation, so the same
+          // statement matches wherever its citation sat.
+          statement: clip(text.replace(SOURCE, " ")).replace(/\s+([.,;:!?])/g, "$1"),
           citation: citation ? clip(citation) : null,
           refKey: null,
         });

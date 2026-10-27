@@ -701,7 +701,22 @@ export const decideStageGate = createServerFn({ method: "POST" })
         if (res.error) throw new Error(res.error.message);
         return res;
       };
-      await lockMission(query, workspace.id, data.missionId);
+      // Re-checked under the lock: a pause, cancel or other decision may have landed since the read.
+      const locked = await lockMission(query, workspace.id, data.missionId);
+      if (locked.status === "paused")
+        throw new Error("This mission is paused. Resume it before deciding this gate.");
+      if (TERMINAL.includes(locked.status)) throw new Error("This mission has already finished.");
+      const states = await query(
+        `select task_key, status from wf_mission_tasks where mission_id = $1::uuid`,
+        [data.missionId] as never,
+      );
+      const taskStatus = new Map(
+        states.map((r) => [r["task_key"] as string, r["status"] as string]),
+      );
+      if (!["blocked", "pending"].includes(taskStatus.get(gate.key) ?? ""))
+        throw new Error("This gate has already been decided.");
+      if (!gate.dependsOn.every((d) => taskStatus.get(d) === "completed"))
+        throw new Error("Upstream stages must complete before this gate can be decided.");
       const updated = must(
         await tx
           .from("wf_mission_tasks")
@@ -761,6 +776,15 @@ export const decideStageGate = createServerFn({ method: "POST" })
           .eq("workspace_id", workspace.id)
           .in("status", ["queued", "running", "blocked"]),
       );
+      await appendEvent(query, {
+        workspaceId: workspace.id,
+        missionId: data.missionId,
+        taskId: gate.id,
+        type: approve ? "gate.approved" : "gate.rejected",
+        actorKind: "user",
+        actorId: userId,
+        data: { gate: gate.key, ...(data.note?.trim() ? { note: data.note.trim() } : {}) },
+      });
       // The founder's decision becomes part of the product's memory.
       await recordMemory(
         query,
@@ -849,6 +873,19 @@ export const markArtefactHumanReviewed = createServerFn({ method: "POST" })
         .eq("workspace_id", workspace.id);
     }
 
+    // The sign-off shows in the mission's activity log as well as the audit trail.
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    await neonTransaction((_tx, query) =>
+      appendEvent(query, {
+        workspaceId: workspace.id,
+        missionId: data.missionId,
+        taskId: (artRes.data.task_id as string | null) ?? null,
+        type: "artefact.reviewed",
+        actorKind: "user",
+        actorId: userId,
+        data: { artefactId: data.artefactId, title: artRes.data.title as string },
+      }),
+    );
     await audit(db, {
       workspaceId: workspace.id,
       missionId: data.missionId,

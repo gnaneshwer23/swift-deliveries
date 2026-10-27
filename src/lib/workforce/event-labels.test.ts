@@ -79,6 +79,18 @@ describe("describeEvent", () => {
     });
   });
 
+  it("describes gate decisions and sign-offs", () => {
+    expect(
+      describeEvent(ev("gate.approved", { gate: "gate_scope" }, "user"), "Scope gate").text,
+    ).toBe("You approved “Scope gate”");
+    expect(describeEvent(ev("gate.rejected", {}, "user"), "Scope gate").text).toBe(
+      "You rejected “Scope gate”",
+    );
+    expect(describeEvent(ev("artefact.reviewed", { title: "PRD" }, "user")).text).toBe(
+      "You signed off “PRD” as human-reviewed",
+    );
+  });
+
   it("shows unknown event types by name rather than guessing", () => {
     expect(describeEvent(ev("something.new")).text).toBe("something.new");
   });
