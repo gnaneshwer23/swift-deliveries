@@ -5,6 +5,7 @@
  * ready when the worker would not run it.
  */
 import { executionWaves, runnableTasks, validateTaskGraph } from "./graph";
+import { awaitsExternalApproval, rerunsAfterExternalApproval } from "./permissions";
 import {
   PRE_EXECUTION_STATUSES,
   TERMINAL_MISSION_STATUSES,
@@ -83,7 +84,7 @@ export function dependencyView(
   const nodes = tasks.map((t) => ({
     ...t,
     dependsOn: t.dependsOn ?? [],
-    status: t.status === "blocked" && t.isExternal && approved ? ("pending" as const) : t.status,
+    status: rerunsAfterExternalApproval(t, approved) ? ("pending" as const) : t.status,
   }));
   const check = validateTaskGraph(nodes);
   if (!check.ok)
@@ -114,8 +115,7 @@ export function dependencyView(
     stranded.set(key, result);
     return result;
   };
-  const needsApproval = (n: (typeof nodes)[number]) =>
-    (n.isExternal || n.permissionRequired === "act_externally") && !approved;
+  const needsApproval = (n: (typeof nodes)[number]) => awaitsExternalApproval(n, approved);
 
   const state = (n: (typeof nodes)[number]): NodeState => {
     if (n.status === "completed" || n.status === "skipped") return "done";

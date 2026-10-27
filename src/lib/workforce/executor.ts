@@ -1,5 +1,5 @@
 import { checkPrototypeHtml } from "./contracts";
-import { requiresExternalApproval } from "./permissions";
+import { awaitsExternalApproval } from "./permissions";
 import { stageArtefact } from "./stage-artefacts";
 import { canAfford, chargeUsage, type UsageBudget } from "./usage";
 import type { EvidenceUse } from "./evidence";
@@ -491,10 +491,7 @@ export function executeTaskStep(input: ExecuteStepInput): ExecuteStepResult {
     };
   }
 
-  if (
-    requiresExternalApproval(task.permissionRequired, mission.externalActionsApproved) ||
-    (task.isExternal && !mission.externalActionsApproved)
-  ) {
+  if (awaitsExternalApproval(task, mission.externalActionsApproved)) {
     return {
       ok: false,
       reason: "external_approval_required",

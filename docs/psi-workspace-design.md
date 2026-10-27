@@ -68,7 +68,11 @@ Every mission page with tasks shows its plan as a dependency graph under **Depen
   - Once acting externally is approved, a blocked outside task reads "Ready to run" again, because the worker re-runs it.
   - Work downstream of a failure reads "Can't run: earlier work failed", whether it is stored as pending or blocked.
   - Nothing reads "Ready to run" or "Waiting on your decision" while the mission is paused, before its plan is approved, or after it has ended. Those read "Paused", "Starts once you approve the plan" or "Not run".
-  - The status lists behind this (`WORKER_ACTIVE_STATUSES`, `PRE_EXECUTION_STATUSES`) live in `types.ts` and are shared with the worker and plan store, so the view and the scheduler can't drift apart.
+  - The rules behind this are shared, not copied:
+    - `WORKER_ACTIVE_STATUSES` and `PRE_EXECUTION_STATUSES` in `types.ts` are used by the worker and the plan store too.
+    - `awaitsExternalApproval` in `permissions.ts` is the executor's own check.
+    - `rerunsAfterExternalApproval` in `permissions.ts` is the worker's own re-schedule rule.
+    - Runnability and waves come from `graph.ts`.
 - **Waits and unblocks.** Each card names what the task waits on and what it unblocks, and links to its row in the task graph.
 - **Refusing a broken plan.** If a plan has a loop, a missing dependency or a repeated key, the view says so instead of drawing it.
 - **Phones.** On a phone the waves stack top to bottom. Elsewhere they scroll sideways.

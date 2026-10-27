@@ -40,3 +40,28 @@ export function isPermissionLevel(value: string): value is PermissionLevel {
 export function permissionRank(level: PermissionLevel): number {
   return RANK[level];
 }
+
+/**
+ * A task that needs the owner to approve acting externally before it runs:
+ * the executor blocks it, and the views say it waits on the owner.
+ */
+export function awaitsExternalApproval(
+  task: { isExternal: boolean; permissionRequired: PermissionLevel },
+  externalActionsApproved: boolean,
+): boolean {
+  return (
+    requiresExternalApproval(task.permissionRequired, externalActionsApproved) ||
+    (task.isExternal && !externalActionsApproved)
+  );
+}
+
+/**
+ * A blocked outside task the worker puts back in the schedule once the owner
+ * has approved acting externally.
+ */
+export function rerunsAfterExternalApproval(
+  task: { status: string; isExternal: boolean },
+  externalActionsApproved: boolean,
+): boolean {
+  return task.status === "blocked" && task.isExternal && externalActionsApproved;
+}

@@ -5,6 +5,7 @@
  * Nothing is inferred: an item exists only because a mission or task row says
  * it is waiting.
  */
+import { awaitsExternalApproval } from "./permissions";
 import { TERMINAL_MISSION_STATUSES, type WfMission, type WfMissionTask } from "./types";
 
 export type InboxKind =
@@ -112,7 +113,6 @@ export function ownerInbox(
       .filter((t) => t.missionId === m.id && t.status === "blocked")
       .sort((a, b) => a.sortOrder - b.sortOrder);
     for (const t of blocked) {
-      const outside = t.isExternal || t.permissionRequired === "act_externally";
       if (t.gate)
         items.push({
           ...base,
@@ -122,7 +122,7 @@ export function ownerInbox(
           since: t.updatedAt,
           hash: `task-${t.id}`,
         });
-      else if (outside && !m.externalActionsApproved)
+      else if (awaitsExternalApproval(t, m.externalActionsApproved))
         items.push({
           ...base,
           kind: "approve_external",

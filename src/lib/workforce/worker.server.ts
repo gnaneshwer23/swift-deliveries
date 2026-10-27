@@ -28,6 +28,7 @@ import {
   type UpstreamArtefact,
 } from "./executor";
 import { runnableTasks, unreachableTasks } from "./graph";
+import { rerunsAfterExternalApproval } from "./permissions";
 import { evidenceForPrompt, includesResearchMaterial, type WfEvidence } from "./evidence";
 import { listEvidence } from "./evidence.server";
 import { extractMemory, memoryForPrompt } from "./product-memory";
@@ -359,7 +360,7 @@ export async function advanceMission(input: {
 
   // Approved external tasks re-enter the schedule; everything else follows the DAG.
   const retryable = (t: WfMissionTask) =>
-    t.status === "blocked" && t.isExternal && mission.externalActionsApproved;
+    rerunsAfterExternalApproval(t, mission.externalActionsApproved);
   const nodes = tasks.map((t) => ({
     ...t,
     status: retryable(t) ? ("pending" as const) : t.status,
