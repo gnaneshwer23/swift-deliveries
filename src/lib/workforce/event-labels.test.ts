@@ -36,6 +36,15 @@ describe("describeEvent", () => {
     );
   });
 
+  it("says when a mission came from a brief confirmed in conversation", () => {
+    expect(describeEvent(ev("mission.created", { via: "conversation" }, "user")).text).toBe(
+      "Mission created from a brief you confirmed in conversation",
+    );
+    expect(describeEvent(ev("mission.created", { via: "form" }, "user")).text).toBe(
+      "Mission created",
+    );
+  });
+
   it("says who acted on controls", () => {
     expect(describeEvent(ev("mission.paused", {}, "user")).text).toBe("You paused the mission");
     expect(describeEvent(ev("workspace.stopped", {}, "user")).text).toBe(

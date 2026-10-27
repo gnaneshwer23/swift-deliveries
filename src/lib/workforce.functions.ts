@@ -218,6 +218,8 @@ export const createMission = createServerFn({ method: "POST" })
         projectId: z.string().uuid(),
         intent: intentSchema,
         requestText: z.string().min(3).max(4000),
+        /** Where the brief came from: the form, or a card the founder confirmed in a conversation. */
+        via: z.enum(["form", "conversation"]).default("form"),
       })
       .parse(data),
   )
@@ -263,7 +265,7 @@ export const createMission = createServerFn({ method: "POST" })
         type: "mission.created",
         actorKind: "user",
         actorId: userId,
-        data: { intent: data.intent },
+        data: { intent: data.intent, via: data.via },
       });
       await savePlanVersion(query, {
         workspaceId: workspace.id,

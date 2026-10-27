@@ -1,0 +1,493 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { MessageSquare, Pencil, Trash2 } from "lucide-react";
+import {
+  deleteConversation,
+  getConversation,
+  sayToAssistant,
+  startConversation,
+  type ConversationState,
+} from "@/lib/conversation.functions";
+import type { MissionTarget, UnderstoodCard } from "@/lib/conversation/interpret";
+import {
+  DEFAULT_RETENTION_DAYS,
+  RETENTION_DAYS,
+  type ConversationTurn,
+  type RetentionDays,
+} from "@/lib/conversation/types";
+import {
+  cancelMission,
+  createMission,
+  createWfProject,
+  pauseMission,
+  resumeMission,
+} from "@/lib/workforce.functions";
+import { INTENT_LABELS, MISSION_INTENTS, type MissionIntent } from "@/lib/workforce/types";
+
+const KEY = ["command", "conversation"];
+
+const day = (iso: string) =>
+  new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+
+/**
+ * Talk to DeliverX by typing. The assistant replies with what it understood;
+ * every action it offers needs a click here, and it never approves anything.
+ * Only the latest reply's actions are live, so an old card cannot be acted on
+ * after the conversation has moved on.
+ */
+export function ConversationPanel({
+  currentMissionId,
+  projects = [],
+}: {
+  /** The mission on screen, so "pause it" means this one. */
+  currentMissionId?: string;
+  projects?: ReadonlyArray<{ id: string; name: string }>;
+}) {
+  const queryClient = useQueryClient();
+  const query = useQuery({ queryKey: KEY, queryFn: () => getConversation() });
+  const [retention, setRetention] = useState<RetentionDays>(DEFAULT_RETENTION_DAYS);
+  const [text, setText] = useState("");
+  const [correcting, setCorrecting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const state = query.data;
+  const conversation = state?.conversation ?? null;
+  const turns = state?.turns ?? [];
+  const lastReply = [...turns].reverse().find((t) => t.speaker === "assistant") ?? null;
+  const fail = (fallback: string) => (e: unknown) =>
+    setError(e instanceof Error ? e.message : fallback);
+
+  const start = useMutation({
+    mutationFn: () => startConversation({ data: { retentionDays: retention } }),
+    onMutate: () => setError(null),
+    onSuccess: (next) => queryClient.setQueryData(KEY, next),
+    onError: fail("Could not start a conversation."),
+  });
+
+  const say = useMutation({
+    mutationFn: (input: "typed" | "edited") =>
+      sayToAssistant({
+        data: {
+          conversationId: conversation!.id,
+          text,
+          input,
+          currentMissionId: currentMissionId ?? null,
+        },
+      }),
+    onMutate: () => setError(null),
+    onSuccess: ({ said, reply }) => {
+      queryClient.setQueryData<ConversationState>(KEY, (prev) =>
+        prev ? { ...prev, turns: [...prev.turns, said, reply] } : prev,
+      );
+      setText("");
+      setCorrecting(false);
+    },
+    onError: fail("Could not send that."),
+  });
+
+  const remove = useMutation({
+    mutationFn: () => deleteConversation({ data: { conversationId: conversation!.id } }),
+    onMutate: () => setError(null),
+    onSuccess: () =>
+      queryClient.setQueryData<ConversationState>(KEY, (prev) =>
+        prev ? { ...prev, conversation: null, turns: [] } : prev,
+      ),
+    onError: fail("Could not delete the conversation."),
+  });
+
+  return (
+    <section className="cc-panel" aria-labelledby="conversation-title">
+      <h2 id="conversation-title" className="cc-panel-title flex items-center gap-2">
+        <MessageSquare className="size-4" aria-hidden="true" /> Talk to DeliverX
+      </h2>
+      <p className="text-sm text-slate-600 mb-3">
+        Describe a product objective, ask how a mission is going, or ask to pause or cancel one. I
+        reply with what I understood. Nothing happens until you click, and approvals are only given
+        on the plan or gate itself.
+      </p>
+
+      {query.isError && !state ? (
+        <p className="cc-error" role="alert">
+          The conversation could not be loaded.
+        </p>
+      ) : state && !state.available ? (
+        <p className="text-sm text-slate-600">
+          Conversations become available once their database update is applied.
+        </p>
+      ) : !conversation ? (
+        query.isPending ? null : (
+          <div className="flex flex-wrap items-end gap-2">
+            <label className="text-sm">
+              <span className="block font-medium mb-1">Keep the transcript for</span>
+              <select
+                className="cc-input"
+                value={retention}
+                onChange={(e) => setRetention(Number(e.target.value) as RetentionDays)}
+              >
+                {RETENTION_DAYS.map((d) => (
+                  <option key={d} value={d}>
+                    {d === 1 ? "1 day" : `${d} days`} after the last message
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button
+              type="button"
+              className="cc-btn cc-btn-primary"
+              disabled={start.isPending}
+              onClick={() => start.mutate()}
+            >
+              {start.isPending ? "Starting…" : "Start a conversation"}
+            </button>
+          </div>
+        )
+      ) : (
+        <>
+          {turns.length ? (
+            <ol className="space-y-2 mb-3" aria-label="Transcript">
+              {turns.map((t) => (
+                <TurnRow
+                  key={t.id}
+                  turn={t}
+                  live={t.id === lastReply?.id}
+                  currentMissionId={currentMissionId}
+                  projects={projects}
+                  onCorrect={() => {
+                    setText(t.text);
+                    setCorrecting(true);
+                  }}
+                />
+              ))}
+            </ol>
+          ) : null}
+
+          <form
+            className="space-y-2"
+            onSubmit={(ev) => {
+              ev.preventDefault();
+              if (text.trim()) say.mutate(correcting ? "edited" : "typed");
+            }}
+          >
+            <label className="block text-sm font-medium" htmlFor="conversation-input">
+              {correcting ? "Correct what you said" : "Message"}
+            </label>
+            <textarea
+              id="conversation-input"
+              className="cc-input cc-textarea"
+              rows={3}
+              maxLength={4000}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="e.g. Find out why parents give up before booking a first lesson"
+            />
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="submit"
+                className="cc-btn cc-btn-primary"
+                disabled={say.isPending || !text.trim()}
+              >
+                {say.isPending ? "Sending…" : correcting ? "Send correction" : "Send"}
+              </button>
+              {correcting ? (
+                <button
+                  type="button"
+                  className="cc-btn"
+                  onClick={() => {
+                    setCorrecting(false);
+                    setText("");
+                  }}
+                >
+                  Cancel correction
+                </button>
+              ) : null}
+            </div>
+          </form>
+
+          <p className="text-xs text-slate-500 mt-3 flex flex-wrap items-center gap-2">
+            Text only; no audio is kept. This transcript is deleted on{" "}
+            {day(conversation.retainUntil)} ({conversation.retentionDays}{" "}
+            {conversation.retentionDays === 1 ? "day" : "days"} after the last message).
+            <button
+              type="button"
+              className="cc-btn"
+              disabled={remove.isPending}
+              onClick={() => {
+                if (window.confirm("Delete this conversation and its transcript now?"))
+                  remove.mutate();
+              }}
+            >
+              <Trash2 className="size-3" aria-hidden="true" /> Delete now
+            </button>
+          </p>
+        </>
+      )}
+
+      {error ? (
+        <p className="cc-error mt-2" role="alert">
+          {error}
+        </p>
+      ) : null}
+    </section>
+  );
+}
+
+function TurnRow({
+  turn,
+  live,
+  currentMissionId,
+  projects,
+  onCorrect,
+}: {
+  turn: ConversationTurn;
+  live: boolean;
+  currentMissionId: string | undefined;
+  projects: ReadonlyArray<{ id: string; name: string }>;
+  onCorrect: () => void;
+}) {
+  if (turn.speaker === "founder")
+    return (
+      <li className="text-sm">
+        <span className="font-medium">You</span>
+        {turn.input === "edited" ? <span className="text-slate-500"> (corrected)</span> : null}
+        {turn.input === "speech" ? <span className="text-slate-500"> (spoken)</span> : null}:{" "}
+        {turn.text}{" "}
+        <button type="button" className="cc-btn" onClick={onCorrect}>
+          <Pencil className="size-3" aria-hidden="true" /> Correct
+        </button>
+      </li>
+    );
+  return (
+    <li className="text-sm rounded border p-2" style={{ borderColor: "var(--x-border)" }}>
+      <span className="font-medium">DeliverX</span>: {turn.text}
+      {turn.card && live ? (
+        <CardActions card={turn.card} currentMissionId={currentMissionId} projects={projects} />
+      ) : null}
+    </li>
+  );
+}
+
+function CardActions({
+  card,
+  currentMissionId,
+  projects,
+}: {
+  card: UnderstoodCard;
+  currentMissionId: string | undefined;
+  projects: ReadonlyArray<{ id: string; name: string }>;
+}) {
+  switch (card.kind) {
+    case "draft_mission":
+      return <DraftMissionCard card={card} projects={projects} />;
+    case "pause":
+    case "cancel":
+    case "resume":
+      return <ControlCard kind={card.kind} target={card.target} />;
+    case "status":
+    case "approval_refused":
+      return "mission" in card.target && card.target.mission.id !== currentMissionId ? (
+        <p className="mt-2">
+          <Link
+            to="/command/missions/$missionId"
+            params={{ missionId: card.target.mission.id }}
+            className="cc-btn"
+          >
+            Open “{card.target.mission.title}”
+          </Link>
+        </p>
+      ) : null;
+    default:
+      return null;
+  }
+}
+
+/** The understood brief, editable, drafted only on a click once every check is ticked. */
+function DraftMissionCard({
+  card,
+  projects,
+}: {
+  card: Extract<UnderstoodCard, { kind: "draft_mission" }>;
+  projects: ReadonlyArray<{ id: string; name: string }>;
+}) {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [intent, setIntent] = useState<MissionIntent>(card.intent);
+  const [requestText, setRequestText] = useState(card.requestText);
+  const [projectId, setProjectId] = useState(
+    card.product.match === "named" || card.product.match === "only" ? card.product.projectId : "",
+  );
+  const [checked, setChecked] = useState<boolean[]>(card.confirm.map(() => false));
+  const [error, setError] = useState<string | null>(null);
+  const choices =
+    card.product.match === "ambiguous"
+      ? card.product.candidates
+      : projects.length
+        ? projects
+        : card.product.match === "named" || card.product.match === "only"
+          ? [{ id: card.product.projectId, name: card.product.name }]
+          : [];
+
+  const draft = useMutation({
+    mutationFn: async () => {
+      let pid = projectId;
+      if (card.product.match === "new") {
+        pid = (await createWfProject({ data: { name: "First project" } })).id;
+      }
+      return createMission({
+        data: { projectId: pid, intent, requestText: requestText.trim(), via: "conversation" },
+      });
+    },
+    onMutate: () => setError(null),
+    onSuccess: async (bundle) => {
+      await queryClient.invalidateQueries({ queryKey: ["command"] });
+      void navigate({
+        to: "/command/missions/$missionId",
+        params: { missionId: bundle.mission.id },
+      });
+    },
+    onError: (e) => setError(e instanceof Error ? e.message : "Could not draft the mission."),
+  });
+
+  const ready =
+    requestText.trim().length >= 3 &&
+    (card.product.match === "new" || Boolean(projectId)) &&
+    checked.every(Boolean);
+
+  return (
+    <div className="mt-2 space-y-2">
+      <label className="block">
+        <span className="block font-medium">Mission type</span>
+        <select
+          className="cc-input"
+          value={intent}
+          onChange={(e) => setIntent(e.target.value as MissionIntent)}
+        >
+          {MISSION_INTENTS.map((i) => (
+            <option key={i} value={i}>
+              {INTENT_LABELS[i]}
+            </option>
+          ))}
+        </select>
+      </label>
+      {card.product.match === "new" ? (
+        <p>Product: a new one, “First project”, is created with the mission.</p>
+      ) : (
+        <label className="block">
+          <span className="block font-medium">Product</span>
+          <select
+            className="cc-input"
+            value={projectId}
+            onChange={(e) => setProjectId(e.target.value)}
+          >
+            <option value="">Choose a product…</option>
+            {choices.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      <label className="block">
+        <span className="block font-medium">Brief</span>
+        <textarea
+          className="cc-input cc-textarea"
+          rows={3}
+          maxLength={4000}
+          value={requestText}
+          onChange={(e) => setRequestText(e.target.value)}
+        />
+      </label>
+      {card.confirm.length ? (
+        <fieldset>
+          <legend className="font-medium">Confirm in writing before drafting</legend>
+          {card.confirm.map((c, i) => (
+            <label key={c} className="flex items-start gap-2">
+              <input
+                type="checkbox"
+                checked={checked[i] ?? false}
+                onChange={(e) =>
+                  setChecked((prev) => prev.map((v, j) => (j === i ? e.target.checked : v)))
+                }
+              />
+              <span>{c} is right (correct the brief above if not)</span>
+            </label>
+          ))}
+        </fieldset>
+      ) : null}
+      {error ? (
+        <p className="cc-error" role="alert">
+          {error}
+        </p>
+      ) : null}
+      <button
+        type="button"
+        className="cc-btn cc-btn-primary"
+        disabled={!ready || draft.isPending}
+        onClick={() => draft.mutate()}
+      >
+        {draft.isPending ? "Drafting…" : "Draft mission plan →"}
+      </button>
+      <p className="text-xs text-slate-500">
+        Drafting a plan does not record usage. Execution waits for your approval of the plan.
+      </p>
+    </div>
+  );
+}
+
+const CONTROL_LABEL = { pause: "Pause", cancel: "Cancel", resume: "Resume" } as const;
+const CONTROL_DONE = { pause: "Paused", cancel: "Cancelled", resume: "Resumed" } as const;
+
+/** A pause, cancel or resume request: runs only when this button is clicked. */
+function ControlCard({
+  kind,
+  target,
+}: {
+  kind: "pause" | "cancel" | "resume";
+  target: MissionTarget;
+}) {
+  const queryClient = useQueryClient();
+  const [error, setError] = useState<string | null>(null);
+  const [done, setDone] = useState<string | null>(null);
+  const act = useMutation({
+    mutationFn: (missionId: string) => {
+      const fn =
+        kind === "pause" ? pauseMission : kind === "cancel" ? cancelMission : resumeMission;
+      return fn({ data: { missionId } });
+    },
+    onMutate: () => setError(null),
+    onSuccess: async (bundle) => {
+      setDone(`${CONTROL_DONE[kind]} “${bundle.mission.title}”.`);
+      await queryClient.invalidateQueries({ queryKey: ["command"] });
+    },
+    onError: (e) => setError(e instanceof Error ? e.message : "That did not work."),
+  });
+  const options = "mission" in target ? [target.mission] : target.candidates;
+  if (done) return <p className="mt-2">{done}</p>;
+  if (!options.length)
+    return <p className="mt-2">No mission can be {CONTROL_DONE[kind].toLowerCase()} right now.</p>;
+  return (
+    <div className="mt-2 flex flex-wrap gap-2">
+      {options.map((m) => (
+        <button
+          key={m.id}
+          type="button"
+          className="cc-btn cc-btn-secondary"
+          disabled={act.isPending}
+          onClick={() => {
+            if (kind === "cancel" && !window.confirm(`Cancel “${m.title}”? This cannot be undone.`))
+              return;
+            act.mutate(m.id);
+          }}
+        >
+          {CONTROL_LABEL[kind]} “{m.title}”
+        </button>
+      ))}
+      {error ? (
+        <p className="cc-error w-full" role="alert">
+          {error}
+        </p>
+      ) : null}
+    </div>
+  );
+}

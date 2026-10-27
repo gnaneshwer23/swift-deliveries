@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
 import { MissionActivity } from "@/components/command/mission-activity";
 import { MissionEvidence } from "@/components/command/mission-evidence";
+import { ConversationPanel } from "@/components/command/conversation-panel";
 import { missionBundleQuery } from "@/lib/workforce-queries";
 import {
   answerClarifications,
@@ -587,6 +588,8 @@ function MissionDetail() {
               What this product has learned across missions
             </Link>
           </p>
+
+          <ConversationPanel currentMissionId={missionId} />
 
           {/* 3. Task Graph & Step Execution */}
           <section className="cc-panel">

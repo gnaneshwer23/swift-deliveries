@@ -43,5 +43,6 @@ jobs:
           -f drizzle/migrations/0027_wf_mission_evidence.sql
           -f drizzle/migrations/0028_wf_product_memory.sql
           -f drizzle/migrations/0029_wf_memory_conflicts.sql
+          -f drizzle/migrations/0030_wf_conversations.sql
       - run: npm test
       - run: npm run build
