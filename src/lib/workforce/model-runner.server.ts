@@ -182,8 +182,12 @@ export function buildStagePrompt(input: {
     evidence.text
       ? `Founder evidence (supplied by the founder; cite each by its title):\n${evidence.text}`
       : "",
+    // Withheld items are counted, never named: a title can hold identifiers too.
     withheld.length
-      ? `Founder evidence withheld because it may contain personal identifiers: ${withheld.map((e) => e.title).join(", ")}. Do not cite it.`
+      ? `${withheld.length} piece(s) of founder evidence were withheld because they may contain personal identifiers. Do not refer to them.`
+      : "",
+    evidence.omitted.length
+      ? `Founder evidence not included in this step for lack of room, so it cannot be cited here: ${evidence.omitted.join(", ")}.`
       : "",
   ]
     .filter(Boolean)

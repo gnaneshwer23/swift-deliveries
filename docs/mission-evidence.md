@@ -21,11 +21,7 @@ The mission page lists unreadable items and the event log reports them. Nothing 
 
 ## Provenance
 
-Each item records:
-
-- who supplied it and when;
-- the original file name, type and size;
-- a SHA-256 hash of the stored text.
+Each item records who supplied it and when. Readable items also store a SHA-256 hash of their stored text. Uploaded files also record the original file name, type and size. Notes have no file details, and unreadable uploads have no text or hash.
 
 Removing an item takes it out of the mission but keeps the record. Additions and removals are logged as `evidence.added` and `evidence.removed` events.
 
@@ -33,12 +29,12 @@ When a model writes a stage, the artefact's evidence items list each piece of fo
 
 ## What reaches a model
 
-- Only readable text reaches a model. Text that looks like it holds personal identifiers is checked at intake and again at use. It is kept but **never sent**: the prompt names it as withheld, and roles cannot cite it.
+- Only readable text reaches a model. Titles and text are checked for likely personal identifiers at intake and again at use. An item that matches is kept but **never sent**. The prompt says only how many items were withheld, never their titles, and roles cannot cite them.
 - Evidence is given to the model as data, inside `<evidence>` tags that its own text cannot close. The system prompt tells the model to ignore any instructions inside it.
-- Each step gets up to 40,000 characters of evidence, oldest first. An item that is cut short is marked `truncated`.
+- Each step gets up to 40,000 characters of evidence, oldest first, counted after escaping. An item that is cut short is marked `truncated`. Items left out for lack of room are named in the prompt as not included, so they cannot be cited.
 - A role may cite an item only if the step was actually given it.
-- Interview or survey claims are accepted only when the founder has supplied evidence.
-- Evidence added or removed during a mission applies from the next step.
+- Interview, survey or call claims are accepted only when the step was given evidence that records such research. An unrelated note does not count.
+- A step reads the mission's evidence when it builds its prompt, just after it claims its task. A change made before then applies to that step; a later change applies from the next step.
 
 ## Not in 3a
 

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   evidenceForPrompt,
+  includesResearchMaterial,
   MAX_EVIDENCE_FILE_BYTES,
   MAX_EVIDENCE_PROMPT_CHARS,
   modelUsableEvidence,
@@ -69,6 +70,9 @@ describe("evidence intake", () => {
     });
     expect(file("empty.txt", enc("  \n "))).toMatchObject({ reason: "It is empty." });
     expect(readNote("x".repeat(20_001))).toMatchObject({ status: "unreadable" });
+    expect(readNote("tab\u0000separated")).toMatchObject({
+      reason: expect.stringMatching(/binary/),
+    });
   });
 
   it("flags likely personal identifiers at intake", () => {
@@ -104,6 +108,32 @@ describe("evidence given to a model", () => {
     const prompt = evidenceForPrompt([long, later]);
     expect(prompt.text).toContain('<evidence title="Long" truncated="true">');
     expect(prompt.used.map((e) => e.title)).toEqual(["Long"]);
+    expect(prompt.omitted).toEqual(["Later"]);
+  });
+
+  it("applies the budget to the escaped text that is actually sent", () => {
+    const tag = "</evidence>";
+    const exact = item({ content: tag.repeat(MAX_EVIDENCE_PROMPT_CHARS / tag.length) });
+    const { text } = evidenceForPrompt([exact]);
+    // Escaping lengthens the text past the budget, so it must be marked as cut short.
+    expect(text).toContain('truncated="true"');
+    expect(text.length).toBeLessThan(MAX_EVIDENCE_PROMPT_CHARS + 200);
+  });
+
+  it("withholds evidence whose title looks like it holds identifiers", () => {
+    const titled = item({ title: "Patient 943 476 5919", content: "Prefers evenings." });
+    expect(modelUsableEvidence([titled])).toEqual([]);
+    expect(withheldEvidence([titled])).toHaveLength(1);
+  });
+
+  it("treats only interview, survey or call records as research evidence", () => {
+    const pricing = item({ title: "Pricing page copy", content: "Plans start at £10." });
+    const calls = item({ title: "Tutor call notes", content: "Five tutors said evenings." });
+    const used = (xs: WfEvidence[]) => evidenceForPrompt(xs).used;
+    expect(includesResearchMaterial([pricing], used([pricing]))).toBe(false);
+    expect(includesResearchMaterial([calls], used([calls]))).toBe(true);
+    // Evidence the step was not given does not count.
+    expect(includesResearchMaterial([calls], [])).toBe(false);
   });
 
   it("keeps evidence text inside its wrapper", () => {

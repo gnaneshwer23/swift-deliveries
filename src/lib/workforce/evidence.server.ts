@@ -13,6 +13,7 @@ import {
   type WfEvidence,
 } from "./evidence";
 import { appendEvent, lockMission, TERMINAL } from "./plan-store.server";
+import { containsLikelyPersonalIdentifiers } from "./privacy";
 
 export function mapEvidence(row: Record<string, unknown>): WfEvidence {
   return {
@@ -99,9 +100,11 @@ export async function addEvidence(query: Executor, input: AddEvidenceInput): Pro
       content,
       input.file?.name ?? null,
       input.file?.mediaType || null,
-      input.file?.byteSize ?? null,
+      // Sizes beyond the column's range are left unrecorded; the reason still says it was too large.
+      input.file && input.file.byteSize <= 2_147_483_647 ? input.file.byteSize : null,
       content === null ? null : createHash("sha256").update(content).digest("hex"),
-      r.status === "readable" && r.containsIdentifiers,
+      r.status === "readable" &&
+        (r.containsIdentifiers || containsLikelyPersonalIdentifiers(title)),
       input.actorId,
     ] as never,
   );

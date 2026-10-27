@@ -49,6 +49,9 @@ function extension(fileName: string): string {
 function readable(content: string): EvidenceReading {
   const text = content.replace(/\r\n/g, "\n").trim();
   if (!text) return { status: "unreadable", reason: "It is empty." };
+  // Postgres text cannot hold NUL characters; text that has them is not plain text.
+  if (text.includes("\u0000"))
+    return { status: "unreadable", reason: "It contains binary data, not text." };
   return {
     status: "readable",
     content: text,
@@ -113,9 +116,12 @@ export function normaliseTitle(title: string): string {
     .trim();
 }
 
-// Re-screened at use as well as at intake, so a stricter screen also covers older evidence.
+// Title and text are screened at intake and again at use, so a stricter screen also covers
+// older evidence.
 const hasIdentifiers = (e: WfEvidence) =>
-  e.containsIdentifiers || containsLikelyPersonalIdentifiers(e.content ?? "");
+  e.containsIdentifiers ||
+  containsLikelyPersonalIdentifiers(e.title) ||
+  containsLikelyPersonalIdentifiers(e.content ?? "");
 
 /** Evidence a model may read: readable, current and free of likely personal identifiers. */
 export function modelUsableEvidence(evidence: readonly WfEvidence[]): WfEvidence[] {
@@ -132,23 +138,49 @@ export type EvidenceUse = { id: string; title: string; sha256: string | null };
 
 /**
  * Evidence text for the prompt, oldest first, within the step's budget. An
- * item cut short says so, so the model never treats a fragment as the whole.
+ * item cut short says so, and items left out for lack of room are named, so
+ * the model never treats a fragment or a subset as the whole.
  */
 export function evidenceForPrompt(evidence: readonly WfEvidence[]): {
   text: string;
   used: EvidenceUse[];
+  omitted: string[];
 } {
   let budget = MAX_EVIDENCE_PROMPT_CHARS;
   const parts: string[] = [];
   const used: EvidenceUse[] = [];
+  const omitted: string[] = [];
   for (const e of modelUsableEvidence(evidence)) {
-    if (budget <= 0) break;
+    if (budget <= 0) {
+      omitted.push(e.title);
+      continue;
+    }
+    // Escaped first, so the budget and the truncation mark apply to the text actually sent.
     // The body cannot close its own wrapper; it stays data however it is written.
-    const body = e.content!.slice(0, budget).replace(/<\/evidence/gi, "<\\/evidence");
+    const escaped = e.content!.replace(/<\/evidence/gi, "<\\/evidence");
+    const body = escaped.slice(0, budget);
     budget -= body.length;
-    const cut = body.length < e.content!.length ? ' truncated="true"' : "";
+    const cut = body.length < escaped.length ? ' truncated="true"' : "";
     parts.push(`<evidence title="${e.title}"${cut}>\n${body}\n</evidence>`);
     used.push({ id: e.id, title: e.title, sha256: e.contentSha256 });
   }
-  return { text: parts.join("\n\n"), used };
+  return { text: parts.join("\n\n"), used, omitted };
+}
+
+const RESEARCH_MATERIAL =
+  /\b(interview(s|ed)?|survey(s|ed)?|respondents?|questionnaire|focus group|user research|spoke (to|with)|calls? with|call notes)\b/i;
+
+/**
+ * True when evidence the step was given records interviews, surveys or calls.
+ * Only then may an output describe such research; an unrelated note never
+ * excuses it.
+ */
+export function includesResearchMaterial(
+  evidence: readonly WfEvidence[],
+  used: readonly EvidenceUse[],
+): boolean {
+  const given = new Set(used.map((u) => u.id));
+  return evidence.some(
+    (e) => given.has(e.id) && RESEARCH_MATERIAL.test(`${e.title}\n${e.content ?? ""}`),
+  );
 }

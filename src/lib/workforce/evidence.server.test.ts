@@ -104,6 +104,18 @@ describe.skipIf(!url)("mission evidence against a real database", () => {
     ]);
   });
 
+  it("flags evidence that may hold identifiers, in its text or its title", async () => {
+    const ids = await mission();
+    const inText = await note(ids, "Clinic list", "Patient 943 476 5919 prefers evenings");
+    const inTitle = await note(ids, "Patient 943 476 5919", "Prefers evenings");
+    expect([inText.containsIdentifiers, inTitle.containsIdentifiers]).toEqual([true, true]);
+    const events = await sql!`select data from wf_mission_events
+      where mission_id = ${ids.missionId} and type = 'evidence.added' order by id`;
+    expect(
+      events.map((e) => (e["data"] as { withheldFromModel?: boolean }).withheldFromModel),
+    ).toEqual([true, true]);
+  });
+
   it("refuses a duplicate title, since titles are how roles cite evidence", async () => {
     const ids = await mission();
     await note(ids, "Call notes", "one");
@@ -118,6 +130,12 @@ describe.skipIf(!url)("mission evidence against a real database", () => {
     const [row] = await sql!`select removed_by, content from wf_mission_evidence
       where id = ${saved.id}`;
     expect(row).toMatchObject({ removed_by: "owner", content: "one" });
+    const [removed] = await sql!`select actor_id, data from wf_mission_events
+      where mission_id = ${ids.missionId} and type = 'evidence.removed'`;
+    expect(removed).toMatchObject({
+      actor_id: "owner",
+      data: { evidenceId: saved.id, title: "Call notes" },
+    });
     // The title is free again once the old item is removed.
     await expect(note(ids, "Call notes", "replacement")).resolves.toMatchObject({
       title: "Call notes",

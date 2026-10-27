@@ -340,7 +340,14 @@ export function stageArtefact(input: ExecuteStepInput): StageOutcome {
     if (!html) {
       return {
         passed: false,
-        artefact: draft(input, kind, modelText ?? "", "markdown", [], [genEvidence]),
+        artefact: draft(
+          input,
+          kind,
+          modelText ?? "",
+          "markdown",
+          [],
+          [genEvidence, ...founderEvidenceItems(input)],
+        ),
         detail: "Model output did not contain a complete HTML document.",
       };
     }
@@ -350,6 +357,7 @@ export function stageArtefact(input: ExecuteStepInput): StageOutcome {
       passed: sandboxSafe,
       artefact: draft(input, kind, html, "html", sandboxSafe ? ["agent_reviewed"] : [], [
         genEvidence,
+        ...founderEvidenceItems(input),
       ]),
       detail: sandboxSafe
         ? undefined

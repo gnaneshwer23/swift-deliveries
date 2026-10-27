@@ -28,7 +28,7 @@ import {
   type UpstreamArtefact,
 } from "./executor";
 import { runnableTasks, unreachableTasks } from "./graph";
-import { evidenceForPrompt, type WfEvidence } from "./evidence";
+import { evidenceForPrompt, includesResearchMaterial, type WfEvidence } from "./evidence";
 import { listEvidence } from "./evidence.server";
 import { appendEvent, hasLivePlanApproval } from "./plan-store.server";
 import { leadRole, roleInstructions, stageForTask } from "./registry/instructions";
@@ -134,16 +134,18 @@ export function roleGuidance(
   if (!stage || !instructions) return {};
   const given = upstream.map((u) => u.content).join("\n\n");
   const usable = evidenceForPrompt(evidence).used;
+  const research = includesResearchMaterial(evidence, usable);
   return {
     extraInstructions: instructions.text,
     instructionVersion: instructions.version,
     extraCheck: (content) => {
-      // Only evidence the model was actually given can be cited or excuse a research claim.
+      // Only evidence the model was actually given can be cited, and only evidence recording
+      // interviews, surveys or calls can excuse a claim of such research.
       const r = checkStageOutput(
         stage,
         content,
         {
-          founderEvidence: usable.length > 0,
+          founderEvidence: research,
           sources: citableSources(clarificationAnswers, [
             ...upstream.map((u) => u.title),
             ...usable.map((e) => e.title),

@@ -404,7 +404,7 @@ describe("model mode safeguards", () => {
     expect(prompt.user).toContain('cite as "mission request"');
   });
 
-  it("gives the model the founder's evidence by title and names what it withheld", () => {
+  it("gives the model the founder's evidence by title and counts what it withheld", () => {
     const base = {
       missionId: "m",
       kind: "note" as const,
@@ -434,9 +434,8 @@ describe("model mode safeguards", () => {
       ],
     });
     expect(prompt.user).toContain('<evidence title="Call notes">');
-    expect(prompt.user).toContain(
-      "withheld because it may contain personal identifiers: Patient list",
-    );
+    expect(prompt.user).toContain("1 piece(s) of founder evidence were withheld");
+    expect(prompt.user).not.toContain("Patient list");
     expect(prompt.user).not.toContain("943 476 5919");
     expect(prompt.evidenceUsed).toEqual([{ id: "e1", title: "Call notes", sha256: "abc" }]);
   });

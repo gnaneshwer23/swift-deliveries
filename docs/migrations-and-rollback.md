@@ -150,4 +150,19 @@ Adds `wf_mission_evidence`: notes and text files the founder supplies for a miss
 
 Safe in either order. Code from before 0027 never reads the table. Code after it checks for the table first: until it exists, the mission page says evidence is not available yet, and the worker runs steps without evidence.
 
-Rollback: redeploy the earlier build and leave the table. Only if it must go, with the owner's approval: `drop table if exists public.wf_mission_evidence;` (this deletes the founder's evidence and its provenance).
+Rollback: redeploy the earlier build and leave the table; earlier builds never read it. Only if the table itself must go, with the owner's approval, after the earlier build is live:
+
+1. Take a Neon snapshot of the production branch, or create a branch from it, and record its ID in the ledger.
+2. Drop the table only when it is empty. If it holds rows, they are founder records: export them under the owner's data-handling instructions first, or keep the table.
+
+```sql
+do $$
+begin
+  if exists (select 1 from public.wf_mission_evidence) then
+    raise exception 'wf_mission_evidence holds founder evidence; export it first. Nothing was changed.';
+  end if;
+  drop table public.wf_mission_evidence;
+end $$;
+```
+
+3. Update the ledger with the date, the reason and the snapshot ID.

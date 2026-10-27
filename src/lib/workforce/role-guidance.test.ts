@@ -63,6 +63,10 @@ describe("role guidance for a running task", () => {
       return g.extraCheck(interview);
     };
     expect(check([])).toMatch(/interviews or survey results/);
+    // An unrelated note does not excuse a claim of research.
+    expect(check([evidence("Pricing page copy", "Plans start at £10.")])).toMatch(
+      /interviews or survey results/,
+    );
     expect(check([evidence("Interview notes", "12 tutor calls, Oct")])).toBeNull();
   });
 });

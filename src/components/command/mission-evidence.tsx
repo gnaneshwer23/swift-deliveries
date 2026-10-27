@@ -60,6 +60,7 @@ export function MissionEvidence({ missionId, editable }: { missionId: string; ed
 
   const add = useMutation({
     mutationFn: async () => {
+      if (!title.trim()) throw new Error("Give the evidence a title.");
       if (mode === "note")
         return addMissionEvidence({ data: { missionId, kind: "note", title, text } });
       if (!file) throw new Error("Choose a file.");
@@ -86,7 +87,9 @@ export function MissionEvidence({ missionId, editable }: { missionId: string; ed
 
   const remove = useMutation({
     mutationFn: (evidenceId: string) => removeMissionEvidence({ data: { missionId, evidenceId } }),
-    onSuccess: (list) => queryClient.setQueryData(key, list),
+    onMutate: () => setError(null),
+    // Refetched rather than taken from the response, so overlapping removals cannot undo each other.
+    onSettled: () => queryClient.invalidateQueries({ queryKey: key }),
     onError: (e) => setError(e instanceof Error ? e.message : "Could not remove the evidence."),
   });
 
@@ -100,12 +103,14 @@ export function MissionEvidence({ missionId, editable }: { missionId: string; ed
       </h2>
       <p className="text-sm text-slate-600 mb-3">
         Research notes and text files you supply. Roles can cite them by title as sourced facts;
-        anything without a source stays labelled as an assumption. Added or removed evidence applies
-        from the next step.
+        anything without a source stays labelled as an assumption. Changes apply to steps that have
+        not started yet.
       </p>
 
-      {query.isError ? (
-        <p className="cc-error">Your evidence could not be loaded.</p>
+      {query.isError && !list ? (
+        <p className="cc-error" role="alert">
+          Your evidence could not be loaded.
+        </p>
       ) : list && !list.available ? (
         <p className="text-sm text-slate-600">
           Evidence becomes available once its database update is applied.
@@ -118,6 +123,7 @@ export function MissionEvidence({ missionId, editable }: { missionId: string; ed
               evidence={e}
               {...(editable ? { onRemove: () => remove.mutate(e.id) } : {})}
               removing={remove.isPending && remove.variables === e.id}
+              disabled={remove.isPending}
             />
           ))}
         </ul>
@@ -168,7 +174,8 @@ export function MissionEvidence({ missionId, editable }: { missionId: string; ed
                 <label className="block text-sm font-medium" htmlFor="evidence-file">
                   File{" "}
                   <span className="font-normal text-slate-500">
-                    (.txt, .md, .csv or .json, up to {MAX_EVIDENCE_FILE_BYTES / 1024} KB)
+                    (plain text: .txt, .md, .csv, .tsv or .json, up to{" "}
+                    {MAX_EVIDENCE_FILE_BYTES / 1024} KB)
                   </span>
                 </label>
                 <input
@@ -189,7 +196,11 @@ export function MissionEvidence({ missionId, editable }: { missionId: string; ed
               Text that looks like it holds personal details (such as NHS or National Insurance
               numbers) is kept here but never sent to a model.
             </p>
-            {error ? <p className="cc-error">{error}</p> : null}
+            {error ? (
+              <p className="cc-error" role="alert">
+                {error}
+              </p>
+            ) : null}
             <div className="flex flex-wrap gap-2">
               <button type="submit" className="cc-btn cc-btn-primary" disabled={add.isPending}>
                 {add.isPending ? "Adding…" : "Add evidence"}
@@ -210,7 +221,11 @@ export function MissionEvidence({ missionId, editable }: { missionId: string; ed
           </div>
         )
       ) : null}
-      {!mode && error ? <p className="cc-error">{error}</p> : null}
+      {!mode && error ? (
+        <p className="cc-error" role="alert">
+          {error}
+        </p>
+      ) : null}
     </section>
   );
 }
@@ -219,10 +234,12 @@ function EvidenceRow({
   evidence: e,
   onRemove,
   removing,
+  disabled,
 }: {
   evidence: WfEvidence;
   onRemove?: () => void;
   removing: boolean;
+  disabled: boolean;
 }) {
   const added = new Date(e.createdAt).toLocaleString("en-GB", {
     day: "numeric",
@@ -254,7 +271,7 @@ function EvidenceRow({
           type="button"
           className="cc-btn"
           onClick={onRemove}
-          disabled={removing}
+          disabled={disabled}
           aria-label={`Remove ${e.title}`}
         >
           <Trash2 className="size-4" aria-hidden />
