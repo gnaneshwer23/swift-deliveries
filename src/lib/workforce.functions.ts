@@ -10,6 +10,7 @@ import {
   mapMission,
   mapProject,
   mapTask,
+  mapMissionEvent,
   mapWorkspace,
 } from "@/lib/workforce/access.server";
 import {
@@ -30,6 +31,7 @@ import type {
   PermissionLevel,
   QualityLabel,
   WfMission,
+  WfMissionEvent,
   WfMissionTask,
   WfProject,
   WfWorkspace,
@@ -281,6 +283,50 @@ export const getMissionBundle = createServerFn({ method: "GET" })
     const { workspace } = await ensureWorkspace(supabase, userId);
     const bundle = await loadMissionBundle(supabase, workspace.id, data.missionId);
     return { ...bundle, workspace };
+  });
+
+const EVENT_PAGE = 100;
+
+/**
+ * Mission events after a cursor, oldest first. The page reads progress from
+ * here; it never advances the mission itself.
+ */
+export const getMissionEvents = createServerFn({ method: "GET" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z
+      .object({ missionId: z.string().uuid(), after: z.number().int().nonnegative().optional() })
+      .parse(data),
+  )
+  .handler(async ({ context, data }): Promise<{ events: WfMissionEvent[]; cursor: number }> => {
+    const { supabase, userId } = context;
+    const { workspace } = await ensureWorkspace(supabase, userId);
+    let query = wfDb(supabase)
+      .from("wf_mission_events")
+      .select("*")
+      .eq("workspace_id", workspace.id)
+      .eq("mission_id", data.missionId);
+    if (data.after) query = query.gt("id", data.after);
+    const res = await query.order("id", { ascending: true }).limit(EVENT_PAGE);
+    if (res.error) throw new Error(res.error.message);
+    const events = ((res.data ?? []) as unknown[]).map(mapMissionEvent);
+    return { events, cursor: events.at(-1)?.id ?? data.after ?? 0 };
+  });
+
+/** The workspace's most recent events, newest first, for the agents office. */
+export const getRecentWorkspaceEvents = createServerFn({ method: "GET" })
+  .middleware([requireAuth])
+  .handler(async ({ context }): Promise<WfMissionEvent[]> => {
+    const { supabase, userId } = context;
+    const { workspace } = await ensureWorkspace(supabase, userId);
+    const res = await wfDb(supabase)
+      .from("wf_mission_events")
+      .select("*")
+      .eq("workspace_id", workspace.id)
+      .order("id", { ascending: false })
+      .limit(12);
+    if (res.error) throw new Error(res.error.message);
+    return ((res.data ?? []) as unknown[]).map(mapMissionEvent);
   });
 
 export const answerClarifications = createServerFn({ method: "POST" })

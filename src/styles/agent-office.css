@@ -398,3 +398,36 @@
     gap: 8px;
   }
 }
+
+/* Latest activity, from the workspace event log */
+.ao-activity {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid #e3e1f0;
+}
+.ao-activity h3 {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  font-weight: 650;
+}
+.ao-activity ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+.ao-activity li {
+  display: grid;
+  grid-template-columns: 3.4rem 1fr;
+  gap: 10px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+.ao-activity time {
+  color: #6c6a80;
+  font-variant-numeric: tabular-nums;
+}
+.ao-activity small {
+  color: #6c6a80;
+}

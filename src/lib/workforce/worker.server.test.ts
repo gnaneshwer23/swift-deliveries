@@ -165,6 +165,19 @@ describe.skipIf(!url)("durable mission worker against a real database", () => {
     const [ws] = await sql!`select usage_consumed from wf_workspaces where id = ${ids.workspaceId}`;
     const spent = done.reduce((s, t) => s + Number(t["actual_usage"]), 0);
     expect(ws!["usage_consumed"]).toBe(spent);
+    // Events read by cursor return only what came after it, in order.
+    const all =
+      await sql!`select id from wf_mission_events where mission_id = ${ids.missionId} order by id`;
+    const cursor = Number(all[2]!["id"]);
+    const after = await db
+      .from("wf_mission_events")
+      .select("id")
+      .eq("mission_id", ids.missionId)
+      .gt("id", cursor)
+      .order("id", { ascending: true });
+    expect((after.data as Array<{ id: number }>).map((r) => Number(r.id))).toEqual(
+      all.slice(3).map((r) => Number(r["id"])),
+    );
     const leased = await sql!`select count(*)::int n from wf_mission_tasks
       where mission_id = ${ids.missionId} and lease_owner is not null`;
     expect(leased[0]!["n"]).toBe(0);
