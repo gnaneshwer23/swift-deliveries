@@ -22,8 +22,27 @@ export type OutputCheckContext = {
   sources: readonly string[];
 };
 
-/** Inputs every stage receives, citable as sources. */
-export const BASE_SOURCES = ["mission request", "clarification answers"] as const;
+/**
+ * Names under which the prompt presents the mission's own inputs. A
+ * [Sourced fact] cites one of these, or an upstream artefact by its title.
+ */
+export const SOURCE_NAMES = {
+  request: "mission request",
+  clarifications: "clarification answers",
+} as const;
+
+/** The inputs a role was actually given: clarification answers only when there are some. */
+export function citableSources(
+  clarificationAnswers: Readonly<Record<string, string | null | undefined>>,
+  upstreamTitles: readonly string[],
+): string[] {
+  const hasAnswers = Object.values(clarificationAnswers).some((v) => v?.trim());
+  return [
+    SOURCE_NAMES.request,
+    ...(hasAnswers ? [SOURCE_NAMES.clarifications] : []),
+    ...upstreamTitles,
+  ];
+}
 
 export type OutputCheck = { ok: boolean; failures: string[] };
 
@@ -44,7 +63,7 @@ const INVENTED_RESEARCH = [
 // Claims about this work's own state. Narrow on purpose: requirement text such
 // as "a booking is approved by the tutor" must not trip them.
 const CLAIMS_APPROVAL =
-  /\b(this|the) (plan|charter|scope|prd|requirements|design|release|mission|work)( candidate)? (has been|was|is) approved\b|\bthe founder (has )?approved\b/i;
+  /\b(this|the|our) (plan|charter|scope|prd|requirements|design|release|mission|work|product|prototype|app|mvp|service|feature)s?( candidate)? (has been |have been |was |were |is |are )(now )?approved\b|\b(the )?founder (has )?approved\b/i;
 const CLAIMS_DEPLOYMENT =
   /\b(this|the|our) (product|release|prototype|app|mvp|service|feature)s? (has been |have been |was |were |is now |is |are now )?(deployed|released|launched|shipped|live in production)\b|\bwe(?:'ve| have)? (deployed|released|launched|shipped)\b|\bit (has been |was )?(deployed|launched|shipped)\b/i;
 

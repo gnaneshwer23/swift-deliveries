@@ -166,6 +166,11 @@ export const STAGE_FIXTURES: readonly StageFixture[] = [
         expect: /claims an approval/,
       },
       {
+        name: "says the plan is approved",
+        output: `${charterGood}\n\nOur plan is approved and the product was approved too.`,
+        expect: /claims an approval/,
+      },
+      {
         name: "invents interviews",
         output: charterGood.replace(
           "## Desired outcome",

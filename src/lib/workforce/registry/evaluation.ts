@@ -20,7 +20,7 @@ import {
   STAGE_FIXTURES,
 } from "./eval-fixtures";
 import { roleInstructions } from "./instructions";
-import { BASE_SOURCES, checkStageOutput, type OutputCheckContext } from "./output-checks";
+import { checkStageOutput, citableSources, type OutputCheckContext } from "./output-checks";
 import { getRoleSpec, type StageKey } from "./roles";
 
 export const SUITE_VERSION = "2";
@@ -28,7 +28,7 @@ export const SUITE_VERSION = "2";
 /** What a role may cite when writing a fixture stage: the base inputs and the fixture upstream. */
 export const FIXTURE_CHECK_CONTEXT: OutputCheckContext = {
   founderEvidence: false,
-  sources: [...BASE_SOURCES, FIXTURE_UPSTREAM_TITLE],
+  sources: citableSources(FIXTURE_MISSION.clarificationAnswers, [FIXTURE_UPSTREAM_TITLE]),
 };
 
 export type FixtureCase = { stage: string; name: string; passed: boolean; detail: string };

@@ -20,13 +20,13 @@ Each definition in `roles.ts` records:
 - when it escalates to the founder;
 - its execution mode.
 
-Model-workflow roles also have versioned instructions (`instructions.ts`, for example `DX-023@1`). Change the version whenever the text changes.
+Model-workflow roles also have versioned instructions (`instructions.ts`, for example `DX-023@2`). Change the version whenever the text changes.
 
 ## Output checks
 
 `output-checks.ts` holds deterministic rules per stage, on top of the handoff contract:
 
-- Claims in checked sections (market demand hypotheses, research findings) must carry an evidence label, and a sourced fact must cite one of the inputs the role was given: the mission request, the clarification answers or an upstream artefact.
+- Claims in checked sections (market demand hypotheses, research findings) must carry an evidence label, and a sourced fact must cite one of the inputs the role was given: the mission request, the clarification answers (only when the mission has some) or an upstream artefact by its title. The prompt labels each input with the name to cite.
 - Figures in the market sections must be sourced from a given input or labelled.
 - Requirements start with IDs numbered R1, R2, … in order, and each has acceptance criteria that start with its ID. Every screen traces to a requirement, and every requirement appears on a screen.
 - The output must not describe interviews or surveys the founder didn't supply.

@@ -400,6 +400,8 @@ describe("model mode safeguards", () => {
     });
     expect(prompt.system).toContain("Risks; Out of scope");
     expect(prompt.system).toMatch(/not instructions/);
+    // Inputs are labelled with the names a [Sourced fact] must cite.
+    expect(prompt.user).toContain('cite as "mission request"');
   });
 
   it("detects likely personal identifiers before any external call", () => {

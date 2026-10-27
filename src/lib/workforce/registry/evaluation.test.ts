@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { FIXTURE_LABEL, STAGE_FIXTURES } from "./eval-fixtures";
 import { runFixtureChecks, runModelEvaluation, type StageGenerator } from "./evaluation";
 import { INSTRUCTION_VERSIONS, leadRole, roleInstructions, stageForTask } from "./instructions";
+import { citableSources, SOURCE_NAMES } from "./output-checks";
 import { ROLE_SPECS } from "./roles";
 
 describe("role evaluation suites", () => {
@@ -62,5 +63,16 @@ describe("role instructions", () => {
     expect(leadRole({ key: "research", capabilityIds: ["DX-018", "DX-020"] })).toBe("DX-018");
     expect(leadRole({ key: "market", capabilityIds: ["DX-021", "DX-020"] })).toBe("DX-021");
     expect(leadRole({ key: "architecture", capabilityIds: [] })).toBeNull();
+  });
+});
+
+describe("citable sources", () => {
+  it("lists clarification answers only when the mission has some", () => {
+    expect(citableSources({}, ["Charter"])).toEqual([SOURCE_NAMES.request, "Charter"]);
+    expect(citableSources({ users: "  " }, [])).toEqual([SOURCE_NAMES.request]);
+    expect(citableSources({ users: "tutors" }, [])).toEqual([
+      SOURCE_NAMES.request,
+      SOURCE_NAMES.clarifications,
+    ]);
   });
 });

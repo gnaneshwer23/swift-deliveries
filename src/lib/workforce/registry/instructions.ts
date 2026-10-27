@@ -12,7 +12,7 @@ const LABELS = EVIDENCE_LABELS.map((l) => `[${l}]`).join(", ");
 
 const COMMON = [
   "Never invent customers, interviews, quotes, survey results, metrics or sources. If evidence is missing, say so in the section where it would belong.",
-  `Where a section lists claims, start each bullet with one of ${LABELS}. A [Sourced fact] must end with (Source: …) naming a source that appears in the inputs.`,
+  `Where a section lists claims, start each bullet with one of ${LABELS}. A [Sourced fact] must end with (Source: …) naming one of your inputs as it is labelled: the mission request, the clarification answers, or an upstream artefact by its title.`,
   "Never state that anything has been approved, deployed or released: only the founder approves, and nothing has shipped.",
 ];
 
@@ -48,13 +48,13 @@ const STAGE_RULES: Partial<Record<StageKey, string[]>> = {
 
 /** Instruction version per role. Recorded with every run that used it. */
 export const INSTRUCTION_VERSIONS: Readonly<Record<string, string>> = {
-  "DX-001": "DX-001@1",
-  "DX-002": "DX-002@1",
-  "DX-018": "DX-018@1",
-  "DX-020": "DX-020@1",
-  "DX-021": "DX-021@1",
-  "DX-023": "DX-023@1",
-  "DX-035": "DX-035@1",
+  "DX-001": "DX-001@2",
+  "DX-002": "DX-002@2",
+  "DX-018": "DX-018@2",
+  "DX-020": "DX-020@2",
+  "DX-021": "DX-021@2",
+  "DX-023": "DX-023@2",
+  "DX-035": "DX-035@2",
 };
 
 export type RoleInstructions = { version: string; text: string };

@@ -323,7 +323,7 @@ describe.skipIf(!url)("durable mission worker against a real database", () => {
       note: "model call timed out",
       failure: { class: "timeout", detail: "model call timed out" },
       calls: [call("timeout")],
-      instructionVersion: "DX-001@1",
+      instructionVersion: "DX-001@2",
     };
     expect((await step(ids)).note).toMatch(/tried again/);
     const { task, run } = await firstTaskRun(ids.missionId);
@@ -363,11 +363,11 @@ describe.skipIf(!url)("durable mission worker against a real database", () => {
       mode: "model",
       model: "fixture-model",
       calls: [call(null)],
-      instructionVersion: "DX-001@1",
+      instructionVersion: "DX-001@2",
     };
     await step(ids);
     expect(lastGenerationInput!["extraInstructions"]).toMatch(/DX-001/);
-    expect(lastGenerationInput!["instructionVersion"]).toBe("DX-001@1");
+    expect(lastGenerationInput!["instructionVersion"]).toBe("DX-001@2");
     const { task, run } = await firstTaskRun(ids.missionId);
     expect(task["status"]).toBe("completed");
     expect(run).toMatchObject({
@@ -379,7 +379,7 @@ describe.skipIf(!url)("durable mission worker against a real database", () => {
       output_tokens: 50,
       model_calls: 1,
       role_id: "DX-001",
-      instruction_version: "DX-001@1",
+      instruction_version: "DX-001@2",
     });
   });
 

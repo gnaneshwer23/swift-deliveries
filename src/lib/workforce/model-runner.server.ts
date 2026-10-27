@@ -21,6 +21,7 @@ import type {
   UpstreamArtefact,
 } from "./executor";
 import { containsLikelyPersonalIdentifiers } from "./privacy";
+import { SOURCE_NAMES } from "./registry/output-checks";
 import type { WfMission, WfMissionTask } from "./types";
 
 type Provider = { name: string; url: string; apiKey: string; model: string };
@@ -167,8 +168,8 @@ export function buildStagePrompt(input: {
     .join("\n");
   const user = [
     `Mission: ${input.mission.title}`,
-    `Objective (operator's words): ${input.mission.requestText}`,
-    answers ? `Operator clarifications:\n${answers}` : "",
+    `Mission request (operator's words; cite as "${SOURCE_NAMES.request}"): ${input.mission.requestText}`,
+    answers ? `Clarification answers (cite as "${SOURCE_NAMES.clarifications}"):\n${answers}` : "",
     `Your task: ${input.task.title}\n${input.task.description}`,
     `Acceptance criteria: ${input.task.acceptanceCriteria}`,
     input.upstream.length

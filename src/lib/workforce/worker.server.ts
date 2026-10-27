@@ -30,7 +30,7 @@ import {
 import { runnableTasks, unreachableTasks } from "./graph";
 import { appendEvent, hasLivePlanApproval } from "./plan-store.server";
 import { leadRole, roleInstructions, stageForTask } from "./registry/instructions";
-import { BASE_SOURCES, checkStageOutput } from "./registry/output-checks";
+import { checkStageOutput, citableSources } from "./registry/output-checks";
 import { canAfford } from "./usage";
 import type { MissionBundle, WfMissionTask } from "./types";
 
@@ -117,6 +117,7 @@ function savedPrototypes(bundle: MissionBundle): UpstreamArtefact[] {
 export function roleGuidance(
   task: Pick<WfMissionTask, "key" | "capabilityIds">,
   upstream: UpstreamArtefact[],
+  clarificationAnswers: Readonly<Record<string, string>> = {},
 ):
   | {
       extraInstructions: string;
@@ -137,7 +138,13 @@ export function roleGuidance(
       const r = checkStageOutput(
         stage,
         content,
-        { founderEvidence: false, sources: [...BASE_SOURCES, ...upstream.map((u) => u.title)] },
+        {
+          founderEvidence: false,
+          sources: citableSources(
+            clarificationAnswers,
+            upstream.map((u) => u.title),
+          ),
+        },
         given,
       );
       return r.ok ? null : r.failures.join("; ");
@@ -485,7 +492,12 @@ export async function advanceMission(input: {
       !task.isExternal
         ? await (
             await import("./model-runner.server")
-          ).generateStageContent({ mission, task, upstream, ...roleGuidance(task, upstream) })
+          ).generateStageContent({
+            mission,
+            task,
+            upstream,
+            ...roleGuidance(task, upstream, mission.clarificationAnswers),
+          })
         : undefined;
     // A configured model that failed never turns into a simulated draft.
     if (!generated?.failure)
