@@ -152,7 +152,8 @@ describe("every mission handler is scoped before it reads or writes", () => {
   const handlers = [
     ...source.matchAll(/export const (\w+) = createServerFn[\s\S]*?(?=\nexport const |\n*$)/g),
   ].map((m) => ({ name: m[1]!, body: m[0] }));
-  const WRITE = /\.(insert|update|delete|upsert)\(|chargeWorkspaceUsage\(/;
+  const WRITE =
+    /\.(insert|update|delete|upsert)\(|chargeWorkspaceUsage\(|query\(\s*`\s*(insert|update|delete)|(savePlanVersion|approvePlanVersion|approveExternalForPlan|appendEvent|audit)\(/;
 
   it("finds the handlers it guards", () => {
     expect(handlers.filter((h) => /data\.missionId/.test(h.body)).length).toBeGreaterThanOrEqual(
@@ -166,7 +167,7 @@ describe("every mission handler is scoped before it reads or writes", () => {
       const ensure = body.indexOf("ensureWorkspace(");
       // the mission bundle, or a read of the target row filtered by the caller's workspace
       const load = body.search(
-        /loadMissionBundle\(|from\("wf_\w+"\)\s*\.select[\s\S]{0,200}?\.eq\("workspace_id", workspace\.id\)/,
+        /loadMissionBundle\(|lockMission\(query, workspace\.id|from\("wf_\w+"\)\s*\.select[\s\S]{0,200}?\.eq\("workspace_id", workspace\.id\)/,
       );
       const firstWrite = body.search(WRITE);
       expect(ensure).toBeGreaterThan(-1);

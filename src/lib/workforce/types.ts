@@ -11,6 +11,7 @@ export const MISSION_STATUSES = [
   "queued",
   "running",
   "reviewing",
+  "paused",
   "completed",
   "partially_completed",
   "blocked",
@@ -154,6 +155,9 @@ export type WfWorkspace = {
   name: string;
   usageCeiling: number;
   usageConsumed: number;
+  /** Emergency stop: no new work starts while set. */
+  stoppedAt: string | null;
+  stopReason: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -180,6 +184,10 @@ export type WfMissionPlan = {
   acceptanceCriteria: string[];
   assignedCapabilities: PlanAssignedCapability[];
   capabilityLimitations: PlanCapabilityLimitation[];
+  /** Bumped on every change; an approval names the version it approved. */
+  version: number;
+  /** Fingerprint of the plan as shown (plan-hash.ts); null before migration 0024. */
+  planHash: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -251,6 +259,27 @@ export type WfApproval = {
   decidedBy: string | null;
   decidedAt: string | null;
   note: string | null;
+  /** The plan version and fingerprint this approval is bound to. */
+  planVersion: number | null;
+  payloadHash: string | null;
+  costLimit: number | null;
+  expiresAt: string | null;
+  /** Set when the plan changed after approval; an invalidated approval authorises nothing. */
+  invalidatedAt: string | null;
+  invalidatedReason: string | null;
+  createdAt: string;
+};
+
+/** One entry in the append-only mission event log (wf_mission_events). */
+export type WfMissionEvent = {
+  id: number;
+  workspaceId: string;
+  missionId: string | null;
+  taskId: string | null;
+  type: string;
+  actorKind: "user" | "worker" | "system";
+  actorId: string | null;
+  data: Record<string, unknown>;
   createdAt: string;
 };
 
@@ -329,6 +358,7 @@ export const STATUS_LABELS: Record<MissionStatus, string> = {
   queued: "Queued",
   running: "Running",
   reviewing: "Reviewing",
+  paused: "Paused",
   completed: "Completed",
   partially_completed: "Partially completed",
   blocked: "Blocked",

@@ -22,6 +22,7 @@ import type {
   WfArtefact,
   WfAuditEvent,
   WfMission,
+  WfMissionEvent,
   WfMissionPlan,
   WfMissionTask,
   WfProject,
@@ -48,6 +49,8 @@ export function mapWorkspace(row: any): WfWorkspace {
     name: row.name,
     usageCeiling: row.usage_ceiling,
     usageConsumed: row.usage_consumed,
+    stoppedAt: row.stopped_at ?? null,
+    stopReason: row.stop_reason ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -104,6 +107,8 @@ export function mapPlan(row: any): WfMissionPlan {
     acceptanceCriteria: decoded.criteria,
     assignedCapabilities: fromColumns.assigned ?? decoded.assignedCapabilities,
     capabilityLimitations: fromColumns.limitations ?? decoded.capabilityLimitations,
+    version: row.version ?? 1,
+    planHash: row.plan_hash ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -111,7 +116,9 @@ export function mapPlan(row: any): WfMissionPlan {
 
 export function mapTask(row: any): WfMissionTask {
   const rawDescription = row.description ?? "";
-  const fromColumn = (row.capability_ids ?? null) as string[] | null;
+  // Migration 0024 stores these as columns; older rows keep them encoded in the description.
+  const columnIds = (row.capability_ids ?? []) as string[];
+  const columnDeps = (row.depends_on ?? []) as string[];
   const decoded = decodeTaskCapabilityIds(rawDescription);
   return {
     id: row.id,
@@ -128,9 +135,9 @@ export function mapTask(row: any): WfMissionTask {
     estimatedUsage: row.estimated_usage,
     actualUsage: row.actual_usage,
     evidenceNotes: (row.evidence_notes ?? []) as EvidenceItem[],
-    capabilityIds: fromColumn ?? decoded.capabilityIds,
-    key: decoded.meta?.key ?? `t${row.sort_order}`,
-    dependsOn: decoded.meta?.dependsOn ?? [],
+    capabilityIds: columnIds.length ? columnIds : decoded.capabilityIds,
+    key: row.task_key ?? decoded.meta?.key ?? `t${row.sort_order}`,
+    dependsOn: columnDeps.length ? columnDeps : (decoded.meta?.dependsOn ?? []),
     stage: decoded.meta?.stage ?? null,
     gate: Boolean(decoded.meta?.gate),
     requiredSections: decoded.meta?.requiredSections ?? [],
@@ -169,6 +176,26 @@ export function mapApproval(row: any): WfApproval {
     decidedBy: row.decided_by ?? null,
     decidedAt: row.decided_at ?? null,
     note: row.note ?? null,
+    planVersion: row.plan_version ?? null,
+    payloadHash: row.payload_hash ?? null,
+    costLimit: row.cost_limit ?? null,
+    expiresAt: row.expires_at ?? null,
+    invalidatedAt: row.invalidated_at ?? null,
+    invalidatedReason: row.invalidated_reason ?? null,
+    createdAt: row.created_at,
+  };
+}
+
+export function mapMissionEvent(row: any): WfMissionEvent {
+  return {
+    id: Number(row.id),
+    workspaceId: row.workspace_id,
+    missionId: row.mission_id ?? null,
+    taskId: row.task_id ?? null,
+    type: row.type,
+    actorKind: row.actor_kind,
+    actorId: row.actor_id ?? null,
+    data: (row.data ?? {}) as Record<string, unknown>,
     createdAt: row.created_at,
   };
 }

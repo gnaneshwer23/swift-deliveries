@@ -10,7 +10,9 @@ import {
   cancelMission,
   decideStageGate,
   markArtefactHumanReviewed,
+  pauseMission,
   rejectMissionPlan,
+  resumeMission,
   reviseMissionScope,
   runMissionStep,
 } from "@/lib/workforce.functions";
@@ -89,10 +91,17 @@ function MissionDetail() {
     onError: (e) => setActionError(e instanceof Error ? e.message : "Scope revision failed"),
   });
 
+  // Approvals name the exact plan version shown, so a plan changed elsewhere is never approved blind.
+  const shownPlan = () => {
+    const plan = query.data?.plan;
+    if (!plan) throw new Error("This mission has no plan to approve.");
+    return { planVersion: plan.version, planHash: plan.planHash };
+  };
+
   const approve = useMutation({
     mutationFn: () =>
       approveMissionPlan({
-        data: { missionId, approveExternalActions: approveExternal },
+        data: { missionId, ...shownPlan(), approveExternalActions: approveExternal },
       }),
     onSuccess: async () => {
       setActionError(null);
@@ -106,7 +115,7 @@ function MissionDetail() {
       rejectMissionPlan({
         data: {
           missionId,
-          reason: rejectReason.trim() || "Plan rejected by operator for scope revision",
+          note: rejectReason.trim() || "Plan rejected by operator for scope revision",
         },
       }),
     onSuccess: async () => {
@@ -119,7 +128,7 @@ function MissionDetail() {
   });
 
   const approveExt = useMutation({
-    mutationFn: () => approveExternalActions({ data: { missionId } }),
+    mutationFn: () => approveExternalActions({ data: { missionId, ...shownPlan() } }),
     onSuccess: async () => {
       setActionError(null);
       await invalidate();
@@ -154,8 +163,20 @@ function MissionDetail() {
   const cancel = useMutation({
     mutationFn: () => cancelMission({ data: { missionId } }),
     onSuccess: async () => {
+      setActionError(null);
       await invalidate();
     },
+    onError: (e) => setActionError(e instanceof Error ? e.message : "Cancel failed"),
+  });
+
+  const pauseOrResume = useMutation({
+    mutationFn: (paused: boolean) =>
+      paused ? resumeMission({ data: { missionId } }) : pauseMission({ data: { missionId } }),
+    onSuccess: async () => {
+      setActionError(null);
+      await invalidate();
+    },
+    onError: (e) => setActionError(e instanceof Error ? e.message : "Pause or resume failed"),
   });
 
   const decideGate = useMutation({
@@ -259,7 +280,8 @@ function MissionDetail() {
           ? 3
           : mission.status === "queued" ||
               mission.status === "running" ||
-              mission.status === "blocked"
+              mission.status === "blocked" ||
+              mission.status === "paused"
             ? 4
             : 5;
 
@@ -549,7 +571,7 @@ function MissionDetail() {
                     {step.isPending ? "Running…" : "Run next step →"}
                   </button>
                 )}
-                {mission.status === "blocked" &&
+                {(mission.status === "blocked" || mission.status === "queued") &&
                 !mission.externalActionsApproved &&
                 tasks.some((t) => t.isExternal && t.status === "blocked") ? (
                   <button
@@ -561,7 +583,19 @@ function MissionDetail() {
                     Approve Act externally
                   </button>
                 ) : null}
-                {!["completed", "cancelled", "failed"].includes(mission.status) ? (
+                {["queued", "running", "blocked", "paused"].includes(mission.status) ? (
+                  <button
+                    type="button"
+                    className="cc-btn cc-btn-secondary"
+                    disabled={pauseOrResume.isPending}
+                    onClick={() => pauseOrResume.mutate(mission.status === "paused")}
+                  >
+                    {mission.status === "paused" ? "Resume mission" : "Pause mission"}
+                  </button>
+                ) : null}
+                {!["completed", "partially_completed", "cancelled", "failed"].includes(
+                  mission.status,
+                ) ? (
                   <button
                     type="button"
                     className="cc-btn cc-btn-ghost"
@@ -620,7 +654,7 @@ function MissionDetail() {
                             <button
                               type="button"
                               className="cc-btn cc-btn-primary"
-                              disabled={decideGate.isPending}
+                              disabled={decideGate.isPending || mission.status === "paused"}
                               onClick={() =>
                                 decideGate.mutate({ taskId: t.id, decision: "approve" })
                               }
@@ -630,7 +664,7 @@ function MissionDetail() {
                             <button
                               type="button"
                               className="cc-btn cc-btn-ghost"
-                              disabled={decideGate.isPending}
+                              disabled={decideGate.isPending || mission.status === "paused"}
                               onClick={() =>
                                 decideGate.mutate({ taskId: t.id, decision: "reject" })
                               }
