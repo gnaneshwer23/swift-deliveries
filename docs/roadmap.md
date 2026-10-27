@@ -66,7 +66,7 @@ Shipped on `origin/main` as the first end-to-end pilot path for Command Centre, 
 1. Founder gives **one business-case statement** (not a multi-field interview). Optional details stay collapsed.
 2. An initiating PM / problem-framing agent drafts a **PM brief**: restated problem, what will happen, rough cost, rough time, team/staffing band — before heavy execution.
 3. Typed Talk-to-DeliverX can start that supervised case (default path); advanced workforce drafts remain an explicit card choice.
-4. A bounded Available Wave 1 specialist team (8 roles active now) owns tasks; a **work scene** dramatises persisted activity (not timer theatre). Staffing bands scale with case complexity (~12–24 focused → ~60–100 expanded) without enabling all 150 by default.
+4. A bounded Available Wave 1 / **Band S** specialist team (8 roles active now) owns tasks; a **work scene** dramatises persisted activity (not timer theatre). Complexity bands S/M/L/XL are labelled for honesty; higher bands are not staffed this ship.
 5. Plan / PM-brief approval is a human gate before comparison advances.
 6. **Research-first default (Combined)**: specialists are expected to research; founder evidence is optional unless blocked. Tools disclosed; no invented web retrieval without a provider key.
 7. Decision pack export: Markdown + PDF with honesty labels, evidence register, assumptions/gaps, options, approval history, experiment brief, follow-up proposal that does not auto-start.

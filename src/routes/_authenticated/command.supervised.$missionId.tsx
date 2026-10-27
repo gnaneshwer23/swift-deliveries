@@ -19,9 +19,18 @@ import {
   setSupervisedResearchMode,
 } from "@/lib/pilot-mission.functions";
 import { decisionPackFilenames } from "@/lib/pilot-mission/decision-pack";
-import { buildPmBrief } from "@/lib/pilot-mission/pm-brief";
+import {
+  buildPmBrief,
+  STAFFING_BAND_LABELS,
+  type PmBrief,
+} from "@/lib/pilot-mission/pm-brief";
 import { RESEARCH_MODE_LABELS, type ResearchMode } from "@/lib/pilot-mission/research-mode";
-import { PROGRESS_STEPS, stepState, type DecisionChoice } from "@/lib/pilot-mission/types";
+import {
+  PROGRESS_STEPS,
+  stepState,
+  type DecisionChoice,
+  type SupervisedMission,
+} from "@/lib/pilot-mission/types";
 
 export const Route = createFileRoute("/_authenticated/command/supervised/$missionId")({
   head: () => ({
@@ -890,6 +899,91 @@ function RecordStepPending({ title, detail }: { title: string; detail: string })
       <a className="cc-btn cc-btn-secondary mt-3 inline-flex" href="#mission-next-action">
         See the next required action
       </a>
+    </section>
+  );
+}
+
+function PmBriefPanel({ mission }: { mission: SupervisedMission }) {
+  const brief: PmBrief = buildPmBrief(mission);
+  const staffing = brief.team.staffing;
+  return (
+    <section className="cc-panel ps-pm-brief" aria-label="PM brief">
+      <p className="cc-kicker">Initiating PM</p>
+      <h2 className="cc-panel-title">Here’s what I heard</h2>
+      <p className="ps-pm-problem">{brief.problemStatement}</p>
+      <h3 className="cc-panel-title text-base">Plan</h3>
+      <ol className="ps-pm-plan">
+        {brief.whatWillHappen.map((step) => (
+          <li key={step}>{step}</li>
+        ))}
+      </ol>
+      <dl className="ps-pm-meta">
+        <div>
+          <dt>Knowns</dt>
+          <dd>
+            <ul>
+              {brief.knowns.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </dd>
+        </div>
+        <div>
+          <dt>Unknowns</dt>
+          <dd>
+            <ul>
+              {brief.unknowns.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </dd>
+        </div>
+        <div>
+          <dt>Cost band</dt>
+          <dd>
+            {brief.roughCost.band}
+            <span className="cc-muted block text-sm">{brief.roughCost.detail}</span>
+          </dd>
+        </div>
+        <div>
+          <dt>Time band</dt>
+          <dd>
+            {brief.roughTime.label}
+            <span className="cc-muted block text-sm">{brief.roughTime.detail}</span>
+          </dd>
+        </div>
+        <div>
+          <dt>Delivery team</dt>
+          <dd>
+            {brief.team.initiatingAgent} initiating · {staffing.activeSpecialists} Wave 1 roles
+            active now
+            <span className="cc-muted block text-sm">
+              {STAFFING_BAND_LABELS[staffing.band]} (catalogue intent {staffing.catalogueTargetMin}
+              –{staffing.catalogueTargetMax}). {staffing.reason}
+            </span>
+            {brief.team.activeLabels.length ? (
+              <span className="cc-muted block text-sm">
+                On this plan: {brief.team.activeLabels.join(" · ")}
+              </span>
+            ) : null}
+          </dd>
+        </div>
+        <div>
+          <dt>Research readiness</dt>
+          <dd>
+            {brief.research.stance}
+            <span className="cc-muted block text-sm">{brief.research.toolsSummary}</span>
+          </dd>
+        </div>
+        <div>
+          <dt>Ask you only when</dt>
+          <dd>{brief.askFounderOnlyWhen}</dd>
+        </div>
+        <div>
+          <dt>Honesty</dt>
+          <dd>{brief.honesty}</dd>
+        </div>
+      </dl>
     </section>
   );
 }

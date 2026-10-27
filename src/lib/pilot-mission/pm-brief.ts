@@ -5,7 +5,6 @@
  * (not the full catalogue) until complexity-scaled assignment lands.
  */
 import { planResearchMode, type ResearchMode } from "./research-mode";
-import type { PilotTeamPlan } from "./specialist-team";
 import type { Brief, EvidenceItem, SupervisedMission } from "./types";
 
 export const DEFAULT_MISSION_OUTCOME = "A decision pack and an experiment brief.";
@@ -15,11 +14,19 @@ export const RESEARCH_REFINE_AUDIENCE = "Primary customers — specialists will 
 export const RESEARCH_FIRST_CONSTRAINT =
   "Research first. Ask the founder only for decisions or real blockers. No customer contact or deployment without approval.";
 
-export type StaffingBand = "focused" | "standard" | "expanded";
+/** Founder-approved complexity bands (catalogue intent). Only Band S Wave 1 is staffed this ship. */
+export type StaffingBand = "S" | "M" | "L" | "XL";
+
+export const STAFFING_BAND_LABELS: Record<StaffingBand, string> = {
+  S: "Band S — Simple (~8–20)",
+  M: "Band M — Standard (~20–50)",
+  L: "Band L — Complex (~50–100)",
+  XL: "Band XL — Ceiling (≤150)",
+};
 
 export type StaffingEstimate = {
   band: StaffingBand;
-  /** Roles active on this pilot mission (Wave 1 core). */
+  /** Roles active on this pilot mission (Wave 1 / Band S core). */
   activeSpecialists: number;
   /** Intended catalogue headcount band for this case complexity — not auto-enabled. */
   catalogueTargetMin: number;
@@ -30,8 +37,11 @@ export type StaffingEstimate = {
 export type PmBrief = {
   version: "pm-brief-v1";
   problemStatement: string;
+  knowns: string[];
+  unknowns: string[];
   whatWillHappen: string[];
   roughCost: {
+    band: string;
     comparisonUnitsReserved: number;
     missionCeiling: number;
     detail: string;
@@ -52,6 +62,7 @@ export type PmBrief = {
     externalGaps: string[];
   };
   askFounderOnlyWhen: string;
+  honesty: string;
 };
 
 const COMPLEX_HINTS =
@@ -60,39 +71,49 @@ const SIMPLE_HINTS =
   /\b(copy|wording|button|label|one step|single|tiny|small tweak|onboarding field|setup field)\b/i;
 
 /**
- * Heuristic complexity → staffing band. Does not enable the full catalogue.
- * Focused ~20, standard ~40–60, expanded toward ~100, always under catalogue ceiling.
+ * Heuristic complexity → staffing band label. Does not enable the full catalogue.
+ * This ship always activates Wave 1 / Band S (~8); higher bands are honesty labels only.
  */
 export function estimateStaffingBand(question: string): StaffingEstimate {
   const text = question.trim();
   const words = text.split(/\s+/).filter(Boolean).length;
   if (SIMPLE_HINTS.test(text) && words < 40) {
     return {
-      band: "focused",
+      band: "S",
       activeSpecialists: 8,
-      catalogueTargetMin: 12,
-      catalogueTargetMax: 24,
+      catalogueTargetMin: 8,
+      catalogueTargetMax: 20,
       reason:
-        "Narrow product question — keep a focused Wave 1 core; scale only if research widens scope.",
+        "Narrow product question — Band S Wave 1 core only; scale later if research widens scope.",
+    };
+  }
+  if (/\b(programme|program-scale|multi[- ]geo|enterprise rollout)\b/i.test(text) && words > 100) {
+    return {
+      band: "XL",
+      activeSpecialists: 8,
+      catalogueTargetMin: 100,
+      catalogueTargetMax: 150,
+      reason:
+        "Programme-scale signals — Band S Wave 1 runs now; XL catalogue staffing needs an explicit ceiling accept later.",
     };
   }
   if (COMPLEX_HINTS.test(text) || words > 80) {
     return {
-      band: "expanded",
+      band: "L",
       activeSpecialists: 8,
-      catalogueTargetMin: 60,
+      catalogueTargetMin: 50,
       catalogueTargetMax: 100,
       reason:
-        "Broad market or multi-thread case — Wave 1 core runs now; expanded catalogue staffing is planned, not all roles at once.",
+        "Broad market or multi-thread case — Band S Wave 1 runs now; Band L catalogue staffing is labelled, not enabled.",
     };
   }
   return {
-    band: "standard",
+    band: "M",
     activeSpecialists: 8,
-    catalogueTargetMin: 24,
-    catalogueTargetMax: 48,
+    catalogueTargetMin: 20,
+    catalogueTargetMax: 50,
     reason:
-      "Standard decision case — Wave 1 core now; mid-band catalogue staffing as research proves need.",
+      "Standard decision case — Band S Wave 1 now; Band M catalogue staffing as research proves need.",
   };
 }
 
@@ -150,22 +171,40 @@ export function buildPmBrief(
 ): PmBrief {
   const staffing = estimateStaffingBand(mission.brief.question);
   const research = planResearchMode(mission.researchMode ?? "combined");
-  const team = mission.team ?? ({ capabilityIds: [], tasks: [] } as PilotTeamPlan);
-  const activeLabels = [
-    ...new Set(
-      team.tasks
-        .filter((t) => t.actor === "specialist" && t.ownerLabel)
-        .map((t) => t.ownerLabel),
-    ),
-  ];
+  const team = mission.team;
+  const activeLabels = team
+    ? [
+        ...new Set(
+          team.tasks
+            .filter((t) => t.actor === "specialist" && t.ownerLabel)
+            .map((t) => t.ownerLabel),
+        ),
+      ]
+    : [];
   const initiating =
-    team.tasks.find((t) => t.key === "frame_objective")?.ownerLabel ??
+    team?.tasks.find((t) => t.key === "frame_objective")?.ownerLabel ??
     activeLabels[0] ??
     "Problem-Framing Agent";
+  const knowns = [
+    "Founder supplied a one-liner business case.",
+    `Research mode: ${research.label}.`,
+    `Active staffing this ship: ${staffing.activeSpecialists} Available Wave 1 specialists (Band S core).`,
+  ];
+  const unknowns = [
+    ...(mission.brief.audience === RESEARCH_REFINE_AUDIENCE
+      ? ["Primary audience is not yet validated."]
+      : []),
+    "Market and competitor facts are not yet evidenced.",
+    ...research.externalGaps,
+  ];
 
   return {
     version: "pm-brief-v1",
     problemStatement: mission.brief.question,
+    knowns,
+    unknowns: unknowns.length
+      ? unknowns
+      : ["No blocking unknowns listed yet — research will surface gaps."],
     whatWillHappen: [
       `${initiating} restates the case and proposes a bounded specialist plan.`,
       "Research fills market and competitor gaps using the selected research mode — without inventing live web results when tools are missing.",
@@ -173,22 +212,28 @@ export function buildPmBrief(
       "Outcome review stays owner-supplied; follow-ups never start without your approval.",
     ],
     roughCost: {
+      band:
+        mission.usageCeiling <= 0
+          ? "Blocked — no comparison units left"
+          : mission.usageCeiling <= 2
+            ? "Low — ≈1 comparison unit / run"
+            : "Modest — ≈1 comparison unit / run within mission ceiling",
       comparisonUnitsReserved: 1,
       missionCeiling: mission.usageCeiling,
       detail:
         mission.usageCeiling > 0
-          ? `About 1 comparison unit per options run against this mission’s remaining ceiling of ${mission.usageCeiling}. Plan approval and evidence edits are not billable.`
+          ? `Banded cost: roughly one comparison unit per options run (mission ceiling ${mission.usageCeiling}). Plan approval and evidence edits are not billable.`
           : "No comparison units remain on this mission allowance. You can still review the plan; billable comparison is blocked until usage is available.",
     },
     roughTime: {
       label:
-        staffing.band === "focused"
+        staffing.band === "S"
           ? "Same-session decision loop"
-          : staffing.band === "expanded"
+          : staffing.band === "L" || staffing.band === "XL"
             ? "Multi-pass research then decision"
             : "One focused research pass then decision",
       detail:
-        "Time is a plan estimate for the supervised loop (brief → research → options → your decision → pack). It is not a wall-clock SLA.",
+        "Time is a banded plan estimate for the supervised loop (brief → research → options → your decision → pack). It is not a wall-clock SLA.",
     },
     team: {
       initiatingAgent: initiating,
@@ -208,5 +253,7 @@ export function buildPmBrief(
     },
     askFounderOnlyWhen:
       "A real decision gate, a missing fact only you can supply, consent to contact customers, or approval to act externally.",
+    honesty:
+      "Simulated / deterministic PM draft — no model call for this brief. Complexity bands above Band S are labels only until scaled staffing ships.",
   };
 }

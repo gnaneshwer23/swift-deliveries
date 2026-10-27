@@ -34,18 +34,18 @@ describe("pm brief — one-liner expansion", () => {
 });
 
 describe("pm brief — staffing bands", () => {
-  it("keeps focused cases near the small band without enabling the full catalogue", () => {
+  it("keeps simple cases on Band S without enabling the full catalogue", () => {
     const band = estimateStaffingBand("Should we change one onboarding field label?");
-    expect(band.band).toBe("focused");
+    expect(band.band).toBe("S");
     expect(band.activeSpecialists).toBe(8);
-    expect(band.catalogueTargetMax).toBeLessThanOrEqual(24);
+    expect(band.catalogueTargetMax).toBeLessThanOrEqual(20);
   });
 
-  it("marks market/competitor cases as expanded without staffing all 150", () => {
+  it("labels market/competitor cases as Band L without staffing all 150", () => {
     const band = estimateStaffingBand(
       "Map competitors and go-to-market pricing for an international launch across three segments.",
     );
-    expect(band.band).toBe("expanded");
+    expect(band.band).toBe("L");
     expect(band.activeSpecialists).toBe(8);
     expect(band.catalogueTargetMax).toBeLessThanOrEqual(100);
   });
@@ -58,8 +58,9 @@ describe("pm brief — research seed and artefact", () => {
     expect(items.some((i) => i.classification === "gap")).toBe(true);
   });
 
-  it("builds a PM brief with plan, cost, time and team", () => {
+  it("builds a PM brief with plan, cost, time and team before approval", () => {
     const team = buildPilotTeamPlan();
+    expect(team.approvedAt).toBeNull();
     const brief = buildPmBrief({
       brief: expandOneLinerBrief({
         question: "Should we charge for onboarding analytics before launch?",
@@ -71,9 +72,13 @@ describe("pm brief — research seed and artefact", () => {
     });
     expect(brief.version).toBe("pm-brief-v1");
     expect(brief.whatWillHappen.length).toBeGreaterThanOrEqual(3);
+    expect(brief.knowns.length).toBeGreaterThan(0);
+    expect(brief.unknowns.length).toBeGreaterThan(0);
+    expect(brief.roughCost.band.length).toBeGreaterThan(0);
     expect(brief.roughCost.comparisonUnitsReserved).toBe(1);
     expect(brief.team.initiatingAgent.length).toBeGreaterThan(0);
     expect(brief.team.staffing.activeSpecialists).toBe(8);
+    expect(brief.honesty).toMatch(/deterministic|simulated/i);
     expect(brief.askFounderOnlyWhen).toMatch(/decision/i);
   });
 });
