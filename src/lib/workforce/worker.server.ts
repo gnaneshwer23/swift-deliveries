@@ -30,6 +30,8 @@ import {
 import { runnableTasks, unreachableTasks } from "./graph";
 import { evidenceForPrompt, includesResearchMaterial, type WfEvidence } from "./evidence";
 import { listEvidence } from "./evidence.server";
+import { extractMemory, memoryForPrompt } from "./product-memory";
+import { listProductMemory, recordMemory } from "./product-memory.server";
 import { appendEvent, hasLivePlanApproval } from "./plan-store.server";
 import { leadRole, roleInstructions, stageForTask } from "./registry/instructions";
 import { checkStageOutput, citableSources } from "./registry/output-checks";
@@ -121,6 +123,8 @@ export function roleGuidance(
   upstream: UpstreamArtefact[],
   clarificationAnswers: Readonly<Record<string, string>> = {},
   evidence: readonly WfEvidence[] = [],
+  /** Founder sources from earlier missions of the same product that are still current. */
+  priorSources: readonly string[] = [],
 ):
   | {
       extraInstructions: string;
@@ -133,8 +137,9 @@ export function roleGuidance(
   const instructions = stage && lead ? roleInstructions(lead, stage) : null;
   if (!stage || !instructions) return {};
   const given = upstream.map((u) => u.content).join("\n\n");
-  const usable = evidenceForPrompt(evidence).used;
-  const research = includesResearchMaterial(evidence, usable);
+  const shown = evidenceForPrompt(evidence);
+  const usable = shown.used;
+  const research = includesResearchMaterial(shown.sent);
   return {
     extraInstructions: instructions.text,
     instructionVersion: instructions.version,
@@ -149,6 +154,7 @@ export function roleGuidance(
           sources: citableSources(clarificationAnswers, [
             ...upstream.map((u) => u.title),
             ...usable.map((e) => e.title),
+            ...priorSources,
           ]),
         },
         given,
@@ -475,6 +481,7 @@ export async function advanceMission(input: {
   let generated: GeneratedContent | undefined;
   let result: ExecuteStepResult | undefined;
   const guidance = roleGuidance(task, []);
+  let memoryIncluded = 0;
   const roleId = "extraInstructions" in guidance ? leadRole(task) : null;
   try {
     const live = must(
@@ -490,10 +497,16 @@ export async function advanceMission(input: {
       : isStructureCheck(task)
         ? savedPrototypes(bundle)
         : [];
-    // Founder evidence as it stands now: added or removed evidence applies from the next step.
-    const evidence = task.produces
-      ? (await transaction((_db, q) => listEvidence(q, workspaceId, missionId))).items
-      : [];
+    // Founder evidence and product memory as they stand when the step builds its prompt.
+    const context = task.produces
+      ? await transaction(async (_db, q) => ({
+          evidence: (await listEvidence(q, workspaceId, missionId)).items,
+          memory: (await listProductMemory(q, workspaceId, mission.projectId)).entries,
+        }))
+      : { evidence: [], memory: [] };
+    const evidence = context.evidence;
+    const memory = memoryForPrompt(context.memory, missionId);
+    memoryIncluded = memory.included;
     // Only spend a model call when the step is affordable and permitted.
     generated =
       task.produces &&
@@ -507,7 +520,8 @@ export async function advanceMission(input: {
             task,
             upstream,
             evidence,
-            ...roleGuidance(task, upstream, mission.clarificationAnswers, evidence),
+            ...(memory.text ? { productMemory: memory.text } : {}),
+            ...roleGuidance(task, upstream, mission.clarificationAnswers, evidence, memory.citable),
           })
         : undefined;
     // A configured model that failed never turns into a simulated draft.
@@ -698,9 +712,11 @@ export async function advanceMission(input: {
     }
 
     const artefact = result.artefact ?? null;
+    const artefactId = randomUUID();
     if (artefact) {
       must(
         await db.from("wf_artefacts").insert({
+          id: artefactId,
           mission_id: artefact.missionId,
           workspace_id: artefact.workspaceId,
           task_id: artefact.taskId,
@@ -713,6 +729,25 @@ export async function advanceMission(input: {
         }),
       );
     }
+    // What an accepted, model-written artefact states joins the product's memory.
+    // Simulated drafts are placeholders and are never remembered.
+    if (
+      artefact &&
+      result.ok &&
+      generated?.mode === "model" &&
+      artefact.contentFormat === "markdown"
+    )
+      await recordMemory(
+        query,
+        {
+          workspaceId,
+          projectId: mission.projectId,
+          missionId,
+          originKind: "artefact",
+          originId: artefactId,
+        },
+        extractMemory(artefact.content),
+      );
     const now = new Date().toISOString();
 
     if (!result.ok) {
@@ -790,6 +825,7 @@ export async function advanceMission(input: {
         ? { role: roleId, instructions: generated?.instructionVersion ?? null }
         : {}),
       ...(calls.length ? { modelCalls: calls.length } : {}),
+      ...(modelSaw && memoryIncluded ? { memoryEntries: memoryIncluded } : {}),
       ...(modelSaw && generated?.evidenceUsed?.length
         ? { evidence: generated.evidenceUsed.map((e) => ({ id: e.id, title: e.title })) }
         : {}),

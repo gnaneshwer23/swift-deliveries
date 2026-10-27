@@ -116,6 +116,12 @@ describe.skipIf(!url)("mission evidence against a real database", () => {
     ).toEqual([true, true]);
   });
 
+  it("counts title length as the database does, in characters", async () => {
+    const ids = await mission();
+    await expect(note(ids, "😀a", "x")).rejects.toThrow(/between 3 and 120/);
+    await expect(note(ids, "😀".repeat(120), "x")).resolves.toMatchObject({ status: "readable" });
+  });
+
   it("refuses a duplicate title, since titles are how roles cite evidence", async () => {
     const ids = await mission();
     await note(ids, "Call notes", "one");

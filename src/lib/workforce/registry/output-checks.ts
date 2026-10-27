@@ -52,7 +52,7 @@ const SOURCE = /\(source:\s*([^)]{3,})\)/i;
 const NUMBER_CLAIM = /([$£€]\s?\d|\d+(\.\d+)?\s?(%|percent|million|billion|bn|m\b|k\b))/i;
 
 /** Claims of research that only the founder can supply; never accepted from a model alone. */
-const INVENTED_RESEARCH = [
+export const INVENTED_RESEARCH: readonly RegExp[] = [
   /\bwe (interviewed|surveyed|spoke (to|with))\b/i,
   /\b(in|from) (our|the) (interviews|survey|user research)\b/i,
   /\b(customers|users|tutors|participants) (told us|said that)\b/i,
@@ -123,6 +123,33 @@ function numbersAreBacked(
     failures.push(`${heading}: ${bare.length} figure(s) neither sourced nor labelled`);
 }
 
+const LINE_LABEL = new RegExp(`^\\s*(?:[-*]\\s*)?\\[(${EVIDENCE_LABELS.join("|")})\\]`, "i");
+const LINE_SOURCED = /^\s*(?:[-*]\s*)?\[sourced fact\]/i;
+
+/**
+ * Every line of a section that states something about the world is labelled,
+ * whether or not it is a bullet: a PRD may not present an unsourced claim as fact.
+ */
+function everyClaimLabelled(
+  markdown: string,
+  heading: string,
+  failures: string[],
+  sources: readonly string[],
+) {
+  const lines = (section(markdown, heading) ?? "")
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean);
+  const unlabelled = lines.filter((l) => !LINE_LABEL.test(l));
+  if (unlabelled.length)
+    failures.push(`${heading}: ${unlabelled.length} claim(s) without an evidence label`);
+  const sourced = lines.filter((l) => LINE_SOURCED.test(l));
+  if (sourced.some((l) => !SOURCE.test(l)))
+    failures.push(`${heading}: sourced fact(s) without a (Source: …)`);
+  else if (sourced.some((l) => !citesKnownSource(l, sources)))
+    failures.push(`${heading}: sourced fact(s) cite a source that was not given`);
+}
+
 const ids = (text: string | undefined) => new Set((text ?? "").match(/\bR\d+\b/g) ?? []);
 
 const LEADING_ID = /^\s*[-*]\s*(R\d+)\s*:/;
@@ -142,7 +169,10 @@ const STAGE_RULES: Partial<Record<StageKey, Rule>> = {
   research(md, f, _u, ctx) {
     labelledClaims(md, "Findings", f, ctx.sources);
   },
-  prd(md, f) {
+  prd(md, f, _u, ctx) {
+    // Claims about the problem and its users are evidence; the rest of a PRD is proposal.
+    for (const h of ["Problem statement", "Target users"])
+      everyClaimLabelled(md, h, f, ctx.sources);
     const reqs = bullets(section(md, "Requirements"));
     if (!reqs.length) {
       f.push("Requirements: no requirements listed");

@@ -31,6 +31,12 @@ import {
   type EvidenceList,
 } from "@/lib/workforce/evidence";
 import { generateMissionPlan, deriveMissionTitle } from "@/lib/workforce/planner";
+import {
+  decisionMemory,
+  staleness,
+  withdrawnSourceTitles,
+  type ProductMemoryEntry,
+} from "@/lib/workforce/product-memory";
 import type {
   DeliveryReport,
   MissionBundle,
@@ -747,6 +753,22 @@ export const decideStageGate = createServerFn({ method: "POST" })
       entityId: gate.id,
       metadata: { gate: gate.key, note: data.note ?? null },
     });
+    // The founder's decision becomes part of the product's memory.
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    const { recordMemory } = await import("@/lib/workforce/product-memory.server");
+    await neonTransaction((_tx, query) =>
+      recordMemory(
+        query,
+        {
+          workspaceId: workspace.id,
+          projectId: bundle.mission.projectId,
+          missionId: data.missionId,
+          originKind: "gate",
+          originId: gate.id,
+        },
+        [decisionMemory(gate, approve, data.note)],
+      ),
+    );
     await (
       await import("@/lib/workforce/worker.server")
     ).kickWorker({ workspaceId: workspace.id, missionId: data.missionId });
@@ -1062,4 +1084,41 @@ export const removeMissionEvidence = createServerFn({ method: "POST" })
       });
       return listEvidence(query, workspace.id, data.missionId);
     });
+  });
+
+export type ProductMemoryView = {
+  project: WfProject;
+  available: boolean;
+  entries: Array<ProductMemoryEntry & { staleReason: string | null }>;
+};
+
+/** A product's memory, current and retired, with entries that may no longer hold marked. */
+export const getProductMemory = createServerFn({ method: "GET" })
+  .middleware([requireAuth])
+  .validator((data: unknown) => z.object({ projectId: z.string().uuid() }).parse(data))
+  .handler(async ({ context, data }): Promise<ProductMemoryView> => {
+    const { supabase, userId } = context;
+    const { workspace } = await ensureWorkspace(supabase, userId);
+    const project = await wfDb(supabase)
+      .from("wf_projects")
+      .select("*")
+      .eq("id", data.projectId)
+      .eq("workspace_id", workspace.id)
+      .maybeSingle();
+    if (project.error) throw new Error(project.error.message);
+    if (!project.data) throw new Error("Project not found.");
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    const { listProductMemory } = await import("@/lib/workforce/product-memory.server");
+    const memory = await neonTransaction((_tx, query) =>
+      listProductMemory(query, workspace.id, data.projectId),
+    );
+    const withdrawn = withdrawnSourceTitles(memory.entries);
+    return {
+      project: mapProject(project.data),
+      available: memory.available,
+      entries: memory.entries.map((e) => ({
+        ...e,
+        staleReason: e.retiredAt ? null : staleness(e, withdrawn).reason,
+      })),
+    };
   });

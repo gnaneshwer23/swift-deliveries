@@ -78,10 +78,11 @@ Low: the only source is the founder's request.
 - How often do students cancel late?`;
 
 const prdGood = `## Problem statement
-Tutors lose bookings to slow message exchanges.
+- [Inference] Tutors lose bookings to slow message exchanges.
+- [Sourced fact] Bookings are arranged by message today (Source: mission request).
 
 ## Target users
-Independent tutors and their students.
+- [Assumption] Independent tutors and their students.
 
 ## Value proposition
 Booking without back-and-forth.
@@ -243,6 +244,14 @@ export const STAGE_FIXTURES: readonly StageFixture[] = [
     upstream: researchGood,
     good: prdGood,
     bad: [
+      {
+        name: "states an unsourced claim as fact",
+        output: prdGood.replace(
+          "- [Inference] Tutors lose bookings to slow message exchanges.",
+          "Tutors lose 30% of bookings to slow message exchanges.",
+        ),
+        expect: /Problem statement: 1 claim\(s\) without an evidence label/,
+      },
       {
         name: "requirement without an ID",
         output: prdGood.replace("- R2: A student can book a slot.", "- A student can book a slot."),

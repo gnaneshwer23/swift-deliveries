@@ -129,11 +129,19 @@ describe("evidence given to a model", () => {
   it("treats only interview, survey or call records as research evidence", () => {
     const pricing = item({ title: "Pricing page copy", content: "Plans start at £10." });
     const calls = item({ title: "Tutor call notes", content: "Five tutors said evenings." });
-    const used = (xs: WfEvidence[]) => evidenceForPrompt(xs).used;
-    expect(includesResearchMaterial([pricing], used([pricing]))).toBe(false);
-    expect(includesResearchMaterial([calls], used([calls]))).toBe(true);
-    // Evidence the step was not given does not count.
-    expect(includesResearchMaterial([calls], [])).toBe(false);
+    const shown = (xs: WfEvidence[]) => evidenceForPrompt(xs).sent;
+    expect(includesResearchMaterial(shown([pricing]))).toBe(false);
+    expect(includesResearchMaterial(shown([calls]))).toBe(true);
+    // The output checks' research phrases count too: one vocabulary on both sides.
+    const toldUs = item({ title: "Notes", content: "Tutors told us evenings are best." });
+    expect(includesResearchMaterial(shown([toldUs]))).toBe(true);
+    // Evidence the step was not given, or text cut off by the budget, does not count.
+    expect(includesResearchMaterial([])).toBe(false);
+    const late = item({
+      title: "Long notes",
+      content: `${"x".repeat(MAX_EVIDENCE_PROMPT_CHARS)} We interviewed 12 tutors.`,
+    });
+    expect(includesResearchMaterial(shown([late]))).toBe(false);
   });
 
   it("keeps evidence text inside its wrapper", () => {

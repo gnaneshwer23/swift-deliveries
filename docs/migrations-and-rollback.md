@@ -33,6 +33,7 @@ The production Neon branch is `br-fancy-breeze-zatt9ocp` in project `spring-wind
 | 0025 corrections to 0024                                           | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0026 run role and instruction version (`wf_task_runs`)             | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0027 founder evidence (`wf_mission_evidence`)                      | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
+| 0028 product memory (`wf_product_memory`) and 0027 constraints     | Not applied — needs owner approval          | Applied 27 Oct 2026                  |
 
 Migrations 0020–0023 were applied to production in a single transaction. The six `psi_*` tables are owned by the server role, have no client grants, and have row-level security enabled. No table rows were read during or after the change.
 
@@ -166,3 +167,35 @@ end $$;
 ```
 
 3. Update the ledger with the date, the reason and the snapshot ID.
+
+## 0028 product memory
+
+Adds `wf_product_memory`: what the team has learned about one product (a project) across missions. Each entry keeps the label it was written with (sourced fact, assumption, inference, speculative, requirement, decision or source), its source, where it came from and when it was first and last seen. A partial unique index keeps one current entry per product, kind and statement; retired entries stay as history. Server role only, row-level security on.
+
+It also tightens 0027, as the review of #42 asked:
+
+- unique `(id, workspace_id)` indexes on `wf_missions` and `wf_projects`;
+- a composite foreign key from `wf_mission_evidence (mission_id, workspace_id)`;
+- a check that readable evidence carries a content hash.
+
+The app has always written both, so existing rows pass. Additive and re-runnable; no existing data is changed.
+
+Safe in either order. Code from before 0028 never reads the table. Code after it checks for the table first: until it exists, nothing is remembered and the product memory page says so.
+
+Rollback: redeploy the earlier build and leave everything in place; earlier builds ignore the table and the constraints. Only if the table itself must go, with the owner's approval, after the earlier build is live:
+
+1. Take a Neon snapshot of the production branch, or create a branch from it, and record its ID in the ledger.
+2. Drop the table only when it is empty. Memory is derived from artefacts, decisions and evidence that stay in their own tables, but it records when each entry was first and last seen, which cannot be rebuilt. Export it under the owner's data-handling instructions first, or keep the table.
+
+```sql
+do $$
+begin
+  if exists (select 1 from public.wf_product_memory) then
+    raise exception 'wf_product_memory holds entries; export them first. Nothing was changed.';
+  end if;
+  drop table public.wf_product_memory;
+end $$;
+```
+
+3. The 0027 constraints and the two unique indexes can stay; they only refuse rows that break workspace isolation or provenance. To remove them anyway: `alter table public.wf_mission_evidence drop constraint if exists wf_mission_evidence_mission_workspace_fkey, drop constraint if exists wf_mission_evidence_hash_check;` then `drop index if exists public.wf_missions_id_workspace_uidx, public.wf_projects_id_workspace_uidx;`.
+4. Update the ledger with the date, the reason and the snapshot ID.

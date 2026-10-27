@@ -123,9 +123,18 @@ function CommandProjects() {
                     {new Date(p.createdAt).toLocaleDateString()}
                   </span>
                 </div>
-                <Link to="/command" className="cc-btn cc-btn-secondary">
-                  New mission
-                </Link>
+                <div className="flex flex-wrap gap-2">
+                  <Link
+                    to="/command/product-memory/$projectId"
+                    params={{ projectId: p.id }}
+                    className="cc-btn cc-btn-secondary"
+                  >
+                    Product memory
+                  </Link>
+                  <Link to="/command" className="cc-btn cc-btn-secondary">
+                    New mission
+                  </Link>
+                </div>
               </li>
             ))}
           </ul>

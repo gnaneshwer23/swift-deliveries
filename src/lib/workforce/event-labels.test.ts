@@ -51,6 +51,34 @@ describe("describeEvent", () => {
     });
   });
 
+  it("describes evidence as added, unreadable, withheld or removed", () => {
+    expect(
+      describeEvent(ev("evidence.added", { title: "Call notes", status: "readable" }, "user")),
+    ).toEqual({ text: "You added evidence “Call notes”", tone: "control" });
+    expect(
+      describeEvent(
+        ev(
+          "evidence.added",
+          { title: "Scan", status: "unreadable", reason: "PDF files can't be read yet." },
+          "user",
+        ),
+      ),
+    ).toEqual({ text: "“Scan” could not be read: PDF files can't be read yet.", tone: "problem" });
+    expect(
+      describeEvent(
+        ev(
+          "evidence.added",
+          { title: "List", status: "readable", withheldFromModel: true },
+          "user",
+        ),
+      ).text,
+    ).toMatch(/not sent to a model/);
+    expect(describeEvent(ev("evidence.removed", { title: "Call notes" }, "user"))).toEqual({
+      text: "You removed evidence “Call notes”",
+      tone: "control",
+    });
+  });
+
   it("shows unknown event types by name rather than guessing", () => {
     expect(describeEvent(ev("something.new")).text).toBe("something.new");
   });

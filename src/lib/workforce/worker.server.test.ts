@@ -27,6 +27,7 @@ const TABLES = [
   "wf_task_runs",
   "wf_mission_events",
   "wf_mission_evidence",
+  "wf_product_memory",
 ];
 const sql = url
   ? postgres(url, {
@@ -91,19 +92,33 @@ const buildPlan = generateMissionPlan({
   clarificationAnswers: { users: "Independent tutors", constraints: "Web only" },
 });
 
-async function approvedMission(ceiling = 1000, chosen = plan) {
-  const [ws] = await sql!`insert into wf_workspaces (owner_id, usage_ceiling)
-    values (${`owner-${Math.random()}`}, ${ceiling}) returning id`;
-  const workspaceId = ws!["id"] as string;
-  const [project] = await sql!`insert into wf_projects (workspace_id, name, created_by)
-    values (${workspaceId}, 'Tutor app', 'owner') returning id`;
+async function approvedMission(
+  ceiling = 1000,
+  chosen = plan,
+  /** An existing workspace and project, for a second mission on the same product. */
+  existing?: { workspaceId: string; projectId: string },
+) {
+  const workspaceId =
+    existing?.workspaceId ??
+    ((
+      await sql!`insert into wf_workspaces (owner_id, usage_ceiling)
+        values (${`owner-${Math.random()}`}, ${ceiling}) returning id`
+    )[0]!["id"] as string);
+  const [project] = existing
+    ? [{ id: existing.projectId }]
+    : await sql!`insert into wf_projects (workspace_id, name, created_by)
+        values (${workspaceId}, 'Tutor app', 'owner') returning id`;
   const [mission] = await sql!`insert into wf_missions
       (workspace_id, project_id, intent, title, request_text, status, permission_ceiling, created_by)
     values (${workspaceId}, ${project!["id"]}, 'investigate', 'M', 'req', 'awaiting_approval',
             'execute_internally', 'owner') returning id`;
   if (chosen !== plan)
     await sql!`update wf_missions set intent = 'build' where id = ${mission!["id"] as string}`;
-  const ids = { workspaceId, missionId: mission!["id"] as string };
+  const ids = {
+    workspaceId,
+    missionId: mission!["id"] as string,
+    projectId: project!["id"] as string,
+  };
   await sql!.begin(async (t) => {
     const q: Executor = async (text, params) => (await t.unsafe(text, params)) as never;
     const saved = await savePlanVersion(q, {
@@ -392,8 +407,8 @@ describe.skipIf(!url)("durable mission worker against a real database", () => {
       values (${ids.workspaceId}, ${ids.missionId}, 'note', 'Call notes', 'readable',
               'Tutors reschedule on Sunday nights.', 'abc', 'owner') returning id`;
     await sql!`insert into wf_mission_evidence
-        (workspace_id, mission_id, kind, title, status, content, supplied_by, removed_at)
-      values (${ids.workspaceId}, ${ids.missionId}, 'note', 'Old notes', 'readable', 'x',
+        (workspace_id, mission_id, kind, title, status, content, content_sha256, supplied_by, removed_at)
+      values (${ids.workspaceId}, ${ids.missionId}, 'note', 'Old notes', 'readable', 'x', 'h',
               'owner', now())`;
     nextGeneration = {
       content: STAGE_FIXTURES.find((f) => f.stage === "charter")!.good,
@@ -415,6 +430,56 @@ describe.skipIf(!url)("durable mission worker against a real database", () => {
     expect(done!["data"]).toMatchObject({
       evidence: [{ id: kept!["id"], title: "Call notes" }],
     });
+  });
+
+  it("remembers what an accepted model-written artefact states, for the product's next mission", async () => {
+    const { STAGE_FIXTURES } = await import("./registry/eval-fixtures");
+    const charter = STAGE_FIXTURES.find((f) => f.stage === "charter")!.good.replace(
+      "## Constraints",
+      "## Constraints\n- [Assumption] Tutors book from a phone browser.",
+    );
+    const first = await approvedMission(1000, buildPlan);
+    nextGeneration = {
+      content: charter,
+      mode: "model",
+      model: "fixture-model",
+      calls: [call(null)],
+    };
+    await step(first);
+    const [artefact] =
+      await sql!`select id from wf_artefacts where mission_id = ${first.missionId}`;
+    const remembered =
+      await sql!`select kind, statement, origin_kind, origin_id from wf_product_memory`;
+    expect(remembered).toEqual([
+      {
+        kind: "assumption",
+        statement: "Tutors book from a phone browser.",
+        origin_kind: "artefact",
+        origin_id: artefact!["id"],
+      },
+    ]);
+
+    // A later mission on the same product is given it as memory, labelled and dated.
+    const second = await approvedMission(1000, buildPlan, first);
+    nextGeneration = {
+      content: charter,
+      mode: "model",
+      model: "fixture-model",
+      calls: [call(null)],
+    };
+    await step(second);
+    expect(lastGenerationInput!["productMemory"]).toMatch(
+      /\[Assumption\] Tutors book from a phone browser\. — last seen \d{4}-\d{2}-\d{2}/,
+    );
+    const [seen] = await sql!`select times_seen from wf_product_memory`;
+    expect(seen!["times_seen"]).toBe(2);
+  });
+
+  it("never remembers a simulated draft", async () => {
+    const ids = await approvedMission(1000, buildPlan);
+    await step(ids);
+    const [n] = await sql!`select count(*)::int n from wf_product_memory`;
+    expect(n!["n"]).toBe(0);
   });
 
   it("lets only one of two concurrent workers take a task", async () => {

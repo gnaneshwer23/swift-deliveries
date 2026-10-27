@@ -29,7 +29,12 @@ describe("role guidance for a running task", () => {
     expect("extraInstructions" in g && g.extraInstructions).toMatch(/DX-023/);
     if (!("extraCheck" in g)) throw new Error("expected a check");
     expect(g.extraCheck(prd.good)).toBeNull();
-    expect(g.extraCheck(prd.bad[0]!.output)).toMatch(/must start with its ID/);
+    expect(
+      g.extraCheck(prd.bad.find((b) => b.name === "requirement without an ID")!.output),
+    ).toMatch(/must start with its ID/);
+    expect(
+      g.extraCheck(prd.bad.find((b) => b.name === "states an unsourced claim as fact")!.output),
+    ).toMatch(/without an evidence label/);
   });
 
   it("adds nothing for a stage no defined role leads", () => {

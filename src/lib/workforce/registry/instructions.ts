@@ -30,6 +30,7 @@ const STAGE_RULES: Partial<Record<StageKey, string[]>> = {
     "Under Findings, label every bullet. Keep conflicting findings side by side and say that they conflict; never average them away.",
   ],
   prd: [
+    "Under Problem statement and Target users, write each claim on its own line starting with an evidence label; nothing there is stated as fact without a source.",
     "Under Requirements, write each as '- R1: …', numbering R1, R2, … in order.",
     "Under Acceptance criteria, give at least one bullet per requirement, starting with its ID ('- R1: …').",
     "Under Out of scope, list what this release will not do.",
@@ -53,7 +54,7 @@ export const INSTRUCTION_VERSIONS: Readonly<Record<string, string>> = {
   "DX-018": "DX-018@2",
   "DX-020": "DX-020@2",
   "DX-021": "DX-021@2",
-  "DX-023": "DX-023@2",
+  "DX-023": "DX-023@3",
   "DX-035": "DX-035@2",
 };
 

@@ -69,6 +69,7 @@ import { Route as AuthenticatedWorkspaceTeamRouteImport } from './routes/_authen
 import { Route as AuthenticatedWorkspaceTimelineRouteImport } from './routes/_authenticated/workspace.timeline'
 import { Route as ApiWorkerTickRouteImport } from './routes/api/worker/tick'
 import { Route as AuthenticatedCommandMissionsMissionIdRouteImport } from './routes/_authenticated/command.missions.$missionId'
+import { Route as AuthenticatedCommandProductMemoryProjectIdRouteImport } from './routes/_authenticated/command.product-memory.$projectId'
 import { Route as AuthenticatedCommandProgrammesIndexRouteImport } from './routes/_authenticated/command.programmes.index'
 import { Route as AuthenticatedCommandProgrammesProgrammeIdRouteImport } from './routes/_authenticated/command.programmes.$programmeId'
 import { Route as AuthenticatedCommandSupervisedMissionIdRouteImport } from './routes/_authenticated/command.supervised.$missionId'
@@ -404,6 +405,12 @@ const AuthenticatedCommandMissionsMissionIdRoute =
     path: '/missions/$missionId',
     getParentRoute: () => AuthenticatedCommandRoute,
   } as any)
+const AuthenticatedCommandProductMemoryProjectIdRoute =
+  AuthenticatedCommandProductMemoryProjectIdRouteImport.update({
+    id: '/product-memory/$projectId',
+    path: '/product-memory/$projectId',
+    getParentRoute: () => AuthenticatedCommandRoute,
+  } as any)
 const AuthenticatedCommandProgrammesIndexRoute =
   AuthenticatedCommandProgrammesIndexRouteImport.update({
     id: '/programmes/',
@@ -529,6 +536,7 @@ export interface FileRoutesByFullPath {
   '/command/': typeof AuthenticatedCommandIndexRoute
   '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/command/missions/$missionId': typeof AuthenticatedCommandMissionsMissionIdRoute
+  '/command/product-memory/$projectId': typeof AuthenticatedCommandProductMemoryProjectIdRoute
   '/command/programmes/$programmeId': typeof AuthenticatedCommandProgrammesProgrammeIdRoute
   '/command/supervised/$missionId': typeof AuthenticatedCommandSupervisedMissionIdRoute
   '/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
@@ -598,6 +606,7 @@ export interface FileRoutesByTo {
   '/command': typeof AuthenticatedCommandIndexRoute
   '/workspace': typeof AuthenticatedWorkspaceIndexRoute
   '/command/missions/$missionId': typeof AuthenticatedCommandMissionsMissionIdRoute
+  '/command/product-memory/$projectId': typeof AuthenticatedCommandProductMemoryProjectIdRoute
   '/command/programmes/$programmeId': typeof AuthenticatedCommandProgrammesProgrammeIdRoute
   '/command/supervised/$missionId': typeof AuthenticatedCommandSupervisedMissionIdRoute
   '/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
@@ -672,6 +681,7 @@ export interface FileRoutesById {
   '/_authenticated/command/': typeof AuthenticatedCommandIndexRoute
   '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/_authenticated/command/missions/$missionId': typeof AuthenticatedCommandMissionsMissionIdRoute
+  '/_authenticated/command/product-memory/$projectId': typeof AuthenticatedCommandProductMemoryProjectIdRoute
   '/_authenticated/command/programmes/$programmeId': typeof AuthenticatedCommandProgrammesProgrammeIdRoute
   '/_authenticated/command/supervised/$missionId': typeof AuthenticatedCommandSupervisedMissionIdRoute
   '/_authenticated/workspace/experience/$taskKey': typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
@@ -746,6 +756,7 @@ export interface FileRouteTypes {
     | '/command/'
     | '/workspace/'
     | '/command/missions/$missionId'
+    | '/command/product-memory/$projectId'
     | '/command/programmes/$programmeId'
     | '/command/supervised/$missionId'
     | '/workspace/experience/$taskKey'
@@ -815,6 +826,7 @@ export interface FileRouteTypes {
     | '/command'
     | '/workspace'
     | '/command/missions/$missionId'
+    | '/command/product-memory/$projectId'
     | '/command/programmes/$programmeId'
     | '/command/supervised/$missionId'
     | '/workspace/experience/$taskKey'
@@ -888,6 +900,7 @@ export interface FileRouteTypes {
     | '/_authenticated/command/'
     | '/_authenticated/workspace/'
     | '/_authenticated/command/missions/$missionId'
+    | '/_authenticated/command/product-memory/$projectId'
     | '/_authenticated/command/programmes/$programmeId'
     | '/_authenticated/command/supervised/$missionId'
     | '/_authenticated/workspace/experience/$taskKey'
@@ -1365,6 +1378,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCommandMissionsMissionIdRouteImport
       parentRoute: typeof AuthenticatedCommandRoute
     }
+    '/_authenticated/command/product-memory/$projectId': {
+      id: '/_authenticated/command/product-memory/$projectId'
+      path: '/product-memory/$projectId'
+      fullPath: '/command/product-memory/$projectId'
+      preLoaderRoute: typeof AuthenticatedCommandProductMemoryProjectIdRouteImport
+      parentRoute: typeof AuthenticatedCommandRoute
+    }
     '/_authenticated/command/programmes/': {
       id: '/_authenticated/command/programmes/'
       path: '/programmes'
@@ -1451,6 +1471,7 @@ interface AuthenticatedCommandRouteChildren {
   AuthenticatedCommandProjectsRoute: typeof AuthenticatedCommandProjectsRoute
   AuthenticatedCommandIndexRoute: typeof AuthenticatedCommandIndexRoute
   AuthenticatedCommandMissionsMissionIdRoute: typeof AuthenticatedCommandMissionsMissionIdRoute
+  AuthenticatedCommandProductMemoryProjectIdRoute: typeof AuthenticatedCommandProductMemoryProjectIdRoute
   AuthenticatedCommandProgrammesProgrammeIdRoute: typeof AuthenticatedCommandProgrammesProgrammeIdRoute
   AuthenticatedCommandSupervisedMissionIdRoute: typeof AuthenticatedCommandSupervisedMissionIdRoute
   AuthenticatedCommandProgrammesIndexRoute: typeof AuthenticatedCommandProgrammesIndexRoute
@@ -1464,6 +1485,8 @@ const AuthenticatedCommandRouteChildren: AuthenticatedCommandRouteChildren = {
   AuthenticatedCommandIndexRoute: AuthenticatedCommandIndexRoute,
   AuthenticatedCommandMissionsMissionIdRoute:
     AuthenticatedCommandMissionsMissionIdRoute,
+  AuthenticatedCommandProductMemoryProjectIdRoute:
+    AuthenticatedCommandProductMemoryProjectIdRoute,
   AuthenticatedCommandProgrammesProgrammeIdRoute:
     AuthenticatedCommandProgrammesProgrammeIdRoute,
   AuthenticatedCommandSupervisedMissionIdRoute:

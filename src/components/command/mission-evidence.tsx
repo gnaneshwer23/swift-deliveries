@@ -35,7 +35,16 @@ function titleFromFile(name: string): string {
  * an item by its title. Files the server cannot read are listed with the
  * reason instead of disappearing.
  */
-export function MissionEvidence({ missionId, editable }: { missionId: string; editable: boolean }) {
+export function MissionEvidence({
+  missionId,
+  editable,
+  onChanged,
+}: {
+  missionId: string;
+  editable: boolean;
+  /** Called after evidence is added or removed, so the activity log can show it. */
+  onChanged?: () => void;
+}) {
   const queryClient = useQueryClient();
   const key = ["command", "mission", missionId, "evidence"];
   const query = useQuery({
@@ -81,6 +90,7 @@ export function MissionEvidence({ missionId, editable }: { missionId: string; ed
     onSuccess: (list) => {
       queryClient.setQueryData(key, list);
       reset();
+      onChanged?.();
     },
     onError: (e) => setError(e instanceof Error ? e.message : "Could not add the evidence."),
   });
@@ -88,6 +98,7 @@ export function MissionEvidence({ missionId, editable }: { missionId: string; ed
   const remove = useMutation({
     mutationFn: (evidenceId: string) => removeMissionEvidence({ data: { missionId, evidenceId } }),
     onMutate: () => setError(null),
+    onSuccess: () => onChanged?.(),
     // Refetched rather than taken from the response, so overlapping removals cannot undo each other.
     onSettled: () => queryClient.invalidateQueries({ queryKey: key }),
     onError: (e) => setError(e instanceof Error ? e.message : "Could not remove the evidence."),
