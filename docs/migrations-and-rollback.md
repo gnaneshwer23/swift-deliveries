@@ -36,6 +36,7 @@ The production Neon branch is `br-fancy-breeze-zatt9ocp` in project `spring-wind
 | 0028 product memory (`wf_product_memory`) and 0027 constraints     | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0029 conflicting evidence (`wf_memory_conflicts`)                  | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0030 conversations (`wf_conversations`, `wf_conversation_turns`)   | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
+| 0031 voice measurements (`wf_voice_metrics`)                       | Not applied — needs owner approval          | Applied 27 Oct 2026                  |
 
 Migrations 0020–0023 were applied to production in a single transaction. The six `psi_*` tables are owned by the server role, have no client grants, and have row-level security enabled. No table rows were read during or after the change.
 
@@ -264,3 +265,32 @@ commit;
 ```
 
 Update the ledger with the date, the reason and the snapshot ID.
+
+## 0031 voice measurements
+
+Adds `wf_voice_metrics`: timings and counts for voice (`docs/conversation.md`). It holds no transcript, audio or words:
+
+- for a spoken turn, the time from Send to transcript and from transcript to reply, and whether the founder later corrected the line, with the share of words changed;
+- otherwise, one row per interruption, dropped connection, reconnect or failed reconnect.
+
+A turn row links to its conversation line in the same workspace while that line exists. The link is a composite foreign key `(turn_id, workspace_id)` to `wf_conversation_turns (id, workspace_id)`. It uses `ON DELETE SET NULL (turn_id)`, which needs PostgreSQL 15 or later (Neon runs 18). So deleting the conversation clears the link and keeps the numbers. To support the key, the migration adds a unique index on `wf_conversation_turns (id, workspace_id)`. It is additive: `id` is already the primary key, so it can't conflict. An index on `created_at` serves the purge. The worker tick purges rows older than 180 days in batches. Server role only, row-level security on. Additive and re-runnable; no existing data is read or changed. The one `DROP CONSTRAINT` replaces the single-column turn link from an earlier draft of this migration, which only preview carried. It touches no other table.
+
+Safe in either order. Code from before 0031 never reads the table. Code after it checks for the table first: until it exists, nothing is measured and the measurements view says so.
+
+Rollback: redeploy the earlier build and leave the table. Only if it must go, with the owner's approval, after the earlier build is live, take a Neon snapshot and record its ID here, then run the following. It refuses while the table holds measurements, like the 0029 and 0030 rollbacks:
+
+```sql
+begin;
+lock table public.wf_voice_metrics in access exclusive mode;
+do $$
+begin
+  if exists (select 1 from public.wf_voice_metrics) then
+    raise exception 'wf_voice_metrics holds measurements; export them or have the owner accept losing them (the snapshot is then the only copy). Nothing was changed.';
+  end if;
+  drop table public.wf_voice_metrics;
+end $$;
+drop index if exists public.wf_conversation_turns_id_workspace_uidx;
+commit;
+```
+
+If the owner accepts losing the measurements, empty the table first with `delete from public.wf_voice_metrics;` in the same transaction. Record that acceptance here. The snapshot is then the only copy. Update the ledger with the date, the reason and the snapshot ID.

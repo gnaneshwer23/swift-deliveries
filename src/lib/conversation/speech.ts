@@ -17,3 +17,8 @@ export function speak(text: string): void {
 export function stopSpeaking(): void {
   if (canSpeak()) window.speechSynthesis.cancel();
 }
+
+/** True while a reply is being read aloud, so talking over it counts as an interruption. */
+export function isSpeaking(): boolean {
+  return canSpeak() && window.speechSynthesis.speaking;
+}

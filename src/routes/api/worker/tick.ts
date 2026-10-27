@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 // Wakes the mission worker: recovers expired leases, then runs mission steps
 // until the time budget is spent. Each tick first deletes a batch of expired
-// conversations. Called by the scheduler with
+// conversations and of voice measurements past their keeping period. Called by the scheduler with
 // `Authorization: Bearer $CRON_SECRET`; refuses everything else.
 const BUDGET_MS = 50_000;
 
@@ -22,6 +22,11 @@ async function purgeConversations(): Promise<number | null> {
   try {
     const { neonTransaction } = await import("@/lib/db/neon.server");
     const { purgeExpiredConversations } = await import("@/lib/conversation/store.server");
+    const { purgeOldVoiceMetrics } = await import("@/lib/conversation/voice-metrics.server");
+    // Separate transactions: a failed metrics purge must not hold back the conversation purge.
+    await neonTransaction((_tx, query) => purgeOldVoiceMetrics(query)).catch((error: unknown) =>
+      console.error("Voice metrics purge failed", error),
+    );
     return await neonTransaction((_tx, query) => purgeExpiredConversations(query));
   } catch (error) {
     console.error("Conversation purge failed", error);

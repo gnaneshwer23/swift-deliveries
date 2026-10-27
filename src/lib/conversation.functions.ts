@@ -90,6 +90,8 @@ export const sayToAssistant = createServerFn({ method: "POST" })
         text: z.string().trim().min(1).max(4000),
         input: z.enum(["typed", "speech", "edited"]),
         currentMissionId: z.string().uuid().nullish(),
+        /** For a correction: the line it corrects, so a corrected spoken line is measured. */
+        correctsTurnId: z.string().uuid().nullish(),
       })
       .parse(data),
   )
@@ -102,7 +104,7 @@ export const sayToAssistant = createServerFn({ method: "POST" })
       const { workspace } = await ensureWorkspace(supabase, userId);
       const s = await store();
       const { respondToFounder } = await import("@/lib/conversation/respond.server");
-      return s.neonTransaction(async (_tx, query) => {
+      const reply = await s.neonTransaction(async (_tx, query) => {
         if (!(await s.conversationsAvailable(query)))
           throw new Error("Conversations need a database update that has not been applied yet.");
         return respondToFounder(query, {
@@ -114,6 +116,22 @@ export const sayToAssistant = createServerFn({ method: "POST" })
           currentMissionId: data.currentMissionId ?? null,
         });
       });
+      // Best effort, after the conversation has committed: a failure here never loses the line.
+      if (data.input === "edited" && data.correctsTurnId) {
+        const correctsTurnId = data.correctsTurnId;
+        await s
+          .neonTransaction(async (_tx, query) => {
+            const m = await import("@/lib/conversation/voice-metrics.server");
+            if (await m.voiceMetricsAvailable(query))
+              await m.recordCorrection(query, {
+                workspaceId: workspace.id,
+                turnId: correctsTurnId,
+                correctedText: data.text,
+              });
+          })
+          .catch((error: unknown) => console.error("Voice correction measurement failed", error));
+      }
+      return reply;
     },
   );
 
@@ -201,4 +219,67 @@ export const startVoiceSession = createServerFn({ method: "POST" })
       throw new Error("Too many voice sessions just now. Wait a few minutes, or type instead.");
     const secret = await mintVoiceSecret(config, userId);
     return secret;
+  });
+
+/**
+ * Records one voice measurement: a spoken turn's timings, or an interruption,
+ * drop or reconnect. Timings and counts only. Silently does nothing before 0031.
+ */
+export const recordVoiceMeasurement = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z
+      .discriminatedUnion("kind", [
+        z.object({
+          kind: z.literal("turn"),
+          turnId: z.string().uuid(),
+          transcriptMs: z.number().int().min(0).max(600_000),
+          replyMs: z.number().int().min(0).max(600_000).nullable(),
+        }),
+        z.object({ kind: z.enum(["interruption", "drop", "reconnect", "reconnect_failed"]) }),
+      ])
+      .parse(data),
+  )
+  .handler(async ({ context, data }): Promise<{ recorded: boolean }> => {
+    const { supabase, userId } = context;
+    const { workspace } = await ensureWorkspace(supabase, userId);
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    const m = await import("@/lib/conversation/voice-metrics.server");
+    const recorded = await neonTransaction(async (_tx, query) => {
+      if (!(await m.voiceMetricsAvailable(query))) return false;
+      if (data.kind === "turn")
+        return m.recordVoiceTurn(query, {
+          workspaceId: workspace.id,
+          turnId: data.turnId,
+          transcriptMs: data.transcriptMs,
+          replyMs: data.replyMs,
+        });
+      return m.recordVoiceEvent(query, workspace.id, data.kind);
+    });
+    return { recorded };
+  });
+
+export type VoiceMeasurements = {
+  available: boolean;
+  days: number;
+  summary: import("@/lib/conversation/voice-metrics").VoiceSummary | null;
+};
+
+/** The workspace's voice measurements over the last 30 days. */
+export const getVoiceMeasurements = createServerFn({ method: "GET" })
+  .middleware([requireAuth])
+  .handler(async ({ context }): Promise<VoiceMeasurements> => {
+    const { supabase, userId } = context;
+    const { workspace } = await ensureWorkspace(supabase, userId);
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    const m = await import("@/lib/conversation/voice-metrics.server");
+    return neonTransaction(async (_tx, query) => {
+      if (!(await m.voiceMetricsAvailable(query)))
+        return { available: false, days: m.SUMMARY_DAYS, summary: null };
+      return {
+        available: true,
+        days: m.SUMMARY_DAYS,
+        summary: await m.voiceSummary(query, workspace.id),
+      };
+    });
   });

@@ -57,6 +57,15 @@ Voice is push-to-talk. What you say becomes a transcript line (marked "spoken") 
 
 The provider connection (`voice-webrtc.ts`) follows OpenAI's documented WebRTC and transcription-session flow. It has not yet been exercised against the live API, because no key is configured. The session logic around it is covered by tests with a fake connection.
 
-## Still to come
+## Voice measurements (Phase 4c)
 
-- **Phase 4c:** measurements of recognition accuracy, response latency and interruptions.
+Nothing is recorded, and the view says so, until migration 0031 is applied. On production, that needs the owner's approval (see `docs/migrations-and-rollback.md`).
+
+**Voice measurements**, under the voice controls, shows the last 30 days for the workspace. It is shown whatever the voice settings, so past measurements stay readable, and it reads only when opened. Each figure is measured, and the one assumption is named.
+
+- **Speed:** the time from Send to the transcript, and from the transcript to the reply on screen. Both show the typical value and the slowest 5%. The typical value is the median, the mean of the two middle values when there is an even number. The slowest 5% is the nearest-rank 95th percentile. Both use a monotonic clock and come from the newest 5,000 spoken lines in the window.
+- **Recognition:** the share of spoken lines the founder corrected, and the average share of words changed in a correction (word-level edit distance against the words heard, with curly and straight apostrophes treated alike). A line nobody corrected is counted as heard right. That is an assumption, not a check, and the view says so. A correction is kept even if it reaches the server before the line's timings.
+- **Interruptions:** how often a spoken reply was stopped, talked over or switched off. None of them changed a mission, because they can't (see above).
+- **Connection:** drops, successful reconnects and failed reconnects. A reconnect after a missing transcript counts as a reconnect, not a drop.
+
+Only timings and counts are stored (`wf_voice_metrics`, migration 0031), never text. A correction is linked to the spoken line it corrects, in the same workspace, while that line exists. Deleting the conversation clears the link and keeps the numbers. Event rows are capped at 300 per workspace per hour. The worker purges rows older than 180 days in batches of 1,000 per tick, so a backlog can briefly outlive that. A failure to record a measurement, a correction included, never affects the conversation.
