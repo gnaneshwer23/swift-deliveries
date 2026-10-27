@@ -8,16 +8,16 @@ Header: Product (/psi), Example mission (/how-it-works), Pricing & Pilot (/prici
 
 ## Page ownership
 
-| Page | Distinct purpose | Useful next step |
-| --- | --- | --- |
-| Home | Audience, handoff problem, flagship interactive scene and useful first outputs | Example mission or brief builder |
-| Product | Product record, specialist handoffs and human controls; expandable lifecycle/learning | Inspect linked sample records |
-| Example mission | One hypothetical onboarding journey and inspectable sample documents | Prepare own brief |
-| Specialists | Searchable catalogue; role foundations with stub limitations versus planned roles | Understand contribution in example |
-| Use cases | Different inputs/work/outputs for founders, product teams and students | Open corresponding editable starter brief |
-| Trust | Action authority, permission/spend boundaries, evidence labels and verification gaps | Review sample decision or product scope |
-| Pricing | Three scoped pilot offers with availability and commercial limits | Plan-specific preparation, not a purchase/request submission |
-| Resources | Editable starter or blank brief, download and evidence/decision/experiment templates | Keep downloaded work and compare offers |
+| Page            | Distinct purpose                                                                      | Useful next step                                             |
+| --------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Home            | Audience, handoff problem, flagship interactive scene and useful first outputs        | Example mission or brief builder                             |
+| Product         | Product record, specialist handoffs and human controls; expandable lifecycle/learning | Inspect linked sample records                                |
+| Example mission | One hypothetical onboarding journey and inspectable sample documents                  | Prepare own brief                                            |
+| Specialists     | Searchable catalogue; role foundations with stub limitations versus planned roles     | Understand contribution in example                           |
+| Use cases       | Different inputs/work/outputs for founders, product teams and students                | Open corresponding editable starter brief                    |
+| Trust           | Action authority, permission/spend boundaries, evidence labels and verification gaps  | Review sample decision or product scope                      |
+| Pricing         | Three scoped pilot offers with availability and commercial limits                     | Plan-specific preparation, not a purchase/request submission |
+| Resources       | Editable starter or blank brief, download and evidence/decision/experiment templates  | Keep downloaded work and compare offers                      |
 
 ## Illustration and interaction rules
 

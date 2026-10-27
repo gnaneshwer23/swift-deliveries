@@ -18,6 +18,7 @@ import { randomUUID } from "node:crypto";
 import type { Executor } from "@/lib/db/builder";
 import { adminDb, loadMissionBundle, neonServer, type DbClient } from "./access.server";
 import {
+  TRANSIENT_MODEL_FAILURES,
   buildDeliveryReport,
   executeTaskStep,
   isStructureCheck,
@@ -28,6 +29,8 @@ import {
 } from "./executor";
 import { runnableTasks, unreachableTasks } from "./graph";
 import { appendEvent, hasLivePlanApproval } from "./plan-store.server";
+import { leadRole, roleInstructions, stageForTask } from "./registry/instructions";
+import { checkStageOutput, citableSources } from "./registry/output-checks";
 import { canAfford } from "./usage";
 import type { MissionBundle, WfMissionTask } from "./types";
 
@@ -104,6 +107,49 @@ function savedPrototypes(bundle: MissionBundle): UpstreamArtefact[] {
       taskKey: bundle.tasks.find((t) => t.id === a.taskId)?.key ?? null,
       requiredSections: [],
     }));
+}
+
+/**
+ * The lead role's instructions and output checks for a stage, when a defined
+ * role leads it. Checked output that still fails after the corrective retry
+ * is rejected by the model runner.
+ */
+export function roleGuidance(
+  task: Pick<WfMissionTask, "key" | "capabilityIds">,
+  upstream: UpstreamArtefact[],
+  clarificationAnswers: Readonly<Record<string, string>> = {},
+):
+  | {
+      extraInstructions: string;
+      extraCheck: (content: string) => string | null;
+      instructionVersion: string;
+    }
+  | Record<string, never> {
+  const stage = stageForTask(task.key);
+  const lead = leadRole(task);
+  const instructions = stage && lead ? roleInstructions(lead, stage) : null;
+  if (!stage || !instructions) return {};
+  const given = upstream.map((u) => u.content).join("\n\n");
+  return {
+    extraInstructions: instructions.text,
+    instructionVersion: instructions.version,
+    extraCheck: (content) => {
+      // Founder-supplied evidence arrives in Phase 3; until then no interview or survey claim is accepted.
+      const r = checkStageOutput(
+        stage,
+        content,
+        {
+          founderEvidence: false,
+          sources: citableSources(
+            clarificationAnswers,
+            upstream.map((u) => u.title),
+          ),
+        },
+        given,
+      );
+      return r.ok ? null : r.failures.join("; ");
+    },
+  };
 }
 
 /** Upstream artefacts for a task: outputs of its transitive dependencies. */
@@ -421,7 +467,9 @@ export async function advanceMission(input: {
   const { task, attempt, runKey } = claim;
   const started = Date.now();
   let generated: GeneratedContent | undefined;
-  let result: ExecuteStepResult;
+  let result: ExecuteStepResult | undefined;
+  const guidance = roleGuidance(task, []);
+  const roleId = "extraInstructions" in guidance ? leadRole(task) : null;
   try {
     const live = must(
       await reader
@@ -444,15 +492,22 @@ export async function advanceMission(input: {
       !task.isExternal
         ? await (
             await import("./model-runner.server")
-          ).generateStageContent({ mission, task, upstream })
+          ).generateStageContent({
+            mission,
+            task,
+            upstream,
+            ...roleGuidance(task, upstream, mission.clarificationAnswers),
+          })
         : undefined;
-    result = executeTaskStep({
-      mission,
-      task: { ...task, status: "running" },
-      budget,
-      upstream,
-      ...(generated ? { generated } : {}),
-    });
+    // A configured model that failed never turns into a simulated draft.
+    if (!generated?.failure)
+      result = executeTaskStep({
+        mission,
+        task: { ...task, status: "running" },
+        budget,
+        upstream,
+        ...(generated ? { generated } : {}),
+      });
   } catch (error) {
     // The task goes back to the queue; the run keeps the failure.
     await transaction(async (_db, query) => {
@@ -484,19 +539,36 @@ export async function advanceMission(input: {
   // 3. Commit, only while this worker still holds the lease.
   const latency = Date.now() - started;
   return transaction(async (db, query): Promise<AdvanceResult> => {
+    const calls = generated?.calls ?? [];
+    // A total only when every call reported it; a partial sum would understate usage.
+    const sum = (k: "inputTokens" | "outputTokens") =>
+      calls.length > 0 && calls.every((c) => c[k] !== null)
+        ? calls.reduce((n, c) => n + (c[k] ?? 0), 0)
+        : null;
+    // Role and instructions are recorded only when a model actually received them.
+    const modelSaw = calls.length > 0;
+    const lastCall = calls.at(-1);
     const closeRun = (status: string, failureClass: string | null, detail?: string) =>
       query(
         `update wf_task_runs set status = $2, failure_class = $3, detail = $4, model = $5,
-            provider = $6, latency_ms = $7::int, finished_at = now()
+            provider = $6, latency_ms = $7::int, input_tokens = $8::int, output_tokens = $9::int,
+            request_id = $10, model_calls = $11::int, role_id = $12, instruction_version = $13,
+            finished_at = now()
           where idempotency_key = $1 and status = 'running'`,
         [
           runKey,
           status,
           failureClass,
           detail?.slice(0, 500) ?? null,
-          generated?.mode === "model" ? (generated.model ?? null) : null,
-          generated ? generated.mode : null,
+          lastCall?.model ?? null,
+          lastCall?.provider ?? null,
           latency,
+          sum("inputTokens"),
+          sum("outputTokens"),
+          [...calls].reverse().find((c) => c.requestId)?.requestId ?? null,
+          calls.length,
+          modelSaw ? roleId : null,
+          modelSaw ? (generated?.instructionVersion ?? null) : null,
         ] as never,
       );
     const held = await query(
@@ -540,6 +612,52 @@ export async function advanceMission(input: {
         progressed: false,
         done: true,
         note: "Mission was cancelled; the result was discarded.",
+      };
+    }
+
+    if (!result) {
+      // The model is configured but gave no accepted output: retry later or fail the task.
+      const failure = generated!.failure!;
+      const retry = TRANSIENT_MODEL_FAILURES.includes(failure.class) && attempt < MAX_ATTEMPTS;
+      if (retry) await release();
+      else
+        must(
+          await db
+            .from("wf_mission_tasks")
+            .update({
+              status: "failed",
+              completed_at: new Date().toISOString(),
+              lease_owner: null,
+              lease_until: null,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", task.id),
+        );
+      await closeRun("failed", failure.class, failure.detail);
+      await auditTx(query, {
+        workspaceId,
+        missionId,
+        actorId: actor.id,
+        eventType: retry ? "task.model_retry" : "task.model_failed",
+        entityType: "task",
+        entityId: task.id,
+        metadata: { failure: failure.class, detail: failure.detail },
+      });
+      await appendEvent(query, {
+        workspaceId,
+        missionId,
+        taskId: task.id,
+        type: retry ? "task.requeued" : "task.failed",
+        actorKind: actor.kind,
+        actorId: actor.id,
+        data: { attempt, reason: failure.class, detail: failure.detail, calls: calls.length },
+      });
+      return {
+        progressed: true,
+        done: false,
+        note: retry
+          ? `The model call failed (${failure.detail}); the step will be tried again.`
+          : `The model could not produce this step: ${failure.detail}`,
       };
     }
 
@@ -657,6 +775,10 @@ export async function advanceMission(input: {
     const metadata = {
       usage: result.usageCharged,
       ...(generated ? { generation: generated.mode, model: generated.model ?? null } : {}),
+      ...(roleId && modelSaw
+        ? { role: roleId, instructions: generated?.instructionVersion ?? null }
+        : {}),
+      ...(calls.length ? { modelCalls: calls.length } : {}),
     };
     await auditTx(query, {
       workspaceId,

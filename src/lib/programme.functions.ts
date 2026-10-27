@@ -392,6 +392,15 @@ export const advanceProgramme = createServerFn({ method: "POST" })
         });
       }
 
+      // A configured model that failed never becomes a simulated deliverable.
+      if (generated?.failure) {
+        return {
+          ...(await view(state, records)),
+          done: false,
+          note: `The model could not produce "${item.title}": ${generated.failure.detail}. Nothing was saved; run the step again.`,
+        };
+      }
+
       // Step 2 — model-proposed decision options; evidence from cited sources.
       let decisionOptions: { options: DecisionOption[]; model: string } | undefined;
       let decisionOptionsNote: string | undefined;

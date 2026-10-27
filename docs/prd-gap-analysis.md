@@ -21,24 +21,24 @@ Supervised AI workforce: **Mission → Plan → Approve → Execute → Deliver*
 
 ## Gaps (concise)
 
-| PRD need | Current state | Stage 1 action |
-| --- | --- | --- |
-| Command Centre shell | Career workspace nav | New `/command` shell + routes |
-| Workspace / Project / Mission model | Delivery-OS `projects`/`tasks` are org-delivery shaped; name collisions | Additive `wf_*` tables + RLS |
-| NL mission intake + clarification | None | Deterministic planner stub |
-| Plan + approval UX | Governance tables unused in UI | Mission plan + approval in slice |
-| Permission ladder | Not modelled for AI labour | Enforced in planner/executor + UI |
-| Usage ceiling | Stripe entitlements for career plans | Local credit ceiling on `wf_workspaces` |
-| Quality labels (no generic Verified) | Career “Verified” is attestation-specific | Workforce uses Agent-reviewed / Automatically tested / Human-reviewed / Externally attested |
-| Durable execution / artefacts | Simulation evidence only | Stub executor + `wf_artefacts` |
-| Stripe / live models / connectors | Partial career Stripe; no AI keys | Out of scope for Stage 1 |
+| PRD need                             | Current state                                                           | Stage 1 action                                                                              |
+| ------------------------------------ | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Command Centre shell                 | Career workspace nav                                                    | New `/command` shell + routes                                                               |
+| Workspace / Project / Mission model  | Delivery-OS `projects`/`tasks` are org-delivery shaped; name collisions | Additive `wf_*` tables + RLS                                                                |
+| NL mission intake + clarification    | None                                                                    | Deterministic planner stub                                                                  |
+| Plan + approval UX                   | Governance tables unused in UI                                          | Mission plan + approval in slice                                                            |
+| Permission ladder                    | Not modelled for AI labour                                              | Enforced in planner/executor + UI                                                           |
+| Usage ceiling                        | Stripe entitlements for career plans                                    | Local credit ceiling on `wf_workspaces`                                                     |
+| Quality labels (no generic Verified) | Career “Verified” is attestation-specific                               | Workforce uses Agent-reviewed / Automatically tested / Human-reviewed / Externally attested |
+| Durable execution / artefacts        | Simulation evidence only                                                | Stub executor + `wf_artefacts`                                                              |
+| Stripe / live models / connectors    | Partial career Stripe; no AI keys                                       | Out of scope for Stage 1                                                                    |
 
 ## Schema conflicts (do not destroy)
 
-| Legacy table | Conflict | Resolution |
-| --- | --- | --- |
+| Legacy table                                     | Conflict                   | Resolution                                                               |
+| ------------------------------------------------ | -------------------------- | ------------------------------------------------------------------------ |
 | `projects`, `tasks`, `artefacts`, `audit_events` | Same names as PRD entities | Use `wf_projects`, `wf_mission_tasks`, `wf_artefacts`, `wf_audit_events` |
-| Career “Verified” semantics | Must not dilute | Workforce UI never shows bare “Verified” |
+| Career “Verified” semantics                      | Must not dilute            | Workforce UI never shows bare “Verified”                                 |
 
 ## What Stage 1 does **not** close
 

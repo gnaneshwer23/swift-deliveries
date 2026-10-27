@@ -10,18 +10,18 @@ The menu uses native buttons and links, an expanded state, Escape with focus ret
 
 ## One job per public destination
 
-| Destination | Visitor question | Forward path |
-| --- | --- | --- |
-| Home | Why keep product reasoning connected? | Inspect an example or prepare a brief |
-| PSI Platform | How do the layers and shared record connect? | Inspect scope, roles or choose a starting brief |
-| How it works | What moves through one mission? | Inspect hypothetical documents, then prepare a brief |
-| Specialists | Which disciplines contribute, and what is available? | Explore six contributions and search the catalogue |
-| Product Brain section | How do sources, decisions and artefacts retain context? | Inspect the sample record |
-| Use cases | Which product question should I start with? | Select an editable starter |
-| Security & Trust | Where do authority, access and usage boundaries sit? | Inspect safeguards and the pending sample decision |
-| Pricing & Pilot | Which paid scope fits, and what is agreed? | Select Builder/Founder/Studio and request review |
-| Resources | How do I prepare useful input? | Edit/keep a local brief, then optionally send an enquiry |
-| About | What company and product direction are we building? | Explore the product workflow |
+| Destination           | Visitor question                                        | Forward path                                             |
+| --------------------- | ------------------------------------------------------- | -------------------------------------------------------- |
+| Home                  | Why keep product reasoning connected?                   | Inspect an example or prepare a brief                    |
+| PSI Platform          | How do the layers and shared record connect?            | Inspect scope, roles or choose a starting brief          |
+| How it works          | What moves through one mission?                         | Inspect hypothetical documents, then prepare a brief     |
+| Specialists           | Which disciplines contribute, and what is available?    | Explore six contributions and search the catalogue       |
+| Product Brain section | How do sources, decisions and artefacts retain context? | Inspect the sample record                                |
+| Use cases             | Which product question should I start with?             | Select an editable starter                               |
+| Security & Trust      | Where do authority, access and usage boundaries sit?    | Inspect safeguards and the pending sample decision       |
+| Pricing & Pilot       | Which paid scope fits, and what is agreed?              | Select Builder/Founder/Studio and request review         |
+| Resources             | How do I prepare useful input?                          | Edit/keep a local brief, then optionally send an enquiry |
+| About                 | What company and product direction are we building?     | Explore the product workflow                             |
 
 Use cases now selects between idea validation, product improvement and learning by building in one illustrated workspace. Each exposes input → specialist contributions → owner decision → proposed takeaway. It replaces three long repeated sections while preserving the existing starter contracts and draft precedence. Existing drafts win until the user explicitly loads a new starter.
 

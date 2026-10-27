@@ -3,6 +3,8 @@
  * its evaluation suite has run against a configured model and passed; the
  * fixture checks that run in CI prove the suite works, not the role.
  */
+import recorded from "./evaluations.json";
+
 export type EvaluationStatus = "passed" | "failed" | "not_evaluated";
 
 /** A result is either absent or carries the run that produced it. */
@@ -17,6 +19,8 @@ export type RoleEvaluation =
       model: string;
     };
 
+export type RecordedEvaluation = Extract<RoleEvaluation, { status: "passed" | "failed" }>;
+
 const NOT_EVALUATED: RoleEvaluation = {
   status: "not_evaluated",
   suiteVersion: null,
@@ -24,10 +28,14 @@ const NOT_EVALUATED: RoleEvaluation = {
   model: null,
 };
 
-/** Recorded results, keyed by role id. Absent means not evaluated. */
-export const ROLE_EVALUATIONS: Readonly<
-  Record<string, Extract<RoleEvaluation, { status: "passed" | "failed" }>>
-> = {};
+/**
+ * Recorded results, keyed by role id. Absent means not evaluated. Written by
+ * `RECORD_ROLE_EVALS=1 npm run eval:roles` after a real model run.
+ */
+export const ROLE_EVALUATIONS: Readonly<Record<string, RecordedEvaluation>> = recorded as Record<
+  string,
+  RecordedEvaluation
+>;
 
 export function roleEvaluation(id: string): RoleEvaluation {
   return ROLE_EVALUATIONS[id] ?? NOT_EVALUATED;

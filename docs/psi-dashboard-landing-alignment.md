@@ -8,14 +8,14 @@ DeliverX helps founders, product teams and students turn a product question into
 
 ## Traceability
 
-| Landing-page concept | Dashboard destination | Current behaviour |
-| --- | --- | --- |
-| Evidence & memory | Product Brain → selected saved mission → evidence | Sources, supplied observations, assumptions and gaps remain attached to the mission. |
-| Judgement | Selected mission → compared options and owner decision | The existing proposal, version/scope and owner decision remain inspectable. |
-| Delivery | Selected mission → decision and experiment brief | Existing reviewable artefact and export behaviour retained; this does not authorise deployment. |
-| Feedback loop | Selected mission → outcome review | Expected and owner-supplied observed results stay separate. Review/follow-up approval remains explicit. |
-| Specialists | Shared navigation → reference-based agent network | Canonical 150 DX role IDs and 15 departments; availability, declared tools, limitations and recorded task activity remain distinct. |
-| Learn by building | Same onboarding and mission environment | Shared evidence/decision standards; no career/CV route or separate lower-standard learner product added. |
+| Landing-page concept | Dashboard destination                                  | Current behaviour                                                                                                                   |
+| -------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Evidence & memory    | Product Brain → selected saved mission → evidence      | Sources, supplied observations, assumptions and gaps remain attached to the mission.                                                |
+| Judgement            | Selected mission → compared options and owner decision | The existing proposal, version/scope and owner decision remain inspectable.                                                         |
+| Delivery             | Selected mission → decision and experiment brief       | Existing reviewable artefact and export behaviour retained; this does not authorise deployment.                                     |
+| Feedback loop        | Selected mission → outcome review                      | Expected and owner-supplied observed results stay separate. Review/follow-up approval remains explicit.                             |
+| Specialists          | Shared navigation → reference-based agent network      | Canonical 150 DX role IDs and 15 departments; availability, declared tools, limitations and recorded task activity remain distinct. |
+| Learn by building    | Same onboarding and mission environment                | Shared evidence/decision standards; no career/CV route or separate lower-standard learner product added.                            |
 
 ## Corrections implemented
 

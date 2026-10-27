@@ -13,9 +13,9 @@ API URL: `https://jibmyxaldetyycmtlxet.supabase.co`
 
 In Supabase Dashboard → Authentication → URL configuration, set:
 
-| Setting | Value |
-| --- | --- |
-| Site URL | `http://localhost:43123` (local) or `https://deliverx.dev` (production) |
+| Setting             | Value                                                                                                                                                                                                                                         |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Site URL            | `http://localhost:43123` (local) or `https://deliverx.dev` (production)                                                                                                                                                                       |
 | Redirect allow list | `http://localhost:43123/auth/callback`, `http://127.0.0.1:43123/auth/callback`, `http://localhost:43123/reset-password`, `http://127.0.0.1:43123/reset-password`, `https://deliverx.dev/auth/callback`, `https://deliverx.dev/reset-password` |
 
 Email confirm and password-reset links use `emailRedirectTo` / `redirectTo` pointing at those paths. Google OAuth uses native Supabase Auth (`signInWithOAuth`) — enable the Google provider in the dashboard before the button appears on `/login` and `/signup`. Do not rely on Lovable’s `/~oauth/*` proxy for local or deliverx.dev hosts.
@@ -36,12 +36,12 @@ Still missing versus the full app/drizzle catalogue (safe follow-ups, not applie
 
 ## Secrets still required
 
-| Secret | Needed for |
-| --- | --- |
-| `SUPABASE_SERVICE_ROLE_KEY` | Admin writes, webhooks, monitoring sink inserts, portfolio admin paths |
-| `STRIPE_SANDBOX_API_KEY` / `STRIPE_LIVE_API_KEY` | Checkout session creation |
-| `LOVABLE_API_KEY` | Stripe connector gateway |
-| `PAYMENTS_SANDBOX_WEBHOOK_SECRET` / `PAYMENTS_LIVE_WEBHOOK_SECRET` | Stripe webhook fulfilment |
-| Open Badges issuer key (server-only) | Prove credential signing |
+| Secret                                                             | Needed for                                                             |
+| ------------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| `SUPABASE_SERVICE_ROLE_KEY`                                        | Admin writes, webhooks, monitoring sink inserts, portfolio admin paths |
+| `STRIPE_SANDBOX_API_KEY` / `STRIPE_LIVE_API_KEY`                   | Checkout session creation                                              |
+| `LOVABLE_API_KEY`                                                  | Stripe connector gateway                                               |
+| `PAYMENTS_SANDBOX_WEBHOOK_SECRET` / `PAYMENTS_LIVE_WEBHOOK_SECRET` | Stripe webhook fulfilment                                              |
+| Open Badges issuer key (server-only)                               | Prove credential signing                                               |
 
 Do not invent service-role or Stripe secret values.

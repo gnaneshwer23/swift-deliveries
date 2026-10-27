@@ -6,12 +6,22 @@
  * configured. Model mode is opt-in (`DXSI_MODEL_ENABLED=true`) so enabling a
  * provider key never silently changes cost or behaviour in production.
  *
- * Any failure falls back to the deterministic simulated draft, and the reason
- * is disclosed on the artefact — never hidden.
+ * With model mode off, stages use the deterministic simulated draft, labelled
+ * as such. With model mode on, a call that does not produce accepted output
+ * reports a failure (GeneratedContent.failure) and the step fails or retries:
+ * it never quietly falls back to a simulated draft. Stage-generation calls are
+ * returned as call records for the run ledger; generateJson (decision options
+ * and pilot comparisons) records its outcome in its own callers' records.
  */
 import { checkMarkdownContract, extractHtmlDocument } from "./contracts";
-import type { GeneratedContent, UpstreamArtefact } from "./executor";
+import type {
+  GeneratedContent,
+  ModelCallRecord,
+  ModelFailureClass,
+  UpstreamArtefact,
+} from "./executor";
 import { containsLikelyPersonalIdentifiers } from "./privacy";
+import { SOURCE_NAMES } from "./registry/output-checks";
 import type { WfMission, WfMissionTask } from "./types";
 
 type Provider = { name: string; url: string; apiKey: string; model: string };
@@ -109,7 +119,14 @@ export function modelModeStatus(): {
 function providerOrReason(): { provider: Provider | null; reason: string | null } {
   try {
     const provider = resolveProvider();
-    return { provider, reason: provider ? null : "model mode not enabled" };
+    if (provider) return { provider, reason: null };
+    return {
+      provider: null,
+      reason:
+        process.env["DXSI_MODEL_ENABLED"] === "true"
+          ? "model not run: model mode is on but no provider credentials are set"
+          : "model mode not enabled",
+    };
   } catch (error) {
     return { provider: null, reason: `model not run: ${(error as Error).message}` };
   }
@@ -151,8 +168,8 @@ export function buildStagePrompt(input: {
     .join("\n");
   const user = [
     `Mission: ${input.mission.title}`,
-    `Objective (operator's words): ${input.mission.requestText}`,
-    answers ? `Operator clarifications:\n${answers}` : "",
+    `Mission request (operator's words; cite as "${SOURCE_NAMES.request}"): ${input.mission.requestText}`,
+    answers ? `Clarification answers (cite as "${SOURCE_NAMES.clarifications}"):\n${answers}` : "",
     `Your task: ${input.task.title}\n${input.task.description}`,
     `Acceptance criteria: ${input.task.acceptanceCriteria}`,
     input.upstream.length
@@ -171,21 +188,36 @@ export async function generateStageContent(input: {
     "title" | "description" | "acceptanceCriteria" | "requiredSections" | "produces"
   >;
   upstream: UpstreamArtefact[];
-  /** Extra system rules (e.g. citation requirements). */
+  /** Extra system rules (e.g. citation requirements or a role's instructions). */
   extraInstructions?: string;
   /** Additional acceptance check; a returned string triggers the corrective retry. */
   extraCheck?: (content: string) => string | null;
+  /** Version of the role instructions in extraInstructions, recorded with the result. */
+  instructionVersion?: string;
 }): Promise<GeneratedContent> {
+  const version = input.instructionVersion ? { instructionVersion: input.instructionVersion } : {};
   const { provider, reason } = providerOrReason();
-  if (!provider)
-    return { content: "", mode: "simulated", note: reason ?? "model mode not enabled" };
+  if (!provider) {
+    // Model mode off is the designed simulated mode; model mode on but unusable is a failure.
+    if (reason === "model mode not enabled")
+      return { content: "", mode: "simulated", note: reason, ...version };
+    return {
+      content: "",
+      mode: "simulated",
+      note: reason ?? "model not configured",
+      failure: { class: "not_configured", detail: reason ?? "model not configured" },
+      ...version,
+    };
+  }
 
   const screened = `${input.mission.requestText} ${Object.values(input.mission.clarificationAnswers).join(" ")}`;
   if (containsLikelyPersonalIdentifiers(screened)) {
+    // Privacy rule: never sent. The simulated draft is labelled with this reason.
     return {
       content: "",
       mode: "simulated",
       note: "possible personal identifiers detected in the request; not sent to an external model",
+      ...version,
     };
   }
 
@@ -194,29 +226,39 @@ export async function generateStageContent(input: {
     ? `${prompt.system}\n${input.extraInstructions}`
     : prompt.system;
   const user = prompt.user;
-  const first = await callModel(provider, system, user, input.task.produces === "prototype_html");
-  if (first.mode !== "model") return first;
+  const html = input.task.produces === "prototype_html";
+  const calls: ModelCallRecord[] = [];
+  const failed = (cls: ModelFailureClass, detail: string): GeneratedContent => ({
+    content: "",
+    mode: "simulated",
+    note: detail,
+    failure: { class: cls, detail },
+    calls,
+    ...version,
+  });
 
-  // One bounded corrective retry when the handoff contract is not met.
+  const first = await callModel(provider, system, user, html);
+  calls.push(first.call);
+  if (first.mode !== "model") return failed(first.call.failure ?? "provider_error", first.note);
+
+  // One bounded corrective retry when the handoff contract or a role check is not met.
   const problem =
     contractProblem(first.content, input.task) ?? input.extraCheck?.(first.content) ?? null;
-  if (!problem) return first;
+  if (!problem)
+    return { content: first.content, mode: "model", model: provider.model, calls, ...version };
   const retry = await callModel(
     provider,
     system,
     `${user}\n\nYour previous attempt was rejected: ${problem}. Produce the complete deliverable again, satisfying the output contract exactly.`,
-    input.task.produces === "prototype_html",
+    html,
   );
-  if (retry.mode !== "model") return retry;
+  calls.push(retry.call);
+  if (retry.mode !== "model") return failed(retry.call.failure ?? "provider_error", retry.note);
   const retryProblem =
     contractProblem(retry.content, input.task) ?? input.extraCheck?.(retry.content) ?? null;
   return retryProblem
-    ? {
-        content: "",
-        mode: "simulated",
-        note: "model output failed its handoff contract after two attempts",
-      }
-    : retry;
+    ? failed("contract_failed", `output failed its checks after two attempts: ${retryProblem}`)
+    : { content: retry.content, mode: "model", model: provider.model, calls, ...version };
 }
 
 function contractProblem(
@@ -236,12 +278,32 @@ function contractProblem(
     .join("; ");
 }
 
+type CallResult =
+  | { mode: "model"; content: string; call: ModelCallRecord }
+  | { mode: "failed"; note: string; call: ModelCallRecord };
+
 async function callModel(
   provider: Provider,
   system: string,
   user: string,
   html: boolean,
-): Promise<GeneratedContent> {
+): Promise<CallResult> {
+  const started = Date.now();
+  const record = (
+    failure: ModelFailureClass | null,
+    extra: Partial<ModelCallRecord> = {},
+  ): ModelCallRecord => ({
+    provider: provider.name,
+    model: provider.model,
+    requestId: null,
+    inputTokens: null,
+    outputTokens: null,
+    latencyMs: Date.now() - started,
+    failure,
+    ...extra,
+  });
+  const fail = (cls: ModelFailureClass, note: string, extra?: Partial<ModelCallRecord>) =>
+    ({ mode: "failed", note, call: record(cls, extra) }) as const;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
@@ -262,34 +324,41 @@ async function callModel(
         ],
       }),
     });
+    const headerId = res.headers.get("x-request-id") ?? res.headers.get("request-id");
     if (!res.ok) {
-      return { content: "", mode: "simulated", note: `model provider returned HTTP ${res.status}` };
+      const cls: ModelFailureClass =
+        res.status === 408
+          ? "timeout"
+          : res.status === 429
+            ? "rate_limited"
+            : res.status >= 500
+              ? "provider_error"
+              : "request_rejected";
+      return fail(cls, `model provider returned HTTP ${res.status}`, { requestId: headerId });
     }
     const json = (await res.json()) as {
+      id?: string;
+      usage?: { prompt_tokens?: number; completion_tokens?: number };
       choices?: Array<{
         finish_reason?: string;
         message?: { content?: unknown; refusal?: string };
       }>;
     };
+    const meta: Partial<ModelCallRecord> = {
+      requestId: headerId ?? json.id ?? null,
+      inputTokens: json.usage?.prompt_tokens ?? null,
+      outputTokens: json.usage?.completion_tokens ?? null,
+    };
     const choice = json.choices?.[0];
-    if (choice?.message?.refusal)
-      return { content: "", mode: "simulated", note: "model declined this request" };
+    if (choice?.message?.refusal) return fail("refused", "model declined this request", meta);
     if (choice?.finish_reason !== "stop")
-      return {
-        content: "",
-        mode: "simulated",
-        note: "model did not return a complete deliverable",
-      };
+      return fail("incomplete", "model did not return a complete deliverable", meta);
     const text = typeof choice.message?.content === "string" ? choice.message.content.trim() : "";
-    if (!text) return { content: "", mode: "simulated", note: "model returned empty output" };
-    return { content: text, mode: "model", model: provider.model };
+    if (!text) return fail("empty", "model returned empty output", meta);
+    return { mode: "model", content: text, call: record(null, meta) };
   } catch (err) {
     const aborted = err instanceof Error && err.name === "AbortError";
-    return {
-      content: "",
-      mode: "simulated",
-      note: aborted ? "model call timed out" : "model call failed",
-    };
+    return aborted ? fail("timeout", "model call timed out") : fail("network", "model call failed");
   } finally {
     clearTimeout(timer);
   }

@@ -8,35 +8,35 @@ Retain the approved illustrated identity. White and cool off-white surfaces, cha
 
 Canonical tokens live in `src/styles/psi-foundation.css`. Existing `--dx-*`, `--mkt-*`, utility-control and workspace tokens reference this foundation. Maintained homepage, platform, footer and handoff styles consume shared text/surface values. Asset pigments remain unchanged. Bespoke diagrams retain local colour values where they distinguish visual objects; migrating every historical CSS declaration is not required to establish the foundation.
 
-| Role | Token/value | Application |
-| --- | --- | --- |
-| Canvas / surface | `--psi-canvas` #F7F8FC / `--psi-surface` #FFFFFF | Quiet workspace and white cards |
-| Heading / action | `--psi-ink` #202B43 / `--psi-action` #171923 | Readable headings / primary calls to action |
-| Body / supporting copy | `--psi-text` #4E5B73 / `--psi-muted` #647089 | Body text and secondary labels |
-| Interaction | `--psi-indigo` #4C56C9 | Selection, links, focus and directional flow |
-| Selected surface | `--psi-indigo-soft` #EEF0FF | Selected controls, never success indication |
-| Illustration tint | `--psi-lavender` #F2EFFB | Explanatory imagery, not dense tables |
-| Success / attention / failure | #16724E / #8B570B / #B42318 | Semantic state with a written label |
+| Role                          | Token/value                                      | Application                                  |
+| ----------------------------- | ------------------------------------------------ | -------------------------------------------- |
+| Canvas / surface              | `--psi-canvas` #F7F8FC / `--psi-surface` #FFFFFF | Quiet workspace and white cards              |
+| Heading / action              | `--psi-ink` #202B43 / `--psi-action` #171923     | Readable headings / primary calls to action  |
+| Body / supporting copy        | `--psi-text` #4E5B73 / `--psi-muted` #647089     | Body text and secondary labels               |
+| Interaction                   | `--psi-indigo` #4C56C9                           | Selection, links, focus and directional flow |
+| Selected surface              | `--psi-indigo-soft` #EEF0FF                      | Selected controls, never success indication  |
+| Illustration tint             | `--psi-lavender` #F2EFFB                         | Explanatory imagery, not dense tables        |
+| Success / attention / failure | #16724E / #8B570B / #B42318                      | Semantic state with a written label          |
 
 Inter remains the interface family. Primary actions use charcoal; task selections and active navigation use indigo. Focus is a visible 3px indigo outline with 4px offset across marketing, onboarding and the workspace. Preserve keyboard semantics, browser zoom and reduced-motion behaviour. No new decorative animation.
 
 ## Current route and claim matrix
 
-| Surface | Purpose and boundary | Next acceptance work |
-| --- | --- | --- |
-| `/` | Introduce connected evidence, judgement, delivery and feedback through approved illustrative scenes | Phase 2: full link/content/accessibility inventory |
-| `/psi` | Explain architecture and shared record; examples do not prove a completed mission | Phase 2: clarify unique page purpose, avoid repetition |
-| `/how-it-works` | Inspect one hypothetical mission and example documents | Phase 2: verify all handoffs/downloads |
-| `/ai-agents` | 150 catalogue roles across 15 registry departments; availability differs from live execution/evaluation | Phases 2/4: inspect directory and actual participation |
-| `/product-brain` | Explain traceability and current record; complete knowledge graph remains roadmap | Phases 2/5: validate evidence/version boundaries |
-| `/solutions` | Starting points for relevant product questions | Phase 2: preserve edited starter briefs |
-| `/security` | Explain implemented safeguards without certification claims | Phases 2/6: match claims to retained test/operational evidence |
-| `/pricing`, `/pilot`, `/resources` | Paid scope, enquiry and editable brief; account creation does not activate paid access | Phases 2/6: journey and selected billing path |
-| `/login`, `/signup`, `/login/forgot`, `/onboarding` | Auth and resumable first-mission context | Phase 3: recovery, refresh, error and continuation acceptance |
-| `/command`, `/command/capabilities`, `/command/projects`, `/command/programmes` | Authenticated work, specialist catalogue and records | Phase 4: status provenance and next-action audit |
-| `/command/supervised/$missionId`, mission/programme detail | Owner decisions, artefacts, supplied outcome and follow-up | Phase 5: full accepted journey and failures |
-| `/about`, legal pages | Company positioning and policy information | Phase 2/6: policy/product consistency |
-| `/experience`, `/launchpad`, `/professional-workspace` | Retired career URLs redirect to resources/how-it-works | Keep intentional redirects; preserve historical data |
+| Surface                                                                         | Purpose and boundary                                                                                    | Next acceptance work                                           |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `/`                                                                             | Introduce connected evidence, judgement, delivery and feedback through approved illustrative scenes     | Phase 2: full link/content/accessibility inventory             |
+| `/psi`                                                                          | Explain architecture and shared record; examples do not prove a completed mission                       | Phase 2: clarify unique page purpose, avoid repetition         |
+| `/how-it-works`                                                                 | Inspect one hypothetical mission and example documents                                                  | Phase 2: verify all handoffs/downloads                         |
+| `/ai-agents`                                                                    | 150 catalogue roles across 15 registry departments; availability differs from live execution/evaluation | Phases 2/4: inspect directory and actual participation         |
+| `/product-brain`                                                                | Explain traceability and current record; complete knowledge graph remains roadmap                       | Phases 2/5: validate evidence/version boundaries               |
+| `/solutions`                                                                    | Starting points for relevant product questions                                                          | Phase 2: preserve edited starter briefs                        |
+| `/security`                                                                     | Explain implemented safeguards without certification claims                                             | Phases 2/6: match claims to retained test/operational evidence |
+| `/pricing`, `/pilot`, `/resources`                                              | Paid scope, enquiry and editable brief; account creation does not activate paid access                  | Phases 2/6: journey and selected billing path                  |
+| `/login`, `/signup`, `/login/forgot`, `/onboarding`                             | Auth and resumable first-mission context                                                                | Phase 3: recovery, refresh, error and continuation acceptance  |
+| `/command`, `/command/capabilities`, `/command/projects`, `/command/programmes` | Authenticated work, specialist catalogue and records                                                    | Phase 4: status provenance and next-action audit               |
+| `/command/supervised/$missionId`, mission/programme detail                      | Owner decisions, artefacts, supplied outcome and follow-up                                              | Phase 5: full accepted journey and failures                    |
+| `/about`, legal pages                                                           | Company positioning and policy information                                                              | Phase 2/6: policy/product consistency                          |
+| `/experience`, `/launchpad`, `/professional-workspace`                          | Retired career URLs redirect to resources/how-it-works                                                  | Keep intentional redirects; preserve historical data           |
 
 Shared product language already exists in `src/lib/psi-journey.ts`: Evidence & memory / Judgement / Delivery / Feedback loop. Global SEO fallback now uses Product Super Intelligence and the bounded product workflow, replacing career positioning. Route-specific metadata remains authoritative.
 
@@ -44,32 +44,32 @@ Shared product language already exists in `src/lib/psi-journey.ts`: Evidence & m
 
 Read-only comparison after fetch against `677e4b9`. Counts are commits unique to each remote branch, not a claim that old branch behaviour is approved.
 
-| Remote branch | Unique commits | Disposition |
-| --- | --- | --- |
-| `origin/cursor/fix-login-929d` | 0 | Already contained in main; retain, no remerge. |
-| `origin/cursor/landing-positioning-929d` | 0 | Already contained in main; retain, no remerge. |
-| `origin/feat/context-handoff-redesign` | 0 | Already contained in main; retain, no remerge. |
-| `origin/feat/homepage-product-story` | 0 | Already contained in main; retain, no remerge. |
-| `origin/feat/marketing-brand-footer` | 0 | Already contained in main; retain, no remerge. |
-| `origin/feat/mission-record-reader` | 0 | Already contained in main; retain, no remerge. |
-| `origin/feat/neon-migration` | 0 | Already contained in main; retain, no remerge. |
-| `origin/feat/pricing-pilot-redesign` | 0 | Already contained in main; retain, no remerge. |
-| `origin/feat/psi-clear-customer-journey` | 0 | Already contained in main; retain, no remerge. |
-| `origin/feat/psi-context-and-lifecycle` | 0 | Already contained in main; retain, no remerge. |
-| `origin/feat/psi-example-mission-experience` | 0 | Already contained in main; retain, no remerge. |
-| `origin/feat/psi-illustrated-journeys` | 0 | Already contained in main; retain, no remerge. |
-| `origin/feat/psi-journey-alignment` | 0 | Already contained in main; retain, no remerge. |
-| `origin/feat/psi-mission-learning-trust` | 0 | Already contained in main; retain, no remerge. |
-| `origin/feat/psi-phase-one-reliability` | 0 | Already contained in main; retain, no remerge. |
-| `origin/feat/psi-platform-redesign` | 0 | Already contained in main; retain, no remerge. |
-| `origin/feat/psi-production-foundation` | 0 | Already contained in main; retain, no remerge. |
-| `origin/feat/psi-secondary-page-journeys` | 0 | Already contained in main; retain, no remerge. |
-| `origin/feat/psi-section-explorers` | 0 | Already contained in main; retain, no remerge. |
-| `origin/feat/resources-brief-builder-design` | 0 | Already contained in main; retain, no remerge. |
-| `origin/feature/openai-dxsi-provider` | 0 | Already contained in main; retain, no remerge. |
-| `origin/fix/restore-mission-illustrations` | 0 | Already contained in main; retain, no remerge. |
-| `origin/redesign/premium-enterprise-saas` | 7 | PR #4: conflicting historical refresh; extract useful principles only after current-code review. |
-| `origin/ux/deliverx-command-centre-redesign-2026-10` | 0 | Already contained in main; retain, no remerge. |
+| Remote branch                                        | Unique commits | Disposition                                                                                      |
+| ---------------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------ |
+| `origin/cursor/fix-login-929d`                       | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/cursor/landing-positioning-929d`             | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/feat/context-handoff-redesign`               | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/feat/homepage-product-story`                 | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/feat/marketing-brand-footer`                 | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/feat/mission-record-reader`                  | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/feat/neon-migration`                         | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/feat/pricing-pilot-redesign`                 | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/feat/psi-clear-customer-journey`             | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/feat/psi-context-and-lifecycle`              | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/feat/psi-example-mission-experience`         | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/feat/psi-illustrated-journeys`               | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/feat/psi-journey-alignment`                  | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/feat/psi-mission-learning-trust`             | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/feat/psi-phase-one-reliability`              | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/feat/psi-platform-redesign`                  | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/feat/psi-production-foundation`              | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/feat/psi-secondary-page-journeys`            | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/feat/psi-section-explorers`                  | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/feat/resources-brief-builder-design`         | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/feature/openai-dxsi-provider`                | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/fix/restore-mission-illustrations`           | 0              | Already contained in main; retain, no remerge.                                                   |
+| `origin/redesign/premium-enterprise-saas`            | 7              | PR #4: conflicting historical refresh; extract useful principles only after current-code review. |
+| `origin/ux/deliverx-command-centre-redesign-2026-10` | 0              | Already contained in main; retain, no remerge.                                                   |
 
 No remote branch was merged, deleted or rewritten as part of this inventory. PR #4 uses outdated career guidance and an initials-regex regression was flagged; its design document is not current product authority. Its focus, hierarchy and consistent-control principles are incorporated without importing the historical shell.
 
