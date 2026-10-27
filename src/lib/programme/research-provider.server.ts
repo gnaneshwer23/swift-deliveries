@@ -9,18 +9,11 @@
  */
 import { tavily } from "@tavily/core";
 import type { RawResult } from "./research";
+import { resolveSearchProvider } from "./search-provider-env";
 
-type Env = Record<string, string | undefined>;
+export { resolveSearchProvider };
+
 const TIMEOUT_MS = 15_000;
-
-export function resolveSearchProvider(
-  env: Env = process.env,
-): { name: string; key: string } | null {
-  if (env["EXA_API_KEY"]) return { name: "exa", key: env["EXA_API_KEY"] };
-  if (env["TAVILY_API_KEY"]) return { name: "tavily", key: env["TAVILY_API_KEY"] };
-  if (env["BRAVE_SEARCH_API_KEY"]) return { name: "brave", key: env["BRAVE_SEARCH_API_KEY"] };
-  return null;
-}
 
 export function parseExa(json: unknown): RawResult[] {
   const results = (json as { results?: Array<Record<string, unknown>> }).results ?? [];

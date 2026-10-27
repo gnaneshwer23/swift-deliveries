@@ -3,7 +3,7 @@
  * Web retrieval is never invented: without a configured provider the web
  * portion is blocked and gaps are marked honestly.
  */
-import { resolveSearchProvider } from "@/lib/programme/research-provider.server";
+import { resolveSearchProvider } from "@/lib/programme/search-provider-env";
 
 export const RESEARCH_MODES = ["provided", "web", "combined"] as const;
 export type ResearchMode = (typeof RESEARCH_MODES)[number];
