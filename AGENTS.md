@@ -11,7 +11,7 @@
 
 ## DeliverX Supervised AI Workforce (Stage 1)
 Source: docs/prd-deliverx-supervised-ai-workforce.md. Gap analysis: docs/prd-gap-analysis.md.
-- Signed-in primary surface is `/command` (Command Centre), not the career agent-directory workspace.
+- Signed-in primary surface is `/command` (DeliverX Studio), not the career agent-directory workspace.
 - AI drafts; humans approve plans. Act externally never runs without an explicit approval.
 - Quality labels are Agent-reviewed / Automatically tested / Human-reviewed / Externally attested — never a generic “Verified”.
 - Usage ceilings hard-stop further billable steps. Stage 1 uses deterministic planner/executor stubs unless model keys exist.
