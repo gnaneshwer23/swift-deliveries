@@ -126,6 +126,30 @@ describe("honestyBadges", () => {
     expect(badges.some((b) => b.label === "Cast band M")).toBe(true);
     expect(badges.every((b) => b.label.length < 80)).toBe(true);
   });
+
+  it("swaps Simulated for Model on the same badge slot when generation ran", () => {
+    const badges = honestyBadges(
+      baseMission({
+        proposal: {
+          action: "compare_options",
+          version: 1,
+          scopeHash: "x",
+          options: [],
+          generation: {
+            ran: true,
+            label: "model",
+            provider: "openai",
+            model: "gpt-demo",
+            output: "",
+            citations: [],
+            gaps: [],
+          },
+        },
+      }),
+    );
+    expect(badges.some((b) => b.label === "Model · gpt-demo")).toBe(true);
+    expect(badges.some((b) => b.label === "Simulated draft")).toBe(false);
+  });
 });
 
 describe("actState", () => {

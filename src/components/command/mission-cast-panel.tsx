@@ -1,11 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { getSupervisedMission, getSupervisedMissionHome } from "@/lib/pilot-mission.functions";
+import { buildSequence, castForMission } from "@/lib/pilot-mission/build-beats";
 import { buildPmBrief, STAFFING_BAND_LABELS } from "@/lib/pilot-mission/pm-brief";
 import { orderAttention } from "@/lib/workspace-attention";
 
 /**
- * G3 — Specialists page opens on the active mission cast; catalogue stays secondary.
+ * G3 / P2 — Specialists page opens on the active mission cast; catalogue stays secondary.
+ * Shows current owner, contribution and handoff aligned with Act V beats.
  */
 export function MissionCastPanel() {
   const home = useQuery({
@@ -50,24 +52,9 @@ export function MissionCastPanel() {
 
   const { mission: record } = mission.data;
   const brief = buildPmBrief(record);
-  const specialists =
-    record.team?.tasks
-      .filter((t) => t.actor === "specialist")
-      .reduce(
-        (acc, t) => {
-          const id = t.capabilityId ?? t.key;
-          if (!acc.some((s) => s.id === id)) {
-            acc.push({
-              id,
-              label: t.ownerLabel,
-              contribution: t.produces,
-              status: t.status,
-            });
-          }
-          return acc;
-        },
-        [] as Array<{ id: string; label: string; contribution: string; status: string }>,
-      ) ?? [];
+  const cast = castForMission(record);
+  const sequence = buildSequence(record);
+  const currentBeat = sequence.beats.find((b) => b.id === sequence.currentId);
 
   return (
     <section className="cc-panel ps-mission-cast" aria-label="Active mission cast">
@@ -76,19 +63,26 @@ export function MissionCastPanel() {
       <p className="cc-muted text-sm">
         {brief.team.initiatingAgent} · {brief.team.staffing.activeSpecialists} specialists ·{" "}
         {STAFFING_BAND_LABELS[brief.team.staffing.band]}
+        {currentBeat
+          ? ` · current beat: ${currentBeat.label} · owner: ${currentBeat.owner.label}`
+          : ""}
       </p>
       <ul className="ps-cast-board mt-3">
-        {specialists.map((s) => (
-          <li key={s.id} data-status={s.status}>
-            <strong>{s.label}</strong>
+        {cast.map((s) => (
+          <li
+            key={s.id}
+            data-status={s.status}
+            data-actor={s.actor}
+            data-current-owner={s.isCurrentOwner ? "true" : undefined}
+          >
+            <strong>
+              {s.label}
+              {s.isCurrentOwner ? " · owns beat" : ""}
+            </strong>
             <span>{s.contribution}</span>
-            <span className="cc-muted text-xs">{s.status.replaceAll("_", " ")}</span>
+            <span className="cc-muted text-xs">Handoff: {s.handoff}</span>
           </li>
         ))}
-        <li data-actor="human">
-          <strong>You</strong>
-          <span>Human gates and decisions</span>
-        </li>
       </ul>
       <div className="mt-3 flex flex-wrap gap-2">
         <Link

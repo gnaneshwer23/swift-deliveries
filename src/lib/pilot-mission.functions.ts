@@ -17,6 +17,7 @@ import {
   SupervisedMissionService,
   UsageLimitError,
 } from "./pilot-mission/service";
+import { projectShelfItems } from "./pilot-mission/build-beats";
 import { learningLinks } from "./pilot-mission/learning";
 import { planResearchMode } from "./pilot-mission/research-mode";
 import { RESEARCH_MODES, type ResearchMode } from "./pilot-mission/research-mode";
@@ -547,4 +548,61 @@ export const approveSupervisedFollowUp = createServerFn({ method: "POST" })
       nowMs: Date.now(),
     });
     return view(mission, null);
+  });
+
+/** P3 — read-only product memory shelf: missions + artefacts + decisions per project. */
+export type ProjectBuildShelf = {
+  projectId: string;
+  name: string;
+  description: string | null;
+  missions: ReturnType<typeof projectShelfItems>[];
+};
+
+export const getSupervisedProjectShelf = createServerFn({ method: "GET" })
+  .middleware([requireAuth])
+  .handler(async ({ context }): Promise<ProjectBuildShelf[]> => {
+    try {
+      const workspace = await workspaceFor(context.supabase, context.userId);
+      const { service } = await serviceFor();
+      const missions = await service.list(workspace.id);
+      const db = wfDb(context.supabase);
+      const projectsRes = await db
+        .from("wf_projects")
+        .select("id, name, description")
+        .eq("workspace_id", workspace.id)
+        .order("created_at", { ascending: false });
+      if (projectsRes.error) throw new Error(projectsRes.error.message);
+      const projects = (projectsRes.data ?? []) as Array<{
+        id: string;
+        name: string;
+        description: string | null;
+      }>;
+      const byProject = new Map<string, SupervisedMission[]>();
+      for (const mission of missions) {
+        if (!mission.projectId) continue;
+        const list = byProject.get(mission.projectId) ?? [];
+        list.push(mission);
+        byProject.set(mission.projectId, list);
+      }
+      const shelves: ProjectBuildShelf[] = projects.map((p) => ({
+        projectId: p.id,
+        name: p.name,
+        description: p.description,
+        missions: (byProject.get(p.id) ?? []).map(projectShelfItems),
+      }));
+      // Include orphan attached missions whose project row is missing from the list.
+      for (const [projectId, attached] of byProject) {
+        if (shelves.some((s) => s.projectId === projectId)) continue;
+        shelves.push({
+          projectId,
+          name: attached[0]?.brief.question.slice(0, 80) || "Product memory",
+          description: "Auto-attached supervised mission family",
+          missions: attached.map(projectShelfItems),
+        });
+      }
+      return shelves;
+    } catch (error) {
+      if (error instanceof MissionStoreUnavailableError) return [];
+      throw error;
+    }
   });

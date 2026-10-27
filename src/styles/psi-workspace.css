@@ -2472,11 +2472,150 @@
 .ps-mission-cast {
   margin-bottom: 20px;
 }
+.ps-cast-board li[data-current-owner="true"] {
+  border-color: var(--psi-indigo, #3b4cca);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--psi-indigo, #3b4cca) 35%, transparent);
+}
+.ps-build-beats {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+.ps-build-beat-btn {
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--psi-border, #dfe5f2);
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px 8px;
+  cursor: pointer;
+  display: grid;
+  gap: 2px;
+  font-size: 13px;
+}
+.ps-build-beats li[data-state="done"] .ps-build-beat-btn {
+  border-color: var(--psi-indigo, #3b4cca);
+  color: var(--psi-indigo, #3b4cca);
+}
+.ps-build-beats li[data-state="current"] .ps-build-beat-btn,
+.ps-build-beats li[data-selected="true"] .ps-build-beat-btn {
+  background: color-mix(in srgb, var(--psi-indigo-soft, #eef1ff) 85%, white);
+  border-color: var(--psi-ink, #0f172a);
+}
+.ps-build-beats li[data-state="blocked"] .ps-build-beat-btn {
+  opacity: 0.75;
+}
+.ps-focal-artefact {
+  margin-top: 8px;
+  padding: 16px 18px;
+  border-left: 3px solid var(--psi-indigo, #3b4cca);
+  background: linear-gradient(
+    165deg,
+    #fff 0%,
+    color-mix(in srgb, var(--psi-indigo-soft, #eef1ff) 55%, white) 100%
+  );
+  display: grid;
+  gap: 8px;
+}
+.ps-focal-artefact-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+.ps-focal-artefact-head h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.ps-focal-artefact .ps-honesty-badges span,
+.ps-project-shelf-artefacts .ps-honesty-badges span {
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  padding: 4px 8px;
+  border: 1px solid var(--psi-border, #dfe5f2);
+  border-radius: 999px;
+  color: var(--psi-muted);
+  background: #f8fafc;
+}
+.ps-focal-artefact .ps-honesty-badges span[data-honesty="model"] {
+  border-color: #b7c9b7;
+  background: #f7faf7;
+  color: #1f4d2e;
+}
+.ps-focal-gaps {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 13px;
+  color: var(--psi-muted);
+  display: grid;
+  gap: 4px;
+}
+.ps-project-shelf {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+}
+.ps-project-shelf-item {
+  padding: 14px 0;
+  border-top: 1px solid var(--psi-border, #dfe5f2);
+}
+.ps-project-shelf-item:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.ps-project-shelf-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.ps-project-shelf-missions {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.ps-project-shelf-mission {
+  display: grid;
+  gap: 2px;
+  text-decoration: none;
+  color: inherit;
+}
+.ps-project-shelf-artefacts,
+.ps-project-shelf-decisions {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+.ps-project-shelf-artefacts li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+  background: #f8fafc;
+  border-radius: 8px;
+}
 @media (max-width: 720px) {
   .ps-theatre-acts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .ps-theatre-columns {
     grid-template-columns: 1fr;
+  }
+  .ps-build-beats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

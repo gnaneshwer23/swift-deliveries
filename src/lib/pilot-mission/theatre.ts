@@ -20,7 +20,7 @@ export const THEATRE_ACT_LABELS: Record<TheatreAct, string> = {
   roadmap: "Strategy",
   cast: "Cast",
   approve: "Approve",
-  work: "Living work",
+  work: "Build",
 };
 
 /** Product-language roadmap beats (not lifecycle pipeline tattoos). */
@@ -75,21 +75,20 @@ export function actState(
   return "upcoming";
 }
 
-/** Compact honesty badges — never essay walls. */
+/** Compact honesty badges — never essay walls. Same slot for stub vs model (P4). */
 export function honestyBadges(mission: SupervisedMission): Array<{ id: string; label: string }> {
-  const badges: Array<{ id: string; label: string }> = [
-    { id: "sim", label: "Simulated draft" },
-  ];
-  if ((mission.researchGaps ?? []).length > 0) {
-    badges.push({ id: "gaps", label: "Research gaps labelled" });
-  }
-  if (mission.proposal?.generation) {
+  const gen = mission.proposal?.generation;
+  const badges: Array<{ id: string; label: string }> = [];
+  if (gen?.ran) {
     badges.push({
       id: "gen",
-      label: mission.proposal.generation.ran
-        ? `Model · ${mission.proposal.generation.model ?? "configured"}`
-        : mission.proposal.generation.label,
+      label: `Model · ${gen.model ?? gen.provider ?? "configured"}`,
     });
+  } else {
+    badges.push({ id: "sim", label: "Simulated draft" });
+  }
+  if ((mission.researchGaps ?? []).length > 0) {
+    badges.push({ id: "gaps", label: "Research gaps labelled" });
   }
   const band = mission.team?.staffingBand;
   if (band) {

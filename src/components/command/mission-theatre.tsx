@@ -1,6 +1,11 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { SpecialistTeamGraph } from "@/components/command/specialist-team-graph";
+import {
+  buildSequence,
+  castForMission,
+  type BuildBeatView,
+  type FocalArtefact,
+} from "@/lib/pilot-mission/build-beats";
 import {
   buildPmBrief,
   STAFFING_BAND_LABELS,
@@ -108,7 +113,7 @@ export function MissionTheatre({
             className="cc-btn cc-btn-ghost"
             onClick={() => setViewAct("work")}
           >
-            Return to living work →
+            Return to build stage →
           </button>
         </p>
       ) : null}
@@ -217,24 +222,9 @@ function ActCast({
   brief: PmBrief;
 }) {
   const staffing = brief.team.staffing;
-  const specialists =
-    mission.team?.tasks
-      .filter((t) => t.actor === "specialist")
-      .reduce(
-        (acc, t) => {
-          const id = t.capabilityId ?? t.key;
-          if (!acc.some((s) => s.id === id)) {
-            acc.push({
-              id,
-              label: t.ownerLabel,
-              contribution: t.produces,
-              status: t.status,
-            });
-          }
-          return acc;
-        },
-        [] as Array<{ id: string; label: string; contribution: string; status: string }>,
-      ) ?? [];
+  const cast = castForMission(mission);
+  const sequence = buildSequence(mission);
+  const currentBeat = sequence.beats.find((b) => b.id === sequence.currentId);
 
   return (
     <section className="ps-act ps-act-cast" aria-label="Cast and timeline">
@@ -242,20 +232,28 @@ function ActCast({
       <h2 className="ps-theatre-title">Who delivers what</h2>
       <p className="cc-muted">
         {brief.team.initiatingAgent} initiating · {staffing.activeSpecialists} on this plan
+        {currentBeat
+          ? ` · now: ${currentBeat.label} (${currentBeat.owner.label})`
+          : sequence.planApproved
+            ? " · build sequence complete through Pack"
+            : ""}
       </p>
       <ul className="ps-cast-board">
-        {specialists.map((s) => (
-          <li key={s.id} data-status={s.status}>
-            <strong>{s.label}</strong>
+        {cast.map((s) => (
+          <li
+            key={s.id}
+            data-status={s.status}
+            data-actor={s.actor}
+            data-current-owner={s.isCurrentOwner ? "true" : undefined}
+          >
+            <strong>
+              {s.label}
+              {s.isCurrentOwner ? " · owns beat" : ""}
+            </strong>
             <span>{s.contribution}</span>
-            <span className="cc-muted text-xs">{s.status.replaceAll("_", " ")}</span>
+            <span className="cc-muted text-xs">Handoff: {s.handoff}</span>
           </li>
         ))}
-        <li data-actor="human">
-          <strong>You</strong>
-          <span>Approve the plan, decide options, and own gates</span>
-          <span className="cc-muted text-xs">human gate</span>
-        </li>
       </ul>
       <p className="cc-muted text-sm mt-3">
         {STAFFING_BAND_LABELS[staffing.band]} · catalogue intent {staffing.catalogueTargetMin}–
@@ -317,7 +315,7 @@ function ActApprove({
       {approved ? (
         <p className="cc-muted text-sm mt-3">
           Approved {mission.team?.approvedAt ? new Date(mission.team.approvedAt).toLocaleString() : ""}.
-          Living work is open.
+          Build stage is open.
         </p>
       ) : (
         <p className="cc-muted text-sm mt-3">
@@ -326,6 +324,55 @@ function ActApprove({
         </p>
       )}
     </section>
+  );
+}
+
+function ArtefactCard({ artefact }: { artefact: FocalArtefact }) {
+  return (
+    <article className="ps-focal-artefact" aria-label={`Focal artefact: ${artefact.title}`}>
+      <div className="ps-focal-artefact-head">
+        <h3>{artefact.title}</h3>
+        <span className="ps-honesty-badges" aria-label="How this was produced">
+          <span data-honesty={artefact.honesty.mode}>{artefact.honesty.label}</span>
+        </span>
+      </div>
+      <p>{artefact.summary}</p>
+      {artefact.gaps.length > 0 ? (
+        <ul className="ps-focal-gaps">
+          {artefact.gaps.map((g) => (
+            <li key={g.slice(0, 48)}>{g}</li>
+          ))}
+        </ul>
+      ) : null}
+    </article>
+  );
+}
+
+function BuildBeatRail({
+  beats,
+  selectedId,
+  onSelect,
+}: {
+  beats: BuildBeatView[];
+  selectedId: string | null;
+  onSelect: (id: BuildBeatView["id"]) => void;
+}) {
+  return (
+    <ol className="ps-build-beats" aria-label="Product build sequence">
+      {beats.map((beat) => (
+        <li key={beat.id} data-state={beat.state} data-selected={selectedId === beat.id ? "true" : undefined}>
+          <button
+            type="button"
+            className="ps-build-beat-btn"
+            aria-current={selectedId === beat.id ? "step" : undefined}
+            onClick={() => onSelect(beat.id)}
+          >
+            <strong>{beat.label}</strong>
+            <span className="cc-muted text-xs">{beat.owner.label}</span>
+          </button>
+        </li>
+      ))}
+    </ol>
   );
 }
 
@@ -340,32 +387,57 @@ function ActWork({
   badges: Array<{ id: string; label: string }>;
   actions: MissionTheatreActions;
 }) {
+  const sequence = buildSequence(mission);
+  const [viewBeatId, setViewBeatId] = useState<BuildBeatView["id"] | null>(null);
+  const selectedId = viewBeatId ?? sequence.currentId ?? sequence.beats[0]?.id ?? null;
+  const selected = sequence.beats.find((b) => b.id === selectedId) ?? null;
+  const focal = selected?.artefact ?? sequence.beats.find((b) => b.id === sequence.currentId)?.artefact;
+
   return (
-    <section className="ps-act ps-act-work" aria-label="Living work">
+    <section className="ps-act ps-act-work" aria-label="Product build stage">
       <div className="ps-act-work-head">
         <div>
-          <p className="cc-kicker">Living work</p>
-          <h2 className="ps-theatre-title">{actions.next.title}</h2>
-          <p className="cc-muted">{actions.next.detail}</p>
+          <p className="cc-kicker">Product build</p>
+          <h2 className="ps-theatre-title">
+            {selected ? `${selected.label} · ${selected.owner.label}` : actions.next.title}
+          </h2>
+          <p className="cc-muted">
+            {selected?.handoff.detail ?? actions.next.detail}
+          </p>
         </div>
         <HonestyBadgeRow badges={badges} />
       </div>
 
-      {mission.team ? (
-        <SpecialistTeamGraph
-          team={mission.team}
-          activity={mission.activity ?? []}
-          evidence={mission.evidence}
-          researchGaps={mission.researchGaps}
-          researchPassCompletedAt={mission.researchPassCompletedAt}
-        />
+      {sequence.planApproved ? (
+        <>
+          <BuildBeatRail
+            beats={sequence.beats}
+            selectedId={selectedId}
+            onSelect={(id) => setViewBeatId(id)}
+          />
+          {focal ? (
+            <ArtefactCard artefact={focal} />
+          ) : selected ? (
+            <p className="cc-muted text-sm mt-3">
+              {selected.state === "upcoming" || selected.handoff.status === "waiting_upstream"
+                ? selected.handoff.detail
+                : `${selected.owner.label} will produce the next artefact when this beat is ready.`}
+            </p>
+          ) : null}
+          {selected ? (
+            <p className="cc-muted text-xs mt-2">
+              Contribution: {selected.contribution} · Handoff: {selected.handoff.status.replaceAll("_", " ")}
+            </p>
+          ) : null}
+        </>
       ) : (
-        <p className="cc-muted">No specialist plan is attached yet.</p>
+        <p className="cc-muted">Approve the plan to open the product-build sequence.</p>
       )}
 
       <div className="ps-work-actions" id="mission-next-action">
         {actions.error ? <p className="cc-error">{actions.error}</p> : null}
         {actions.usageWarning ? <p className="cc-error">{actions.usageWarning}</p> : null}
+        <p className="cc-muted text-sm mb-2">{actions.next.detail}</p>
 
         <details className="ps-theatre-footnote">
           <summary>Research mode & tools</summary>
