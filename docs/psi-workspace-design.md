@@ -31,6 +31,16 @@ The explorer does not add a direct assignment mutation. Available roles link to 
 
 At desktop widths, the department rail, network and inspector share one workspace. At compact widths, the inspector moves below the graph. Narrow phones start in a searchable list view with a collapsible department rail; network view remains selectable. Nodes and controls are native keyboard-operable buttons, selection is indicated with text and styling, and reduced-motion preferences are respected. No perpetual motion suggests agents are working while idle.
 
+## Lifecycle wheel (Phase 7a)
+
+A product-build mission page shows its lifecycle as a wheel of twelve segments, with a list beside it that says the same thing. The twelve segments are a display mapping over the eight stored stages (`src/lib/workforce/lifecycle-wheel.ts`, version `wheel-v1`). Stored data is unchanged.
+
+- **One home per task.** Each segment belongs to exactly one stored stage, and every task in the product-mission plan lands in exactly one segment of its own stage. Discover splits into Market, Research and Foresight. Design splits into Experience and Architecture. Release splits into Release and Publish. Each human gate sits in the segment whose work it decides. A task with a key the mapping doesn't know falls to the first segment of its stored stage, so nothing drops off the wheel. Tests check all of this against the planner. Changing where a task lands needs a new version.
+- **Nothing moves unless a task did.** A segment's state comes only from its tasks: Not started, In progress, Awaiting your decision (a gate is waiting), Complete or Stopped. A segment with no tasks reads Not started. There is no animation apart from a short colour transition, which is turned off under reduced motion.
+- **Every state links to its record.** Selecting a segment lists its tasks. Each task links to its row in the task graph, where gates are decided, and each artefact it produced opens in the artefact viewer.
+- **Opening state.** The wheel opens on a waiting decision first. If there is none, it opens on a stopped stage, then work in progress, then the first unfinished stage.
+- **Accessibility.** Segments are focusable buttons named "n. Stage: state". The arrow keys move between them, and state is given in text as well as colour. The **List** view shows the stages in order, each opening in place. On phones (up to 640px) the list replaces the wheel.
+
 ## Verification and remaining gates
 
 TypeScript and production build pass. Lint passes with nine existing warnings. The full suite, including disposable local PostgreSQL checks, passes 192 tests with 16 environment-dependent tests skipped.

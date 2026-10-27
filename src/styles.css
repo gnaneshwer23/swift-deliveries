@@ -1260,14 +1260,6 @@ html:has(.marketing-page) {
   .cc-intent-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 .cc-intent[aria-disabled="true"] { opacity: .55; cursor: not-allowed; }
-.cc-stage-track { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: .35rem; margin-top: .75rem; }
-.cc-stage { border: 1px solid var(--x-border); border-radius: 10px; padding: .5rem .55rem; font-size: .72rem; line-height: 1.25; background: var(--x-paper); }
-.cc-stage strong { display: block; font-size: .72rem; }
-.cc-stage[data-state="done"] { border-color: #6ee7b7; background: #ecfdf5; }
-.cc-stage[data-state="active"] { border-color: #93c5fd; background: #eff6ff; }
-.cc-stage[data-state="gate"] { border-color: #fcd34d; background: #fffbeb; }
-.cc-stage[data-state="failed"] { border-color: #fca5a5; background: #fef2f2; }
-@media (max-width: 900px) { .cc-stage-track { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .cc-gen-badge { display: inline-flex; align-items: center; gap: .3rem; font-size: .7rem; font-weight: 600; padding: .15rem .5rem; border-radius: 999px; }
 .cc-gen-badge[data-mode="model"] { background: #eef2ff; color: #3730a3; }
 .cc-gen-badge[data-mode="simulated"] { background: #fef3c7; color: #92400e; }
