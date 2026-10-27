@@ -37,6 +37,13 @@ describe("planHash", () => {
     expect(planHash({ requestText: "x", plan: { ...plan, estimatedUsage: 1 } })).not.toBe(base);
     const tasks = plan.tasks.map((t, i) => (i === 0 ? { ...t, isExternal: !t.isExternal } : t));
     expect(planHash({ requestText: "x", plan: { ...plan, tasks } })).not.toBe(base);
+    const sections = plan.tasks.map((t, i) =>
+      i === 0 ? { ...t, requiredSections: [...(t.requiredSections ?? []), "Extra"] } : t,
+    );
+    expect(planHash({ requestText: "x", plan: { ...plan, tasks: sections } })).not.toBe(base);
+    expect(
+      planHash({ requestText: "x", plan: { ...plan, acceptanceCriteria: ["Something else"] } }),
+    ).not.toBe(base);
   });
 });
 
@@ -117,6 +124,8 @@ describe.skipIf(!url)("plan versions and bound approvals against a real database
     await sql!
       .unsafe(`create trigger append_only before update or delete on ${schema}.wf_mission_events
       for each row execute function public.wf_mission_events_append_only()`);
+    await sql!.unsafe(`alter table ${schema}.wf_mission_events add foreign key (mission_id)
+      references ${schema}.wf_missions (id) on delete cascade`);
   });
   beforeEach(async () => {
     await sql!.unsafe(`truncate ${TABLES.map((t) => `${schema}.${t}`).join(", ")}`);
@@ -272,5 +281,12 @@ describe.skipIf(!url)("plan versions and bound approvals against a real database
     await save(ids, "first request");
     await expect(sql!`update wf_mission_events set type = 'edited'`).rejects.toThrow(/append-only/);
     await expect(sql!`delete from wf_mission_events`).rejects.toThrow(/append-only/);
+    // Deleting the mission itself still cascades to its events.
+    await sql!`delete from wf_mission_tasks where mission_id = ${ids.missionId}`;
+    await sql!`delete from wf_approvals where mission_id = ${ids.missionId}`;
+    await sql!`delete from wf_mission_plans where mission_id = ${ids.missionId}`;
+    await sql!`delete from wf_missions where id = ${ids.missionId}`;
+    const [left] = await sql!`select count(*)::int n from wf_mission_events`;
+    expect(left!["n"]).toBe(0);
   });
 });

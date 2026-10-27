@@ -280,7 +280,8 @@ function MissionDetail() {
           ? 3
           : mission.status === "queued" ||
               mission.status === "running" ||
-              mission.status === "blocked"
+              mission.status === "blocked" ||
+              mission.status === "paused"
             ? 4
             : 5;
 
@@ -653,7 +654,7 @@ function MissionDetail() {
                             <button
                               type="button"
                               className="cc-btn cc-btn-primary"
-                              disabled={decideGate.isPending}
+                              disabled={decideGate.isPending || mission.status === "paused"}
                               onClick={() =>
                                 decideGate.mutate({ taskId: t.id, decision: "approve" })
                               }
@@ -663,7 +664,7 @@ function MissionDetail() {
                             <button
                               type="button"
                               className="cc-btn cc-btn-ghost"
-                              disabled={decideGate.isPending}
+                              disabled={decideGate.isPending || mission.status === "paused"}
                               onClick={() =>
                                 decideGate.mutate({ taskId: t.id, decision: "reject" })
                               }

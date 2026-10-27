@@ -30,6 +30,7 @@ The production Neon branch is `br-fancy-breeze-zatt9ocp` in project `spring-wind
 | 0023 comparison reconciliations                                    | Applied 26 Oct 2026 with owner approval     | Applied 26 Oct 2026                  |
 | Row-level security on `psi_pilot_requests`                         | Enabled 26 Oct 2026 with owner approval     | Not applied                          |
 | 0024 durable missions (`wf_task_runs`, `wf_mission_events`, …)     | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
+| 0025 corrections to 0024                                           | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 
 Migrations 0020–0023 were applied to production in a single transaction. The six `psi_*` tables are owned by the server role, have no client grants, and have row-level security enabled. No table rows were read during or after the change.
 
@@ -99,6 +100,9 @@ do $$ begin
   if exists (select 1 from public.wf_missions where status = 'paused') then
     raise exception 'Paused missions exist; nothing was changed.';
   end if;
+  if exists (select 1 from public.wf_task_runs) or exists (select 1 from public.wf_mission_events) then
+    raise exception 'The run ledger or event log holds records; export them first. Nothing was changed.';
+  end if;
 end $$;
 drop table public.wf_task_runs;
 drop table public.wf_mission_events;
@@ -113,4 +117,8 @@ commit;
 
 The rollback SQL was rehearsed on 27 October 2026 against a local database built from the test schema and 0024: it dropped the two tables and returned the schema version to 3, and 0024 then re-applied cleanly. 0024 was applied in one transaction to the preview branch and then, with the owner's approval, to production on 27 October 2026. On both, the owner index was created, row-level security is on for the two new tables, the status check includes `paused`, and `wf_schema_version()` returns 4. No table rows were read.
 
-The added columns and the owner index are left in place: dropping them would discard plan versions, approval bindings and the stop flag, and earlier builds ignore them. The event log and run ledger are dropped because earlier builds never read them; export them first if they hold anything the owner wants kept.
+The added columns and the owner index are left in place: dropping them would discard plan versions, approval bindings and the stop flag, and earlier builds ignore them. The event log and run ledger are dropped only when both are empty; earlier builds never read them. If either holds records, export them under the owner's data-handling instructions first, or keep the tables.
+
+## 0025 corrections to 0024
+
+0025 changes no data. It lets deleting a mission or workspace cascade to its events, which 0024's append-only trigger blocked, while direct updates and deletes stay refused. It also drops the owner index 0024 added where an older unique index (`wf_workspaces_owner_uidx` in Neon) already covers `owner_id`. Applied to preview and then production on 27 October 2026; production now has one owner index (`wf_workspaces_owner_uidx`). No rollback is needed; the application reads neither. Re-running 0024 brings both back, so always run 0025 after it.

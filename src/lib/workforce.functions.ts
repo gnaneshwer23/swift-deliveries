@@ -754,7 +754,8 @@ export const runMissionStep = createServerFn({ method: "POST" })
           .from("wf_missions")
           .update({ status: "blocked", updated_at: new Date().toISOString() })
           .eq("id", mission.id)
-          .eq("workspace_id", workspace.id);
+          .eq("workspace_id", workspace.id)
+          .in("status", ["queued", "running", "blocked"]);
         const refreshed = await loadMissionBundle(supabase, workspace.id, mission.id);
         return { ...refreshed, workspace, done: true, note: `Awaiting human gate: ${gate.title}` };
       }
@@ -778,23 +779,50 @@ export const runMissionStep = createServerFn({ method: "POST" })
       );
     }
 
-    // Atomic claim: only one concurrent caller can move this task out of pending/blocked.
-    const claimed = await writeDb
-      .from("wf_mission_tasks")
-      .update({ status: "running", started_at: new Date().toISOString() })
-      .eq("id", next.id)
-      .in("status", ["pending", "blocked"])
-      .select("id");
-    if (!(claimed.data ?? []).length) {
+    // Atomic claim against the locked mission and workspace rows, so a stop, pause or cancel
+    // that commits first always wins, and only one caller can take this task.
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    const claim = await neonTransaction(async (_tx, query) => {
+      const live = await query(
+        `select m.status, w.stopped_at from wf_missions m
+           join wf_workspaces w on w.id = m.workspace_id
+          where m.id = $1::uuid and m.workspace_id = $2::uuid
+          for update of m, w`,
+        [mission.id, workspace.id] as never,
+      );
+      const state = live[0];
+      if (!state) throw new Error("Mission not found.");
+      if (state["stopped_at"]) return "Workspace stopped: no new work starts.";
+      if (!["queued", "running", "blocked"].includes(state["status"] as string))
+        return `Mission is ${state["status"] as string}: no new work starts.`;
+      const taken = await query(
+        `update wf_mission_tasks set status = 'running', started_at = now(), attempt = attempt + 1
+          where id = $1::uuid and status in ('pending', 'blocked') returning attempt`,
+        [next.id] as never,
+      );
+      if (!taken.length) return "claimed";
+      await query(
+        `update wf_missions set status = 'running', updated_at = now() where id = $1::uuid`,
+        [mission.id] as never,
+      );
+      await appendEvent(query, {
+        workspaceId: workspace.id,
+        missionId: mission.id,
+        taskId: next.id,
+        type: "task.started",
+        actorKind: "user",
+        actorId: userId,
+        data: { attempt: Number(taken[0]!["attempt"]) },
+      });
+      return null;
+    });
+    if (claim && claim !== "claimed") {
+      const refreshed = await loadMissionBundle(supabase, workspace.id, mission.id);
+      return { ...refreshed, workspace, done: true, note: claim };
+    }
+    if (claim === "claimed") {
       const refreshed = await loadMissionBundle(supabase, workspace.id, mission.id);
       return { ...refreshed, workspace, done: false, note: "Task already claimed by another run." };
-    }
-    if (mission.status !== "running") {
-      await writeDb
-        .from("wf_missions")
-        .update({ status: "running", updated_at: new Date().toISOString() })
-        .eq("id", mission.id)
-        .eq("workspace_id", workspace.id);
     }
 
     const liveWorkspace = (
@@ -860,7 +888,8 @@ export const runMissionStep = createServerFn({ method: "POST" })
             updated_at: new Date().toISOString(),
           })
           .eq("id", mission.id)
-          .eq("workspace_id", workspace.id);
+          .eq("workspace_id", workspace.id)
+          .in("status", ["queued", "running", "blocked"]);
         const refreshed = await loadMissionBundle(supabase, workspace.id, mission.id);
         return { ...refreshed, workspace, done: true, note: "Usage ceiling reached." };
       }
@@ -919,13 +948,15 @@ export const runMissionStep = createServerFn({ method: "POST" })
             updated_at: new Date().toISOString(),
           })
           .eq("id", mission.id)
-          .eq("workspace_id", workspace.id);
+          .eq("workspace_id", workspace.id)
+          .in("status", ["queued", "running", "blocked"]);
       } else if (!failed) {
         await writeDb
           .from("wf_missions")
           .update({ status: "blocked", updated_at: new Date().toISOString() })
           .eq("id", mission.id)
-          .eq("workspace_id", workspace.id);
+          .eq("workspace_id", workspace.id)
+          .in("status", ["queued", "running", "blocked"]);
       }
 
       await audit(db, {
@@ -1001,6 +1032,8 @@ export const decideStageGate = createServerFn({ method: "POST" })
     const bundle = await loadMissionBundle(supabase, workspace.id, data.missionId);
     const gate = bundle.tasks.find((t) => t.id === data.taskId);
     if (!gate || !gate.gate) throw new Error("Gate not found on this mission.");
+    if (bundle.mission.status === "paused")
+      throw new Error("This mission is paused. Resume it before deciding this gate.");
     if (gate.status !== "blocked" && gate.status !== "pending") {
       throw new Error("This gate has already been decided.");
     }
@@ -1055,11 +1088,13 @@ export const decideStageGate = createServerFn({ method: "POST" })
           .eq("id", a.id);
       }
     }
+    // A pause or cancel that landed meanwhile keeps its status.
     await writeDb
       .from("wf_missions")
       .update({ status: "queued", updated_at: now })
       .eq("id", data.missionId)
-      .eq("workspace_id", workspace.id);
+      .eq("workspace_id", workspace.id)
+      .in("status", ["queued", "running", "blocked"]);
     await audit(db, {
       workspaceId: workspace.id,
       missionId: data.missionId,
@@ -1255,6 +1290,8 @@ export const setWorkspaceStopped = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { workspace } = await ensureWorkspace(supabase, userId);
 
+    const reason = data.reason?.trim() || "Stopped by the owner";
+
     const { neonTransaction } = await import("@/lib/db/neon.server");
     const row = await neonTransaction(async (_tx, query) => {
       const rows = await query(
@@ -1265,16 +1302,14 @@ export const setWorkspaceStopped = createServerFn({ method: "POST" })
           : `update wf_workspaces set stopped_at = null, stopped_by = null, stop_reason = null,
                 updated_at = now()
               where id = $1::uuid returning *`,
-        (data.stopped
-          ? [workspace.id, userId, data.reason?.trim() || "Stopped by the owner"]
-          : [workspace.id]) as never,
+        (data.stopped ? [workspace.id, userId, reason] : [workspace.id]) as never,
       );
       await appendEvent(query, {
         workspaceId: workspace.id,
         type: data.stopped ? "workspace.stopped" : "workspace.resumed",
         actorKind: "user",
         actorId: userId,
-        data: data.stopped ? { reason: data.reason ?? null } : {},
+        data: data.stopped ? { reason } : {},
       });
       return rows[0]!;
     });
