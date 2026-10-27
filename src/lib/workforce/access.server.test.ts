@@ -171,9 +171,10 @@ describe("every mission handler is scoped before it reads or writes", () => {
     "%s resolves the caller's workspace and reads through it before any write",
     (_name, body) => {
       const ensure = body.indexOf("ensureWorkspace(");
-      // the mission bundle, or a read of the target row filtered by the caller's workspace
+      // the mission bundle, a read of the target row filtered by the caller's workspace, or an
+      // evidence helper given the caller's workspace (evidence.server.test.ts checks its scoping)
       const load = body.search(
-        /loadMissionBundle\(|lockMission\(query, workspace\.id|from\("wf_\w+"\)\s*\.select[\s\S]{0,200}?\.eq\("workspace_id", workspace\.id\)/,
+        /loadMissionBundle\(|lockMission\(query, workspace\.id|from\("wf_\w+"\)\s*\.select[\s\S]{0,200}?\.eq\("workspace_id", workspace\.id\)|(listEvidence|addEvidence|removeEvidence)\(query, (workspace\.id|\{\s*workspaceId: workspace\.id)/,
       );
       const firstWrite = body.search(WRITE);
       expect(ensure).toBeGreaterThan(-1);

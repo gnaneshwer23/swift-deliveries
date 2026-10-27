@@ -42,6 +42,19 @@ function generationEvidence(input: ExecuteStepInput): EvidenceItem {
   };
 }
 
+export const EVIDENCE_SOURCE_PREFIX = "evidence:";
+
+/** The founder evidence the model was given for this artefact, with its content hash. */
+function founderEvidenceItems(input: ExecuteStepInput): EvidenceItem[] {
+  const g = input.generated;
+  if (g?.mode !== "model") return [];
+  return (g.evidenceUsed ?? []).map((e) => ({
+    classification: "sourced_facts",
+    statement: `Founder-supplied evidence given to the model: "${e.title}".`,
+    source: `${EVIDENCE_SOURCE_PREFIX}${e.id}${e.sha256 ? `@sha256:${e.sha256}` : ""}`,
+  }));
+}
+
 const SECTION_HINTS: Record<string, string> = {
   problem: "The problem the objective addresses, stated in the operator's words: “{req}”.",
   "target users": "{users}. Confirm with real user evidence before scope is frozen.",
@@ -348,6 +361,7 @@ export function stageArtefact(input: ExecuteStepInput): StageOutcome {
   const contract = checkMarkdownContract(content, input.task.requiredSections);
   const evidence: EvidenceItem[] = [
     genEvidence,
+    ...founderEvidenceItems(input),
     {
       classification: contract.ok ? "sourced_facts" : "assumptions",
       statement: contract.ok

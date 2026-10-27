@@ -26,6 +26,7 @@ const TABLES = [
   "wf_usage_records",
   "wf_task_runs",
   "wf_mission_events",
+  "wf_mission_evidence",
 ];
 const sql = url
   ? postgres(url, {
@@ -380,6 +381,39 @@ describe.skipIf(!url)("durable mission worker against a real database", () => {
       model_calls: 1,
       role_id: "DX-001",
       instruction_version: "DX-001@2",
+    });
+  });
+
+  it("gives the step the founder's current evidence and records what the model used", async () => {
+    const { STAGE_FIXTURES } = await import("./registry/eval-fixtures");
+    const ids = await approvedMission(1000, buildPlan);
+    const [kept] = await sql!`insert into wf_mission_evidence
+        (workspace_id, mission_id, kind, title, status, content, content_sha256, supplied_by)
+      values (${ids.workspaceId}, ${ids.missionId}, 'note', 'Call notes', 'readable',
+              'Tutors reschedule on Sunday nights.', 'abc', 'owner') returning id`;
+    await sql!`insert into wf_mission_evidence
+        (workspace_id, mission_id, kind, title, status, content, supplied_by, removed_at)
+      values (${ids.workspaceId}, ${ids.missionId}, 'note', 'Old notes', 'readable', 'x',
+              'owner', now())`;
+    nextGeneration = {
+      content: STAGE_FIXTURES.find((f) => f.stage === "charter")!.good,
+      mode: "model",
+      model: "fixture-model",
+      calls: [call(null)],
+      instructionVersion: "DX-001@2",
+      evidenceUsed: [{ id: kept!["id"], title: "Call notes", sha256: "abc" }],
+    };
+    await step(ids);
+    // Removed evidence is not given to the step.
+    const given = lastGenerationInput!["evidence"] as Array<{ title: string }>;
+    expect(given.map((e) => e.title)).toEqual(["Call notes"]);
+    const [artefact] = await sql!`select evidence_items from wf_artefacts`;
+    expect(JSON.stringify(artefact!["evidence_items"])).toContain(
+      `evidence:${kept!["id"] as string}@sha256:abc`,
+    );
+    const [done] = await sql!`select data from wf_mission_events where type = 'task.completed'`;
+    expect(done!["data"]).toMatchObject({
+      evidence: [{ id: kept!["id"], title: "Call notes" }],
     });
   });
 

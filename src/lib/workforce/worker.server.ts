@@ -28,6 +28,8 @@ import {
   type UpstreamArtefact,
 } from "./executor";
 import { runnableTasks, unreachableTasks } from "./graph";
+import { evidenceForPrompt, type WfEvidence } from "./evidence";
+import { listEvidence } from "./evidence.server";
 import { appendEvent, hasLivePlanApproval } from "./plan-store.server";
 import { leadRole, roleInstructions, stageForTask } from "./registry/instructions";
 import { checkStageOutput, citableSources } from "./registry/output-checks";
@@ -118,6 +120,7 @@ export function roleGuidance(
   task: Pick<WfMissionTask, "key" | "capabilityIds">,
   upstream: UpstreamArtefact[],
   clarificationAnswers: Readonly<Record<string, string>> = {},
+  evidence: readonly WfEvidence[] = [],
 ):
   | {
       extraInstructions: string;
@@ -130,20 +133,21 @@ export function roleGuidance(
   const instructions = stage && lead ? roleInstructions(lead, stage) : null;
   if (!stage || !instructions) return {};
   const given = upstream.map((u) => u.content).join("\n\n");
+  const usable = evidenceForPrompt(evidence).used;
   return {
     extraInstructions: instructions.text,
     instructionVersion: instructions.version,
     extraCheck: (content) => {
-      // Founder-supplied evidence arrives in Phase 3; until then no interview or survey claim is accepted.
+      // Only evidence the model was actually given can be cited or excuse a research claim.
       const r = checkStageOutput(
         stage,
         content,
         {
-          founderEvidence: false,
-          sources: citableSources(
-            clarificationAnswers,
-            upstream.map((u) => u.title),
-          ),
+          founderEvidence: usable.length > 0,
+          sources: citableSources(clarificationAnswers, [
+            ...upstream.map((u) => u.title),
+            ...usable.map((e) => e.title),
+          ]),
         },
         given,
       );
@@ -484,6 +488,10 @@ export async function advanceMission(input: {
       : isStructureCheck(task)
         ? savedPrototypes(bundle)
         : [];
+    // Founder evidence as it stands now: added or removed evidence applies from the next step.
+    const evidence = task.produces
+      ? (await transaction((_db, q) => listEvidence(q, workspaceId, missionId))).items
+      : [];
     // Only spend a model call when the step is affordable and permitted.
     generated =
       task.produces &&
@@ -496,7 +504,8 @@ export async function advanceMission(input: {
             mission,
             task,
             upstream,
-            ...roleGuidance(task, upstream, mission.clarificationAnswers),
+            evidence,
+            ...roleGuidance(task, upstream, mission.clarificationAnswers, evidence),
           })
         : undefined;
     // A configured model that failed never turns into a simulated draft.
@@ -779,6 +788,9 @@ export async function advanceMission(input: {
         ? { role: roleId, instructions: generated?.instructionVersion ?? null }
         : {}),
       ...(calls.length ? { modelCalls: calls.length } : {}),
+      ...(modelSaw && generated?.evidenceUsed?.length
+        ? { evidence: generated.evidenceUsed.map((e) => ({ id: e.id, title: e.title })) }
+        : {}),
     };
     await auditTx(query, {
       workspaceId,

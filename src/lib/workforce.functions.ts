@@ -23,6 +23,13 @@ import {
   savePlanVersion,
   TERMINAL,
 } from "@/lib/workforce/plan-store.server";
+import {
+  MAX_EVIDENCE_FILE_BYTES,
+  MAX_EVIDENCE_NOTE_CHARS,
+  readFile,
+  readNote,
+  type EvidenceList,
+} from "@/lib/workforce/evidence";
 import { generateMissionPlan, deriveMissionTitle } from "@/lib/workforce/planner";
 import type {
   DeliveryReport,
@@ -960,4 +967,99 @@ export const setWorkspaceStopped = createServerFn({ method: "POST" })
         await import("@/lib/workforce/worker.server")
       ).kickWorker({ workspaceId: workspace.id });
     return mapWorkspace(row as never);
+  });
+
+/** Founder-supplied evidence for a mission. `available` is false until migration 0027 is applied. */
+export const getMissionEvidence = createServerFn({ method: "GET" })
+  .middleware([requireAuth])
+  .validator((data: unknown) => z.object({ missionId: z.string().uuid() }).parse(data))
+  .handler(async ({ context, data }): Promise<EvidenceList> => {
+    const { supabase, userId } = context;
+    const { workspace } = await ensureWorkspace(supabase, userId);
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    const { listEvidence } = await import("@/lib/workforce/evidence.server");
+    return neonTransaction((_tx, query) => listEvidence(query, workspace.id, data.missionId));
+  });
+
+const evidenceInput = z.discriminatedUnion("kind", [
+  z.object({
+    missionId: z.string().uuid(),
+    kind: z.literal("note"),
+    title: z.string().max(200),
+    text: z.string().max(MAX_EVIDENCE_NOTE_CHARS + 1000),
+  }),
+  z.object({
+    missionId: z.string().uuid(),
+    kind: z.literal("file"),
+    title: z.string().max(200),
+    fileName: z.string().min(1).max(255),
+    mediaType: z.string().max(200),
+    byteSize: z.number().int().nonnegative(),
+    // Sent only for files within the size limit; base64 of at most MAX_EVIDENCE_FILE_BYTES.
+    base64: z
+      .string()
+      .max(Math.ceil(MAX_EVIDENCE_FILE_BYTES / 3) * 4)
+      .optional(),
+  }),
+]);
+
+/**
+ * Adds a note or an uploaded text file. A file the server cannot read is still
+ * recorded, as unreadable with the reason, so it is reported and not skipped.
+ */
+export const addMissionEvidence = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) => evidenceInput.parse(data))
+  .handler(async ({ context, data }): Promise<EvidenceList> => {
+    const { supabase, userId } = context;
+    const { workspace } = await ensureWorkspace(supabase, userId);
+    const reading =
+      data.kind === "note"
+        ? readNote(data.text)
+        : readFile({
+            fileName: data.fileName,
+            mediaType: data.mediaType,
+            byteSize: data.byteSize,
+            bytes: data.base64 === undefined ? null : Buffer.from(data.base64, "base64"),
+          });
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    const { addEvidence, listEvidence } = await import("@/lib/workforce/evidence.server");
+    return neonTransaction(async (_tx, query) => {
+      if (!(await listEvidence(query, workspace.id, data.missionId)).available)
+        throw new Error("Evidence needs a database update that has not been applied yet.");
+      await addEvidence(query, {
+        workspaceId: workspace.id,
+        missionId: data.missionId,
+        actorId: userId,
+        kind: data.kind,
+        title: data.title,
+        reading,
+        ...(data.kind === "file"
+          ? { file: { name: data.fileName, mediaType: data.mediaType, byteSize: data.byteSize } }
+          : {}),
+      });
+      return listEvidence(query, workspace.id, data.missionId);
+    });
+  });
+
+/** Removes evidence from a mission that has not finished. The record is kept as provenance. */
+export const removeMissionEvidence = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z.object({ missionId: z.string().uuid(), evidenceId: z.string().uuid() }).parse(data),
+  )
+  .handler(async ({ context, data }): Promise<EvidenceList> => {
+    const { supabase, userId } = context;
+    const { workspace } = await ensureWorkspace(supabase, userId);
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    const { listEvidence, removeEvidence } = await import("@/lib/workforce/evidence.server");
+    return neonTransaction(async (_tx, query) => {
+      await removeEvidence(query, {
+        workspaceId: workspace.id,
+        missionId: data.missionId,
+        evidenceId: data.evidenceId,
+        actorId: userId,
+      });
+      return listEvidence(query, workspace.id, data.missionId);
+    });
   });
