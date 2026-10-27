@@ -33,6 +33,8 @@ The production Neon branch is `br-fancy-breeze-zatt9ocp` in project `spring-wind
 | 0025 corrections to 0024                                           | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0026 run role and instruction version (`wf_task_runs`)             | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0027 founder evidence (`wf_mission_evidence`)                      | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
+| 0028 product memory (`wf_product_memory`) and 0027 constraints     | Not applied — needs owner approval          | Applied 27 Oct 2026                  |
+| 0029 conflicting evidence (`wf_memory_conflicts`)                  | Not applied — needs owner approval          | Applied 27 Oct 2026                  |
 
 Migrations 0020–0023 were applied to production in a single transaction. The six `psi_*` tables are owned by the server role, have no client grants, and have row-level security enabled. No table rows were read during or after the change.
 
@@ -156,6 +158,9 @@ Rollback: redeploy the earlier build and leave the table; earlier builds never r
 2. Drop the table only when it is empty. If it holds rows, they are founder records: export them under the owner's data-handling instructions first, or keep the table.
 
 ```sql
+begin;
+-- Blocks every read and write until the transaction ends, so no row can arrive between the check and the drop.
+lock table public.wf_mission_evidence in access exclusive mode;
 do $$
 begin
   if exists (select 1 from public.wf_mission_evidence) then
@@ -163,6 +168,67 @@ begin
   end if;
   drop table public.wf_mission_evidence;
 end $$;
+commit;
 ```
 
 3. Update the ledger with the date, the reason and the snapshot ID.
+
+## 0028 product memory
+
+Adds `wf_product_memory`: what the team has learned about one product (a project) across missions. Each entry keeps the label it was written with (sourced fact, assumption, inference, speculative, requirement, decision or source), its source, where it came from and when it was first and last seen. A partial unique index keeps one current entry per product, kind and statement; retired entries stay as history. The missions an entry was first and last seen in are held to its product by composite keys on `wf_missions (id, project_id)`; deleting a mission clears only that reference (`ON DELETE SET NULL (column)`, Postgres 15+; Neon runs 18). Server role only, row-level security on.
+
+It also tightens 0027, as the review of #42 asked:
+
+- unique `(id, workspace_id)` indexes on `wf_missions` and `wf_projects`;
+- a composite foreign key from `wf_mission_evidence (mission_id, workspace_id)`;
+- a check that readable evidence carries a content hash.
+
+The app has always written both, so existing rows pass. Additive and re-runnable; no existing data is changed.
+
+Safe in either order. Code from before 0028 never reads the table. Code after it checks for the table first: until it exists, nothing is remembered and the product memory page says so.
+
+Rollback: redeploy the earlier build and leave everything in place; earlier builds ignore the table and the constraints. Only if the table itself must go, with the owner's approval, after the earlier build is live:
+
+1. Take a Neon snapshot of the production branch, or create a branch from it, and record its ID in the ledger.
+2. If 0029 is applied, roll it back first (its conflicts reference this table, so the drop below would fail). Then drop the table, only when it is empty. Memory is derived from artefacts, decisions and evidence that stay in their own tables, but it records when each entry was first and last seen, which cannot be rebuilt. Export it under the owner's data-handling instructions first, or keep the table.
+
+```sql
+begin;
+-- Blocks every read and write until the transaction ends, so no row can arrive between the check and the drop.
+lock table public.wf_product_memory in access exclusive mode;
+do $$
+begin
+  if exists (select 1 from public.wf_product_memory) then
+    raise exception 'wf_product_memory holds entries; export them first. Nothing was changed.';
+  end if;
+  drop table public.wf_product_memory;
+end $$;
+commit;
+```
+
+3. The 0027 constraints and the two unique indexes can stay; they only refuse rows that break workspace isolation or provenance. To remove them anyway: `alter table public.wf_mission_evidence drop constraint if exists wf_mission_evidence_mission_workspace_fkey, drop constraint if exists wf_mission_evidence_hash_check;` then `drop index if exists public.wf_missions_id_workspace_uidx, public.wf_projects_id_workspace_uidx, public.wf_missions_id_project_uidx;`. Drop `wf_missions_id_project_uidx` once `wf_product_memory` is gone, since nothing else uses it.
+4. Update the ledger with the date, the reason and the snapshot ID.
+
+## 0029 conflicting evidence
+
+Adds `wf_memory_conflicts`: a link between two product-memory entries that the founder has marked as unable to both be true. Neither entry is changed or merged. Resolving a conflict records the founder's reasoning, who resolved it and when, and both entries stay. Each pair is stored in a fixed order and has at most one open conflict; once resolved it can be flagged again, and the resolved rows stay as history. Composite foreign keys hold both entries to the conflict's own product and workspace, backed by a unique `(id, project_id, workspace_id)` index on `wf_product_memory`. Server role only, row-level security on. Additive and re-runnable; no existing data is changed.
+
+Safe in either order. Code from before 0029 never reads the table. Code after it checks for the table first: until it exists, the memory page does not offer conflicts and steps are shown none.
+
+Rollback: redeploy the earlier build and leave the table. Only if it must go, with the owner's approval, after the earlier build is live, take a Neon snapshot and record its ID here, then:
+
+```sql
+begin;
+lock table public.wf_memory_conflicts in access exclusive mode;
+do $$
+begin
+  if exists (select 1 from public.wf_memory_conflicts) then
+    raise exception 'wf_memory_conflicts holds the founder''s conflict decisions; export them first. Nothing was changed.';
+  end if;
+  drop table public.wf_memory_conflicts;
+  drop index if exists public.wf_product_memory_scope_uidx;
+end $$;
+commit;
+```
+
+Update the ledger with the date, the reason and the snapshot ID.

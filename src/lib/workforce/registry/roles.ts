@@ -17,12 +17,16 @@ import { getCapability } from "./load";
 
 export type StageKey = keyof typeof STAGE_CONTRACTS;
 
-/** What a role may read. Narrower scopes are enforced from Phase 3 onwards. */
+/**
+ * What a role may read. The worker gives a role's model step only the scopes
+ * listed here (worker.server.ts, contextFor); the mission request is always given.
+ */
 export const CONTEXT_SCOPES = [
   "mission_request",
   "clarification_answers",
   "upstream_artefacts",
   "founder_evidence",
+  "product_memory",
 ] as const;
 export type ContextScope = (typeof CONTEXT_SCOPES)[number];
 
@@ -68,7 +72,12 @@ export const ROLE_SPECS: readonly RoleSpec[] = [
       { stage: "charter", produces: "mission_charter" },
       { stage: "release", produces: "release_pack" },
     ],
-    contextScopes: ["mission_request", "clarification_answers", "upstream_artefacts"],
+    contextScopes: [
+      "mission_request",
+      "clarification_answers",
+      "upstream_artefacts",
+      "product_memory",
+    ],
     tools: [],
     escalateWhen: [
       "The request is ambiguous about the user or the outcome",
@@ -87,7 +96,7 @@ export const ROLE_SPECS: readonly RoleSpec[] = [
       { name: "Clarification answers", from: "mission", required: false },
     ],
     leads: [{ stage: "charter", produces: "mission_charter" }],
-    contextScopes: ["mission_request", "clarification_answers"],
+    contextScopes: ["mission_request", "clarification_answers", "product_memory"],
     tools: [],
     escalateWhen: ["The target user or desired outcome cannot be stated from the inputs"],
     executionMode: "model_workflow",
@@ -106,7 +115,7 @@ export const ROLE_SPECS: readonly RoleSpec[] = [
       { name: "Founder-supplied sources", from: "mission", required: false },
     ],
     leads: [{ stage: "research", produces: "research_dossier" }],
-    contextScopes: ["mission_request", "upstream_artefacts", "founder_evidence"],
+    contextScopes: ["mission_request", "upstream_artefacts", "founder_evidence", "product_memory"],
     tools: [],
     escalateWhen: ["A decision depends on a claim with no source", "Sources conflict"],
     executionMode: "model_workflow",
@@ -124,7 +133,7 @@ export const ROLE_SPECS: readonly RoleSpec[] = [
       { stage: "research", produces: "research_dossier" },
       { stage: "evolution", produces: "evolution_plan" },
     ],
-    contextScopes: ["mission_request", "upstream_artefacts", "founder_evidence"],
+    contextScopes: ["mission_request", "upstream_artefacts", "founder_evidence", "product_memory"],
     tools: [],
     escalateWhen: ["Evidence is too thin to support any finding"],
     executionMode: "model_workflow",
@@ -134,9 +143,18 @@ export const ROLE_SPECS: readonly RoleSpec[] = [
     purpose:
       "Maps the market, customer segments, competitors and demand hypotheses, and names the evidence gaps.",
     mustNot: [...MUST_NOT_ALWAYS, "State market sizes or competitor facts without a source"],
-    inputs: [{ name: "Mission charter", from: "upstream", required: true }],
+    inputs: [
+      { name: "Mission charter", from: "upstream", required: true },
+      { name: "Founder-supplied sources", from: "mission", required: false },
+    ],
     leads: [{ stage: "market", produces: "research_dossier" }],
-    contextScopes: ["mission_request", "clarification_answers", "upstream_artefacts"],
+    contextScopes: [
+      "mission_request",
+      "clarification_answers",
+      "upstream_artefacts",
+      "founder_evidence",
+      "product_memory",
+    ],
     tools: [],
     escalateWhen: ["The segment cannot be identified from the inputs"],
     executionMode: "model_workflow",
@@ -155,7 +173,12 @@ export const ROLE_SPECS: readonly RoleSpec[] = [
       { name: "Research dossier", from: "upstream", required: true },
     ],
     leads: [{ stage: "prd", produces: "prd" }],
-    contextScopes: ["mission_request", "clarification_answers", "upstream_artefacts"],
+    contextScopes: [
+      "mission_request",
+      "clarification_answers",
+      "upstream_artefacts",
+      "product_memory",
+    ],
     tools: [],
     escalateWhen: ["Requirements conflict with the charter's constraints"],
     executionMode: "model_workflow",
@@ -207,6 +230,17 @@ export function roleLimits(id: string) {
     maxCredits: cap.limits.max_usage_credits,
   };
 }
+
+/**
+ * What a stage step with no defined lead role may read: everything but the
+ * founder's evidence, which only roles that declare it receive.
+ */
+export const DEFAULT_CONTEXT_SCOPES: readonly ContextScope[] = [
+  "mission_request",
+  "clarification_answers",
+  "upstream_artefacts",
+  "product_memory",
+];
 
 export function getRoleSpec(id: string): RoleSpec | undefined {
   return ROLE_SPECS.find((r) => r.id === id);

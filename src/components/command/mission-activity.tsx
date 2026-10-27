@@ -16,6 +16,7 @@ export function MissionActivity({
   active,
   tasks,
   onProgress,
+  refreshKey = 0,
 }: {
   missionId: string;
   /** True while the worker may be running steps (queued or running). */
@@ -23,6 +24,8 @@ export function MissionActivity({
   tasks: readonly WfMissionTask[];
   /** Called when new events arrive, so the page can refresh the mission. */
   onProgress: () => void;
+  /** Changing it reads new events once, for actions taken on the page while nothing runs. */
+  refreshKey?: number;
 }) {
   const [events, setEvents] = useState<WfMissionEvent[]>([]);
   const [failed, setFailed] = useState(false);
@@ -58,7 +61,7 @@ export function MissionActivity({
       stopped = true;
       if (timer) clearTimeout(timer);
     };
-  }, [missionId, active]);
+  }, [missionId, active, refreshKey]);
 
   const titles = new Map(tasks.map((t) => [t.id, t.title]));
   const newest = [...events].reverse();

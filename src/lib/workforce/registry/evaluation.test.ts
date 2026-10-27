@@ -2,7 +2,12 @@ import { describe, expect, it } from "vitest";
 import { FIXTURE_LABEL, STAGE_FIXTURES } from "./eval-fixtures";
 import { runFixtureChecks, runModelEvaluation, type StageGenerator } from "./evaluation";
 import { INSTRUCTION_VERSIONS, leadRole, roleInstructions, stageForTask } from "./instructions";
-import { citableSources, SOURCE_NAMES } from "./output-checks";
+import {
+  acknowledgesConflict,
+  checkStageOutput,
+  citableSources,
+  SOURCE_NAMES,
+} from "./output-checks";
 import { ROLE_SPECS } from "./roles";
 
 describe("role evaluation suites", () => {
@@ -74,5 +79,63 @@ describe("citable sources", () => {
       SOURCE_NAMES.request,
       SOURCE_NAMES.clarifications,
     ]);
+  });
+});
+
+describe("PRD claim checks", () => {
+  const ctx = { founderEvidence: false, sources: ["mission request"] };
+  const prd = (problem: string) => `## Problem statement
+${problem}
+
+## Target users
+- [Assumption] Independent tutors.
+
+## Value proposition
+Booking without messages.
+
+## Requirements
+- R1: A student can book a slot.
+
+## Acceptance criteria
+- R1: A booked slot leaves the open list.
+
+## Success metrics
+- Bookings made without a message.
+
+## Risks
+- Stale availability.
+
+## Out of scope
+- Payments in the first release.`;
+  const failures = (problem: string) => checkStageOutput("prd", prd(problem), ctx).failures;
+
+  it("accepts a cited input by its exact name, never a fragment of it", () => {
+    expect(failures("- [Sourced fact] Bookings are by message (Source: Mission Request.)")).toEqual(
+      [],
+    );
+    expect(failures("- [Sourced fact] Bookings are by message (Source: mission re)")).toEqual([
+      "Problem statement: sourced fact(s) cite a source that was not given",
+    ]);
+  });
+
+  it("needs a claim after the label, and lets sub-headings organise claims", () => {
+    expect(failures("- [Assumption]")).toEqual([
+      "Problem statement: 1 claim(s) without an evidence label",
+    ]);
+    expect(failures("### Today\n- [Inference] Tutors lose bookings.")).toEqual([]);
+  });
+});
+
+describe("acknowledging conflicting evidence", () => {
+  it("accepts an affirmative statement in any inflection", () => {
+    expect(acknowledgesConflict("The two call notes conflict on booking day.")).toBe(true);
+    expect(acknowledgesConflict("- [Inference] Conflicting evidence: Sundays and Mondays.")).toBe(
+      true,
+    );
+  });
+  it("rejects a denial or no mention", () => {
+    expect(acknowledgesConflict("No conflict is present.")).toBe(false);
+    expect(acknowledgesConflict("The sources are not in conflict.")).toBe(false);
+    expect(acknowledgesConflict("Tutors book on Sundays.")).toBe(false);
   });
 });

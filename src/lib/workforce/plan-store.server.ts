@@ -10,7 +10,12 @@
 import type { Executor } from "@/lib/db/builder";
 import { encodePlanAcceptanceCriteria, encodeTaskDescription } from "./capability-persistence";
 import { planHash } from "./plan-hash";
-import type { GeneratedPlan, MissionStatus, PlannedTask } from "./types";
+import {
+  TERMINAL_MISSION_STATUSES,
+  type GeneratedPlan,
+  type MissionStatus,
+  type PlannedTask,
+} from "./types";
 
 /** Statuses in which the plan may still be changed: nothing has run yet. */
 export const PRE_EXECUTION: readonly MissionStatus[] = [
@@ -387,12 +392,7 @@ export async function approveExternalForPlan(
 }
 
 /** Mission statuses from which nothing more can happen. */
-export const TERMINAL: readonly MissionStatus[] = [
-  "completed",
-  "partially_completed",
-  "failed",
-  "cancelled",
-];
+export const TERMINAL = TERMINAL_MISSION_STATUSES;
 
 /** Statuses a running mission may be paused from. */
 export const PAUSABLE: readonly MissionStatus[] = ["queued", "running", "blocked"];

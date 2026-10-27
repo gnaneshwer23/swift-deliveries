@@ -25,7 +25,7 @@ Each item records who supplied it and when. Readable items also store a SHA-256 
 
 Removing an item takes it out of the mission but keeps the record. Additions and removals are logged as `evidence.added` and `evidence.removed` events.
 
-When a model writes a stage, the artefact's evidence items list each piece of founder evidence it was given, as `evidence:<id>@sha256:<hash>`. The `task.completed` event lists the same items. That shows which version of which evidence a claim could have come from.
+When a model writes a stage, the artefact's evidence items list each piece of founder evidence it was given, as `evidence:<id>@sha256:<hash>`. The `task.completed` event lists the id and title of each item, without the hash. The hash on each artefact evidence item is what shows which version of the evidence a claim could have come from.
 
 ## What reaches a model
 
@@ -33,15 +33,9 @@ When a model writes a stage, the artefact's evidence items list each piece of fo
 - Evidence is given to the model as data, inside `<evidence>` tags that its own text cannot close. The system prompt tells the model to ignore any instructions inside it.
 - Each step gets up to 40,000 characters of evidence, oldest first, counted after escaping. An item that is cut short is marked `truncated`. Items left out for lack of room are named in the prompt as not included, so they cannot be cited.
 - A role may cite an item only if the step was actually given it.
-- Interview, survey or call claims are accepted only when the step was given evidence that records such research. An unrelated note does not count.
+- Interview, survey or call claims are accepted only when the step was given evidence that affirmatively records such research. Only the text the model was actually shown counts: research mentioned before the cut-off of a truncated item counts, because the model saw it; anything past the cut-off, an unrelated note or a negated mention ("no interviews yet") does not.
 - A step reads the mission's evidence when it builds its prompt, just after it claims its task. A change made before then applies to that step; a later change applies from the next step.
 
-## Not in 3a
+## Product memory
 
-The rest of Phase 3 is still to come:
-
-- product-level memory that lasts across missions;
-- conflicting-evidence and stale-context flags;
-- per-role context limits;
-- a rule that PRD claims must be sourced or labelled;
-- approved web research.
+Readable evidence that is safe to show a model also becomes a **source** in the product's memory (`docs/product-memory.md`), so later missions on the same product can carry a sourced fact forward with its original source. Removing the last copy of that evidence from the product retires the source, and facts citing it are marked possibly stale.

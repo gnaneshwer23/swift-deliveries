@@ -20,6 +20,8 @@ export type OutputCheckContext = {
    * them. The mission request and clarification answers are always inputs.
    */
   sources: readonly string[];
+  /** Unresolved conflicts from product memory the role was shown; it must say they conflict. */
+  conflictsGiven?: number;
 };
 
 /**
@@ -44,6 +46,30 @@ export function citableSources(
   ];
 }
 
+/** Stages whose output weighs evidence, and so must state any conflict it was shown. */
+const CONFLICT_STAGES: readonly StageKey[] = [
+  "charter",
+  "market",
+  "research",
+  "prd",
+  "evolution",
+  "release",
+];
+
+const CONFLICT_WORD = /\bconflict(?:s|ed|ing)?\b/i;
+const NEGATED_CONFLICT =
+  /\b(?:no|not|never|none|without|nor)\b(?:\W+\w+){0,3}?\W+conflict(?:s|ed|ing)?\b/i;
+
+/**
+ * True when some sentence affirmatively says the evidence conflicts. A denial
+ * such as "no conflict is present" does not count.
+ */
+export function acknowledgesConflict(markdown: string): boolean {
+  return markdown
+    .split(/(?<=[.!?])\s+|\n+/)
+    .some((sentence) => CONFLICT_WORD.test(sentence) && !NEGATED_CONFLICT.test(sentence));
+}
+
 export type OutputCheck = { ok: boolean; failures: string[] };
 
 const LABEL = new RegExp(`^\\s*[-*]\\s*\\[(${EVIDENCE_LABELS.join("|")})\\]`, "i");
@@ -52,7 +78,7 @@ const SOURCE = /\(source:\s*([^)]{3,})\)/i;
 const NUMBER_CLAIM = /([$£€]\s?\d|\d+(\.\d+)?\s?(%|percent|million|billion|bn|m\b|k\b))/i;
 
 /** Claims of research that only the founder can supply; never accepted from a model alone. */
-const INVENTED_RESEARCH = [
+export const INVENTED_RESEARCH: readonly RegExp[] = [
   /\bwe (interviewed|surveyed|spoke (to|with))\b/i,
   /\b(in|from) (our|the) (interviews|survey|user research)\b/i,
   /\b(customers|users|tutors|participants) (told us|said that)\b/i,
@@ -79,13 +105,20 @@ function section(markdown: string, heading: string): string | undefined {
 }
 
 /** A sourced fact names a source that was among the role's inputs. */
+/** A source name as compared: case, spacing and closing punctuation do not matter. */
+const sourceKey = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .replace(/[.;:,\s]+$/, "")
+    .trim();
+
+/** The cited name must be one of the given inputs exactly; a fragment of one is not a source. */
 function citesKnownSource(line: string, sources: readonly string[]): boolean {
-  const cited = SOURCE.exec(line)?.[1]?.toLowerCase().trim();
+  const cited = SOURCE.exec(line)?.[1];
   if (!cited) return false;
-  return sources.some((s) => {
-    const name = s.toLowerCase().trim();
-    return name.length > 2 && (cited.includes(name) || name.includes(cited));
-  });
+  const key = sourceKey(cited);
+  return sources.some((s) => sourceKey(s) === key);
 }
 
 /** Every bullet in the section carries an evidence label; sourced facts cite a given input. */
@@ -123,6 +156,35 @@ function numbersAreBacked(
     failures.push(`${heading}: ${bare.length} figure(s) neither sourced nor labelled`);
 }
 
+// A label must be followed by the claim itself.
+const LINE_LABEL = new RegExp(`^\\s*(?:[-*]\\s*)?\\[(${EVIDENCE_LABELS.join("|")})\\]\\s*\\S`, "i");
+const LINE_SOURCED = /^\s*(?:[-*]\s*)?\[sourced fact\]/i;
+
+/**
+ * Every line of a section that states something about the world is labelled,
+ * whether or not it is a bullet: a PRD may not present an unsourced claim as fact.
+ */
+function everyClaimLabelled(
+  markdown: string,
+  heading: string,
+  failures: string[],
+  sources: readonly string[],
+) {
+  const lines = (section(markdown, heading) ?? "")
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean);
+  // Sub-headings organise claims; they are not claims themselves.
+  const unlabelled = lines.filter((l) => !/^#{1,6}\s/.test(l) && !LINE_LABEL.test(l));
+  if (unlabelled.length)
+    failures.push(`${heading}: ${unlabelled.length} claim(s) without an evidence label`);
+  const sourced = lines.filter((l) => LINE_SOURCED.test(l));
+  if (sourced.some((l) => !SOURCE.test(l)))
+    failures.push(`${heading}: sourced fact(s) without a (Source: …)`);
+  else if (sourced.some((l) => !citesKnownSource(l, sources)))
+    failures.push(`${heading}: sourced fact(s) cite a source that was not given`);
+}
+
 const ids = (text: string | undefined) => new Set((text ?? "").match(/\bR\d+\b/g) ?? []);
 
 const LEADING_ID = /^\s*[-*]\s*(R\d+)\s*:/;
@@ -142,7 +204,10 @@ const STAGE_RULES: Partial<Record<StageKey, Rule>> = {
   research(md, f, _u, ctx) {
     labelledClaims(md, "Findings", f, ctx.sources);
   },
-  prd(md, f) {
+  prd(md, f, _u, ctx) {
+    // Claims about the problem and its users are evidence; the rest of a PRD is proposal.
+    for (const h of ["Problem statement", "Target users"])
+      everyClaimLabelled(md, h, f, ctx.sources);
     const reqs = bullets(section(md, "Requirements"));
     if (!reqs.length) {
       f.push("Requirements: no requirements listed");
@@ -198,6 +263,11 @@ export function checkStageOutput(
     failures.push("claims an approval that only the founder can give");
   if (CLAIMS_DEPLOYMENT.test(markdown))
     failures.push("claims a deployment or release that has not happened");
+  // Conflicting evidence is kept and stated, never averaged away.
+  if (ctx.conflictsGiven && CONFLICT_STAGES.includes(stage) && !acknowledgesConflict(markdown))
+    failures.push(
+      "does not state the conflicting evidence it was given; keep both sides and say they conflict",
+    );
   STAGE_RULES[stage]?.(markdown, failures, upstream, ctx);
   return { ok: failures.length === 0, failures };
 }

@@ -20,6 +20,14 @@ export const MISSION_STATUSES = [
 ] as const;
 export type MissionStatus = (typeof MISSION_STATUSES)[number];
 
+/** Mission statuses from which nothing more can happen. Shared by the server guards and the UI. */
+export const TERMINAL_MISSION_STATUSES: readonly MissionStatus[] = [
+  "completed",
+  "partially_completed",
+  "failed",
+  "cancelled",
+];
+
 export const PERMISSION_LEVELS = [
   "plan",
   "create",

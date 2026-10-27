@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { STAGE_FIXTURES } from "./registry/eval-fixtures";
 import type { WfEvidence } from "./evidence";
-import { roleGuidance } from "./worker.server";
+import { contextScopesFor, roleGuidance } from "./worker.server";
 
 const prd = STAGE_FIXTURES.find((f) => f.stage === "prd")!;
 const research = STAGE_FIXTURES.find((f) => f.stage === "research")!;
@@ -29,7 +29,12 @@ describe("role guidance for a running task", () => {
     expect("extraInstructions" in g && g.extraInstructions).toMatch(/DX-023/);
     if (!("extraCheck" in g)) throw new Error("expected a check");
     expect(g.extraCheck(prd.good)).toBeNull();
-    expect(g.extraCheck(prd.bad[0]!.output)).toMatch(/must start with its ID/);
+    expect(
+      g.extraCheck(prd.bad.find((b) => b.name === "requirement without an ID")!.output),
+    ).toMatch(/must start with its ID/);
+    expect(
+      g.extraCheck(prd.bad.find((b) => b.name === "states an unsourced claim as fact")!.output),
+    ).toMatch(/without an evidence label/);
   });
 
   it("adds nothing for a stage no defined role leads", () => {
@@ -68,5 +73,37 @@ describe("role guidance for a running task", () => {
       /interviews or survey results/,
     );
     expect(check([evidence("Interview notes", "12 tutor calls, Oct")])).toBeNull();
+  });
+
+  it("requires output to state conflicting evidence it was shown", () => {
+    const g = roleGuidance({ key: "research", capabilityIds: ["DX-018"] }, [], {}, [], [], 1);
+    if (!("extraCheck" in g)) throw new Error("expected a check");
+    expect(g.extraCheck(research.good)).toMatch(/does not state the conflicting evidence/);
+    const stated = research.good.replace(
+      "## Evidence quality",
+      "- [Inference] Earlier missions conflict on which day tutors book; both are kept.\n\n## Evidence quality",
+    );
+    expect(g.extraCheck(stated)).toBeNull();
+  });
+
+  it("gives each role only the context its definition allows", () => {
+    expect(contextScopesFor({ key: "research", capabilityIds: ["DX-018"] })).toEqual([
+      "mission_request",
+      "upstream_artefacts",
+      "founder_evidence",
+      "product_memory",
+    ]);
+    // UX works from the requirements: no founder evidence, no product memory.
+    expect(contextScopesFor({ key: "ux", capabilityIds: ["DX-035"] })).toEqual([
+      "mission_request",
+      "upstream_artefacts",
+    ]);
+    // A stage no defined role leads gets the default: everything but founder evidence.
+    expect(contextScopesFor({ key: "architecture", capabilityIds: [] })).toEqual([
+      "mission_request",
+      "clarification_answers",
+      "upstream_artefacts",
+      "product_memory",
+    ]);
   });
 });

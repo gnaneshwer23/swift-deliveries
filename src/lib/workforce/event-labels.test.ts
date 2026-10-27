@@ -51,6 +51,46 @@ describe("describeEvent", () => {
     });
   });
 
+  it("describes evidence as added, unreadable, withheld or removed", () => {
+    expect(
+      describeEvent(ev("evidence.added", { title: "Call notes", status: "readable" }, "user")),
+    ).toEqual({ text: "You added evidence “Call notes”", tone: "control" });
+    expect(
+      describeEvent(
+        ev(
+          "evidence.added",
+          { title: "Scan", status: "unreadable", reason: "PDF files can't be read yet." },
+          "user",
+        ),
+      ),
+    ).toEqual({ text: "“Scan” could not be read: PDF files can't be read yet.", tone: "problem" });
+    expect(
+      describeEvent(
+        ev(
+          "evidence.added",
+          { title: "List", status: "readable", withheldFromModel: true },
+          "user",
+        ),
+      ).text,
+    ).toMatch(/not sent to a model/);
+    expect(describeEvent(ev("evidence.removed", { title: "Call notes" }, "user"))).toEqual({
+      text: "You removed evidence “Call notes”",
+      tone: "control",
+    });
+  });
+
+  it("describes gate decisions and sign-offs", () => {
+    expect(
+      describeEvent(ev("gate.approved", { gate: "gate_scope" }, "user"), "Scope gate").text,
+    ).toBe("You approved “Scope gate”");
+    expect(describeEvent(ev("gate.rejected", {}, "user"), "Scope gate").text).toBe(
+      "You rejected “Scope gate”",
+    );
+    expect(describeEvent(ev("artefact.reviewed", { title: "PRD" }, "user")).text).toBe(
+      "You signed off “PRD” as human-reviewed",
+    );
+  });
+
   it("shows unknown event types by name rather than guessing", () => {
     expect(describeEvent(ev("something.new")).text).toBe("something.new");
   });

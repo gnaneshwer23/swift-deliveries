@@ -27,6 +27,7 @@ import {
   PERMISSION_LABELS,
   QUALITY_LABEL_DISPLAY,
   STATUS_LABELS,
+  TERMINAL_MISSION_STATUSES,
   type LifecycleStage,
   type PermissionLevel,
   type QualityLabel,
@@ -66,8 +67,11 @@ function MissionDetail() {
   const [showRejectBox, setShowRejectBox] = useState(false);
   const [runNote, setRunNote] = useState<string | null>(null);
   const [gateNote, setGateNote] = useState("");
+  const [activityKey, setActivityKey] = useState(0);
 
   const invalidate = async () => {
+    // Every action here writes the event log; read it even when no worker is running.
+    setActivityKey((k) => k + 1);
     await queryClient.invalidateQueries({ queryKey: ["command", "mission", missionId] });
     await queryClient.invalidateQueries({ queryKey: ["command", "bootstrap"] });
   };
@@ -566,14 +570,23 @@ function MissionDetail() {
             onProgress={() =>
               void queryClient.invalidateQueries({ queryKey: ["command", "mission", missionId] })
             }
+            refreshKey={activityKey}
           />
 
           <MissionEvidence
             missionId={missionId}
-            editable={
-              !["completed", "partially_completed", "failed", "cancelled"].includes(mission.status)
-            }
+            editable={!TERMINAL_MISSION_STATUSES.includes(mission.status)}
+            onChanged={() => setActivityKey((k) => k + 1)}
           />
+          <p className="text-sm -mt-2 mb-4">
+            <Link
+              to="/command/product-memory/$projectId"
+              params={{ projectId: mission.projectId }}
+              className="underline"
+            >
+              What this product has learned across missions
+            </Link>
+          </p>
 
           {/* 3. Task Graph & Step Execution */}
           <section className="cc-panel">

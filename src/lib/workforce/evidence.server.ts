@@ -14,6 +14,14 @@ import {
 } from "./evidence";
 import { appendEvent, lockMission, TERMINAL } from "./plan-store.server";
 import { containsLikelyPersonalIdentifiers } from "./privacy";
+import { recordMemory, retireEvidenceSource } from "./product-memory.server";
+
+async function projectOf(query: Executor, missionId: string): Promise<string> {
+  const [row] = await query(`select project_id from wf_missions where id = $1::uuid`, [
+    missionId,
+  ] as never);
+  return row!["project_id"] as string;
+}
 
 export function mapEvidence(row: Record<string, unknown>): WfEvidence {
   return {
@@ -65,7 +73,9 @@ export type AddEvidenceInput = {
 /** Records one piece of evidence, readable or not, and logs it on the mission. */
 export async function addEvidence(query: Executor, input: AddEvidenceInput): Promise<WfEvidence> {
   const title = normaliseTitle(input.title);
-  if (title.length < 3 || title.length > 120)
+  // Counted in code points, as the table's length check counts them.
+  const chars = [...title].length;
+  if (chars < 3 || chars > 120)
     throw new Error("Give the evidence a title between 3 and 120 characters.");
   const locked = await lockMission(query, input.workspaceId, input.missionId);
   if (TERMINAL.includes(locked.status))
@@ -109,6 +119,19 @@ export async function addEvidence(query: Executor, input: AddEvidenceInput): Pro
     ] as never,
   );
   const saved = mapEvidence(rows[0]!);
+  // Readable evidence safe to show a model becomes a source in the product's memory.
+  if (saved.status === "readable" && !saved.containsIdentifiers)
+    await recordMemory(
+      query,
+      {
+        workspaceId: input.workspaceId,
+        projectId: await projectOf(query, input.missionId),
+        missionId: input.missionId,
+        originKind: "evidence",
+        originId: saved.id,
+      },
+      [{ kind: "source", statement: saved.title, citation: null, refKey: null }],
+    );
   await appendEvent(query, {
     workspaceId: input.workspaceId,
     missionId: input.missionId,
@@ -143,6 +166,11 @@ export async function removeEvidence(
     [input.workspaceId, input.missionId, input.evidenceId, input.actorId] as never,
   );
   if (!rows[0]) throw new Error("Evidence not found.");
+  await retireEvidenceSource(query, {
+    workspaceId: input.workspaceId,
+    projectId: await projectOf(query, input.missionId),
+    title: rows[0]["title"] as string,
+  });
   await appendEvent(query, {
     workspaceId: input.workspaceId,
     missionId: input.missionId,

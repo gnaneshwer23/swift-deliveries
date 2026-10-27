@@ -31,6 +31,13 @@ import {
   type EvidenceList,
 } from "@/lib/workforce/evidence";
 import { generateMissionPlan, deriveMissionTitle } from "@/lib/workforce/planner";
+import {
+  decisionMemory,
+  staleness,
+  withdrawnSourceTitles,
+  type MemoryConflict,
+  type ProductMemoryEntry,
+} from "@/lib/workforce/product-memory";
 import type {
   DeliveryReport,
   MissionBundle,
@@ -670,7 +677,6 @@ export const decideStageGate = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { workspace } = await ensureWorkspace(supabase, userId);
     const db = wfDb(supabase);
-    const writeDb = await adminDb();
 
     const bundle = await loadMissionBundle(supabase, workspace.id, data.missionId);
     const gate = bundle.tasks.find((t) => t.id === data.taskId);
@@ -687,57 +693,112 @@ export const decideStageGate = createServerFn({ method: "POST" })
 
     const now = new Date().toISOString();
     const approve = data.decision === "approve";
-    const updated = await writeDb
-      .from("wf_mission_tasks")
-      .update({
-        status: approve ? "completed" : "failed",
-        completed_at: now,
-        updated_at: now,
-        evidence_notes: [
-          {
-            classification: "sourced_facts",
-            statement: `${approve ? "Approved" : "Rejected"} by operator${data.note?.trim() ? `: ${data.note.trim()}` : "."}`,
-            source: "operator.gate_decision",
-          },
-        ],
-      })
-      .eq("id", gate.id)
-      .in("status", ["blocked", "pending"])
-      .select("id");
-    if (!(updated.data ?? []).length) throw new Error("This gate has already been decided.");
+    // The decision, its effects and its place in the product's memory commit together.
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    const { recordMemory } = await import("@/lib/workforce/product-memory.server");
+    await neonTransaction(async (tx, query) => {
+      // Builder calls return errors instead of throwing; any error must abort the whole decision.
+      const must = <T extends { error?: { message: string } | null }>(res: T): T => {
+        if (res.error) throw new Error(res.error.message);
+        return res;
+      };
+      // Re-checked under the lock: a pause, cancel or other decision may have landed since the read.
+      const locked = await lockMission(query, workspace.id, data.missionId);
+      if (locked.status === "paused")
+        throw new Error("This mission is paused. Resume it before deciding this gate.");
+      if (TERMINAL.includes(locked.status)) throw new Error("This mission has already finished.");
+      const states = await query(
+        `select task_key, status from wf_mission_tasks where mission_id = $1::uuid`,
+        [data.missionId] as never,
+      );
+      const taskStatus = new Map(
+        states.map((r) => [r["task_key"] as string, r["status"] as string]),
+      );
+      if (!["blocked", "pending"].includes(taskStatus.get(gate.key) ?? ""))
+        throw new Error("This gate has already been decided.");
+      if (!gate.dependsOn.every((d) => taskStatus.get(d) === "completed"))
+        throw new Error("Upstream stages must complete before this gate can be decided.");
+      const updated = must(
+        await tx
+          .from("wf_mission_tasks")
+          .update({
+            status: approve ? "completed" : "failed",
+            completed_at: now,
+            updated_at: now,
+            evidence_notes: [
+              {
+                classification: "sourced_facts",
+                statement: `${approve ? "Approved" : "Rejected"} by operator${data.note?.trim() ? `: ${data.note.trim()}` : "."}`,
+                source: "operator.gate_decision",
+              },
+            ],
+          })
+          .eq("id", gate.id)
+          .in("status", ["blocked", "pending"])
+          .select("id"),
+      );
+      if (!((updated.data as unknown[] | null) ?? []).length)
+        throw new Error("This gate has already been decided.");
 
-    await writeDb.from("wf_approvals").insert({
-      mission_id: data.missionId,
-      workspace_id: workspace.id,
-      kind: "plan",
-      status: approve ? "approved" : "rejected",
-      decided_by: userId,
-      decided_at: now,
-      note: `Stage gate ${approve ? "approved" : "rejected"}: ${gate.title}${data.note?.trim() ? ` — ${data.note.trim()}` : ""} [gate:${gate.key}]`,
-    });
-    // Approved inputs become human-reviewed: the operator has signed off on them.
-    if (approve) {
-      const reviewedIds = bundle.artefacts
-        .filter(
-          (a) =>
-            a.taskId &&
-            gate.dependsOn.includes(bundle.tasks.find((t) => t.id === a.taskId)?.key ?? ""),
-        )
-        .filter((a) => !a.qualityLabels.includes("human_reviewed"));
-      for (const a of reviewedIds) {
-        await writeDb
-          .from("wf_artefacts")
-          .update({ quality_labels: [...a.qualityLabels, "human_reviewed"], updated_at: now })
-          .eq("id", a.id);
+      must(
+        await tx.from("wf_approvals").insert({
+          mission_id: data.missionId,
+          workspace_id: workspace.id,
+          kind: "plan",
+          status: approve ? "approved" : "rejected",
+          decided_by: userId,
+          decided_at: now,
+          note: `Stage gate ${approve ? "approved" : "rejected"}: ${gate.title}${data.note?.trim() ? ` — ${data.note.trim()}` : ""} [gate:${gate.key}]`,
+        }),
+      );
+      // Approved inputs become human-reviewed: the operator has signed off on them.
+      if (approve) {
+        const reviewed = bundle.artefacts
+          .filter(
+            (a) =>
+              a.taskId &&
+              gate.dependsOn.includes(bundle.tasks.find((t) => t.id === a.taskId)?.key ?? ""),
+          )
+          .filter((a) => !a.qualityLabels.includes("human_reviewed"));
+        for (const a of reviewed)
+          must(
+            await tx
+              .from("wf_artefacts")
+              .update({ quality_labels: [...a.qualityLabels, "human_reviewed"], updated_at: now })
+              .eq("id", a.id),
+          );
       }
-    }
-    // A pause or cancel that landed meanwhile keeps its status.
-    await writeDb
-      .from("wf_missions")
-      .update({ status: "queued", updated_at: now })
-      .eq("id", data.missionId)
-      .eq("workspace_id", workspace.id)
-      .in("status", ["queued", "running", "blocked"]);
+      // A pause or cancel that landed meanwhile keeps its status.
+      must(
+        await tx
+          .from("wf_missions")
+          .update({ status: "queued", updated_at: now })
+          .eq("id", data.missionId)
+          .eq("workspace_id", workspace.id)
+          .in("status", ["queued", "running", "blocked"]),
+      );
+      await appendEvent(query, {
+        workspaceId: workspace.id,
+        missionId: data.missionId,
+        taskId: gate.id,
+        type: approve ? "gate.approved" : "gate.rejected",
+        actorKind: "user",
+        actorId: userId,
+        data: { gate: gate.key, ...(data.note?.trim() ? { note: data.note.trim() } : {}) },
+      });
+      // The founder's decision becomes part of the product's memory.
+      await recordMemory(
+        query,
+        {
+          workspaceId: workspace.id,
+          projectId: bundle.mission.projectId,
+          missionId: data.missionId,
+          originKind: "gate",
+          originId: gate.id,
+        },
+        [decisionMemory(gate, approve, data.note)],
+      );
+    });
     await audit(db, {
       workspaceId: workspace.id,
       missionId: data.missionId,
@@ -813,6 +874,19 @@ export const markArtefactHumanReviewed = createServerFn({ method: "POST" })
         .eq("workspace_id", workspace.id);
     }
 
+    // The sign-off shows in the mission's activity log as well as the audit trail.
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    await neonTransaction((_tx, query) =>
+      appendEvent(query, {
+        workspaceId: workspace.id,
+        missionId: data.missionId,
+        taskId: (artRes.data.task_id as string | null) ?? null,
+        type: "artefact.reviewed",
+        actorKind: "user",
+        actorId: userId,
+        data: { artefactId: data.artefactId, title: artRes.data.title as string },
+      }),
+    );
     await audit(db, {
       workspaceId: workspace.id,
       missionId: data.missionId,
@@ -1062,4 +1136,127 @@ export const removeMissionEvidence = createServerFn({ method: "POST" })
       });
       return listEvidence(query, workspace.id, data.missionId);
     });
+  });
+
+export type ProductMemoryView = {
+  project: WfProject;
+  available: boolean;
+  entries: Array<ProductMemoryEntry & { staleReason: string | null }>;
+  /** False until migration 0029 is applied. */
+  conflictsAvailable: boolean;
+  conflicts: MemoryConflict[];
+};
+
+/** A product's memory, current and retired, with entries that may no longer hold marked. */
+export const getProductMemory = createServerFn({ method: "GET" })
+  .middleware([requireAuth])
+  .validator((data: unknown) => z.object({ projectId: z.string().uuid() }).parse(data))
+  .handler(async ({ context, data }): Promise<ProductMemoryView> => {
+    const { supabase, userId } = context;
+    const { workspace } = await ensureWorkspace(supabase, userId);
+    const project = await wfDb(supabase)
+      .from("wf_projects")
+      .select("*")
+      .eq("id", data.projectId)
+      .eq("workspace_id", workspace.id)
+      .maybeSingle();
+    if (project.error) throw new Error(project.error.message);
+    if (!project.data) throw new Error("Project not found.");
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    const { listProductMemory } = await import("@/lib/workforce/product-memory.server");
+    const { listConflicts } = await import("@/lib/workforce/product-memory.server");
+    const [memory, conflicts] = await neonTransaction(
+      async (_tx, query) =>
+        [
+          await listProductMemory(query, workspace.id, data.projectId),
+          await listConflicts(query, workspace.id, data.projectId),
+        ] as const,
+    );
+    const withdrawn = withdrawnSourceTitles(memory.entries);
+    return {
+      project: mapProject(project.data),
+      available: memory.available,
+      entries: memory.entries.map((e) => ({
+        ...e,
+        staleReason: e.retiredAt ? null : staleness(e, withdrawn).reason,
+      })),
+      conflictsAvailable: conflicts.available,
+      conflicts: conflicts.conflicts,
+    };
+  });
+
+/** Resolves the caller's project, or throws: every memory write is scoped through it. */
+async function ownedProject(
+  supabase: Parameters<typeof wfDb>[0],
+  workspaceId: string,
+  projectId: string,
+) {
+  const project = await wfDb(supabase)
+    .from("wf_projects")
+    .select("id")
+    .eq("id", projectId)
+    .eq("workspace_id", workspaceId)
+    .maybeSingle();
+  if (project.error) throw new Error(project.error.message);
+  if (!project.data) throw new Error("Project not found.");
+}
+
+/** Marks two current memory entries as conflicting. Both stay; nothing is merged. */
+export const flagMemoryConflict = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z
+      .object({
+        projectId: z.string().uuid(),
+        entryA: z.string().uuid(),
+        entryB: z.string().uuid(),
+        note: z.string().max(1000).optional(),
+      })
+      .parse(data),
+  )
+  .handler(async ({ context, data }): Promise<MemoryConflict> => {
+    const { supabase, userId } = context;
+    const { workspace } = await ensureWorkspace(supabase, userId);
+    await ownedProject(supabase, workspace.id, data.projectId);
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    const { flagConflict } = await import("@/lib/workforce/product-memory.server");
+    return neonTransaction((_tx, query) =>
+      flagConflict(query, {
+        workspaceId: workspace.id,
+        projectId: data.projectId,
+        entryA: data.entryA,
+        entryB: data.entryB,
+        note: data.note ?? null,
+        actorId: userId,
+      }),
+    );
+  });
+
+/** Records how the founder resolved a conflict. Both entries stay as history. */
+export const resolveMemoryConflict = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z
+      .object({
+        projectId: z.string().uuid(),
+        conflictId: z.string().uuid(),
+        resolution: z.string().min(3).max(1000),
+      })
+      .parse(data),
+  )
+  .handler(async ({ context, data }): Promise<void> => {
+    const { supabase, userId } = context;
+    const { workspace } = await ensureWorkspace(supabase, userId);
+    await ownedProject(supabase, workspace.id, data.projectId);
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    const { resolveConflict } = await import("@/lib/workforce/product-memory.server");
+    await neonTransaction((_tx, query) =>
+      resolveConflict(query, {
+        workspaceId: workspace.id,
+        projectId: data.projectId,
+        conflictId: data.conflictId,
+        resolution: data.resolution,
+        actorId: userId,
+      }),
+    );
   });

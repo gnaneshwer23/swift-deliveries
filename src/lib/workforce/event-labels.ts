@@ -56,6 +56,15 @@ export function describeEvent(e: WfMissionEvent, taskTitle?: string | null): Eve
       return { text: `A late result for ${task} was discarded`, tone: "problem" };
     case "gate.waiting":
       return { text: `${task} is waiting for your decision`, tone: "waiting" };
+    case "gate.approved":
+      return { text: `${who(e)} approved ${task}`, tone: "control" };
+    case "gate.rejected":
+      return { text: `${who(e)} rejected ${task}`, tone: "control" };
+    case "artefact.reviewed":
+      return {
+        text: `${who(e)} signed off “${String(e.data["title"] ?? "an artefact")}” as human-reviewed`,
+        tone: "control",
+      };
     case "mission.paused":
       return { text: `${who(e)} paused the mission`, tone: "control" };
     case "mission.resumed":
