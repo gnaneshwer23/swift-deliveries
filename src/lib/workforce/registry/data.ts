@@ -1,4 +1,4 @@
-/* Auto-generated from content/capabilities/registry.json — do not edit by hand. */
+/* Canonical capability registry. content/capabilities/registry.json is generated from it (npm run registry:export). */
 import type { CapabilityRegistry } from "./types";
 
 export const capabilityRegistryData = {
@@ -7,15 +7,11 @@ export const capabilityRegistryData = {
   wave1_available_ids: [
     "DX-001",
     "DX-002",
-    "DX-011",
-    "DX-012",
     "DX-018",
     "DX-020",
     "DX-021",
     "DX-023",
     "DX-035",
-    "DX-041",
-    "DX-049",
     "DX-071",
   ],
   intent_capability_map: {
@@ -609,7 +605,7 @@ export const capabilityRegistryData = {
       description:
         "Defines research questions, methods, scope, source requirements and completion criteria.",
       implementation_type: "model_workflow",
-      lifecycle_status: "available",
+      lifecycle_status: "planned",
       version: "1.0.0",
       tool_allowlist: [],
       permission_profile: "execute_internally",
@@ -620,8 +616,9 @@ export const capabilityRegistryData = {
         max_usage_credits: 20,
       },
       owner: "DeliverX Platform",
-      evaluation_notes: "Wave 1 stub wired into deterministic Command Centre planner/executor.",
-      known_limitations: ["Deterministic stub behaviour; no live model tools yet."],
+      evaluation_notes:
+        "Planned. Was a Wave 1 stub; returns to Available once it has a role definition and a passing evaluation suite.",
+      known_limitations: ["No role definition or evaluation suite yet; cannot be assigned."],
       activation_wave: 1,
       input_schema: {
         type: "object",
@@ -638,7 +635,7 @@ export const capabilityRegistryData = {
       department_number: 2,
       description: "Collects relevant online material and returns source-linked findings.",
       implementation_type: "tool_using_specialist",
-      lifecycle_status: "available",
+      lifecycle_status: "planned",
       version: "1.0.0",
       tool_allowlist: [],
       permission_profile: "execute_internally",
@@ -649,8 +646,9 @@ export const capabilityRegistryData = {
         max_usage_credits: 20,
       },
       owner: "DeliverX Platform",
-      evaluation_notes: "Wave 1 stub wired into deterministic Command Centre planner/executor.",
-      known_limitations: ["Deterministic stub behaviour; no live model tools yet."],
+      evaluation_notes:
+        "Planned. Was a Wave 1 stub; returns to Available once it has a role definition and a passing evaluation suite.",
+      known_limitations: ["No role definition or evaluation suite yet; cannot be assigned."],
       activation_wave: 1,
       input_schema: {
         type: "object",
@@ -1521,7 +1519,7 @@ export const capabilityRegistryData = {
       description:
         "Produces architecture decisions, component boundaries, dependencies and trade-offs.",
       implementation_type: "model_workflow",
-      lifecycle_status: "available",
+      lifecycle_status: "planned",
       version: "1.0.0",
       tool_allowlist: [],
       permission_profile: "execute_internally",
@@ -1532,8 +1530,9 @@ export const capabilityRegistryData = {
         max_usage_credits: 20,
       },
       owner: "DeliverX Platform",
-      evaluation_notes: "Wave 1 stub wired into deterministic Command Centre planner/executor.",
-      known_limitations: ["Deterministic stub behaviour; no live model tools yet."],
+      evaluation_notes:
+        "Planned. Was a Wave 1 stub; returns to Available once it has a role definition and a passing evaluation suite.",
+      known_limitations: ["No role definition or evaluation suite yet; cannot be assigned."],
       activation_wave: 1,
       input_schema: {
         type: "object",
@@ -1763,7 +1762,7 @@ export const capabilityRegistryData = {
       description:
         "Reviews changes for correctness, maintainability, security concerns and requirement coverage.",
       implementation_type: "model_workflow",
-      lifecycle_status: "available",
+      lifecycle_status: "planned",
       version: "1.0.0",
       tool_allowlist: [],
       permission_profile: "execute_internally",
@@ -1774,8 +1773,9 @@ export const capabilityRegistryData = {
         max_usage_credits: 20,
       },
       owner: "DeliverX Platform",
-      evaluation_notes: "Wave 1 stub wired into deterministic Command Centre planner/executor.",
-      known_limitations: ["Deterministic stub behaviour; no live model tools yet."],
+      evaluation_notes:
+        "Planned. Was a Wave 1 stub; returns to Available once it has a role definition and a passing evaluation suite.",
+      known_limitations: ["No role definition or evaluation suite yet; cannot be assigned."],
       activation_wave: 1,
       input_schema: {
         type: "object",

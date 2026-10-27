@@ -26,15 +26,11 @@ export const WORKFORCE_DEPARTMENTS = [
 export const WORKFORCE_AVAILABLE_IDS = [
   "DX-001",
   "DX-002",
-  "DX-011",
-  "DX-012",
   "DX-018",
   "DX-020",
   "DX-021",
   "DX-023",
   "DX-035",
-  "DX-041",
-  "DX-049",
   "DX-071",
 ] as const;
 

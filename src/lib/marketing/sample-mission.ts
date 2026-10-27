@@ -38,7 +38,7 @@ export const SAMPLE_MISSION_PLAN: {
 } = {
   estimatedUsage: 26,
   requiredPermission: "execute_internally",
-  capabilityIds: ["DX-001", "DX-002", "DX-011", "DX-012", "DX-018", "DX-020"],
+  capabilityIds: ["DX-001", "DX-002", "DX-018", "DX-020"],
   tasks: [
     {
       key: "scope",
@@ -57,11 +57,7 @@ export const SAMPLE_MISSION_PLAN: {
       acceptance: "Evidence table includes sourced facts and explicit assumptions.",
       usage: 8,
       permission: "execute_internally",
-      team: [
-        { id: "DX-011", name: "Research Planning" },
-        { id: "DX-012", name: "Web Research" },
-        { id: "DX-018", name: "Evidence Verification" },
-      ],
+      team: [{ id: "DX-018", name: "Evidence Verification" }],
     },
     {
       key: "brief",

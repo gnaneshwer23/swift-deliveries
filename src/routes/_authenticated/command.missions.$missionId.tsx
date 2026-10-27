@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { EVALUATION_LABELS, roleEvaluation } from "@/lib/workforce/registry/evaluations";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
@@ -447,7 +448,9 @@ function MissionDetail() {
                           {c.name}
                           <small className="cc-muted"> — {c.role_in_plan}</small>
                         </span>
-                        <span className="cc-chip cc-chip-available">Available</span>
+                        <span className="cc-chip cc-chip-available">
+                          Available · {EVALUATION_LABELS[roleEvaluation(c.capability_id).status]}
+                        </span>
                       </li>
                     ))}
                   </ul>

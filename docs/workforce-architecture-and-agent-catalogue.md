@@ -235,24 +235,24 @@ The following catalogue defines each role's primary responsibility and expected 
 | DX-089 | Disaster Recovery Agent | Defines recovery procedures and evaluates backup and restoration readiness. |
 | DX-090 | Cost Optimisation Agent | Identifies infrastructure cost drivers and proposes measured optimisations. |
 
-## Department 10 — Healthcare and Life Sciences
+## Department 10 — Future Technology and Foresight
 
-**Purpose:** Support biomedical research, healthcare software and scientific workflows with evidence and appropriate boundaries.
+**Purpose:** Track emerging technology and turn it into adopt, experiment, monitor, defer or reject recommendations with evidence.
 
 | ID | Role | Responsibility and expected output |
 |---|---|---|
-| DX-091 | Clinical Literature Agent | Retrieves and summarises relevant clinical literature with source references. |
-| DX-092 | Biomedical Research Agent | Supports biomedical research questions, experimental rationale and evidence synthesis. |
-| DX-093 | Clinical Data Analysis Agent | Analyses authorised clinical or research datasets with appropriate statistical caveats. |
-| DX-094 | Healthcare Workflow Agent | Maps healthcare processes, operational bottlenecks and workflow requirements. |
-| DX-095 | Clinical Documentation Agent | Drafts or structures clinical documentation from authorised inputs for human review. |
-| DX-096 | Health Informatics Agent | Supports health data models, interoperability and health information workflows. |
-| DX-097 | Biomedical Knowledge Graph Agent | Represents biomedical entities and relationships with evidence provenance. |
-| DX-098 | Scientific Evidence Appraisal Agent | Evaluates study design, evidence strength, limitations and potential bias. |
-| DX-099 | Healthcare Privacy Agent | Reviews healthcare data flows and privacy safeguards against specified requirements. |
-| DX-100 | Clinical Safety Review Agent | Identifies potential clinical safety hazards and required escalation or review. |
+| DX-091 | Emerging Technology Scout Agent | Scans releases, papers and repositories for technologies relevant to the product and records source, date and relevance. |
+| DX-092 | AI Research Tracker Agent | Tracks model, agent and tooling research and summarises what changed and why it matters for the product. |
+| DX-093 | Scientific Breakthrough Analyst Agent | Distinguishes laboratory results from reproducible prototypes and production-ready capabilities. |
+| DX-094 | Patent Trend Analyst Agent | Maps patent activity and freedom-to-operate questions that need expert review. |
+| DX-095 | Open-Source Ecosystem Analyst Agent | Assesses open-source project health, licensing, maintenance and adoption signals. |
+| DX-096 | Standards Evolution Researcher Agent | Monitors evolving technical standards and their implications for product architecture. |
+| DX-097 | Technology Maturity Assessor Agent | Scores technologies on maturity, cost, security, integration difficulty and evidence quality. |
+| DX-098 | Technology Convergence Analyst Agent | Finds useful combinations of technologies that solve user problems better than current approaches. |
+| DX-099 | Scenario Planner Agent | Builds plausible future scenarios and stress-tests the roadmap against them. |
+| DX-100 | Future Product Opportunity Strategist Agent | Translates foresight into adopt / experiment / monitor / defer / reject recommendations with costs and evidence. |
 
-These roles support research and healthcare technology work. They do not replace qualified clinicians or authorise autonomous high-stakes clinical decisions.
+Department mapping version 2 (27 October 2026): these IDs described Healthcare and Life Sciences roles in version 1. Healthcare is out of scope for DeliverX, so the IDs were re-scoped without renumbering. See `src/lib/workforce/registry/department-mapping.ts`.
 
 ## Department 11 — Growth and Marketing
 
@@ -288,22 +288,24 @@ These roles support research and healthcare technology work. They do not replace
 | DX-119 | Customer Success Agent | Organises onboarding, adoption, feedback and renewal support. |
 | DX-120 | Partnership Development Agent | Researches partnership opportunities and drafts proposals or outreach for approval. |
 
-## Department 13 — Books, Education and Publishing
+## Department 13 — Product Analytics and Continuous Improvement
 
-**Purpose:** Produce structured educational, editorial and publishing deliverables.
+**Purpose:** Measure how the product performs and turn outcomes into the next validated improvements.
 
 | ID | Role | Responsibility and expected output |
 |---|---|---|
-| DX-121 | Book Research Agent | Collects source material and creates a traceable research pack. |
-| DX-122 | Book Architecture Agent | Designs book structure, chapter sequence, audience and learning objectives. |
-| DX-123 | Long-Form Writing Agent | Drafts chapters or long-form content against a defined brief. |
-| DX-124 | Editorial Review Agent | Reviews structure, consistency, clarity, tone and repetition. |
-| DX-125 | Citation and Reference Agent | Validates bibliographic details and citation consistency against available sources. |
-| DX-126 | Curriculum Design Agent | Structures learning programmes, modules, objectives and progression. |
-| DX-127 | Instructional Design Agent | Designs learning experiences, practice activities and assessment alignment. |
-| DX-128 | Assessment Creation Agent | Creates questions, rubrics and answer criteria for a specified learning objective. |
-| DX-129 | Course Production Agent | Organises scripts, lesson assets, production instructions and course materials. |
-| DX-130 | Publishing Operations Agent | Prepares publishing checklists, metadata and production files for review. |
+| DX-121 | Product Analytics Engineer Agent | Defines the analytics model, metrics layer and dashboards for product health. |
+| DX-122 | Event Instrumentation Specialist Agent | Specifies tracking events, properties and privacy-safe instrumentation plans. |
+| DX-123 | Funnel Analyst Agent | Analyses conversion funnels and identifies the largest drop-off opportunities. |
+| DX-124 | Retention Analyst Agent | Analyses cohorts and retention drivers and proposes retention experiments. |
+| DX-125 | Experimentation Analyst Agent | Designs experiments with hypotheses, sample sizes and success thresholds. |
+| DX-126 | Feedback Intelligence Specialist Agent | Synthesises customer feedback into themes linked to evidence and roadmap items. |
+| DX-127 | Product Performance Analyst Agent | Monitors product performance against targets and flags regressions. |
+| DX-128 | Incident Learning Analyst Agent | Turns incidents and defects into root causes and preventive actions. |
+| DX-129 | Roadmap Optimisation Specialist Agent | Re-prioritises the roadmap using measured outcomes and evidence. |
+| DX-130 | Product Evolution Strategist Agent | Recommends the next validated product improvements and their sequencing. |
+
+Department mapping version 2 (27 October 2026): these IDs described Books, Education and Publishing roles in version 1. Publishing is out of scope for DeliverX, so the IDs were re-scoped without renumbering. See `src/lib/workforce/registry/department-mapping.ts`.
 
 ## Department 14 — Finance, Legal and Governance
 
@@ -594,7 +596,6 @@ Activate selected capabilities from:
 - Growth and Marketing.
 - Sales and Commercial Operations.
 - Finance and Business Models.
-- Books, Education and Publishing.
 
 Prioritise based on observed demand from pilot customers.
 
@@ -602,9 +603,9 @@ Prioritise based on observed demand from pilot customers.
 
 ## Wave 5 — Specialist expansion
 
-Expand into healthcare, advanced AI engineering, enterprise operations and additional domains where customer demand justifies investment.
+Expand into advanced AI engineering, enterprise operations and additional domains where customer demand justifies investment. Healthcare and publishing are out of scope.
 
-Specialist workflows must have domain-specific acceptance tests and governance. Healthcare, legal, financial and other high-impact work must have suitable professional oversight and risk controls.
+Specialist workflows must have domain-specific acceptance tests and governance. Legal, financial and other high-impact work must have suitable professional oversight and risk controls.
 
 **Exit gate:** The new capability has passed its domain-specific evaluation, security review and operational readiness checks.
 

@@ -1,4 +1,5 @@
 import { TaskContribution } from "./task-contribution";
+import { EVALUATION_LABELS, roleEvaluation } from "@/lib/workforce/registry/evaluations";
 import { useEffect, useId, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -607,7 +608,7 @@ export function AgentNetworkExplorer() {
             <span>{role.capability_id}</span>
             <span className="an-state" data-state={role.lifecycle_status}>
               {role.lifecycle_status === "available"
-                ? "Available for planning"
+                ? `Available for planning · ${EVALUATION_LABELS[roleEvaluation(role.capability_id).status]}`
                 : readable(role.lifecycle_status)}
             </span>
           </div>

@@ -14,15 +14,11 @@ import { matchCapabilitiesForMission } from "./matching";
 const WAVE1 = [
   "DX-001",
   "DX-002",
-  "DX-011",
-  "DX-012",
   "DX-018",
   "DX-020",
   "DX-021",
   "DX-023",
   "DX-035",
-  "DX-041",
-  "DX-049",
   "DX-071",
 ] as const;
 
@@ -52,7 +48,7 @@ describe("capability registry", () => {
     const others = listCapabilities().filter(
       (c) => !WAVE1.includes(c.capability_id as (typeof WAVE1)[number]),
     );
-    expect(others.length).toBe(138);
+    expect(others.length).toBe(142);
     for (const cap of others) {
       expect(["planned", "draft"]).toContain(cap.lifecycle_status);
       expect(isAssignable(cap)).toBe(false);
@@ -133,5 +129,39 @@ describe("capability matching", () => {
     expect(match.limitations.some((l) => l.requested_capability_ids?.includes("DX-091"))).toBe(
       true,
     );
+  });
+});
+
+describe("department mapping", () => {
+  it("keeps every reassigned ID in its department under the current names", async () => {
+    const { DEPARTMENT_MAPPING_HISTORY } = await import("./department-mapping");
+    const current = DEPARTMENT_MAPPING_HISTORY[0]!;
+    for (const change of current.changes) {
+      const dept = listDepartments().find((d) => d.number === change.department)!;
+      expect(dept.name).toBe(change.name);
+      for (const r of change.reassigned) {
+        expect(dept.capability_ids).toContain(r.id);
+        expect(getCapability(r.id)!.lifecycle_status).not.toBe("available");
+      }
+    }
+  });
+
+  it("names no healthcare or publishing department", () => {
+    for (const d of listDepartments())
+      expect(d.name).not.toMatch(/healthcare|life sciences|books|publishing/i);
+  });
+});
+
+describe("registry export", () => {
+  it("matches the canonical registry (run npm run registry:export after changing it)", async () => {
+    const { readFileSync } = await import("node:fs");
+    const exported = JSON.parse(
+      readFileSync(
+        new URL("../../../../content/capabilities/registry.json", import.meta.url),
+        "utf8",
+      ),
+    );
+    delete exported._generated;
+    expect(exported).toEqual(JSON.parse(JSON.stringify(getCapabilityRegistry())));
   });
 });
