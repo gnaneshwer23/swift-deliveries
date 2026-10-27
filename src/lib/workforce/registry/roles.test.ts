@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { STAGE_CONTRACTS } from "../lifecycle";
 import { listAssignableCapabilities, listCapabilities } from "./load";
 import { ROLE_EVALUATIONS, roleEvaluation } from "./evaluations";
-import { CONTEXT_SCOPES, ROLE_SPECS, getRoleSpec } from "./roles";
+import { CONTEXT_SCOPES, ROLE_SPECS, getRoleSpec, roleLimits } from "./roles";
 
 describe("role definitions", () => {
   it("defines exactly the roles that can be assigned", () => {
@@ -24,7 +24,11 @@ describe("role definitions", () => {
         r.inputs.some((i) => i.required),
         r.id,
       ).toBe(true);
-      expect(r.limits.timeoutSeconds, r.id).toBeGreaterThan(0);
+      expect(
+        r.mustNot.some((m) => /assumption or inference as a sourced fact/i.test(m)),
+        r.id,
+      ).toBe(true);
+      expect(roleLimits(r.id).timeoutSeconds, r.id).toBeGreaterThan(0);
       expect(
         r.contextScopes.every((s) => CONTEXT_SCOPES.includes(s)),
         r.id,

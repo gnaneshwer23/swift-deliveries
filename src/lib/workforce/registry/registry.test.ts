@@ -134,8 +134,12 @@ describe("capability matching", () => {
 
 describe("department mapping", () => {
   it("keeps every reassigned ID in its department under the current names", async () => {
-    const { DEPARTMENT_MAPPING_HISTORY } = await import("./department-mapping");
+    const { DEPARTMENT_MAPPING_HISTORY, DEPARTMENT_MAPPING_VERSION } =
+      await import("./department-mapping");
     const current = DEPARTMENT_MAPPING_HISTORY[0]!;
+    expect(current.version).toBe(DEPARTMENT_MAPPING_VERSION);
+    // the previous version still names what departments 10 and 13 were
+    expect(DEPARTMENT_MAPPING_HISTORY[1]!.changes.map((c) => c.department)).toEqual([10, 13]);
     for (const change of current.changes) {
       const dept = listDepartments().find((d) => d.number === change.department)!;
       expect(dept.name).toBe(change.name);

@@ -445,7 +445,7 @@ export function AgentNetworkExplorer() {
                     </span>
                     <em className="an-state" data-state={c.lifecycle_status}>
                       {c.lifecycle_status === "available"
-                        ? "Available"
+                        ? `Available · ${EVALUATION_LABELS[roleEvaluation(c.capability_id).status]}`
                         : readable(c.lifecycle_status)}
                     </em>
                     <ChevronRight size={13} />
@@ -551,7 +551,7 @@ export function AgentNetworkExplorer() {
                         <small>
                           {c.capability_id} ·{" "}
                           {c.lifecycle_status === "available"
-                            ? "Available"
+                            ? `Available · ${EVALUATION_LABELS[roleEvaluation(c.capability_id).status]}`
                             : readable(c.lifecycle_status)}
                         </small>
                       </button>

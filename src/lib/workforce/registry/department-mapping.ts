@@ -66,8 +66,10 @@ export const DEPARTMENT_MAPPING_HISTORY: ReadonlyArray<{
   {
     version: 1,
     effective: "2026-10-01",
-    reason:
-      "Original catalogue: department 10 Healthcare and Life Sciences, department 13 Books, Education and Publishing.",
-    changes: [],
+    reason: "Original catalogue.",
+    changes: [
+      { department: 10, name: "Healthcare and Life Sciences", reassigned: [] },
+      { department: 13, name: "Books, Education and Publishing", reassigned: [] },
+    ],
   },
 ];

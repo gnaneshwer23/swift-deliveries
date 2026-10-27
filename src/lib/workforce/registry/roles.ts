@@ -1,9 +1,10 @@
 /**
  * Role definitions for the specialists that may be assigned to missions.
  *
- * A role is assignable only when it has a definition here and an evaluation
- * suite (roles.test.ts enforces both). Every other catalogue entry stays
- * visible but cannot be assigned.
+ * Every Available role needs a definition here, and only Available roles have
+ * one (roles.test.ts checks both directions). Time, retry and cost limits come from the registry record
+ * (roleLimits). Every other catalogue entry stays visible but cannot be
+ * assigned. Evaluation status is tracked separately in evaluations.ts.
  *
  * Each role keeps three statuses apart:
  * - availability: may the planner assign it (registry lifecycle status);
@@ -12,6 +13,7 @@
  */
 import type { STAGE_CONTRACTS } from "../lifecycle";
 import type { WfArtefact } from "../types";
+import { getCapability } from "./load";
 
 export type StageKey = keyof typeof STAGE_CONTRACTS;
 
@@ -37,13 +39,11 @@ export type RoleSpec = {
   contextScopes: ContextScope[];
   /** External tools the role may call. Empty means it uses none. */
   tools: string[];
-  limits: { timeoutSeconds: number; maxRetries: number; maxCredits: number };
   /** Situations in which the role stops and asks the founder. */
   escalateWhen: string[];
   executionMode: "model_workflow" | "deterministic";
 };
 
-const STANDARD_LIMITS = { timeoutSeconds: 120, maxRetries: 2, maxCredits: 12 };
 const MUST_NOT_ALWAYS = [
   "Invent customers, interviews, quotes, metrics or sources",
   "Present an assumption or inference as a sourced fact",
@@ -70,7 +70,6 @@ export const ROLE_SPECS: readonly RoleSpec[] = [
     ],
     contextScopes: ["mission_request", "clarification_answers", "upstream_artefacts"],
     tools: [],
-    limits: STANDARD_LIMITS,
     escalateWhen: [
       "The request is ambiguous about the user or the outcome",
       "A stage failed its handoff contract",
@@ -90,7 +89,6 @@ export const ROLE_SPECS: readonly RoleSpec[] = [
     leads: [{ stage: "charter", produces: "mission_charter" }],
     contextScopes: ["mission_request", "clarification_answers"],
     tools: [],
-    limits: STANDARD_LIMITS,
     escalateWhen: ["The target user or desired outcome cannot be stated from the inputs"],
     executionMode: "model_workflow",
   },
@@ -104,13 +102,12 @@ export const ROLE_SPECS: readonly RoleSpec[] = [
       "Drop a claim because it conflicts with another; conflicts are kept and flagged",
     ],
     inputs: [
-      { name: "Research findings", from: "upstream", required: true },
+      { name: "Mission charter", from: "upstream", required: true },
       { name: "Founder-supplied sources", from: "mission", required: false },
     ],
     leads: [{ stage: "research", produces: "research_dossier" }],
     contextScopes: ["mission_request", "upstream_artefacts", "founder_evidence"],
     tools: [],
-    limits: STANDARD_LIMITS,
     escalateWhen: ["A decision depends on a claim with no source", "Sources conflict"],
     executionMode: "model_workflow",
   },
@@ -129,7 +126,6 @@ export const ROLE_SPECS: readonly RoleSpec[] = [
     ],
     contextScopes: ["mission_request", "upstream_artefacts", "founder_evidence"],
     tools: [],
-    limits: STANDARD_LIMITS,
     escalateWhen: ["Evidence is too thin to support any finding"],
     executionMode: "model_workflow",
   },
@@ -142,7 +138,6 @@ export const ROLE_SPECS: readonly RoleSpec[] = [
     leads: [{ stage: "market", produces: "research_dossier" }],
     contextScopes: ["mission_request", "clarification_answers", "upstream_artefacts"],
     tools: [],
-    limits: STANDARD_LIMITS,
     escalateWhen: ["The segment cannot be identified from the inputs"],
     executionMode: "model_workflow",
   },
@@ -162,7 +157,6 @@ export const ROLE_SPECS: readonly RoleSpec[] = [
     leads: [{ stage: "prd", produces: "prd" }],
     contextScopes: ["mission_request", "clarification_answers", "upstream_artefacts"],
     tools: [],
-    limits: STANDARD_LIMITS,
     escalateWhen: ["Requirements conflict with the charter's constraints"],
     executionMode: "model_workflow",
   },
@@ -179,7 +173,6 @@ export const ROLE_SPECS: readonly RoleSpec[] = [
     leads: [{ stage: "ux", produces: "design_spec" }],
     contextScopes: ["mission_request", "upstream_artefacts"],
     tools: [],
-    limits: STANDARD_LIMITS,
     escalateWhen: ["A requirement cannot be shown on any screen"],
     executionMode: "model_workflow",
   },
@@ -199,11 +192,21 @@ export const ROLE_SPECS: readonly RoleSpec[] = [
     leads: [],
     contextScopes: ["mission_request", "upstream_artefacts"],
     tools: [],
-    limits: STANDARD_LIMITS,
     escalateWhen: ["A requirement has no way to be checked"],
     executionMode: "deterministic",
   },
 ];
+
+/** A role's limits, from its registry record so they are defined in one place. */
+export function roleLimits(id: string) {
+  const cap = getCapability(id);
+  if (!cap) throw new Error(`${id} is not in the registry`);
+  return {
+    timeoutSeconds: cap.limits.max_runtime_seconds,
+    maxRetries: cap.limits.max_retries,
+    maxCredits: cap.limits.max_usage_credits,
+  };
+}
 
 export function getRoleSpec(id: string): RoleSpec | undefined {
   return ROLE_SPECS.find((r) => r.id === id);
