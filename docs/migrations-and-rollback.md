@@ -35,11 +35,16 @@ The production Neon branch is `br-fancy-breeze-zatt9ocp` in project `spring-wind
 | 0027 founder evidence (`wf_mission_evidence`)                      | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0028 product memory (`wf_product_memory`) and 0027 constraints     | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0029 conflicting evidence (`wf_memory_conflicts`)                  | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
-| 0030 conversations (`wf_conversations`, `wf_conversation_turns`)   | Not applied — needs owner approval          | Applied 27 Oct 2026                  |
+| 0030 conversations (`wf_conversations`, `wf_conversation_turns`)   | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 
 Migrations 0020–0023 were applied to production in a single transaction. The six `psi_*` tables are owned by the server role, have no client grants, and have row-level security enabled. No table rows were read during or after the change.
 
 Migrations 0028 and 0029 were applied to production together in a single transaction on 27 October 2026, after a preflight that used only aggregate counts. It found no evidence rows that would break the new 0027 constraints. Production's constraints match the migration files. Preview also carries two redundant single-column foreign keys (`wf_product_memory_first_mission_id_fkey`, `wf_product_memory_last_mission_id_fkey`) left over from an earlier draft of 0028. They clear the same columns on delete as the composite keys, so they change nothing.
+
+Migration 0030 was applied to production on 27 October 2026 in a single transaction, after a catalog-only preflight confirmed neither table existed. A post-apply catalog check on production returned the following.
+
+- **`wf_conversations`:** row-level security on; `has_table_privilege('public', …, 'SELECT')` false; constraints `wf_conversations_pkey`, `wf_conversations_retention_days_check`, `wf_conversations_workspace_id_fkey`.
+- **`wf_conversation_turns`:** row-level security on; public SELECT false; constraints `wf_conversation_turns_card_check`, `wf_conversation_turns_check`, `wf_conversation_turns_conversation_id_workspace_id_fkey`, `wf_conversation_turns_input_check`, `wf_conversation_turns_pkey`, `wf_conversation_turns_speaker_check`, `wf_conversation_turns_text_check`.
 
 ## Rollback for 0020–0023
 

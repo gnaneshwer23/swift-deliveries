@@ -23,6 +23,8 @@ import {
   resumeMission,
 } from "@/lib/workforce.functions";
 import { commandCentreBootstrapQuery } from "@/lib/workforce-queries";
+import { speak } from "@/lib/conversation/speech";
+import { VoiceControls } from "@/components/command/voice-controls";
 import { INTENT_LABELS, MISSION_INTENTS, type MissionIntent } from "@/lib/workforce/types";
 
 const KEY = ["command", "conversation"];
@@ -47,6 +49,9 @@ export function ConversationPanel({
   const [retention, setRetention] = useState<RetentionDays>(DEFAULT_RETENTION_DAYS);
   const [text, setText] = useState("");
   const [correcting, setCorrecting] = useState(false);
+  const [speakReplies, setSpeakReplies] = useState(true);
+  /** A spoken turn is in flight: typing waits, so lines arrive in the order they were said. */
+  const [voiceBusy, setVoiceBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const state = query.data;
@@ -64,22 +69,27 @@ export function ConversationPanel({
   });
 
   const say = useMutation({
-    mutationFn: (input: "typed" | "edited") =>
+    mutationFn: (line: { text: string; input: "typed" | "edited" | "speech" }) =>
       sayToAssistant({
         data: {
           conversationId: conversation!.id,
-          text,
-          input,
+          text: line.text,
+          input: line.input,
           currentMissionId: currentMissionId ?? null,
         },
       }),
     onMutate: () => setError(null),
-    onSuccess: ({ said, reply }) => {
+    onSuccess: ({ said, reply }, line) => {
       queryClient.setQueryData<ConversationState>(KEY, (prev) =>
         prev ? { ...prev, turns: [...prev.turns, said, reply] } : prev,
       );
-      setText("");
-      setCorrecting(false);
+      if (line.input === "speech") {
+        // A spoken request gets a spoken reply: the same words as the written one.
+        if (speakReplies) speak(reply.text);
+      } else {
+        setText("");
+        setCorrecting(false);
+      }
       // Refetched for the new retention date and the server's window of lines.
       void queryClient.invalidateQueries({ queryKey: KEY });
     },
@@ -168,11 +178,19 @@ export function ConversationPanel({
             </ol>
           ) : null}
 
+          <VoiceControls
+            disabled={say.isPending}
+            speakReplies={speakReplies}
+            onSpeakRepliesChange={setSpeakReplies}
+            onBusyChange={setVoiceBusy}
+            onTranscript={(spoken) => say.mutate({ text: spoken.slice(0, 4000), input: "speech" })}
+          />
+
           <form
-            className="space-y-2"
+            className="space-y-2 mt-3"
             onSubmit={(ev) => {
               ev.preventDefault();
-              if (text.trim()) say.mutate(correcting ? "edited" : "typed");
+              if (text.trim()) say.mutate({ text, input: correcting ? "edited" : "typed" });
             }}
           >
             <label className="block text-sm font-medium" htmlFor="conversation-input">
@@ -192,7 +210,7 @@ export function ConversationPanel({
               <button
                 type="submit"
                 className="cc-btn cc-btn-primary"
-                disabled={say.isPending || !text.trim()}
+                disabled={say.isPending || voiceBusy || !text.trim()}
               >
                 {say.isPending ? "Sending…" : correcting ? "Send correction" : "Send"}
               </button>
