@@ -2578,6 +2578,20 @@
   background: #f7faf7;
   color: #1f4d2e;
 }
+.ps-focal-sources {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+.ps-focal-sources a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  word-break: break-word;
+}
 .ps-focal-gaps {
   margin: 0;
   padding-left: 1.1rem;
@@ -2660,6 +2674,18 @@
   padding: 8px 10px;
   background: #f8fafc;
   border-radius: 8px;
+}
+.ps-project-shelf-mission-block {
+  display: grid;
+  gap: 6px;
+}
+.ps-project-shelf-next {
+  color: var(--psi-muted, #5b6475);
+}
+.ps-project-follow-up {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--psi-border, #dfe5f2);
 }
 @media (max-width: 720px) {
   .ps-theatre-acts {

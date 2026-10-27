@@ -81,9 +81,11 @@ Strategy detail: `docs/roadmap-one-liner-pm-brief.md` (Phases B–E shipped; F d
 - Enabling the full 150-role catalogue / Planned roles beyond Available Wave 1
 - Voice / oral PM brief (Phase F — typed path first; voice remains Phase 4b infra)
 - Full programme ZIP export
-- Claiming live web research without EXA / Tavily / Brave configured
+- Claiming live web research without EXA / Tavily / Brave configured *(Production has Tavily; Combined live verify showed real citations — still never invent when unconfigured)*
 - Invented customer evidence or interviews
 - Rich illustrated “movie” art beyond the event-driven work scene
+- Programme Lab Acts language (P6) — Lab stays frozen; no KPI dashboard revival
+- Deeper Project shelf + propose follow-up — **shipped** (see `docs/roadmap-product-building-agents.md`)
 
 ## Still outside these phases
 

@@ -81,6 +81,8 @@ const startBriefSchema = z.object({
   ...briefFields,
   /** Research-first default: combined, with honest gaps when web tools are missing. */
   researchMode: z.enum(RESEARCH_MODES).optional().default("combined"),
+  /** Attach to an existing product shelf. Plan is never auto-approved. */
+  projectId: z.string().uuid().optional().nullable(),
 });
 
 const evidenceSchema = z
@@ -197,6 +199,33 @@ async function ensureMissionProjectMemory(input: {
   }
 }
 
+/** Attach to a founder-chosen shelf, or fall back to auto-create. Never auto-approves. */
+async function resolveMissionProjectId(input: {
+  workspaceId: string;
+  userId: string;
+  question: string;
+  projectId?: string | null;
+}): Promise<string | null> {
+  if (input.projectId) {
+    const { adminDb } = await import("@/lib/workforce/access.server");
+    const writeDb = await adminDb();
+    const row = await writeDb
+      .from("wf_projects")
+      .select("id")
+      .eq("workspace_id", input.workspaceId)
+      .eq("id", input.projectId)
+      .maybeSingle();
+    if (row.error) throw new Error(row.error.message);
+    if (!row.data?.id) throw new Error("Project not found in this workspace.");
+    return String(row.data.id);
+  }
+  return ensureMissionProjectMemory({
+    workspaceId: input.workspaceId,
+    userId: input.userId,
+    question: input.question,
+  });
+}
+
 export const startSupervisedMission = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .validator((data: unknown) => startBriefSchema.parse(data))
@@ -204,10 +233,11 @@ export const startSupervisedMission = createServerFn({ method: "POST" })
     const workspace = await workspaceFor(context.supabase, context.userId);
     const { service } = await serviceFor();
     const remaining = Math.max(0, workspace.usageCeiling - workspace.usageConsumed);
-    const projectId = await ensureMissionProjectMemory({
+    const projectId = await resolveMissionProjectId({
       workspaceId: workspace.id,
       userId: context.userId,
       question: data.question,
+      projectId: data.projectId,
     });
     const mission = await service.create({
       id: crypto.randomUUID(),

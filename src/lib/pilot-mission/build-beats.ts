@@ -6,7 +6,7 @@
  */
 import { buildPmBrief } from "./pm-brief";
 import { syncTeamWithMission, type PilotSpecialistTask } from "./specialist-team";
-import type { SupervisedMission } from "./types";
+import { nextRequiredAction, type SupervisedMission } from "./types";
 
 export const BUILD_BEAT_IDS = [
   "frame",
@@ -40,6 +40,8 @@ export type FocalArtefact = {
   summary: string;
   honesty: ArtefactHonesty;
   gaps: string[];
+  /** Cited source URLs when the research beat retrieved web findings (P1 polish). */
+  sources?: Array<{ url: string; label: string }>;
   /** Sandboxed HTML body when the beat produced a prototype (P5). */
   html?: string | null;
   /** Static verify rows — failures remain visible. */
@@ -292,10 +294,18 @@ function focalArtefact(
             ? "Research findings"
             : "Research register",
         summary:
-          findings[0]?.statement ??
-          "Research pass recorded. Gaps stay labelled when providers are missing.",
+          citedFindings.length > 0
+            ? `${citedFindings.length} cited finding${citedFindings.length === 1 ? "" : "s"}${
+                citedProvider ? ` via ${citedProvider}` : ""
+              }. ${findings[0]?.statement ?? ""}`.trim()
+            : (findings[0]?.statement ??
+              "Research pass recorded. Gaps stay labelled when providers are missing."),
         honesty: researchHonesty,
         gaps: gaps.slice(0, 5),
+        sources: citedFindings.slice(0, 8).map((e) => ({
+          url: e.source.trim(),
+          label: e.statement.replace(/^\[Cited[^\]]*\]\s*/i, "").slice(0, 96) || e.source.trim(),
+        })),
       };
     }
     case "options": {
@@ -501,23 +511,32 @@ export function castForMission(mission: SupervisedMission): Array<{
   return rows;
 }
 
-/** Compact project-shelf rows from a mission (P3). */
+/** Compact project-shelf rows from a mission (P3+ deeper shelf). */
 export function projectShelfItems(mission: SupervisedMission): {
   missionId: string;
   question: string;
   stage: string;
-  artefacts: Array<{ title: string; honesty: string; kind: string }>;
+  stageLabel: string;
+  nextAction: string;
+  beatsDone: number;
+  beatsTotal: number;
+  currentBeat: string | null;
+  openGaps: number;
+  researchProvider: string | null;
+  updatedAt: string;
+  artefacts: Array<{ title: string; honesty: string; kind: string; state: string }>;
   decisions: Array<{ summary: string; at: string }>;
 } {
   const honesty = artefactHonesty(mission);
-  const artefacts: Array<{ title: string; honesty: string; kind: string }> = [];
+  const artefacts: Array<{ title: string; honesty: string; kind: string; state: string }> = [];
   const sequence = buildSequence(mission);
   for (const beat of sequence.beats) {
-    if (beat.artefact && beat.state === "done") {
+    if (beat.artefact && (beat.state === "done" || beat.state === "current")) {
       artefacts.push({
         title: beat.artefact.title,
         honesty: beat.artefact.honesty.label,
         kind: beat.artefact.kind,
+        state: beat.state,
       });
     }
   }
@@ -526,6 +545,7 @@ export function projectShelfItems(mission: SupervisedMission): {
       title: mission.artefact.title,
       honesty: honesty.label,
       kind: "pack",
+      state: "done",
     });
   }
   const decisions: Array<{ summary: string; at: string }> = [];
@@ -538,10 +558,28 @@ export function projectShelfItems(mission: SupervisedMission): {
       at: mission.approval.decidedAt,
     });
   }
+  const next = nextRequiredAction(mission);
+  const openGaps =
+    (mission.researchGaps?.length ?? 0) +
+    mission.evidence.filter((e) => e.classification === "gap").length;
+  const beatsDone = sequence.beats.filter((b) => b.state === "done").length;
+  const current = sequence.beats.find((b) => b.id === sequence.currentId) ?? null;
   return {
     missionId: mission.id,
     question: mission.brief.question,
     stage: mission.stage,
+    stageLabel: sequence.planApproved
+      ? current
+        ? `Build · ${current.label}`
+        : `Stage · ${mission.stage}`
+      : "Awaiting plan approval",
+    nextAction: next.title,
+    beatsDone,
+    beatsTotal: sequence.beats.length,
+    currentBeat: current?.label ?? null,
+    openGaps,
+    researchProvider: mission.researchProvider,
+    updatedAt: mission.updatedAt,
     artefacts,
     decisions,
   };

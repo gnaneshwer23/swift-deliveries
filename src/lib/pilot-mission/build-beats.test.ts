@@ -231,6 +231,13 @@ describe("research beat cited honesty", () => {
       label: "Cited · tavily",
       modelId: "tavily",
     });
+    expect(research?.artefact?.sources).toEqual([
+      {
+        url: "https://example.com/pricing",
+        label: "Pricing patterns: paid analytics are common.",
+      },
+    ]);
+    expect(research?.artefact?.summary).toMatch(/1 cited finding via tavily/i);
   });
 });
 
@@ -428,5 +435,8 @@ describe("projectShelfItems (P3)", () => {
     expect(shelf.decisions[0]?.summary).toContain("Charge");
     expect(shelf.artefacts.some((a) => a.kind === "pack")).toBe(true);
     expect(shelf.artefacts.every((a) => a.honesty.length > 0)).toBe(true);
+    expect(shelf.nextAction.length).toBeGreaterThan(0);
+    expect(shelf.beatsTotal).toBeGreaterThan(0);
+    expect(shelf.stageLabel.length).toBeGreaterThan(0);
   });
 });

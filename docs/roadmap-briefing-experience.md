@@ -268,8 +268,8 @@ Why: Phase B–E already bet on supervised as the spine. The gap is **experience
 | **G1 — Mission theatre** | **Shipped** | Acts I–V on supervised URL; honesty badges; ops grid demoted | Briefing → strategy → cast → approve → living work |
 | **G2 — Overview foyer** | **Shipped** | Start/resume only; chat/stop/inbox collapsed | First viewport = Continue + one-liner |
 | **G3 — Specialists as cast** | **Shipped** | Active mission cast primary; catalogue Explore | Specialists shows cast for open mission |
-| **G4 — Project as memory** | **Light** | Auto-attach `wf_projects` on mission start; Projects copy updated | New mission gets `projectId` when projects table available |
-| **G5 — Programme Lab** | **Light** | Nav labelled Lab; feature freeze; data kept | Programmes not confused with primary path |
+| **G4 — Project as memory** | **Shipped (deeper)** | Auto-attach + artefact shelf: missions/artefacts/decisions, beat progress, propose follow-up without auto-authorising | Project shows shelf + Propose follow-up → new mission awaiting plan approval |
+| **G5 — Programme Lab** | **Light (frozen)** | Nav labelled Lab; feature freeze; data kept. Light Acts language **skipped** this pass — detail page still KPI-led; do not revive dashboard | Programmes not confused with primary path |
 | **F — Voice** | Deferred | — | After typed theatre |
 
 Prior A–E remain historical delivery; **G\*** is the experience track. Do not claim B–E “done” as the briefing product.
@@ -309,9 +309,10 @@ Prior A–E remain historical delivery; **G\*** is the experience track. Do not 
 
 ## 12. Remaining after this ship
 
-- Deeper Project shelf (list missions/packs on the project page beyond auto-link).  
-- Programme acts language if Lab is ever promoted.  
-- Optional further chrome rename away from “Command”.  
+- ~~Deeper Project shelf (list missions/packs on the project page beyond auto-link).~~ **Done** — shelf lists missions, artefacts, decisions, beat progress, next action; Propose follow-up attaches to the same project and never auto-approves.
+- Programme Acts language if Lab is ever promoted (explicit re-approval; avoid KPI hero).
+- Optional further chrome rename away from “Command”.
 - Voice (F) still deferred.
+- Agents office primary / always-on 150 / full ZIP — still deferred.
 
-**Research note (27 Oct 2026):** `@tavily/core` is wired on the supervised Combined/Web path. Founder must set `TAVILY_API_KEY` (or Exa/Brave) in Vercel + local for real cited sources; keyless stays honest gaps.
+**Research note (27 Oct 2026):** `@tavily/core` is wired on the supervised Combined/Web path. Production has `TAVILY_API_KEY`. Live Combined verify (mission `0f73b32f-ee1d-49f4-837f-dc1982d53a3f`): **citations yes** — Research beat showed `Cited · tavily` with real source URLs (not gaps-only).

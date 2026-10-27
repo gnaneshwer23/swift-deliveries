@@ -97,10 +97,10 @@ That is the product: **future product-building agents**, supervised — not a Co
 | **P0 — Contract** | This doc + decisions below closed | Founder “build these phases” (or named subset) in chat | — |
 | **P1 — Sequential build stage** | **Shipped** — Act V = Frame → Research → Options → Decide → Pack beats + focal artefact; advances only when upstream ready | On a supervised mission: approve plan → watch beats advance with named specialist + artefact (or honest gap) → open the artefact — **not** a panel stack of meters | P0 |
 | **P2 — Cast owns the beat** | **Shipped** — cast shows current owner, contribution, handoff; Specialists cast-first matches | Click a beat → see who owns it and what they produced; Specialists matches that cast | P1 |
-| **P3 — Artefact shelf on Project** | **Shipped** — Project page read-only shelf: missions + artefacts + decisions for auto-attached product | Start mission → finish a beat → Project shows the artefact under that product | P1 |
+| **P3 — Artefact shelf on Project** | **Shipped (deeper)** — read-only shelf + **Propose follow-up** (same `projectId`, plan gate intact); richer mission rows (beats, next action, gaps, decisions) | Start mission → finish a beat → Project shows artefact; Propose follow-up opens a new brief awaiting approval | P1 |
 | **P4 — Stub→model honesty ladder** | **Shipped** — same artefact UI badge slot: Simulated draft ↔ Model · id | Toggle/config: same demo mission discloses Simulated vs Model on the artefact without layout change | P1 |
 | **P5 — One deeper build beat** | **Shipped** — sandboxed HTML prototype after Pack (human gate → UX Prototype Agent → static verify; failures visible). PRD not chosen — workforce already had prototype/verify spine; HTML is the visible “built something” artefact | After pack export: approve → specialist produces sandboxed HTML → open iframe + verify rows (or failure labels) | P1–P2; founder pick = HTML prototype |
-| **P6 — Optional later** | Programme Lab speaks Acts language **or** stays frozen; voice (F); richer cinematic office | Only after P1–P3 feel true | Explicit re-approval |
+| **P6 — Optional later** | **Skipped this pass** — Programme Lab stays frozen (KPI detail page not Acts-ready without dashboard revival). Voice (F) / cinematic office remain deferred | Only after explicit re-approval | Explicit re-approval |
 
 **Explicit non-goals for P1–P5:** new dashboard widgets, catalogue expansion, agents office primary, programme feature build-out, self-service checkout, fabricated research, production-readiness claims without release checks.
 
@@ -112,16 +112,16 @@ That is the product: **future product-building agents**, supervised — not a Co
 2. **P5 artefact:** ~~Prefer **PRD** or **sandboxed HTML prototype**?~~ **Closed — HTML prototype** (founder approved P5 default).
 3. **Unify vs bridge:** Should the workforce “build a product” DAG **feed supervised theatre** (recommended), or stay a separate advanced path for longer?
 4. **Model keys in demo:** Is a **configured-provider** demo required for founder conviction, or is an honest stub sequence with clear “Simulated draft” enough for P1?
-5. **Project shelf depth:** P3 read-only shelf first, or also **start follow-up mission from Project** in the same phase?
+5. **Project shelf depth:** ~~P3 read-only shelf first, or also start follow-up from Project?~~ **Closed** — deeper shelf + Propose follow-up without auto-authorising.
 6. **Naming:** Keep shell “Command / Workspace,” or rename primary metaphor toward **Studio / Build stage** once sequence lands? (Cosmetic; can wait.)
 
 ---
 
 ## 7. Binding close
 
-**P0 signed; P1–P5 implemented on the supervised theatre spine.** P6+ remain approval-gated. Prior Option 2 / B–E ships remain the baseline; this track evolves Act V / cast / Project shelf / honesty ladder / one deeper build beat only — demo criterion first, dashboard second never.
+**P0 signed; P1–P5 implemented; P3 deepened (follow-up from Project).** P6 skipped this pass (Lab stays frozen). Voice / agents office primary / always-on 150 / full ZIP remain deferred. Prior Option 2 / B–E ships remain the baseline.
 
-**Research (post-P5):** Official `@tavily/core` SDK is wired for Combined/Web supervised research (Path B). Product search still needs a founder-configured raw `TAVILY_API_KEY` (local + Vercel) — CLI OAuth alone does not enable retrieval. Without a key, the path keeps honest gaps and never invents sources. UI shows a research-provider readiness chip.
+**Research (post-P5 + live verify 27 Oct 2026):** Path B via `@tavily/core` is live; Production has `TAVILY_API_KEY`; foyer shows `Web research ready · tavily`. Signed-in Combined run produced **real cited findings** (`Cited · tavily` + source URLs), not gaps-only. Keyless still honest. Research beat UI now lists clickable cited sources.
 
 ---
 

@@ -345,6 +345,17 @@ function ArtefactCard({ artefact }: { artefact: FocalArtefact }) {
         </span>
       </div>
       <p>{artefact.summary}</p>
+      {artefact.sources && artefact.sources.length > 0 ? (
+        <ul className="ps-focal-sources" aria-label="Cited sources">
+          {artefact.sources.map((s) => (
+            <li key={s.url}>
+              <a href={s.url} target="_blank" rel="noopener noreferrer">
+                {s.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : null}
       {artefact.verification && artefact.verification.length > 0 ? (
         <ul className="ps-proto-checks" aria-label="Static prototype checks">
           {artefact.verification.map((c) => (
