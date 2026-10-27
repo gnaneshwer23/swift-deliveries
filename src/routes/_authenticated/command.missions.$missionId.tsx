@@ -653,6 +653,7 @@ function MissionDetail() {
               <>
                 {mission.intent === "build" ? (
                   <LifecycleWheel
+                    key={mission.id}
                     tasks={tasks}
                     artefacts={artefacts}
                     onOpenArtefact={(id) => {

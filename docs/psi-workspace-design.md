@@ -33,7 +33,7 @@ At desktop widths, the department rail, network and inspector share one workspac
 
 ## Lifecycle wheel (Phase 7a)
 
-A product-build mission page shows its lifecycle as a wheel of twelve segments, with a list beside it that says the same thing. The twelve segments are a display mapping over the eight stored stages (`src/lib/workforce/lifecycle-wheel.ts`, version `wheel-v1`). Stored data is unchanged.
+A product-build mission page shows its lifecycle as a wheel of twelve segments, with a **List** view, one toggle away, that says the same thing. The twelve segments are a display mapping over the eight stored stages (`src/lib/workforce/lifecycle-wheel.ts`, version `wheel-v1`). Stored data is unchanged.
 
 - **One home per task.** Each segment belongs to exactly one stored stage, and every task in the product-mission plan lands in exactly one segment of its own stage. Discover splits into Market, Research and Foresight. Design splits into Experience and Architecture. Release splits into Release and Publish. Each human gate sits in the segment whose work it decides. A task with a key the mapping doesn't know falls to the first segment of its stored stage, so nothing drops off the wheel. Tests check all of this against the planner. Changing where a task lands needs a new version.
 - **Nothing moves unless a task did.** A segment's state comes only from its tasks: Not started, In progress, Awaiting your decision (a gate is waiting), Complete or Stopped. A segment with no tasks reads Not started. There is no animation apart from a short colour transition, which is turned off under reduced motion.

@@ -121,14 +121,15 @@ export const SEGMENT_STATE_TEXT: Record<SegmentState, string> = {
 };
 
 /**
- * The segment a task belongs to. Known keys map exactly; a task with an
- * unknown key falls to the first segment of its stored stage, so nothing is
- * ever left off the wheel. A task with no stage has no segment.
+ * The segment a task belongs to. A task with no stage has no segment. A known
+ * key maps exactly when its segment is on the task's own stage; otherwise the
+ * task falls to the first segment of its stored stage, so nothing with a stage
+ * is ever left off the wheel or placed outside it.
  */
 export function segmentFor(task: Pick<WfMissionTask, "key" | "stage">): WheelSegment | null {
-  const exact = WHEEL_SEGMENTS.find((s) => s.taskKeys.includes(task.key));
-  if (exact) return exact;
   if (!task.stage) return null;
+  const exact = WHEEL_SEGMENTS.find((s) => s.taskKeys.includes(task.key));
+  if (exact && exact.stage === task.stage) return exact;
   return WHEEL_SEGMENTS.find((s) => s.stage === task.stage) ?? null;
 }
 

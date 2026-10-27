@@ -13,7 +13,7 @@ type T = Parameters<typeof wheelView>[0][number];
 const task = (key: string, status: T["status"], extra: Partial<T> = {}): T => ({
   id: `id-${key}`,
   key,
-  stage: segmentFor({ key, stage: null })?.stage ?? null,
+  stage: WHEEL_SEGMENTS.find((s) => s.taskKeys.includes(key))?.stage ?? null,
   status,
   gate: key.startsWith("gate_"),
   title: key,
@@ -41,6 +41,9 @@ describe("lifecycle wheel mapping", () => {
   it("keeps a task with an unknown key on the wheel, under its stored stage", () => {
     expect(segmentFor({ key: "extra_check", stage: "verify" })?.id).toBe("verify");
     expect(segmentFor({ key: "t3", stage: null })).toBeNull();
+    // A known key with no stage, or on another stage, follows its stored stage.
+    expect(segmentFor({ key: "publish", stage: null })).toBeNull();
+    expect(segmentFor({ key: "publish", stage: "evolve" })?.id).toBe("evolve");
   });
 });
 

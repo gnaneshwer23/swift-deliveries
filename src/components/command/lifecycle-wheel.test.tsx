@@ -31,7 +31,8 @@ describe("LifecycleWheel", () => {
       [{ id: "a1", taskId: "id-prd", title: "PRD v1" } as WfArtefact],
     );
     expect(html).toContain("Stage 5 of 12");
-    expect(html).toContain('href="#task-id-gate_scope"');
+    for (const key of ["charter", "prd", "gate_scope"])
+      expect(html).toContain(`href="#task-id-${key}"`);
     expect(html).toContain("Awaiting your decision");
     expect(html).toContain("Open PRD v1");
     expect(html).toContain("wheel-v1");
