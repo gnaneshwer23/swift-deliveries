@@ -12,11 +12,11 @@ export const Route = createFileRoute("/_authenticated/command/programmes/")({
   validateSearch: () => ({}),
   head: () => ({
     meta: [
-      { title: "Programmes (Lab) — DeliverX" },
+      { title: "Programmes — DeliverX Studio" },
       {
         name: "description",
         content:
-          "Lab long-horizon simulation. Primary investigations run on the supervised briefing path.",
+          "Long-horizon product programmes with the same Acts language as Studio theatre — human gates throughout.",
       },
     ],
   }),
@@ -100,12 +100,12 @@ function ProgrammesHome() {
 
   return (
     <CommandShell
-      title="Programmes · Lab"
-      subtitle="Long-horizon simulation — demoted while the supervised briefing theatre is the primary path. Data is preserved."
+      title="Programmes"
+      subtitle="Long-horizon product builds with Briefing → Strategy → Cast → Approve → Build Acts. Human gates stay human-only."
     >
       <p className="cc-muted text-sm mb-4">
-        Prefer Overview → one-liner → briefing theatre for new product questions. Programme intake
-        stays available here for lab use only.
+        Same Acts language as Studio theatre. For a single decision loop, start from Studio Overview
+        → one-liner. Cast scales by complexity toward the catalogue ceiling — not 150 on every case.
       </p>
       {features.isSuccess && !supported ? (
         <section className="cc-panel cc-panel-active-gate">
@@ -113,8 +113,8 @@ function ProgrammesHome() {
           <p className="cc-muted">
             An admin needs to apply the database migrations{" "}
             <code>20261022100000_dxsi_product_mission</code> and{" "}
-            <code>20261022120000_dxsi_programmes</code>. Existing Command Centre missions keep
-            working meanwhile.
+            <code>20261022120000_dxsi_programmes</code>. Existing Studio missions keep working
+            meanwhile.
           </p>
         </section>
       ) : null}

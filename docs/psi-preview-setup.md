@@ -17,6 +17,8 @@ Use Node 24 and the Vercel Nitro preset. Never repoint production while preview 
 - DXSI_OPENAI_MODEL: optional direct OpenAI model ID that overrides DXSI_MODEL for OpenAI. Gateway prefixes are rejected.
 - DXSI_DECISION_MODEL: optional separate model for decision options.
 - DXSI_MODEL_ALLOWLIST: comma-separated exact model IDs this deployment may call. Every model that is set and used (DXSI_MODEL, DXSI_OPENAI_MODEL or DXSI_DECISION_MODEL) must be listed; anything else is refused with a clear reason. Confirm each ID is available to the account before listing it.
+- TAVILY_API_KEY (or EXA_API_KEY / BRAVE_API_KEY): optional. **Production** has Tavily wired for Combined/Web supervised research. **Preview** may omit the key — the foyer chip then shows web research not configured and research stays gaps-labelled (never invented). Set the same key on Preview only when you need live citations in that environment.
+- DXSI_VOICE_ENABLED / DXSI_VOICE_TRANSCRIBE_MODEL: optional. Voice reuses the OpenAI key path; when unset the Studio foyer says “Voice not configured” and typed Talk still works.
 
 Vercel preview URLs must be included in Auth trusted origins using the provider's supported configuration. Verify signup, confirmation, recovery, session refresh and sign-out with an authorised test account.
 

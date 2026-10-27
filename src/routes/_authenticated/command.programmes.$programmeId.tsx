@@ -16,6 +16,12 @@ import {
 import { decisionStatus, finalOptionId, latestDecisions } from "@/lib/programme/engine";
 import { sourceRegister } from "@/lib/programme/research";
 import { displayName, member } from "@/lib/programme/roster";
+import {
+  PROGRAMME_ACTS,
+  PROGRAMME_ACT_LABELS,
+  programmeActState,
+  programmeTheatreState,
+} from "@/lib/programme/theatre";
 import { createZip } from "@/lib/programme/zip";
 import {
   CRITERIA,
@@ -28,7 +34,7 @@ import {
 } from "@/lib/programme/types";
 
 export const Route = createFileRoute("/_authenticated/command/programmes/$programmeId")({
-  head: () => ({ meta: [{ title: "Programme dashboard — DeliverX" }] }),
+  head: () => ({ meta: [{ title: "Programme — DeliverX Studio" }] }),
   loader: async ({ context, params }) => {
     await context.queryClient.ensureQueryData(programmeQuery(params.programmeId));
   },
@@ -113,6 +119,7 @@ function ProgrammeDashboard() {
 
   const { state, records, metrics, reputation, modelMode } = query.data;
   const running = state.status === "active";
+  const theatre = programmeTheatreState(state);
 
   return (
     <CommandShell
@@ -127,10 +134,10 @@ function ProgrammeDashboard() {
           </Link>
           <span className="cc-chip">{STATUS_TEXT[state.status] ?? state.status}</span>
           <span className="cc-gen-badge" data-mode={modelMode.enabled ? "model" : "simulated"}>
-            {modelMode.enabled ? `Model: ${modelMode.model}` : "Simulated mode"}
+            {modelMode.enabled ? `Model · ${modelMode.model}` : "Simulated draft"}
           </span>
           <span className="cc-gen-badge" data-mode={query.data.search ? "model" : "simulated"}>
-            {query.data.search ? `Research: ${query.data.search}` : "No web research"}
+            {query.data.search ? `Cited · ${query.data.search}` : "Web research gaps labelled"}
           </span>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -143,7 +150,11 @@ function ProgrammeDashboard() {
                 onClick={() => step.mutate()}
               >
                 <StepForward className="size-4" />{" "}
-                {step.isPending ? "Running…" : "Run next server step"}
+                {step.isPending
+                  ? "Advancing…"
+                  : theatre.awaitingHuman
+                    ? "Waiting on your gate"
+                    : "Advance next build beat"}
               </button>
             </>
           ) : null}
@@ -154,7 +165,7 @@ function ProgrammeDashboard() {
             onClick={() => download.mutate()}
           >
             <Download className="size-4" />{" "}
-            {download.isPending ? "Packaging…" : "Download project (.zip)"}
+            {download.isPending ? "Packaging…" : "Download full programme (.zip)"}
           </button>
           {!["completed", "cancelled"].includes(state.status) ? (
             <button
@@ -172,6 +183,34 @@ function ProgrammeDashboard() {
       {error ? <p className="cc-error mb-3">{error}</p> : null}
       {note ? <p className="cc-muted mb-3 text-sm">{note}</p> : null}
 
+      <section className="ps-theatre-acts cc-panel mb-4" aria-label="Programme acts">
+        <p className="cc-kicker">Programme Acts · same language as Studio theatre</p>
+        <h2 className="ps-theatre-title mb-2">
+          {PROGRAMME_ACT_LABELS[theatre.current]}
+          {theatre.phaseLabel ? ` · ${theatre.phaseLabel}` : ""}
+        </h2>
+        <p className="cc-muted text-sm mb-3">
+          {theatre.awaitingHuman
+            ? theatre.nextGateTitle
+              ? `Human gate: ${theatre.nextGateTitle}. Specialists cannot pass this for you.`
+              : "A human gate is open — nothing external runs without your approval."
+            : "Specialists draft; you approve. Full Acts path for long-horizon product builds."}
+        </p>
+        <ol className="ps-theatre-acts">
+          {PROGRAMME_ACTS.map((act) => {
+            const st = programmeActState(theatre, act);
+            return (
+              <li key={act} data-state={st}>
+                <div className="ps-theatre-act-btn" aria-current={st === "current" ? "step" : undefined}>
+                  {PROGRAMME_ACT_LABELS[act]}
+                  {st === "current" ? <span className="ps-theatre-act-now">Now</span> : null}
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      </section>
+
       <AttentionPanel
         view={query.data}
         programmeId={programmeId}
@@ -181,31 +220,34 @@ function ProgrammeDashboard() {
 
       <FounderBriefing view={query.data} />
 
-      <section className="cc-kpi-strip" aria-label="Programme summary">
-        <Kpi
-          label="Progress"
-          value={`${Math.round(metrics.progress * 100)}%`}
-          sub={`${metrics.itemsDone}/${metrics.itemsTotal} work items`}
-        />
-        <Kpi
-          label="Workforce engaged"
-          value={`${metrics.engagedRoles}`}
-          small="/ 150"
-          sub={`${metrics.departments.filter((d) => d.engaged).length}/15 departments`}
-        />
-        <Kpi
-          label="Decisions"
-          value={`${metrics.decisions.total}`}
-          sub={`${metrics.decisions.adopted} adopted · ${metrics.decisions.escalated} escalated · ${metrics.decisions.vetoes} vetoes · ${metrics.decisions.mindChanges} changed minds`}
-        />
-        <Kpi
-          label="Meetings & deliverables"
-          value={`${metrics.meetings} · ${metrics.deliverables}`}
-          sub={`Peer review avg ${metrics.reviewAverage ?? "—"}/100`}
-        />
-      </section>
-
       <RoadmapTimeline view={query.data} />
+
+      <details className="ps-legacy mt-4 mb-4">
+        <summary>Operator metrics (under the fold — not the briefing)</summary>
+        <section className="cc-kpi-strip mt-3" aria-label="Programme summary">
+          <Kpi
+            label="Progress"
+            value={`${Math.round(metrics.progress * 100)}%`}
+            sub={`${metrics.itemsDone}/${metrics.itemsTotal} work items`}
+          />
+          <Kpi
+            label={`Cast band ${metrics.staffing.band}`}
+            value={`${metrics.staffing.catalogueSelected}`}
+            small={`/ ${metrics.staffing.catalogueCeiling}`}
+            sub={`${metrics.engagedRoles} contributed · ${metrics.departments.filter((d) => d.engaged).length}/15 departments · not every case staffs 150`}
+          />
+          <Kpi
+            label="Decisions"
+            value={`${metrics.decisions.total}`}
+            sub={`${metrics.decisions.adopted} adopted · ${metrics.decisions.escalated} escalated · ${metrics.decisions.vetoes} vetoes · ${metrics.decisions.mindChanges} changed minds`}
+          />
+          <Kpi
+            label="Meetings & deliverables"
+            value={`${metrics.meetings} · ${metrics.deliverables}`}
+            sub={`Peer review avg ${metrics.reviewAverage ?? "—"}/100`}
+          />
+        </section>
+      </details>
 
       <div className="pg-tabs" role="tablist" aria-label="Programme views">
         {TABS.map(([id, label]) => (
@@ -1039,7 +1081,9 @@ function FounderBriefing({ view }: { view: ProgrammeView }) {
         <div>
           <dt>Who contributed, disagreed or changed their mind?</dt>
           <dd>
-            {metrics.engagedRoles}/150 roles engaged · {dissent} dissenting positions recorded ·{" "}
+            Cast band {metrics.staffing.band} · catalogue{" "}
+            {metrics.staffing.catalogueSelected}/{metrics.staffing.catalogueCeiling} ·{" "}
+            {metrics.engagedRoles} contributed · {dissent} dissenting positions ·{" "}
             {metrics.decisions.mindChanges} changes of mind · {metrics.decisions.vetoes} vetoes
           </dd>
         </div>

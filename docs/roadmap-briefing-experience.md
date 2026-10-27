@@ -1,6 +1,6 @@
 # Strategy: Briefing theatre → cast & roadmap → approve → living work
 
-**Status:** G0 signed (founder Option 2 + defaults). **G1–G3 shipping** on supervised spine; G4/G5 light.  
+**Status:** G0–G5 + Voice F + Studio rename + catalogue roster shipped (founder close-out 27 Oct 2026).  
 **Date:** 27 October 2026  
 **Repo:** `swift-deliveries` · Live: https://www.deliverx.dev  
 **E2E reference mission:** `/command/supervised/e1a95c83-e087-402d-b91e-0455e5f0ce6e`  
@@ -269,8 +269,8 @@ Why: Phase B–E already bet on supervised as the spine. The gap is **experience
 | **G2 — Overview foyer** | **Shipped** | Start/resume only; chat/stop/inbox collapsed | First viewport = Continue + one-liner |
 | **G3 — Specialists as cast** | **Shipped** | Active mission cast primary; catalogue Explore | Specialists shows cast for open mission |
 | **G4 — Project as memory** | **Shipped (deeper)** | Auto-attach + artefact shelf: missions/artefacts/decisions, beat progress, propose follow-up without auto-authorising | Project shows shelf + Propose follow-up → new mission awaiting plan approval |
-| **G5 — Programme Lab** | **Light (frozen)** | Nav labelled Lab; feature freeze; data kept. Light Acts language **skipped** this pass — detail page still KPI-led; do not revive dashboard | Programmes not confused with primary path |
-| **F — Voice** | Deferred | — | After typed theatre |
+| **G5 — Programme Lab** | **Shipped (Acts)** | Unfrozen Acts chrome on programme detail; KPI strip under the fold; same Briefing→Build language as Studio | Lab detail reads as Acts, not a KPI hero |
+| **F — Voice** | **Shipped (honesty)** | Foyer Talk (typed + voice) shares clarification → supervised mission → click-to-approve path; configure banner when keys missing | Speak or type → same cards → human gates intact |
 
 Prior A–E remain historical delivery; **G\*** is the experience track. Do not claim B–E “done” as the briefing product.
 
@@ -307,12 +307,18 @@ Prior A–E remain historical delivery; **G\*** is the experience track. Do not 
 
 ---
 
-## 12. Remaining after this ship
+## 12. Close-out (founder override — nothing deferred)
 
-- ~~Deeper Project shelf (list missions/packs on the project page beyond auto-link).~~ **Done** — shelf lists missions, artefacts, decisions, beat progress, next action; Propose follow-up attaches to the same project and never auto-approves.
-- Programme Acts language if Lab is ever promoted (explicit re-approval; avoid KPI hero).
-- Optional further chrome rename away from “Command”.
-- Voice (F) still deferred.
-- Agents office primary / always-on 150 / full ZIP — still deferred.
+| Item | Status |
+| --- | --- |
+| Deeper Project shelf + Propose follow-up | **Done** |
+| Programme Lab Acts language | **Done** — KPI under fold |
+| Command → Studio rename | **Done** — shell/nav copy; routes stay `/command` |
+| Voice (F) | **Done** — foyer Talk + honesty when unconfigured |
+| Agents office primary | **Done** — Specialists + nav Office |
+| Catalogue band→N toward 150 | **Done** — S/M/L/XL → 16/35/75/140; Available runnable only |
+| Full supervised ZIP | **Done** — pack + evidence + prototype + manifest |
+| Live web research | **Done** — Production Tavily; Preview note in `docs/psi-preview-setup.md` |
+| Model mode opt-in | **Done** — foyer readiness chip; Simulated when keys absent |
 
-**Research note (27 Oct 2026):** `@tavily/core` is wired on the supervised Combined/Web path. Production has `TAVILY_API_KEY`. Live Combined verify (mission `0f73b32f-ee1d-49f4-837f-dc1982d53a3f`): **citations yes** — Research beat showed `Cited · tavily` with real source URLs (not gaps-only).
+**Research note (27 Oct 2026):** `@tavily/core` is wired on the supervised Combined/Web path. Production has `TAVILY_API_KEY`. Preview may omit the key — chip stays honest. Live Combined verify (mission `0f73b32f-ee1d-49f4-837f-dc1982d53a3f`): **citations yes**.

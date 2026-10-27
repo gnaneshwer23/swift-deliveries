@@ -142,7 +142,8 @@ ${bc.idea}
 
 - **Status:** ${state.status} · **Progress:** ${metrics.itemsDone}/${metrics.itemsTotal} work items
 - **Credits:** ${state.budget.consumed}/${state.budget.ceiling}
-- **Workforce engaged:** ${metrics.engagedRoles}/150 roles across ${metrics.departments.filter((d) => d.engaged).length} departments
+- **Cast:** band ${metrics.staffing.band} · catalogue roster ${metrics.staffing.catalogueSelected}/${metrics.staffing.catalogueCeiling} (not every case staffs 150)
+- **Roles that contributed so far:** ${metrics.engagedRoles} across ${metrics.departments.filter((d) => d.engaged).length} departments
 - **Decisions:** ${metrics.decisions.total} (${metrics.decisions.adopted} adopted by panels, ${metrics.decisions.escalated} escalated, ${metrics.decisions.overridden} overridden by the founder)
 - **Meetings:** ${metrics.meetings} · **Deliverables:** ${metrics.deliverables} · **Peer review average:** ${metrics.reviewAverage ?? "—"}
 

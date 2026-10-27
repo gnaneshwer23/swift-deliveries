@@ -1,6 +1,6 @@
 # Product brief: Future product-building agents
 
-**Status:** P0 signed — **P1–P5 shipping** (founder approved P5). Voice / agents office primary / always-on 150 / programme feature build-out out of scope.  
+**Status:** P0–P5 + close-out complete (Studio rename, Voice F, Programme Acts, catalogue roster, ZIP, agents office). 27 Oct 2026.  
 **Date:** 27 October 2026  
 **North star (founder):** “We are building future product building agents.”  
 **Repo:** `swift-deliveries` · Live: https://www.deliverx.dev  
@@ -100,9 +100,9 @@ That is the product: **future product-building agents**, supervised — not a Co
 | **P3 — Artefact shelf on Project** | **Shipped (deeper)** — read-only shelf + **Propose follow-up** (same `projectId`, plan gate intact); richer mission rows (beats, next action, gaps, decisions) | Start mission → finish a beat → Project shows artefact; Propose follow-up opens a new brief awaiting approval | P1 |
 | **P4 — Stub→model honesty ladder** | **Shipped** — same artefact UI badge slot: Simulated draft ↔ Model · id | Toggle/config: same demo mission discloses Simulated vs Model on the artefact without layout change | P1 |
 | **P5 — One deeper build beat** | **Shipped** — sandboxed HTML prototype after Pack (human gate → UX Prototype Agent → static verify; failures visible). PRD not chosen — workforce already had prototype/verify spine; HTML is the visible “built something” artefact | After pack export: approve → specialist produces sandboxed HTML → open iframe + verify rows (or failure labels) | P1–P2; founder pick = HTML prototype |
-| **P6 — Optional later** | **Skipped this pass** — Programme Lab stays frozen (KPI detail page not Acts-ready without dashboard revival). Voice (F) / cinematic office remain deferred | Only after explicit re-approval | Explicit re-approval |
+| **P6 — Programme Acts + Studio close-out** | **Shipped** — Programme Lab Acts chrome; Studio rename; agents office primary; band→N catalogue roster; supervised ZIP; Voice F honesty path | Click Lab detail Acts; foyer Studio + Talk; Office on Specialists; XL roster approaches 150 with Planned labelled | Founder override |
 
-**Explicit non-goals for P1–P5:** new dashboard widgets, catalogue expansion, agents office primary, programme feature build-out, self-service checkout, fabricated research, production-readiness claims without release checks.
+**Explicit non-goals retained:** new dashboard widgets as hero, self-service checkout, fabricated research, production-readiness claims without release checks. (Catalogue roster / office / Programme Acts / Voice shipped under founder close-out.)
 
 ---
 
@@ -119,9 +119,9 @@ That is the product: **future product-building agents**, supervised — not a Co
 
 ## 7. Binding close
 
-**P0 signed; P1–P5 implemented; P3 deepened (follow-up from Project).** P6 skipped this pass (Lab stays frozen). Voice / agents office primary / always-on 150 / full ZIP remain deferred. Prior Option 2 / B–E ships remain the baseline.
+**P0–P6 close-out shipped.** Theatre, Project shelf, HTML prototype, Programme Acts, Studio shell, agents office, catalogue roster (band→N toward 150), supervised ZIP, Voice F (configure banner when keys missing), model readiness chips. Nothing left deferred for founder secrets except optional model/voice keys.
 
-**Research (post-P5 + live verify 27 Oct 2026):** Path B via `@tavily/core` is live; Production has `TAVILY_API_KEY`; foyer shows `Web research ready · tavily`. Signed-in Combined run produced **real cited findings** (`Cited · tavily` + source URLs), not gaps-only. Keyless still honest. Research beat UI now lists clickable cited sources.
+**Research (post-P5 + live verify 27 Oct 2026):** Path B via `@tavily/core` is live; Production has `TAVILY_API_KEY`; Preview may omit the key (see `docs/psi-preview-setup.md`). Signed-in Combined run produced **real cited findings**. Keyless still honest.
 
 ---
 

@@ -34,11 +34,12 @@ describe("pm brief — one-liner expansion", () => {
 });
 
 describe("pm brief — staffing bands", () => {
-  it("sizes Band S to the Available core (4), not the full catalogue", () => {
+  it("sizes Band S to the Available core (4) with a small catalogue roster", () => {
     const band = estimateStaffingBand("Should we change one onboarding field label?");
     expect(band.band).toBe("S");
     expect(band.activeSpecialists).toBe(4);
-    expect(band.catalogueTargetMax).toBeLessThanOrEqual(20);
+    expect(band.catalogueSelected).toBe(16);
+    expect(band.catalogueSelected).toBeLessThan(50);
   });
 
   it("sizes Band M to core + options (6)", () => {
@@ -47,15 +48,18 @@ describe("pm brief — staffing bands", () => {
     );
     expect(band.band).toBe("M");
     expect(band.activeSpecialists).toBe(6);
+    expect(band.catalogueSelected).toBe(35);
   });
 
-  it("sizes Band L to the Available cap (8) without staffing all 150", () => {
+  it("sizes Band L runnable to Available cap (8) while catalogue approaches mid-range", () => {
     const band = estimateStaffingBand(
       "Map competitors and go-to-market pricing for an international launch across three segments.",
     );
     expect(band.band).toBe("L");
     expect(band.activeSpecialists).toBe(8);
-    expect(band.catalogueTargetMax).toBeLessThanOrEqual(100);
+    expect(band.catalogueSelected).toBe(75);
+    expect(band.cataloguePlanned).toBeGreaterThan(0);
+    expect(band.catalogueCeiling).toBe(150);
   });
 });
 

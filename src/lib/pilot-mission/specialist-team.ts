@@ -1,14 +1,33 @@
 /**
  * Specialist team for the supervised decision pilot.
- * Uses only Available Wave 1 registry roles — not the full catalogue.
- * Complexity band selects a deterministic subset (S/M/L/XL → 4/6/8/8).
+ * Runnable tasks use only Available Wave 1 roles (S/M/L/XL → 4/6/8/8).
+ * Catalogue roster scales by band toward the 150 ceiling; Planned roles stay
+ * on the roster as honesty labels — they never run until Available.
  */
-import { getCapability } from "@/lib/workforce/registry/load";
+import {
+  getCapability,
+  listAssignableCapabilities,
+  listCapabilities,
+} from "@/lib/workforce/registry/load";
 import { validateTaskGraph, type GraphNode } from "@/lib/workforce/graph";
 import type { MissionStage, SupervisedMission } from "./types";
 
 /** Matches PM-brief complexity bands. Kept local to avoid import cycles. */
 export type StaffingBand = "S" | "M" | "L" | "XL";
+
+/** Catalogue ceiling — complex/XL approaches this; simple cases stay far below. */
+export const CATALOGUE_CEILING = 150;
+
+/**
+ * Real band → N catalogue selection (not fake-enable-all-150).
+ * Available first, then Planned, deterministic by capability_id.
+ */
+export const BAND_CATALOGUE_N: Record<StaffingBand, number> = {
+  S: 16,
+  M: 35,
+  L: 75,
+  XL: 140,
+};
 
 export const DECISION_LOOP_STEPS = [
   "objective",
@@ -68,12 +87,27 @@ export type PilotActivityEvent = {
   actor: string;
 };
 
+export type CatalogueRoster = {
+  /** Selected catalogue IDs for this band (Available first, then Planned). */
+  ids: string[];
+  /** How many of those are Available (can run today). */
+  availableCount: number;
+  /** How many are Planned (rostered only — not runnable). */
+  plannedCount: number;
+  /** N selected for this band. */
+  selected: number;
+  /** Catalogue ceiling (150). */
+  ceiling: number;
+};
+
 export type PilotTeamPlan = {
   version: "pilot-team-v1";
   /** Assignable Wave 1 specialists staffing this mission. */
   capabilityIds: string[];
   /** Complexity band that selected this subset. */
   staffingBand: StaffingBand;
+  /** Catalogue roster sized by band — Planned included honestly, not runnable. */
+  catalogueRosterIds?: string[];
   tasks: PilotSpecialistTask[];
   approvedAt: string | null;
   approvedBy: string | null;
@@ -90,7 +124,7 @@ export const STAFFING_DELIVERY_IDS = ["DX-023", "DX-035"] as const;
 
 export const WAVE1_AVAILABLE_CAP = 8;
 
-/** Deterministic Available-only selection by band. Never pulls Planned / catalogue-150 roles. */
+/** Deterministic Available-only selection by band. Never pulls Planned into runnable tasks. */
 export function selectCapabilityIdsForBand(band: StaffingBand): string[] {
   if (band === "S") return [...STAFFING_CORE_IDS];
   if (band === "M") return [...STAFFING_CORE_IDS, ...STAFFING_OPTIONS_IDS];
@@ -98,6 +132,39 @@ export function selectCapabilityIdsForBand(band: StaffingBand): string[] {
     0,
     WAVE1_AVAILABLE_CAP,
   );
+}
+
+/**
+ * Band → N catalogue roster. Scales toward the 150 ceiling for XL; simple
+ * cases stay small. Available roles first; Planned fill the remainder and
+ * never become runnable from this list alone.
+ */
+export function selectCatalogueRosterForBand(band: StaffingBand): CatalogueRoster {
+  const target = Math.min(BAND_CATALOGUE_N[band], CATALOGUE_CEILING);
+  const available = listAssignableCapabilities()
+    .map((c) => c.capability_id)
+    .sort();
+  const planned = listCapabilities()
+    .filter((c) => c.lifecycle_status === "planned")
+    .map((c) => c.capability_id)
+    .sort();
+  // Prefer active Wave-1 order for Available, then remaining Available, then Planned.
+  const wave1 = selectCapabilityIdsForBand(band === "S" || band === "M" ? "L" : band);
+  const availableOrdered = [
+    ...wave1.filter((id) => available.includes(id)),
+    ...available.filter((id) => !wave1.includes(id)),
+  ];
+  const ordered = [...availableOrdered, ...planned.filter((id) => !availableOrdered.includes(id))];
+  const ids = ordered.slice(0, target);
+  const availableCount = ids.filter((id) => available.includes(id)).length;
+  const plannedCount = ids.length - availableCount;
+  return {
+    ids,
+    availableCount,
+    plannedCount,
+    selected: ids.length,
+    ceiling: CATALOGUE_CEILING,
+  };
 }
 
 function ownerFor(
@@ -123,6 +190,7 @@ function ownerFor(
 export function buildPilotTeamPlan(input?: { band?: StaffingBand }): PilotTeamPlan {
   const band = input?.band ?? "M";
   const capabilityIds = selectCapabilityIdsForBand(band);
+  const catalogue = selectCatalogueRosterForBand(band);
   const frame = ownerFor("DX-002", capabilityIds, "DX-002");
   const evidence = ownerFor("DX-018", capabilityIds, "DX-018");
   const synthesis = ownerFor("DX-020", capabilityIds, "DX-020");
@@ -321,6 +389,7 @@ export function buildPilotTeamPlan(input?: { band?: StaffingBand }): PilotTeamPl
     version: "pilot-team-v1",
     capabilityIds,
     staffingBand: band,
+    catalogueRosterIds: catalogue.ids,
     tasks,
     approvedAt: null,
     approvedBy: null,

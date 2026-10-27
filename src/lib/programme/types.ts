@@ -153,6 +153,16 @@ export type Roadmap = {
   items: WorkItem[];
 };
 
+export type ProgrammeStaffingSnapshot = {
+  band: "S" | "M" | "L" | "XL";
+  catalogueSelected: number;
+  catalogueAvailable: number;
+  cataloguePlanned: number;
+  catalogueCeiling: number;
+  rosterIds: string[];
+  reason: string;
+};
+
 export type ProgrammeState = {
   id: string;
   title: string;
@@ -160,6 +170,11 @@ export type ProgrammeState = {
   roadmap: Roadmap;
   status: ProgrammeStatus;
   budget: { ceiling: number; consumed: number };
+  /**
+   * Complexity-scaled cast toward the catalogue ceiling.
+   * Optional for programmes created before banding shipped — UI treats missing as XL honesty.
+   */
+  staffing?: ProgrammeStaffingSnapshot;
   /** Optimistic-concurrency version for persisted state. */
   version: number;
   createdAt: string;

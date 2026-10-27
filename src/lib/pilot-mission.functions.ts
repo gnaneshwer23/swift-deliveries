@@ -237,7 +237,7 @@ export const startSupervisedMission = createServerFn({ method: "POST" })
       workspaceId: workspace.id,
       userId: context.userId,
       question: data.question,
-      projectId: data.projectId,
+      ...(data.projectId !== undefined ? { projectId: data.projectId } : {}),
     });
     const mission = await service.create({
       id: crypto.randomUUID(),
@@ -423,6 +423,27 @@ export const exportSupervisedMission = createServerFn({ method: "POST" })
     });
     return view(mission, null);
   });
+
+/** Full ZIP: decision pack + evidence + prototype (when present) + honesty manifest. */
+export const exportSupervisedMissionZip = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(
+    async ({
+      context,
+      data,
+    }): Promise<{ files: Array<{ path: string; content: string }>; title: string; filename: string }> => {
+      const workspace = await workspaceFor(context.supabase, context.userId);
+      const { service } = await serviceFor();
+      const mission = await service.get(workspace.id, data.id);
+      if (!mission) throw new Error("Mission not found in this workspace.");
+      if (!mission.artefact) {
+        throw new Error("Prepare and export the decision pack before downloading the ZIP.");
+      }
+      const { buildSupervisedZip } = await import("@/lib/pilot-mission/supervised-zip");
+      return buildSupervisedZip(mission);
+    },
+  );
 
 /** P5 — human gate then sandboxed HTML prototype + static verify. */
 export const approveSupervisedPrototype = createServerFn({ method: "POST" })

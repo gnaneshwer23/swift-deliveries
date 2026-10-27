@@ -12,6 +12,7 @@ import {
   cancelSupervisedMission,
   decideSupervisedMission,
   exportSupervisedMission,
+  exportSupervisedMissionZip,
   getSupervisedMission,
   prepareSupervisedArtefact,
   reviseSupervisedBrief,
@@ -20,6 +21,7 @@ import {
   setSupervisedResearchMode,
 } from "@/lib/pilot-mission.functions";
 import { decisionPackFilenames } from "@/lib/pilot-mission/decision-pack";
+import { createZip } from "@/lib/programme/zip";
 import { type ResearchMode } from "@/lib/pilot-mission/research-mode";
 import { type DecisionChoice } from "@/lib/pilot-mission/types";
 
@@ -758,6 +760,21 @@ function ExportButton({
     },
     onError,
   });
+  const zip = useMutation({
+    mutationFn: () => exportSupervisedMissionZip({ data: { id: missionId } }),
+    onSuccess: ({ files, filename }) => {
+      const archive = createZip(files);
+      const url = URL.createObjectURL(
+        new Blob([archive.buffer as ArrayBuffer], { type: "application/zip" }),
+      );
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    },
+    onError,
+  });
   return (
     <div className="mt-3 flex flex-wrap gap-2">
       <button
@@ -771,8 +788,17 @@ function ExportButton({
       >
         {save.isPending ? "Exporting…" : "Download decision pack (PDF + Markdown)"}
       </button>
+      <button
+        type="button"
+        className="cc-btn cc-btn-secondary"
+        disabled={zip.isPending || !existingMd}
+        onClick={() => zip.mutate()}
+      >
+        {zip.isPending ? "Packaging…" : "Download full pack (.zip)"}
+      </button>
       <p className="cc-muted text-xs basis-full">
-        Linked sources are referenced only — they are not bundled in the download.
+        ZIP includes decision pack, evidence register, prototype HTML when built, and an honesty
+        manifest. Linked source URLs are referenced only — not fetched into the archive.
       </p>
     </div>
   );

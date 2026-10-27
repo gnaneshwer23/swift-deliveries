@@ -28,6 +28,7 @@ import {
   sourcesRecord,
   type Source,
 } from "./research";
+import { programmeStaffingFor, staffingOrLegacy } from "./staffing";
 import {
   PHASES,
   type BusinessCase,
@@ -62,6 +63,7 @@ export function createProgramme(id: string, bc: BusinessCase, now: string): Prog
     roadmap: generateRoadmap(bc, id),
     status: "active",
     budget: { ceiling: bc.budgetCredits, consumed: 0 },
+    staffing: programmeStaffingFor(bc),
     version: 1,
     createdAt: now,
     updatedAt: now,
@@ -701,6 +703,16 @@ export function programmeMetrics(state: ProgrammeState, records: ProgrammeRecord
     })),
     budget: state.budget,
     engagedRoles: engaged.size,
+    /** Complexity-scaled cast toward catalogue ceiling (not always 150). */
+    staffing: (() => {
+      const s = staffingOrLegacy(state.staffing);
+      return {
+        band: s.band,
+        catalogueSelected: s.catalogueSelected,
+        catalogueCeiling: s.catalogueCeiling,
+        reason: state.staffing?.reason ?? "Legacy programme — catalogue ceiling shown honestly.",
+      };
+    })(),
     departments,
     meetings: records.filter((r) => r.kind === "meeting").length,
     deliverables: new Set(records.filter((r) => r.kind === "artefact").map((r) => r.itemKey)).size,

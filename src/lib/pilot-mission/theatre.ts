@@ -30,6 +30,11 @@ export const ROADMAP_BEATS = [
   { id: "options", label: "Options", detail: "Specialists draft alternatives with tradeoffs." },
   { id: "decide", label: "Your decision", detail: "You accept an option or request more evidence." },
   { id: "pack", label: "Pack", detail: "Decision pack you can inspect and export." },
+  {
+    id: "prototype",
+    label: "Prototype",
+    detail: "Sandboxed HTML after Pack — human gate, then static verify.",
+  },
   { id: "learn", label: "Learn", detail: "Owner-supplied outcome; follow-up only if you approve." },
 ] as const;
 

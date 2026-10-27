@@ -18,6 +18,7 @@ import {
   preparedMissionIntake,
   restoreMissionIntake,
 } from "@/lib/mission-intake-draft";
+import { VoiceControls } from "@/components/command/voice-controls";
 
 export function SupervisedMissionStart() {
   const { user } = useSession();
@@ -38,6 +39,8 @@ function MissionStartForm({ userId }: { userId: string }) {
   const [constraints, setConstraints] = useState(RESEARCH_FIRST_CONSTRAINT);
   const [researchMode, setResearchMode] = useState<ResearchMode>("combined");
   const [error, setError] = useState<string | null>(null);
+  const [speakReplies, setSpeakReplies] = useState(false);
+  const [voiceBusy, setVoiceBusy] = useState(false);
 
   const [draftReady, setDraftReady] = useState(false);
   const [prepared, setPrepared] = useState<ProductBrief | null>(null);
@@ -178,7 +181,28 @@ function MissionStartForm({ userId }: { userId: string }) {
           placeholder="e.g. Should we charge for onboarding analytics before launch, or keep it free to learn faster?"
           value={question}
           onChange={(event) => setQuestion(event.target.value)}
+          disabled={voiceBusy}
         />
+
+        <div className="ps-voice-one-liner" aria-label="Voice one-liner">
+          <p className="cc-muted text-xs mb-2">
+            Voice uses the same spine as typing — spoken words become this one-liner. Nothing is
+            approved by voice; you still click Brief the PM. If tokens are missing, the panel says
+            so and typing still works.
+          </p>
+          <VoiceControls
+            disabled={!draftReady || start.isPending}
+            speakReplies={speakReplies}
+            onSpeakRepliesChange={setSpeakReplies}
+            onBusyChange={setVoiceBusy}
+            onTranscript={(text) => {
+              const line = text.trim();
+              if (!line) return;
+              // Same spine as typing: spoken words become the one-liner; Brief the PM still requires a click.
+              setQuestion((current) => (current.trim() ? `${current.trim()} ${line}` : line));
+            }}
+          />
+        </div>
 
         <details className="ps-intake-advanced">
           <summary>Optional details (defaults are research-first)</summary>

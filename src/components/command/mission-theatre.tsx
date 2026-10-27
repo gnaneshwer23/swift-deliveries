@@ -258,8 +258,10 @@ function ActCast({
         ))}
       </ul>
       <p className="cc-muted text-sm mt-3">
-        {STAFFING_BAND_LABELS[staffing.band]} · catalogue intent {staffing.catalogueTargetMin}–
-        {staffing.catalogueTargetMax} (label only — not all 150).
+        {STAFFING_BAND_LABELS[staffing.band]} · catalogue roster {staffing.catalogueSelected}/
+        {staffing.catalogueCeiling} ({staffing.catalogueAvailable} Available can run ·{" "}
+        {staffing.cataloguePlanned} Planned on roster only). Simple cases stay small; XL approaches
+        the ceiling — never fake-enables all 150 on every mission.
       </p>
       <Link to="/command/capabilities" className="cc-btn cc-btn-secondary mt-3 inline-flex">
         Open cast on Specialists →

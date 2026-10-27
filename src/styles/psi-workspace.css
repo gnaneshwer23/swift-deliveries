@@ -1342,6 +1342,12 @@
   background: #fbf8f1;
   color: #6b5420;
 }
+.ps-studio-readiness {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+}
 .ps-focal-artefact .ps-honesty-badges span[data-honesty="cited"] {
   border-color: #b7c9b7;
   background: #f7faf7;

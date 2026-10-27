@@ -1,11 +1,14 @@
 /**
  * PM brief for the supervised "one-liner → case" loop.
  * Derived from the founder statement + bounded team plan — not a second questionnaire.
- * Staffing bands select a deterministic Available Wave 1 subset (not the full catalogue).
+ * Runnable specialists = Available Wave 1 by band; catalogue roster scales toward 150.
  */
 import { planResearchMode, type ResearchMode } from "./research-mode";
 import {
+  BAND_CATALOGUE_N,
+  CATALOGUE_CEILING,
   selectCapabilityIdsForBand,
+  selectCatalogueRosterForBand,
   type StaffingBand,
 } from "./specialist-team";
 import type { Brief, EvidenceItem, SupervisedMission } from "./types";
@@ -20,17 +23,25 @@ export const RESEARCH_FIRST_CONSTRAINT =
 export type { StaffingBand };
 
 export const STAFFING_BAND_LABELS: Record<StaffingBand, string> = {
-  S: "Band S — Simple (~8–20 catalogue intent)",
-  M: "Band M — Standard (~20–50 catalogue intent)",
-  L: "Band L — Complex (~50–100 catalogue intent)",
-  XL: "Band XL — Ceiling (≤150 catalogue intent)",
+  S: "Band S — Simple (catalogue ~16)",
+  M: "Band M — Standard (catalogue ~35)",
+  L: "Band L — Complex (catalogue ~75)",
+  XL: "Band XL — Near ceiling (catalogue ~140 / 150)",
 };
 
 export type StaffingEstimate = {
   band: StaffingBand;
-  /** Roles active on this pilot mission (Available Wave 1 subset for the band). */
+  /** Roles that can run on this mission (Available Wave 1 subset for the band). */
   activeSpecialists: number;
-  /** Intended catalogue headcount band for this case complexity — not auto-enabled. */
+  /** Real catalogue N selected for this band (Available + Planned roster). */
+  catalogueSelected: number;
+  /** How many of catalogueSelected are Available today. */
+  catalogueAvailable: number;
+  /** How many of catalogueSelected are Planned (roster only). */
+  cataloguePlanned: number;
+  /** Catalogue ceiling. */
+  catalogueCeiling: number;
+  /** Legacy display range — min/max around the selected N. */
   catalogueTargetMin: number;
   catalogueTargetMax: number;
   reason: string;
@@ -72,56 +83,41 @@ const COMPLEX_HINTS =
 const SIMPLE_HINTS =
   /\b(copy|wording|button|label|one step|single|tiny|small tweak|onboarding field|setup field)\b/i;
 
+function staffingForBand(band: StaffingBand, reasonCore: string): StaffingEstimate {
+  const activeSpecialists = selectCapabilityIdsForBand(band).length;
+  const roster = selectCatalogueRosterForBand(band);
+  const n = BAND_CATALOGUE_N[band];
+  return {
+    band,
+    activeSpecialists,
+    catalogueSelected: roster.selected,
+    catalogueAvailable: roster.availableCount,
+    cataloguePlanned: roster.plannedCount,
+    catalogueCeiling: CATALOGUE_CEILING,
+    catalogueTargetMin: Math.max(activeSpecialists, Math.floor(n * 0.7)),
+    catalogueTargetMax: n,
+    reason: `${reasonCore} ${activeSpecialists} Available can run today; catalogue roster ${roster.selected}/${CATALOGUE_CEILING} (${roster.availableCount} Available · ${roster.plannedCount} Planned — Planned do not run until Available).`,
+  };
+}
+
 /**
  * Heuristic complexity → staffing band.
- * Active count is a deterministic Available Wave 1 subset (4 / 6 / 8 / 8).
- * Catalogue min/max remain honesty labels — the full 150 is not enabled.
+ * Runnable count = Available Wave 1 (4 / 6 / 8 / 8).
+ * Catalogue roster N scales by band toward 150 (16 / 35 / 75 / 140) — real selection, not fake-all.
  */
 export function estimateStaffingBand(question: string): StaffingEstimate {
   const text = question.trim();
   const words = text.split(/\s+/).filter(Boolean).length;
   if (SIMPLE_HINTS.test(text) && words < 40) {
-    const band: StaffingBand = "S";
-    const activeSpecialists = selectCapabilityIdsForBand(band).length;
-    return {
-      band,
-      activeSpecialists,
-      catalogueTargetMin: 8,
-      catalogueTargetMax: 20,
-      reason: `Narrow product question — ${activeSpecialists} Available Wave 1 specialists proposed (core spine). Catalogue intent ${8}–${20}; full catalogue not enabled.`,
-    };
+    return staffingForBand("S", "Narrow product question —");
   }
   if (/\b(programme|program-scale|multi[- ]geo|enterprise rollout)\b/i.test(text) && words > 100) {
-    const band: StaffingBand = "XL";
-    const activeSpecialists = selectCapabilityIdsForBand(band).length;
-    return {
-      band,
-      activeSpecialists,
-      catalogueTargetMin: 100,
-      catalogueTargetMax: 150,
-      reason: `Programme-scale signals — ${activeSpecialists} Available Wave 1 specialists proposed (cap). Catalogue ceiling ≤150 needs an explicit later accept; Planned roles stay off.`,
-    };
+    return staffingForBand("XL", "Programme-scale signals —");
   }
   if (COMPLEX_HINTS.test(text) || words > 80) {
-    const band: StaffingBand = "L";
-    const activeSpecialists = selectCapabilityIdsForBand(band).length;
-    return {
-      band,
-      activeSpecialists,
-      catalogueTargetMin: 50,
-      catalogueTargetMax: 100,
-      reason: `Broad market or multi-thread case — ${activeSpecialists} Available Wave 1 specialists proposed. Catalogue intent 50–100 labelled, not auto-staffed beyond Available.`,
-    };
+    return staffingForBand("L", "Broad market or multi-thread case —");
   }
-  const band: StaffingBand = "M";
-  const activeSpecialists = selectCapabilityIdsForBand(band).length;
-  return {
-    band,
-    activeSpecialists,
-    catalogueTargetMin: 20,
-    catalogueTargetMax: 50,
-    reason: `Standard decision case — ${activeSpecialists} Available Wave 1 specialists proposed (core + options). Catalogue intent 20–50 as research proves need.`,
-  };
+  return staffingForBand("M", "Standard decision case —");
 }
 
 /** Expand a one-liner into a brief without forcing a form interview. */
@@ -196,7 +192,7 @@ export function buildPmBrief(
   const knowns = [
     "Founder supplied a one-liner business case.",
     `Research mode: ${research.label}.`,
-    `Proposed staffing: ${activeCount} Available Wave 1 specialists (${STAFFING_BAND_LABELS[staffing.band]}).`,
+    `Proposed staffing: ${activeCount} Available Wave 1 specialists can run; catalogue roster ${staffing.catalogueSelected}/${staffing.catalogueCeiling} for ${STAFFING_BAND_LABELS[staffing.band]}.`,
   ];
   const unknowns = [
     ...(mission.brief.audience === RESEARCH_REFINE_AUDIENCE
@@ -262,6 +258,6 @@ export function buildPmBrief(
     askFounderOnlyWhen:
       "A real decision gate, a missing fact only you can supply, consent to contact customers, or approval to act externally.",
     honesty:
-      "Simulated / deterministic PM draft — no model call for this brief. Active staffing is an Available Wave 1 subset sized by band; catalogue ranges above that are labels only (full 150 not enabled).",
+      "Simulated / deterministic PM draft — no model call for this brief. Runnable specialists are Available Wave 1 sized by band; catalogue roster scales toward 150 for complex cases. Planned roles stay labelled and never run until Available.",
   };
 }

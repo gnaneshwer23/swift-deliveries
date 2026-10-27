@@ -19,19 +19,17 @@ import {
 } from "@/components/marketing/motion-product-visuals";
 import { FlaskConical, Rocket, Search, ShieldCheck, Wrench } from "lucide-react";
 import { WorkspaceStopControl } from "@/components/command/workspace-stop";
-import { AgentOffice } from "@/components/command/agent-office";
-import { ConversationPanel } from "@/components/command/conversation-panel";
 import { OwnerInbox } from "@/components/command/owner-inbox";
 import { OWNER_WAITING } from "@/lib/agent-office";
 
 export const Route = createFileRoute("/_authenticated/command/")({
   head: () => ({
     meta: [
-      { title: "Product workspace — DeliverX" },
+      { title: "Studio — DeliverX" },
       {
         name: "description",
         content:
-          "Turn a product question into evidence, a decision you control, and work you can review.",
+          "DeliverX Studio — turn a product question into evidence, a decision you control, and work you can review.",
       },
     ],
   }),
@@ -250,7 +248,7 @@ function CommandHome() {
 
   if (isLoading) {
     return (
-      <CommandShell title="Workspace" subtitle="Loading…">
+      <CommandShell title="Studio" subtitle="Loading…">
         <p className="text-sm" style={{ color: "var(--x-slate-light)" }}>
           Preparing your foyer…
         </p>
@@ -260,9 +258,9 @@ function CommandHome() {
 
   if (isError || !data) {
     return (
-      <CommandShell title="Workspace" subtitle="Could not load">
+      <CommandShell title="Studio" subtitle="Could not load">
         <div className="cc-panel">
-          <h2 className="cc-panel-title">Workspace could not load</h2>
+          <h2 className="cc-panel-title">Studio could not load</h2>
           <p className="cc-muted">
             {error instanceof Error
               ? error.message
@@ -273,7 +271,7 @@ function CommandHome() {
             disabled={isFetching}
             onClick={() => void refetch()}
           >
-            {isFetching ? "Retrying…" : "Retry workspace"}
+            {isFetching ? "Retrying…" : "Retry Studio"}
           </button>
           <Link to="/login" className="cc-btn cc-btn-secondary mt-4 inline-flex">
             Sign in again
@@ -302,7 +300,7 @@ function CommandHome() {
 
   return (
     <CommandShell
-      title="Workspace"
+      title="Studio"
       subtitle="Start a product question, or continue one that is waiting on you."
       usage={{
         consumed: data.workspace.usageConsumed,
@@ -312,28 +310,15 @@ function CommandHome() {
       <WorkspaceFoyer />
 
       <details className="ps-legacy mt-6">
-        <summary>Workspace tools (inbox, stop, talk) — not the primary path</summary>
+        <summary>Studio tools under the fold (inbox, stop) — not the foyer</summary>
         <div className="mt-3 grid gap-3">
           <OwnerInbox />
           <WorkspaceStopControl workspace={data.workspace} />
-          <details className="ps-legacy">
-            <summary>Talk to DeliverX (optional)</summary>
-            <ConversationPanel />
-          </details>
         </div>
       </details>
 
       <details className="ps-legacy mt-4">
         <summary>Advanced tools · specialist planner & mission ledger (not the foyer)</summary>
-        <details className="ps-legacy mt-3">
-          <summary>Agents office (recent specialist missions — not the primary pilot path)</summary>
-          <AgentOffice
-            missions={data.recentMissions}
-            tasks={data.recentTasks}
-            tasksUnavailable={data.recentTasksUnavailable}
-            usage={{ consumed: data.workspace.usageConsumed, ceiling: data.workspace.usageCeiling }}
-          />
-        </details>
         {/* Unified Mission Composer Card */}
         <section
           id="mission-composer"

@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   ArrowUpRight,
+  Building2,
   Compass,
   FlaskConical,
   FolderKanban,
@@ -20,10 +21,16 @@ import { BrandLogo } from "@/components/brand-logo";
 import "@/styles/psi-workspace.css";
 
 const NAV = [
-  { to: "/command", label: "Overview", icon: Compass, lab: false },
-  { to: "/command/projects", label: "Projects", icon: FolderKanban, lab: false },
-  { to: "/command/capabilities", label: "Specialists", icon: UsersRound, lab: false },
-  { to: "/command/programmes", label: "Programmes Lab", icon: FlaskConical, lab: true },
+  { to: "/command", label: "Studio", icon: Compass },
+  {
+    to: "/command/capabilities",
+    hash: "agents-office",
+    label: "Agents office",
+    icon: Building2,
+  },
+  { to: "/command/projects", label: "Projects", icon: FolderKanban },
+  { to: "/command/capabilities", label: "Specialists", icon: UsersRound },
+  { to: "/command/programmes", label: "Programmes", icon: FlaskConical },
 ] as const;
 
 export function CommandShell({
@@ -41,7 +48,9 @@ export function CommandShell({
     | { consumed: number; ceiling: number; scope?: "workspace" | "mission" | "programme" }
     | undefined;
 }) {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { pathname, hash: locationHash } = useRouterState({
+    select: (s) => ({ pathname: s.location.pathname, hash: s.location.hash }),
+  });
   const signOut = useSignOut();
   const { user } = useSession();
   const [open, setOpen] = useState(false);
@@ -50,7 +59,7 @@ export function CommandShell({
     queryFn: () => getPilotOperatorAccess(),
     staleTime: 60_000,
   });
-  const name = user?.user_metadata.full_name ?? user?.email ?? "Workspace owner";
+  const name = user?.user_metadata.full_name ?? user?.email ?? "Studio owner";
   const remaining = usage ? Math.max(0, usage.ceiling - usage.consumed) : null;
   return (
     <div
@@ -78,32 +87,38 @@ export function CommandShell({
         <div className="ps-workspace-switch">
           <span className="ps-product-mark">P</span>
           <div>
-            <strong>Product workspace</strong>
-            <small>Product Super Intelligence</small>
+            <strong>DeliverX Studio</strong>
+            <small>Supervised product-building agents</small>
           </div>
         </div>
-        <nav aria-label="Workspace navigation">
-          {NAV.map(({ to, label, icon: Icon, lab }) => {
+        <nav aria-label="Studio navigation">
+          {NAV.map((item) => {
+            const { to, label, icon: Icon } = item;
+            const hash = "hash" in item ? item.hash : undefined;
+            const onCapabilities = pathname.startsWith("/command/capabilities");
+            const hashIsOffice =
+              locationHash === "#agents-office" || locationHash === "agents-office";
             const active =
-              to === "/command"
+              label === "Studio"
                 ? pathname === "/command" ||
                   pathname.startsWith("/command/supervised") ||
                   pathname.startsWith("/command/missions")
-                : pathname.startsWith(to);
+                : label === "Agents office"
+                  ? onCapabilities && hashIsOffice
+                  : label === "Specialists"
+                    ? onCapabilities && !hashIsOffice
+                    : pathname.startsWith(to);
             return (
               <Link
-                key={to}
+                key={hash ? `${to}#${hash}` : `${to}-${label}`}
                 to={to}
+                {...(hash ? { hash } : {})}
                 aria-current={active ? "page" : undefined}
-                className={`ps-nav-link ${active ? "is-active" : ""}${lab ? " ps-nav-lab" : ""}`}
+                className={`ps-nav-link ${active ? "is-active" : ""}`}
                 onClick={() => setOpen(false)}
-                title={lab ? "Lab — long-horizon simulation; not the primary path" : undefined}
               >
                 <Icon size={18} />
-                <span>
-                  {label}
-                  {lab ? <small>Not primary</small> : null}
-                </span>
+                <span>{label}</span>
               </Link>
             );
           })}
@@ -128,14 +143,14 @@ export function CommandShell({
                     ? "Mission usage"
                     : usage.scope === "programme"
                       ? "Programme usage"
-                      : "Workspace usage"}
+                      : "Studio usage"}
                 </span>
                 <strong>
                   {usage.consumed} / {usage.ceiling}
                 </strong>
               </div>
               <progress
-                aria-label={`${usage.scope ?? "workspace"} usage`}
+                aria-label={`${usage.scope ?? "studio"} usage`}
                 max={Math.max(1, usage.ceiling)}
                 value={usage.consumed}
               />
@@ -152,7 +167,7 @@ export function CommandShell({
             <span>{name.slice(0, 1).toUpperCase()}</span>
             <div>
               <strong>{name}</strong>
-              <small>Workspace owner</small>
+              <small>Studio owner</small>
             </div>
             <button onClick={() => void signOut()}>Sign out</button>
           </div>
@@ -161,7 +176,7 @@ export function CommandShell({
       <main className="ps-main" inert={open}>
         <div className="ps-topbar">
           <span>
-            Workspace <span>/</span> {title}
+            Studio <span>/</span> {title}
           </span>
           <Link to="/command" hash="supervised-brief" className="ps-new-mission">
             + New mission
