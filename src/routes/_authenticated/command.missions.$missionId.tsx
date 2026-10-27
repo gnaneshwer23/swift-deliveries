@@ -665,10 +665,7 @@ function MissionDetail() {
                     }}
                   />
                 ) : null}
-                <PlanDependencies
-                  tasks={tasks}
-                  externalActionsApproved={mission.externalActionsApproved}
-                />
+                <PlanDependencies tasks={tasks} mission={mission} />
                 {runNote ? <p className="cc-muted mt-3 text-sm">{runNote}</p> : null}
                 <ol className="cc-task-list mt-4">
                   {tasks.map((t) => (

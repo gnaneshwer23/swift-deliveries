@@ -12,10 +12,10 @@
   cursor: pointer;
   font-size: 0.95rem;
   font-weight: 700;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: baseline;
+  /* Stays a list item, so the browser keeps the open/closed marker. */
+}
+.pd-count {
+  margin-left: 0.5rem;
 }
 .pd-count,
 .pd-note {

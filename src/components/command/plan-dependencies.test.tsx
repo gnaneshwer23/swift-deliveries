@@ -19,10 +19,12 @@ const t = (key: string, status: WfMissionTask["status"], dependsOn: string[] = [
   }) as WfMissionTask;
 
 const render = (tasks: WfMissionTask[]) =>
-  renderToString(<PlanDependencies tasks={tasks} externalActionsApproved={false} />).replaceAll(
-    "<!-- -->",
-    "",
-  );
+  renderToString(
+    <PlanDependencies
+      tasks={tasks}
+      mission={{ status: "running", externalActionsApproved: false }}
+    />,
+  ).replaceAll("<!-- -->", "");
 
 describe("PlanDependencies", () => {
   it("shows each wave and links every task to its record", () => {

@@ -4,7 +4,7 @@ import {
   dependencyView,
   type DependencyNode,
 } from "@/lib/workforce/dependency-view";
-import type { WfMissionTask } from "@/lib/workforce/types";
+import type { WfMission, WfMissionTask } from "@/lib/workforce/types";
 import "@/styles/plan-dependencies.css";
 
 /**
@@ -14,14 +14,15 @@ import "@/styles/plan-dependencies.css";
  */
 export function PlanDependencies({
   tasks,
-  externalActionsApproved,
+  mission,
 }: {
   tasks: WfMissionTask[];
-  externalActionsApproved: boolean;
+  mission: Pick<WfMission, "status" | "externalActionsApproved">;
 }) {
+  const { status, externalActionsApproved } = mission;
   const view = useMemo(
-    () => dependencyView(tasks, externalActionsApproved),
-    [tasks, externalActionsApproved],
+    () => dependencyView(tasks, { status, externalActionsApproved }),
+    [tasks, status, externalActionsApproved],
   );
   return (
     <details className="pd" open>
