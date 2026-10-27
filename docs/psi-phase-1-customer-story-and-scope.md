@@ -18,11 +18,11 @@ The existing headline can remain. Its supporting copy must describe concrete wor
 
 ### Audience priority
 
-| Priority | Person and situation | Useful first outcome |
-|---|---|---|
-| First pilot focus | A founder or individual builder with one product question and some supplied evidence | An inspectable decision pack and a scoped experiment brief. |
-| Secondary | A product manager improving an existing workflow | Evidence, alternatives and rationale that can be shared with the team. |
-| Same product, supported learning path | A student learning through a real product-building exercise | The same artefacts, with explanations of trade-offs and reflection prompts. |
+| Priority                              | Person and situation                                                                 | Useful first outcome                                                        |
+| ------------------------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
+| First pilot focus                     | A founder or individual builder with one product question and some supplied evidence | An inspectable decision pack and a scoped experiment brief.                 |
+| Secondary                             | A product manager improving an existing workflow                                     | Evidence, alternatives and rationale that can be shared with the team.      |
+| Same product, supported learning path | A student learning through a real product-building exercise                          | The same artefacts, with explanations of trade-offs and reflection prompts. |
 
 This is a recommended focus for the first release, not a decision to exclude product teams or students. Student learning remains part of the vision. Avoid launching three separate products before one journey works reliably.
 
@@ -38,13 +38,13 @@ The value proposition is not simply a large agent count. It is a useful answer w
 
 This is a proposed delivery contract. It must pass Phase 4 runtime verification before it is promised as a working paid service.
 
-| Item | Proposed scope |
-|---|---|
-| Customer brings | One product, target audience, question, constraints, desired outcome and authorised source material. |
-| Intake | Validate that the question is answerable within scope; identify missing evidence before proceeding. |
-| DeliverX contributes | Organised evidence and gaps; alternative approaches; recommendations and objections; a human decision point; a next-step artefact and export. |
-| Customer controls | Evidence supplied, scope, decision, any consequential action and any additional usage. |
-| End state | A completed or explicitly inconclusive decision pack. Missing evidence may justify a research plan rather than a confident recommendation. |
+| Item                             | Proposed scope                                                                                                                                                 |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Customer brings                  | One product, target audience, question, constraints, desired outcome and authorised source material.                                                           |
+| Intake                           | Validate that the question is answerable within scope; identify missing evidence before proceeding.                                                            |
+| DeliverX contributes             | Organised evidence and gaps; alternative approaches; recommendations and objections; a human decision point; a next-step artefact and export.                  |
+| Customer controls                | Evidence supplied, scope, decision, any consequential action and any additional usage.                                                                         |
+| End state                        | A completed or explicitly inconclusive decision pack. Missing evidence may justify a research plan rather than a confident recommendation.                     |
 | Excluded from this first promise | Customer interviews conducted by agents, production code changes, deployment, external communications, automatic analytics collection and autonomous learning. |
 
 ### What the customer receives
@@ -74,15 +74,15 @@ A lightweight prototype is an optional agreed extension after the selected path 
 
 Use this across Home, Product and How it works. Do not invent customer interviews, baseline figures or success percentages. Example notes must be labelled hypothetical; a real pilot uses authorised supplied evidence.
 
-| Step | Sender → recipient | What moves | Visitor interaction |
-|---|---|---|---|
-| Frame | Owner → Problem Framing | Question, constraints, intended outcome | Inspect the sample brief and unanswered questions. |
-| Investigate | Research Synthesis → Product Discovery | Evidence brief with references and gaps | Open a sample observation and its source label. |
-| Compare | Product Strategy → scoped reviewers | Options and trade-offs | Compare options and inspect objections. |
-| Decide | Specialist recommendation → owner | Decision pack, risks and uncertainty | Approve an example scope or request more evidence; explicitly no workspace mutation. |
-| Prepare | Approved scope → relevant specialist contribution | Experiment brief and acceptance criteria | Inspect/download a labelled sample output. |
-| Preserve | Mission record → Product Brain | Evidence, decision and artefact relationships | Follow why an output exists and who decided. |
-| Learn, later capability | Supplied observed result → outcome review → owner | Comparison and proposed next mission | See a clearly labelled planned preview until Phase 5 is implemented and verified. |
+| Step                    | Sender → recipient                                | What moves                                    | Visitor interaction                                                                  |
+| ----------------------- | ------------------------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Frame                   | Owner → Problem Framing                           | Question, constraints, intended outcome       | Inspect the sample brief and unanswered questions.                                   |
+| Investigate             | Research Synthesis → Product Discovery            | Evidence brief with references and gaps       | Open a sample observation and its source label.                                      |
+| Compare                 | Product Strategy → scoped reviewers               | Options and trade-offs                        | Compare options and inspect objections.                                              |
+| Decide                  | Specialist recommendation → owner                 | Decision pack, risks and uncertainty          | Approve an example scope or request more evidence; explicitly no workspace mutation. |
+| Prepare                 | Approved scope → relevant specialist contribution | Experiment brief and acceptance criteria      | Inspect/download a labelled sample output.                                           |
+| Preserve                | Mission record → Product Brain                    | Evidence, decision and artefact relationships | Follow why an output exists and who decided.                                         |
+| Learn, later capability | Supplied observed result → outcome review → owner | Comparison and proposed next mission          | See a clearly labelled planned preview until Phase 5 is implemented and verified.    |
 
 These are explanatory role contributions, not a promise that every named role currently executes. Runtime capability selection must follow the verified capability table.
 
@@ -92,19 +92,19 @@ PayNudge can later become a separate example selected explicitly, rather than ap
 
 Baseline: current source and retained implementation audit. No new authenticated or real-provider verification was performed for this document.
 
-| Capability | Evidence/status today | Safe interpretation | Required before stronger claim |
-|---|---|---|---|
-| Public interactive scenes | Implemented public UI, previously browser inspected | Interactive examples explain the intended workflow | Keep concept labels; use actual screenshots only from actual representative runs. |
-| Role catalogue | 150 entries; 12 marked available; those entries retain stub limitations | Catalogue of specialist roles; status is not live execution proof | Reconcile metadata with runtime and retain per-capability evaluation evidence. |
-| Model providers | Integration and typed-output code exist | Provider foundation exists | Configured bounded execution, cost evidence and output evaluation in an isolated release environment. |
-| Signup/onboarding/command centre | Implemented code; complete live journey unverified | Account/workspace foundation | Preview signup, refresh, recovery, persistence and two-workspace isolation checks. |
-| Mission DAG/handoffs | Deterministic logic/tests exist; durability gaps remain | Supervised mission foundation | Durable ownership, atomic writes, retry, cancellation and recovery evidence. |
-| Decisions and exports | Decision/source/export foundations exist | Inspectable records are part of the design and implementation | Accepted complete mission, persisted provenance and checked exports. |
-| Product Brain | Partial records/history; full typed graph incomplete | Product record foundation | Verified cross-record relationships and outcome links; full graph remains future scope. |
-| Permissions/approvals/budgets | Server checks exist; exact binding, concurrency and measured cost gaps remain | Controls implemented in part, requiring release verification | Bound approvals, isolation and cost reconciliation tests on the release candidate. |
-| Outcomes and next mission | Full loop incomplete | Planned outcome review | Expected/observed record, evidence-linked comparison and human-approved follow-up. |
-| Pilot enquiry/billing | Offers displayed; enquiry submission and entitlements absent | Proposed pilot offers; no automatic subscription | Persistent enquiry and confirmation; agreed activation or verified checkout/entitlements. |
-| Software build/deployment | Prototype/release-plan artefacts; isolated delivery workers planned | Planning/prototype scope only | Real isolated build/test/staging evidence and explicit deployment approval. |
+| Capability                       | Evidence/status today                                                         | Safe interpretation                                               | Required before stronger claim                                                                        |
+| -------------------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Public interactive scenes        | Implemented public UI, previously browser inspected                           | Interactive examples explain the intended workflow                | Keep concept labels; use actual screenshots only from actual representative runs.                     |
+| Role catalogue                   | 150 entries; 12 marked available; those entries retain stub limitations       | Catalogue of specialist roles; status is not live execution proof | Reconcile metadata with runtime and retain per-capability evaluation evidence.                        |
+| Model providers                  | Integration and typed-output code exist                                       | Provider foundation exists                                        | Configured bounded execution, cost evidence and output evaluation in an isolated release environment. |
+| Signup/onboarding/command centre | Implemented code; complete live journey unverified                            | Account/workspace foundation                                      | Preview signup, refresh, recovery, persistence and two-workspace isolation checks.                    |
+| Mission DAG/handoffs             | Deterministic logic/tests exist; durability gaps remain                       | Supervised mission foundation                                     | Durable ownership, atomic writes, retry, cancellation and recovery evidence.                          |
+| Decisions and exports            | Decision/source/export foundations exist                                      | Inspectable records are part of the design and implementation     | Accepted complete mission, persisted provenance and checked exports.                                  |
+| Product Brain                    | Partial records/history; full typed graph incomplete                          | Product record foundation                                         | Verified cross-record relationships and outcome links; full graph remains future scope.               |
+| Permissions/approvals/budgets    | Server checks exist; exact binding, concurrency and measured cost gaps remain | Controls implemented in part, requiring release verification      | Bound approvals, isolation and cost reconciliation tests on the release candidate.                    |
+| Outcomes and next mission        | Full loop incomplete                                                          | Planned outcome review                                            | Expected/observed record, evidence-linked comparison and human-approved follow-up.                    |
+| Pilot enquiry/billing            | Offers displayed; enquiry submission and entitlements absent                  | Proposed pilot offers; no automatic subscription                  | Persistent enquiry and confirmation; agreed activation or verified checkout/entitlements.             |
+| Software build/deployment        | Prototype/release-plan artefacts; isolated delivery workers planned           | Planning/prototype scope only                                     | Real isolated build/test/staging evidence and explicit deployment approval.                           |
 
 ### Labels and vocabulary
 
@@ -116,18 +116,18 @@ Keep detailed implementation caveats in an accessible status panel while placing
 
 ## 5. Page map for Phase 2
 
-| Destination | Owns this question | Content boundary | Next step |
-|---|---|---|---|
-| Home `/` | Is this for me, and what useful work comes out? | Audience, compact problem, flagship visual, sample output, current scope and paid-pilot invitation | Example mission or prepare brief. |
-| Product `/psi` | How do the parts work together? | Product record, missions, specialist contributions and controls; current versus planned capability | Example mission; contextual specialist/trust details. |
-| Example mission `/how-it-works` | What happens to my question? | One example stepper with input, evidence, options, decision and output | Prepare a matching brief. |
-| Specialists `/ai-agents` | Which disciplines contribute, and what can execute? | Searchable catalogue with visible limitations and runtime status distinctions | Relevant example stage or brief. |
-| Brain `/product-brain` | How is reasoning retained? | Initially a detailed section in Product; preserve existing URL using an anchor/redirect during implementation | Inspect a linked record in the example. |
-| Use cases `/solutions` | Where would I start in my situation? | Three different inputs and outputs, without replaying the same pipeline | Prefilled, editable brief. |
-| Trust `/security` | What stays under my control? | Actual approval, permission, spend and data practices; operational details only when confirmed | Product detail or pilot enquiry. |
-| Pricing `/pricing` | What is the offer and what happens next? | Three offers, bounded mission definition, availability and account/paid-access distinction | Genuine pilot request once built. |
-| Resources `/resources` | How do I bring useful input? | Brief builder and practical templates | Download/save draft and enter enquiry flow when available. |
-| Sign in `/login` | How do I resume my work? | Account utility and recovery | Intended authenticated workspace. |
+| Destination                     | Owns this question                                  | Content boundary                                                                                              | Next step                                                  |
+| ------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Home `/`                        | Is this for me, and what useful work comes out?     | Audience, compact problem, flagship visual, sample output, current scope and paid-pilot invitation            | Example mission or prepare brief.                          |
+| Product `/psi`                  | How do the parts work together?                     | Product record, missions, specialist contributions and controls; current versus planned capability            | Example mission; contextual specialist/trust details.      |
+| Example mission `/how-it-works` | What happens to my question?                        | One example stepper with input, evidence, options, decision and output                                        | Prepare a matching brief.                                  |
+| Specialists `/ai-agents`        | Which disciplines contribute, and what can execute? | Searchable catalogue with visible limitations and runtime status distinctions                                 | Relevant example stage or brief.                           |
+| Brain `/product-brain`          | How is reasoning retained?                          | Initially a detailed section in Product; preserve existing URL using an anchor/redirect during implementation | Inspect a linked record in the example.                    |
+| Use cases `/solutions`          | Where would I start in my situation?                | Three different inputs and outputs, without replaying the same pipeline                                       | Prefilled, editable brief.                                 |
+| Trust `/security`               | What stays under my control?                        | Actual approval, permission, spend and data practices; operational details only when confirmed                | Product detail or pilot enquiry.                           |
+| Pricing `/pricing`              | What is the offer and what happens next?            | Three offers, bounded mission definition, availability and account/paid-access distinction                    | Genuine pilot request once built.                          |
+| Resources `/resources`          | How do I bring useful input?                        | Brief builder and practical templates                                                                         | Download/save draft and enter enquiry flow when available. |
+| Sign in `/login`                | How do I resume my work?                            | Account utility and recovery                                                                                  | Intended authenticated workspace.                          |
 
 **Header:** Product · Example mission · Pricing. Sign in as utility. Use “Prepare your brief” while the request flow is incomplete; switch to “Request a pilot” only when that action submits a real request.
 

@@ -26,11 +26,11 @@ Model-workflow roles also have versioned instructions (`instructions.ts`, for ex
 
 `output-checks.ts` holds deterministic rules per stage, on top of the handoff contract:
 
-- Claims must carry an evidence label, and a sourced fact must name its source.
-- Figures must be sourced or labelled.
-- Requirements need IDs and acceptance criteria, and screens must trace to requirements.
+- Claims in checked sections (market demand hypotheses, research findings) must carry an evidence label, and a sourced fact must cite one of the inputs the role was given: the mission request, the clarification answers or an upstream artefact.
+- Figures in the market sections must be sourced from a given input or labelled.
+- Requirements start with IDs numbered R1, R2, … in order, and each has acceptance criteria that start with its ID. Every screen traces to a requirement, and every requirement appears on a screen.
 - The output must not describe interviews or surveys the founder didn't supply.
-- The output must not claim approvals or deployments.
+- No stage may claim that the work was approved or that the product was deployed, released, launched or shipped.
 
 When a role leads a stage, the worker adds the role's instructions to the prompt and applies these checks. Output that fails twice fails the step.
 
@@ -39,9 +39,9 @@ When a role leads a stage, the worker adds the role's instructions to the prompt
 Each role's suite (`evaluation.ts`) has two parts:
 
 1. **Fixture checks**, run in CI by `npm test`. Labelled fixtures (`eval-fixtures.ts`) prove the checks accept good output for every stage the role leads, and reject each kind of bad output. This proves the suite works, not the role.
-2. **Model evaluation**, run with `npm run eval:roles`. The role writes each stage for the fixture mission under its instructions, and the checks grade the output.
+2. **Model evaluation**, run with `npm run eval:roles`, using the same checks and corrective retry as a production step. The role writes each stage for the fixture mission under its instructions, and the checks grade the output.
    - With no model configured, every role is reported as **not run**.
-   - Add `RECORD_ROLE_EVALS=1` to write the results to `evaluations.json`. The role then shows "Evaluation passed" or "Evaluation failed".
+   - Set `RECORD_ROLE_EVALS=1` to write the results to `evaluations.json`. The role then shows "Evaluation passed" or "Evaluation failed".
    - This spends model credits. Run it only with the owner's approval.
 
 ## Model calls

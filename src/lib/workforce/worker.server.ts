@@ -30,7 +30,7 @@ import {
 import { runnableTasks, unreachableTasks } from "./graph";
 import { appendEvent, hasLivePlanApproval } from "./plan-store.server";
 import { leadRole, roleInstructions, stageForTask } from "./registry/instructions";
-import { checkStageOutput } from "./registry/output-checks";
+import { BASE_SOURCES, checkStageOutput } from "./registry/output-checks";
 import { canAfford } from "./usage";
 import type { MissionBundle, WfMissionTask } from "./types";
 
@@ -134,7 +134,12 @@ export function roleGuidance(
     instructionVersion: instructions.version,
     extraCheck: (content) => {
       // Founder-supplied evidence arrives in Phase 3; until then no interview or survey claim is accepted.
-      const r = checkStageOutput(stage, content, { founderEvidence: false }, given);
+      const r = checkStageOutput(
+        stage,
+        content,
+        { founderEvidence: false, sources: [...BASE_SOURCES, ...upstream.map((u) => u.title)] },
+        given,
+      );
       return r.ok ? null : r.failures.join("; ");
     },
   };
@@ -523,8 +528,13 @@ export async function advanceMission(input: {
   const latency = Date.now() - started;
   return transaction(async (db, query): Promise<AdvanceResult> => {
     const calls = generated?.calls ?? [];
+    // A total only when every call reported it; a partial sum would understate usage.
     const sum = (k: "inputTokens" | "outputTokens") =>
-      calls.some((c) => c[k] !== null) ? calls.reduce((n, c) => n + (c[k] ?? 0), 0) : null;
+      calls.length > 0 && calls.every((c) => c[k] !== null)
+        ? calls.reduce((n, c) => n + (c[k] ?? 0), 0)
+        : null;
+    // Role and instructions are recorded only when a model actually received them.
+    const modelSaw = calls.length > 0;
     const lastCall = calls.at(-1);
     const closeRun = (status: string, failureClass: string | null, detail?: string) =>
       query(
@@ -545,8 +555,8 @@ export async function advanceMission(input: {
           sum("outputTokens"),
           [...calls].reverse().find((c) => c.requestId)?.requestId ?? null,
           calls.length,
-          roleId,
-          generated?.instructionVersion ?? null,
+          modelSaw ? roleId : null,
+          modelSaw ? (generated?.instructionVersion ?? null) : null,
         ] as never,
       );
     const held = await query(
@@ -753,7 +763,9 @@ export async function advanceMission(input: {
     const metadata = {
       usage: result.usageCharged,
       ...(generated ? { generation: generated.mode, model: generated.model ?? null } : {}),
-      ...(roleId ? { role: roleId, instructions: generated?.instructionVersion ?? null } : {}),
+      ...(roleId && modelSaw
+        ? { role: roleId, instructions: generated?.instructionVersion ?? null }
+        : {}),
       ...(calls.length ? { modelCalls: calls.length } : {}),
     };
     await auditTx(query, {

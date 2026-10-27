@@ -25,12 +25,12 @@ DeliverX is a **command centre for supervised AI labour**:
 
 ## 3. Positioning
 
-| Not this | This |
-| --- | --- |
-| Agent marketplace / directory | Supervised workforce under human authority |
-| Unbounded autonomous agents | Permission ladder + explicit external-action approval |
-| Generic “Verified” badges | Discrete quality labels (see §9) |
-| Career simulation record (legacy) | Mission → Plan → Approve → Execute → Deliver |
+| Not this                          | This                                                  |
+| --------------------------------- | ----------------------------------------------------- |
+| Agent marketplace / directory     | Supervised workforce under human authority            |
+| Unbounded autonomous agents       | Permission ladder + explicit external-action approval |
+| Generic “Verified” badges         | Discrete quality labels (see §9)                      |
+| Career simulation record (legacy) | Mission → Plan → Approve → Execute → Deliver          |
 
 **Public name:** DeliverX  
 **Stage 1 home (signed-in):** Command Centre (`/command`)
@@ -47,11 +47,11 @@ Stage 1 implements Operator only.
 
 Entry intents:
 
-| Intent | Purpose |
-| --- | --- |
-| **Investigate** | Research / analysis → brief with sourced facts vs assumptions |
-| **Prototype** | Lightweight interactive / HTML / structured UI prototype (not production deploy) |
-| **Improve** | Diagnose and propose improvements to an existing artefact or flow |
+| Intent          | Purpose                                                                          |
+| --------------- | -------------------------------------------------------------------------------- |
+| **Investigate** | Research / analysis → brief with sourced facts vs assumptions                    |
+| **Prototype**   | Lightweight interactive / HTML / structured UI prototype (not production deploy) |
+| **Improve**     | Diagnose and propose improvements to an existing artefact or flow                |
 
 Core loop:
 
@@ -62,36 +62,36 @@ Intent → Mission intake → Clarification (if needed) → Plan → Approval
 
 ## 6. Domain model (Stage 1 entities)
 
-| Entity | Role |
-| --- | --- |
-| **Workspace** | Isolation boundary for a user (or team later) |
-| **Project** | Container for related missions |
-| **Mission** | Natural-language request + status machine |
+| Entity          | Role                                                                |
+| --------------- | ------------------------------------------------------------------- |
+| **Workspace**   | Isolation boundary for a user (or team later)                       |
+| **Project**     | Container for related missions                                      |
+| **Mission**     | Natural-language request + status machine                           |
 | **MissionPlan** | Tasks, acceptance criteria, usage estimate, permission requirements |
-| **Task** | Unit of work in the plan / execution graph |
-| **Artefact** | Deliverable content (brief, HTML prototype, report section, …) |
-| **Approval** | Explicit human gate (plan approval; external-action approval) |
-| **UsageRecord** | Billable step against a budget ceiling |
-| **AuditEvent** | Append-only trail of status / approval / usage changes |
+| **Task**        | Unit of work in the plan / execution graph                          |
+| **Artefact**    | Deliverable content (brief, HTML prototype, report section, …)      |
+| **Approval**    | Explicit human gate (plan approval; external-action approval)       |
+| **UsageRecord** | Billable step against a budget ceiling                              |
+| **AuditEvent**  | Append-only trail of status / approval / usage changes              |
 
 > **Schema note:** Legacy Delivery-OS already owns `projects`, `tasks`, `artefacts`, and `audit_events`. Stage 1 tables are prefixed `wf_*` (workforce) to remain additive and avoid destructive conflicts. See `docs/prd-gap-analysis.md`.
 
 ## 7. Mission status machine
 
-| Status | Meaning |
-| --- | --- |
-| `draft` | Intake captured; not yet planned |
-| `needs_clarification` | Missing critical inputs; questions outstanding |
-| `planned` | Plan generated |
-| `awaiting_approval` | Plan ready for human approval |
-| `queued` | Approved; waiting to run |
-| `running` | Executing tasks |
-| `reviewing` | Execution finished; delivery report assembling |
-| `completed` | Delivered |
+| Status                | Meaning                                            |
+| --------------------- | -------------------------------------------------- |
+| `draft`               | Intake captured; not yet planned                   |
+| `needs_clarification` | Missing critical inputs; questions outstanding     |
+| `planned`             | Plan generated                                     |
+| `awaiting_approval`   | Plan ready for human approval                      |
+| `queued`              | Approved; waiting to run                           |
+| `running`             | Executing tasks                                    |
+| `reviewing`           | Execution finished; delivery report assembling     |
+| `completed`           | Delivered                                          |
 | `partially_completed` | Stopped with some tasks done (e.g. budget ceiling) |
-| `blocked` | Waiting on external approval or unmet permission |
-| `failed` | Unrecoverable execution failure |
-| `cancelled` | Operator cancelled |
+| `blocked`             | Waiting on external approval or unmet permission   |
+| `failed`              | Unrecoverable execution failure                    |
+| `cancelled`           | Operator cancelled                                 |
 
 ## 8. Permission ladder
 
@@ -108,21 +108,21 @@ Stage 1: plans that include external actions stay `blocked` / require a separate
 
 ### 9.1 Quality labels (must not misuse generic “Verified”)
 
-| Label | Meaning |
-| --- | --- |
-| **Agent-reviewed** | Another agent pass checked the artefact |
-| **Automatically tested** | Automated checks ran |
-| **Human-reviewed** | A named human reviewed |
-| **Externally attested** | Outside party attested (later stages) |
+| Label                    | Meaning                                 |
+| ------------------------ | --------------------------------------- |
+| **Agent-reviewed**       | Another agent pass checked the artefact |
+| **Automatically tested** | Automated checks ran                    |
+| **Human-reviewed**       | A named human reviewed                  |
+| **Externally attested**  | Outside party attested (later stages)   |
 
 ### 9.2 Evidence classification
 
-| Class | Meaning |
-| --- | --- |
+| Class             | Meaning                               |
+| ----------------- | ------------------------------------- |
 | **Sourced facts** | Traceable to an input or cited source |
-| **Assumptions** | Explicitly assumed for the mission |
-| **Inferences** | Derived from facts + assumptions |
-| **Speculative** | Weakly grounded suggestion |
+| **Assumptions**   | Explicitly assumed for the mission    |
+| **Inferences**    | Derived from facts + assumptions      |
+| **Speculative**   | Weakly grounded suggestion            |
 
 ## 10. Usage & budget
 
@@ -188,30 +188,30 @@ Reserved for multi-member workspaces, live model routing, external connectors, a
 
 ## 20. Open decisions — Stage 1 resolutions
 
-| # | Decision | Stage 1 choice |
-| --- | --- | --- |
-| 1 | Host | **This existing codebase** (`swift-deliveries` / DeliverX) |
-| 2 | First prototype target | **Reviewable product brief + lightweight interactive/HTML or structured UI prototype artefacts** (not production deploy) |
-| 3 | Model providers | **Stub / deterministic** unless keys exist |
-| 4 | Multi-tenant team model | Out of scope — single-operator workspace |
-| 5 | Stripe / commercial metering | Out of scope — local credit ceiling only |
-| 6 | External connectors | Out of scope — gated as Act externally |
-| 7 | Career product fate | Coexist; Command Centre is new signed-in primary |
-| 8 | Custom domains / hosting | Out of scope |
-| 9 | Real-time multiplayer | Out of scope |
-| 10 | Mobile | Responsive web only |
-| 11 | Human-review workflow | Label only; no reviewer queue |
-| 12 | Extern / marketplace agents | Out of scope |
+| #   | Decision                     | Stage 1 choice                                                                                                           |
+| --- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Host                         | **This existing codebase** (`swift-deliveries` / DeliverX)                                                               |
+| 2   | First prototype target       | **Reviewable product brief + lightweight interactive/HTML or structured UI prototype artefacts** (not production deploy) |
+| 3   | Model providers              | **Stub / deterministic** unless keys exist                                                                               |
+| 4   | Multi-tenant team model      | Out of scope — single-operator workspace                                                                                 |
+| 5   | Stripe / commercial metering | Out of scope — local credit ceiling only                                                                                 |
+| 6   | External connectors          | Out of scope — gated as Act externally                                                                                   |
+| 7   | Career product fate          | Coexist; Command Centre is new signed-in primary                                                                         |
+| 8   | Custom domains / hosting     | Out of scope                                                                                                             |
+| 9   | Real-time multiplayer        | Out of scope                                                                                                             |
+| 10  | Mobile                       | Responsive web only                                                                                                      |
+| 11  | Human-review workflow        | Label only; no reviewer queue                                                                                            |
+| 12  | Extern / marketplace agents  | Out of scope                                                                                                             |
 
 ---
 
 ## Appendix A — Routes (Stage 1)
 
-| Path | Purpose |
-| --- | --- |
-| `/command` | Command Centre home — intents + recent missions |
-| `/command/projects` | Project list / create |
-| `/command/projects/$projectId` | Project missions |
-| `/command/missions/$missionId` | Mission detail (clarify → plan → run → report) |
+| Path                           | Purpose                                         |
+| ------------------------------ | ----------------------------------------------- |
+| `/command`                     | Command Centre home — intents + recent missions |
+| `/command/projects`            | Project list / create                           |
+| `/command/projects/$projectId` | Project missions                                |
+| `/command/missions/$missionId` | Mission detail (clarify → plan → run → report)  |
 
 Legacy `/workspace/*` career surfaces remain available.

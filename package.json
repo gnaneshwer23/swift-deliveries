@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run --dir src",
-    "eval:roles": "RUN_ROLE_EVALS=1 vitest run src/lib/workforce/registry/model-eval.run.test.ts",
+    "eval:roles": "vitest run src/lib/workforce/registry/model-eval.run.test.ts",
     "registry:export": "node --experimental-strip-types --no-warnings scripts/export-registry.mts"
   },
   "overrides": {

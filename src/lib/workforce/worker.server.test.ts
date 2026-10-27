@@ -334,7 +334,7 @@ describe.skipIf(!url)("durable mission worker against a real database", () => {
     expect(kept[0]).toMatchObject({ a: 0, u: 0 });
   });
 
-  it("fails the step, never a simulated draft, when the model output fails its checks", async () => {
+  it("fails the step, never a simulated draft, when the runner reports failed checks", async () => {
     const ids = await approvedMission(1000, buildPlan);
     nextGeneration = {
       content: "",

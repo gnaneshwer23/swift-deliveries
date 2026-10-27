@@ -12,6 +12,7 @@ The vision's own recommendation — prove one reproducible end-to-end mission be
 - **Parallel, breadth-first work is where multi-agent pays off.** Tightly coupled work like coding benefits less, and token spend dominates cost and quality. ([Anthropic engineering](https://www.anthropic.com/engineering/multi-agent-research-system))
 
 Design consequences used here:
+
 - an explicit dependency graph;
 - a typed handoff contract per stage;
 - loud failure that stops only the dependent branch;
@@ -21,25 +22,26 @@ Design consequences used here:
 
 ## 2. Vision vs current build
 
-| Vision element | Before this change | Now | Still open |
-| --- | --- | --- | --- |
-| 150 roles / 15 divisions | 150-role registry, 12 Available; department taxonomy differs from the vision's divisions | Unchanged; product missions assign Available roles only | Reconcile divisions ↔ departments (§5) |
-| Role ≠ model ≠ task | Registry roles; no model layer | Model-agnostic runner (Vercel AI Gateway / OpenRouter), chosen by env, separate from roles and tasks | Per-role model routing on measured quality and cost |
-| 8-stage lifecycle | 3 intents with 4–5 linear tasks | **"Build a product" intent**: 14-task DAG across all 8 stages | Production code generation (Stage 5) |
-| Mission orchestrator / dependency graph | Linear `sort_order` | DAG scheduler: validation, runnable set, cascade-blocking, parallel waves | Real concurrent workers (today one step per call) |
-| Artifact & evidence system | Artefacts with quality and evidence labels | Each stage consumes its upstream artefacts; handoff contracts; generation provenance on every artefact | Versioned artefacts; evidence graph |
-| Human control & QA | Plan approval and an external-action gate | **Human gates** at scope, design and release; approval marks inputs Human-reviewed | Multi-member reviewer roles |
-| Verification | Simulated "structure check" note | **Real deterministic verify stage**: re-checks every contract, 8 static prototype checks, PRD traceability table | Behavioural and E2E tests on generated code |
-| Honest status / simulated disclosure | Text disclaimers | Per-artefact "Model: X" or "Simulated draft" badge, with the fallback reason recorded | — |
-| Budget enforcement | Read-modify-write (race could overspend or double-run a step) | Atomic task claim; optimistic-locked usage charge | DB-side ledger function |
-| Product Brain / Intelligence Graph | — | — (Phase 2) | Canonical decisions, assumptions and requirements store |
-| Future-tech intelligence | — | Foresight stage outputs a radar with adopt / experiment / monitor / defer / reject | Source connectors, maturity tracking, sandbox benchmarks (Phase 3) |
-| Learning loop | Audit events + usage | Audit now records generation mode and model per task | Outcome dataset for routing (Phase 4) |
-| Privacy | — | Model calls blocked when likely identifiers are present (NHS number with checksum, NI, SSN, DOB, MRN) | DPIA; tenant-level "never send to cloud" switch |
+| Vision element                          | Before this change                                                                       | Now                                                                                                              | Still open                                                         |
+| --------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| 150 roles / 15 divisions                | 150-role registry, 12 Available; department taxonomy differs from the vision's divisions | Unchanged; product missions assign Available roles only                                                          | Reconcile divisions ↔ departments (§5)                             |
+| Role ≠ model ≠ task                     | Registry roles; no model layer                                                           | Model-agnostic runner (Vercel AI Gateway / OpenRouter), chosen by env, separate from roles and tasks             | Per-role model routing on measured quality and cost                |
+| 8-stage lifecycle                       | 3 intents with 4–5 linear tasks                                                          | **"Build a product" intent**: 14-task DAG across all 8 stages                                                    | Production code generation (Stage 5)                               |
+| Mission orchestrator / dependency graph | Linear `sort_order`                                                                      | DAG scheduler: validation, runnable set, cascade-blocking, parallel waves                                        | Real concurrent workers (today one step per call)                  |
+| Artifact & evidence system              | Artefacts with quality and evidence labels                                               | Each stage consumes its upstream artefacts; handoff contracts; generation provenance on every artefact           | Versioned artefacts; evidence graph                                |
+| Human control & QA                      | Plan approval and an external-action gate                                                | **Human gates** at scope, design and release; approval marks inputs Human-reviewed                               | Multi-member reviewer roles                                        |
+| Verification                            | Simulated "structure check" note                                                         | **Real deterministic verify stage**: re-checks every contract, 8 static prototype checks, PRD traceability table | Behavioural and E2E tests on generated code                        |
+| Honest status / simulated disclosure    | Text disclaimers                                                                         | Per-artefact "Model: X" or "Simulated draft" badge, with the fallback reason recorded                            | —                                                                  |
+| Budget enforcement                      | Read-modify-write (race could overspend or double-run a step)                            | Atomic task claim; optimistic-locked usage charge                                                                | DB-side ledger function                                            |
+| Product Brain / Intelligence Graph      | —                                                                                        | — (Phase 2)                                                                                                      | Canonical decisions, assumptions and requirements store            |
+| Future-tech intelligence                | —                                                                                        | Foresight stage outputs a radar with adopt / experiment / monitor / defer / reject                               | Source connectors, maturity tracking, sandbox benchmarks (Phase 3) |
+| Learning loop                           | Audit events + usage                                                                     | Audit now records generation mode and model per task                                                             | Outcome dataset for routing (Phase 4)                              |
+| Privacy                                 | —                                                                                        | Model calls blocked when likely identifiers are present (NHS number with checksum, NI, SSN, DOB, MRN)            | DPIA; tenant-level "never send to cloud" switch                    |
 
 ## 3. What shipped (Phase 1 proof point)
 
 **Lifecycle (`src/lib/workforce/lifecycle.ts`):**
+
 1. Charter.
 2. Market evidence ∥ deep research ∥ technology foresight (parallel).
 3. PRD → **scope gate**.
@@ -52,6 +54,7 @@ Design consequences used here:
 Total cost is 82 credits, which fits the default 100-credit ceiling.
 
 **Infrastructure (deterministic, not agents):**
+
 - `graph.ts`: DAG validation, scheduling, unreachable detection, wave grouping.
 - `contracts.ts`: markdown section contracts and static HTML checks.
 - `privacy.ts`: identifier screen.
@@ -63,6 +66,7 @@ Total cost is 82 credits, which fits the default 100-credit ceiling.
   - failures stop only dependants, and the mission ends `partially_completed` with the failure named in the delivery report.
 
 **Model mode (`model-runner.server.ts`):**
+
 - OpenAI-compatible chat completions.
 - Upstream artefacts are passed as data, never instructions.
 - One corrective retry when the contract is not met.
@@ -106,7 +110,6 @@ Total cost is 82 credits, which fits the default 100-credit ceiling.
   - routing from the outcome dataset (accepted / rejected / revised per artefact);
   - reusable team templates.
 - **Phase 5:** analytics and feedback connectors driving evidence-backed roadmap updates.
-
 
 ## 7. Agreed end-to-end target and current boundary
 

@@ -10,7 +10,7 @@ describe("role guidance for a running task", () => {
     expect("extraInstructions" in g && g.extraInstructions).toMatch(/DX-023/);
     if (!("extraCheck" in g)) throw new Error("expected a check");
     expect(g.extraCheck(prd.good)).toBeNull();
-    expect(g.extraCheck(prd.bad[0]!.output)).toMatch(/needs an ID/);
+    expect(g.extraCheck(prd.bad[0]!.output)).toMatch(/must start with its ID/);
   });
 
   it("adds nothing for a stage no defined role leads", () => {

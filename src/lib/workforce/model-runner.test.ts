@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { generateJson, resolveProvider } from "./model-runner.server";
 
 afterEach(() => {
@@ -154,8 +154,24 @@ describe("stage generation records every call and never falls back quietly", () 
     },
     upstream: [],
   };
+  // Hermetic: no inherited provider settings reach these cases.
+  beforeEach(() => {
+    for (const k of [
+      "DXSI_MODEL_ENABLED",
+      "DXSI_PROVIDER",
+      "DXSI_MODEL",
+      "DXSI_OPENAI_MODEL",
+      "DXSI_MODEL_ALLOWLIST",
+      "OPENAI_API_KEY",
+      "AI_GATEWAY_API_KEY",
+      "VERCEL_OIDC_TOKEN",
+      "OPENROUTER_API_KEY",
+    ])
+      vi.stubEnv(k, "");
+  });
   const enable = () => {
     vi.stubEnv("DXSI_MODEL_ENABLED", "true");
+    vi.stubEnv("DXSI_PROVIDER", "openai");
     vi.stubEnv("OPENAI_API_KEY", "test");
     vi.stubEnv("DXSI_OPENAI_MODEL", "fixture-model");
     vi.stubEnv("DXSI_MODEL_ALLOWLIST", "fixture-model");
@@ -177,11 +193,30 @@ describe("stage generation records every call and never falls back quietly", () 
     expect(r.failure).toBeUndefined();
   });
 
-  it("fails when model mode is on but not configured", async () => {
+  it("fails when model mode is on but the selected provider has no key", async () => {
     vi.stubEnv("DXSI_MODEL_ENABLED", "true");
     vi.stubEnv("DXSI_PROVIDER", "openai");
     const r = await (await import("./model-runner.server")).generateStageContent(input);
-    expect(r.failure?.class).toBe("not_configured");
+    expect(r).toMatchObject({ content: "", failure: { class: "not_configured" } });
+  });
+
+  it("fails when model mode is on with no provider credentials at all", async () => {
+    vi.stubEnv("DXSI_MODEL_ENABLED", "true");
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    const r = await (await import("./model-runner.server")).generateStageContent(input);
+    expect(r).toMatchObject({ content: "", failure: { class: "not_configured" } });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("treats a provider-side timeout (HTTP 408) as a timeout to retry", async () => {
+    enable();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response("slow", { status: 408 })),
+    );
+    const r = await (await import("./model-runner.server")).generateStageContent(input);
+    expect(r.failure?.class).toBe("timeout");
   });
 
   it("records the provider, model, request id and tokens of a successful call", async () => {
@@ -231,7 +266,7 @@ describe("stage generation records every call and never falls back quietly", () 
       extraCheck: () => null,
     });
     expect(fetchMock).toHaveBeenCalledTimes(2);
-    expect(r.failure?.class).toBe("contract_failed");
+    expect(r).toMatchObject({ content: "", failure: { class: "contract_failed" } });
     expect(r.calls).toHaveLength(2);
   });
 });

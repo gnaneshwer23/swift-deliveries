@@ -9,7 +9,9 @@
  * With model mode off, stages use the deterministic simulated draft, labelled
  * as such. With model mode on, a call that does not produce accepted output
  * reports a failure (GeneratedContent.failure) and the step fails or retries:
- * it never quietly falls back to a simulated draft. Every call is recorded.
+ * it never quietly falls back to a simulated draft. Stage-generation calls are
+ * returned as call records for the run ledger; generateJson (decision options
+ * and pilot comparisons) records its outcome in its own callers' records.
  */
 import { checkMarkdownContract, extractHtmlDocument } from "./contracts";
 import type {
@@ -116,7 +118,14 @@ export function modelModeStatus(): {
 function providerOrReason(): { provider: Provider | null; reason: string | null } {
   try {
     const provider = resolveProvider();
-    return { provider, reason: provider ? null : "model mode not enabled" };
+    if (provider) return { provider, reason: null };
+    return {
+      provider: null,
+      reason:
+        process.env["DXSI_MODEL_ENABLED"] === "true"
+          ? "model not run: model mode is on but no provider credentials are set"
+          : "model mode not enabled",
+    };
   } catch (error) {
     return { provider: null, reason: `model not run: ${(error as Error).message}` };
   }
@@ -317,11 +326,13 @@ async function callModel(
     const headerId = res.headers.get("x-request-id") ?? res.headers.get("request-id");
     if (!res.ok) {
       const cls: ModelFailureClass =
-        res.status === 429
-          ? "rate_limited"
-          : res.status >= 500
-            ? "provider_error"
-            : "request_rejected";
+        res.status === 408
+          ? "timeout"
+          : res.status === 429
+            ? "rate_limited"
+            : res.status >= 500
+              ? "provider_error"
+              : "request_rejected";
       return fail(cls, `model provider returned HTTP ${res.status}`, { requestId: headerId });
     }
     const json = (await res.json()) as {

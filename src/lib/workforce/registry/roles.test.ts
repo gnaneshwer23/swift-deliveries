@@ -46,9 +46,14 @@ describe("role definitions", () => {
     for (const r of ROLE_SPECS) expect(r.tools, r.id).toEqual([]);
   });
 
-  it("shows every role as not evaluated until a real evaluation is recorded", () => {
-    expect(Object.keys(ROLE_EVALUATIONS)).toEqual([]);
-    for (const r of ROLE_SPECS) expect(roleEvaluation(r.id).status).toBe("not_evaluated");
+  it("records evaluations only for defined roles, each with its run, and none otherwise", () => {
+    for (const [id, e] of Object.entries(ROLE_EVALUATIONS)) {
+      expect(getRoleSpec(id), id).toBeDefined();
+      expect(["passed", "failed"]).toContain(e.status);
+      expect(e.suiteVersion && e.ranAt && e.model, id).toBeTruthy();
+    }
+    for (const r of ROLE_SPECS)
+      if (!ROLE_EVALUATIONS[r.id]) expect(roleEvaluation(r.id).status).toBe("not_evaluated");
   });
 
   it("keeps planned roles out of the definitions", () => {

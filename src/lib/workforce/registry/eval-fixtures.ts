@@ -7,6 +7,9 @@ import type { StageKey } from "./roles";
 
 export const FIXTURE_LABEL = "Fixture — invented test material, not real data";
 
+/** Title under which the fixture upstream is given to a role; citable as a source. */
+export const FIXTURE_UPSTREAM_TITLE = "Fixture upstream (invented test material)";
+
 export const FIXTURE_MISSION = {
   title: "Fixture: tutor booking tool",
   requestText:
@@ -50,7 +53,7 @@ const marketGood = `## Market landscape
 - [Inference] Most tutors already use a calendar tool and messaging apps together.
 
 ## Customer segments
-- Independent tutors with regular students; agencies are out of scope.
+- [Assumption] Independent tutors with regular students are the first segment; agencies are out of scope.
 
 ## Competitors
 - [Assumption] General scheduling tools exist but are not built around recurring lessons.
@@ -86,10 +89,12 @@ Booking without back-and-forth.
 ## Requirements
 - R1: A student can see a tutor's open slots.
 - R2: A student can book a slot.
+- R3: A booking request is approved by the tutor before it is confirmed.
 
 ## Acceptance criteria
 - R1: Open slots for the next 14 days are shown.
 - R2: A booked slot disappears from the open list.
+- R3: An unapproved request is shown to the student as pending.
 
 ## Success metrics
 - Share of bookings made without a message.
@@ -206,6 +211,19 @@ export const STAGE_FIXTURES: readonly StageFixture[] = [
         expect: /without an evidence label/,
       },
       {
+        name: "cites a source the role was not given",
+        output: researchGood.replace("(Source: mission request)", "(Source: Gartner 2026 report)"),
+        expect: /cite a source that was not given/,
+      },
+      {
+        name: "claims the product shipped",
+        output: researchGood.replace(
+          "## Evidence quality",
+          "- [Inference] We shipped the product to five tutors.\n\n## Evidence quality",
+        ),
+        expect: /claims a deployment/,
+      },
+      {
         name: "invents a survey",
         output: researchGood.replace(
           "## Evidence quality",
@@ -223,7 +241,15 @@ export const STAGE_FIXTURES: readonly StageFixture[] = [
       {
         name: "requirement without an ID",
         output: prdGood.replace("- R2: A student can book a slot.", "- A student can book a slot."),
-        expect: /needs an ID/,
+        expect: /must start with its ID/,
+      },
+      {
+        name: "second requirement unlabelled while the first mentions its ID",
+        output: prdGood.replace(
+          "- R1: A student can see a tutor's open slots.\n- R2: A student can book a slot.",
+          "- R1: A student can see a tutor's open slots (see R2).\n- A student can book a slot.",
+        ),
+        expect: /numbered R1, R2/,
       },
       {
         name: "requirement without acceptance criteria",
@@ -247,6 +273,11 @@ export const STAGE_FIXTURES: readonly StageFixture[] = [
         output: uxGood.replace("- Booking confirmation (R2)", "- Booking confirmation\n- Settings"),
         expect: /not traced to a requirement/,
       },
+      {
+        name: "a requirement no screen serves",
+        output: uxGood.replace("- Booking confirmation (R2)", "- Booking confirmation (R1)"),
+        expect: /no screen serves R2/,
+      },
     ],
   },
   {
@@ -254,6 +285,14 @@ export const STAGE_FIXTURES: readonly StageFixture[] = [
     upstream: prdGood,
     good: releaseGood,
     bad: [
+      {
+        name: "says the product launched",
+        output: releaseGood.replace(
+          "## Unresolved risks",
+          "The product launched to fixture tutors.\n\n## Unresolved risks",
+        ),
+        expect: /claims a deployment/,
+      },
       {
         name: "claims a deployment",
         output: releaseGood.replace(

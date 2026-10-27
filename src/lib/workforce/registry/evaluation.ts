@@ -13,12 +13,23 @@
  */
 import { structureCheckLog } from "../executor";
 import { STAGE_CONTRACTS } from "../lifecycle";
-import { FIXTURE_MISSION, PROTOTYPE_FIXTURES, STAGE_FIXTURES } from "./eval-fixtures";
+import {
+  FIXTURE_MISSION,
+  FIXTURE_UPSTREAM_TITLE,
+  PROTOTYPE_FIXTURES,
+  STAGE_FIXTURES,
+} from "./eval-fixtures";
 import { roleInstructions } from "./instructions";
-import { checkStageOutput } from "./output-checks";
+import { BASE_SOURCES, checkStageOutput, type OutputCheckContext } from "./output-checks";
 import { getRoleSpec, type StageKey } from "./roles";
 
-export const SUITE_VERSION = "1";
+export const SUITE_VERSION = "2";
+
+/** What a role may cite when writing a fixture stage: the base inputs and the fixture upstream. */
+export const FIXTURE_CHECK_CONTEXT: OutputCheckContext = {
+  founderEvidence: false,
+  sources: [...BASE_SOURCES, FIXTURE_UPSTREAM_TITLE],
+};
 
 export type FixtureCase = { stage: string; name: string; passed: boolean; detail: string };
 
@@ -36,7 +47,7 @@ export function runFixtureChecks(roleId: string): FixtureCase[] {
       cases.push({ stage, name: "fixture exists", passed: false, detail: "no fixture for stage" });
       continue;
     }
-    const ctx = { founderEvidence: false };
+    const ctx = FIXTURE_CHECK_CONTEXT;
     const good = checkStageOutput(stage, fixture.good, ctx, fixture.upstream);
     cases.push({
       stage,
@@ -150,7 +161,7 @@ export async function runModelEvaluation(
     if (out.mode !== "model")
       return { status: "not_run", reason: out.note ?? "the model did not return output" };
     model = out.model ?? model;
-    const r = checkStageOutput(stage, out.content, { founderEvidence: false }, fixture.upstream);
+    const r = checkStageOutput(stage, out.content, FIXTURE_CHECK_CONTEXT, fixture.upstream);
     stages.push({ stage, ok: r.ok, failures: r.failures });
   }
   return { status: stages.every((s) => s.ok) ? "passed" : "failed", model, stages };

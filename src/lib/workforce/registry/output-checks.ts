@@ -15,13 +15,21 @@ export const EVIDENCE_LABELS = ["Sourced fact", "Assumption", "Inference", "Spec
 export type OutputCheckContext = {
   /** True when the founder supplied research notes or sources for this mission. */
   founderEvidence: boolean;
+  /**
+   * Names of the inputs the role was given; a [Sourced fact] must cite one of
+   * them. The mission request and clarification answers are always inputs.
+   */
+  sources: readonly string[];
 };
+
+/** Inputs every stage receives, citable as sources. */
+export const BASE_SOURCES = ["mission request", "clarification answers"] as const;
 
 export type OutputCheck = { ok: boolean; failures: string[] };
 
 const LABEL = new RegExp(`^\\s*[-*]\\s*\\[(${EVIDENCE_LABELS.join("|")})\\]`, "i");
 const SOURCED = /^\s*[-*]\s*\[sourced fact\]/i;
-const HAS_SOURCE = /\(source:\s*[^)]{3,}\)/i;
+const SOURCE = /\(source:\s*([^)]{3,})\)/i;
 const NUMBER_CLAIM = /([$£€]\s?\d|\d+(\.\d+)?\s?(%|percent|million|billion|bn|m\b|k\b))/i;
 
 /** Claims of research that only the founder can supply; never accepted from a model alone. */
@@ -33,8 +41,12 @@ const INVENTED_RESEARCH = [
   /\b\d+\s?% of (respondents|interviewees|participants)\b/i,
 ];
 
-const CLAIMS_APPROVAL = /\b(has been|was|is) approved\b|\bthe founder approved\b/i;
-const CLAIMS_DEPLOYMENT = /\b(has been|was|is now) (deployed|released|launched|shipped)\b/i;
+// Claims about this work's own state. Narrow on purpose: requirement text such
+// as "a booking is approved by the tutor" must not trip them.
+const CLAIMS_APPROVAL =
+  /\b(this|the) (plan|charter|scope|prd|requirements|design|release|mission|work)( candidate)? (has been|was|is) approved\b|\bthe founder (has )?approved\b/i;
+const CLAIMS_DEPLOYMENT =
+  /\b(this|the|our) (product|release|prototype|app|mvp|service|feature)s? (has been |have been |was |were |is now |is |are now )?(deployed|released|launched|shipped|live in production)\b|\bwe(?:'ve| have)? (deployed|released|launched|shipped)\b|\bit (has been |was )?(deployed|launched|shipped)\b/i;
 
 function bullets(section: string | undefined): string[] {
   return (section ?? "").split(/\r?\n/).filter((l) => /^\s*[-*]\s+\S/.test(l));
@@ -47,21 +59,46 @@ function section(markdown: string, heading: string): string | undefined {
   return undefined;
 }
 
-/** Every bullet in the section carries an evidence label; sourced facts name their source. */
-function labelledClaims(markdown: string, heading: string, failures: string[]) {
+/** A sourced fact names a source that was among the role's inputs. */
+function citesKnownSource(line: string, sources: readonly string[]): boolean {
+  const cited = SOURCE.exec(line)?.[1]?.toLowerCase().trim();
+  if (!cited) return false;
+  return sources.some((s) => {
+    const name = s.toLowerCase().trim();
+    return name.length > 2 && (cited.includes(name) || name.includes(cited));
+  });
+}
+
+/** Every bullet in the section carries an evidence label; sourced facts cite a given input. */
+function labelledClaims(
+  markdown: string,
+  heading: string,
+  failures: string[],
+  sources: readonly string[],
+) {
   const lines = bullets(section(markdown, heading));
   const unlabelled = lines.filter((l) => !LABEL.test(l));
   if (unlabelled.length)
     failures.push(`${heading}: ${unlabelled.length} claim(s) without an evidence label`);
-  const unsourced = lines.filter((l) => SOURCED.test(l) && !HAS_SOURCE.test(l));
+  const sourced = lines.filter((l) => SOURCED.test(l));
+  const unsourced = sourced.filter((l) => !SOURCE.test(l));
   if (unsourced.length)
     failures.push(`${heading}: ${unsourced.length} sourced fact(s) without a (Source: …)`);
+  const unknown = sourced.filter((l) => SOURCE.test(l) && !citesKnownSource(l, sources));
+  if (unknown.length)
+    failures.push(`${heading}: ${unknown.length} sourced fact(s) cite a source that was not given`);
 }
 
-/** Numbers about markets or prices are either sourced or labelled as not established. */
-function numbersAreBacked(markdown: string, heading: string, failures: string[]) {
+/** Numbers about markets or prices are either sourced from a given input or labelled. */
+function numbersAreBacked(
+  markdown: string,
+  heading: string,
+  failures: string[],
+  sources: readonly string[],
+) {
   const bare = bullets(section(markdown, heading)).filter(
-    (l) => NUMBER_CLAIM.test(l) && !(SOURCED.test(l) ? HAS_SOURCE.test(l) : LABEL.test(l)),
+    (l) =>
+      NUMBER_CLAIM.test(l) && !(SOURCED.test(l) ? citesKnownSource(l, sources) : LABEL.test(l)),
   );
   if (bare.length)
     failures.push(`${heading}: ${bare.length} figure(s) neither sourced nor labelled`);
@@ -69,54 +106,60 @@ function numbersAreBacked(markdown: string, heading: string, failures: string[])
 
 const ids = (text: string | undefined) => new Set((text ?? "").match(/\bR\d+\b/g) ?? []);
 
-const STAGE_RULES: Partial<Record<StageKey, (md: string, f: string[], upstream: string) => void>> =
-  {
-    charter(md, f) {
-      if (/\b(we will build|the solution is|we should build)\b/i.test(section(md, "Problem") ?? ""))
-        f.push("Problem: proposes a solution instead of stating the problem");
-      if (CLAIMS_APPROVAL.test(md)) f.push("claims an approval that only the founder can give");
-    },
-    market(md, f) {
-      for (const h of ["Market landscape", "Competitors", "Demand hypotheses"])
-        numbersAreBacked(md, h, f);
-      labelledClaims(md, "Demand hypotheses", f);
-    },
-    research(md, f) {
-      labelledClaims(md, "Findings", f);
-    },
-    prd(md, f) {
-      const reqs = bullets(section(md, "Requirements"));
-      const reqIds = ids(section(md, "Requirements"));
-      if (!reqs.length) f.push("Requirements: no requirements listed");
-      else if (reqIds.size < reqs.length)
-        f.push("Requirements: every requirement needs an ID (R1, R2, …)");
-      const covered = ids(section(md, "Acceptance criteria"));
-      const missing = [...reqIds].filter((r) => !covered.has(r));
-      if (missing.length) f.push(`Acceptance criteria: none for ${missing.join(", ")}`);
-    },
-    ux(md, f, upstream) {
-      const known = ids(upstream);
-      if (!known.size) return; // upstream requirements carry no IDs to trace to
-      const screens = bullets(section(md, "Screens"));
-      const untraced = screens.filter(
-        (l) => !(l.match(/\bR\d+\b/g) ?? []).some((r) => known.has(r)),
-      );
-      if (untraced.length)
-        f.push(`Screens: ${untraced.length} screen(s) not traced to a requirement`);
-    },
-    release(md, f) {
-      if (CLAIMS_DEPLOYMENT.test(md))
-        f.push("claims a deployment or release that has not happened");
-      if (CLAIMS_APPROVAL.test(md)) f.push("claims an approval that only the founder can give");
-    },
-    evolution(md, f) {
-      const unmeasured = bullets(section(md, "Next experiments")).filter(
-        (l) => !/measure:/i.test(l),
-      );
-      if (unmeasured.length)
-        f.push(`Next experiments: ${unmeasured.length} experiment(s) without a "Measure:"`);
-    },
-  };
+const LEADING_ID = /^\s*[-*]\s*(R\d+)\s*:/;
+
+type Rule = (md: string, f: string[], upstream: string, ctx: OutputCheckContext) => void;
+
+const STAGE_RULES: Partial<Record<StageKey, Rule>> = {
+  charter(md, f) {
+    if (/\b(we will build|the solution is|we should build)\b/i.test(section(md, "Problem") ?? ""))
+      f.push("Problem: proposes a solution instead of stating the problem");
+  },
+  market(md, f, _u, ctx) {
+    for (const h of ["Market landscape", "Competitors", "Demand hypotheses"])
+      numbersAreBacked(md, h, f, ctx.sources);
+    labelledClaims(md, "Demand hypotheses", f, ctx.sources);
+  },
+  research(md, f, _u, ctx) {
+    labelledClaims(md, "Findings", f, ctx.sources);
+  },
+  prd(md, f) {
+    const reqs = bullets(section(md, "Requirements"));
+    if (!reqs.length) {
+      f.push("Requirements: no requirements listed");
+      return;
+    }
+    // Each requirement bullet starts with its own ID, numbered R1, R2, … in order.
+    const reqIds = reqs.map((l) => LEADING_ID.exec(l)?.[1] ?? null);
+    if (reqIds.some((id, i) => id !== `R${i + 1}`))
+      f.push("Requirements: each requirement must start with its ID, numbered R1, R2, … in order");
+    const known = new Set(reqIds.filter((id): id is string => id !== null));
+    // Each acceptance bullet starts with the ID it checks; every requirement has one.
+    const acceptance = bullets(section(md, "Acceptance criteria"));
+    const accIds = acceptance.map((l) => LEADING_ID.exec(l)?.[1] ?? null);
+    if (accIds.some((id) => id === null || !known.has(id)))
+      f.push("Acceptance criteria: each bullet must start with the ID of a listed requirement");
+    const covered = new Set(accIds);
+    const missing = [...known].filter((r) => !covered.has(r));
+    if (missing.length) f.push(`Acceptance criteria: none for ${missing.join(", ")}`);
+  },
+  ux(md, f, upstream) {
+    const known = ids(upstream);
+    if (!known.size) return; // upstream requirements carry no IDs to trace to
+    const screens = bullets(section(md, "Screens"));
+    const untraced = screens.filter((l) => !(l.match(/\bR\d+\b/g) ?? []).some((r) => known.has(r)));
+    if (untraced.length)
+      f.push(`Screens: ${untraced.length} screen(s) not traced to a requirement`);
+    const shown = ids(section(md, "Screens"));
+    const unshown = [...known].filter((r) => !shown.has(r));
+    if (unshown.length) f.push(`Screens: no screen serves ${unshown.join(", ")}`);
+  },
+  evolution(md, f) {
+    const unmeasured = bullets(section(md, "Next experiments")).filter((l) => !/measure:/i.test(l));
+    if (unmeasured.length)
+      f.push(`Next experiments: ${unmeasured.length} experiment(s) without a "Measure:"`);
+  },
+};
 
 /** Checks one stage artefact written by a role. `upstream` is the text the role was given. */
 export function checkStageOutput(
@@ -131,7 +174,12 @@ export function checkStageOutput(
   if (contract.empty.length) failures.push(`empty sections: ${contract.empty.join(", ")}`);
   if (!ctx.founderEvidence && INVENTED_RESEARCH.some((re) => re.test(markdown)))
     failures.push("describes interviews or survey results the founder did not supply");
-  STAGE_RULES[stage]?.(markdown, failures, upstream);
+  // Only the founder approves, and nothing has shipped: true of every stage.
+  if (CLAIMS_APPROVAL.test(markdown))
+    failures.push("claims an approval that only the founder can give");
+  if (CLAIMS_DEPLOYMENT.test(markdown))
+    failures.push("claims a deployment or release that has not happened");
+  STAGE_RULES[stage]?.(markdown, failures, upstream, ctx);
   return { ok: failures.length === 0, failures };
 }
 

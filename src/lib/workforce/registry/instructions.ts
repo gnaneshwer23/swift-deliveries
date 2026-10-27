@@ -79,7 +79,7 @@ export function roleInstructions(roleId: string, stage: StageKey): RoleInstructi
 /** The stage a lifecycle task produces, by task key. Null for gates and tasks with no contract. */
 export function stageForTask(taskKey: string): StageKey | null {
   if (taskKey === "release_pack") return "release";
-  return taskKey in STAGE_CONTRACTS ? (taskKey as StageKey) : null;
+  return Object.hasOwn(STAGE_CONTRACTS, taskKey) ? (taskKey as StageKey) : null;
 }
 
 /**
