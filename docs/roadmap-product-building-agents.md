@@ -121,6 +121,8 @@ That is the product: **future product-building agents**, supervised — not a Co
 
 **P0 signed; P1–P5 implemented on the supervised theatre spine.** P6+ remain approval-gated. Prior Option 2 / B–E ships remain the baseline; this track evolves Act V / cast / Project shelf / honesty ladder / one deeper build beat only — demo criterion first, dashboard second never.
 
+**Research (post-P5):** Official `@tavily/core` SDK is wired for Combined/Web supervised research (Path B). Product search still needs a founder-configured raw `TAVILY_API_KEY` (local + Vercel) — CLI OAuth alone does not enable retrieval. Without a key, the path keeps honest gaps and never invents sources. UI shows a research-provider readiness chip.
+
 ---
 
 ## Related docs

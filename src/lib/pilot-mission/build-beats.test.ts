@@ -203,6 +203,37 @@ describe("artefactHonesty (P4)", () => {
   });
 });
 
+describe("research beat cited honesty", () => {
+  it("labels URL findings as Cited when a research provider ran", () => {
+    const team = buildPilotTeamPlan({ band: "M" });
+    team.approvedAt = "2026-10-27T12:00:00.000Z";
+    const seq = buildSequence(
+      baseMission({
+        stage: "evidence",
+        team,
+        researchPassCompletedAt: "2026-10-27T12:05:00.000Z",
+        researchProvider: "tavily",
+        evidence: [
+          {
+            id: "e1",
+            statement: "[Cited · tavily] Pricing patterns: paid analytics are common.",
+            source: "https://example.com/pricing",
+            classification: "supplied",
+          },
+        ],
+        researchGaps: [],
+      }),
+    );
+    const research = seq.beats.find((b) => b.id === "research");
+    expect(research?.artefact?.kind).toBe("research");
+    expect(research?.artefact?.honesty).toEqual({
+      mode: "cited",
+      label: "Cited · tavily",
+      modelId: "tavily",
+    });
+  });
+});
+
 describe("castForMission (P2)", () => {
   it("marks the current beat owner and handoff", () => {
     const team = buildPilotTeamPlan({ band: "M" });

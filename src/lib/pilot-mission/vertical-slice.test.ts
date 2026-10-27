@@ -4,7 +4,7 @@ import {
   buildDecisionPackPdf,
   honestyFor,
 } from "./decision-pack";
-import { planResearchMode } from "./research-mode";
+import { planResearchMode, researchProviderReadiness } from "./research-mode";
 import { MemoryStore, SupervisedMissionService } from "./service";
 import { buildPilotTeamPlan, syncTeamWithMission } from "./specialist-team";
 import { nextRequiredAction, type SupervisedMission } from "./types";
@@ -124,6 +124,14 @@ describe("founder vertical slice — research mode honesty", () => {
     const plan = planResearchMode("combined", {});
     expect(plan.executable).toBe(true);
     expect(plan.externalGaps.some((g) => /Web portion unavailable/i.test(g))).toBe(true);
+  });
+
+  it("exposes honest research-provider readiness for the UI", () => {
+    expect(researchProviderReadiness({}).configured).toBe(false);
+    expect(researchProviderReadiness({}).label).toMatch(/not configured/i);
+    const ready = researchProviderReadiness({ TAVILY_API_KEY: "tvly-test" });
+    expect(ready).toMatchObject({ configured: true, provider: "tavily" });
+    expect(ready.label).toMatch(/tavily/i);
   });
 
   it("records research mode changes as persisted activity", async () => {

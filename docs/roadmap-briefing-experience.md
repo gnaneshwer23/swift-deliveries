@@ -313,3 +313,5 @@ Prior A–E remain historical delivery; **G\*** is the experience track. Do not 
 - Programme acts language if Lab is ever promoted.  
 - Optional further chrome rename away from “Command”.  
 - Voice (F) still deferred.
+
+**Research note (27 Oct 2026):** `@tavily/core` is wired on the supervised Combined/Web path. Founder must set `TAVILY_API_KEY` (or Exa/Brave) in Vercel + local for real cited sources; keyless stays honest gaps.
