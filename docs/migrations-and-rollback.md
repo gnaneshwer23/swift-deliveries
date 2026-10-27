@@ -32,7 +32,7 @@ The production Neon branch is `br-fancy-breeze-zatt9ocp` in project `spring-wind
 | 0024 durable missions (`wf_task_runs`, `wf_mission_events`, …)     | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0025 corrections to 0024                                           | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0026 run role and instruction version (`wf_task_runs`)             | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
-| 0027 founder evidence (`wf_mission_evidence`)                      | Not applied — needs owner approval          | Pending                              |
+| 0027 founder evidence (`wf_mission_evidence`)                      | Not applied — needs owner approval          | Applied 27 Oct 2026                  |
 
 Migrations 0020–0023 were applied to production in a single transaction. The six `psi_*` tables are owned by the server role, have no client grants, and have row-level security enabled. No table rows were read during or after the change.
 
