@@ -76,6 +76,7 @@ function MissionDetail() {
     setActivityKey((k) => k + 1);
     await queryClient.invalidateQueries({ queryKey: ["command", "mission", missionId] });
     await queryClient.invalidateQueries({ queryKey: ["command", "bootstrap"] });
+    await queryClient.invalidateQueries({ queryKey: ["command", "inbox"] });
   };
 
   const clarify = useMutation({
@@ -382,7 +383,7 @@ function MissionDetail() {
 
           {/* 1. Clarification Stage */}
           {mission.status === "needs_clarification" ? (
-            <section className="cc-panel cc-panel-active-gate">
+            <section id="mission-clarify" className="cc-panel cc-panel-active-gate">
               <h2 className="cc-panel-title">Clarification needed before planning</h2>
               <p className="cc-muted mb-4">
                 Answer the required questions (or click <strong>Revise scope</strong> above) so the
@@ -416,6 +417,7 @@ function MissionDetail() {
           {/* 2. Plan & Mandatory Human Approval Gate */}
           {plan && mission.status !== "needs_clarification" ? (
             <section
+              id="mission-plan"
               className={`cc-panel${
                 mission.status === "awaiting_approval" || mission.status === "planned"
                   ? " cc-panel-active-gate"
@@ -593,7 +595,7 @@ function MissionDetail() {
           <ConversationPanel currentMissionId={missionId} />
 
           {/* 3. Task Graph & Step Execution */}
-          <section className="cc-panel">
+          <section id="mission-tasks" className="cc-panel">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="cc-panel-title mb-0">Task graph ({tasks.length})</h2>
               <div className="flex flex-wrap gap-2">

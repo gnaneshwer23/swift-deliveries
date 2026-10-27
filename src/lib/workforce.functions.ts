@@ -50,6 +50,7 @@ import type {
   WfProject,
   WfWorkspace,
 } from "@/lib/workforce/types";
+import { MISSION_STATUSES, TERMINAL_MISSION_STATUSES } from "@/lib/workforce/types";
 
 const intentSchema = z.enum(["investigate", "prototype", "improve", "build"]);
 
@@ -88,6 +89,50 @@ export type CommandCentreBootstrap = {
     };
   };
 };
+
+/** Open missions read for the owner inbox; the oldest waits beyond this are named, not dropped silently. */
+const INBOX_MISSION_LIMIT = 200;
+
+/**
+ * Every decision waiting on the owner across the workspace's open missions:
+ * questions, plans, stage gates, outside actions and paused missions. Read
+ * from mission and task rows only (`lib/workforce/owner-inbox.ts`).
+ */
+export const getOwnerInbox = createServerFn({ method: "GET" })
+  .middleware([requireAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const { workspace } = await ensureWorkspace(supabase, userId);
+    const db = wfDb(supabase);
+    const missionsRes = await db
+      .from("wf_missions")
+      .select("*")
+      .eq("workspace_id", workspace.id)
+      .in(
+        "status",
+        MISSION_STATUSES.filter((st) => !TERMINAL_MISSION_STATUSES.includes(st)),
+      )
+      .order("updated_at", { ascending: true })
+      .limit(INBOX_MISSION_LIMIT + 1);
+    if (missionsRes.error) throw new Error(missionsRes.error.message);
+    const rows = (missionsRes.data ?? []).slice(0, INBOX_MISSION_LIMIT);
+    const missions: WfMission[] = rows.map(mapMission);
+    const ids = missions.map((m) => m.id);
+    const tasksRes = ids.length
+      ? await db
+          .from("wf_mission_tasks")
+          .select("*")
+          .eq("workspace_id", workspace.id)
+          .eq("status", "blocked")
+          .in("mission_id", ids)
+      : { data: [], error: null };
+    if (tasksRes.error) throw new Error(tasksRes.error.message);
+    const { ownerInbox } = await import("@/lib/workforce/owner-inbox");
+    return {
+      items: ownerInbox(missions, (tasksRes.data ?? []).map(mapTask)),
+      truncated: (missionsRes.data ?? []).length > INBOX_MISSION_LIMIT,
+    };
+  });
 
 export const getCommandCentreBootstrap = createServerFn({ method: "GET" })
   .middleware([requireAuth])
