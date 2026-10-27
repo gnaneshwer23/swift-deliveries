@@ -25,7 +25,10 @@ export type InboxItem = {
   taskId: string | null;
   /** The anchor on the mission page where the decision is made. */
   hash: string;
-  /** When the mission last changed, so the oldest waits can be read first. */
+  /**
+   * When the wait began, as near as the rows say: the task's last change for a
+   * gate or outside action, else the mission's.
+   */
   since: string;
 };
 
@@ -62,6 +65,7 @@ type TaskLike = Pick<
   | "isExternal"
   | "permissionRequired"
   | "sortOrder"
+  | "updatedAt"
 >;
 
 export function ownerInbox(
@@ -115,6 +119,7 @@ export function ownerInbox(
           kind: "decide_gate",
           action: `Decide: ${t.title}`,
           taskId: t.id,
+          since: t.updatedAt,
           hash: `task-${t.id}`,
         });
       else if (outside && !m.externalActionsApproved)
@@ -123,6 +128,7 @@ export function ownerInbox(
           kind: "approve_external",
           action: `Approve acting externally: ${t.title}`,
           taskId: t.id,
+          since: t.updatedAt,
           hash: `task-${t.id}`,
         });
     }

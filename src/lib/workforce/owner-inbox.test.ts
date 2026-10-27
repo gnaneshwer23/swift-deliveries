@@ -21,6 +21,7 @@ const task = (id: string, missionId: string, over: Partial<T> = {}): T => ({
   isExternal: false,
   permissionRequired: "create",
   sortOrder: 0,
+  updatedAt: "2026-10-27T10:00:00Z",
   ...over,
 });
 
@@ -70,6 +71,25 @@ describe("owner inbox", () => {
       [task("g", "p", { status: "blocked", gate: true })],
     );
     expect(items.map((i) => i.kind)).toEqual(["resume"]);
+  });
+
+  it("dates a task's wait from the task, so gates in one mission order by their own wait", () => {
+    const items = ownerInbox(
+      [mission("c", "running", { updatedAt: "2026-10-27T12:00:00Z" })],
+      [
+        task("late", "c", { status: "blocked", gate: true, updatedAt: "2026-10-27T11:00:00Z" }),
+        task("early", "c", {
+          status: "blocked",
+          gate: true,
+          sortOrder: 5,
+          updatedAt: "2026-10-27T09:00:00Z",
+        }),
+      ],
+    );
+    expect(items.map((i) => [i.taskId, i.since])).toEqual([
+      ["early", "2026-10-27T09:00:00Z"],
+      ["late", "2026-10-27T11:00:00Z"],
+    ]);
   });
 
   it("puts the longest wait first within a kind", () => {

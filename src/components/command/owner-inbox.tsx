@@ -51,12 +51,27 @@ export function OwnerInboxBody({ state }: { state: OwnerInboxState }) {
   if (state.status === "loading") return <p className="cc-muted mt-3 text-sm">Loading…</p>;
   if (state.status === "error")
     return (
-      <p className="cc-error mt-3">
+      <p className="cc-error mt-3" role="alert">
         What's waiting on you couldn't be loaded. Each mission page still shows its own decisions.
       </p>
     );
+  const cutOff = state.truncated ? (
+    <p className="cc-muted mt-2 text-xs">
+      Showing decisions from the 200 longest-waiting open missions only. More recently updated
+      missions show their own decisions on their pages.
+    </p>
+  ) : null;
   if (!state.items.length)
-    return <p className="cc-muted mt-3 text-sm">Nothing is waiting on you.</p>;
+    return (
+      <>
+        <p className="cc-muted mt-3 text-sm">
+          {state.truncated
+            ? "Nothing is waiting on you in the 200 longest-waiting open missions."
+            : "Nothing is waiting on you."}
+        </p>
+        {cutOff}
+      </>
+    );
   return (
     <>
       <ul className="cc-mission-list mt-3">
@@ -79,12 +94,7 @@ export function OwnerInboxBody({ state }: { state: OwnerInboxState }) {
           </li>
         ))}
       </ul>
-      {state.truncated ? (
-        <p className="cc-muted mt-2 text-xs">
-          Showing decisions from the 200 longest-waiting open missions only. More recently updated
-          missions show their own decisions on their pages.
-        </p>
-      ) : null}
+      {cutOff}
     </>
   );
 }
