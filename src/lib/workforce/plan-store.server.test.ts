@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import postgres from "postgres";
+import { POSTGRES_TYPES } from "@/lib/db/postgres-types";
 import type { Executor } from "@/lib/db/builder";
 import { planHash } from "./plan-hash";
 import { generateMissionPlan } from "./planner";
@@ -93,7 +94,12 @@ const TABLES = [
   "wf_mission_events",
 ];
 const sql = url
-  ? postgres(url, { prepare: false, max: 4, connection: { search_path: schema } })
+  ? postgres(url, {
+      prepare: false,
+      max: 4,
+      types: POSTGRES_TYPES,
+      connection: { search_path: schema },
+    })
   : null;
 const inTx = <T>(work: (q: Executor) => Promise<T>) =>
   sql!.begin((t) =>

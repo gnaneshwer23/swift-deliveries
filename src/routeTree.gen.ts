@@ -67,6 +67,7 @@ import { Route as AuthenticatedWorkspaceReviewRouteImport } from './routes/_auth
 import { Route as AuthenticatedWorkspaceReviewsRouteImport } from './routes/_authenticated/workspace.reviews'
 import { Route as AuthenticatedWorkspaceTeamRouteImport } from './routes/_authenticated/workspace.team'
 import { Route as AuthenticatedWorkspaceTimelineRouteImport } from './routes/_authenticated/workspace.timeline'
+import { Route as ApiWorkerTickRouteImport } from './routes/api/worker/tick'
 import { Route as AuthenticatedCommandMissionsMissionIdRouteImport } from './routes/_authenticated/command.missions.$missionId'
 import { Route as AuthenticatedCommandProgrammesIndexRouteImport } from './routes/_authenticated/command.programmes.index'
 import { Route as AuthenticatedCommandProgrammesProgrammeIdRouteImport } from './routes/_authenticated/command.programmes.$programmeId'
@@ -392,6 +393,11 @@ const AuthenticatedWorkspaceTimelineRoute =
     path: '/timeline',
     getParentRoute: () => AuthenticatedWorkspaceRoute,
   } as any)
+const ApiWorkerTickRoute = ApiWorkerTickRouteImport.update({
+  id: '/api/worker/tick',
+  path: '/api/worker/tick',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedCommandMissionsMissionIdRoute =
   AuthenticatedCommandMissionsMissionIdRouteImport.update({
     id: '/missions/$missionId',
@@ -519,6 +525,7 @@ export interface FileRoutesByFullPath {
   '/workspace/reviews': typeof AuthenticatedWorkspaceReviewsRoute
   '/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
   '/workspace/timeline': typeof AuthenticatedWorkspaceTimelineRoute
+  '/api/worker/tick': typeof ApiWorkerTickRoute
   '/command/': typeof AuthenticatedCommandIndexRoute
   '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/command/missions/$missionId': typeof AuthenticatedCommandMissionsMissionIdRoute
@@ -587,6 +594,7 @@ export interface FileRoutesByTo {
   '/workspace/reviews': typeof AuthenticatedWorkspaceReviewsRoute
   '/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
   '/workspace/timeline': typeof AuthenticatedWorkspaceTimelineRoute
+  '/api/worker/tick': typeof ApiWorkerTickRoute
   '/command': typeof AuthenticatedCommandIndexRoute
   '/workspace': typeof AuthenticatedWorkspaceIndexRoute
   '/command/missions/$missionId': typeof AuthenticatedCommandMissionsMissionIdRoute
@@ -660,6 +668,7 @@ export interface FileRoutesById {
   '/_authenticated/workspace/reviews': typeof AuthenticatedWorkspaceReviewsRoute
   '/_authenticated/workspace/team': typeof AuthenticatedWorkspaceTeamRoute
   '/_authenticated/workspace/timeline': typeof AuthenticatedWorkspaceTimelineRoute
+  '/api/worker/tick': typeof ApiWorkerTickRoute
   '/_authenticated/command/': typeof AuthenticatedCommandIndexRoute
   '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/_authenticated/command/missions/$missionId': typeof AuthenticatedCommandMissionsMissionIdRoute
@@ -733,6 +742,7 @@ export interface FileRouteTypes {
     | '/workspace/reviews'
     | '/workspace/team'
     | '/workspace/timeline'
+    | '/api/worker/tick'
     | '/command/'
     | '/workspace/'
     | '/command/missions/$missionId'
@@ -801,6 +811,7 @@ export interface FileRouteTypes {
     | '/workspace/reviews'
     | '/workspace/team'
     | '/workspace/timeline'
+    | '/api/worker/tick'
     | '/command'
     | '/workspace'
     | '/command/missions/$missionId'
@@ -873,6 +884,7 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace/reviews'
     | '/_authenticated/workspace/team'
     | '/_authenticated/workspace/timeline'
+    | '/api/worker/tick'
     | '/_authenticated/command/'
     | '/_authenticated/workspace/'
     | '/_authenticated/command/missions/$missionId'
@@ -922,6 +934,7 @@ export interface RootRouteChildren {
   ResourcesStarInterviewStoriesRoute: typeof ResourcesStarInterviewStoriesRoute
   VerifyCredentialIdRoute: typeof VerifyCredentialIdRoute
   ResourcesIndexRoute: typeof ResourcesIndexRoute
+  ApiWorkerTickRoute: typeof ApiWorkerTickRoute
   ApiPublicMonitoringClientErrorRoute: typeof ApiPublicMonitoringClientErrorRoute
   ApiPublicMonitoringHealthRoute: typeof ApiPublicMonitoringHealthRoute
   ApiPublicMonitoringUptimeRoute: typeof ApiPublicMonitoringUptimeRoute
@@ -1338,6 +1351,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkspaceTimelineRouteImport
       parentRoute: typeof AuthenticatedWorkspaceRoute
     }
+    '/api/worker/tick': {
+      id: '/api/worker/tick'
+      path: '/api/worker/tick'
+      fullPath: '/api/worker/tick'
+      preLoaderRoute: typeof ApiWorkerTickRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/command/missions/$missionId': {
       id: '/_authenticated/command/missions/$missionId'
       path: '/missions/$missionId'
@@ -1584,6 +1604,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResourcesStarInterviewStoriesRoute: ResourcesStarInterviewStoriesRoute,
   VerifyCredentialIdRoute: VerifyCredentialIdRoute,
   ResourcesIndexRoute: ResourcesIndexRoute,
+  ApiWorkerTickRoute: ApiWorkerTickRoute,
   ApiPublicMonitoringClientErrorRoute: ApiPublicMonitoringClientErrorRoute,
   ApiPublicMonitoringHealthRoute: ApiPublicMonitoringHealthRoute,
   ApiPublicMonitoringUptimeRoute: ApiPublicMonitoringUptimeRoute,

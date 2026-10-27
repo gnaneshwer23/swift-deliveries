@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import postgres from "postgres";
+import { POSTGRES_TYPES } from "@/lib/db/postgres-types";
 import { createDb, type ColumnTypes, type Executor } from "@/lib/db/builder";
 
 const url = process.env["PSI_TEST_DATABASE_URL"];
@@ -26,7 +27,12 @@ const TABLES = [
   "wf_audit_events",
 ];
 const sql = url
-  ? postgres(url, { prepare: false, max: 10, connection: { search_path: schema } })
+  ? postgres(url, {
+      prepare: false,
+      max: 10,
+      types: POSTGRES_TYPES,
+      connection: { search_path: schema },
+    })
   : null;
 let types: ColumnTypes = new Map();
 const query: Executor = async (text, params) =>
