@@ -72,6 +72,25 @@ export function describeEvent(e: WfMissionEvent, taskTitle?: string | null): Eve
             : `Mission ended: ${String(e.data["status"] ?? "").replace(/_/g, " ")}`,
         tone: e.data["status"] === "completed" ? "done" : "problem",
       };
+    case "evidence.added": {
+      const title = `“${String(e.data["title"] ?? "")}”`;
+      if (e.data["status"] === "unreadable")
+        return {
+          text: `${title} could not be read: ${String(e.data["reason"] ?? "")}`,
+          tone: "problem",
+        };
+      return {
+        text: e.data["withheldFromModel"]
+          ? `${who(e)} added ${title}; it may hold personal details, so it is not sent to a model`
+          : `${who(e)} added evidence ${title}`,
+        tone: "control",
+      };
+    }
+    case "evidence.removed":
+      return {
+        text: `${who(e)} removed evidence “${String(e.data["title"] ?? "")}”`,
+        tone: "control",
+      };
     case "workspace.stopped":
       return { text: `${who(e)} stopped all work in the workspace`, tone: "control" };
     case "workspace.resumed":

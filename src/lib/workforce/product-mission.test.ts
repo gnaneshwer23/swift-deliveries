@@ -404,6 +404,42 @@ describe("model mode safeguards", () => {
     expect(prompt.user).toContain('cite as "mission request"');
   });
 
+  it("gives the model the founder's evidence by title and counts what it withheld", () => {
+    const base = {
+      missionId: "m",
+      kind: "note" as const,
+      status: "readable" as const,
+      unreadableReason: null,
+      fileName: null,
+      mediaType: null,
+      byteSize: null,
+      contentSha256: "abc",
+      containsIdentifiers: false,
+      suppliedBy: "owner",
+      createdAt: new Date().toISOString(),
+    };
+    const prompt = buildStagePrompt({
+      mission,
+      task: {
+        title: "Research",
+        description: "d",
+        acceptanceCriteria: "a",
+        requiredSections: ["Findings"],
+        produces: "research_dossier",
+      },
+      upstream: [],
+      evidence: [
+        { ...base, id: "e1", title: "Call notes", content: "Tutors reschedule on Sundays." },
+        { ...base, id: "e2", title: "Patient list", content: "NHS 943 476 5919" },
+      ],
+    });
+    expect(prompt.user).toContain('<evidence title="Call notes">');
+    expect(prompt.user).toContain("1 piece(s) of founder evidence were withheld");
+    expect(prompt.user).not.toContain("Patient list");
+    expect(prompt.user).not.toContain("943 476 5919");
+    expect(prompt.evidenceUsed).toEqual([{ id: "e1", title: "Call notes", sha256: "abc" }]);
+  });
+
   it("detects likely personal identifiers before any external call", () => {
     expect(isValidNhsNumber("9434765919")).toBe(true);
     expect(isValidNhsNumber("9434765918")).toBe(false);

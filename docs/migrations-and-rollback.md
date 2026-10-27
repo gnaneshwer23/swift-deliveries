@@ -32,6 +32,7 @@ The production Neon branch is `br-fancy-breeze-zatt9ocp` in project `spring-wind
 | 0024 durable missions (`wf_task_runs`, `wf_mission_events`, …)     | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0025 corrections to 0024                                           | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0026 run role and instruction version (`wf_task_runs`)             | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
+| 0027 founder evidence (`wf_mission_evidence`)                      | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 
 Migrations 0020–0023 were applied to production in a single transaction. The six `psi_*` tables are owned by the server role, have no client grants, and have row-level security enabled. No table rows were read during or after the change.
 
@@ -142,3 +143,26 @@ This blocks deleting any mission or workspace that has events again, so only do 
 Adds `role_id`, `instruction_version` and `model_calls` to `wf_task_runs`, so each run records which role and instruction version produced it and how many model calls it made. Additive and re-runnable; no data is read or changed. Apply before deploying the code that writes these columns: the worker's commit step writes them, and a missing column would make every step fail. Code from before 0026 ignores the columns.
 
 Rollback: redeploy the earlier build and leave the columns; they are nullable or defaulted. Only if they must go, with the owner's approval: `alter table public.wf_task_runs drop column if exists role_id, drop column if exists instruction_version, drop column if exists model_calls;` (this discards those recorded values).
+
+## 0027 founder evidence
+
+Adds `wf_mission_evidence`: notes and text files the founder supplies for a mission, with who supplied them, when, the file's name, type and size, and a SHA-256 of the stored text. Unreadable files are kept as rows with the reason and no content. Removal sets `removed_at`; the row stays as provenance. Server role only, row-level security on. Additive and re-runnable; no existing data is read or changed.
+
+Safe in either order. Code from before 0027 never reads the table. Code after it checks for the table first: until it exists, the mission page says evidence is not available yet, and the worker runs steps without evidence.
+
+Rollback: redeploy the earlier build and leave the table; earlier builds never read it. Only if the table itself must go, with the owner's approval, after the earlier build is live:
+
+1. Take a Neon snapshot of the production branch, or create a branch from it, and record its ID in the ledger.
+2. Drop the table only when it is empty. If it holds rows, they are founder records: export them under the owner's data-handling instructions first, or keep the table.
+
+```sql
+do $$
+begin
+  if exists (select 1 from public.wf_mission_evidence) then
+    raise exception 'wf_mission_evidence holds founder evidence; export it first. Nothing was changed.';
+  end if;
+  drop table public.wf_mission_evidence;
+end $$;
+```
+
+3. Update the ledger with the date, the reason and the snapshot ID.

@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
 import { MissionActivity } from "@/components/command/mission-activity";
+import { MissionEvidence } from "@/components/command/mission-evidence";
 import { missionBundleQuery } from "@/lib/workforce-queries";
 import {
   answerClarifications,
@@ -564,6 +565,13 @@ function MissionDetail() {
             tasks={tasks}
             onProgress={() =>
               void queryClient.invalidateQueries({ queryKey: ["command", "mission", missionId] })
+            }
+          />
+
+          <MissionEvidence
+            missionId={missionId}
+            editable={
+              !["completed", "partially_completed", "failed", "cancelled"].includes(mission.status)
             }
           />
 

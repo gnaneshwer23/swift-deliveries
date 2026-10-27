@@ -13,7 +13,7 @@ import type { StageKey } from "./roles";
 export const EVIDENCE_LABELS = ["Sourced fact", "Assumption", "Inference", "Speculative"] as const;
 
 export type OutputCheckContext = {
-  /** True when the founder supplied research notes or sources for this mission. */
+  /** True when evidence the role was given records interviews, surveys or calls. */
   founderEvidence: boolean;
   /**
    * Names of the inputs the role was given; a [Sourced fact] must cite one of

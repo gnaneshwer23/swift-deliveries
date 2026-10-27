@@ -2,6 +2,7 @@ import { checkPrototypeHtml } from "./contracts";
 import { requiresExternalApproval } from "./permissions";
 import { stageArtefact } from "./stage-artefacts";
 import { canAfford, chargeUsage, type UsageBudget } from "./usage";
+import type { EvidenceUse } from "./evidence";
 import type {
   DeliveryReport,
   EvidenceItem,
@@ -88,6 +89,8 @@ export type GeneratedContent = {
   calls?: ModelCallRecord[];
   /** The role instructions the output was written under, when a role led the stage. */
   instructionVersion?: string;
+  /** Founder evidence the model was given, by id, title and content hash. */
+  evidenceUsed?: EvidenceUse[];
 };
 
 type ArtefactDraft = Omit<WfArtefact, "id" | "createdAt" | "updatedAt">;
