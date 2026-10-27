@@ -68,17 +68,17 @@ describe("agent office", () => {
     const office = buildAgentOffice(
       [mission("a", "running"), mission("b", "awaiting_approval"), mission("c", "draft")],
       [
-        task("1", "a", "running", ["DX-011", "DX-012"]),
+        task("1", "a", "running", ["DX-018", "DX-020"]),
         task("2", "a", "completed", ["DX-001"]),
         task("3", "a", "pending", ["DX-020"]),
-        task("4", "b", "pending", ["DX-041"]),
+        task("4", "b", "pending", ["DX-035"]),
       ],
     );
     expect(office.totals).toEqual({ waiting: 2, doing: 1, next: 1, later: 0, done: 1, stopped: 0 });
     const research = office.departments.find((d) => d.n === 2)!;
     expect(research.counts).toMatchObject({ doing: 1, next: 1 });
-    expect(research.specialists.find((s) => s.id === "DX-011")!.state).toBe("doing");
-    expect(office.departments.find((d) => d.n === 5)!.specialists[0]!.state).toBe("waiting");
+    expect(research.specialists.find((s) => s.id === "DX-018")!.state).toBe("doing");
+    expect(office.departments.find((d) => d.n === 4)!.specialists[0]!.state).toBe("waiting");
     // waiting items lead, and the draft mission with no tasks is waiting on you
     expect(office.items[0]!.state).toBe("waiting");
     expect(office.items.some((i) => i.missionId === "c" && i.who === "You")).toBe(true);

@@ -1,47 +1,22 @@
 {
+  "_generated": "Generated from src/lib/workforce/registry/data.ts by npm run registry:export. Do not edit.",
   "version": "1.0.0",
   "spec": "docs/workforce-architecture-and-agent-catalogue.md",
   "wave1_available_ids": [
     "DX-001",
     "DX-002",
-    "DX-011",
-    "DX-012",
     "DX-018",
     "DX-020",
     "DX-021",
     "DX-023",
     "DX-035",
-    "DX-041",
-    "DX-049",
     "DX-071"
   ],
   "intent_capability_map": {
-    "investigate": [
-      "DX-001",
-      "DX-002",
-      "DX-011",
-      "DX-012",
-      "DX-018",
-      "DX-020"
-    ],
-    "prototype": [
-      "DX-001",
-      "DX-002",
-      "DX-021",
-      "DX-023",
-      "DX-035",
-      "DX-041",
-      "DX-071"
-    ],
-    "improve": [
-      "DX-001",
-      "DX-002",
-      "DX-021",
-      "DX-035",
-      "DX-041",
-      "DX-049",
-      "DX-071"
-    ]
+    "investigate": ["DX-001", "DX-002", "DX-018", "DX-020"],
+    "prototype": ["DX-001", "DX-002", "DX-021", "DX-023", "DX-035", "DX-071"],
+    "improve": ["DX-001", "DX-002", "DX-021", "DX-035", "DX-071"],
+    "build": ["DX-001", "DX-002", "DX-018", "DX-020", "DX-021", "DX-023", "DX-035", "DX-071"]
   },
   "departments": [
     {
@@ -199,8 +174,8 @@
     },
     {
       "number": 10,
-      "name": "Healthcare and Life Sciences",
-      "slug": "healthcare-and-life-sciences",
+      "name": "Future Technology and Foresight",
+      "slug": "future-technology-and-foresight",
       "capability_ids": [
         "DX-091",
         "DX-092",
@@ -250,8 +225,8 @@
     },
     {
       "number": 13,
-      "name": "Books, Education and Publishing",
-      "slug": "books-education-and-publishing",
+      "name": "Product Analytics and Continuous Improvement",
+      "slug": "product-analytics-and-continuous-improvement",
       "capability_ids": [
         "DX-121",
         "DX-122",
@@ -320,9 +295,7 @@
       },
       "owner": "DeliverX Platform",
       "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
-      "known_limitations": [
-        "Deterministic stub behaviour; no live model tools yet."
-      ],
+      "known_limitations": ["Deterministic stub behaviour; no live model tools yet."],
       "activation_wave": 1,
       "input_schema": {
         "type": "object"
@@ -351,9 +324,7 @@
       },
       "owner": "DeliverX Platform",
       "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
-      "known_limitations": [
-        "Deterministic stub behaviour; no live model tools yet."
-      ],
+      "known_limitations": ["Deterministic stub behaviour; no live model tools yet."],
       "activation_wave": 1,
       "input_schema": {
         "type": "object"
@@ -381,10 +352,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -412,10 +381,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -443,10 +410,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -474,10 +439,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -505,10 +468,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -536,10 +497,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -567,10 +526,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -598,10 +555,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -618,7 +573,7 @@
       "department_number": 2,
       "description": "Defines research questions, methods, scope, source requirements and completion criteria.",
       "implementation_type": "model_workflow",
-      "lifecycle_status": "available",
+      "lifecycle_status": "planned",
       "version": "1.0.0",
       "tool_allowlist": [],
       "permission_profile": "execute_internally",
@@ -629,10 +584,8 @@
         "max_usage_credits": 20
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
-      "known_limitations": [
-        "Deterministic stub behaviour; no live model tools yet."
-      ],
+      "evaluation_notes": "Planned. Was a Wave 1 stub; returns to Available once it has a role definition and a passing evaluation suite.",
+      "known_limitations": ["No role definition or evaluation suite yet; cannot be assigned."],
       "activation_wave": 1,
       "input_schema": {
         "type": "object"
@@ -649,7 +602,7 @@
       "department_number": 2,
       "description": "Collects relevant online material and returns source-linked findings.",
       "implementation_type": "tool_using_specialist",
-      "lifecycle_status": "available",
+      "lifecycle_status": "planned",
       "version": "1.0.0",
       "tool_allowlist": [],
       "permission_profile": "execute_internally",
@@ -660,10 +613,8 @@
         "max_usage_credits": 20
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
-      "known_limitations": [
-        "Deterministic stub behaviour; no live model tools yet."
-      ],
+      "evaluation_notes": "Planned. Was a Wave 1 stub; returns to Available once it has a role definition and a passing evaluation suite.",
+      "known_limitations": ["No role definition or evaluation suite yet; cannot be assigned."],
       "activation_wave": 1,
       "input_schema": {
         "type": "object"
@@ -691,10 +642,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -722,10 +671,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -753,10 +700,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -784,10 +729,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -815,10 +758,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -847,9 +788,7 @@
       },
       "owner": "DeliverX Platform",
       "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
-      "known_limitations": [
-        "Deterministic stub behaviour; no live model tools yet."
-      ],
+      "known_limitations": ["Deterministic stub behaviour; no live model tools yet."],
       "activation_wave": 1,
       "input_schema": {
         "type": "object"
@@ -877,10 +816,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -909,9 +846,7 @@
       },
       "owner": "DeliverX Platform",
       "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
-      "known_limitations": [
-        "Deterministic stub behaviour; no live model tools yet."
-      ],
+      "known_limitations": ["Deterministic stub behaviour; no live model tools yet."],
       "activation_wave": 1,
       "input_schema": {
         "type": "object"
@@ -940,9 +875,7 @@
       },
       "owner": "DeliverX Platform",
       "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
-      "known_limitations": [
-        "Deterministic stub behaviour; no live model tools yet."
-      ],
+      "known_limitations": ["Deterministic stub behaviour; no live model tools yet."],
       "activation_wave": 1,
       "input_schema": {
         "type": "object"
@@ -970,10 +903,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -1002,9 +933,7 @@
       },
       "owner": "DeliverX Platform",
       "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
-      "known_limitations": [
-        "Deterministic stub behaviour; no live model tools yet."
-      ],
+      "known_limitations": ["Deterministic stub behaviour; no live model tools yet."],
       "activation_wave": 1,
       "input_schema": {
         "type": "object"
@@ -1032,10 +961,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -1063,10 +990,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -1094,10 +1019,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -1125,10 +1048,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 2,
       "input_schema": {
         "type": "object"
@@ -1156,10 +1077,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 2,
       "input_schema": {
         "type": "object"
@@ -1187,10 +1106,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -1218,10 +1135,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -1249,10 +1164,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -1280,10 +1193,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -1311,10 +1222,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -1342,10 +1251,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -1374,9 +1281,7 @@
       },
       "owner": "DeliverX Platform",
       "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
-      "known_limitations": [
-        "Deterministic stub behaviour; no live model tools yet."
-      ],
+      "known_limitations": ["Deterministic stub behaviour; no live model tools yet."],
       "activation_wave": 1,
       "input_schema": {
         "type": "object"
@@ -1404,10 +1309,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 2,
       "input_schema": {
         "type": "object"
@@ -1435,10 +1338,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -1466,10 +1367,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -1497,10 +1396,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -1528,10 +1425,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -1548,7 +1443,7 @@
       "department_number": 5,
       "description": "Produces architecture decisions, component boundaries, dependencies and trade-offs.",
       "implementation_type": "model_workflow",
-      "lifecycle_status": "available",
+      "lifecycle_status": "planned",
       "version": "1.0.0",
       "tool_allowlist": [],
       "permission_profile": "execute_internally",
@@ -1559,10 +1454,8 @@
         "max_usage_credits": 20
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
-      "known_limitations": [
-        "Deterministic stub behaviour; no live model tools yet."
-      ],
+      "evaluation_notes": "Planned. Was a Wave 1 stub; returns to Available once it has a role definition and a passing evaluation suite.",
+      "known_limitations": ["No role definition or evaluation suite yet; cannot be assigned."],
       "activation_wave": 1,
       "input_schema": {
         "type": "object"
@@ -1590,10 +1483,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 2,
       "input_schema": {
         "type": "object"
@@ -1621,10 +1512,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 2,
       "input_schema": {
         "type": "object"
@@ -1652,10 +1541,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -1683,10 +1570,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 2,
       "input_schema": {
         "type": "object"
@@ -1714,10 +1599,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 2,
       "input_schema": {
         "type": "object"
@@ -1745,10 +1628,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -1776,10 +1657,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 2,
       "input_schema": {
         "type": "object"
@@ -1796,7 +1675,7 @@
       "department_number": 5,
       "description": "Reviews changes for correctness, maintainability, security concerns and requirement coverage.",
       "implementation_type": "model_workflow",
-      "lifecycle_status": "available",
+      "lifecycle_status": "planned",
       "version": "1.0.0",
       "tool_allowlist": [],
       "permission_profile": "execute_internally",
@@ -1807,10 +1686,8 @@
         "max_usage_credits": 20
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
-      "known_limitations": [
-        "Deterministic stub behaviour; no live model tools yet."
-      ],
+      "evaluation_notes": "Planned. Was a Wave 1 stub; returns to Available once it has a role definition and a passing evaluation suite.",
+      "known_limitations": ["No role definition or evaluation suite yet; cannot be assigned."],
       "activation_wave": 1,
       "input_schema": {
         "type": "object"
@@ -1838,10 +1715,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 3,
       "input_schema": {
         "type": "object"
@@ -1869,10 +1744,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 5,
       "input_schema": {
         "type": "object"
@@ -1900,10 +1773,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 5,
       "input_schema": {
         "type": "object"
@@ -1931,10 +1802,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 5,
       "input_schema": {
         "type": "object"
@@ -1962,10 +1831,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 5,
       "input_schema": {
         "type": "object"
@@ -1993,10 +1860,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 5,
       "input_schema": {
         "type": "object"
@@ -2024,10 +1889,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 5,
       "input_schema": {
         "type": "object"
@@ -2055,10 +1918,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 5,
       "input_schema": {
         "type": "object"
@@ -2086,10 +1947,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 5,
       "input_schema": {
         "type": "object"
@@ -2117,10 +1976,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 5,
       "input_schema": {
         "type": "object"
@@ -2148,10 +2005,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 5,
       "input_schema": {
         "type": "object"
@@ -2179,10 +2034,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 3,
       "input_schema": {
         "type": "object"
@@ -2210,10 +2063,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 3,
       "input_schema": {
         "type": "object"
@@ -2241,10 +2092,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -2272,10 +2121,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -2303,10 +2150,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -2334,10 +2179,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 3,
       "input_schema": {
         "type": "object"
@@ -2365,10 +2208,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 3,
       "input_schema": {
         "type": "object"
@@ -2396,10 +2237,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -2427,10 +2266,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -2458,10 +2295,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -2490,9 +2325,7 @@
       },
       "owner": "DeliverX Platform",
       "evaluation_notes": "Wave 1 stub wired into deterministic Command Centre planner/executor.",
-      "known_limitations": [
-        "Deterministic stub behaviour; no live model tools yet."
-      ],
+      "known_limitations": ["Deterministic stub behaviour; no live model tools yet."],
       "activation_wave": 1,
       "input_schema": {
         "type": "object"
@@ -2520,10 +2353,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 2,
       "input_schema": {
         "type": "object"
@@ -2551,10 +2382,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 2,
       "input_schema": {
         "type": "object"
@@ -2582,10 +2411,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 2,
       "input_schema": {
         "type": "object"
@@ -2613,10 +2440,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 3,
       "input_schema": {
         "type": "object"
@@ -2644,10 +2469,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -2675,10 +2498,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -2706,10 +2527,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 2,
       "input_schema": {
         "type": "object"
@@ -2737,10 +2556,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 3,
       "input_schema": {
         "type": "object"
@@ -2768,10 +2585,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 3,
       "input_schema": {
         "type": "object"
@@ -2799,10 +2614,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -2830,10 +2643,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -2861,10 +2672,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -2892,10 +2701,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -2923,10 +2730,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -2954,10 +2759,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 3,
       "input_schema": {
         "type": "object"
@@ -2985,10 +2788,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 3,
       "input_schema": {
         "type": "object"
@@ -3016,10 +2817,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -3047,10 +2846,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -3078,10 +2875,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -3093,10 +2888,10 @@
     },
     {
       "capability_id": "DX-091",
-      "name": "Clinical Literature Agent",
-      "department": "Healthcare and Life Sciences",
+      "name": "Emerging Technology Scout Agent",
+      "department": "Future Technology and Foresight",
       "department_number": 10,
-      "description": "Retrieves and summarises relevant clinical literature with source references.",
+      "description": "Scans releases, papers and repositories for technologies relevant to the product and records source, date and relevance.",
       "implementation_type": "tool_using_specialist",
       "lifecycle_status": "planned",
       "version": "0.0.0",
@@ -3109,10 +2904,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 5,
       "input_schema": {
         "type": "object"
@@ -3124,10 +2917,10 @@
     },
     {
       "capability_id": "DX-092",
-      "name": "Biomedical Research Agent",
-      "department": "Healthcare and Life Sciences",
+      "name": "AI Research Tracker Agent",
+      "department": "Future Technology and Foresight",
       "department_number": 10,
-      "description": "Supports biomedical research questions, experimental rationale and evidence synthesis.",
+      "description": "Tracks model, agent and tooling research and summarises what changed and why it matters for the product.",
       "implementation_type": "tool_using_specialist",
       "lifecycle_status": "planned",
       "version": "0.0.0",
@@ -3140,10 +2933,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 5,
       "input_schema": {
         "type": "object"
@@ -3155,10 +2946,10 @@
     },
     {
       "capability_id": "DX-093",
-      "name": "Clinical Data Analysis Agent",
-      "department": "Healthcare and Life Sciences",
+      "name": "Scientific Breakthrough Analyst Agent",
+      "department": "Future Technology and Foresight",
       "department_number": 10,
-      "description": "Analyses authorised clinical or research datasets with appropriate statistical caveats.",
+      "description": "Distinguishes laboratory results from reproducible prototypes and production-ready capabilities.",
       "implementation_type": "tool_using_specialist",
       "lifecycle_status": "planned",
       "version": "0.0.0",
@@ -3171,10 +2962,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 5,
       "input_schema": {
         "type": "object"
@@ -3186,10 +2975,10 @@
     },
     {
       "capability_id": "DX-094",
-      "name": "Healthcare Workflow Agent",
-      "department": "Healthcare and Life Sciences",
+      "name": "Patent Trend Analyst Agent",
+      "department": "Future Technology and Foresight",
       "department_number": 10,
-      "description": "Maps healthcare processes, operational bottlenecks and workflow requirements.",
+      "description": "Maps patent activity and freedom-to-operate questions that need expert review.",
       "implementation_type": "tool_using_specialist",
       "lifecycle_status": "planned",
       "version": "0.0.0",
@@ -3202,10 +2991,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 5,
       "input_schema": {
         "type": "object"
@@ -3217,10 +3004,10 @@
     },
     {
       "capability_id": "DX-095",
-      "name": "Clinical Documentation Agent",
-      "department": "Healthcare and Life Sciences",
+      "name": "Open-Source Ecosystem Analyst Agent",
+      "department": "Future Technology and Foresight",
       "department_number": 10,
-      "description": "Drafts or structures clinical documentation from authorised inputs for human review.",
+      "description": "Assesses open-source project health, licensing, maintenance and adoption signals.",
       "implementation_type": "tool_using_specialist",
       "lifecycle_status": "planned",
       "version": "0.0.0",
@@ -3233,10 +3020,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 5,
       "input_schema": {
         "type": "object"
@@ -3248,10 +3033,10 @@
     },
     {
       "capability_id": "DX-096",
-      "name": "Health Informatics Agent",
-      "department": "Healthcare and Life Sciences",
+      "name": "Standards Evolution Researcher Agent",
+      "department": "Future Technology and Foresight",
       "department_number": 10,
-      "description": "Supports health data models, interoperability and health information workflows.",
+      "description": "Monitors evolving technical standards and their implications for product architecture.",
       "implementation_type": "tool_using_specialist",
       "lifecycle_status": "planned",
       "version": "0.0.0",
@@ -3264,10 +3049,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 5,
       "input_schema": {
         "type": "object"
@@ -3279,10 +3062,10 @@
     },
     {
       "capability_id": "DX-097",
-      "name": "Biomedical Knowledge Graph Agent",
-      "department": "Healthcare and Life Sciences",
+      "name": "Technology Maturity Assessor Agent",
+      "department": "Future Technology and Foresight",
       "department_number": 10,
-      "description": "Represents biomedical entities and relationships with evidence provenance.",
+      "description": "Scores technologies on maturity, cost, security, integration difficulty and evidence quality.",
       "implementation_type": "tool_using_specialist",
       "lifecycle_status": "planned",
       "version": "0.0.0",
@@ -3295,10 +3078,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 5,
       "input_schema": {
         "type": "object"
@@ -3310,10 +3091,10 @@
     },
     {
       "capability_id": "DX-098",
-      "name": "Scientific Evidence Appraisal Agent",
-      "department": "Healthcare and Life Sciences",
+      "name": "Technology Convergence Analyst Agent",
+      "department": "Future Technology and Foresight",
       "department_number": 10,
-      "description": "Evaluates study design, evidence strength, limitations and potential bias.",
+      "description": "Finds useful combinations of technologies that solve user problems better than current approaches.",
       "implementation_type": "tool_using_specialist",
       "lifecycle_status": "planned",
       "version": "0.0.0",
@@ -3326,10 +3107,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 5,
       "input_schema": {
         "type": "object"
@@ -3341,10 +3120,10 @@
     },
     {
       "capability_id": "DX-099",
-      "name": "Healthcare Privacy Agent",
-      "department": "Healthcare and Life Sciences",
+      "name": "Scenario Planner Agent",
+      "department": "Future Technology and Foresight",
       "department_number": 10,
-      "description": "Reviews healthcare data flows and privacy safeguards against specified requirements.",
+      "description": "Builds plausible future scenarios and stress-tests the roadmap against them.",
       "implementation_type": "tool_using_specialist",
       "lifecycle_status": "planned",
       "version": "0.0.0",
@@ -3357,10 +3136,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 5,
       "input_schema": {
         "type": "object"
@@ -3372,10 +3149,10 @@
     },
     {
       "capability_id": "DX-100",
-      "name": "Clinical Safety Review Agent",
-      "department": "Healthcare and Life Sciences",
+      "name": "Future Product Opportunity Strategist Agent",
+      "department": "Future Technology and Foresight",
       "department_number": 10,
-      "description": "Identifies potential clinical safety hazards and required escalation or review.",
+      "description": "Translates foresight into adopt / experiment / monitor / defer / reject recommendations with costs and evidence.",
       "implementation_type": "tool_using_specialist",
       "lifecycle_status": "planned",
       "version": "0.0.0",
@@ -3388,10 +3165,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 5,
       "input_schema": {
         "type": "object"
@@ -3419,10 +3194,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -3450,10 +3223,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -3481,10 +3252,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -3512,10 +3281,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -3543,10 +3310,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -3574,10 +3339,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -3605,10 +3368,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -3636,10 +3397,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -3667,10 +3426,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -3698,10 +3455,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -3729,10 +3484,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -3760,10 +3513,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -3791,10 +3542,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -3822,10 +3571,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -3853,10 +3600,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -3884,10 +3629,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -3915,10 +3658,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -3946,10 +3687,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -3977,10 +3716,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4008,10 +3745,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4023,10 +3758,10 @@
     },
     {
       "capability_id": "DX-121",
-      "name": "Book Research Agent",
-      "department": "Books, Education and Publishing",
+      "name": "Product Analytics Engineer Agent",
+      "department": "Product Analytics and Continuous Improvement",
       "department_number": 13,
-      "description": "Collects source material and creates a traceable research pack.",
+      "description": "Defines the analytics model, metrics layer and dashboards for product health.",
       "implementation_type": "tool_using_specialist",
       "lifecycle_status": "planned",
       "version": "0.0.0",
@@ -4039,10 +3774,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4054,10 +3787,10 @@
     },
     {
       "capability_id": "DX-122",
-      "name": "Book Architecture Agent",
-      "department": "Books, Education and Publishing",
+      "name": "Event Instrumentation Specialist Agent",
+      "department": "Product Analytics and Continuous Improvement",
       "department_number": 13,
-      "description": "Designs book structure, chapter sequence, audience and learning objectives.",
+      "description": "Specifies tracking events, properties and privacy-safe instrumentation plans.",
       "implementation_type": "tool_using_specialist",
       "lifecycle_status": "planned",
       "version": "0.0.0",
@@ -4070,10 +3803,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4085,10 +3816,10 @@
     },
     {
       "capability_id": "DX-123",
-      "name": "Long-Form Writing Agent",
-      "department": "Books, Education and Publishing",
+      "name": "Funnel Analyst Agent",
+      "department": "Product Analytics and Continuous Improvement",
       "department_number": 13,
-      "description": "Drafts chapters or long-form content against a defined brief.",
+      "description": "Analyses conversion funnels and identifies the largest drop-off opportunities.",
       "implementation_type": "tool_using_specialist",
       "lifecycle_status": "planned",
       "version": "0.0.0",
@@ -4101,10 +3832,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4116,10 +3845,10 @@
     },
     {
       "capability_id": "DX-124",
-      "name": "Editorial Review Agent",
-      "department": "Books, Education and Publishing",
+      "name": "Retention Analyst Agent",
+      "department": "Product Analytics and Continuous Improvement",
       "department_number": 13,
-      "description": "Reviews structure, consistency, clarity, tone and repetition.",
+      "description": "Analyses cohorts and retention drivers and proposes retention experiments.",
       "implementation_type": "tool_using_specialist",
       "lifecycle_status": "planned",
       "version": "0.0.0",
@@ -4132,10 +3861,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4147,10 +3874,10 @@
     },
     {
       "capability_id": "DX-125",
-      "name": "Citation and Reference Agent",
-      "department": "Books, Education and Publishing",
+      "name": "Experimentation Analyst Agent",
+      "department": "Product Analytics and Continuous Improvement",
       "department_number": 13,
-      "description": "Validates bibliographic details and citation consistency against available sources.",
+      "description": "Designs experiments with hypotheses, sample sizes and success thresholds.",
       "implementation_type": "tool_using_specialist",
       "lifecycle_status": "planned",
       "version": "0.0.0",
@@ -4163,10 +3890,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4178,10 +3903,10 @@
     },
     {
       "capability_id": "DX-126",
-      "name": "Curriculum Design Agent",
-      "department": "Books, Education and Publishing",
+      "name": "Feedback Intelligence Specialist Agent",
+      "department": "Product Analytics and Continuous Improvement",
       "department_number": 13,
-      "description": "Structures learning programmes, modules, objectives and progression.",
+      "description": "Synthesises customer feedback into themes linked to evidence and roadmap items.",
       "implementation_type": "tool_using_specialist",
       "lifecycle_status": "planned",
       "version": "0.0.0",
@@ -4194,10 +3919,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4209,10 +3932,10 @@
     },
     {
       "capability_id": "DX-127",
-      "name": "Instructional Design Agent",
-      "department": "Books, Education and Publishing",
+      "name": "Product Performance Analyst Agent",
+      "department": "Product Analytics and Continuous Improvement",
       "department_number": 13,
-      "description": "Designs learning experiences, practice activities and assessment alignment.",
+      "description": "Monitors product performance against targets and flags regressions.",
       "implementation_type": "tool_using_specialist",
       "lifecycle_status": "planned",
       "version": "0.0.0",
@@ -4225,10 +3948,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4240,10 +3961,10 @@
     },
     {
       "capability_id": "DX-128",
-      "name": "Assessment Creation Agent",
-      "department": "Books, Education and Publishing",
+      "name": "Incident Learning Analyst Agent",
+      "department": "Product Analytics and Continuous Improvement",
       "department_number": 13,
-      "description": "Creates questions, rubrics and answer criteria for a specified learning objective.",
+      "description": "Turns incidents and defects into root causes and preventive actions.",
       "implementation_type": "tool_using_specialist",
       "lifecycle_status": "planned",
       "version": "0.0.0",
@@ -4256,10 +3977,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4271,10 +3990,10 @@
     },
     {
       "capability_id": "DX-129",
-      "name": "Course Production Agent",
-      "department": "Books, Education and Publishing",
+      "name": "Roadmap Optimisation Specialist Agent",
+      "department": "Product Analytics and Continuous Improvement",
       "department_number": 13,
-      "description": "Organises scripts, lesson assets, production instructions and course materials.",
+      "description": "Re-prioritises the roadmap using measured outcomes and evidence.",
       "implementation_type": "tool_using_specialist",
       "lifecycle_status": "planned",
       "version": "0.0.0",
@@ -4287,10 +4006,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4302,10 +4019,10 @@
     },
     {
       "capability_id": "DX-130",
-      "name": "Publishing Operations Agent",
-      "department": "Books, Education and Publishing",
+      "name": "Product Evolution Strategist Agent",
+      "department": "Product Analytics and Continuous Improvement",
       "department_number": 13,
-      "description": "Prepares publishing checklists, metadata and production files for review.",
+      "description": "Recommends the next validated product improvements and their sequencing.",
       "implementation_type": "tool_using_specialist",
       "lifecycle_status": "planned",
       "version": "0.0.0",
@@ -4318,10 +4035,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4349,10 +4064,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4380,10 +4093,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4411,10 +4122,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4442,10 +4151,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4473,10 +4180,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4504,10 +4209,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4535,10 +4238,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4566,10 +4267,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4597,10 +4296,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4628,10 +4325,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 4,
       "input_schema": {
         "type": "object"
@@ -4659,10 +4354,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -4690,10 +4383,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -4721,10 +4412,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -4752,10 +4441,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -4783,10 +4470,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -4814,10 +4499,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -4845,10 +4528,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -4876,10 +4557,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 3,
       "input_schema": {
         "type": "object"
@@ -4907,10 +4586,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": null,
       "input_schema": {
         "type": "object"
@@ -4938,10 +4615,8 @@
         "max_usage_credits": 10
       },
       "owner": "DeliverX Platform",
-      "evaluation_notes": "Catalogue entry only \u2014 not operational. Do not present as available for missions.",
-      "known_limitations": [
-        "Not implemented. Planned catalogue role only."
-      ],
+      "evaluation_notes": "Catalogue entry only — not operational. Do not present as available for missions.",
+      "known_limitations": ["Not implemented. Planned catalogue role only."],
       "activation_wave": 3,
       "input_schema": {
         "type": "object"
@@ -4961,12 +4636,12 @@
       "is_agent": false,
       "enforces": "usage_ceiling",
       "owner": "DeliverX Platform",
-      "notes": "Governance rule: DX-149 may advise on cost, but ceilings are enforced here \u2014 never by an agent."
+      "notes": "Governance rule: DX-149 may advise on cost, but ceilings are enforced here — never by an agent."
     },
     {
       "service_id": "svc-permissions",
       "name": "Permission Ladder Service",
-      "description": "Enforces Plan \u2192 Create \u2192 Execute internally \u2192 Act externally ceilings and external-action gates.",
+      "description": "Enforces Plan → Create → Execute internally → Act externally ceilings and external-action gates.",
       "implementation_type": "deterministic_service",
       "is_agent": false,
       "enforces": "permission_ladder",

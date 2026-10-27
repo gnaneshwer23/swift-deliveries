@@ -1,4 +1,5 @@
 import { TaskContribution } from "./task-contribution";
+import { EVALUATION_LABELS, roleEvaluation } from "@/lib/workforce/registry/evaluations";
 import { useEffect, useId, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -444,7 +445,7 @@ export function AgentNetworkExplorer() {
                     </span>
                     <em className="an-state" data-state={c.lifecycle_status}>
                       {c.lifecycle_status === "available"
-                        ? "Available"
+                        ? `Available · ${EVALUATION_LABELS[roleEvaluation(c.capability_id).status]}`
                         : readable(c.lifecycle_status)}
                     </em>
                     <ChevronRight size={13} />
@@ -550,7 +551,7 @@ export function AgentNetworkExplorer() {
                         <small>
                           {c.capability_id} ·{" "}
                           {c.lifecycle_status === "available"
-                            ? "Available"
+                            ? `Available · ${EVALUATION_LABELS[roleEvaluation(c.capability_id).status]}`
                             : readable(c.lifecycle_status)}
                         </small>
                       </button>
@@ -607,7 +608,7 @@ export function AgentNetworkExplorer() {
             <span>{role.capability_id}</span>
             <span className="an-state" data-state={role.lifecycle_status}>
               {role.lifecycle_status === "available"
-                ? "Available for planning"
+                ? `Available for planning · ${EVALUATION_LABELS[roleEvaluation(role.capability_id).status]}`
                 : readable(role.lifecycle_status)}
             </span>
           </div>

@@ -26,15 +26,11 @@ export const WORKFORCE_DEPARTMENTS = [
 export const WORKFORCE_AVAILABLE_IDS = [
   "DX-001",
   "DX-002",
-  "DX-011",
-  "DX-012",
   "DX-018",
   "DX-020",
   "DX-021",
   "DX-023",
   "DX-035",
-  "DX-041",
-  "DX-049",
   "DX-071",
 ] as const;
 
@@ -47,8 +43,6 @@ export const WORKFORCE_INTENTS: Record<
   investigate: [
     { id: "DX-001", name: "Chief of Staff Agent", department: 1 },
     { id: "DX-002", name: "Problem-Framing Agent", department: 1 },
-    { id: "DX-011", name: "Research Planning Agent", department: 2 },
-    { id: "DX-012", name: "Web Research Agent", department: 2 },
     { id: "DX-018", name: "Evidence Verification Agent", department: 2 },
     { id: "DX-020", name: "Research Synthesis Agent", department: 2 },
   ],
@@ -58,7 +52,6 @@ export const WORKFORCE_INTENTS: Record<
     { id: "DX-021", name: "Product Discovery Agent", department: 3 },
     { id: "DX-023", name: "PRD Agent", department: 3 },
     { id: "DX-035", name: "Wireframing Agent", department: 4 },
-    { id: "DX-041", name: "Software Architect Agent", department: 5 },
     { id: "DX-071", name: "Test Strategy Agent", department: 8 },
   ],
   improve: [
@@ -66,22 +59,16 @@ export const WORKFORCE_INTENTS: Record<
     { id: "DX-002", name: "Problem-Framing Agent", department: 1 },
     { id: "DX-021", name: "Product Discovery Agent", department: 3 },
     { id: "DX-035", name: "Wireframing Agent", department: 4 },
-    { id: "DX-041", name: "Software Architect Agent", department: 5 },
-    { id: "DX-049", name: "Code Review Agent", department: 5 },
     { id: "DX-071", name: "Test Strategy Agent", department: 8 },
   ],
   build: [
     { id: "DX-001", name: "Chief of Staff Agent", department: 1 },
     { id: "DX-002", name: "Problem-Framing Agent", department: 1 },
-    { id: "DX-011", name: "Research Planning Agent", department: 2 },
-    { id: "DX-012", name: "Web Research Agent", department: 2 },
     { id: "DX-018", name: "Evidence Verification Agent", department: 2 },
     { id: "DX-020", name: "Research Synthesis Agent", department: 2 },
     { id: "DX-021", name: "Product Discovery Agent", department: 3 },
     { id: "DX-023", name: "PRD Agent", department: 3 },
     { id: "DX-035", name: "Wireframing Agent", department: 4 },
-    { id: "DX-041", name: "Software Architect Agent", department: 5 },
-    { id: "DX-049", name: "Code Review Agent", department: 5 },
     { id: "DX-071", name: "Test Strategy Agent", department: 8 },
   ],
 };

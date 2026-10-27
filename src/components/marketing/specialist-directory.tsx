@@ -1,3 +1,4 @@
+import { EVALUATION_LABELS, roleEvaluation } from "@/lib/workforce/registry/evaluations";
 import {
   Brain,
   ChartLine,
@@ -177,7 +178,9 @@ export function SpecialistDirectory() {
                       <Icon size={16} aria-hidden="true" />
                     </span>
                     <span className="sd-badge" data-live={live || undefined}>
-                      {live ? "Available" : "In development"}
+                      {live
+                        ? `Available · ${EVALUATION_LABELS[roleEvaluation(c.capability_id).status]}`
+                        : "In development"}
                     </span>
                   </span>
                   <strong>{short(c.name)}</strong>

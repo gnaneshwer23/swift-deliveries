@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { EVALUATION_LABELS, roleEvaluation } from "@/lib/workforce/registry/evaluations";
 import { Link } from "@tanstack/react-router";
 import { CtaLink } from "@/components/marketing/cta-link";
 import {
@@ -52,9 +53,10 @@ export function WorkforcePreview({
           </h2>
         </div>
         <p className="body" style={{ margin: 0, maxWidth: 480 }}>
-          Only verified <strong>Available</strong> roles ({availableCount} operational today) can be
-          assigned to active missions. The remaining {totalCatalogue - availableCount} catalogue
-          roles are marked <strong>Planned</strong> and never routed as live labour.
+          Only <strong>Available</strong> roles ({availableCount} today) can be assigned to active
+          missions, and each shows whether its evaluation has passed. The remaining{" "}
+          {totalCatalogue - availableCount} catalogue roles are marked <strong>Planned</strong> and
+          never routed as live labour.
         </p>
       </div>
 
@@ -108,7 +110,11 @@ export function WorkforcePreview({
                 <span className="workforce-card-dept" style={{ margin: 0 }}>
                   {cap.department}
                 </span>
-                <span className={`pill ${isAvail ? "pill-teal" : "pill-neutral"}`}>{label}</span>
+                <span className={`pill ${isAvail ? "pill-teal" : "pill-neutral"}`}>
+                  {isAvail
+                    ? `${label} · ${EVALUATION_LABELS[roleEvaluation(cap.capability_id).status]}`
+                    : label}
+                </span>
               </div>
               <h3 className="workforce-card-name" style={{ marginTop: 10 }}>
                 {cap.name}
