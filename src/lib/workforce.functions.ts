@@ -15,6 +15,17 @@ import {
   mapWorkspace,
   type DbClient,
 } from "@/lib/workforce/access.server";
+import {
+  appendEvent,
+  approveExternalForPlan,
+  approvePlanVersion,
+  hasLivePlanApproval,
+  lockMission,
+  PAUSABLE,
+  PRE_EXECUTION,
+  savePlanVersion,
+  TERMINAL,
+} from "@/lib/workforce/plan-store.server";
 import { generateMissionPlan, deriveMissionTitle } from "@/lib/workforce/planner";
 import {
   buildDeliveryReport,
@@ -25,17 +36,11 @@ import {
 } from "@/lib/workforce/executor";
 import { runnableTasks, unreachableTasks } from "@/lib/workforce/graph";
 import { canAfford } from "@/lib/workforce/usage";
-import {
-  encodePlanAcceptanceCriteria,
-  encodeTaskDescription,
-  type TaskMeta,
-} from "@/lib/workforce/capability-persistence";
 import type {
   DeliveryReport,
   MissionBundle,
   MissionIntent,
   PermissionLevel,
-  PlannedTask,
   QualityLabel,
   WfMission,
   WfMissionPlan,
@@ -45,17 +50,6 @@ import type {
 } from "@/lib/workforce/types";
 
 const intentSchema = z.enum(["investigate", "prototype", "improve", "build"]);
-
-function taskMetaOf(t: PlannedTask): TaskMeta {
-  return {
-    key: t.key,
-    dependsOn: t.dependsOn ?? [],
-    stage: t.stage ?? null,
-    gate: Boolean(t.gate),
-    requiredSections: t.requiredSections ?? [],
-    produces: t.produces ?? null,
-  };
-}
 
 let schemaProbe: { at: number; productMission: boolean } | null = null;
 
@@ -229,11 +223,10 @@ export const createMission = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { workspace } = await ensureWorkspace(supabase, userId);
     const db = wfDb(supabase);
-    const writeDb = await adminDb();
 
     const project = await db
       .from("wf_projects")
-      .select("*")
+      .select("id")
       .eq("id", data.projectId)
       .eq("workspace_id", workspace.id)
       .maybeSingle();
@@ -246,100 +239,52 @@ export const createMission = createServerFn({ method: "POST" })
       );
     }
 
-    const title = deriveMissionTitle(data.intent, data.requestText);
-    const draftPlan = generateMissionPlan({
-      intent: data.intent,
-      requestText: data.requestText,
-    });
+    const requestText = data.requestText.trim();
+    const title = deriveMissionTitle(data.intent, requestText);
+    const draftPlan = generateMissionPlan({ intent: data.intent, requestText });
+    const status = draftPlan.tasks.length === 0 ? "needs_clarification" : "awaiting_approval";
 
-    const needsClarification = draftPlan.tasks.length === 0;
-    const status = needsClarification ? "needs_clarification" : "awaiting_approval";
-
-    const missionIns = await writeDb
-      .from("wf_missions")
-      .insert({
-        workspace_id: workspace.id,
-        project_id: data.projectId,
-        intent: data.intent,
-        title,
-        request_text: data.requestText.trim(),
-        status,
-        clarification_answers: {},
-        permission_ceiling: "execute_internally",
-        created_by: userId,
-      })
-      .select("*")
-      .single();
-    if (missionIns.error) throw new Error(missionIns.error.message);
-    const mission = mapMission(missionIns.data);
-
-    let plan: WfMissionPlan | null = null;
-    let tasks: WfMissionTask[] = [];
-
-    const planIns = await writeDb
-      .from("wf_mission_plans")
-      .insert({
-        mission_id: mission.id,
-        workspace_id: workspace.id,
-        summary: draftPlan.summary,
-        estimated_usage: draftPlan.estimatedUsage,
-        required_permission: draftPlan.requiredPermission,
-        includes_external_actions: draftPlan.includesExternalActions,
-        clarification_questions: draftPlan.clarificationQuestions,
-        acceptance_criteria: encodePlanAcceptanceCriteria(draftPlan),
-      })
-      .select("*")
-      .single();
-    if (planIns.error) throw new Error(planIns.error.message);
-    plan = mapPlan(planIns.data);
-
-    if (!needsClarification) {
-      const taskRows = draftPlan.tasks.map((t, index) => ({
-        mission_id: mission.id,
-        workspace_id: workspace.id,
-        plan_id: plan!.id,
-        sort_order: index,
-        title: t.title,
-        description: encodeTaskDescription(t.description, t.capabilityIds, taskMetaOf(t)),
-        acceptance_criteria: t.acceptanceCriteria,
-        status: "pending",
-        permission_required: t.permissionRequired,
-        is_external: t.isExternal,
-        estimated_usage: t.estimatedUsage,
-      }));
-      const taskIns = await writeDb.from("wf_mission_tasks").insert(taskRows).select("*");
-      if (taskIns.error) throw new Error(taskIns.error.message);
-      tasks = (taskIns.data ?? []).map(mapTask);
-
-      await writeDb.from("wf_approvals").insert({
-        mission_id: mission.id,
-        workspace_id: workspace.id,
-        kind: "plan",
-        status: "pending",
+    // Mission, plan, tasks, approval and events commit together or not at all.
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    const missionId = await neonTransaction(async (_tx, query) => {
+      const rows = await query(
+        `insert into wf_missions (workspace_id, project_id, intent, title, request_text, status,
+            clarification_answers, permission_ceiling, created_by)
+         values ($1::uuid, $2::uuid, $3, $4, $5, $6, '{}'::jsonb, 'execute_internally', $7)
+         returning id`,
+        [workspace.id, data.projectId, data.intent, title, requestText, status, userId] as never,
+      );
+      const id = rows[0]!["id"] as string;
+      await appendEvent(query, {
+        workspaceId: workspace.id,
+        missionId: id,
+        type: "mission.created",
+        actorKind: "user",
+        actorId: userId,
+        data: { intent: data.intent },
       });
-    }
+      await savePlanVersion(query, {
+        workspaceId: workspace.id,
+        missionId: id,
+        requestText,
+        plan: draftPlan,
+        actorId: userId,
+        reason: "Plan drafted from the mission request",
+      });
+      return id;
+    });
 
     await audit(db, {
       workspaceId: workspace.id,
-      missionId: mission.id,
+      missionId,
       actorId: userId,
-      eventType: needsClarification ? "mission.needs_clarification" : "mission.planned",
+      eventType:
+        status === "needs_clarification" ? "mission.needs_clarification" : "mission.planned",
       entityType: "mission",
-      entityId: mission.id,
+      entityId: missionId,
       metadata: { intent: data.intent },
     });
-
-    const approvalsRes = await db.from("wf_approvals").select("*").eq("mission_id", mission.id);
-    if (approvalsRes.error) throw new Error(approvalsRes.error.message);
-
-    return {
-      mission,
-      plan,
-      tasks,
-      artefacts: [],
-      approvals: (approvalsRes.data ?? []).map(mapApproval),
-      auditEvents: [],
-    };
+    return loadMissionBundle(supabase, workspace.id, missionId);
   });
 
 export const getMissionBundle = createServerFn({ method: "GET" })
@@ -366,127 +311,57 @@ export const answerClarifications = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { workspace } = await ensureWorkspace(supabase, userId);
     const db = wfDb(supabase);
-    const writeDb = await adminDb();
 
-    const missionRes = await db
-      .from("wf_missions")
-      .select("*")
-      .eq("id", data.missionId)
-      .eq("workspace_id", workspace.id)
-      .maybeSingle();
-    if (missionRes.error) throw new Error(missionRes.error.message);
-    if (!missionRes.data) throw new Error("Mission not found.");
-    const mission = mapMission(missionRes.data);
-
-    const mergedAnswers = {
-      ...mission.clarificationAnswers,
-      ...Object.fromEntries(Object.entries(data.answers).map(([k, v]) => [k, v.trim()])),
-    };
-
-    const draftPlan = generateMissionPlan({
-      intent: mission.intent as MissionIntent,
-      requestText: mission.requestText,
-      clarificationAnswers: mergedAnswers,
-    });
-
-    if (draftPlan.tasks.length === 0) {
-      await writeDb
-        .from("wf_missions")
-        .update({
-          clarification_answers: mergedAnswers,
-          status: "needs_clarification",
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", mission.id)
-        .eq("workspace_id", workspace.id);
-
-      await writeDb.from("wf_mission_plans").upsert(
-        {
-          mission_id: mission.id,
-          workspace_id: workspace.id,
-          summary: draftPlan.summary,
-          estimated_usage: 0,
-          required_permission: "plan",
-          includes_external_actions: draftPlan.includesExternalActions,
-          clarification_questions: draftPlan.clarificationQuestions,
-          acceptance_criteria: encodePlanAcceptanceCriteria(draftPlan),
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "mission_id" },
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    const needsClarification = await neonTransaction(async (_tx, query) => {
+      const locked = await lockMission(query, workspace.id, data.missionId);
+      if (!PRE_EXECUTION.includes(locked.status))
+        throw new Error("This mission has started. Its answers can no longer change the plan.");
+      const rows = await query(
+        `select intent, clarification_answers from wf_missions where id = $1::uuid`,
+        [data.missionId] as never,
       );
+      const mergedAnswers = {
+        ...((rows[0]!["clarification_answers"] ?? {}) as Record<string, string>),
+        ...Object.fromEntries(Object.entries(data.answers).map(([k, v]) => [k, v.trim()])),
+      };
+      const draftPlan = generateMissionPlan({
+        intent: rows[0]!["intent"] as MissionIntent,
+        requestText: locked.requestText,
+        clarificationAnswers: mergedAnswers,
+      });
+      const waiting = draftPlan.tasks.length === 0;
+      await query(
+        `update wf_missions set clarification_answers = $2::jsonb, status = $3, updated_at = now()
+          where id = $1::uuid`,
+        [
+          data.missionId,
+          JSON.stringify(mergedAnswers),
+          waiting ? "needs_clarification" : "awaiting_approval",
+        ] as never,
+      );
+      await savePlanVersion(query, {
+        workspaceId: workspace.id,
+        missionId: data.missionId,
+        requestText: locked.requestText,
+        plan: draftPlan,
+        actorId: userId,
+        reason: "Plan redrafted after clarification answers",
+      });
+      return waiting;
+    });
 
-      return loadMissionBundle(supabase, workspace.id, mission.id);
+    if (!needsClarification) {
+      await audit(db, {
+        workspaceId: workspace.id,
+        missionId: data.missionId,
+        actorId: userId,
+        eventType: "mission.planned",
+        entityType: "mission",
+        entityId: data.missionId,
+      });
     }
-
-    await writeDb
-      .from("wf_missions")
-      .update({
-        clarification_answers: mergedAnswers,
-        status: "awaiting_approval",
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", mission.id)
-      .eq("workspace_id", workspace.id);
-
-    const planUpsert = await writeDb
-      .from("wf_mission_plans")
-      .upsert(
-        {
-          mission_id: mission.id,
-          workspace_id: workspace.id,
-          summary: draftPlan.summary,
-          estimated_usage: draftPlan.estimatedUsage,
-          required_permission: draftPlan.requiredPermission,
-          includes_external_actions: draftPlan.includesExternalActions,
-          clarification_questions: draftPlan.clarificationQuestions,
-          acceptance_criteria: encodePlanAcceptanceCriteria(draftPlan),
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "mission_id" },
-      )
-      .select("*")
-      .single();
-    if (planUpsert.error) throw new Error(planUpsert.error.message);
-
-    await writeDb.from("wf_mission_tasks").delete().eq("mission_id", mission.id);
-    const taskIns = await writeDb
-      .from("wf_mission_tasks")
-      .insert(
-        draftPlan.tasks.map((t, index) => ({
-          mission_id: mission.id,
-          workspace_id: workspace.id,
-          plan_id: planUpsert.data.id,
-          sort_order: index,
-          title: t.title,
-          description: encodeTaskDescription(t.description, t.capabilityIds, taskMetaOf(t)),
-          acceptance_criteria: t.acceptanceCriteria,
-          status: "pending",
-          permission_required: t.permissionRequired,
-          is_external: t.isExternal,
-          estimated_usage: t.estimatedUsage,
-        })),
-      )
-      .select("*");
-    if (taskIns.error) throw new Error(taskIns.error.message);
-
-    await writeDb.from("wf_approvals").delete().eq("mission_id", mission.id).eq("kind", "plan");
-    await writeDb.from("wf_approvals").insert({
-      mission_id: mission.id,
-      workspace_id: workspace.id,
-      kind: "plan",
-      status: "pending",
-    });
-
-    await audit(db, {
-      workspaceId: workspace.id,
-      missionId: mission.id,
-      actorId: userId,
-      eventType: "mission.planned",
-      entityType: "mission",
-      entityId: mission.id,
-    });
-
-    return loadMissionBundle(supabase, workspace.id, mission.id);
+    return loadMissionBundle(supabase, workspace.id, data.missionId);
   });
 
 export const reviseMissionScope = createServerFn({ method: "POST" })
@@ -503,109 +378,60 @@ export const reviseMissionScope = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { workspace } = await ensureWorkspace(supabase, userId);
     const db = wfDb(supabase);
-    const writeDb = await adminDb();
-
-    const missionRes = await db
-      .from("wf_missions")
-      .select("*")
-      .eq("id", data.missionId)
-      .eq("workspace_id", workspace.id)
-      .maybeSingle();
-    if (missionRes.error) throw new Error(missionRes.error.message);
-    if (!missionRes.data) throw new Error("Mission not found.");
-    const mission = mapMission(missionRes.data);
 
     const nextText = data.requestText.trim();
-    const nextTitle = deriveMissionTitle(mission.intent, nextText);
-    const draftPlan = generateMissionPlan({
-      intent: mission.intent,
-      requestText: nextText,
-      clarificationAnswers: mission.clarificationAnswers,
-    });
-
-    const needsClarification = draftPlan.tasks.length === 0;
-    const nextStatus = needsClarification ? "needs_clarification" : "awaiting_approval";
-    const now = new Date().toISOString();
-
-    await writeDb
-      .from("wf_missions")
-      .update({
-        title: nextTitle,
-        request_text: nextText,
-        status: nextStatus,
-        external_actions_approved: false,
-        permission_ceiling: "execute_internally",
-        updated_at: now,
-      })
-      .eq("id", mission.id)
-      .eq("workspace_id", workspace.id);
-
-    const planUpsert = await writeDb
-      .from("wf_mission_plans")
-      .upsert(
-        {
-          mission_id: mission.id,
-          workspace_id: workspace.id,
-          summary: draftPlan.summary,
-          estimated_usage: draftPlan.estimatedUsage,
-          required_permission: draftPlan.requiredPermission,
-          includes_external_actions: draftPlan.includesExternalActions,
-          clarification_questions: draftPlan.clarificationQuestions,
-          acceptance_criteria: encodePlanAcceptanceCriteria(draftPlan),
-          updated_at: now,
-        },
-        { onConflict: "mission_id" },
-      )
-      .select("*")
-      .single();
-    if (planUpsert.error) throw new Error(planUpsert.error.message);
-
-    await writeDb.from("wf_mission_tasks").delete().eq("mission_id", mission.id);
-    if (!needsClarification) {
-      const taskIns = await writeDb
-        .from("wf_mission_tasks")
-        .insert(
-          draftPlan.tasks.map((t, index) => ({
-            mission_id: mission.id,
-            workspace_id: workspace.id,
-            plan_id: planUpsert.data.id,
-            sort_order: index,
-            title: t.title,
-            description: encodeTaskDescription(t.description, t.capabilityIds, taskMetaOf(t)),
-            acceptance_criteria: t.acceptanceCriteria,
-            status: "pending",
-            permission_required: t.permissionRequired,
-            is_external: t.isExternal,
-            estimated_usage: t.estimatedUsage,
-          })),
-        )
-        .select("*");
-      if (taskIns.error) throw new Error(taskIns.error.message);
-    }
-
-    // Invalidate any prior approvals on scope change
-    await writeDb.from("wf_approvals").delete().eq("mission_id", mission.id);
-    if (!needsClarification) {
-      await writeDb.from("wf_approvals").insert({
-        mission_id: mission.id,
-        workspace_id: workspace.id,
-        kind: "plan",
-        status: "pending",
-        note: "Re-queued after operator scope revision",
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    const needsClarification = await neonTransaction(async (_tx, query) => {
+      const locked = await lockMission(query, workspace.id, data.missionId);
+      // Revising a mission that has started would delete work in progress.
+      if (!PRE_EXECUTION.includes(locked.status))
+        throw new Error(
+          "This mission has started, so its scope can no longer change. Cancel it and start a new mission instead.",
+        );
+      const rows = await query(
+        `select intent, clarification_answers from wf_missions where id = $1::uuid`,
+        [data.missionId] as never,
+      );
+      const intent = rows[0]!["intent"] as MissionIntent;
+      const draftPlan = generateMissionPlan({
+        intent,
+        requestText: nextText,
+        clarificationAnswers: (rows[0]!["clarification_answers"] ?? {}) as Record<string, string>,
       });
-    }
+      const waiting = draftPlan.tasks.length === 0;
+      await query(
+        `update wf_missions set title = $2, request_text = $3, status = $4,
+            external_actions_approved = false, permission_ceiling = 'execute_internally',
+            updated_at = now()
+          where id = $1::uuid`,
+        [
+          data.missionId,
+          deriveMissionTitle(intent, nextText),
+          nextText,
+          waiting ? "needs_clarification" : "awaiting_approval",
+        ] as never,
+      );
+      await savePlanVersion(query, {
+        workspaceId: workspace.id,
+        missionId: data.missionId,
+        requestText: nextText,
+        plan: draftPlan,
+        actorId: userId,
+        reason: "Scope revised by the owner",
+      });
+      return waiting;
+    });
 
     await audit(db, {
       workspaceId: workspace.id,
-      missionId: mission.id,
+      missionId: data.missionId,
       actorId: userId,
       eventType: "mission.scope_revised",
       entityType: "mission",
-      entityId: mission.id,
+      entityId: data.missionId,
       metadata: { needsClarification },
     });
-
-    return loadMissionBundle(supabase, workspace.id, mission.id);
+    return loadMissionBundle(supabase, workspace.id, data.missionId);
   });
 
 export const rejectMissionPlan = createServerFn({ method: "POST" })
@@ -622,39 +448,34 @@ export const rejectMissionPlan = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { workspace } = await ensureWorkspace(supabase, userId);
     const db = wfDb(supabase);
-    const writeDb = await adminDb();
+    const note = data.note?.trim() || "Plan rejected by the owner for revision";
 
-    const missionRes = await db
-      .from("wf_missions")
-      .select("id")
-      .eq("id", data.missionId)
-      .eq("workspace_id", workspace.id)
-      .maybeSingle();
-    if (missionRes.error) throw new Error(missionRes.error.message);
-    if (!missionRes.data) throw new Error("Mission not found.");
-
-    const now = new Date().toISOString();
-    await writeDb
-      .from("wf_approvals")
-      .update({
-        status: "rejected",
-        decided_by: userId,
-        decided_at: now,
-        note: data.note?.trim() || "Plan rejected by operator for revision",
-      })
-      .eq("mission_id", data.missionId)
-      .eq("kind", "plan");
-
-    await writeDb
-      .from("wf_missions")
-      .update({
-        status: "draft",
-        external_actions_approved: false,
-        permission_ceiling: "execute_internally",
-        updated_at: now,
-      })
-      .eq("id", data.missionId)
-      .eq("workspace_id", workspace.id);
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    await neonTransaction(async (_tx, query) => {
+      const locked = await lockMission(query, workspace.id, data.missionId);
+      if (locked.status !== "awaiting_approval" && locked.status !== "planned")
+        throw new Error("This mission has no plan waiting for a decision.");
+      await query(
+        `update wf_approvals set status = 'rejected', decided_by = $2, decided_at = now(), note = $3
+          where mission_id = $1::uuid and kind = 'plan' and status = 'pending'
+            and invalidated_at is null`,
+        [data.missionId, userId, note] as never,
+      );
+      await query(
+        `update wf_missions set status = 'draft', external_actions_approved = false,
+            permission_ceiling = 'execute_internally', updated_at = now()
+          where id = $1::uuid`,
+        [data.missionId] as never,
+      );
+      await appendEvent(query, {
+        workspaceId: workspace.id,
+        missionId: data.missionId,
+        type: "plan.rejected",
+        actorKind: "user",
+        actorId: userId,
+        data: { note },
+      });
+    });
 
     await audit(db, {
       workspaceId: workspace.id,
@@ -663,9 +484,8 @@ export const rejectMissionPlan = createServerFn({ method: "POST" })
       eventType: "mission.plan_rejected",
       entityType: "mission",
       entityId: data.missionId,
-      metadata: { note: data.note?.trim() || null },
+      metadata: { note },
     });
-
     return loadMissionBundle(supabase, workspace.id, data.missionId);
   });
 
@@ -675,6 +495,9 @@ export const approveMissionPlan = createServerFn({ method: "POST" })
     z
       .object({
         missionId: z.string().uuid(),
+        /** The plan version and fingerprint the owner was shown. */
+        planVersion: z.number().int().positive(),
+        planHash: z.string().min(8).max(200).nullable(),
         approveExternalActions: z.boolean().optional(),
       })
       .parse(data),
@@ -683,60 +506,22 @@ export const approveMissionPlan = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { workspace } = await ensureWorkspace(supabase, userId);
     const db = wfDb(supabase);
-
-    const missionRes = await db
-      .from("wf_missions")
-      .select("*")
-      .eq("id", data.missionId)
-      .eq("workspace_id", workspace.id)
-      .maybeSingle();
-    if (missionRes.error) throw new Error(missionRes.error.message);
-    if (!missionRes.data) throw new Error("Mission not found.");
-    if (missionRes.data.status !== "awaiting_approval" && missionRes.data.status !== "planned") {
-      throw new Error("This mission is not awaiting plan approval.");
-    }
-
     const approveExternal = Boolean(data.approveExternalActions);
-    const now = new Date().toISOString();
 
-    await (
-      await adminDb()
-    )
-      .from("wf_approvals")
-      .update({
-        status: "approved",
-        decided_by: userId,
-        decided_at: now,
-        note: approveExternal ? "Plan + external actions approved" : "Plan approved",
-      })
-      .eq("mission_id", data.missionId)
-      .eq("kind", "plan")
-      .eq("status", "pending");
-
-    if (approveExternal) {
-      await (await adminDb()).from("wf_approvals").insert({
-        mission_id: data.missionId,
-        workspace_id: workspace.id,
-        kind: "external_action",
-        status: "approved",
-        decided_by: userId,
-        decided_at: now,
-        note: "Operator approved Act externally for this mission",
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    await neonTransaction(async (_tx, query) => {
+      const locked = await lockMission(query, workspace.id, data.missionId);
+      if (locked.status !== "awaiting_approval" && locked.status !== "planned")
+        throw new Error("This mission is not awaiting plan approval.");
+      await approvePlanVersion(query, {
+        workspaceId: workspace.id,
+        missionId: data.missionId,
+        planVersion: data.planVersion,
+        planHash: data.planHash,
+        actorId: userId,
+        approveExternal,
       });
-    }
-
-    await (
-      await adminDb()
-    )
-      .from("wf_missions")
-      .update({
-        status: "queued",
-        external_actions_approved: approveExternal || missionRes.data.external_actions_approved,
-        permission_ceiling: approveExternal ? "act_externally" : "execute_internally",
-        updated_at: now,
-      })
-      .eq("id", data.missionId)
-      .eq("workspace_id", workspace.id);
+    });
 
     await audit(db, {
       workspaceId: workspace.id,
@@ -745,51 +530,40 @@ export const approveMissionPlan = createServerFn({ method: "POST" })
       eventType: "mission.plan_approved",
       entityType: "mission",
       entityId: data.missionId,
-      metadata: { approveExternal },
+      metadata: { approveExternal, planVersion: data.planVersion },
     });
-
     return loadMissionBundle(supabase, workspace.id, data.missionId);
   });
 
 export const approveExternalActions = createServerFn({ method: "POST" })
   .middleware([requireAuth])
-  .validator((data: unknown) => z.object({ missionId: z.string().uuid() }).parse(data))
+  .validator((data: unknown) =>
+    z
+      .object({
+        missionId: z.string().uuid(),
+        planVersion: z.number().int().positive(),
+        planHash: z.string().min(8).max(200).nullable(),
+      })
+      .parse(data),
+  )
   .handler(async ({ context, data }): Promise<MissionBundle> => {
     const { supabase, userId } = context;
     const { workspace } = await ensureWorkspace(supabase, userId);
     const db = wfDb(supabase);
-    const now = new Date().toISOString();
 
-    const owned = await db
-      .from("wf_missions")
-      .select("id")
-      .eq("id", data.missionId)
-      .eq("workspace_id", workspace.id)
-      .maybeSingle();
-    if (owned.error) throw new Error(owned.error.message);
-    if (!owned.data) throw new Error("Mission not found.");
-
-    await (await adminDb()).from("wf_approvals").insert({
-      mission_id: data.missionId,
-      workspace_id: workspace.id,
-      kind: "external_action",
-      status: "approved",
-      decided_by: userId,
-      decided_at: now,
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    await neonTransaction(async (_tx, query) => {
+      const locked = await lockMission(query, workspace.id, data.missionId);
+      if (TERMINAL.includes(locked.status) || PRE_EXECUTION.includes(locked.status))
+        throw new Error("Outside actions can only be approved on an approved, unfinished mission.");
+      await approveExternalForPlan(query, {
+        workspaceId: workspace.id,
+        missionId: data.missionId,
+        planVersion: data.planVersion,
+        planHash: data.planHash,
+        actorId: userId,
+      });
     });
-
-    await (
-      await adminDb()
-    )
-      .from("wf_missions")
-      .update({
-        external_actions_approved: true,
-        permission_ceiling: "act_externally",
-        status: "queued",
-        updated_at: now,
-      })
-      .eq("id", data.missionId)
-      .eq("workspace_id", workspace.id);
 
     await audit(db, {
       workspaceId: workspace.id,
@@ -932,6 +706,18 @@ export const runMissionStep = createServerFn({ method: "POST" })
     if (mission.workspaceId !== workspace.id) throw new Error("Mission not found.");
     if (!["queued", "running", "blocked"].includes(mission.status)) {
       return { ...bundle, workspace, done: true };
+    }
+    if (workspace.stoppedAt) {
+      return { ...bundle, workspace, done: true, note: "Workspace stopped: no new work starts." };
+    }
+    // Work runs only under a live approval bound to the current plan version.
+    if (!hasLivePlanApproval(bundle.plan, bundle.approvals)) {
+      return {
+        ...bundle,
+        workspace,
+        done: true,
+        note: "The current plan has no live approval. Review and approve it before work continues.",
+      };
     }
 
     // Approved external tasks re-enter the schedule; everything else follows the DAG.
@@ -1365,22 +1151,30 @@ export const cancelMission = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { workspace } = await ensureWorkspace(supabase, userId);
     const db = wfDb(supabase);
-    const writeDb = await adminDb();
 
-    const owned = await db
-      .from("wf_missions")
-      .select("id")
-      .eq("id", data.missionId)
-      .eq("workspace_id", workspace.id)
-      .maybeSingle();
-    if (owned.error) throw new Error(owned.error.message);
-    if (!owned.data) throw new Error("Mission not found.");
-
-    await writeDb
-      .from("wf_missions")
-      .update({ status: "cancelled", updated_at: new Date().toISOString() })
-      .eq("id", data.missionId)
-      .eq("workspace_id", workspace.id);
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    await neonTransaction(async (_tx, query) => {
+      const locked = await lockMission(query, workspace.id, data.missionId);
+      if (TERMINAL.includes(locked.status)) throw new Error("This mission has already finished.");
+      await query(
+        `update wf_missions set status = 'cancelled', updated_at = now() where id = $1::uuid`,
+        [data.missionId] as never,
+      );
+      // Pending approvals for a cancelled mission must never authorise anything later.
+      await query(
+        `update wf_approvals set invalidated_at = now(), invalidated_reason = 'Mission cancelled'
+          where mission_id = $1::uuid and status = 'pending' and invalidated_at is null`,
+        [data.missionId] as never,
+      );
+      await appendEvent(query, {
+        workspaceId: workspace.id,
+        missionId: data.missionId,
+        type: "mission.cancelled",
+        actorKind: "user",
+        actorId: userId,
+        data: { from: locked.status },
+      });
+    });
     await audit(db, {
       workspaceId: workspace.id,
       missionId: data.missionId,
@@ -1390,4 +1184,99 @@ export const cancelMission = createServerFn({ method: "POST" })
       entityId: data.missionId,
     });
     return loadMissionBundle(supabase, workspace.id, data.missionId);
+  });
+
+/** Pauses a mission: no further step starts until it is resumed. Work in flight finishes. */
+export const pauseMission = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) => z.object({ missionId: z.string().uuid() }).parse(data))
+  .handler(async ({ context, data }): Promise<MissionBundle> => {
+    const { supabase, userId } = context;
+    const { workspace } = await ensureWorkspace(supabase, userId);
+
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    await neonTransaction(async (_tx, query) => {
+      const locked = await lockMission(query, workspace.id, data.missionId);
+      if (!PAUSABLE.includes(locked.status))
+        throw new Error("Only an approved mission that has not finished can be paused.");
+      await query(
+        `update wf_missions set status = 'paused', updated_at = now() where id = $1::uuid`,
+        [data.missionId] as never,
+      );
+      await appendEvent(query, {
+        workspaceId: workspace.id,
+        missionId: data.missionId,
+        type: "mission.paused",
+        actorKind: "user",
+        actorId: userId,
+        data: { from: locked.status },
+      });
+    });
+    return loadMissionBundle(supabase, workspace.id, data.missionId);
+  });
+
+/** Resumes a paused mission. It re-enters the queue; the plan approval still applies. */
+export const resumeMission = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) => z.object({ missionId: z.string().uuid() }).parse(data))
+  .handler(async ({ context, data }): Promise<MissionBundle> => {
+    const { supabase, userId } = context;
+    const { workspace } = await ensureWorkspace(supabase, userId);
+
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    await neonTransaction(async (_tx, query) => {
+      const locked = await lockMission(query, workspace.id, data.missionId);
+      if (locked.status !== "paused") throw new Error("This mission is not paused.");
+      await query(
+        `update wf_missions set status = 'queued', updated_at = now() where id = $1::uuid`,
+        [data.missionId] as never,
+      );
+      await appendEvent(query, {
+        workspaceId: workspace.id,
+        missionId: data.missionId,
+        type: "mission.resumed",
+        actorKind: "user",
+        actorId: userId,
+      });
+    });
+    return loadMissionBundle(supabase, workspace.id, data.missionId);
+  });
+
+/**
+ * Emergency stop for the whole workspace: no mission step starts while it is
+ * set. Missions keep their status, so resuming continues where they were.
+ */
+export const setWorkspaceStopped = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z.object({ stopped: z.boolean(), reason: z.string().max(400).optional() }).parse(data),
+  )
+  .handler(async ({ context, data }): Promise<WfWorkspace> => {
+    const { supabase, userId } = context;
+    const { workspace } = await ensureWorkspace(supabase, userId);
+
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    const row = await neonTransaction(async (_tx, query) => {
+      const rows = await query(
+        data.stopped
+          ? `update wf_workspaces set stopped_at = coalesce(stopped_at, now()), stopped_by = $2,
+                stop_reason = $3, updated_at = now()
+              where id = $1::uuid returning *`
+          : `update wf_workspaces set stopped_at = null, stopped_by = null, stop_reason = null,
+                updated_at = now()
+              where id = $1::uuid returning *`,
+        (data.stopped
+          ? [workspace.id, userId, data.reason?.trim() || "Stopped by the owner"]
+          : [workspace.id]) as never,
+      );
+      await appendEvent(query, {
+        workspaceId: workspace.id,
+        type: data.stopped ? "workspace.stopped" : "workspace.resumed",
+        actorKind: "user",
+        actorId: userId,
+        data: data.stopped ? { reason: data.reason ?? null } : {},
+      });
+      return rows[0]!;
+    });
+    return mapWorkspace(row as never);
   });

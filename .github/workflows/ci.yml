@@ -37,5 +37,6 @@ jobs:
           -f drizzle/migrations/0021_psi_pilot_activations.sql
           -f drizzle/migrations/0022_psi_comparison_reservations.sql
           -f drizzle/migrations/0023_psi_comparison_reconciliation.sql
+          -f drizzle/migrations/0024_wf_durable_missions.sql
       - run: npm test
       - run: npm run build

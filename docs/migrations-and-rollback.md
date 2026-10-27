@@ -29,6 +29,7 @@ The production Neon branch is `br-fancy-breeze-zatt9ocp` in project `spring-wind
 | 0022 comparison reservations                                       | Applied 26 Oct 2026 with owner approval     | Applied 25 Oct 2026                  |
 | 0023 comparison reconciliations                                    | Applied 26 Oct 2026 with owner approval     | Applied 26 Oct 2026                  |
 | Row-level security on `psi_pilot_requests`                         | Enabled 26 Oct 2026 with owner approval     | Not applied                          |
+| 0024 durable missions (`wf_task_runs`, `wf_mission_events`, …)     | Not applied — needs owner approval          | Applied 27 Oct 2026                  |
 
 Migrations 0020–0023 were applied to production in a single transaction. The six `psi_*` tables are owned by the server role, have no client grants, and have row-level security enabled. No table rows were read during or after the change.
 
@@ -76,3 +77,40 @@ Migrations 0020–0023 were applied to production in a single transaction. The s
 7. Update the ledger above with the date, the reason and the snapshot ID.
 
 Restoring the snapshot from step 2 reverses only the database changes (steps 5–6). To undo step 3, redeploy the application version you want separately. The step 5 SQL was rehearsed on 27 October 2026 against a local test database built from these migrations: with one row present it aborted and dropped nothing; with the tables empty it dropped all five and left `psi_pilot_requests`. Rehearse the full sequence on a Neon branch before running it on production.
+
+## 0024 durable missions
+
+**Order.** Apply 0024 before deploying code that uses it: the Phase 1a mission handlers write the new columns and tables. Code from before 0024 keeps working with 0024 applied, because every new column has a default or is nullable, and the status check only gains `paused`.
+
+**Re-runnable.** Every statement is `IF NOT EXISTS` or drop-and-recreate. The unique index on `wf_workspaces.owner_id` is created only when no owner has two workspaces; if it is skipped, the advisory lock in `ensureWorkspace` still prevents new duplicates. Check afterwards with `select wf_schema_version();` (expect 4) and `select indexname from pg_indexes where indexname = 'wf_workspaces_owner_id_unique';`.
+
+**Rollback.** Prefer redeploying the earlier build and leaving the schema in place. Earlier builds do not know the `paused` status, so resume or cancel any paused mission first:
+
+```sql
+select count(*) from public.wf_missions where status = 'paused';
+```
+
+Only if the schema itself must be removed, with the owner's approval and a snapshot taken first, after the earlier build is live:
+
+```sql
+begin;
+lock table public.wf_missions, public.wf_mission_events, public.wf_task_runs in access exclusive mode;
+do $$ begin
+  if exists (select 1 from public.wf_missions where status = 'paused') then
+    raise exception 'Paused missions exist; nothing was changed.';
+  end if;
+end $$;
+drop table public.wf_task_runs;
+drop table public.wf_mission_events;
+drop function public.wf_mission_events_append_only();
+alter table public.wf_missions drop constraint wf_missions_status_check;
+alter table public.wf_missions add constraint wf_missions_status_check check (status in (
+  'draft', 'needs_clarification', 'planned', 'awaiting_approval', 'queued', 'running',
+  'reviewing', 'completed', 'partially_completed', 'blocked', 'failed', 'cancelled'));
+create or replace function public.wf_schema_version() returns integer language sql immutable as $f$ select 3 $f$;
+commit;
+```
+
+The rollback SQL was rehearsed on 27 October 2026 against a local database built from the test schema and 0024: it dropped the two tables and returned the schema version to 3, and 0024 then re-applied cleanly. On the preview branch, 0024 was applied in one transaction on 27 October 2026; the owner index was created and `wf_schema_version()` returns 4.
+
+The added columns and the owner index are left in place: dropping them would discard plan versions, approval bindings and the stop flag, and earlier builds ignore them. The event log and run ledger are dropped because earlier builds never read them; export them first if they hold anything the owner wants kept.
