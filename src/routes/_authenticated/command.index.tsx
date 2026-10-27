@@ -19,7 +19,6 @@ import {
 } from "@/components/marketing/motion-product-visuals";
 import { FlaskConical, Rocket, Search, ShieldCheck, Wrench } from "lucide-react";
 import { WorkspaceStopControl } from "@/components/command/workspace-stop";
-import { AgentOffice } from "@/components/command/agent-office";
 import { OwnerInbox } from "@/components/command/owner-inbox";
 import { OWNER_WAITING } from "@/lib/agent-office";
 
@@ -302,28 +301,13 @@ function CommandHome() {
   return (
     <CommandShell
       title="Studio"
-      subtitle="Start a product question, watch the agents office, or continue work waiting on you."
+      hideHeading
       usage={{
         consumed: data.workspace.usageConsumed,
         ceiling: data.workspace.usageCeiling,
       }}
     >
       <WorkspaceFoyer />
-
-      <section id="overview-agents-office" className="mt-6" aria-label="Agents office">
-        <p className="cc-kicker">Agents office</p>
-        <h2 className="cc-panel-title mb-1">Primary living surface</h2>
-        <p className="cc-muted text-sm mb-3">
-          Desks reflect real missions and tasks. Available roles work today; Planned stay labelled.
-          Full cast and catalogue also live under Agents office / Specialists.
-        </p>
-        <AgentOffice
-          missions={data.recentMissions}
-          tasks={data.recentTasks}
-          tasksUnavailable={data.recentTasksUnavailable}
-          usage={{ consumed: data.workspace.usageConsumed, ceiling: data.workspace.usageCeiling }}
-        />
-      </section>
 
       <details className="ps-legacy mt-6">
         <summary>Studio tools under the fold (inbox, stop) — not the foyer</summary>

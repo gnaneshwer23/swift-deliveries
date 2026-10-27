@@ -16,7 +16,7 @@ export function StudioReadiness() {
   const model = boot.data?.features.modelMode;
 
   return (
-    <div className="ps-studio-readiness" aria-label="Studio readiness">
+    <div className="ps-studio-readiness ps-studio-readiness-footnote" aria-label="Studio readiness">
       <span
         className="ps-research-readiness-chip"
         data-ready={model?.enabled ? "true" : "false"}

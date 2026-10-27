@@ -20,12 +20,17 @@ import {
 } from "@/lib/mission-intake-draft";
 import { VoiceControls } from "@/components/command/voice-controls";
 
-export function SupervisedMissionStart() {
+export function SupervisedMissionStart({
+  tone = "hero",
+}: {
+  /** hero = first-viewport brief; secondary = quieter form below a Continue stage */
+  tone?: "hero" | "secondary";
+}) {
   const { user } = useSession();
-  return user ? <MissionStartForm key={user.id} userId={user.id} /> : null;
+  return user ? <MissionStartForm key={user.id} userId={user.id} tone={tone} /> : null;
 }
 
-function MissionStartForm({ userId }: { userId: string }) {
+function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "secondary" }) {
   const profile = useQuery(myProfileQuery);
   const home = useQuery({
     queryKey: ["supervised", "home"],
@@ -107,34 +112,39 @@ function MissionStartForm({ userId }: { userId: string }) {
       setError(err instanceof Error ? err.message : "The case could not be started."),
   });
 
+  const isHero = tone === "hero";
+
   return (
-    <section id="supervised-brief" className="cc-panel" aria-label="Supervised mission">
-      <p className="cc-kicker">Start a mission</p>
-      <h2 className="cc-panel-title">One business case. Specialists take it from here.</h2>
-      <p className="cc-muted">
-        Give a one-liner. A PM agent restates the problem, briefs plan, rough cost, time and team,
-        then researches before asking you anything else. You approve gates — you are not interviewed
-        for every field.
-      </p>
-      {home.data ? (
-        <div className="ps-research-readiness" data-ready={home.data.researchProvider?.configured}>
-          <p className="cc-muted text-sm mb-0">
-            {home.data.providerLabel}
-            {home.data.usage
-              ? ` · Workspace usage ${home.data.usage.consumed} / ${home.data.usage.ceiling}`
-              : ""}
+    <section
+      id="supervised-brief"
+      className={isHero ? "ps-foyer-brief" : "ps-foyer-brief ps-foyer-brief-secondary"}
+      aria-label="Supervised mission"
+    >
+      {isHero ? (
+        <>
+          <p className="cc-kicker">Business case</p>
+          <h3 className="cc-panel-title">Give a one-liner</h3>
+          <p className="cc-muted">
+            A PM restates the problem, plan, rough cost, time and team — then researches before
+            asking for more. You approve gates; you are not interviewed for every field.
           </p>
-          {home.data.researchProvider ? (
-            <p
-              className="ps-research-readiness-chip"
-              data-ready={home.data.researchProvider.configured}
-              role="status"
-              title={home.data.researchProvider.detail}
-            >
-              {home.data.researchProvider.label}
-            </p>
-          ) : null}
-        </div>
+        </>
+      ) : (
+        <>
+          <p className="cc-kicker">Or start fresh</p>
+          <h3 className="cc-panel-title mb-1">Brief a new case</h3>
+          <p className="cc-muted text-sm">
+            One statement is enough. The plan waits for your approval before work runs.
+          </p>
+        </>
+      )}
+      {home.data ? (
+        <p className="ps-brief-status cc-muted text-xs mb-0" role="status">
+          {home.data.providerLabel}
+          {home.data.researchProvider
+            ? ` · ${home.data.researchProvider.label}`
+            : ""}
+        </p>
       ) : null}
       {home.isError && (
         <p className="cc-error" role="alert">

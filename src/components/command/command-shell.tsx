@@ -39,6 +39,7 @@ export function CommandShell({
   children,
   usage,
   networkMode = false,
+  hideHeading = false,
 }: {
   title: string;
   networkMode?: boolean;
@@ -47,6 +48,8 @@ export function CommandShell({
   usage?:
     | { consumed: number; ceiling: number; scope?: "workspace" | "mission" | "programme" }
     | undefined;
+  /** Overview foyer owns the first-viewport composition — skip duplicate page H1. */
+  hideHeading?: boolean;
 }) {
   const { pathname, hash: locationHash } = useRouterState({
     select: (s) => ({ pathname: s.location.pathname, hash: s.location.hash }),
@@ -61,9 +64,20 @@ export function CommandShell({
   });
   const name = user?.user_metadata.full_name ?? user?.email ?? "Studio owner";
   const remaining = usage ? Math.max(0, usage.ceiling - usage.consumed) : null;
+  const isStudioHome = title === "Studio" || pathname === "/command";
+  const breadcrumb = isStudioHome ? (
+    <span>Studio</span>
+  ) : (
+    <span>
+      Studio <span>/</span> {title}
+    </span>
+  );
+
   return (
     <div
-      className={`dxa cc-shell psi-workspace${networkMode ? " ps-network-shell" : ""}`}
+      className={`dxa cc-shell psi-workspace${networkMode ? " ps-network-shell" : ""}${
+        hideHeading ? " ps-shell-foyer" : ""
+      }`}
       onKeyDown={(event) => {
         if (event.key === "Escape") setOpen(false);
       }}
@@ -88,7 +102,7 @@ export function CommandShell({
           <span className="ps-product-mark">P</span>
           <div>
             <strong>DeliverX Studio</strong>
-            <small>Supervised product-building agents</small>
+            <small>Supervised product-building</small>
           </div>
         </div>
         <nav aria-label="Studio navigation">
@@ -122,76 +136,86 @@ export function CommandShell({
               </Link>
             );
           })}
-          {operatorAccess.data?.authorised && (
-            <Link to="/command/pilot-requests" className="ps-nav-link">
-              <Inbox size={18} />
-              Pilot requests
-            </Link>
-          )}
         </nav>
-        <div className="ps-sidebar-note">
-          <ShieldCheck size={18} />
-          <strong>You stay in control.</strong>
-          <p>Specialists contribute. You decide what moves forward.</p>
-        </div>
         <div className="ps-sidebar-bottom">
-          {usage && (
-            <div className="ps-budget">
-              <div>
-                <span>
-                  {usage.scope === "mission"
-                    ? "Mission usage"
-                    : usage.scope === "programme"
-                      ? "Programme usage"
-                      : "Studio usage"}
-                </span>
-                <strong>
-                  {usage.consumed} / {usage.ceiling}
-                </strong>
-              </div>
-              <progress
-                aria-label={`${usage.scope ?? "studio"} usage`}
-                max={Math.max(1, usage.ceiling)}
-                value={usage.consumed}
-              />
-              <small>
-                {remaining === 0 ? "Usage ceiling reached" : `${remaining} units remaining`}
-              </small>
-            </div>
-          )}
           <Link to="/" className="ps-site-link">
             Explore DeliverX
             <ArrowUpRight size={14} />
           </Link>
-          <div className="ps-user">
-            <span>{name.slice(0, 1).toUpperCase()}</span>
-            <div>
-              <strong>{name}</strong>
-              <small>Studio owner</small>
+          <details className="ps-account">
+            <summary className="ps-user">
+              <span>{name.slice(0, 1).toUpperCase()}</span>
+              <div>
+                <strong>{name}</strong>
+                <small>Account</small>
+              </div>
+            </summary>
+            <div className="ps-account-panel">
+              {usage ? (
+                <div className="ps-budget">
+                  <div>
+                    <span>
+                      {usage.scope === "mission"
+                        ? "Mission usage"
+                        : usage.scope === "programme"
+                          ? "Programme usage"
+                          : "Studio usage"}
+                    </span>
+                    <strong>
+                      {usage.consumed} / {usage.ceiling}
+                    </strong>
+                  </div>
+                  <progress
+                    aria-label={`${usage.scope ?? "studio"} usage`}
+                    max={Math.max(1, usage.ceiling)}
+                    value={usage.consumed}
+                  />
+                  <small>
+                    {remaining === 0 ? "Usage ceiling reached" : `${remaining} units remaining`}
+                  </small>
+                </div>
+              ) : null}
+              {operatorAccess.data?.authorised ? (
+                <Link
+                  to="/command/pilot-requests"
+                  className="ps-account-link"
+                  onClick={() => setOpen(false)}
+                >
+                  <Inbox size={14} />
+                  Pilot requests
+                </Link>
+              ) : null}
+              <div className="ps-sidebar-note">
+                <ShieldCheck size={16} />
+                <strong>You stay in control.</strong>
+                <p>Specialists contribute. You decide what moves forward.</p>
+              </div>
+              <button type="button" className="ps-account-signout" onClick={() => void signOut()}>
+                Sign out
+              </button>
             </div>
-            <button onClick={() => void signOut()}>Sign out</button>
-          </div>
+          </details>
         </div>
       </aside>
       <main className="ps-main" inert={open}>
         <div className="ps-topbar">
-          <span>
-            Studio <span>/</span> {title}
-          </span>
+          {breadcrumb}
           <Link to="/command" hash="supervised-brief" className="ps-new-mission">
-            + New mission
+            + New case
           </Link>
         </div>
-        <header className="ps-page-heading">
-          <div>
-            <h1>{title}</h1>
-            {subtitle && <p>{subtitle}</p>}
-          </div>
-          <span className="ps-supervision">
-            <ShieldCheck size={15} />
-            Human supervised
-          </span>
-        </header>
+        {!hideHeading ? (
+          <header className="ps-page-heading">
+            <div>
+              <h1>{title}</h1>
+              {subtitle && <p>{subtitle}</p>}
+            </div>
+            <span className="ps-supervision">
+              <ShieldCheck size={15} />
+              Human supervised
+            </span>
+          </header>
+        ) : null}
         <div className="ps-content">{children}</div>
       </main>
     </div>
