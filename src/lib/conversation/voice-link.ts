@@ -76,7 +76,8 @@ export class VoiceLink {
   ) {}
 
   private clock(): number {
-    return (this.opts.now ?? Date.now)();
+    // A monotonic clock, so a wall-clock adjustment can't skew a duration.
+    return (this.opts.now ?? (() => performance.now()))();
   }
 
   get current(): VoicePhase {
@@ -215,14 +216,14 @@ export class VoiceLink {
       try {
         this.conn = await this.open(generation);
         this.set("ready");
-        if (!afterTimeout) this.opts.onConnectionEvent?.("reconnect");
+        this.opts.onConnectionEvent?.("reconnect");
         return;
       } catch {
         if (generation !== this.generation) return;
       }
     }
     this.set("failed");
-    if (!afterTimeout) this.opts.onConnectionEvent?.("reconnect_failed");
+    this.opts.onConnectionEvent?.("reconnect_failed");
     this.opts.onNotice(
       "Voice couldn't reconnect. Your conversation is safe; type, or turn voice on again.",
     );

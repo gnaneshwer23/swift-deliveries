@@ -25,6 +25,7 @@ import {
 } from "@/lib/workforce.functions";
 import { commandCentreBootstrapQuery } from "@/lib/workforce-queries";
 import { speak } from "@/lib/conversation/speech";
+import { VoiceMeasurements } from "@/components/command/voice-measurements";
 import { VoiceControls } from "@/components/command/voice-controls";
 import { INTENT_LABELS, MISSION_INTENTS, type MissionIntent } from "@/lib/workforce/types";
 
@@ -211,6 +212,8 @@ export function ConversationPanel({
               })
             }
           />
+          {/* Shown whatever the voice settings, so past measurements stay readable. */}
+          <VoiceMeasurements />
 
           <form
             className="space-y-2 mt-3"

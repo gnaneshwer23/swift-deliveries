@@ -4,14 +4,15 @@ import { POSTGRES_TYPES } from "@/lib/db/postgres-types";
 import type { Executor } from "@/lib/db/builder";
 import { addTurn, deleteConversation, startConversation } from "./store.server";
 import {
-  listVoiceMetrics,
+  EVENTS_PER_HOUR,
+  listVoiceTurns,
   purgeOldVoiceMetrics,
   recordCorrection,
   recordVoiceEvent,
   recordVoiceTurn,
   voiceMetricsAvailable,
+  voiceSummary,
 } from "./voice-metrics.server";
-import { summarise } from "./voice-metrics";
 
 const url = process.env["PSI_TEST_DATABASE_URL"];
 if (url) {
@@ -53,7 +54,8 @@ describe.skipIf(!url)("voice measurements against a real database", () => {
       add foreign key (conversation_id, workspace_id)
       references ${schema}.wf_conversations (id, workspace_id) on delete cascade`);
     await sql!.unsafe(`alter table ${schema}.wf_voice_metrics
-      add foreign key (turn_id) references ${schema}.wf_conversation_turns (id) on delete set null`);
+      add foreign key (turn_id, workspace_id)
+      references ${schema}.wf_conversation_turns (id, workspace_id) on delete set null (turn_id)`);
   });
   beforeEach(async () => {
     await sql!.unsafe(`truncate ${TABLES.map((t) => `${schema}.${t}`).join(", ")}`);
@@ -65,6 +67,17 @@ describe.skipIf(!url)("voice measurements against a real database", () => {
 
   it("finds the table", async () => {
     expect(await tx(voiceMetricsAvailable)).toBe(true);
+  });
+
+  it("before 0031, reports the table missing and purges nothing", async () => {
+    await sql!.unsafe(`alter table ${schema}.wf_voice_metrics rename to wf_voice_metrics_hidden`);
+    try {
+      // The test connection's search path is this schema alone, so the table is now missing.
+      expect(await tx(voiceMetricsAvailable)).toBe(false);
+      expect(await tx(purgeOldVoiceMetrics)).toBe(0);
+    } finally {
+      await sql!.unsafe(`alter table ${schema}.wf_voice_metrics_hidden rename to wf_voice_metrics`);
+    }
   });
 
   it("records a spoken turn once, and a correction with how many words changed", async () => {
@@ -87,7 +100,7 @@ describe.skipIf(!url)("voice measurements against a real database", () => {
         correctedText: "something else entirely",
       }),
     );
-    const rows = await tx((q) => listVoiceMetrics(q, l.workspaceId));
+    const rows = await tx((q) => listVoiceTurns(q, l.workspaceId));
     expect(rows).toEqual([
       {
         kind: "turn",
@@ -97,6 +110,60 @@ describe.skipIf(!url)("voice measurements against a real database", () => {
         wordChange: expect.closeTo(1 / 7, 5),
       },
     ]);
+  });
+
+  it("keeps a correction that reaches the server before the turn's timings", async () => {
+    const l = await spokenLine();
+    expect(
+      await tx((q) =>
+        recordCorrection(q, {
+          workspaceId: l.workspaceId,
+          turnId: l.turnId,
+          correctedText: "find out whether 13 tutors would pay",
+        }),
+      ),
+    ).toBe(true);
+    const turn = { workspaceId: l.workspaceId, turnId: l.turnId, transcriptMs: 800, replyMs: 200 };
+    expect(await tx((q) => recordVoiceTurn(q, turn))).toBe(true);
+    // Timings are filled once and never overwritten.
+    expect(await tx((q) => recordVoiceTurn(q, { ...turn, transcriptMs: 1 }))).toBe(false);
+    expect(await tx((q) => listVoiceTurns(q, l.workspaceId))).toEqual([
+      {
+        kind: "turn",
+        transcriptMs: 800,
+        replyMs: 200,
+        corrected: true,
+        wordChange: expect.closeTo(1 / 7, 5),
+      },
+    ]);
+  });
+
+  it("refuses to link a measurement to another workspace's line", async () => {
+    const mine = await spokenLine();
+    const theirs = await spokenLine();
+    await expect(
+      sql!`insert into wf_voice_metrics (workspace_id, kind, turn_id)
+        values (${mine.workspaceId}, 'turn', ${theirs.turnId})`,
+    ).rejects.toThrow(/foreign key/);
+    expect(
+      await tx((q) =>
+        recordCorrection(q, {
+          workspaceId: mine.workspaceId,
+          turnId: theirs.turnId,
+          correctedText: "x",
+        }),
+      ),
+    ).toBe(false);
+  });
+
+  it("caps event rows per workspace per hour", async () => {
+    const l = await spokenLine();
+    await sql!`insert into wf_voice_metrics (workspace_id, kind)
+      select ${l.workspaceId}, 'interruption' from generate_series(1, ${EVENTS_PER_HOUR - 1})`;
+    expect(await tx((q) => recordVoiceEvent(q, l.workspaceId, "drop"))).toBe(true);
+    expect(await tx((q) => recordVoiceEvent(q, l.workspaceId, "drop"))).toBe(false);
+    const other = await spokenLine();
+    expect(await tx((q) => recordVoiceEvent(q, other.workspaceId, "drop"))).toBe(true);
   });
 
   it("measures only this workspace's spoken lines", async () => {
@@ -141,7 +208,7 @@ describe.skipIf(!url)("voice measurements against a real database", () => {
     await tx((q) => deleteConversation(q, l.workspaceId, l.userId, l.conversationId));
     const [row] = await sql!`select turn_id from wf_voice_metrics where kind = 'turn'`;
     expect(row!["turn_id"]).toBeNull();
-    expect(summarise(await tx((q) => listVoiceMetrics(q, l.workspaceId)))).toMatchObject({
+    expect(await tx((q) => voiceSummary(q, l.workspaceId))).toMatchObject({
       turns: 1,
       interruptions: 1,
     });

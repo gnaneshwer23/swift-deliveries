@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { percentile, summarise, wordChange, type VoiceMetric } from "./voice-metrics";
+import { median, percentile, summarise, wordChange, type VoiceMetric } from "./voice-metrics";
 
 const turn = (over: Partial<VoiceMetric> = {}): VoiceMetric => ({
   kind: "turn",
@@ -19,6 +19,10 @@ describe("word change from a correction", () => {
     expect(wordChange("cancel", "do not cancel the mission")).toBe(1);
     expect(wordChange("", "anything")).toBe(1);
   });
+
+  it("treats curly and straight apostrophes as the same word", () => {
+    expect(wordChange("don’t cancel it", "don't cancel it")).toBe(0);
+  });
 });
 
 describe("percentiles", () => {
@@ -27,6 +31,12 @@ describe("percentiles", () => {
     expect(percentile(xs, 50)).toBe(1000);
     expect(percentile(xs, 95)).toBe(1900);
     expect(percentile([], 50)).toBeNull();
+  });
+
+  it("takes the mean of the two middle values for an even-length median", () => {
+    expect(median([400, 200])).toBe(300);
+    expect(median([200, 300, 900])).toBe(300);
+    expect(median([])).toBeNull();
   });
 });
 
@@ -45,17 +55,24 @@ describe("summary", () => {
       },
       { kind: "drop", transcriptMs: null, replyMs: null, corrected: false, wordChange: null },
       { kind: "reconnect", transcriptMs: null, replyMs: null, corrected: false, wordChange: null },
+      {
+        kind: "reconnect_failed",
+        transcriptMs: null,
+        replyMs: null,
+        corrected: false,
+        wordChange: null,
+      },
     ]);
     expect(s).toEqual({
       turns: 3,
       transcriptMs: { median: 900, p95: 1200 },
-      replyMs: { median: 200, p95: 400 },
+      replyMs: { median: 300, p95: 400 },
       correctedShare: 1 / 3,
       wordChangeWhenCorrected: 0.25,
       interruptions: 1,
       drops: 1,
       reconnects: 1,
-      reconnectsFailed: 0,
+      reconnectsFailed: 1,
     });
   });
 

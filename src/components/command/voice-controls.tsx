@@ -8,7 +8,6 @@ import {
 } from "@/lib/conversation.functions";
 import { VoiceLink, type VoicePhase } from "@/lib/conversation/voice-link";
 import type { VoiceMeasurementInput } from "@/lib/conversation/voice-metrics";
-import { VoiceMeasurements } from "@/components/command/voice-measurements";
 import { voiceSupported, webrtcConnector } from "@/lib/conversation/voice-webrtc";
 import { canSpeak, isSpeaking, stopSpeaking } from "@/lib/conversation/speech";
 
@@ -189,7 +188,7 @@ export function VoiceControls({
             type="button"
             className="cc-btn"
             onClick={() => {
-              stopSpeaking();
+              interrupt();
               if (phase === "listening" || phase === "transcribing")
                 setNotice(
                   "Voice was turned off before that was sent. Say it again, or type instead.",
@@ -206,7 +205,7 @@ export function VoiceControls({
               type="checkbox"
               checked={speakReplies}
               onChange={(e) => {
-                if (!e.target.checked) stopSpeaking();
+                if (!e.target.checked) interrupt();
                 onSpeakRepliesChange(e.target.checked);
               }}
             />
@@ -223,7 +222,6 @@ export function VoiceControls({
           {notice}
         </p>
       ) : null}
-      <VoiceMeasurements />
     </div>
   );
 }

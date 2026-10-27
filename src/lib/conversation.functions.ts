@@ -104,10 +104,10 @@ export const sayToAssistant = createServerFn({ method: "POST" })
       const { workspace } = await ensureWorkspace(supabase, userId);
       const s = await store();
       const { respondToFounder } = await import("@/lib/conversation/respond.server");
-      return s.neonTransaction(async (_tx, query) => {
+      const reply = await s.neonTransaction(async (_tx, query) => {
         if (!(await s.conversationsAvailable(query)))
           throw new Error("Conversations need a database update that has not been applied yet.");
-        const out = await respondToFounder(query, {
+        return respondToFounder(query, {
           workspaceId: workspace.id,
           userId,
           conversationId: data.conversationId,
@@ -115,17 +115,23 @@ export const sayToAssistant = createServerFn({ method: "POST" })
           input: data.input,
           currentMissionId: data.currentMissionId ?? null,
         });
-        if (data.input === "edited" && data.correctsTurnId) {
-          const m = await import("@/lib/conversation/voice-metrics.server");
-          if (await m.voiceMetricsAvailable(query))
-            await m.recordCorrection(query, {
-              workspaceId: workspace.id,
-              turnId: data.correctsTurnId,
-              correctedText: data.text,
-            });
-        }
-        return out;
       });
+      // Best effort, after the conversation has committed: a failure here never loses the line.
+      if (data.input === "edited" && data.correctsTurnId) {
+        const correctsTurnId = data.correctsTurnId;
+        await s
+          .neonTransaction(async (_tx, query) => {
+            const m = await import("@/lib/conversation/voice-metrics.server");
+            if (await m.voiceMetricsAvailable(query))
+              await m.recordCorrection(query, {
+                workspaceId: workspace.id,
+                turnId: correctsTurnId,
+                correctedText: data.text,
+              });
+          })
+          .catch((error: unknown) => console.error("Voice correction measurement failed", error));
+      }
+      return reply;
     },
   );
 
@@ -248,8 +254,7 @@ export const recordVoiceMeasurement = createServerFn({ method: "POST" })
           transcriptMs: data.transcriptMs,
           replyMs: data.replyMs,
         });
-      await m.recordVoiceEvent(query, workspace.id, data.kind);
-      return true;
+      return m.recordVoiceEvent(query, workspace.id, data.kind);
     });
     return { recorded };
   });
@@ -268,14 +273,13 @@ export const getVoiceMeasurements = createServerFn({ method: "GET" })
     const { workspace } = await ensureWorkspace(supabase, userId);
     const { neonTransaction } = await import("@/lib/db/neon.server");
     const m = await import("@/lib/conversation/voice-metrics.server");
-    const { summarise } = await import("@/lib/conversation/voice-metrics");
     return neonTransaction(async (_tx, query) => {
       if (!(await m.voiceMetricsAvailable(query)))
         return { available: false, days: m.SUMMARY_DAYS, summary: null };
       return {
         available: true,
         days: m.SUMMARY_DAYS,
-        summary: summarise(await m.listVoiceMetrics(query, workspace.id)),
+        summary: await m.voiceSummary(query, workspace.id),
       };
     });
   });

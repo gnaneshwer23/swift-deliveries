@@ -34,6 +34,7 @@ export type VoiceMetric = {
 const words = (t: string) =>
   t
     .toLowerCase()
+    .replace(/[‘’]/g, "'")
     .replace(/[^\p{L}\p{N}%£$€' ]+/gu, " ")
     .split(/\s+/)
     .filter(Boolean);
@@ -58,6 +59,14 @@ export function wordChange(heard: string, corrected: string): number {
     prev = row;
   }
   return Math.min(1, prev[b.length]! / a.length);
+}
+
+/** The median: the middle value, or the mean of the two middle values. Null when there are none. */
+export function median(values: readonly number[]): number | null {
+  if (!values.length) return null;
+  const sorted = [...values].sort((x, y) => x - y);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid]! : (sorted[mid - 1]! + sorted[mid]!) / 2;
 }
 
 /** The nearest-rank percentile of a list of numbers, or null when there are none. */
@@ -93,8 +102,8 @@ export function summarise(rows: readonly VoiceMetric[]): VoiceSummary {
   const count = (k: VoiceMetricKind) => rows.filter((r) => r.kind === k).length;
   return {
     turns: turns.length,
-    transcriptMs: { median: percentile(transcript, 50), p95: percentile(transcript, 95) },
-    replyMs: { median: percentile(reply, 50), p95: percentile(reply, 95) },
+    transcriptMs: { median: median(transcript), p95: percentile(transcript, 95) },
+    replyMs: { median: median(reply), p95: percentile(reply, 95) },
     correctedShare: turns.length ? corrected.length / turns.length : null,
     wordChangeWhenCorrected: changes.length
       ? changes.reduce((s, v) => s + v, 0) / changes.length

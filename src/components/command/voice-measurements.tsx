@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getVoiceMeasurements } from "@/lib/conversation.functions";
 import type { VoiceSummary } from "@/lib/conversation/voice-metrics";
@@ -11,10 +12,11 @@ const pct = (share: number | null) => (share === null ? "–" : `${Math.round(sh
  * was measured and what is assumed.
  */
 export function VoiceMeasurements() {
+  const [open, setOpen] = useState(false);
   return (
-    <details className="text-sm">
+    <details className="text-sm" onToggle={(e) => setOpen(e.currentTarget.open)}>
       <summary className="cursor-pointer">Voice measurements</summary>
-      <MeasurementsBody />
+      {open ? <MeasurementsBody /> : null}
     </details>
   );
 }
@@ -29,11 +31,12 @@ function MeasurementsBody() {
   if (!q.data.available)
     return (
       <p className="text-slate-600 mt-1">
-        Measurements start once their database update is applied.
+        Measurements start once their database update (migration 0031) is applied. Until then,
+        nothing is recorded.
       </p>
     );
   const s = q.data.summary as VoiceSummary;
-  if (!s.turns && !s.interruptions && !s.drops)
+  if (!s.turns && !s.interruptions && !s.drops && !s.reconnects && !s.reconnectsFailed)
     return <p className="text-slate-600 mt-1">Nothing measured in the last {q.data.days} days.</p>;
   return (
     <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
