@@ -387,6 +387,25 @@ export const exportSupervisedMission = createServerFn({ method: "POST" })
     return view(mission, null);
   });
 
+/** P5 — human gate then sandboxed HTML prototype + static verify. */
+export const approveSupervisedPrototype = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z.object({ id: z.string().uuid(), expectedVersion: z.number().int().positive() }).parse(data),
+  )
+  .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
+    const workspace = await workspaceFor(context.supabase, context.userId);
+    const { service } = await serviceFor();
+    const mission = await service.approvePrototypeBuild({
+      workspaceId: workspace.id,
+      id: data.id,
+      expectedVersion: data.expectedVersion,
+      actorId: context.userId,
+      nowMs: Date.now(),
+    });
+    return view(mission, null);
+  });
+
 export const cancelSupervisedMission = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .validator((data: unknown) =>

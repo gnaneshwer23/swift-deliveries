@@ -131,6 +131,7 @@ export function buildPilotTeamPlan(input?: { band?: StaffingBand }): PilotTeamPl
   const structure = ownerFor("DX-001", capabilityIds, "DX-001");
   const product = ownerFor("DX-023", capabilityIds, "DX-001");
   const pack = ownerFor("DX-035", capabilityIds, "DX-001");
+  const proto = ownerFor("DX-035", capabilityIds, "DX-001");
   const follow = ownerFor("DX-001", capabilityIds, "DX-001");
 
   const tasks: PilotSpecialistTask[] = [
@@ -252,14 +253,40 @@ export function buildPilotTeamPlan(input?: { band?: StaffingBand }): PilotTeamPl
       actor: "specialist",
     },
     {
+      key: "approve_prototype",
+      title: "Approve sandboxed prototype build",
+      loopStep: "approved_work",
+      capabilityId: null,
+      ownerLabel: "You (human)",
+      dependsOn: ["assemble_pack"],
+      status: "pending",
+      uses: ["Exported decision pack"],
+      produces: "Explicit go-ahead for a sandboxed HTML prototype",
+      blockedReason: null,
+      actor: "human",
+    },
+    {
+      key: "build_prototype",
+      title: "Build sandboxed HTML prototype",
+      loopStep: "approved_work",
+      capabilityId: proto.capabilityId,
+      ownerLabel: proto.ownerLabel,
+      dependsOn: ["approve_prototype"],
+      status: "pending",
+      uses: ["Approved decision", "Decision pack"],
+      produces: "Sandboxed HTML prototype with static verify",
+      blockedReason: null,
+      actor: "specialist",
+    },
+    {
       key: "outcome_observation",
       title: "Record expected outcome / observation",
       loopStep: "outcome",
       capabilityId: null,
       ownerLabel: "You (human)",
-      dependsOn: ["assemble_pack"],
+      dependsOn: ["build_prototype"],
       status: "pending",
-      uses: ["Exported pack", "Owner-supplied result only"],
+      uses: ["Exported pack", "Prototype", "Owner-supplied result only"],
       produces: "Expectation and later observation (owner-supplied)",
       blockedReason: null,
       actor: "human",
@@ -300,6 +327,52 @@ export function buildPilotTeamPlan(input?: { band?: StaffingBand }): PilotTeamPl
   };
 }
 
+/** Additive P5 tasks for older stored plans — no fabricated activity. */
+function withPrototypeTasks(plan: PilotTeamPlan): PilotTeamPlan {
+  if (plan.tasks.some((t) => t.key === "build_prototype")) return plan;
+  const proto = ownerFor("DX-035", plan.capabilityIds, "DX-001");
+  const insert: PilotSpecialistTask[] = [
+    {
+      key: "approve_prototype",
+      title: "Approve sandboxed prototype build",
+      loopStep: "approved_work",
+      capabilityId: null,
+      ownerLabel: "You (human)",
+      dependsOn: ["assemble_pack"],
+      status: "pending",
+      uses: ["Exported decision pack"],
+      produces: "Explicit go-ahead for a sandboxed HTML prototype",
+      blockedReason: null,
+      actor: "human",
+    },
+    {
+      key: "build_prototype",
+      title: "Build sandboxed HTML prototype",
+      loopStep: "approved_work",
+      capabilityId: proto.capabilityId,
+      ownerLabel: proto.ownerLabel,
+      dependsOn: ["approve_prototype"],
+      status: "pending",
+      uses: ["Approved decision", "Decision pack"],
+      produces: "Sandboxed HTML prototype with static verify",
+      blockedReason: null,
+      actor: "specialist",
+    },
+  ];
+  const assembleIdx = plan.tasks.findIndex((t) => t.key === "assemble_pack");
+  const tasks = [...plan.tasks];
+  const at = assembleIdx >= 0 ? assembleIdx + 1 : tasks.length;
+  tasks.splice(at, 0, ...insert);
+  return {
+    ...plan,
+    tasks: tasks.map((task) =>
+      task.key === "outcome_observation"
+        ? { ...task, dependsOn: ["build_prototype"] }
+        : task,
+    ),
+  };
+}
+
 /** Map stored mission progress onto the specialist DAG without inventing activity. */
 export function syncTeamWithMission(
   plan: PilotTeamPlan,
@@ -310,6 +383,7 @@ export function syncTeamWithMission(
     | "approval"
     | "artefact"
     | "exportBody"
+    | "prototype"
     | "expectation"
     | "observation"
     | "reviews"
@@ -318,6 +392,7 @@ export function syncTeamWithMission(
     | "researchPassCompletedAt"
   >,
 ): PilotTeamPlan {
+  plan = withPrototypeTasks(plan);
   const approved = Boolean(plan.approvedAt);
   const researchDone = Boolean(mission.researchPassCompletedAt);
   const completed = new Set<string>();
@@ -357,6 +432,8 @@ export function syncTeamWithMission(
   mark("human_decision", Boolean(mission.approval));
   mark("product_brief", Boolean(mission.artefact));
   mark("assemble_pack", Boolean(mission.exportBody));
+  mark("approve_prototype", Boolean(mission.prototype));
+  mark("build_prototype", Boolean(mission.prototype));
   mark(
     "outcome_observation",
     Boolean(mission.observation) || Boolean(mission.reviews.length),
@@ -397,6 +474,13 @@ export function syncTeamWithMission(
         blockedReason: "Waiting for your decision on the proposal.",
       };
     }
+    if (task.key === "approve_prototype") {
+      return {
+        ...task,
+        status: "awaiting_approval" as const,
+        blockedReason: "Waiting for your approval to build a sandboxed HTML prototype.",
+      };
+    }
     if (task.key === "propose_follow_up" && mission.followUp?.status === "proposed") {
       return {
         ...task,
@@ -409,6 +493,13 @@ export function syncTeamWithMission(
         ...task,
         status: "blocked" as const,
         blockedReason: "Export the decision pack before recording an outcome.",
+      };
+    }
+    if (task.key === "outcome_observation" && !mission.prototype) {
+      return {
+        ...task,
+        status: "blocked" as const,
+        blockedReason: "Approve and build the sandboxed prototype before recording an outcome.",
       };
     }
     return { ...task, status: "ready" as const, blockedReason: null };

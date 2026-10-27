@@ -71,6 +71,32 @@ export type ArtefactPack = {
   provenance: string;
 };
 
+/** P5 — sandboxed HTML prototype produced after an explicit human gate. */
+export type MissionPrototypeCheck = {
+  id: string;
+  label: string;
+  passed: boolean;
+};
+
+export type MissionPrototype = {
+  title: string;
+  html: string;
+  honesty: {
+    mode: "simulated" | "model";
+    label: string;
+    modelId: string | null;
+  };
+  checks: MissionPrototypeCheck[];
+  sandboxSafe: boolean;
+  verified: boolean;
+  failureDetail: string | null;
+  approvedAt: string;
+  approvedBy: string;
+  producedAt: string;
+  ownerCapabilityId: string;
+  ownerLabel: string;
+};
+
 /** Stored on every owner-supplied result. DeliverX does not measure it. */
 export const OWNER_SUPPLIED_OBSERVATION_LABEL =
   "Owner-supplied. DeliverX did not measure this result.";
@@ -185,6 +211,11 @@ export type SupervisedMission = {
     archivedAt: string;
     reason: string;
   }>;
+  /**
+   * Sandboxed HTML prototype after Pack (P5). Null until the human gate
+   * approves the build. Additive document field — no SQL migration.
+   */
+  prototype: MissionPrototype | null;
   exportBody: string | null;
   /** Base64 PDF of the same decision pack; optional for older missions. */
   exportPdfBase64: string | null;
@@ -346,6 +377,19 @@ export function nextRequiredAction(mission: SupervisedMission): {
       id: "export",
       title: "Export the pack",
       detail: "The export is stored on the mission. Opening it again does not add a usage record.",
+    };
+  }
+  if (
+    mission.exportBody &&
+    !mission.prototype &&
+    !mission.observation &&
+    !mission.reviews.length
+  ) {
+    return {
+      id: "approve_prototype",
+      title: "Approve sandboxed HTML prototype",
+      detail:
+        "Human gate — the UX Prototype Agent drafts a sandboxed HTML artefact only after you approve. Static verify failures stay visible.",
     };
   }
   return learningNext(mission);

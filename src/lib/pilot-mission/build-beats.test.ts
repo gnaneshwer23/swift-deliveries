@@ -27,6 +27,7 @@ function baseMission(overrides: Partial<SupervisedMission> = {}): SupervisedMiss
     approval: null,
     invalidatedApprovals: [],
     artefact: null,
+    prototype: null,
     exportBody: null,
     exportPdfBase64: null,
     job: {
@@ -216,6 +217,134 @@ describe("castForMission (P2)", () => {
     expect(cast.some((c) => c.actor === "human")).toBe(true);
     expect(cast.some((c) => c.isCurrentOwner)).toBe(true);
     expect(cast.find((c) => c.isCurrentOwner)?.handoff.length).toBeGreaterThan(0);
+  });
+});
+
+describe("prototype beat (P5)", () => {
+  it("keeps Prototype behind a human gate until Pack is ready", () => {
+    const team = buildPilotTeamPlan({ band: "L" });
+    team.approvedAt = "2026-10-27T12:00:00.000Z";
+    const seq = buildSequence(
+      baseMission({
+        stage: "exported",
+        team,
+        researchPassCompletedAt: "2026-10-27T12:05:00.000Z",
+        proposal: {
+          action: "compare_options",
+          version: 1,
+          scopeHash: "x",
+          options: [
+            { id: "a", title: "Charge", tradeoff: "x", basis: "gap" },
+            { id: "b", title: "Free", tradeoff: "y", basis: "gap" },
+          ],
+          generation: {
+            ran: false,
+            label: "simulated",
+            provider: null,
+            model: null,
+            output: "",
+            citations: [],
+            gaps: [],
+          },
+        },
+        approval: {
+          action: "compare_options",
+          version: 1,
+          scopeHash: "x",
+          optionId: "a",
+          choice: "accept",
+          note: "",
+          actorId: "u",
+          decidedAt: "2026-10-27T13:00:00.000Z",
+        },
+        artefact: {
+          title: "Analytics pricing pack",
+          decisionBrief: "Charge for analytics.",
+          experimentBrief: "Pilot with 10 teams.",
+          provenance: "Simulated draft",
+        },
+        exportBody: "# Pack",
+      }),
+    );
+    expect(seq.currentId).toBe("prototype");
+    const beat = seq.beats.find((b) => b.id === "prototype");
+    expect(beat?.state).toBe("current");
+    expect(beat?.owner.actor).toBe("human");
+    expect(beat?.handoff.status).toBe("awaiting_you");
+    expect(beat?.artefact).toBeNull();
+  });
+
+  it("shows the sandboxed HTML artefact with honesty and verify rows after build", () => {
+    const team = buildPilotTeamPlan({ band: "L" });
+    team.approvedAt = "2026-10-27T12:00:00.000Z";
+    const seq = buildSequence(
+      baseMission({
+        stage: "exported",
+        team,
+        researchPassCompletedAt: "2026-10-27T12:05:00.000Z",
+        proposal: {
+          action: "compare_options",
+          version: 1,
+          scopeHash: "x",
+          options: [
+            { id: "a", title: "Charge", tradeoff: "x", basis: "gap" },
+            { id: "b", title: "Free", tradeoff: "y", basis: "gap" },
+          ],
+          generation: {
+            ran: false,
+            label: "simulated",
+            provider: null,
+            model: null,
+            output: "",
+            citations: [],
+            gaps: [],
+          },
+        },
+        approval: {
+          action: "compare_options",
+          version: 1,
+          scopeHash: "x",
+          optionId: "a",
+          choice: "accept",
+          note: "",
+          actorId: "u",
+          decidedAt: "2026-10-27T13:00:00.000Z",
+        },
+        artefact: {
+          title: "Analytics pricing pack",
+          decisionBrief: "Charge.",
+          experimentBrief: "Pilot.",
+          provenance: "Simulated draft",
+        },
+        exportBody: "# Pack",
+        prototype: {
+          title: "Analytics pricing pack — prototype",
+          html: "<!DOCTYPE html><html lang=\"en\"><head><title>t</title></head><body><main><button>Go</button></main></body></html>",
+          honesty: { mode: "simulated", label: "Simulated draft", modelId: null },
+          checks: [
+            { id: "doctype", label: "Declares <!DOCTYPE html>", passed: true },
+            { id: "no_network", label: "Makes no network calls", passed: false },
+          ],
+          sandboxSafe: false,
+          verified: false,
+          failureDetail: "Prototype loads remote scripts or makes network calls — rejected as not sandbox-safe.",
+          approvedAt: "2026-10-27T14:00:00.000Z",
+          approvedBy: "u",
+          producedAt: "2026-10-27T14:00:00.000Z",
+          ownerCapabilityId: "DX-035",
+          ownerLabel: "UX Prototype Agent",
+        },
+      }),
+    );
+    expect(seq.currentId).toBeNull();
+    const beat = seq.beats.find((b) => b.id === "prototype");
+    expect(beat?.state).toBe("done");
+    expect(beat?.owner.label).toBe("UX Prototype Agent");
+    expect(beat?.artefact?.kind).toBe("prototype_html");
+    expect(beat?.artefact?.honesty.label).toBe("Simulated draft");
+    expect(beat?.artefact?.html).toContain("<!DOCTYPE html>");
+    expect(beat?.artefact?.verification?.some((c) => !c.passed)).toBe(true);
+    expect(beat?.artefact?.gaps[0]).toMatch(/sandbox/i);
   });
 });
 

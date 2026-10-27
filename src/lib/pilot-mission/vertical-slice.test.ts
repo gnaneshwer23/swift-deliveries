@@ -349,6 +349,14 @@ describe("founder vertical slice — follow-up not auto-started", () => {
       id: mission.id,
       nowMs: 6_000,
     });
+    mission = await service.approvePrototypeBuild({
+      workspaceId: "alpha",
+      id: mission.id,
+      actorId: "owner",
+      nowMs: 6_500,
+    });
+    expect(mission.prototype?.html).toContain("<!DOCTYPE html>");
+    expect(mission.prototype?.checks.some((c) => !c.passed)).toBe(false);
     mission = await service.recordObservation({
       workspaceId: "alpha",
       id: mission.id,

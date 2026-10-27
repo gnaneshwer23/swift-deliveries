@@ -8,6 +8,7 @@ import { MissionTheatre } from "@/components/command/mission-theatre";
 import { SupervisedLearningLoop } from "@/components/command/supervised-learning-loop";
 import {
   approveSupervisedPlan,
+  approveSupervisedPrototype,
   cancelSupervisedMission,
   decideSupervisedMission,
   exportSupervisedMission,
@@ -117,6 +118,17 @@ function SupervisedMissionPage() {
     },
     onError,
   });
+  const approvePrototype = useMutation({
+    mutationFn: () =>
+      approveSupervisedPrototype({
+        data: { id: missionId, expectedVersion: query.data?.mission.version ?? 0 },
+      }),
+    onSuccess: async () => {
+      setError(null);
+      await invalidate();
+    },
+    onError,
+  });
   const cancel = useMutation({
     mutationFn: () =>
       cancelSupervisedMission({
@@ -217,6 +229,8 @@ function SupervisedMissionPage() {
           onCompare: () => compare.mutate(),
           preparePending: prepare.isPending,
           onPrepare: () => prepare.mutate(),
+          prototypePending: approvePrototype.isPending,
+          onApprovePrototype: () => approvePrototype.mutate(),
           exportSlot:
             next.id === "export" || mission.exportBody ? (
               <ExportButton

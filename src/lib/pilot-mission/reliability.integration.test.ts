@@ -570,6 +570,12 @@ describe.skipIf(!url)("isolated PostgreSQL transaction and recovery checks", () 
     await service.prepareArtefact({ workspaceId, id: m.id, nowMs: 5000 });
     const exported = await service.exportMission({ workspaceId, id: m.id, nowMs: 6000 });
     expect(exported.exportBody).toContain("not run");
+    await service.approvePrototypeBuild({
+      workspaceId,
+      id: m.id,
+      actorId: "test-owner",
+      nowMs: 6500,
+    });
     await service.recordObservation({
       workspaceId,
       id: m.id,

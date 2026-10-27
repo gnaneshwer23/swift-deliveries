@@ -1,6 +1,6 @@
 # Product brief: Future product-building agents
 
-**Status:** P0 signed — **P1–P4 shipping** (founder approved). P5 deferred. Voice / agents office primary / always-on 150 / programme feature build-out out of scope.  
+**Status:** P0 signed — **P1–P5 shipping** (founder approved P5). Voice / agents office primary / always-on 150 / programme feature build-out out of scope.  
 **Date:** 27 October 2026  
 **North star (founder):** “We are building future product building agents.”  
 **Repo:** `swift-deliveries` · Live: https://www.deliverx.dev  
@@ -99,7 +99,7 @@ That is the product: **future product-building agents**, supervised — not a Co
 | **P2 — Cast owns the beat** | **Shipped** — cast shows current owner, contribution, handoff; Specialists cast-first matches | Click a beat → see who owns it and what they produced; Specialists matches that cast | P1 |
 | **P3 — Artefact shelf on Project** | **Shipped** — Project page read-only shelf: missions + artefacts + decisions for auto-attached product | Start mission → finish a beat → Project shows the artefact under that product | P1 |
 | **P4 — Stub→model honesty ladder** | **Shipped** — same artefact UI badge slot: Simulated draft ↔ Model · id | Toggle/config: same demo mission discloses Simulated vs Model on the artefact without layout change | P1 |
-| **P5 — One deeper build beat** | **Deferred** — not in this ship | After decision/pack (or at an inserted gate): approve → specialist produces that artefact → verify/contract failure is visible if it fails | P1–P2, founder pick in §6 |
+| **P5 — One deeper build beat** | **Shipped** — sandboxed HTML prototype after Pack (human gate → UX Prototype Agent → static verify; failures visible). PRD not chosen — workforce already had prototype/verify spine; HTML is the visible “built something” artefact | After pack export: approve → specialist produces sandboxed HTML → open iframe + verify rows (or failure labels) | P1–P2; founder pick = HTML prototype |
 | **P6 — Optional later** | Programme Lab speaks Acts language **or** stays frozen; voice (F); richer cinematic office | Only after P1–P3 feel true | Explicit re-approval |
 
 **Explicit non-goals for P1–P5:** new dashboard widgets, catalogue expansion, agents office primary, programme feature build-out, self-service checkout, fabricated research, production-readiness claims without release checks.
@@ -109,7 +109,7 @@ That is the product: **future product-building agents**, supervised — not a Co
 ## 6. Open decisions for founder
 
 1. **Phase set:** Approve P1–P4 as the near track? Include **P5** now or after P1 demo?
-2. **P5 artefact:** Prefer **PRD** (spec depth) or **sandboxed HTML prototype** (visible “built something”) as the first deeper build beat?
+2. **P5 artefact:** ~~Prefer **PRD** or **sandboxed HTML prototype**?~~ **Closed — HTML prototype** (founder approved P5 default).
 3. **Unify vs bridge:** Should the workforce “build a product” DAG **feed supervised theatre** (recommended), or stay a separate advanced path for longer?
 4. **Model keys in demo:** Is a **configured-provider** demo required for founder conviction, or is an honest stub sequence with clear “Simulated draft” enough for P1?
 5. **Project shelf depth:** P3 read-only shelf first, or also **start follow-up mission from Project** in the same phase?
@@ -119,7 +119,7 @@ That is the product: **future product-building agents**, supervised — not a Co
 
 ## 7. Binding close
 
-**P0 signed; P1–P4 implemented on the supervised theatre spine.** P5+ remain approval-gated. Prior Option 2 / B–E ships remain the baseline; this track evolves Act V / cast / Project shelf / honesty ladder only — demo criterion first, dashboard second never.
+**P0 signed; P1–P5 implemented on the supervised theatre spine.** P6+ remain approval-gated. Prior Option 2 / B–E ships remain the baseline; this track evolves Act V / cast / Project shelf / honesty ladder / one deeper build beat only — demo criterion first, dashboard second never.
 
 ---
 

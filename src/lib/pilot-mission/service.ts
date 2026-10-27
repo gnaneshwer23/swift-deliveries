@@ -18,6 +18,7 @@ import {
 } from "./research-mode";
 import { estimateStaffingBand, expandOneLinerBrief, seedResearchEvidence } from "./pm-brief";
 import { runResearchPass } from "./research-pass";
+import { buildMissionPrototype } from "./prototype";
 import {
   activityEvent,
   buildPilotTeamPlan,
@@ -218,8 +219,9 @@ function invalidateForScope(
     invalidatedApprovals: invalidated,
     archivedPacks: archivePack(mission, "Brief or evidence scope changed", nowMs),
     artefact: null,
+    prototype: null,
     exportBody: null,
-      exportPdfBase64: null,
+    exportPdfBase64: null,
     expectation: null,
     job: idleJob(mission.job.attempts),
     stage: "evidence",
@@ -480,6 +482,7 @@ export class SupervisedMissionService {
       approval: null,
       invalidatedApprovals: [],
       artefact: null,
+      prototype: null,
       exportBody: null,
       exportPdfBase64: null,
       job: idleJob(),
@@ -848,6 +851,7 @@ export class SupervisedMissionService {
         },
         approval: null,
         artefact: null,
+        prototype: null,
         exportBody: null,
         exportPdfBase64: null,
         researchGaps,
@@ -951,6 +955,7 @@ export class SupervisedMissionService {
       approval,
       expectation: null,
       artefact: null,
+      prototype: null,
       exportBody: null,
       exportPdfBase64: null,
       updatedAt: approval.decidedAt,
@@ -1022,6 +1027,68 @@ export class SupervisedMissionService {
     return this.store.save(next, current.version);
   }
 
+  /**
+   * P5 human gate: explicit approve → UX Prototype Agent produces sandboxed HTML
+   * and static verify. Agents never auto-pass this gate.
+   */
+  async approvePrototypeBuild(input: {
+    workspaceId: string;
+    expectedVersion?: number;
+    id: string;
+    actorId: string;
+    nowMs: number;
+  }): Promise<SupervisedMission> {
+    const current = await this.must(input.workspaceId, input.id);
+    if (input.expectedVersion !== undefined && current.version !== input.expectedVersion) {
+      throw new MissionConflictError(
+        "This mission changed in another session. Your edits were not saved. Review the latest record before trying again.",
+      );
+    }
+    if (current.prototype) return current;
+    if (current.stage === "cancelled") throw new Error("Mission is cancelled.");
+    assertPlanApproved(current);
+    if (!current.approval) throw new Error("Record a decision before building a prototype.");
+    if (!current.exportBody) {
+      throw new Error("Export the decision pack before approving the prototype build.");
+    }
+    const synced = current.team ? syncTeamWithMission(current.team, current) : null;
+    const builder = synced?.tasks.find((t) => t.key === "build_prototype");
+    const proto = buildMissionPrototype(current, {
+      actorId: input.actorId,
+      nowMs: input.nowMs,
+      ownerCapabilityId: builder?.capabilityId ?? "DX-035",
+      ownerLabel: builder?.ownerLabel ?? "UX Prototype Agent",
+    });
+    const at = new Date(input.nowMs).toISOString();
+    const verifySummary = proto.verified
+      ? "Static sandbox checks passed."
+      : proto.failureDetail ?? "Static verify reported failures.";
+    const next: SupervisedMission = withSyncedTeam({
+      ...current,
+      version: current.version + 1,
+      prototype: proto,
+      activity: pushActivity(
+        current,
+        activityEvent({
+          at,
+          taskKey: "approve_prototype",
+          kind: "prototype.approved",
+          summary: "You approved the sandboxed HTML prototype build. Specialist work may proceed.",
+          actor: "human",
+        }),
+        activityEvent({
+          at,
+          taskKey: "build_prototype",
+          kind: proto.verified ? "prototype.built" : "prototype.verify_failed",
+          summary: `${proto.ownerLabel} produced “${proto.title}” (${proto.honesty.label}). ${verifySummary}`,
+          actor: proto.ownerCapabilityId,
+        }),
+      ),
+      updatedAt: at,
+    });
+    return this.store.save(next, current.version);
+  }
+
   async recordExpectation(input: {
     workspaceId: string;
     expectedVersion?: number;
@@ -1062,6 +1129,7 @@ export class SupervisedMissionService {
       expectation,
       archivedPacks: archivePack(current, "Measurement plan changed", input.nowMs),
       artefact: null,
+      prototype: null,
       exportBody: null,
       exportPdfBase64: null,
       stage: "decision",
@@ -1090,6 +1158,9 @@ export class SupervisedMissionService {
     if (!current.expectation) throw new Error("Record the measurement plan before a result.");
     if (!current.exportBody || !current.artefact || !current.approval) {
       throw new Error("Export the decision pack before recording a result.");
+    }
+    if (!current.prototype) {
+      throw new Error("Approve the sandboxed HTML prototype before recording a result.");
     }
     const suppliedAt = new Date(input.nowMs).toISOString();
     const observation: OutcomeObservation = {

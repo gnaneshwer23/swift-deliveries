@@ -25,6 +25,7 @@ function baseMission(overrides: Partial<SupervisedMission> = {}): SupervisedMiss
     approval: null,
     invalidatedApprovals: [],
     artefact: null,
+    prototype: null,
     exportBody: null,
     exportPdfBase64: null,
     job: {

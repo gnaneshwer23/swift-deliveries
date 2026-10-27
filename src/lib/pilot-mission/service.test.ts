@@ -528,7 +528,13 @@ async function exportedMission(service: SupervisedMissionService): Promise<Super
     nowMs: 4_500,
   });
   await service.prepareArtefact({ workspaceId: "alpha", id: mission.id, nowMs: 5_000 });
-  return service.exportMission({ workspaceId: "alpha", id: mission.id, nowMs: 6_000 });
+  const exported = await service.exportMission({ workspaceId: "alpha", id: mission.id, nowMs: 6_000 });
+  return service.approvePrototypeBuild({
+    workspaceId: "alpha",
+    id: exported.id,
+    actorId: "owner",
+    nowMs: 6_050,
+  });
 }
 
 describe("supervised mission outcome review", () => {

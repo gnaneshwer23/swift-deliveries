@@ -45,6 +45,8 @@ export type MissionTheatreActions = {
   onCompare: () => void;
   preparePending: boolean;
   onPrepare: () => void;
+  prototypePending: boolean;
+  onApprovePrototype: () => void;
   exportSlot: ReactNode;
 };
 
@@ -328,15 +330,38 @@ function ActApprove({
 }
 
 function ArtefactCard({ artefact }: { artefact: FocalArtefact }) {
+  const verifyFailed = artefact.verification?.some((c) => !c.passed) ?? false;
   return (
     <article className="ps-focal-artefact" aria-label={`Focal artefact: ${artefact.title}`}>
       <div className="ps-focal-artefact-head">
         <h3>{artefact.title}</h3>
         <span className="ps-honesty-badges" aria-label="How this was produced">
           <span data-honesty={artefact.honesty.mode}>{artefact.honesty.label}</span>
+          {artefact.verification ? (
+            <span data-honesty={verifyFailed ? "gap" : "model"}>
+              {verifyFailed ? "Verify failed" : "Automatically tested"}
+            </span>
+          ) : null}
         </span>
       </div>
       <p>{artefact.summary}</p>
+      {artefact.verification && artefact.verification.length > 0 ? (
+        <ul className="ps-proto-checks" aria-label="Static prototype checks">
+          {artefact.verification.map((c) => (
+            <li key={c.id} data-passed={c.passed ? "true" : "false"}>
+              {c.passed ? "Pass" : "Fail"} — {c.label}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      {artefact.html ? (
+        <iframe
+          title={artefact.title}
+          className="ps-proto-frame"
+          srcDoc={artefact.html}
+          sandbox="allow-scripts"
+        />
+      ) : null}
       {artefact.gaps.length > 0 ? (
         <ul className="ps-focal-gaps">
           {artefact.gaps.map((g) => (
@@ -515,6 +540,18 @@ function ActWork({
             onClick={actions.onPrepare}
           >
             {actions.preparePending ? "Preparing…" : "Prepare decision pack"}
+          </button>
+        ) : null}
+        {actions.next.id === "approve_prototype" ? (
+          <button
+            type="button"
+            className="cc-btn cc-btn-primary mt-3"
+            disabled={actions.prototypePending}
+            onClick={actions.onApprovePrototype}
+          >
+            {actions.prototypePending
+              ? "Building prototype…"
+              : "Approve sandboxed HTML prototype"}
           </button>
         ) : null}
         {actions.next.id === "export" || mission.exportBody ? actions.exportSlot : null}

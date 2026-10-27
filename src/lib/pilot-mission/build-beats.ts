@@ -1,14 +1,21 @@
 /**
  * Sequential product-build beats for Act V (P1).
  * Bridges the supervised PSI loop into theatre language — Frame → Research →
- * Options → Decide → Pack — with one focal artefact per beat. Upstream readiness
- * follows the specialist DAG; no second product surface.
+ * Options → Decide → Pack → Prototype — with one focal artefact per beat.
+ * Upstream readiness follows the specialist DAG; no second product surface.
  */
 import { buildPmBrief } from "./pm-brief";
 import { syncTeamWithMission, type PilotSpecialistTask } from "./specialist-team";
 import type { SupervisedMission } from "./types";
 
-export const BUILD_BEAT_IDS = ["frame", "research", "options", "decide", "pack"] as const;
+export const BUILD_BEAT_IDS = [
+  "frame",
+  "research",
+  "options",
+  "decide",
+  "pack",
+  "prototype",
+] as const;
 export type BuildBeatId = (typeof BUILD_BEAT_IDS)[number];
 
 export type BeatHandoffStatus =
@@ -33,6 +40,10 @@ export type FocalArtefact = {
   summary: string;
   honesty: ArtefactHonesty;
   gaps: string[];
+  /** Sandboxed HTML body when the beat produced a prototype (P5). */
+  html?: string | null;
+  /** Static verify rows — failures remain visible. */
+  verification?: Array<{ id: string; label: string; passed: boolean }>;
 };
 
 export type BuildBeatView = {
@@ -89,6 +100,11 @@ const BEAT_META: Record<
     detail: "Decision pack you can inspect and export.",
     taskKeys: ["product_brief", "assemble_pack"],
   },
+  prototype: {
+    label: "Prototype",
+    detail: "Sandboxed HTML of the primary journey — after your go-ahead.",
+    taskKeys: ["approve_prototype", "build_prototype"],
+  },
 };
 
 /** Honesty ladder for the same artefact chrome (P4). Never silent upgrade. */
@@ -135,6 +151,8 @@ function beatDone(mission: SupervisedMission, id: BuildBeatId): boolean {
       return Boolean(mission.approval);
     case "pack":
       return Boolean(mission.artefact) || Boolean(mission.exportBody);
+    case "prototype":
+      return Boolean(mission.prototype);
   }
 }
 
@@ -196,6 +214,17 @@ function handoffFor(
     };
   }
   const relevant = tasks.filter((t) => keys.includes(t.key));
+  if (
+    id === "prototype" &&
+    !done &&
+    upstreamReady &&
+    !mission.prototype
+  ) {
+    return {
+      status: "awaiting_you",
+      detail: "Human gate — approve before the UX Prototype Agent builds sandboxed HTML.",
+    };
+  }
   if (relevant.some((t) => t.status === "awaiting_approval" || t.actor === "human")) {
     return { status: "awaiting_you", detail: "Human gate — nothing advances without your yes." };
   }
@@ -293,6 +322,31 @@ function focalArtefact(
         gaps: [],
       };
     }
+    case "prototype": {
+      const proto = mission.prototype;
+      if (!proto) return null;
+      const failed = proto.checks.filter((c) => !c.passed).map((c) => c.label);
+      const gaps = [
+        ...(proto.failureDetail ? [proto.failureDetail] : []),
+        ...failed,
+      ];
+      return {
+        kind: "prototype_html",
+        title: proto.title,
+        summary: proto.verified
+          ? "Sandboxed HTML prototype — static checks passed. Not a production deploy."
+          : proto.failureDetail ??
+            "Sandboxed HTML prototype — static verify reported failures (visible below).",
+        honesty: {
+          mode: proto.honesty.mode,
+          label: proto.honesty.label,
+          modelId: proto.honesty.modelId,
+        },
+        gaps,
+        html: proto.html,
+        verification: proto.checks,
+      };
+    }
   }
 }
 
@@ -343,7 +397,18 @@ export function buildSequence(mission: SupervisedMission): BuildSequence {
       label: meta.label,
       detail: meta.detail,
       state,
-      owner: id === "decide" ? { label: "You", capabilityId: null, actor: "human" } : owner,
+      owner:
+        id === "decide"
+          ? { label: "You", capabilityId: null, actor: "human" }
+          : id === "prototype" && mission.prototype
+            ? {
+                label: mission.prototype.ownerLabel,
+                capabilityId: mission.prototype.ownerCapabilityId,
+                actor: "specialist" as const,
+              }
+            : id === "prototype" && !done
+              ? { label: "You", capabilityId: null, actor: "human" }
+              : owner,
       contribution: contributionFor(tasks, meta.taskKeys),
       handoff,
       artefact,

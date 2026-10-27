@@ -2554,6 +2554,27 @@
   display: grid;
   gap: 4px;
 }
+.ps-proto-checks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+}
+.ps-proto-checks li[data-passed="true"] {
+  color: #1f4d2e;
+}
+.ps-proto-checks li[data-passed="false"] {
+  color: #7f1d1d;
+  font-weight: 600;
+}
+.ps-proto-frame {
+  width: 100%;
+  min-height: 280px;
+  border: 1px solid var(--psi-border, #dfe5f2);
+  background: #fff;
+}
 .ps-project-shelf {
   list-style: none;
   margin: 0;
