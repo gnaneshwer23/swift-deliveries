@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
 import { ConversationPanel } from "@/components/command/conversation-panel";
-import { SpecialistTeamGraph } from "@/components/command/specialist-team-graph";
+import { MissionTheatre } from "@/components/command/mission-theatre";
 import { SupervisedLearningLoop } from "@/components/command/supervised-learning-loop";
 import {
   approveSupervisedPlan,
@@ -19,18 +19,8 @@ import {
   setSupervisedResearchMode,
 } from "@/lib/pilot-mission.functions";
 import { decisionPackFilenames } from "@/lib/pilot-mission/decision-pack";
-import {
-  buildPmBrief,
-  STAFFING_BAND_LABELS,
-  type PmBrief,
-} from "@/lib/pilot-mission/pm-brief";
-import { RESEARCH_MODE_LABELS, type ResearchMode } from "@/lib/pilot-mission/research-mode";
-import {
-  PROGRESS_STEPS,
-  stepState,
-  type DecisionChoice,
-  type SupervisedMission,
-} from "@/lib/pilot-mission/types";
+import { type ResearchMode } from "@/lib/pilot-mission/research-mode";
+import { type DecisionChoice } from "@/lib/pilot-mission/types";
 
 export const Route = createFileRoute("/_authenticated/command/supervised/$missionId")({
   head: () => ({
@@ -169,7 +159,7 @@ function SupervisedMissionPage() {
   return (
     <CommandShell
       title={mission.brief.question}
-      subtitle={next.detail}
+      subtitle={next.title}
       {...(mission.usageCeiling > 0
         ? {
             usage: {
@@ -182,166 +172,69 @@ function SupervisedMissionPage() {
     >
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <Link to="/command" hash="supervised-brief" className="cc-muted text-sm">
-          ← Product workspace
+          ← Workspace foyer
         </Link>
-        {open ? (
-          <button
-            type="button"
-            className="cc-btn cc-btn-ghost"
-            disabled={cancel.isPending}
-            onClick={() => cancel.mutate()}
-          >
-            Cancel mission
-          </button>
-        ) : null}
-      </div>
-      <ol className="ps-mission-progress" aria-label="Mission progress">
-        {PROGRESS_STEPS.map((step, index) => {
-          const state = stepState(mission.stage, index);
-          return (
-            <li
-              key={step.id}
-              className="ps-progress-step"
-              data-state={state}
-              aria-current={state === "current" ? "step" : undefined}
+        <div className="flex flex-wrap items-center gap-2">
+          {mission.projectId ? (
+            <Link
+              to="/command/product-memory/$projectId"
+              params={{ projectId: mission.projectId }}
+              className="cc-muted text-sm"
             >
-              {state === "done" ? "Done · " : state === "current" ? "Now · " : ""}
-              {step.label}
-            </li>
-          );
-        })}
-      </ol>
-      <PmBriefPanel mission={mission} />
-
-      {mission.team ? (
-        <SpecialistTeamGraph
-          team={mission.team}
-          activity={mission.activity ?? []}
-          evidence={mission.evidence}
-          researchGaps={mission.researchGaps}
-          researchPassCompletedAt={mission.researchPassCompletedAt}
-        />
-      ) : null}
-
-      <section className="cc-panel" id="mission-next-action" aria-label="Next action">
-        <h2 className="cc-panel-title">{next.title}</h2>
-        <p className="cc-muted">{next.detail}</p>
-        {usageWarning ? <p className="cc-error mt-2">{usageWarning}</p> : null}
-        {error ? <p className="cc-error mt-2">{error}</p> : null}
-        <p className="cc-muted mt-2 text-sm">
-          Usage on this mission: {mission.usageConsumed} / {mission.usageCeiling}. Attempts:{" "}
-          {mission.job.attempts}.
-          {mission.proposal
-            ? ` Generation: ${mission.proposal.generation.label}.`
-            : " Comparison has not been stored yet."}
-        </p>
-
-        <section className="mt-4" aria-label="Research mode">
-          <h3 className="cc-panel-title text-base">Research mode</h3>
-          <p className="cc-muted text-sm">
-            Shown before execution. Web results are never invented when a provider is missing.
-          </p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {(Object.keys(RESEARCH_MODE_LABELS) as ResearchMode[]).map((mode) => (
-              <button
-                key={mode}
-                type="button"
-                className={`cc-btn ${mission.researchMode === mode ? "cc-btn-primary" : "cc-btn-secondary"}`}
-                disabled={!open || setResearch.isPending || Boolean(mission.proposal)}
-                onClick={() => setResearch.mutate(mode)}
-              >
-                {RESEARCH_MODE_LABELS[mode]}
-              </button>
-            ))}
-          </div>
-          <ul className="ps-research-tools">
-            {query.data.research.tools.map((tool) => (
-              <li key={tool.id} data-available={tool.available}>
-                <strong>{tool.label}</strong>
-                {!tool.available ? " — unavailable" : ""}
-                <span className="cc-muted block text-sm">{tool.detail}</span>
-              </li>
-            ))}
-          </ul>
-          {query.data.research.blockReason ? (
-            <p className="cc-error mt-2" role="alert">
-              {query.data.research.blockReason}
-            </p>
+              Product memory
+            </Link>
           ) : null}
-          {query.data.research.externalGaps.length ? (
-            <ul className="mt-2 text-sm">
-              {query.data.research.externalGaps.map((gap) => (
-                <li key={gap}>{gap}</li>
-              ))}
-            </ul>
+          {open ? (
+            <button
+              type="button"
+              className="cc-btn cc-btn-ghost"
+              disabled={cancel.isPending}
+              onClick={() => cancel.mutate()}
+            >
+              Cancel mission
+            </button>
           ) : null}
-        </section>
+        </div>
+      </div>
 
-        {next.id === "approve_plan" ? (
-          <button
-            type="button"
-            className="cc-btn cc-btn-primary mt-3"
-            disabled={approvePlan.isPending}
-            onClick={() => approvePlan.mutate()}
-          >
-            {approvePlan.isPending ? "Approving…" : "Approve PM brief & specialist plan"}
-          </button>
-        ) : null}
-        {(next.id === "compare" || next.id === "retry" || next.id === "recover") &&
-        query.data.modelConfigured ? (
-          <label className="cc-muted mt-3 block">
-            <input
-              type="checkbox"
-              checked={consentedScope === query.data.comparisonScope}
-              onChange={(e) =>
-                setConsentedScope(e.target.checked ? query.data.comparisonScope : null)
-              }
-            />{" "}
-            Allow this comparison to send the current brief and evidence to the configured provider
-            and reserve one comparison unit. Unknown provider attempts remain held for
-            reconciliation. This is not approval to deploy or contact customers.
-          </label>
-        ) : null}
-        {next.id === "compare" || next.id === "retry" || next.id === "recover" ? (
-          <button
-            type="button"
-            className="cc-btn cc-btn-primary mt-3"
-            disabled={
-              compare.isPending ||
-              (query.data.modelConfigured && consentedScope !== query.data.comparisonScope) ||
-              (next.id === "recover" && Date.parse(mission.job.leaseUntil ?? "") > Date.now())
-            }
-            onClick={() => compare.mutate()}
-          >
-            {compare.isPending
-              ? "Comparing…"
-              : next.id === "retry"
-                ? "Retry comparison"
-                : "Compare options"}
-          </button>
-        ) : null}
-        {next.id === "artefact" ? (
-          <button
-            type="button"
-            className="cc-btn cc-btn-primary mt-3"
-            disabled={prepare.isPending}
-            onClick={() => prepare.mutate()}
-          >
-            {prepare.isPending ? "Preparing…" : "Prepare decision pack"}
-          </button>
-        ) : null}
-        {next.id === "export" || mission.exportBody ? (
-          <ExportButton
-            recordVersion={mission.version}
-            missionId={missionId}
-            existingMd={mission.exportBody}
-            existingPdf={mission.exportPdfBase64}
-            onError={onError}
-          />
-        ) : null}
-      </section>
+      <MissionTheatre
+        mission={mission}
+        actions={{
+          open,
+          next,
+          usageWarning,
+          error,
+          research: query.data.research,
+          modelConfigured: query.data.modelConfigured,
+          comparisonScope: query.data.comparisonScope,
+          consentedScope,
+          setConsentedScope,
+          approvePending: approvePlan.isPending,
+          onApprove: () => approvePlan.mutate(),
+          setResearchPending: setResearch.isPending,
+          onSetResearch: (mode) => setResearch.mutate(mode),
+          comparePending: compare.isPending,
+          onCompare: () => compare.mutate(),
+          preparePending: prepare.isPending,
+          onPrepare: () => prepare.mutate(),
+          exportSlot:
+            next.id === "export" || mission.exportBody ? (
+              <ExportButton
+                recordVersion={mission.version}
+                missionId={missionId}
+                existingMd={mission.exportBody}
+                existingPdf={mission.exportPdfBase64}
+                onError={onError}
+              />
+            ) : null,
+        }}
+      />
 
-      <ConversationPanel />
+      <details className="ps-legacy mt-4">
+        <summary>Talk to DeliverX (optional · revise beside the mission)</summary>
+        <ConversationPanel currentMissionId={missionId} />
+      </details>
+
       <div
         id="mission-evidence"
         className="ps-record-anchor"
@@ -909,87 +802,3 @@ function RecordStepPending({ title, detail }: { title: string; detail: string })
   );
 }
 
-function PmBriefPanel({ mission }: { mission: SupervisedMission }) {
-  const brief: PmBrief = buildPmBrief(mission);
-  const staffing = brief.team.staffing;
-  return (
-    <section className="cc-panel ps-pm-brief" aria-label="PM brief">
-      <p className="cc-kicker">Initiating PM</p>
-      <h2 className="cc-panel-title">Here’s what I heard</h2>
-      <p className="ps-pm-problem">{brief.problemStatement}</p>
-      <h3 className="cc-panel-title text-base">Plan</h3>
-      <ol className="ps-pm-plan">
-        {brief.whatWillHappen.map((step) => (
-          <li key={step}>{step}</li>
-        ))}
-      </ol>
-      <dl className="ps-pm-meta">
-        <div>
-          <dt>Knowns</dt>
-          <dd>
-            <ul>
-              {brief.knowns.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </dd>
-        </div>
-        <div>
-          <dt>Unknowns</dt>
-          <dd>
-            <ul>
-              {brief.unknowns.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </dd>
-        </div>
-        <div>
-          <dt>Cost band</dt>
-          <dd>
-            {brief.roughCost.band}
-            <span className="cc-muted block text-sm">{brief.roughCost.detail}</span>
-          </dd>
-        </div>
-        <div>
-          <dt>Time band</dt>
-          <dd>
-            {brief.roughTime.label}
-            <span className="cc-muted block text-sm">{brief.roughTime.detail}</span>
-          </dd>
-        </div>
-        <div>
-          <dt>Delivery team</dt>
-          <dd>
-            {brief.team.initiatingAgent} initiating · {staffing.activeSpecialists} Available roles
-            proposed now
-            <span className="cc-muted block text-sm">
-              {STAFFING_BAND_LABELS[staffing.band]} (catalogue intent {staffing.catalogueTargetMin}
-              –{staffing.catalogueTargetMax}). {staffing.reason}
-            </span>
-            {brief.team.activeLabels.length ? (
-              <span className="cc-muted block text-sm">
-                On this plan: {brief.team.activeLabels.join(" · ")}
-              </span>
-            ) : null}
-          </dd>
-        </div>
-        <div>
-          <dt>Research readiness</dt>
-          <dd>
-            {brief.research.stance}
-            <span className="cc-muted block text-sm">{brief.research.toolsSummary}</span>
-          </dd>
-        </div>
-        <div>
-          <dt>Ask you only when</dt>
-          <dd>{brief.askFounderOnlyWhen}</dd>
-        </div>
-        <div>
-          <dt>Honesty</dt>
-          <dd>{brief.honesty}</dd>
-        </div>
-      </dl>
-    </section>
-  );
-}

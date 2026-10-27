@@ -1,6 +1,6 @@
 # Strategy: One-liner → PM brief → living work scene → decision pack
 
-**Status:** Phases **B–E shipped** on `main` (Option C Hybrid + research-first). Phase F voice still deferred.  
+**Status:** Phases **B–E shipped** (mechanics). Experience track continues in `docs/roadmap-briefing-experience.md` (**G1–G3 shipped** Option 2 theatre). Phase F voice still deferred.  
 **Date:** 27 October 2026  
 **Context repo:** `swift-deliveries` · prior Phase B tip `566626c`; C–E land after that tip  
 **Live pain reference:** `/command/supervised/{missionId}` previously felt like a questionnaire, not an agent-staffed build.

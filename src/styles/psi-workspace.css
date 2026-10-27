@@ -2263,3 +2263,220 @@
     animation: none;
   }
 }
+
+/* Briefing theatre (G1) — narrative stage, not ops progress grid */
+.ps-theatre {
+  margin: 8px 0 28px;
+}
+.ps-theatre-acts {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+}
+.ps-theatre-act-btn {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-top: 3px solid #dfe5f2;
+  background: transparent;
+  padding: 12px 8px 10px;
+  cursor: pointer;
+  color: var(--psi-muted);
+  font-size: 12px;
+}
+.ps-theatre-acts li[data-state="done"] .ps-theatre-act-btn {
+  border-top-color: var(--psi-indigo);
+  color: var(--psi-indigo);
+}
+.ps-theatre-acts li[data-state="current"] .ps-theatre-act-btn,
+.ps-theatre-acts li[data-viewing="true"] .ps-theatre-act-btn {
+  border-top-color: var(--psi-ink, #0f172a);
+  color: var(--psi-ink, #0f172a);
+  background: color-mix(in srgb, var(--psi-indigo-soft, #eef1ff) 80%, white);
+  border-radius: 0 0 8px 8px;
+}
+.ps-theatre-act-now {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: 4px;
+  opacity: 0.7;
+}
+.ps-theatre-stage {
+  padding: 4px 0 8px;
+}
+.ps-theatre-title {
+  font-size: 1.45rem;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin: 4px 0 10px;
+}
+.ps-theatre-lede {
+  font-size: 1.05rem;
+  line-height: 1.5;
+  margin: 0 0 14px;
+  max-width: 46rem;
+}
+.ps-honesty-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+}
+.ps-honesty-badges li {
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  padding: 4px 8px;
+  border: 1px solid var(--psi-border, #dfe5f2);
+  border-radius: 999px;
+  color: var(--psi-muted);
+  background: #f8fafc;
+}
+.ps-theatre-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.ps-theatre-columns h3 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--psi-muted);
+  margin: 0 0 8px;
+}
+.ps-theatre-columns ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+}
+.ps-theatre-footnote {
+  margin-top: 14px;
+  font-size: 13px;
+}
+.ps-theatre-footnote > summary {
+  cursor: pointer;
+  color: var(--psi-muted);
+}
+.ps-roadmap-beats {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.ps-roadmap-beats li {
+  padding: 12px 14px;
+  border-left: 3px solid var(--psi-indigo, #3b4cca);
+  background: color-mix(in srgb, var(--psi-surface, #fff) 92%, var(--psi-indigo, #3b4cca) 8%);
+  display: grid;
+  gap: 4px;
+}
+.ps-cast-board {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 10px;
+}
+.ps-cast-board li {
+  padding: 12px;
+  border: 1px solid var(--psi-border, #dfe5f2);
+  border-radius: 12px;
+  background: linear-gradient(165deg, #fff 0%, #f4f7fc 100%);
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+}
+.ps-cast-board li[data-actor="human"] {
+  background: #f7faf7;
+  border-color: #b7c9b7;
+}
+.ps-approve-summary {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+}
+.ps-approve-summary strong {
+  display: inline-block;
+  min-width: 4.5rem;
+  color: var(--psi-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.ps-act-work-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.ps-work-actions {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--psi-border, #dfe5f2);
+}
+.ps-foyer {
+  display: grid;
+  gap: 20px;
+}
+.ps-foyer-resume {
+  display: grid;
+  gap: 10px;
+}
+.ps-foyer-resume-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.ps-foyer-resume-list a {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid var(--psi-border, #dfe5f2);
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  background: #fff;
+}
+.ps-foyer-resume-list a:hover {
+  border-color: var(--psi-indigo, #3b4cca);
+}
+.ps-foyer-resume-list strong {
+  font-size: 15px;
+}
+.ps-nav-lab {
+  opacity: 0.85;
+}
+.ps-nav-lab small {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--psi-muted);
+}
+.ps-mission-cast {
+  margin-bottom: 20px;
+}
+@media (max-width: 720px) {
+  .ps-theatre-acts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ps-theatre-columns {
+    grid-template-columns: 1fr;
+  }
+}

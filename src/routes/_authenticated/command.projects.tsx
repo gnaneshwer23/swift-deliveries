@@ -59,9 +59,13 @@ function CommandProjects() {
   return (
     <CommandShell
       title="Projects"
-      subtitle="Containers for related Investigate / Prototype / Improve missions"
+      subtitle="Product memory shelf — missions, decisions and packs for a case family"
       usage={usage}
     >
+      <p className="cc-muted text-sm mb-4">
+        Supervised missions auto-attach a lightweight project when a family starts. Create another
+        shelf below when you need a separate product thread.
+      </p>
       <section className="cc-panel">
         <h2 className="cc-panel-title">Create project</h2>
         <label className="cc-label" htmlFor="name">

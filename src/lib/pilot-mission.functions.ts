@@ -153,6 +153,42 @@ export const getSupervisedMissionHome = createServerFn({ method: "GET" })
     }
   });
 
+/** Ensure a lightweight wf_projects shelf exists for supervised mission memory (additive). */
+async function ensureMissionProjectMemory(input: {
+  workspaceId: string;
+  userId: string;
+  question: string;
+}): Promise<string | null> {
+  try {
+    const { adminDb } = await import("@/lib/workforce/access.server");
+    const writeDb = await adminDb();
+    const existing = await writeDb
+      .from("wf_projects")
+      .select("id")
+      .eq("workspace_id", input.workspaceId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (existing.error) return null;
+    if (existing.data?.id) return String(existing.data.id);
+    const name = input.question.trim().slice(0, 80) || "Product investigation";
+    const inserted = await writeDb
+      .from("wf_projects")
+      .insert({
+        workspace_id: input.workspaceId,
+        name,
+        description: "Auto-created product memory for a supervised mission family.",
+        created_by: input.userId,
+      })
+      .select("id")
+      .single();
+    if (inserted.error || !inserted.data?.id) return null;
+    return String(inserted.data.id);
+  } catch {
+    return null;
+  }
+}
+
 export const startSupervisedMission = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .validator((data: unknown) => startBriefSchema.parse(data))
@@ -160,6 +196,11 @@ export const startSupervisedMission = createServerFn({ method: "POST" })
     const workspace = await workspaceFor(context.supabase, context.userId);
     const { service } = await serviceFor();
     const remaining = Math.max(0, workspace.usageCeiling - workspace.usageConsumed);
+    const projectId = await ensureMissionProjectMemory({
+      workspaceId: workspace.id,
+      userId: context.userId,
+      question: data.question,
+    });
     const mission = await service.create({
       id: crypto.randomUUID(),
       workspaceId: workspace.id,
@@ -173,6 +214,7 @@ export const startSupervisedMission = createServerFn({ method: "POST" })
       researchMode: data.researchMode as ResearchMode,
       usageCeiling: remaining,
       nowMs: Date.now(),
+      projectId,
     });
     return view(mission, null);
   });

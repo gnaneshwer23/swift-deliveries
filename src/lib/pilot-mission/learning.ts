@@ -42,6 +42,7 @@ export function withLearningDefaults(mission: SupervisedMission): SupervisedMiss
         }
       : null,
     activity: Array.isArray(mission.activity) ? mission.activity : [],
+    projectId: mission.projectId ?? null,
   };
 }
 

@@ -1,6 +1,6 @@
 # Strategy: Briefing theatre → cast & roadmap → approve → living work
 
-**Status:** Planning only — **do not build until founder sign-off.**  
+**Status:** G0 signed (founder Option 2 + defaults). **G1–G3 shipping** on supervised spine; G4/G5 light.  
 **Date:** 27 October 2026  
 **Repo:** `swift-deliveries` · Live: https://www.deliverx.dev  
 **E2E reference mission:** `/command/supervised/e1a95c83-e087-402d-b91e-0455e5f0ce6e`  
@@ -24,7 +24,7 @@ The founder’s desired arc is **not** “improve the dashboard.” It is a **pr
 
 Specialists / Project / Programme pages were left as **side rooms with different jobs** (catalogue, empty containers, long forms + KPI dashboard). That is why it feels like you are “stuck in overview.”
 
-**Do not build UI or product code from this document until the founder chooses an option and signs the open decisions.**
+**G0 closed** with Option 2 and founder defaults (Programme → Lab; ConversationPanel off Overview hero; Specialists = cast first; auto-attach project memory; soften ops chrome; demo on supervised spine).
 
 ---
 
@@ -260,17 +260,17 @@ Why: Phase B–E already bet on supervised as the spine. The gap is **experience
 
 ---
 
-## 9. Phased roadmap (planning — no build yet)
+## 9. Phased roadmap
 
-| Phase | Outcome | Demo criteria (founder can click) | Depends on |
+| Phase | Status | Outcome | Demo criteria (founder can click) |
 | --- | --- | --- | --- |
-| **G0 — Experience contract** | This doc signed; option + open decisions closed | Written approval in chat/doc | Founder |
-| **G1 — Mission theatre** | Acts I–V on supervised URL; one focal CTA; honesty demoted | One-liner → briefing → roadmap → cast → approve → living findings without ops hero chrome | G0; existing PM brief + team + activity events |
-| **G2 — Overview foyer** | Start/resume only; chat/metrics/advanced demoted | First viewport has no honesty essay, no KPI wall | G1 patterns |
-| **G3 — Specialists as cast** | Active mission cast primary; catalogue secondary | From mission, Specialists shows the 4–8 on the plan with contribution lines | G1 cast model |
-| **G4 — Project as memory** | Project page lists missions, decisions, packs | Empty CRUD replaced by shelf for at least one real project | Supervised ↔ project linkage clarity |
-| **G5 — Programme alignment or Lab label** | Either same acts language or explicit Lab demotion | Founder no longer confuses programme form with primary path | G1–G4 stable |
-| **F — Voice** | Still deferred after typed theatre works | — | G1 |
+| **G0 — Experience contract** | **Done** | Option 2 + open decisions closed | Founder chat approval |
+| **G1 — Mission theatre** | **Shipped** | Acts I–V on supervised URL; honesty badges; ops grid demoted | Briefing → strategy → cast → approve → living work |
+| **G2 — Overview foyer** | **Shipped** | Start/resume only; chat/stop/inbox collapsed | First viewport = Continue + one-liner |
+| **G3 — Specialists as cast** | **Shipped** | Active mission cast primary; catalogue Explore | Specialists shows cast for open mission |
+| **G4 — Project as memory** | **Light** | Auto-attach `wf_projects` on mission start; Projects copy updated | New mission gets `projectId` when projects table available |
+| **G5 — Programme Lab** | **Light** | Nav labelled Lab; feature freeze; data kept | Programmes not confused with primary path |
+| **F — Voice** | Deferred | — | After typed theatre |
 
 Prior A–E remain historical delivery; **G\*** is the experience track. Do not claim B–E “done” as the briefing product.
 
@@ -284,35 +284,32 @@ Prior A–E remain historical delivery; **G\*** is the experience track. Do not 
 
 ---
 
-## 10. Open decisions for founder approval
+## 10. Open decisions — closed (founder defaults)
 
-1. **Option 1 vs 2 vs 3?** (Recommendation: **2**)  
-2. **Programme:** demote to Lab in nav now, or keep peer nav but freeze feature work?  
-3. **ConversationPanel on Overview:** remove from home, mission-only, or keep but collapsed?  
-4. **Specialists default:** always require an active mission context, or allow catalogue with empty-state CTA into one-liner?  
-5. **Project linkage:** auto-create a project per supervised mission family, or lazy attach at pack export?  
-6. **Shell metaphor:** keep “Command Centre / Product workspace” naming, or rename to something less ops (e.g. “Workspace” / “Investigations”)?  
-7. **Demo mission for G1:** reuse coworking E2E, or a fresh one-liner with web provider on so Act V shows findings not only gaps?
-
----
-
-## 11. Explicit: do not build yet / what NOT to change
-
-Until G0 sign-off:
-
-- **Do not** implement Act UI, reskins, nav renames, or programme demotion in code.  
-- **Do not** commit or push from this planning work.  
-- **Do not** add migrations for “briefing” entities.  
-- **Do not** expand the 150-role catalogue UX.  
-- **Do not** promote agents office or voice.  
-- **Do not** merge programme and supervised into one schema.  
-- **Do not** rewrite `docs/roadmap-one-liner-pm-brief.md` as “done experience.”  
-- **Do not** force-push or rebase Lovable-connected history.
-
-Safe meanwhile: keep using the live supervised path for evidence; treat honesty gaps as product truth, not UX failure of the honesty policy itself.
+1. **Option 2** Unified briefing IA.  
+2. **Programme:** Lab in nav; freeze feature work; keep data.  
+3. **ConversationPanel:** off Overview hero; collapsed / mission-adjacent.  
+4. **Specialists:** cast for active mission primary; catalogue under Explore.  
+5. **Project:** auto-attach/create lightweight project memory when mission family starts.  
+6. **Shell:** “Command” may stay; reduce LayoutDashboard ops hero feel (Overview → Compass, title Workspace).  
+7. **Demo:** supervised spine; honesty badges not essays; no invented research; no voice; no always-on 150; no agents office primary; no full ZIP.
 
 ---
 
-## 12. One-line ask to the founder
+## 11. Binding constraints (still)
 
-Approve **Option 2** (and the open decisions above) so the next build is a **briefing theatre on the supervised spine**, with Specialists/Project as cast and memory — not another pass at making the ops dashboard prettier.
+- No migrations for briefing entities (document `projectId` only).  
+- No expand 150-role catalogue UX as primary.  
+- No agents office / voice promotion.  
+- No programme↔supervised schema merge.  
+- No force-push / Lovable history rewrite.  
+- Honesty, human gates, no fabricated research — presentation only changed.
+
+---
+
+## 12. Remaining after this ship
+
+- Deeper Project shelf (list missions/packs on the project page beyond auto-link).  
+- Programme acts language if Lab is ever promoted.  
+- Optional further chrome rename away from “Command”.  
+- Voice (F) still deferred.

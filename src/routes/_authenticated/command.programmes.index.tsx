@@ -12,11 +12,11 @@ export const Route = createFileRoute("/_authenticated/command/programmes/")({
   validateSearch: () => ({}),
   head: () => ({
     meta: [
-      { title: "Programmes — DeliverX Command Centre" },
+      { title: "Programmes (Lab) — DeliverX" },
       {
         name: "description",
         content:
-          "Turn a product question into evidence, a decision you approve, and work you can review.",
+          "Lab long-horizon simulation. Primary investigations run on the supervised briefing path.",
       },
     ],
   }),
@@ -100,9 +100,13 @@ function ProgrammesHome() {
 
   return (
     <CommandShell
-      title="Programmes"
-      subtitle="Carry a product question into evidence, a decision you control, and reviewable work."
+      title="Programmes · Lab"
+      subtitle="Long-horizon simulation — demoted while the supervised briefing theatre is the primary path. Data is preserved."
     >
+      <p className="cc-muted text-sm mb-4">
+        Prefer Overview → one-liner → briefing theatre for new product questions. Programme intake
+        stays available here for lab use only.
+      </p>
       {features.isSuccess && !supported ? (
         <section className="cc-panel cc-panel-active-gate">
           <h2 className="cc-panel-title">Programmes are not enabled yet</h2>

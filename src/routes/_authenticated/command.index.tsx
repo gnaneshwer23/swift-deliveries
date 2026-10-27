@@ -2,8 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
-import { WorkspaceOverview } from "@/components/command/workspace-overview";
-import { SupervisedMissionStart } from "@/components/command/supervised-mission-start";
+import { WorkspaceFoyer } from "@/components/command/workspace-foyer";
 import { myProfileQuery } from "@/lib/profile-queries";
 import { commandCentreBootstrapQuery } from "@/lib/workforce-queries";
 import { createMission, createWfProject } from "@/lib/workforce.functions";
@@ -251,9 +250,9 @@ function CommandHome() {
 
   if (isLoading) {
     return (
-      <CommandShell title="Command Centre" subtitle="Loading your product workforce workspace…">
+      <CommandShell title="Workspace" subtitle="Loading…">
         <p className="text-sm" style={{ color: "var(--x-slate-light)" }}>
-          Preparing supervised workforce shell…
+          Preparing your foyer…
         </p>
       </CommandShell>
     );
@@ -261,7 +260,7 @@ function CommandHome() {
 
   if (isError || !data) {
     return (
-      <CommandShell title="Command Centre" subtitle="Could not load workspace">
+      <CommandShell title="Workspace" subtitle="Could not load">
         <div className="cc-panel">
           <h2 className="cc-panel-title">Workspace could not load</h2>
           <p className="cc-muted">
@@ -303,20 +302,28 @@ function CommandHome() {
 
   return (
     <CommandShell
-      title="Product overview"
-      subtitle="Supervised decision loop: objective → evidence → options → decision → approved work → outcome → next mission."
+      title="Workspace"
+      subtitle="Start a product question, or continue one that is waiting on you."
       usage={{
         consumed: data.workspace.usageConsumed,
         ceiling: data.workspace.usageCeiling,
       }}
     >
-      <WorkspaceStopControl workspace={data.workspace} />
-      <OwnerInbox />
-      <ConversationPanel />
-      <WorkspaceOverview />
-      <SupervisedMissionStart />
+      <WorkspaceFoyer />
 
-      <details className="ps-legacy">
+      <details className="ps-legacy mt-6">
+        <summary>Workspace tools (inbox, stop, talk) — not the primary path</summary>
+        <div className="mt-3 grid gap-3">
+          <OwnerInbox />
+          <WorkspaceStopControl workspace={data.workspace} />
+          <details className="ps-legacy">
+            <summary>Talk to DeliverX (optional)</summary>
+            <ConversationPanel />
+          </details>
+        </div>
+      </details>
+
+      <details className="ps-legacy mt-4">
         <summary>Advanced mission planner · discovery, prototypes and product builds</summary>
         <details className="ps-legacy mt-3">
           <summary>Agents office (recent specialist missions — not the primary pilot path)</summary>

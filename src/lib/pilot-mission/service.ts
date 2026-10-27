@@ -438,6 +438,8 @@ export class SupervisedMissionService {
     nowMs: number;
     origin?: MissionOrigin | null;
     researchMode?: ResearchMode;
+    /** Optional product-memory project for this mission family. */
+    projectId?: string | null;
   }): Promise<SupervisedMission> {
     return this.store.save(this.initialMission(input), 0);
   }
@@ -451,6 +453,7 @@ export class SupervisedMissionService {
     nowMs: number;
     origin?: MissionOrigin | null;
     researchMode?: ResearchMode;
+    projectId?: string | null;
   }): SupervisedMission {
     if (!Number.isInteger(input.usageCeiling) || input.usageCeiling < 0) {
       throw new Error("Usage ceiling must be a whole number.");
@@ -492,6 +495,7 @@ export class SupervisedMissionService {
       researchGaps: researchPlan.externalGaps,
       researchPassCompletedAt: null,
       team,
+      projectId: input.projectId ?? null,
       activity: [
         activityEvent({
           at,
@@ -1211,6 +1215,7 @@ export class SupervisedMissionService {
       brief: current.followUp.brief,
       usageCeiling: input.usageCeiling,
       nowMs: input.nowMs,
+      projectId: current.projectId,
       origin: {
         parentMissionId: current.id,
         reviewVersion: latest.version,

@@ -4,11 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   ArrowUpRight,
+  Compass,
+  FlaskConical,
   FolderKanban,
   Inbox,
-  LayoutDashboard,
   Menu,
-  Rocket,
   ShieldCheck,
   UsersRound,
   X,
@@ -20,10 +20,10 @@ import { BrandLogo } from "@/components/brand-logo";
 import "@/styles/psi-workspace.css";
 
 const NAV = [
-  { to: "/command", label: "Overview", icon: LayoutDashboard },
-  { to: "/command/programmes", label: "Programmes", icon: Rocket },
-  { to: "/command/projects", label: "Projects", icon: FolderKanban },
-  { to: "/command/capabilities", label: "Specialists", icon: UsersRound },
+  { to: "/command", label: "Overview", icon: Compass, lab: false },
+  { to: "/command/projects", label: "Projects", icon: FolderKanban, lab: false },
+  { to: "/command/capabilities", label: "Specialists", icon: UsersRound, lab: false },
+  { to: "/command/programmes", label: "Programmes", icon: FlaskConical, lab: true },
 ] as const;
 
 export function CommandShell({
@@ -83,7 +83,7 @@ export function CommandShell({
           </div>
         </div>
         <nav aria-label="Workspace navigation">
-          {NAV.map(({ to, label, icon: Icon }) => {
+          {NAV.map(({ to, label, icon: Icon, lab }) => {
             const active =
               to === "/command"
                 ? pathname === "/command" ||
@@ -95,11 +95,15 @@ export function CommandShell({
                 key={to}
                 to={to}
                 aria-current={active ? "page" : undefined}
-                className={`ps-nav-link ${active ? "is-active" : ""}`}
+                className={`ps-nav-link ${active ? "is-active" : ""}${lab ? " ps-nav-lab" : ""}`}
                 onClick={() => setOpen(false)}
+                title={lab ? "Lab — long-horizon simulation; not the primary path" : undefined}
               >
                 <Icon size={18} />
-                {label}
+                <span>
+                  {label}
+                  {lab ? <small>Lab</small> : null}
+                </span>
               </Link>
             );
           })}

@@ -210,6 +210,11 @@ export type SupervisedMission = {
   team: PilotTeamPlan | null;
   /** Persisted task events only — no fake chat or timer theatre. */
   activity: PilotActivityEvent[];
+  /**
+   * Lightweight product-memory shelf (`wf_projects.id`) for this mission family.
+   * Additive document field — null on older missions until attached.
+   */
+  projectId: string | null;
   updatedAt: string;
 };
 

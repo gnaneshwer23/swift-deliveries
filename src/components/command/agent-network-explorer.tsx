@@ -228,11 +228,14 @@ export function AgentNetworkExplorer() {
           </div>
         </div>
       </header>
-      <div className="an-heading">
+      <div className="an-heading" id="explore-bench">
         <div>
-          <p>Product Super Intelligence</p>
-          <h1>Your specialist network.</h1>
-          <span>Explore roles. Inspect their contribution. Follow work through your product.</span>
+          <p>Explore the bench</p>
+          <h1>Specialist catalogue</h1>
+          <span>
+            Secondary to the active cast above. Browse roles when you need the wider bench — not as
+            the default story.
+          </span>
         </div>
         <div className="an-summary">
           <strong>
