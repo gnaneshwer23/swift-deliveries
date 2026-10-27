@@ -676,7 +676,6 @@ export const decideStageGate = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { workspace } = await ensureWorkspace(supabase, userId);
     const db = wfDb(supabase);
-    const writeDb = await adminDb();
 
     const bundle = await loadMissionBundle(supabase, workspace.id, data.missionId);
     const gate = bundle.tasks.find((t) => t.id === data.taskId);
@@ -693,71 +692,77 @@ export const decideStageGate = createServerFn({ method: "POST" })
 
     const now = new Date().toISOString();
     const approve = data.decision === "approve";
-    const updated = await writeDb
-      .from("wf_mission_tasks")
-      .update({
-        status: approve ? "completed" : "failed",
-        completed_at: now,
-        updated_at: now,
-        evidence_notes: [
-          {
-            classification: "sourced_facts",
-            statement: `${approve ? "Approved" : "Rejected"} by operator${data.note?.trim() ? `: ${data.note.trim()}` : "."}`,
-            source: "operator.gate_decision",
-          },
-        ],
-      })
-      .eq("id", gate.id)
-      .in("status", ["blocked", "pending"])
-      .select("id");
-    if (!(updated.data ?? []).length) throw new Error("This gate has already been decided.");
-
-    await writeDb.from("wf_approvals").insert({
-      mission_id: data.missionId,
-      workspace_id: workspace.id,
-      kind: "plan",
-      status: approve ? "approved" : "rejected",
-      decided_by: userId,
-      decided_at: now,
-      note: `Stage gate ${approve ? "approved" : "rejected"}: ${gate.title}${data.note?.trim() ? ` — ${data.note.trim()}` : ""} [gate:${gate.key}]`,
-    });
-    // Approved inputs become human-reviewed: the operator has signed off on them.
-    if (approve) {
-      const reviewedIds = bundle.artefacts
-        .filter(
-          (a) =>
-            a.taskId &&
-            gate.dependsOn.includes(bundle.tasks.find((t) => t.id === a.taskId)?.key ?? ""),
-        )
-        .filter((a) => !a.qualityLabels.includes("human_reviewed"));
-      for (const a of reviewedIds) {
-        await writeDb
-          .from("wf_artefacts")
-          .update({ quality_labels: [...a.qualityLabels, "human_reviewed"], updated_at: now })
-          .eq("id", a.id);
-      }
-    }
-    // A pause or cancel that landed meanwhile keeps its status.
-    await writeDb
-      .from("wf_missions")
-      .update({ status: "queued", updated_at: now })
-      .eq("id", data.missionId)
-      .eq("workspace_id", workspace.id)
-      .in("status", ["queued", "running", "blocked"]);
-    await audit(db, {
-      workspaceId: workspace.id,
-      missionId: data.missionId,
-      actorId: userId,
-      eventType: approve ? "gate.approved" : "gate.rejected",
-      entityType: "task",
-      entityId: gate.id,
-      metadata: { gate: gate.key, note: data.note ?? null },
-    });
-    // The founder's decision becomes part of the product's memory.
+    // The decision, its effects and its place in the product's memory commit together.
     const { neonTransaction } = await import("@/lib/db/neon.server");
     const { recordMemory } = await import("@/lib/workforce/product-memory.server");
-    await neonTransaction((_tx, query) =>
-      recordMemory(
+    await neonTransaction(async (tx, query) => {
+      // Builder calls return errors instead of throwing; any error must abort the whole decision.
+      const must = <T extends { error?: { message: string } | null }>(res: T): T => {
+        if (res.error) throw new Error(res.error.message);
+        return res;
+      };
+      await lockMission(query, workspace.id, data.missionId);
+      const updated = must(
+        await tx
+          .from("wf_mission_tasks")
+          .update({
+            status: approve ? "completed" : "failed",
+            completed_at: now,
+            updated_at: now,
+            evidence_notes: [
+              {
+                classification: "sourced_facts",
+                statement: `${approve ? "Approved" : "Rejected"} by operator${data.note?.trim() ? `: ${data.note.trim()}` : "."}`,
+                source: "operator.gate_decision",
+              },
+            ],
+          })
+          .eq("id", gate.id)
+          .in("status", ["blocked", "pending"])
+          .select("id"),
+      );
+      if (!((updated.data as unknown[] | null) ?? []).length)
+        throw new Error("This gate has already been decided.");
+
+      must(
+        await tx.from("wf_approvals").insert({
+          mission_id: data.missionId,
+          workspace_id: workspace.id,
+          kind: "plan",
+          status: approve ? "approved" : "rejected",
+          decided_by: userId,
+          decided_at: now,
+          note: `Stage gate ${approve ? "approved" : "rejected"}: ${gate.title}${data.note?.trim() ? ` — ${data.note.trim()}` : ""} [gate:${gate.key}]`,
+        }),
+      );
+      // Approved inputs become human-reviewed: the operator has signed off on them.
+      if (approve) {
+        const reviewed = bundle.artefacts
+          .filter(
+            (a) =>
+              a.taskId &&
+              gate.dependsOn.includes(bundle.tasks.find((t) => t.id === a.taskId)?.key ?? ""),
+          )
+          .filter((a) => !a.qualityLabels.includes("human_reviewed"));
+        for (const a of reviewed)
+          must(
+            await tx
+              .from("wf_artefacts")
+              .update({ quality_labels: [...a.qualityLabels, "human_reviewed"], updated_at: now })
+              .eq("id", a.id),
+          );
+      }
+      // A pause or cancel that landed meanwhile keeps its status.
+      must(
+        await tx
+          .from("wf_missions")
+          .update({ status: "queued", updated_at: now })
+          .eq("id", data.missionId)
+          .eq("workspace_id", workspace.id)
+          .in("status", ["queued", "running", "blocked"]),
+      );
+      // The founder's decision becomes part of the product's memory.
+      await recordMemory(
         query,
         {
           workspaceId: workspace.id,
@@ -767,8 +772,17 @@ export const decideStageGate = createServerFn({ method: "POST" })
           originId: gate.id,
         },
         [decisionMemory(gate, approve, data.note)],
-      ),
-    );
+      );
+    });
+    await audit(db, {
+      workspaceId: workspace.id,
+      missionId: data.missionId,
+      actorId: userId,
+      eventType: approve ? "gate.approved" : "gate.rejected",
+      entityType: "task",
+      entityId: gate.id,
+      metadata: { gate: gate.key, note: data.note ?? null },
+    });
     await (
       await import("@/lib/workforce/worker.server")
     ).kickWorker({ workspaceId: workspace.id, missionId: data.missionId });

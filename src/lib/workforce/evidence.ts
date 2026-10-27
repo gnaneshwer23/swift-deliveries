@@ -175,18 +175,26 @@ export function evidenceForPrompt(evidence: readonly WfEvidence[]): {
 const RESEARCH_MATERIAL =
   /\b(interview(s|ed)?|survey(s|ed)?|respondents?|questionnaire|focus group|user research|spoke (to|with)|calls? with|call notes)\b/i;
 
+const NEGATED = /\b(no|not|never|none|without|haven't|hasn't|didn't|don't|do not|yet to)\b/i;
+
 /**
  * True when the evidence text a step was actually shown records interviews,
  * surveys or calls. Only then may an output describe such research; an
- * unrelated note, or a phrase cut off by the budget, never excuses it. The
- * output checks' own research patterns count too, so both sides share one
- * vocabulary.
+ * unrelated note, or a phrase cut off by the budget, never excuses it. A
+ * sentence counts only when it states the research affirmatively, so "no
+ * interviews yet" or "do not say participants said that" does not. The output
+ * checks' own research patterns count too, so both sides share one vocabulary.
  */
 export function includesResearchMaterial(
   sent: ReadonlyArray<{ title: string; text: string }>,
 ): boolean {
-  return sent.some(({ title, text }) => {
-    const shown = `${title}\n${text}`;
-    return RESEARCH_MATERIAL.test(shown) || INVENTED_RESEARCH.some((re) => re.test(shown));
-  });
+  return sent.some(({ title, text }) =>
+    `${title}.\n${text}`
+      .split(/(?<=[.!?])\s+|\n+/)
+      .some(
+        (sentence) =>
+          !NEGATED.test(sentence) &&
+          (RESEARCH_MATERIAL.test(sentence) || INVENTED_RESEARCH.some((re) => re.test(sentence))),
+      ),
+  );
 }

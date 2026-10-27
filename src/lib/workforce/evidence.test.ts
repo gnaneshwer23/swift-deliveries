@@ -135,6 +135,12 @@ describe("evidence given to a model", () => {
     // The output checks' research phrases count too: one vocabulary on both sides.
     const toldUs = item({ title: "Notes", content: "Tutors told us evenings are best." });
     expect(includesResearchMaterial(shown([toldUs]))).toBe(true);
+    // A negated or instructional mention is not a record of research.
+    const none = item({
+      title: "Plan",
+      content: "No interviews yet. Do not say participants said that.",
+    });
+    expect(includesResearchMaterial(shown([none]))).toBe(false);
     // Evidence the step was not given, or text cut off by the budget, does not count.
     expect(includesResearchMaterial([])).toBe(false);
     const late = item({

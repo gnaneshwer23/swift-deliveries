@@ -112,8 +112,9 @@ function ProductMemoryPage() {
           ) : (
             <section className="cc-panel">
               <p className="cc-muted">
-                Nothing remembered yet. Memory fills in as missions on this product finish model
-                steps, you decide gates, or you add evidence.
+                {retiredCount && !showRetired
+                  ? "No current entries remain. Show retired entries above to see this product's history."
+                  : "Nothing remembered yet. Memory fills in as missions on this product finish model steps, you decide gates, or you add evidence."}
               </p>
             </section>
           )}

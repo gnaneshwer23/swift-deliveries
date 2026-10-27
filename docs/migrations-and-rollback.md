@@ -157,6 +157,9 @@ Rollback: redeploy the earlier build and leave the table; earlier builds never r
 2. Drop the table only when it is empty. If it holds rows, they are founder records: export them under the owner's data-handling instructions first, or keep the table.
 
 ```sql
+begin;
+-- Blocks every read and write until the transaction ends, so no row can arrive between the check and the drop.
+lock table public.wf_mission_evidence in access exclusive mode;
 do $$
 begin
   if exists (select 1 from public.wf_mission_evidence) then
@@ -164,13 +167,14 @@ begin
   end if;
   drop table public.wf_mission_evidence;
 end $$;
+commit;
 ```
 
 3. Update the ledger with the date, the reason and the snapshot ID.
 
 ## 0028 product memory
 
-Adds `wf_product_memory`: what the team has learned about one product (a project) across missions. Each entry keeps the label it was written with (sourced fact, assumption, inference, speculative, requirement, decision or source), its source, where it came from and when it was first and last seen. A partial unique index keeps one current entry per product, kind and statement; retired entries stay as history. Server role only, row-level security on.
+Adds `wf_product_memory`: what the team has learned about one product (a project) across missions. Each entry keeps the label it was written with (sourced fact, assumption, inference, speculative, requirement, decision or source), its source, where it came from and when it was first and last seen. A partial unique index keeps one current entry per product, kind and statement; retired entries stay as history. The missions an entry was first and last seen in are held to its product by composite keys on `wf_missions (id, project_id)`; deleting a mission clears only that reference (`ON DELETE SET NULL (column)`, Postgres 15+; Neon runs 18). Server role only, row-level security on.
 
 It also tightens 0027, as the review of #42 asked:
 
@@ -188,6 +192,9 @@ Rollback: redeploy the earlier build and leave everything in place; earlier buil
 2. Drop the table only when it is empty. Memory is derived from artefacts, decisions and evidence that stay in their own tables, but it records when each entry was first and last seen, which cannot be rebuilt. Export it under the owner's data-handling instructions first, or keep the table.
 
 ```sql
+begin;
+-- Blocks every read and write until the transaction ends, so no row can arrive between the check and the drop.
+lock table public.wf_product_memory in access exclusive mode;
 do $$
 begin
   if exists (select 1 from public.wf_product_memory) then
@@ -195,6 +202,7 @@ begin
   end if;
   drop table public.wf_product_memory;
 end $$;
+commit;
 ```
 
 3. The 0027 constraints and the two unique indexes can stay; they only refuse rows that break workspace isolation or provenance. To remove them anyway: `alter table public.wf_mission_evidence drop constraint if exists wf_mission_evidence_mission_workspace_fkey, drop constraint if exists wf_mission_evidence_hash_check;` then `drop index if exists public.wf_missions_id_workspace_uidx, public.wf_projects_id_workspace_uidx;`.

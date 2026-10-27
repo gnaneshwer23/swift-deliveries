@@ -79,13 +79,20 @@ function section(markdown: string, heading: string): string | undefined {
 }
 
 /** A sourced fact names a source that was among the role's inputs. */
+/** A source name as compared: case, spacing and closing punctuation do not matter. */
+const sourceKey = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .replace(/[.;:,\s]+$/, "")
+    .trim();
+
+/** The cited name must be one of the given inputs exactly; a fragment of one is not a source. */
 function citesKnownSource(line: string, sources: readonly string[]): boolean {
-  const cited = SOURCE.exec(line)?.[1]?.toLowerCase().trim();
+  const cited = SOURCE.exec(line)?.[1];
   if (!cited) return false;
-  return sources.some((s) => {
-    const name = s.toLowerCase().trim();
-    return name.length > 2 && (cited.includes(name) || name.includes(cited));
-  });
+  const key = sourceKey(cited);
+  return sources.some((s) => sourceKey(s) === key);
 }
 
 /** Every bullet in the section carries an evidence label; sourced facts cite a given input. */
@@ -123,7 +130,8 @@ function numbersAreBacked(
     failures.push(`${heading}: ${bare.length} figure(s) neither sourced nor labelled`);
 }
 
-const LINE_LABEL = new RegExp(`^\\s*(?:[-*]\\s*)?\\[(${EVIDENCE_LABELS.join("|")})\\]`, "i");
+// A label must be followed by the claim itself.
+const LINE_LABEL = new RegExp(`^\\s*(?:[-*]\\s*)?\\[(${EVIDENCE_LABELS.join("|")})\\]\\s*\\S`, "i");
 const LINE_SOURCED = /^\s*(?:[-*]\s*)?\[sourced fact\]/i;
 
 /**
@@ -140,7 +148,8 @@ function everyClaimLabelled(
     .split(/\r?\n/)
     .map((l) => l.trim())
     .filter(Boolean);
-  const unlabelled = lines.filter((l) => !LINE_LABEL.test(l));
+  // Sub-headings organise claims; they are not claims themselves.
+  const unlabelled = lines.filter((l) => !/^#{1,6}\s/.test(l) && !LINE_LABEL.test(l));
   if (unlabelled.length)
     failures.push(`${heading}: ${unlabelled.length} claim(s) without an evidence label`);
   const sourced = lines.filter((l) => LINE_SOURCED.test(l));

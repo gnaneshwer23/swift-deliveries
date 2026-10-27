@@ -159,6 +159,8 @@ describe.skipIf(!url)("product memory against a real database", () => {
     expect(constraints.map((c) => c["conname"])).toEqual([
       "wf_mission_evidence_hash_check",
       "wf_mission_evidence_mission_workspace_fkey",
+      "wf_product_memory_first_mission_fkey",
+      "wf_product_memory_last_mission_fkey",
       "wf_product_memory_project_id_workspace_id_fkey",
     ]);
   });

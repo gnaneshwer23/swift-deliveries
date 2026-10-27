@@ -99,6 +99,35 @@ describe("memory extraction", () => {
     ]);
   });
 
+  it("reads citations mid-line, keeps facts from different sources apart, and accepts suffixed headings", () => {
+    const md = `## Findings
+- [Sourced fact] Tutors reschedule weekly (Source: Call notes), mostly on Sundays.
+- [Sourced fact] Tutors reschedule weekly (Source: Survey sheet).
+
+## Requirements (first release)
+- R1: A student can book a slot.`;
+    expect(extractMemory(md)).toEqual([
+      {
+        kind: "sourced_fact",
+        statement: "Tutors reschedule weekly , mostly on Sundays.",
+        citation: "Call notes",
+        refKey: null,
+      },
+      {
+        kind: "sourced_fact",
+        statement: "Tutors reschedule weekly",
+        citation: "Survey sheet",
+        refKey: null,
+      },
+      {
+        kind: "requirement",
+        statement: "A student can book a slot.",
+        citation: null,
+        refKey: "R1",
+      },
+    ]);
+  });
+
   it("never keeps text that may hold personal identifiers", () => {
     const md =
       "## Findings\n- [Inference] Patient 943 476 5919 prefers evenings.\n- [Inference] Fine.";
@@ -109,6 +138,7 @@ describe("memory extraction", () => {
     const a = { kind: "inference" as const, statement: "Tutors   Lose bookings.", citation: null };
     const b = { kind: "inference" as const, statement: "tutors lose bookings", citation: null };
     expect(memoryMatchKey(a)).toBe(memoryMatchKey(b));
+    expect(memoryMatchKey({ ...a, statement: "Tutors lose bookings?" })).toBe(memoryMatchKey(b));
     // The same statement from a different source is a different fact.
     expect(memoryMatchKey({ ...a, kind: "sourced_fact", citation: "X" })).not.toBe(
       memoryMatchKey({ ...a, kind: "sourced_fact", citation: "Y" }),
@@ -159,6 +189,8 @@ describe("memory given to a model", () => {
       }),
       entry({ kind: "source", statement: "Call notes", retiredAt: "2026-10-01" }),
       entry({ kind: "source", statement: "Pricing sheet" }),
+      entry({ kind: "sourced_fact", statement: "Plans start at £10", citation: "Pricing sheet" }),
+      entry({ kind: "source", statement: "Unused notes" }),
       entry({ statement: "From this mission", firstMissionId: "this" }),
     ];
     const m = memoryForPrompt(entries, "this", now);
@@ -167,9 +199,9 @@ describe("memory given to a model", () => {
       "[Sourced fact] Bookings are by message (Source: Call notes) — last seen 2026-10-26 — possibly stale: its source was withdrawn",
     );
     expect(m.text).not.toContain("From this mission");
-    // Only current founder sources can be cited again.
+    // Only current founder sources cited by a fact the model was shown can be cited again.
     expect(m.citable).toEqual(["Pricing sheet"]);
-    expect(m.included).toBe(2);
+    expect(m.included).toBe(3);
   });
 
   it("keeps memory text inside its block", () => {

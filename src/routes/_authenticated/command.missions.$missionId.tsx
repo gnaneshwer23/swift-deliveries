@@ -70,6 +70,8 @@ function MissionDetail() {
   const [activityKey, setActivityKey] = useState(0);
 
   const invalidate = async () => {
+    // Every action here writes the event log; read it even when no worker is running.
+    setActivityKey((k) => k + 1);
     await queryClient.invalidateQueries({ queryKey: ["command", "mission", missionId] });
     await queryClient.invalidateQueries({ queryKey: ["command", "bootstrap"] });
   };

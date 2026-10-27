@@ -8,6 +8,8 @@ CREATE UNIQUE INDEX IF NOT EXISTS wf_missions_id_workspace_uidx
   ON public.wf_missions (id, workspace_id);
 CREATE UNIQUE INDEX IF NOT EXISTS wf_projects_id_workspace_uidx
   ON public.wf_projects (id, workspace_id);
+CREATE UNIQUE INDEX IF NOT EXISTS wf_missions_id_project_uidx
+  ON public.wf_missions (id, project_id);
 
 DO $$
 BEGIN
@@ -46,8 +48,9 @@ CREATE TABLE IF NOT EXISTS public.wf_product_memory (
   statement_hash text NOT NULL,
   origin_kind text NOT NULL CHECK (origin_kind IN ('evidence', 'artefact', 'gate')),
   origin_id text NOT NULL,
-  first_mission_id uuid REFERENCES public.wf_missions (id) ON DELETE SET NULL,
-  last_mission_id uuid REFERENCES public.wf_missions (id) ON DELETE SET NULL,
+  -- Held to this product by the composite keys below.
+  first_mission_id uuid,
+  last_mission_id uuid,
   first_seen_at timestamptz NOT NULL DEFAULT now(),
   last_seen_at timestamptz NOT NULL DEFAULT now(),
   times_seen integer NOT NULL DEFAULT 1 CHECK (times_seen >= 1),
@@ -56,6 +59,28 @@ CREATE TABLE IF NOT EXISTS public.wf_product_memory (
   FOREIGN KEY (project_id, workspace_id)
     REFERENCES public.wf_projects (id, workspace_id) ON DELETE CASCADE
 );
+-- The missions an entry was seen in belong to its product (and so to its workspace).
+-- Deleting a mission clears only the reference, never the entry.
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'wf_product_memory_first_mission_fkey'
+  ) THEN
+    ALTER TABLE public.wf_product_memory
+      ADD CONSTRAINT wf_product_memory_first_mission_fkey
+      FOREIGN KEY (first_mission_id, project_id)
+      REFERENCES public.wf_missions (id, project_id) ON DELETE SET NULL (first_mission_id);
+  END IF;
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'wf_product_memory_last_mission_fkey'
+  ) THEN
+    ALTER TABLE public.wf_product_memory
+      ADD CONSTRAINT wf_product_memory_last_mission_fkey
+      FOREIGN KEY (last_mission_id, project_id)
+      REFERENCES public.wf_missions (id, project_id) ON DELETE SET NULL (last_mission_id);
+  END IF;
+END $$;
+
 CREATE UNIQUE INDEX IF NOT EXISTS wf_product_memory_current_uidx
   ON public.wf_product_memory (project_id, kind, statement_hash)
   WHERE retired_at IS NULL;

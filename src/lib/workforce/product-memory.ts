@@ -65,7 +65,8 @@ const LABEL_KIND: Record<string, MemoryKind> = {
   speculative: "speculation",
 };
 const LABELLED = /^\s*(?:[-*]\s*)?\[(sourced fact|assumption|inference|speculative)\]\s*(.+)$/i;
-const SOURCE = /\s*\(source:\s*([^)]{3,})\)\s*\.?\s*$/i;
+// The same citation form the output checks accept, wherever it sits in the line.
+const SOURCE = /\s*\(source:\s*([^)]{3,})\)/i;
 const REQUIREMENT = /^\s*[-*]\s*(R\d+)\s*:\s*(.+)$/;
 
 /** The text an entry is matched on: case, spacing and closing punctuation do not matter. */
@@ -73,7 +74,7 @@ export function normaliseStatement(statement: string): string {
   return statement
     .toLowerCase()
     .replace(/\s+/g, " ")
-    .replace(/[.;:,!\s]+$/, "")
+    .replace(/[.;:,!?\s]+$/, "")
     .trim();
 }
 
@@ -93,7 +94,7 @@ export function extractMemory(markdown: string): MemoryDraft[] {
   const push = (d: MemoryDraft) => {
     if (!d.statement || containsLikelyPersonalIdentifiers(`${d.statement} ${d.citation ?? ""}`))
       return;
-    const key = `${d.kind}:${normaliseStatement(d.statement)}`;
+    const key = memoryMatchKey(d);
     if (seen.has(key) || out.length >= MAX_ENTRIES_PER_ARTEFACT) return;
     seen.add(key);
     out.push(d);
@@ -108,13 +109,15 @@ export function extractMemory(markdown: string): MemoryDraft[] {
         // A sourced fact without its source is kept only as what it can claim to be.
         push({
           kind: kind === "sourced_fact" && !citation ? "assumption" : kind,
-          statement: clip(text.replace(SOURCE, "")),
+          statement: clip(text.replace(SOURCE, " ")).replace(/\s+([.;,])$/, ""),
           citation: citation ? clip(citation) : null,
           refKey: null,
         });
         continue;
       }
-      const req = heading === "requirements" ? REQUIREMENT.exec(line) : null;
+      // Headings match as the contract checker matches them: "Requirements" or "Requirements …".
+      const inRequirements = heading === "requirements" || heading.startsWith("requirements ");
+      const req = inRequirements ? REQUIREMENT.exec(line) : null;
       if (req)
         push({ kind: "requirement", statement: clip(req[2]!), citation: null, refKey: req[1]! });
     }
@@ -202,13 +205,14 @@ export function memoryForPrompt(
     .sort((a, b) => b.lastSeenAt.localeCompare(a.lastSeenAt));
   let budget = MAX_MEMORY_PROMPT_CHARS;
   const lines: string[] = [];
-  const citable: string[] = [];
+  const currentSources = new Map<string, string>();
+  const cited = new Set<string>();
   for (const e of current) {
     // Screened again at use, so a stricter screen also covers older entries.
     if (containsLikelyPersonalIdentifiers(`${e.statement} ${e.citation ?? ""}`)) continue;
     const s = staleness(e, withdrawn, now);
     if (e.kind === "source") {
-      if (!s.stale) citable.push(e.statement);
+      if (!s.stale) currentSources.set(e.statement.toLowerCase(), e.statement);
       continue;
     }
     const label =
@@ -219,7 +223,10 @@ export function memoryForPrompt(
     if (line.length > budget) break;
     budget -= line.length;
     lines.push(line);
+    if (e.citation) cited.add(e.citation.toLowerCase());
   }
+  // A founder source can be cited again only where the model was shown a fact that cites it.
+  const citable = [...currentSources].filter(([k]) => cited.has(k)).map(([, title]) => title);
   // The block cannot be closed from inside; entries stay data however they are written.
   const text = lines.join("\n").replace(/<\/product_memory/gi, "<\\/product_memory");
   return { text, citable, included: lines.length };
