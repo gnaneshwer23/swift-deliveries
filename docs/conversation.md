@@ -42,7 +42,21 @@ Any line you sent can be corrected. The correction is kept as a new line, marked
 
 A mission drafted from a card records `via: "conversation"` on its `mission.created` event, and the activity log says so. The server records that only after checking that the latest card in the founder's own live conversation is a brief. If the card has moved on, drafting is refused. If the card was for a new product, the product and its first mission are created in one transaction, so a failure leaves neither behind.
 
+## Voice (Phase 4b)
+
+Voice is push-to-talk. What you say becomes a transcript line (marked "spoken") and goes through exactly the same path as typing, so everything above applies unchanged. In particular, spoken numbers must be ticked in writing, and nothing is approved by voice.
+
+- **Off until switched on.** Voice needs `DXSI_VOICE_ENABLED=true`, `OPENAI_API_KEY`, and a transcription model in `DXSI_VOICE_TRANSCRIBE_MODEL` that is listed in `DXSI_MODEL_ALLOWLIST`. There is no default model. If anything is missing, the panel says what, and typing works as before.
+- **Transcription only.** The provider is given a transcription session, not a conversational model, so it only writes down what was said. Replies come from the same deterministic interpreter as typed messages and are read aloud by the browser's own speech, so the reply you hear is exactly the reply written.
+- **Permission first.** Nothing is captured until you click **Use voice**, read what happens to your audio, click **Turn voice on**, and grant the browser's microphone permission.
+- **Push-to-talk.** The microphone track is muted except between **Talk** and **Send what I said**. A red dot and "Recording" show while it is open. At each Talk the provider's input buffer is cleared, so only that turn is transcribed.
+- **No audio kept.** Audio streams to the provider for transcription and is never stored by DeliverX. Only the written transcript is saved, for the retention period you chose.
+- **The key stays on the server.** The browser connects with a token minted per session by `startVoiceSession`. The token is valid for 60 seconds, bound to a transcription-only session, and sent with a hashed user id for the provider's abuse monitoring. Each mint is audited (`voice.session_started`, with the model), and a workspace can mint at most 20 in 10 minutes.
+- **Interrupting is not cancelling.** Pressing Talk or **Stop speaking** only silences the spoken reply. **Turn voice off** only ends the voice session. Neither, nor a dropped connection, touches a mission: the voice session (`voice-link.ts`) has no way to reach one.
+- **Reconnecting.** If the connection drops, voice reconnects up to three times with a fresh token. A sentence cut off mid-turn is reported, not guessed at. If it can't reconnect, the conversation is untouched and typing carries on.
+
+The provider connection (`voice-webrtc.ts`) follows OpenAI's documented WebRTC and transcription-session flow. It has not yet been exercised against the live API, because no key is configured. The session logic around it is covered by tests with a fake connection.
+
 ## Still to come
 
-- **Phase 4b:** voice, through server-minted short-lived provider tokens. It needs the voice provider key and model to be configured.
 - **Phase 4c:** measurements of recognition accuracy, response latency and interruptions.

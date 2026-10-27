@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth/middleware";
 import { ensureWorkspace } from "@/lib/workforce/access.server";
+import { wfDb } from "@/lib/workforce/db";
 import type { UnderstoodCard } from "@/lib/conversation/interpret";
 import {
   DEFAULT_RETENTION_DAYS,
@@ -131,4 +132,66 @@ export const deleteConversation = createServerFn({ method: "POST" })
         : false,
     );
     return { deleted };
+  });
+
+export type VoiceAvailability = {
+  enabled: boolean;
+  /** Why voice is switched on but cannot run, if it is. Never a secret. */
+  problem: string | null;
+  /** Seconds a minted session token stays valid for starting a session. */
+  secretSeconds: number;
+};
+
+/** Whether voice can be offered. Typing always works whatever this says. */
+export const getVoiceAvailability = createServerFn({ method: "GET" })
+  .middleware([requireAuth])
+  .handler(async (): Promise<VoiceAvailability> => {
+    const { voiceConfig, VOICE_SECRET_SECONDS } = await import("@/lib/conversation/voice.server");
+    const config = voiceConfig();
+    return {
+      enabled: config.enabled,
+      problem: config.enabled ? null : config.problem,
+      secretSeconds: VOICE_SECRET_SECONDS,
+    };
+  });
+
+/** Session tokens a workspace may mint in the window below. */
+export const VOICE_SESSIONS_PER_WINDOW = 20;
+const VOICE_WINDOW_MINUTES = 10;
+
+/**
+ * Mints a short-lived token for one transcription-only voice session. The
+ * browser connects with it directly; the API key never leaves the server.
+ * Each mint is audited and the rate is capped per workspace.
+ */
+export const startVoiceSession = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .handler(async ({ context }): Promise<{ value: string; expiresAt: number }> => {
+    const { supabase, userId } = context;
+    const { workspace } = await ensureWorkspace(supabase, userId);
+    const { voiceConfig, mintVoiceSecret } = await import("@/lib/conversation/voice.server");
+    const config = voiceConfig();
+    if (!config.enabled) throw new Error(config.problem ?? "Voice is not switched on here.");
+    const { neonTransaction } = await import("@/lib/db/neon.server");
+    const recent = await neonTransaction(async (_tx, query) => {
+      const [row] = await query(
+        `select count(*)::int as n from wf_audit_events
+          where workspace_id = $1::uuid and event_type = 'voice.session_started'
+            and created_at > now() - make_interval(mins => $2)`,
+        [workspace.id, VOICE_WINDOW_MINUTES] as never,
+      );
+      return Number(row?.["n"] ?? 0);
+    });
+    if (recent >= VOICE_SESSIONS_PER_WINDOW)
+      throw new Error("Too many voice sessions just now. Wait a few minutes, or type instead.");
+    const secret = await mintVoiceSecret(config, userId);
+    const { audit } = await import("@/lib/workforce/access.server");
+    await audit(wfDb(supabase), {
+      workspaceId: workspace.id,
+      actorId: userId,
+      eventType: "voice.session_started",
+      entityType: "voice_session",
+      metadata: { model: config.model, mode: "transcription" },
+    });
+    return secret;
   });
