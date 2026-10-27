@@ -160,7 +160,14 @@ export function resolveMission(
     eligible(m.status)
       ? { match, mission: ref(m) }
       : { match: "ineligible" as const, mission: ref(m) };
-  const named = ctx.missions.filter((m) => wordsIn(text, m.title));
+  // The most specific title wins: "Tutor research" over "Tutor" when both are said.
+  const mentioned = ctx.missions.filter((m) => wordsIn(text, m.title));
+  const named = mentioned.filter(
+    (m) =>
+      !mentioned.some(
+        (o) => o !== m && norm(o.title) !== norm(m.title) && wordsIn(norm(o.title), m.title),
+      ),
+  );
   if (named.length === 1) return pick(named[0]!, "named");
   if (named.length > 1) {
     const usable = named.filter((m) => eligible(m.status));
@@ -298,7 +305,7 @@ export function replyFor(card: UnderstoodCard): string {
     }
     case "approval_refused":
       if (card.target.match === "ineligible")
-        return `${targetName(card.target)} has finished, so there is nothing left to approve. In any case, I can't approve anything: approvals need an on-screen click.`;
+        return `${targetName(card.target)} can't be approved in its current state. In any case, I can't approve anything: approvals need an on-screen click.`;
       return "I can't approve anything. Approvals need an on-screen click on the plan or the gate. I can open it for you.";
     case "stop_speech":
       return "Stopped talking. Your missions are unchanged.";

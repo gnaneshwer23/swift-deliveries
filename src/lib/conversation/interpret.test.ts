@@ -210,3 +210,31 @@ describe("heard numbers", () => {
     ]);
   });
 });
+
+describe("missions whose titles overlap", () => {
+  const overlap: ConversationContext = {
+    projects: ctx.projects,
+    missions: [
+      { id: "a", title: "Tutor", status: "running", projectId: "p1" },
+      { id: "b", title: "Tutor research", status: "completed", projectId: "p1" },
+    ],
+  };
+
+  it("takes the most specific title, and says when it cannot take the request", () => {
+    const card = interpret("pause Tutor research", "speech", overlap);
+    expect(card).toMatchObject({
+      kind: "pause",
+      target: { match: "ineligible", mission: { id: "b" } },
+    });
+    expect(interpret("pause Tutor", "speech", overlap)).toMatchObject({
+      target: { match: "named", mission: { id: "a" } },
+    });
+  });
+
+  it("does not claim a mission finished when it can't be approved", () => {
+    const card = interpret("approve the plan for Tutor research", "speech", overlap);
+    expect(replyFor(card)).toBe(
+      "“Tutor research” (completed) can't be approved in its current state. In any case, I can't approve anything: approvals need an on-screen click.",
+    );
+  });
+});
