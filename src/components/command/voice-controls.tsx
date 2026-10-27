@@ -28,11 +28,14 @@ export function VoiceControls({
   speakReplies,
   onSpeakRepliesChange,
   disabled,
+  onBusyChange,
 }: {
   onTranscript: (text: string) => void;
   speakReplies: boolean;
   onSpeakRepliesChange: (on: boolean) => void;
   disabled: boolean;
+  /** True while a spoken turn is in flight, so the panel can hold typing until it lands. */
+  onBusyChange?: (busy: boolean) => void;
 }) {
   const availability = useQuery({
     queryKey: ["command", "voice"],
@@ -45,6 +48,8 @@ export function VoiceControls({
   const [consenting, setConsenting] = useState(false);
   const transcriptRef = useRef(onTranscript);
   transcriptRef.current = onTranscript;
+  const onBusyRef = useRef(onBusyChange);
+  onBusyRef.current = onBusyChange;
   const linkRef = useRef<VoiceLink | null>(null);
 
   useEffect(
@@ -56,7 +61,12 @@ export function VoiceControls({
   );
 
   const voice = availability.data;
-  if (!voice) return null;
+  if (!voice)
+    return availability.isError ? (
+      <p className="text-xs text-slate-500">
+        Voice availability couldn't be checked. Typing works.
+      </p>
+    ) : null;
   if (!voice.enabled)
     return (
       <p className="text-xs text-slate-500">
@@ -72,6 +82,7 @@ export function VoiceControls({
       {
         onPhase: (p) => {
           setPhase(p);
+          onBusyRef.current?.(p === "listening" || p === "transcribing");
           if (p !== "listening" && p !== "transcribing") setPartial("");
         },
         onTranscript: (text) => transcriptRef.current(text),
@@ -100,8 +111,9 @@ export function VoiceControls({
         <div className="text-sm space-y-2">
           <p>
             Your browser will ask to use the microphone. While voice is on, sound is sent to the
-            voice provider for transcription only between Talk and Send. No audio is kept, here or
-            by us; only the written transcript is saved, for the period you chose. For personal
+            voice provider for transcription only between Talk and Send. DeliverX stores no audio;
+            the provider may keep what it receives for a limited time under its own API data policy.
+            Only the written transcript is saved here, for the period you chose. For personal
             details, type instead.
           </p>
           <div className="flex flex-wrap gap-2">
@@ -138,7 +150,7 @@ export function VoiceControls({
               // Talking over the assistant only stops its speech.
               stopSpeaking();
               setNotice(null);
-              link().talk();
+              void link().talk();
             }}
           >
             <Mic className="size-3" aria-hidden="true" /> Talk
@@ -160,6 +172,10 @@ export function VoiceControls({
             className="cc-btn"
             onClick={() => {
               stopSpeaking();
+              if (phase === "listening" || phase === "transcribing")
+                setNotice(
+                  "Voice was turned off before that was sent. Say it again, or type instead.",
+                );
               link().stop();
             }}
           >

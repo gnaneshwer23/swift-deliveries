@@ -1,18 +1,21 @@
 /**
  * The voice session as the panel sees it: connect, talk, send, reconnect,
  * stop. It knows nothing about missions, so nothing it does (dropping,
- * reconnecting, stopping, interrupting) can change one. A finished transcript
- * is handed to the panel, which sends it down the same path as typed text.
- * The connection itself is injected, so all of this is testable without a
- * browser or a provider.
+ * reconnecting, stopping) can change one. A finished transcript is handed to
+ * the panel, which sends it down the same path as typed text. The connection
+ * itself is injected, so all of this is testable without a browser or a
+ * provider.
  */
 
 export type VoicePhase =
   "off" | "connecting" | "ready" | "listening" | "transcribing" | "reconnecting" | "failed";
 
 export type VoiceConnection = {
-  /** Opens the microphone for one turn; nothing is sent before this. */
-  startTurn(): void;
+  /**
+   * Opens the microphone for one turn, once the provider has cleared what came
+   * before; nothing is sent before this.
+   */
+  startTurn(): Promise<void>;
   /** Closes the microphone and asks for the turn's final transcript. */
   endTurn(): void;
   close(): void;
@@ -20,12 +23,15 @@ export type VoiceConnection = {
 
 export type VoiceHandlers = {
   onTranscript(text: string): void;
+  /** The provider could not transcribe the committed turn. */
+  onTranscriptFailed(message: string): void;
   onPartial(text: string): void;
   onDrop(): void;
   onError(message: string): void;
 };
 
-export type Connector = (handlers: VoiceHandlers) => Promise<VoiceConnection>;
+/** Opens a connection. Setup must stop, and release the microphone, once `signal` aborts. */
+export type Connector = (handlers: VoiceHandlers, signal: AbortSignal) => Promise<VoiceConnection>;
 
 export type VoiceLinkOptions = {
   onPhase(phase: VoicePhase): void;
@@ -33,6 +39,7 @@ export type VoiceLinkOptions = {
   onTranscript(text: string): void;
   onPartial?(text: string): void;
   onNotice(message: string): void;
+  /** Reconnect attempts allowed between two completed turns. */
   maxReconnects?: number;
   /** Milliseconds before reconnect attempt n (1-based). */
   backoff?(attempt: number): number;
@@ -53,7 +60,11 @@ export class VoiceLink {
   private conn: VoiceConnection | null = null;
   /** Bumped on every (re)connect and on stop, so stale callbacks are ignored. */
   private generation = 0;
+  private setup: AbortController | null = null;
   private cancelTimeout: (() => void) | null = null;
+  /** Reconnects used since the last completed turn: a connection that keeps dropping gives up. */
+  private reconnectsUsed = 0;
+  private starting = false;
 
   constructor(
     private readonly connect: Connector,
@@ -74,37 +85,66 @@ export class VoiceLink {
     this.cancelTimeout = null;
   }
 
+  /** Retires the current connection: its late events are ignored and its setup is cancelled. */
+  private retire(): number {
+    const generation = ++this.generation;
+    this.clearTimeout();
+    this.setup?.abort();
+    this.setup = null;
+    this.conn?.close();
+    this.conn = null;
+    this.starting = false;
+    return generation;
+  }
+
+  private turnEnded(generation: number) {
+    if (generation !== this.generation || this.phase !== "transcribing") return false;
+    this.clearTimeout();
+    this.set("ready");
+    return true;
+  }
+
   private async open(generation: number): Promise<VoiceConnection> {
-    const conn = await this.connect({
-      onTranscript: (text) => {
-        if (generation !== this.generation || this.phase !== "transcribing") return;
-        this.clearTimeout();
-        this.set("ready");
-        const said = text.trim();
-        if (said) this.opts.onTranscript(said);
-        else this.opts.onNotice("I didn't catch anything. Try again, or type instead.");
+    const setup = new AbortController();
+    this.setup = setup;
+    const conn = await this.connect(
+      {
+        onTranscript: (text) => {
+          if (!this.turnEnded(generation)) return;
+          this.reconnectsUsed = 0;
+          const said = text.trim();
+          if (said) this.opts.onTranscript(said);
+          else this.opts.onNotice("I didn't catch anything. Try again, or type instead.");
+        },
+        onTranscriptFailed: (message) => {
+          if (this.turnEnded(generation))
+            this.opts.onNotice(`${message} Say it again, or type instead.`);
+        },
+        onPartial: (text) => {
+          if (generation === this.generation) this.opts.onPartial?.(text);
+        },
+        onDrop: () => {
+          if (generation === this.generation) void this.reconnect();
+        },
+        onError: (message) => {
+          if (generation === this.generation) this.opts.onNotice(message);
+        },
       },
-      onPartial: (text) => {
-        if (generation === this.generation) this.opts.onPartial?.(text);
-      },
-      onDrop: () => {
-        if (generation === this.generation) void this.reconnect();
-      },
-      onError: (message) => {
-        if (generation === this.generation) this.opts.onNotice(message);
-      },
-    });
-    if (generation !== this.generation) {
+      setup.signal,
+    );
+    if (generation !== this.generation || setup.signal.aborted) {
       // Stopped (or replaced) while connecting: never keep a stray microphone open.
       conn.close();
       throw new Error("stale");
     }
+    this.setup = null;
     return conn;
   }
 
   async start(): Promise<void> {
     if (this.phase !== "off" && this.phase !== "failed") return;
-    const generation = ++this.generation;
+    const generation = this.retire();
+    this.reconnectsUsed = 0;
     this.set("connecting");
     try {
       this.conn = await this.open(generation);
@@ -118,11 +158,17 @@ export class VoiceLink {
     }
   }
 
-  /** Push-to-talk: open the microphone for one turn. */
-  talk(): void {
-    if (this.phase !== "ready" || !this.conn) return;
-    this.conn.startTurn();
-    this.set("listening");
+  /** Push-to-talk: open the microphone for one turn, once the provider is ready for it. */
+  async talk(): Promise<void> {
+    if (this.phase !== "ready" || !this.conn || this.starting) return;
+    const generation = this.generation;
+    this.starting = true;
+    try {
+      await this.conn.startTurn();
+    } finally {
+      if (generation === this.generation) this.starting = false;
+    }
+    if (generation === this.generation && this.phase === "ready") this.set("listening");
   }
 
   /** End the turn and wait for its transcript. */
@@ -133,24 +179,23 @@ export class VoiceLink {
     const generation = this.generation;
     this.cancelTimeout = (this.opts.setTimer ?? defaultTimer)(() => {
       if (generation !== this.generation || this.phase !== "transcribing") return;
-      this.set("ready");
       this.opts.onNotice("The transcript didn't arrive. Say it again, or type instead.");
+      // A fresh connection, so a late transcript of this turn can never pass as the next one.
+      void this.reconnect(true);
     }, this.opts.transcriptTimeoutMs ?? 15_000);
   }
 
-  private async reconnect(): Promise<void> {
+  private async reconnect(afterTimeout = false): Promise<void> {
     if (this.phase === "off" || this.phase === "reconnecting") return;
-    const lostTurn = this.phase === "listening" || this.phase === "transcribing";
-    this.clearTimeout();
+    const lostTurn = !afterTimeout && (this.phase === "listening" || this.phase === "transcribing");
     // A new generation first, so the old connection's own close events are ignored.
-    const generation = ++this.generation;
+    const generation = this.retire();
     this.set("reconnecting");
-    this.conn?.close();
-    this.conn = null;
     if (lostTurn)
       this.opts.onNotice("The connection dropped mid-sentence. Say it again once it's back.");
     const max = this.opts.maxReconnects ?? 3;
-    for (let attempt = 1; attempt <= max; attempt++) {
+    while (this.reconnectsUsed < max) {
+      const attempt = ++this.reconnectsUsed;
       await (this.opts.sleep ?? defaultSleep)(this.opts.backoff?.(attempt) ?? attempt * 1000);
       if (generation !== this.generation) return;
       try {
@@ -167,12 +212,9 @@ export class VoiceLink {
     );
   }
 
-  /** Ends the voice session. The conversation and every mission are left as they are. */
+  /** Ends the voice session, cancelling any setup. The conversation and every mission are left as they are. */
   stop(): void {
-    this.generation++;
-    this.clearTimeout();
-    this.conn?.close();
-    this.conn = null;
+    this.retire();
     this.set("off");
   }
 }

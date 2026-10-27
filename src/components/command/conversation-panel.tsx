@@ -50,6 +50,8 @@ export function ConversationPanel({
   const [text, setText] = useState("");
   const [correcting, setCorrecting] = useState(false);
   const [speakReplies, setSpeakReplies] = useState(true);
+  /** A spoken turn is in flight: typing waits, so lines arrive in the order they were said. */
+  const [voiceBusy, setVoiceBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const state = query.data;
@@ -180,6 +182,7 @@ export function ConversationPanel({
             disabled={say.isPending}
             speakReplies={speakReplies}
             onSpeakRepliesChange={setSpeakReplies}
+            onBusyChange={setVoiceBusy}
             onTranscript={(spoken) => say.mutate({ text: spoken.slice(0, 4000), input: "speech" })}
           />
 
@@ -207,7 +210,7 @@ export function ConversationPanel({
               <button
                 type="submit"
                 className="cc-btn cc-btn-primary"
-                disabled={say.isPending || !text.trim()}
+                disabled={say.isPending || voiceBusy || !text.trim()}
               >
                 {say.isPending ? "Sending…" : correcting ? "Send correction" : "Send"}
               </button>
