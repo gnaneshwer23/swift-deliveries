@@ -19,6 +19,7 @@ import {
   ProductImproveIcon,
 } from "@/components/marketing/motion-product-visuals";
 import { FlaskConical, Rocket, Search, ShieldCheck, Wrench } from "lucide-react";
+import { WorkspaceStopControl } from "@/components/command/workspace-stop";
 import { AgentOffice } from "@/components/command/agent-office";
 import { OWNER_WAITING } from "@/lib/agent-office";
 
@@ -307,6 +308,7 @@ function CommandHome() {
         ceiling: data.workspace.usageCeiling,
       }}
     >
+      <WorkspaceStopControl workspace={data.workspace} />
       <WorkspaceOverview
         pipeline={
           <AgentOffice

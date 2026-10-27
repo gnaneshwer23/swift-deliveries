@@ -38,3 +38,9 @@ Approved missions run on the server, not in the browser. Code: `src/lib/workforc
 
 - That `waitUntil` is reachable from the server-function request on the deployed Vercel runtime. The code falls back to a detached run when it isn't.
 - An end-to-end run on the preview deployment.
+
+## What the owner sees
+
+- **Mission page.** The Activity panel reads the mission's event log by cursor (`getMissionEvents`). It polls every 3 seconds only while the mission is queued or running, and refreshes the mission when new events arrive. It never advances the mission; the worker does that.
+- **Command Centre.** An emergency stop above the agents office stops all work in the workspace, with an optional reason. While stopped, a banner says so and offers "Let work continue". Missions keep their status.
+- **Agents office.** "Latest activity" shows the newest workspace events (`getRecentWorkspaceEvents`), refreshes every 5 seconds while a mission is queued or running, and refreshes the office when something new happens.

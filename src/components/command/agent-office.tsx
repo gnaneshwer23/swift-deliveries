@@ -1,9 +1,12 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AgentOfficeIllustration } from "@/components/illustrations/agent-office-illustration";
 import { podAnchor } from "@/components/illustrations/agent-office-layout";
 import { buildAgentOffice, type OfficeState } from "@/lib/agent-office";
+import { getRecentWorkspaceEvents } from "@/lib/workforce.functions";
+import { describeEvent } from "@/lib/workforce/event-labels";
 import type { WfMission, WfMissionTask } from "@/lib/workforce/types";
 import "@/styles/agent-office.css";
 
@@ -190,7 +193,65 @@ export function AgentOffice({
           )}
         </aside>
       </div>
+      <OfficeActivity
+        missions={missions}
+        tasks={tasks}
+        active={missions.some((m) => m.status === "queued" || m.status === "running")}
+      />
     </section>
+  );
+}
+
+/**
+ * The latest events across the workspace, read from the event log. While
+ * work is active it refreshes, and new events refresh the office itself.
+ */
+function OfficeActivity({
+  missions,
+  tasks,
+  active,
+}: {
+  missions: readonly WfMission[];
+  tasks: readonly WfMissionTask[];
+  active: boolean;
+}) {
+  const queryClient = useQueryClient();
+  const { data, isError } = useQuery({
+    queryKey: ["command", "workspace-events"],
+    queryFn: () => getRecentWorkspaceEvents(),
+    refetchInterval: active ? 5000 : false,
+  });
+  const newest = data?.[0]?.id;
+  const seen = useRef<number | undefined>(undefined);
+  useEffect(() => {
+    if (newest === undefined) return;
+    if (seen.current !== undefined && newest !== seen.current)
+      void queryClient.invalidateQueries({ queryKey: ["command", "bootstrap"] });
+    seen.current = newest;
+  }, [newest, queryClient]);
+
+  if (isError || !data?.length) return null;
+  const titles = new Map(tasks.map((t) => [t.id, t.title]));
+  const missionTitles = new Map(missions.map((m) => [m.id, m.title]));
+  return (
+    <div className="ao-activity">
+      <h3>Latest activity</h3>
+      <ol aria-live="polite">
+        {data.slice(0, 6).map((e) => (
+          <li key={e.id}>
+            <time dateTime={e.createdAt}>
+              {new Date(e.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+            </time>
+            <span>
+              {describeEvent(e, e.taskId ? titles.get(e.taskId) : null).text}
+              {e.missionId && missionTitles.get(e.missionId) ? (
+                <small> · {missionTitles.get(e.missionId)}</small>
+              ) : null}
+            </span>
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }
 

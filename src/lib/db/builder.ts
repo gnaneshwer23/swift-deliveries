@@ -37,7 +37,7 @@ export function toParam(value: unknown, sqlType: string): string | null {
 }
 
 type Op = "select" | "insert" | "update" | "upsert" | "delete";
-type Filter = { col: string; kind: "eq" | "in"; value: unknown };
+type Filter = { col: string; kind: "eq" | "in" | "gt"; value: unknown };
 
 export class QueryBuilder<T = any> implements PromiseLike<DbResult<T>> {
   private op: Op = "select";
@@ -96,6 +96,12 @@ export class QueryBuilder<T = any> implements PromiseLike<DbResult<T>> {
     this.filters.push({ col, kind: "eq", value });
     return this;
   }
+  /** Strictly greater than, for cursor reads. */
+  gt(col: string, value: unknown): this {
+    this.filters.push({ col, kind: "gt", value });
+    return this;
+  }
+
   in(col: string, values: unknown[]): this {
     this.filters.push({ col, kind: "in", value: values });
     return this;
@@ -152,6 +158,7 @@ export class QueryBuilder<T = any> implements PromiseLike<DbResult<T>> {
             if (f.value === null) return `${ident(f.col)} is null`;
             return `${ident(f.col)} = ${bind(f.col, f.value)}`;
           }
+          if (f.kind === "gt") return `${ident(f.col)} > ${bind(f.col, f.value)}`;
           const values = f.value as unknown[];
           if (!values.length) return "false";
           return `${ident(f.col)} in (${values.map((v) => bind(f.col, v)).join(", ")})`;

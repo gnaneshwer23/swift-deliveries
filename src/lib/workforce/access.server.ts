@@ -202,7 +202,7 @@ export function mapMissionEvent(row: any): WfMissionEvent {
     type: row.type,
     actorKind: row.actor_kind,
     actorId: row.actor_id ?? null,
-    data: (row.data ?? {}) as Record<string, unknown>,
+    data: (row.data ?? {}) as WfMissionEvent["data"],
     createdAt: row.created_at,
   };
 }

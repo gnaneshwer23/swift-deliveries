@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
+import { MissionActivity } from "@/components/command/mission-activity";
 import { missionBundleQuery } from "@/lib/workforce-queries";
 import {
   answerClarifications,
@@ -554,6 +555,15 @@ function MissionDetail() {
             </section>
           ) : null}
 
+          <MissionActivity
+            missionId={missionId}
+            active={mission.status === "queued" || mission.status === "running"}
+            tasks={tasks}
+            onProgress={() =>
+              void queryClient.invalidateQueries({ queryKey: ["command", "mission", missionId] })
+            }
+          />
+
           {/* 3. Task Graph & Step Execution */}
           <section className="cc-panel">
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -568,7 +578,7 @@ function MissionDetail() {
                     disabled={step.isPending}
                     onClick={() => step.mutate()}
                   >
-                    {step.isPending ? "Running…" : "Run next step →"}
+                    {step.isPending ? "Running…" : "Run a step now"}
                   </button>
                 )}
                 {(mission.status === "blocked" || mission.status === "queued") &&

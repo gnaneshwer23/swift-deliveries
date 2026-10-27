@@ -270,6 +270,9 @@ export type WfApproval = {
   createdAt: string;
 };
 
+export type JsonValue =
+  string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+
 /** One entry in the append-only mission event log (wf_mission_events). */
 export type WfMissionEvent = {
   id: number;
@@ -279,7 +282,7 @@ export type WfMissionEvent = {
   type: string;
   actorKind: "user" | "worker" | "system";
   actorId: string | null;
-  data: Record<string, unknown>;
+  data: { [key: string]: JsonValue };
   createdAt: string;
 };
 
