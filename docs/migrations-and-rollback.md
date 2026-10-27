@@ -36,6 +36,7 @@ The production Neon branch is `br-fancy-breeze-zatt9ocp` in project `spring-wind
 | 0028 product memory (`wf_product_memory`) and 0027 constraints     | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0029 conflicting evidence (`wf_memory_conflicts`)                  | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0030 conversations (`wf_conversations`, `wf_conversation_turns`)   | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
+| 0031 voice measurements (`wf_voice_metrics`)                       | Not applied — needs owner approval          | Applied 27 Oct 2026                  |
 
 Migrations 0020–0023 were applied to production in a single transaction. The six `psi_*` tables are owned by the server role, have no client grants, and have row-level security enabled. No table rows were read during or after the change.
 
@@ -264,3 +265,25 @@ commit;
 ```
 
 Update the ledger with the date, the reason and the snapshot ID.
+
+## 0031 voice measurements
+
+Adds `wf_voice_metrics`: timings and counts for voice (`docs/conversation.md`). It holds no transcript, audio or words:
+
+- for a spoken turn, the time from Send to transcript and from transcript to reply, and whether the founder later corrected the line, with the share of words changed;
+- otherwise, one row per interruption, dropped connection, reconnect or failed reconnect.
+
+A turn row links to its conversation line while that line exists. Deleting the conversation clears the link (`ON DELETE SET NULL`) and keeps the numbers. Rows older than 180 days are deleted by the worker tick. Server role only, row-level security on. Additive and re-runnable; no existing data is read or changed.
+
+Safe in either order. Code from before 0031 never reads the table. Code after it checks for the table first: until it exists, nothing is measured and the measurements view says so.
+
+Rollback: redeploy the earlier build and leave the table. Only if it must go, with the owner's approval, after the earlier build is live, take a Neon snapshot and record its ID here, then:
+
+```sql
+begin;
+lock table public.wf_voice_metrics in access exclusive mode;
+drop table public.wf_voice_metrics;
+commit;
+```
+
+The table holds only timings and counts, so it can be dropped without exporting. Update the ledger with the date, the reason and the snapshot ID.

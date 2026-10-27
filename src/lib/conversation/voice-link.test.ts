@@ -26,10 +26,18 @@ function link(connect: Connector, extra: Partial<ConstructorParameters<typeof Vo
   const phases: VoicePhase[] = [];
   const said: string[] = [];
   const notices: string[] = [];
+  const events: string[] = [];
+  const timings: number[] = [];
+  let clock = 1000;
   let fire: (() => void) | null = null;
   const v = new VoiceLink(connect, {
     onPhase: (p) => phases.push(p),
-    onTranscript: (t) => said.push(t),
+    onTranscript: (t, ms) => {
+      said.push(t);
+      timings.push(ms);
+    },
+    onConnectionEvent: (e) => events.push(e),
+    now: () => clock,
     onNotice: (n) => notices.push(n),
     sleep: async () => {},
     setTimer: (fn) => {
@@ -38,20 +46,31 @@ function link(connect: Connector, extra: Partial<ConstructorParameters<typeof Vo
     },
     ...extra,
   });
-  return { v, phases, said, notices, timeout: () => fire?.() };
+  return {
+    v,
+    phases,
+    said,
+    notices,
+    events,
+    timings,
+    tick: (ms: number) => (clock += ms),
+    timeout: () => fire?.(),
+  };
 }
 
 describe("voice session", () => {
   it("sends nothing before Talk, and hands over the turn's final transcript", async () => {
     const p = fakeProvider();
-    const { v, said, phases } = link(p.connect);
+    const { v, said, phases, timings, tick } = link(p.connect);
     await v.start();
     expect(p.calls).toEqual([]);
     await v.talk();
     v.send();
+    tick(850);
     p.last().onPartial("Investigate why");
     p.last().onTranscript("  Investigate why parents drop off  ");
     expect(said).toEqual(["Investigate why parents drop off"]);
+    expect(timings).toEqual([850]);
     expect(phases).toEqual(["connecting", "ready", "listening", "transcribing", "ready"]);
     expect(p.calls).toEqual(["talk#1", "send#1"]);
   });
@@ -134,7 +153,7 @@ describe("voice session", () => {
 
   it("reconnects after a dropped connection, and says a turn in flight was lost", async () => {
     const p = fakeProvider();
-    const { v, phases, notices, said } = link(p.connect);
+    const { v, phases, notices, said, events } = link(p.connect);
     await v.start();
     await v.talk();
     p.last().onDrop();
@@ -149,6 +168,7 @@ describe("voice session", () => {
     p.last().onTranscript("Pause it");
     expect(said).toEqual(["Pause it"]);
     expect(p.calls.filter((c) => c.startsWith("close"))).toEqual(["close#1"]);
+    expect(events).toEqual(["drop", "reconnect"]);
   });
 
   it("gives up on a connection that keeps dropping, until a turn completes", async () => {
@@ -174,10 +194,11 @@ describe("voice session", () => {
       handlers.push(h);
       return { startTurn: async () => {}, endTurn() {}, close() {} };
     };
-    const { v, notices } = link(connect, { maxReconnects: 2 });
+    const { v, notices, events } = link(connect, { maxReconnects: 2 });
     await v.start();
     handlers[0]!.onDrop();
     await vi.waitFor(() => expect(v.current).toBe("failed"));
+    expect(events).toEqual(["drop", "reconnect_failed"]);
     expect(n).toBe(3);
     expect(notices.at(-1)).toMatch(/couldn't reconnect\. Your conversation is safe/);
   });

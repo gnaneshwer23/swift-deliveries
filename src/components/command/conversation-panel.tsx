@@ -5,6 +5,7 @@ import { MessageSquare, Pencil, Trash2 } from "lucide-react";
 import {
   deleteConversation,
   getConversation,
+  recordVoiceMeasurement,
   sayToAssistant,
   startConversation,
   type ConversationState,
@@ -48,7 +49,8 @@ export function ConversationPanel({
   const query = useQuery({ queryKey: KEY, queryFn: () => getConversation() });
   const [retention, setRetention] = useState<RetentionDays>(DEFAULT_RETENTION_DAYS);
   const [text, setText] = useState("");
-  const [correcting, setCorrecting] = useState(false);
+  /** The line being corrected, if any. */
+  const [correcting, setCorrecting] = useState<string | null>(null);
   const [speakReplies, setSpeakReplies] = useState(true);
   /** A spoken turn is in flight: typing waits, so lines arrive in the order they were said. */
   const [voiceBusy, setVoiceBusy] = useState(false);
@@ -69,13 +71,21 @@ export function ConversationPanel({
   });
 
   const say = useMutation({
-    mutationFn: (line: { text: string; input: "typed" | "edited" | "speech" }) =>
+    mutationFn: (line: {
+      text: string;
+      input: "typed" | "edited" | "speech";
+      /** For speech: time from Send to transcript, and when the line was sent on. */
+      transcriptMs?: number;
+      sentAt?: number;
+      correctsTurnId?: string | null;
+    }) =>
       sayToAssistant({
         data: {
           conversationId: conversation!.id,
           text: line.text,
           input: line.input,
           currentMissionId: currentMissionId ?? null,
+          correctsTurnId: line.correctsTurnId ?? null,
         },
       }),
     onMutate: () => setError(null),
@@ -86,9 +96,18 @@ export function ConversationPanel({
       if (line.input === "speech") {
         // A spoken request gets a spoken reply: the same words as the written one.
         if (speakReplies) speak(reply.text);
+        if (line.transcriptMs !== undefined && line.sentAt !== undefined)
+          void recordVoiceMeasurement({
+            data: {
+              kind: "turn",
+              turnId: said.id,
+              transcriptMs: Math.round(line.transcriptMs),
+              replyMs: Math.round(performance.now() - line.sentAt),
+            },
+          }).catch(() => undefined);
       } else {
         setText("");
-        setCorrecting(false);
+        setCorrecting(null);
       }
       // Refetched for the new retention date and the server's window of lines.
       void queryClient.invalidateQueries({ queryKey: KEY });
@@ -171,7 +190,7 @@ export function ConversationPanel({
                   conversationId={conversation.id}
                   onCorrect={() => {
                     setText(t.text);
-                    setCorrecting(true);
+                    setCorrecting(t.id);
                   }}
                 />
               ))}
@@ -183,14 +202,26 @@ export function ConversationPanel({
             speakReplies={speakReplies}
             onSpeakRepliesChange={setSpeakReplies}
             onBusyChange={setVoiceBusy}
-            onTranscript={(spoken) => say.mutate({ text: spoken.slice(0, 4000), input: "speech" })}
+            onTranscript={(spoken, transcriptMs) =>
+              say.mutate({
+                text: spoken.slice(0, 4000),
+                input: "speech",
+                transcriptMs,
+                sentAt: performance.now(),
+              })
+            }
           />
 
           <form
             className="space-y-2 mt-3"
             onSubmit={(ev) => {
               ev.preventDefault();
-              if (text.trim()) say.mutate({ text, input: correcting ? "edited" : "typed" });
+              if (text.trim())
+                say.mutate(
+                  correcting
+                    ? { text, input: "edited", correctsTurnId: correcting }
+                    : { text, input: "typed" },
+                );
             }}
           >
             <label className="block text-sm font-medium" htmlFor="conversation-input">
@@ -219,7 +250,7 @@ export function ConversationPanel({
                   type="button"
                   className="cc-btn"
                   onClick={() => {
-                    setCorrecting(false);
+                    setCorrecting(null);
                     setText("");
                   }}
                 >

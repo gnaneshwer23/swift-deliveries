@@ -57,6 +57,13 @@ Voice is push-to-talk. What you say becomes a transcript line (marked "spoken") 
 
 The provider connection (`voice-webrtc.ts`) follows OpenAI's documented WebRTC and transcription-session flow. It has not yet been exercised against the live API, because no key is configured. The session logic around it is covered by tests with a fake connection.
 
-## Still to come
+## Voice measurements (Phase 4c)
 
-- **Phase 4c:** measurements of recognition accuracy, response latency and interruptions.
+**Voice measurements**, under the voice controls, shows the last 30 days for the workspace. Each figure is measured, and the one assumption is named.
+
+- **Speed:** the time from Send to the transcript, and from the transcript to the reply on screen. Both show the typical (median) and the slowest 5% (95th percentile).
+- **Recognition:** the share of spoken lines the founder corrected, and how many words a correction changed on average (word-level edit distance against the words heard). A line nobody corrected is counted as heard right. That is an assumption, not a check, and the view says so.
+- **Interruptions:** how often a spoken reply was stopped or talked over. None of them changed a mission, because they can't (see above).
+- **Connection:** drops, successful reconnects and failed reconnects.
+
+Only timings and counts are stored (`wf_voice_metrics`, migration 0031), never text. A correction is linked to the spoken line it corrects while that line exists. Deleting the conversation clears the link and keeps the numbers. Rows are deleted after 180 days. A failure to record a measurement never affects the conversation.

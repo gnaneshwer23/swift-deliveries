@@ -1,10 +1,26 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { Mic, MicOff, Square, VolumeX } from "lucide-react";
-import { getVoiceAvailability, startVoiceSession } from "@/lib/conversation.functions";
+import {
+  getVoiceAvailability,
+  recordVoiceMeasurement,
+  startVoiceSession,
+} from "@/lib/conversation.functions";
 import { VoiceLink, type VoicePhase } from "@/lib/conversation/voice-link";
+import type { VoiceMeasurementInput } from "@/lib/conversation/voice-metrics";
+import { VoiceMeasurements } from "@/components/command/voice-measurements";
 import { voiceSupported, webrtcConnector } from "@/lib/conversation/voice-webrtc";
-import { canSpeak, stopSpeaking } from "@/lib/conversation/speech";
+import { canSpeak, isSpeaking, stopSpeaking } from "@/lib/conversation/speech";
+
+/** Measurements never get in the way: a failure to record one is ignored. */
+const measure = (data: VoiceMeasurementInput) =>
+  void recordVoiceMeasurement({ data }).catch(() => undefined);
+
+/** Silences the reply; if it was talking, that was an interruption, and is counted. */
+function interrupt() {
+  if (isSpeaking()) measure({ kind: "interruption" });
+  stopSpeaking();
+}
 
 const PHASE_TEXT: Record<VoicePhase, string> = {
   off: "Voice is off.",
@@ -30,7 +46,8 @@ export function VoiceControls({
   disabled,
   onBusyChange,
 }: {
-  onTranscript: (text: string) => void;
+  /** A spoken turn's final transcript and its time from Send, in milliseconds. */
+  onTranscript: (text: string, transcriptMs: number) => void;
   speakReplies: boolean;
   onSpeakRepliesChange: (on: boolean) => void;
   disabled: boolean;
@@ -85,7 +102,8 @@ export function VoiceControls({
           onBusyRef.current?.(p === "listening" || p === "transcribing");
           if (p !== "listening" && p !== "transcribing") setPartial("");
         },
-        onTranscript: (text) => transcriptRef.current(text),
+        onTranscript: (text, ms) => transcriptRef.current(text, ms),
+        onConnectionEvent: (kind) => measure({ kind }),
         onPartial: setPartial,
         onNotice: setNotice,
       },
@@ -148,7 +166,7 @@ export function VoiceControls({
             disabled={disabled}
             onClick={() => {
               // Talking over the assistant only stops its speech.
-              stopSpeaking();
+              interrupt();
               setNotice(null);
               void link().talk();
             }}
@@ -162,7 +180,7 @@ export function VoiceControls({
           </button>
         ) : null}
         {canSpeak() ? (
-          <button type="button" className="cc-btn" onClick={() => stopSpeaking()}>
+          <button type="button" className="cc-btn" onClick={() => interrupt()}>
             <VolumeX className="size-3" aria-hidden="true" /> Stop speaking
           </button>
         ) : null}
@@ -205,6 +223,7 @@ export function VoiceControls({
           {notice}
         </p>
       ) : null}
+      <VoiceMeasurements />
     </div>
   );
 }

@@ -35,8 +35,11 @@ export type Connector = (handlers: VoiceHandlers, signal: AbortSignal) => Promis
 
 export type VoiceLinkOptions = {
   onPhase(phase: VoicePhase): void;
-  /** The final transcript of one turn, ready to send like typed text. */
-  onTranscript(text: string): void;
+  /** The final transcript of one turn, ready to send like typed text, and its time from Send. */
+  onTranscript(text: string, transcriptMs: number): void;
+  /** Connection events, for the voice measurements. */
+  onConnectionEvent?(event: "drop" | "reconnect" | "reconnect_failed"): void;
+  now?(): number;
   onPartial?(text: string): void;
   onNotice(message: string): void;
   /** Reconnect attempts allowed between two completed turns. */
@@ -65,11 +68,16 @@ export class VoiceLink {
   /** Reconnects used since the last completed turn: a connection that keeps dropping gives up. */
   private reconnectsUsed = 0;
   private starting = false;
+  private sentAt = 0;
 
   constructor(
     private readonly connect: Connector,
     private readonly opts: VoiceLinkOptions,
   ) {}
+
+  private clock(): number {
+    return (this.opts.now ?? Date.now)();
+  }
 
   get current(): VoicePhase {
     return this.phase;
@@ -113,7 +121,7 @@ export class VoiceLink {
           if (!this.turnEnded(generation)) return;
           this.reconnectsUsed = 0;
           const said = text.trim();
-          if (said) this.opts.onTranscript(said);
+          if (said) this.opts.onTranscript(said, Math.max(0, this.clock() - this.sentAt));
           else this.opts.onNotice("I didn't catch anything. Try again, or type instead.");
         },
         onTranscriptFailed: (message) => {
@@ -179,6 +187,7 @@ export class VoiceLink {
   send(): void {
     if (this.phase !== "listening" || !this.conn) return;
     this.conn.endTurn();
+    this.sentAt = this.clock();
     this.set("transcribing");
     const generation = this.generation;
     this.cancelTimeout = (this.opts.setTimer ?? defaultTimer)(() => {
@@ -195,6 +204,7 @@ export class VoiceLink {
     // A new generation first, so the old connection's own close events are ignored.
     const generation = this.retire();
     this.set("reconnecting");
+    if (!afterTimeout) this.opts.onConnectionEvent?.("drop");
     if (lostTurn)
       this.opts.onNotice("The connection dropped mid-sentence. Say it again once it's back.");
     const max = this.opts.maxReconnects ?? 3;
@@ -205,12 +215,14 @@ export class VoiceLink {
       try {
         this.conn = await this.open(generation);
         this.set("ready");
+        if (!afterTimeout) this.opts.onConnectionEvent?.("reconnect");
         return;
       } catch {
         if (generation !== this.generation) return;
       }
     }
     this.set("failed");
+    if (!afterTimeout) this.opts.onConnectionEvent?.("reconnect_failed");
     this.opts.onNotice(
       "Voice couldn't reconnect. Your conversation is safe; type, or turn voice on again.",
     );
