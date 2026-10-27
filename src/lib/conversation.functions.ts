@@ -1,0 +1,134 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+import { requireAuth } from "@/lib/auth/middleware";
+import { ensureWorkspace } from "@/lib/workforce/access.server";
+import type { UnderstoodCard } from "@/lib/conversation/interpret";
+import {
+  DEFAULT_RETENTION_DAYS,
+  RETENTION_DAYS,
+  type Conversation,
+  type ConversationTurn,
+  type RetentionDays,
+} from "@/lib/conversation/types";
+
+export type ConversationState = {
+  /** False until migration 0030 is applied; the panel then says conversations are not available. */
+  available: boolean;
+  conversation: Conversation | null;
+  turns: ConversationTurn[];
+  /** Older lines kept but not returned, so the panel can say they exist. */
+  earlierTurns: number;
+};
+
+const retentionSchema = z
+  .number()
+  .int()
+  .refine((d): d is RetentionDays => (RETENTION_DAYS as readonly number[]).includes(d), {
+    message: "Choose 1, 7, 30 or 90 days.",
+  });
+
+async function store() {
+  const { neonTransaction } = await import("@/lib/db/neon.server");
+  const s = await import("@/lib/conversation/store.server");
+  return { neonTransaction, ...s };
+}
+
+/** The founder's current conversation, after deleting every expired one. */
+export const getConversation = createServerFn({ method: "GET" })
+  .middleware([requireAuth])
+  .handler(async ({ context }): Promise<ConversationState> => {
+    const { supabase, userId } = context;
+    const { workspace } = await ensureWorkspace(supabase, userId);
+    const s = await store();
+    return s.neonTransaction(async (_tx, query) => {
+      if (!(await s.conversationsAvailable(query)))
+        return { available: false, conversation: null, turns: [], earlierTurns: 0 };
+      await s.purgeExpiredConversations(query);
+      const latest = await s.latestConversation(query, workspace.id, userId);
+      if (!latest) return { available: true, conversation: null, turns: [], earlierTurns: 0 };
+      const read = await s.readConversation(query, workspace.id, userId, latest.id);
+      return {
+        available: true,
+        conversation: read?.conversation ?? null,
+        turns: read?.turns ?? [],
+        earlierTurns: read?.earlierTurns ?? 0,
+      };
+    });
+  });
+
+export const startConversation = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z.object({ retentionDays: retentionSchema.default(DEFAULT_RETENTION_DAYS) }).parse(data),
+  )
+  .handler(async ({ context, data }): Promise<ConversationState> => {
+    const { supabase, userId } = context;
+    const { workspace } = await ensureWorkspace(supabase, userId);
+    const s = await store();
+    return s.neonTransaction(async (_tx, query) => {
+      if (!(await s.conversationsAvailable(query)))
+        throw new Error("Conversations need a database update that has not been applied yet.");
+      const conversation = await s.startConversation(query, {
+        workspaceId: workspace.id,
+        userId,
+        retentionDays: data.retentionDays as RetentionDays,
+      });
+      return { available: true, conversation, turns: [], earlierTurns: 0 };
+    });
+  });
+
+/**
+ * Records what the founder typed or said and replies with what was understood.
+ * The reply's card offers actions; none of them runs from here.
+ */
+export const sayToAssistant = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z
+      .object({
+        conversationId: z.string().uuid(),
+        text: z.string().trim().min(1).max(4000),
+        input: z.enum(["typed", "speech", "edited"]),
+        currentMissionId: z.string().uuid().nullish(),
+      })
+      .parse(data),
+  )
+  .handler(
+    async ({
+      context,
+      data,
+    }): Promise<{ said: ConversationTurn; reply: ConversationTurn; card: UnderstoodCard }> => {
+      const { supabase, userId } = context;
+      const { workspace } = await ensureWorkspace(supabase, userId);
+      const s = await store();
+      const { respondToFounder } = await import("@/lib/conversation/respond.server");
+      return s.neonTransaction(async (_tx, query) => {
+        if (!(await s.conversationsAvailable(query)))
+          throw new Error("Conversations need a database update that has not been applied yet.");
+        return respondToFounder(query, {
+          workspaceId: workspace.id,
+          userId,
+          conversationId: data.conversationId,
+          text: data.text,
+          input: data.input,
+          currentMissionId: data.currentMissionId ?? null,
+        });
+      });
+    },
+  );
+
+/** Deletes a conversation and every line of it now. */
+export const deleteConversation = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) => z.object({ conversationId: z.string().uuid() }).parse(data))
+  .handler(async ({ context, data }): Promise<{ deleted: boolean }> => {
+    const { supabase, userId } = context;
+    const { workspace } = await ensureWorkspace(supabase, userId);
+    const s = await store();
+    const deleted = await s.neonTransaction(async (_tx, query) =>
+      (await s.conversationsAvailable(query))
+        ? s.deleteConversation(query, workspace.id, userId, data.conversationId)
+        : false,
+    );
+    return { deleted };
+  });

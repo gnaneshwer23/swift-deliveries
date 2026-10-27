@@ -17,7 +17,13 @@ export function describeEvent(e: WfMissionEvent, taskTitle?: string | null): Eve
   const retry = attempt && attempt > 1 ? ` (attempt ${attempt})` : "";
   switch (e.type) {
     case "mission.created":
-      return { text: "Mission created", tone: "control" };
+      return {
+        text:
+          e.data["via"] === "conversation"
+            ? "Mission created from a brief you confirmed in conversation"
+            : "Mission created",
+        tone: "control",
+      };
     case "plan.proposed":
       return { text: `Plan version ${String(e.data["version"] ?? "")} proposed`, tone: "waiting" };
     case "plan.needs_clarification":

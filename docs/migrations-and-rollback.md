@@ -33,10 +33,13 @@ The production Neon branch is `br-fancy-breeze-zatt9ocp` in project `spring-wind
 | 0025 corrections to 0024                                           | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0026 run role and instruction version (`wf_task_runs`)             | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0027 founder evidence (`wf_mission_evidence`)                      | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
-| 0028 product memory (`wf_product_memory`) and 0027 constraints     | Not applied — needs owner approval          | Applied 27 Oct 2026                  |
-| 0029 conflicting evidence (`wf_memory_conflicts`)                  | Not applied — needs owner approval          | Applied 27 Oct 2026                  |
+| 0028 product memory (`wf_product_memory`) and 0027 constraints     | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
+| 0029 conflicting evidence (`wf_memory_conflicts`)                  | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
+| 0030 conversations (`wf_conversations`, `wf_conversation_turns`)   | Not applied — needs owner approval          | Applied 27 Oct 2026                  |
 
 Migrations 0020–0023 were applied to production in a single transaction. The six `psi_*` tables are owned by the server role, have no client grants, and have row-level security enabled. No table rows were read during or after the change.
+
+Migrations 0028 and 0029 were applied to production together in a single transaction on 27 October 2026, after a preflight that used only aggregate counts. It found no evidence rows that would break the new 0027 constraints. Production's constraints match the migration files. Preview also carries two redundant single-column foreign keys (`wf_product_memory_first_mission_id_fkey`, `wf_product_memory_last_mission_id_fkey`) left over from an earlier draft of 0028. They clear the same columns on delete as the composite keys, so they change nothing.
 
 ## Rollback for 0020–0023
 
@@ -227,6 +230,30 @@ begin
   end if;
   drop table public.wf_memory_conflicts;
   drop index if exists public.wf_product_memory_scope_uidx;
+end $$;
+commit;
+```
+
+Update the ledger with the date, the reason and the snapshot ID.
+
+## 0030 conversations
+
+Adds `wf_conversations` and `wf_conversation_turns`: the founder's conversations with the assistant (`docs/conversation.md`). A turn holds text only; there is no column for audio. The assistant's turns carry the card of what it understood, as JSON; a check (`wf_conversation_turns_card_check`) keeps cards off the founder's lines and on every assistant line, and is added by name so a re-run brings an earlier copy of the table up to date. Each conversation has the retention period the founder chose (1, 7, 30 or 90 days), counted from its last turn, and is deleted when that passes. Turns are tied to their conversation's workspace by a composite foreign key and are deleted with it. Server role only, row-level security on. Additive and re-runnable; no existing data is read or changed.
+
+Safe in either order. Code from before 0030 never reads the tables. Code after it checks for them first: until they exist, the conversation panel says conversations are not available yet, and the worker tick deletes nothing.
+
+Rollback: redeploy the earlier build and leave the tables; earlier builds never read them. Only if they must go, with the owner's approval, after the earlier build is live, take a Neon snapshot and record its ID here, then:
+
+```sql
+begin;
+lock table public.wf_conversations, public.wf_conversation_turns in access exclusive mode;
+do $$
+begin
+  if exists (select 1 from public.wf_conversations) then
+    raise exception 'wf_conversations holds founder transcripts; let them expire or have the founder delete them first. Nothing was changed.';
+  end if;
+  drop table public.wf_conversation_turns;
+  drop table public.wf_conversations;
 end $$;
 commit;
 ```

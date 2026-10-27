@@ -21,6 +21,7 @@ import {
 import { FlaskConical, Rocket, Search, ShieldCheck, Wrench } from "lucide-react";
 import { WorkspaceStopControl } from "@/components/command/workspace-stop";
 import { AgentOffice } from "@/components/command/agent-office";
+import { ConversationPanel } from "@/components/command/conversation-panel";
 import { OWNER_WAITING } from "@/lib/agent-office";
 
 export const Route = createFileRoute("/_authenticated/command/")({
@@ -518,6 +519,7 @@ function CommandHome() {
           </div>
         </section>
       </details>
+      <ConversationPanel />
       {/* Recent Missions & Supervision Ledger */}
       <section className="cc-panel" id="cc-missions">
         <div className="flex flex-wrap items-center justify-between gap-3">
