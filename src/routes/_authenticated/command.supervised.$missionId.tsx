@@ -19,6 +19,7 @@ import {
   setSupervisedResearchMode,
 } from "@/lib/pilot-mission.functions";
 import { decisionPackFilenames } from "@/lib/pilot-mission/decision-pack";
+import { buildPmBrief } from "@/lib/pilot-mission/pm-brief";
 import { RESEARCH_MODE_LABELS, type ResearchMode } from "@/lib/pilot-mission/research-mode";
 import { PROGRESS_STEPS, stepState, type DecisionChoice } from "@/lib/pilot-mission/types";
 
@@ -201,6 +202,8 @@ function SupervisedMissionPage() {
           );
         })}
       </ol>
+      <PmBriefPanel mission={mission} />
+
       {mission.team ? (
         <SpecialistTeamGraph team={mission.team} activity={mission.activity ?? []} />
       ) : null}
@@ -266,7 +269,7 @@ function SupervisedMissionPage() {
             disabled={approvePlan.isPending}
             onClick={() => approvePlan.mutate()}
           >
-            {approvePlan.isPending ? "Approving…" : "Approve specialist plan"}
+            {approvePlan.isPending ? "Approving…" : "Approve PM brief & specialist plan"}
           </button>
         ) : null}
         {(next.id === "compare" || next.id === "retry" || next.id === "recover") &&
@@ -663,20 +666,25 @@ function BriefEditor({
   });
   if (locked) return null;
   return (
-    <section className="cc-panel" aria-label="Edit brief">
+    <details className="cc-panel" aria-label="Revise case statement">
+      <summary>
+        <strong>Revise case statement</strong>
+        <span className="cc-muted block text-sm font-normal">
+          Prefer letting research fill gaps. Changing the case clears the current proposal.
+        </span>
+      </summary>
       {draft.stale && (
-        <div role="alert" className="cc-error">
+        <div role="alert" className="cc-error mt-3">
           The saved record changed. Your edits are kept here.{" "}
           <button className="cc-btn cc-btn-secondary" onClick={draft.reset}>
             Discard these edits and load saved values
           </button>
         </div>
       )}
-      <h2 className="cc-panel-title">Brief</h2>
       <div className="mt-3 grid gap-2">
         <textarea
           className="cc-input cc-textarea"
-          aria-label="Question"
+          aria-label="Business case"
           rows={2}
           value={brief.question}
           onChange={(event) => setBrief({ ...brief, question: event.target.value })}
@@ -705,10 +713,10 @@ function BriefEditor({
           disabled={save.isPending}
           onClick={() => save.mutate()}
         >
-          {save.isPending ? "Saving…" : "Save brief changes"}
+          {save.isPending ? "Saving…" : "Save case changes"}
         </button>
       </div>
-    </section>
+    </details>
   );
 }
 

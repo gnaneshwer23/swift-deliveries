@@ -279,15 +279,24 @@ export function nextRequiredAction(mission: SupervisedMission): {
     if (mission.team && !mission.team.approvedAt) {
       return {
         id: "approve_plan",
-        title: "Approve the specialist plan",
+        title: "Approve the PM brief and specialist plan",
         detail:
-          "Review which specialists own each task. Nothing runs until you approve this bounded plan.",
+          "Read the PM brief (plan, rough cost, time, team). Nothing runs until you approve this bounded plan. Specialists research before asking you for more detail.",
+      };
+    }
+    if (mission.evidence.length) {
+      return {
+        id: "compare",
+        title: "Let specialists compare options",
+        detail:
+          "Research placeholders are already on the record. Add a founder fact only if you have a decision-critical detail; otherwise compare from the research-first register.",
       };
     }
     return {
       id: "evidence",
-      title: "Add supplied evidence",
-      detail: "Add the observations, assumptions and gaps this decision is allowed to use.",
+      title: "Add what only you know (optional)",
+      detail:
+        "Prefer research over a questionnaire. Add observations only when specialists cannot obtain them.",
     };
   }
   if (mission.stage === "evidence") {
@@ -295,7 +304,7 @@ export function nextRequiredAction(mission: SupervisedMission): {
       id: "compare",
       title: "Compare options",
       detail:
-        "Review the research mode and tools first. One comparison is prepared from the saved brief and evidence.",
+        "Review research mode and tools first. One comparison is prepared from the brief and evidence register — including research gaps marked honestly when web tools are unavailable.",
     };
   }
   if (mission.stage === "alternatives") {

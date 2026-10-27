@@ -62,14 +62,20 @@ async function settleUsage(db: Db, mission: SupervisedMission): Promise<string |
 
 const briefFields = {
   question: z.string().max(2000),
+  audience: z.string().max(400).optional().default(""),
+  outcome: z.string().max(2000).optional().default(""),
+  constraints: z.string().max(2000).optional().default(""),
+};
+const briefSchema = z.object({
+  question: z.string().max(2000),
   audience: z.string().max(400),
   outcome: z.string().max(2000),
   constraints: z.string().max(2000).optional().default(""),
-};
-const briefSchema = z.object(briefFields);
+});
 const startBriefSchema = z.object({
   ...briefFields,
-  researchMode: z.enum(RESEARCH_MODES).optional().default("provided"),
+  /** Research-first default: combined, with honest gaps when web tools are missing. */
+  researchMode: z.enum(RESEARCH_MODES).optional().default("combined"),
 });
 
 const evidenceSchema = z

@@ -73,8 +73,32 @@ describe("founder vertical slice — specialist plan", () => {
       nowMs: 2_000,
     });
     expect(approved.team?.approvedAt).toBeTruthy();
-    expect(nextRequiredAction(approved).id).toBe("evidence");
+    // Research-first: placeholders are seeded at create, so the next gate is compare.
+    expect(approved.evidence.length).toBeGreaterThan(0);
+    expect(nextRequiredAction(approved).id).toBe("compare");
     expect(approved.activity.some((e) => e.kind === "plan.approved")).toBe(true);
+    expect(approved.activity.some((e) => e.kind === "pm_brief.drafted")).toBe(true);
+  });
+
+  it("defaults to combined research and soft-fills a one-liner brief", async () => {
+    const service = new SupervisedMissionService(new MemoryStore());
+    const created = await service.create({
+      id: crypto.randomUUID(),
+      workspaceId: "alpha",
+      ownerUserId: "owner",
+      brief: {
+        question: "Should we charge for onboarding analytics before launch?",
+        audience: "",
+        outcome: "",
+        constraints: "",
+      },
+      usageCeiling: 4,
+      nowMs: 1_000,
+    });
+    expect(created.researchMode).toBe("combined");
+    expect(created.brief.audience.length).toBeGreaterThan(2);
+    expect(created.brief.outcome.length).toBeGreaterThan(7);
+    expect(created.evidence.some((e) => e.classification === "gap")).toBe(true);
   });
 });
 

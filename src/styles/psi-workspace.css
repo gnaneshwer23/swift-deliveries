@@ -2133,3 +2133,107 @@
 .ps-record-anchor[data-active="true"] .ps-record-pending {
   display: block;
 }
+
+.ps-intake-advanced {
+  border: 1px solid var(--psi-border, #dfe5f2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: #f8fafc;
+}
+.ps-intake-advanced > summary {
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--psi-muted);
+}
+.ps-pm-brief {
+  border-left: 3px solid var(--psi-indigo, #3b4cca);
+}
+.ps-pm-problem {
+  margin: 8px 0 12px;
+  font-size: 1.05rem;
+  line-height: 1.45;
+}
+.ps-pm-plan {
+  margin: 0 0 14px;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+}
+.ps-pm-meta {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+.ps-pm-meta dt {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--psi-muted);
+}
+.ps-pm-meta dd {
+  margin: 2px 0 0;
+  font-size: 14px;
+}
+.ps-work-scene {
+  position: relative;
+  overflow: hidden;
+}
+.ps-scene-stage {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+.ps-scene-actor {
+  position: relative;
+  min-width: 9.5rem;
+  flex: 1 1 9.5rem;
+  max-width: 14rem;
+  padding: 12px 12px 10px;
+  border: 1px solid var(--psi-border, #dfe5f2);
+  border-radius: 12px;
+  background: linear-gradient(165deg, #fff 0%, #f4f7fc 100%);
+  display: grid;
+  gap: 4px;
+}
+.ps-scene-actor[data-status="ready"],
+.ps-scene-actor[data-status="awaiting_approval"] {
+  border-color: var(--psi-indigo, #3b4cca);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--psi-indigo, #3b4cca) 20%, transparent);
+}
+.ps-scene-actor[data-status="completed"] {
+  opacity: 0.72;
+}
+.ps-scene-pulse {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #c5cddc;
+}
+.ps-scene-actor[data-status="ready"] .ps-scene-pulse,
+.ps-scene-actor[data-status="awaiting_approval"] .ps-scene-pulse {
+  background: var(--psi-indigo, #3b4cca);
+  animation: ps-scene-breathe 1.8s ease-in-out infinite;
+}
+@keyframes ps-scene-breathe {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.35); opacity: 0.55; }
+}
+.ps-scene-now { margin-top: 12px; font-size: 14px; }
+.ps-scene-tasks > summary,
+.ps-optional-evidence > summary { cursor: pointer; }
+.ps-scene-feed .ps-activity-log li[data-kind="pm_brief.drafted"],
+.ps-scene-feed .ps-activity-log li[data-kind="plan.proposed"],
+.ps-scene-feed .ps-activity-log li[data-kind="plan.approved"] {
+  border-left-color: var(--psi-indigo, #3b4cca);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ps-scene-actor[data-status="ready"] .ps-scene-pulse,
+  .ps-scene-actor[data-status="awaiting_approval"] .ps-scene-pulse {
+    animation: none;
+  }
+}

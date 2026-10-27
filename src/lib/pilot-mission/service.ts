@@ -16,6 +16,7 @@ import {
   planResearchMode,
   type ResearchMode,
 } from "./research-mode";
+import { expandOneLinerBrief, seedResearchEvidence } from "./pm-brief";
 import {
   activityEvent,
   buildPilotTeamPlan,
@@ -146,11 +147,12 @@ function archivePack(mission: SupervisedMission, reason: string, nowMs: number) 
 }
 
 export function normaliseBrief(input: Brief): Brief {
+  const expanded = expandOneLinerBrief(input);
   return {
-    question: requireText(input.question, "Question", 8, 2000),
-    audience: requireText(input.audience, "Audience", 2, 400),
-    outcome: requireText(input.outcome, "Outcome", 8, 2000),
-    constraints: input.constraints.trim().slice(0, 2000),
+    question: requireText(expanded.question, "Question", 8, 2000),
+    audience: requireText(expanded.audience, "Audience", 2, 400),
+    outcome: requireText(expanded.outcome, "Outcome", 8, 2000),
+    constraints: expanded.constraints.trim().slice(0, 2000),
   };
 }
 
@@ -453,18 +455,22 @@ export class SupervisedMissionService {
       throw new Error("Usage ceiling must be a whole number.");
     }
     const at = new Date(input.nowMs).toISOString();
-    const researchMode = input.researchMode ?? "provided";
+    const researchMode = input.researchMode ?? "combined";
     if (!isResearchMode(researchMode)) throw new Error("Unknown research mode.");
     const researchPlan = planResearchMode(researchMode);
     const team = buildPilotTeamPlan();
+    const brief = normaliseBrief(input.brief);
+    const evidence = seedResearchEvidence(researchMode);
+    const initiating =
+      team.tasks.find((t) => t.key === "frame_objective")?.ownerLabel ?? "Problem-Framing Agent";
     const mission: SupervisedMission = {
       id: input.id,
       workspaceId: input.workspaceId,
       ownerUserId: input.ownerUserId,
       version: 1,
       stage: "brief",
-      brief: normaliseBrief(input.brief),
-      evidence: [],
+      brief,
+      evidence,
       proposal: null,
       approval: null,
       invalidatedApprovals: [],
@@ -488,8 +494,15 @@ export class SupervisedMissionService {
           at,
           taskKey: null,
           kind: "mission.created",
-          summary: `Brief saved. Specialist plan proposed with ${team.capabilityIds.length} Available Wave 1 roles. Research mode: ${researchPlan.label}.`,
+          summary: `One-liner case received. ${initiating} is preparing the PM brief and a bounded specialist plan (${team.capabilityIds.length} Wave 1 roles). Research mode: ${researchPlan.label}.`,
           actor: "human",
+        }),
+        activityEvent({
+          at,
+          taskKey: "frame_objective",
+          kind: "pm_brief.drafted",
+          summary: `${initiating} drafted the PM brief: plan, rough cost, time and team before heavy execution. Research placeholders seeded so specialists are not blocked on a questionnaire.`,
+          actor: team.tasks.find((t) => t.key === "frame_objective")?.capabilityId ?? "DX-002",
         }),
         activityEvent({
           at,

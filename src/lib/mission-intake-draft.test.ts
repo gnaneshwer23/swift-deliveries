@@ -13,8 +13,8 @@ describe("first mission intake", () => {
   it("keeps a newer edited onboarding question separate from unrelated brief details", () => {
     const result = restoreMissionIntake(null, "A different question", BRIEF_PRESETS.team.brief);
     expect(result.question).toBe("A different question");
-    expect(result.audience).toBe("");
-    expect(result.constraints).toBe("");
+    expect(result.audience).toMatch(/Primary customers/i);
+    expect(result.constraints).toMatch(/Research first/i);
   });
   it("preserves a deliberately blank intake instead of refilling it on reload", () => {
     const local = { question: "", audience: "", outcome: "", constraints: "" };

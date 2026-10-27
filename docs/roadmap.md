@@ -59,25 +59,29 @@ Migration `drizzle/migrations/0021_psi_pilot_activations.sql` is committed and h
 
 ## Founder vertical slice (supervised decision loop)
 
-Shipped on `origin/main` as the first end-to-end pilot path for Command Centre:
+Shipped on `origin/main` as the first end-to-end pilot path for Command Centre, then refined toward the founder “agent-staffed build” feel:
 
-1. Typed Talk-to-DeliverX can save a supervised brief (default path); advanced workforce drafts remain an explicit card choice.
-2. A bounded Available Wave 1 specialist team (8 roles) owns tasks on a visible dependency graph inside Objective → Evidence → Options → Decision → Approved work → Outcome → Next mission.
-3. Plan approval is a human gate before evidence/comparison.
-4. Research modes: Provided | Web (configured provider) | Combined — tools disclosed before execution; no invented web retrieval without a provider key.
-5. Decision pack export: Markdown + PDF with honesty labels (human / model / simulated), evidence register with source refs (not bundled), assumptions/gaps, options, approval history, experiment brief, execution status, follow-up proposal.
-6. Outcome expectation, owner-supplied observation, review, and follow-up proposal that does not auto-start.
+### Product loop name: **One-liner → PM brief → research scene**
+
+1. Founder gives **one business-case statement** (not a multi-field interview). Optional details stay collapsed.
+2. An initiating PM / problem-framing agent drafts a **PM brief**: restated problem, what will happen, rough cost, rough time, team/staffing band — before heavy execution.
+3. Typed Talk-to-DeliverX can start that supervised case (default path); advanced workforce drafts remain an explicit card choice.
+4. A bounded Available Wave 1 specialist team (8 roles active now) owns tasks; a **work scene** dramatises persisted activity (not timer theatre). Staffing bands scale with case complexity (~12–24 focused → ~60–100 expanded) without enabling all 150 by default.
+5. Plan / PM-brief approval is a human gate before comparison advances.
+6. **Research-first default (Combined)**: specialists are expected to research; founder evidence is optional unless blocked. Tools disclosed; no invented web retrieval without a provider key.
+7. Decision pack export: Markdown + PDF with honesty labels, evidence register, assumptions/gaps, options, approval history, experiment brief, follow-up proposal that does not auto-start.
 
 Default `/command` view is this supervised loop (Talk + overview + supervised start). Agents office is nested under advanced planner — not primary.
 
 ### Deferred (explicitly out of this slice)
 
 - Agents office as the primary Command surface
-- Enabling the full 150-role catalogue
-- Voice Talk-to-DeliverX (typed path is shared; voice remains Phase 4b)
+- Enabling the full 150-role catalogue / live complexity-scaled assignment beyond the Wave 1 core
+- Voice / oral PM brief (typed path is shared; voice remains Phase 4b)
 - Full programme ZIP export
 - Claiming live web research without EXA / Tavily / Brave configured
 - Invented customer evidence or interviews
+- Rich illustrated “movie” art beyond the event-driven work scene
 
 ## Still outside these phases
 

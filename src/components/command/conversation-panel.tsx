@@ -133,10 +133,9 @@ export function ConversationPanel({
         <MessageSquare className="size-4" aria-hidden="true" /> Talk to DeliverX
       </h2>
       <p className="text-sm text-slate-600 mb-3">
-        Describe a product objective for the supervised decision loop, ask how a mission is going,
-        or ask to pause or cancel one. I reply with what I understood. Nothing happens until you
-        click, and approvals are only given on the plan or gate itself. Voice will reuse this same
-        path later.
+        One business case in a sentence is enough. I restated what I heard; you confirm and the PM
+        briefs plan, cost, time and team. Specialists research before asking more. Nothing runs
+        until you click, and approvals stay on the plan or gate. Voice reuses this path later.
       </p>
 
       {query.isError && !state ? (
@@ -419,10 +418,10 @@ function DraftMissionCard({
               audience:
                 card.product.match === "named" || card.product.match === "only"
                   ? card.product.name
-                  : "Product owner",
-              outcome: "A decision pack and an experiment brief.",
+                  : "",
+              outcome: "",
               constraints: `From Talk-to-DeliverX (${INTENT_LABELS[intent]}). Conversation ${conversationId}.`,
-              researchMode: "provided",
+              researchMode: "combined",
             },
           }),
         };
@@ -476,7 +475,8 @@ function DraftMissionCard({
             onChange={() => setPath("supervised")}
           />
           <span>
-            Supervised decision loop (default) — small specialist team, decision pack, human gates
+            Supervised case (default) — one-liner → PM brief → research-first specialists, human
+            gates
           </span>
         </label>
         <label className="flex items-start gap-2">
@@ -534,7 +534,7 @@ function DraftMissionCard({
       ) : null}
       <label className="block">
         <span className="block font-medium">
-          {path === "supervised" ? "Product question" : "Brief"}
+          {path === "supervised" ? "Business case (one statement)" : "Brief"}
         </span>
         <textarea
           className="cc-input cc-textarea"

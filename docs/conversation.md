@@ -1,6 +1,6 @@
 # Talking to DeliverX (Phase 4a)
 
-The founder can describe a product objective, ask how a mission is going, or ask to pause, resume or cancel one, in plain words. Phase 4a delivers this by typing on the Command Centre, on mission pages (`/command/missions/…`), and on supervised pilot pages (`/command/supervised/…`). The default draft path is the supervised decision loop (small specialist team + decision pack). The advanced workforce planner remains available as an explicit choice on the card. Voice (Phase 4b) uses exactly the same path: spoken words become a transcript line, and everything below applies unchanged.
+The founder can describe a product objective, ask how a mission is going, or ask to pause, resume or cancel one, in plain words. Phase 4a delivers this by typing on the Command Centre, on mission pages (`/command/missions/…`), and on supervised pilot pages (`/command/supervised/…`). The default draft path is the supervised **One-liner → PM brief → research scene** loop: one business-case statement, a PM brief (plan / cost / time / team), research-first specialists, human gates — not a multi-field intake interview. The advanced workforce planner remains available as an explicit choice on the card. Voice (Phase 4b) uses exactly the same path: spoken words become a transcript line, and everything below applies unchanged.
 
 ## Nothing is approved by talking
 

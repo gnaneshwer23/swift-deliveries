@@ -1,11 +1,16 @@
 import type { ProductBrief } from "./marketing/product-resources";
+import {
+  DEFAULT_MISSION_OUTCOME,
+  RESEARCH_FIRST_CONSTRAINT,
+  RESEARCH_REFINE_AUDIENCE,
+} from "./pilot-mission/pm-brief";
 export type MissionIntakeDraft = {
   question: string;
   audience: string;
   outcome: string;
   constraints: string;
 };
-export const DEFAULT_MISSION_OUTCOME = "A decision pack and an experiment brief.";
+export { DEFAULT_MISSION_OUTCOME };
 export function preparedMissionIntake(brief: ProductBrief): MissionIntakeDraft {
   return {
     question: brief.problem.slice(0, 2000),
@@ -45,8 +50,8 @@ export function restoreMissionIntake(
     return preparedMissionIntake(brief);
   return {
     question: question?.slice(0, 2000) ?? "",
-    audience: "",
+    audience: RESEARCH_REFINE_AUDIENCE,
     outcome: DEFAULT_MISSION_OUTCOME,
-    constraints: "",
+    constraints: RESEARCH_FIRST_CONSTRAINT,
   };
 }
