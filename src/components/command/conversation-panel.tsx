@@ -23,6 +23,7 @@ import {
   pauseMission,
   resumeMission,
 } from "@/lib/workforce.functions";
+import { startSupervisedMission } from "@/lib/pilot-mission.functions";
 import { commandCentreBootstrapQuery } from "@/lib/workforce-queries";
 import { speak } from "@/lib/conversation/speech";
 import { VoiceMeasurements } from "@/components/command/voice-measurements";
@@ -132,9 +133,10 @@ export function ConversationPanel({
         <MessageSquare className="size-4" aria-hidden="true" /> Talk to DeliverX
       </h2>
       <p className="text-sm text-slate-600 mb-3">
-        Describe a product objective, ask how a mission is going, or ask to pause or cancel one. I
-        reply with what I understood. Nothing happens until you click, and approvals are only given
-        on the plan or gate itself.
+        Describe a product objective for the supervised decision loop, ask how a mission is going,
+        or ask to pause or cancel one. I reply with what I understood. Nothing happens until you
+        click, and approvals are only given on the plan or gate itself. Voice will reuse this same
+        path later.
       </p>
 
       {query.isError && !state ? (
@@ -402,82 +404,142 @@ function DraftMissionCard({
           ? [{ id: card.product.projectId, name: card.product.name }]
           : [];
 
+  const [path, setPath] = useState<"supervised" | "advanced">(
+    intent === "investigate" || intent === "improve" ? "supervised" : "advanced",
+  );
+
   const draft = useMutation({
-    // A new product is created by the server with the mission, in one transaction.
-    mutationFn: () =>
-      createMission({
+    mutationFn: async () => {
+      if (path === "supervised") {
+        return {
+          kind: "supervised" as const,
+          mission: await startSupervisedMission({
+            data: {
+              question: requestText.trim().slice(0, 2000),
+              audience:
+                card.product.match === "named" || card.product.match === "only"
+                  ? card.product.name
+                  : "Product owner",
+              outcome: "A decision pack and an experiment brief.",
+              constraints: `From Talk-to-DeliverX (${INTENT_LABELS[intent]}). Conversation ${conversationId}.`,
+              researchMode: "provided",
+            },
+          }),
+        };
+      }
+      // Advanced workforce planner — still requires a click; never auto-approves.
+      const bundle = await createMission({
         data: {
           ...(card.product.match === "new" ? { newProjectName: "First project" } : { projectId }),
           intent,
           requestText: requestText.trim(),
           conversationId,
         },
-      }),
+      });
+      return { kind: "advanced" as const, bundle };
+    },
     onMutate: () => setError(null),
-    onSuccess: async (bundle) => {
+    onSuccess: async (result) => {
       await queryClient.invalidateQueries({ queryKey: ["command"] });
+      await queryClient.invalidateQueries({ queryKey: ["supervised"] });
+      if (result.kind === "supervised") {
+        void navigate({
+          to: "/command/supervised/$missionId",
+          params: { missionId: result.mission.mission.id },
+        });
+        return;
+      }
       void navigate({
         to: "/command/missions/$missionId",
-        params: { missionId: bundle.mission.id },
+        params: { missionId: result.bundle.mission.id },
       });
     },
     onError: (e) => setError(e instanceof Error ? e.message : "Could not draft the mission."),
   });
 
-  const buildBlocked = intent === "build" && !buildAvailable;
+  const buildBlocked = path === "advanced" && intent === "build" && !buildAvailable;
   const ready =
-    requestText.trim().length >= 3 &&
-    (card.product.match === "new" || Boolean(projectId)) &&
+    requestText.trim().length >= (path === "supervised" ? 8 : 3) &&
+    (path === "supervised" || card.product.match === "new" || Boolean(projectId)) &&
     checked.every(Boolean) &&
     !buildBlocked;
 
   return (
     <div className="mt-2 space-y-2">
-      <label className="block">
-        <span className="block font-medium">Mission type</span>
-        <select
-          className="cc-input"
-          value={intent}
-          onChange={(e) => setIntent(e.target.value as MissionIntent)}
-        >
-          {MISSION_INTENTS.map((i) => (
-            <option key={i} value={i} disabled={i === "build" && !buildAvailable}>
-              {INTENT_LABELS[i]}
-              {i === "build" && !buildAvailable ? " (not enabled in this workspace yet)" : ""}
-            </option>
-          ))}
-        </select>
-      </label>
+      <fieldset>
+        <legend className="font-medium">Path</legend>
+        <label className="flex items-start gap-2">
+          <input
+            type="radio"
+            name="talk-path"
+            checked={path === "supervised"}
+            onChange={() => setPath("supervised")}
+          />
+          <span>
+            Supervised decision loop (default) — small specialist team, decision pack, human gates
+          </span>
+        </label>
+        <label className="flex items-start gap-2">
+          <input
+            type="radio"
+            name="talk-path"
+            checked={path === "advanced"}
+            onChange={() => setPath("advanced")}
+          />
+          <span>Advanced workforce planner — discovery, prototype or build missions</span>
+        </label>
+      </fieldset>
+      {path === "advanced" ? (
+        <label className="block">
+          <span className="block font-medium">Mission type</span>
+          <select
+            className="cc-input"
+            value={intent}
+            onChange={(e) => setIntent(e.target.value as MissionIntent)}
+          >
+            {MISSION_INTENTS.map((i) => (
+              <option key={i} value={i} disabled={i === "build" && !buildAvailable}>
+                {INTENT_LABELS[i]}
+                {i === "build" && !buildAvailable ? " (not enabled in this workspace yet)" : ""}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
       {buildBlocked ? (
         <p className="cc-error">
           Product builds are not enabled in this workspace yet. Choose another mission type.
         </p>
       ) : null}
-      {card.product.match === "new" ? (
-        <p>Product: a new one, “First project”, is created with the mission.</p>
-      ) : (
-        <label className="block">
-          <span className="block font-medium">Product</span>
-          <select
-            className="cc-input"
-            value={projectId}
-            onChange={(e) => setProjectId(e.target.value)}
-          >
-            <option value="">Choose a product…</option>
-            {choices.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </label>
-      )}
+      {path === "advanced" ? (
+        card.product.match === "new" ? (
+          <p>Product: a new one, “First project”, is created with the mission.</p>
+        ) : (
+          <label className="block">
+            <span className="block font-medium">Product</span>
+            <select
+              className="cc-input"
+              value={projectId}
+              onChange={(e) => setProjectId(e.target.value)}
+            >
+              <option value="">Choose a product…</option>
+              {choices.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        )
+      ) : null}
       <label className="block">
-        <span className="block font-medium">Brief</span>
+        <span className="block font-medium">
+          {path === "supervised" ? "Product question" : "Brief"}
+        </span>
         <textarea
           className="cc-input cc-textarea"
           rows={3}
-          maxLength={4000}
+          maxLength={path === "supervised" ? 2000 : 4000}
           value={requestText}
           onChange={(e) => {
             setRequestText(e.target.value);
@@ -514,10 +576,16 @@ function DraftMissionCard({
         disabled={!ready || draft.isPending}
         onClick={() => draft.mutate()}
       >
-        {draft.isPending ? "Drafting…" : "Draft mission plan →"}
+        {draft.isPending
+          ? "Drafting…"
+          : path === "supervised"
+            ? "Save supervised brief →"
+            : "Draft mission plan →"}
       </button>
       <p className="text-xs text-slate-500">
-        Drafting a plan does not record usage. Execution waits for your approval of the plan.
+        {path === "supervised"
+          ? "Saving creates a supervised mission. Specialist work waits for your plan approval."
+          : "Drafting a plan does not record usage. Execution waits for your approval of the plan."}
       </p>
     </div>
   );

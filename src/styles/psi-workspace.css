@@ -1228,6 +1228,98 @@
   background: var(--psi-indigo-soft);
   border-radius: 0 0 7px 7px;
 }
+.ps-decision-loop {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.ps-decision-loop li {
+  padding: 10px 8px;
+  border-top: 3px solid #dfe5f2;
+  color: var(--psi-muted);
+  font-size: 11px;
+}
+.ps-decision-loop li[data-state="done"] {
+  border-color: var(--psi-indigo);
+  color: var(--psi-indigo);
+}
+.ps-decision-loop li[data-state="current"] {
+  border-color: var(--psi-indigo);
+  color: var(--psi-ink);
+  background: var(--psi-indigo-soft);
+}
+.ps-team-graph {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.ps-team-graph > li {
+  border: 1px solid var(--psi-border, #dfe5f2);
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: var(--psi-surface, #fff);
+}
+.ps-team-graph > li[data-status="awaiting_approval"],
+.ps-team-graph > li[data-status="blocked"] {
+  border-color: #c4a574;
+}
+.ps-team-graph > li[data-status="completed"] {
+  border-color: var(--psi-indigo);
+}
+.ps-team-graph > li[data-actor="human"] {
+  background: #f7faf7;
+}
+.ps-team-graph-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.ps-team-status {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--psi-muted);
+}
+.ps-activity-log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.ps-activity-log li {
+  border-left: 2px solid #dfe5f2;
+  padding-left: 10px;
+  font-size: 13px;
+}
+.ps-activity-log time,
+.ps-activity-log span {
+  display: block;
+  font-size: 11px;
+  color: var(--psi-muted);
+}
+.ps-research-tools {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.ps-research-tools li[data-available="false"] {
+  color: var(--psi-muted);
+}
+@media (max-width: 760px) {
+  .ps-decision-loop {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 .ps-role-detail {
   overflow-wrap: anywhere;
 }

@@ -18,6 +18,8 @@ import {
   UsageLimitError,
 } from "./pilot-mission/service";
 import { learningLinks } from "./pilot-mission/learning";
+import { planResearchMode } from "./pilot-mission/research-mode";
+import { RESEARCH_MODES, type ResearchMode } from "./pilot-mission/research-mode";
 import { nextRequiredAction, type SupervisedMission } from "./pilot-mission/types";
 
 type DbClient = { from: (table: string) => unknown };
@@ -58,11 +60,16 @@ async function settleUsage(db: Db, mission: SupervisedMission): Promise<string |
   }
 }
 
-const briefSchema = z.object({
+const briefFields = {
   question: z.string().max(2000),
   audience: z.string().max(400),
   outcome: z.string().max(2000),
   constraints: z.string().max(2000).optional().default(""),
+};
+const briefSchema = z.object(briefFields);
+const startBriefSchema = z.object({
+  ...briefFields,
+  researchMode: z.enum(RESEARCH_MODES).optional().default("provided"),
 });
 
 const evidenceSchema = z
@@ -81,6 +88,7 @@ export type SupervisedMissionView = {
   usageWarning: string | null;
   comparisonScope: string;
   modelConfigured: boolean;
+  research: ReturnType<typeof planResearchMode>;
 };
 
 function view(mission: SupervisedMission, usageWarning: string | null): SupervisedMissionView {
@@ -90,6 +98,7 @@ function view(mission: SupervisedMission, usageWarning: string | null): Supervis
     usageWarning,
     comparisonScope: scopeHash(mission.brief, mission.evidence),
     modelConfigured: generationPlan(process.env, "").cost > 0,
+    research: planResearchMode(mission.researchMode ?? "provided"),
   };
 }
 
@@ -140,7 +149,7 @@ export const getSupervisedMissionHome = createServerFn({ method: "GET" })
 
 export const startSupervisedMission = createServerFn({ method: "POST" })
   .middleware([requireAuth])
-  .validator((data: unknown) => briefSchema.parse(data))
+  .validator((data: unknown) => startBriefSchema.parse(data))
   .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
     const workspace = await workspaceFor(context.supabase, context.userId);
     const { service } = await serviceFor();
@@ -149,7 +158,13 @@ export const startSupervisedMission = createServerFn({ method: "POST" })
       id: crypto.randomUUID(),
       workspaceId: workspace.id,
       ownerUserId: context.userId,
-      brief: { ...data, constraints: data.constraints },
+      brief: {
+        question: data.question,
+        audience: data.audience,
+        outcome: data.outcome,
+        constraints: data.constraints,
+      },
+      researchMode: data.researchMode as ResearchMode,
       usageCeiling: remaining,
       nowMs: Date.now(),
     });
@@ -417,6 +432,49 @@ export const recordSupervisedReview = createServerFn({ method: "POST" })
       reading: data.reading,
       uncertainty: data.uncertainty,
       followUp: data.followUp,
+      actorId: context.userId,
+      nowMs: Date.now(),
+    });
+    return view(mission, null);
+  });
+
+export const approveSupervisedPlan = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z.object({ id: z.string().uuid(), expectedVersion: z.number().int().positive() }).parse(data),
+  )
+  .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
+    const workspace = await workspaceFor(context.supabase, context.userId);
+    const { service } = await serviceFor();
+    const mission = await service.approvePlan({
+      workspaceId: workspace.id,
+      id: data.id,
+      expectedVersion: data.expectedVersion,
+      actorId: context.userId,
+      nowMs: Date.now(),
+    });
+    return view(mission, null);
+  });
+
+export const setSupervisedResearchMode = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        expectedVersion: z.number().int().positive(),
+        mode: z.enum(RESEARCH_MODES),
+      })
+      .parse(data),
+  )
+  .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
+    const workspace = await workspaceFor(context.supabase, context.userId);
+    const { service } = await serviceFor();
+    const mission = await service.setResearchMode({
+      workspaceId: workspace.id,
+      id: data.id,
+      expectedVersion: data.expectedVersion,
+      mode: data.mode,
       actorId: context.userId,
       nowMs: Date.now(),
     });

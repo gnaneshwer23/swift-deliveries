@@ -28,6 +28,11 @@ export function withLearningDefaults(mission: SupervisedMission): SupervisedMiss
     reviews: Array.isArray(mission.reviews) ? mission.reviews : [],
     followUp: mission.followUp ?? null,
     origin: mission.origin ?? null,
+    exportPdfBase64: mission.exportPdfBase64 ?? null,
+    researchMode: mission.researchMode ?? "provided",
+    researchGaps: Array.isArray(mission.researchGaps) ? mission.researchGaps : [],
+    team: mission.team ?? null,
+    activity: Array.isArray(mission.activity) ? mission.activity : [],
   };
 }
 

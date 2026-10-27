@@ -95,9 +95,15 @@ describe.skipIf(!url)("isolated PostgreSQL transaction and recovery checks", () 
 
   async function readyMission() {
     const created = await mission();
-    return service.saveEvidence({
+    const approved = await service.approvePlan({
       workspaceId,
       id: created.id,
+      actorId: "owner",
+      nowMs: Date.now(),
+    });
+    return service.saveEvidence({
+      workspaceId,
+      id: approved.id,
       nowMs: Date.now(),
       items: [
         {
@@ -511,6 +517,12 @@ describe.skipIf(!url)("isolated PostgreSQL transaction and recovery checks", () 
   });
   it("persists the complete decision-to-outcome loop and creates only one child under concurrent approval", async () => {
     const m = await mission();
+    await service.approvePlan({
+      workspaceId,
+      id: m.id,
+      actorId: "owner",
+      nowMs: 1500,
+    });
     await service.saveEvidence({
       workspaceId,
       id: m.id,

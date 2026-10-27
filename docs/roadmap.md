@@ -57,6 +57,28 @@ Self-service checkout is not live for these offers. The older checkout code stil
 
 Migration `drizzle/migrations/0021_psi_pilot_activations.sql` is committed and has not been applied to the live database. Migrations `0019` and `0020` are still unapplied. Until `0021` is applied, an activation save reports that it was not stored. The allowance count after a successful comparison is not proven across a crash. Release checks in `docs/psi-production-readiness-plan.md` have not been run on this candidate. No production-readiness claim is made.
 
+## Founder vertical slice (supervised decision loop)
+
+Shipped on `origin/main` as the first end-to-end pilot path for Command Centre:
+
+1. Typed Talk-to-DeliverX can save a supervised brief (default path); advanced workforce drafts remain an explicit card choice.
+2. A bounded Available Wave 1 specialist team (8 roles) owns tasks on a visible dependency graph inside Objective → Evidence → Options → Decision → Approved work → Outcome → Next mission.
+3. Plan approval is a human gate before evidence/comparison.
+4. Research modes: Provided | Web (configured provider) | Combined — tools disclosed before execution; no invented web retrieval without a provider key.
+5. Decision pack export: Markdown + PDF with honesty labels (human / model / simulated), evidence register with source refs (not bundled), assumptions/gaps, options, approval history, experiment brief, execution status, follow-up proposal.
+6. Outcome expectation, owner-supplied observation, review, and follow-up proposal that does not auto-start.
+
+Default `/command` view is this supervised loop (Talk + overview + supervised start). Agents office is nested under advanced planner — not primary.
+
+### Deferred (explicitly out of this slice)
+
+- Agents office as the primary Command surface
+- Enabling the full 150-role catalogue
+- Voice Talk-to-DeliverX (typed path is shared; voice remains Phase 4b)
+- Full programme ZIP export
+- Claiming live web research without EXA / Tavily / Brave configured
+- Invented customer evidence or interviews
+
 ## Still outside these phases
 
 Self-service checkout, automatic entitlements, customer interviews run by agents, production deployment and unattended learning remain outside this release. Books, publishing and regulated healthcare stay out of scope.

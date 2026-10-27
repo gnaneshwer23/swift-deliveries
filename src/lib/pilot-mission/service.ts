@@ -7,6 +7,21 @@ import {
   withLearningDefaults,
 } from "./learning";
 import {
+  buildDecisionPackMarkdown,
+  buildDecisionPackPdf,
+  pdfToBase64,
+} from "./decision-pack";
+import {
+  isResearchMode,
+  planResearchMode,
+  type ResearchMode,
+} from "./research-mode";
+import {
+  activityEvent,
+  buildPilotTeamPlan,
+  syncTeamWithMission,
+} from "./specialist-team";
+import {
   LEASE_MS,
   OWNER_SUPPLIED_OBSERVATION_LABEL,
   nextRequiredAction,
@@ -201,10 +216,31 @@ function invalidateForScope(
     archivedPacks: archivePack(mission, "Brief or evidence scope changed", nowMs),
     artefact: null,
     exportBody: null,
+      exportPdfBase64: null,
     expectation: null,
     job: idleJob(mission.job.attempts),
     stage: "evidence",
   };
+}
+
+function withSyncedTeam(mission: SupervisedMission): SupervisedMission {
+  if (!mission.team) return mission;
+  return { ...mission, team: syncTeamWithMission(mission.team, mission) };
+}
+
+function pushActivity(
+  mission: SupervisedMission,
+  event: ReturnType<typeof activityEvent>,
+): PilotActivitySlice {
+  return [...(mission.activity ?? []), event].slice(-200);
+}
+
+type PilotActivitySlice = SupervisedMission["activity"];
+
+function assertPlanApproved(mission: SupervisedMission): void {
+  if (mission.team && !mission.team.approvedAt) {
+    throw new Error("Approve the specialist plan before this step.");
+  }
 }
 
 function decisionBinding(approval: ApprovalRecord): DecisionBinding {
@@ -299,16 +335,16 @@ function buildPack(mission: SupervisedMission): ArtefactPack {
   };
 }
 
-function exportBody(mission: SupervisedMission, pack: ArtefactPack): string {
-  return [
-    pack.decisionBrief,
-    "",
-    pack.experimentBrief,
-    "",
-    "## Export note",
-    "This file is the stored mission export. Reloading it does not create another usage record.",
-    pack.provenance,
-  ].join("\n");
+function exportBodies(mission: SupervisedMission): {
+  exportBody: string;
+  exportPdfBase64: string;
+} {
+  const synced = withSyncedTeam(mission);
+  const markdown = buildDecisionPackMarkdown(synced);
+  return {
+    exportBody: markdown,
+    exportPdfBase64: pdfToBase64(buildDecisionPackPdf(markdown)),
+  };
 }
 
 export class MemoryStore implements MissionStore {
@@ -398,6 +434,7 @@ export class SupervisedMissionService {
     usageCeiling: number;
     nowMs: number;
     origin?: MissionOrigin | null;
+    researchMode?: ResearchMode;
   }): Promise<SupervisedMission> {
     return this.store.save(this.initialMission(input), 0);
   }
@@ -410,10 +447,16 @@ export class SupervisedMissionService {
     usageCeiling: number;
     nowMs: number;
     origin?: MissionOrigin | null;
+    researchMode?: ResearchMode;
   }): SupervisedMission {
     if (!Number.isInteger(input.usageCeiling) || input.usageCeiling < 0) {
       throw new Error("Usage ceiling must be a whole number.");
     }
+    const at = new Date(input.nowMs).toISOString();
+    const researchMode = input.researchMode ?? "provided";
+    if (!isResearchMode(researchMode)) throw new Error("Unknown research mode.");
+    const researchPlan = planResearchMode(researchMode);
+    const team = buildPilotTeamPlan();
     const mission: SupervisedMission = {
       id: input.id,
       workspaceId: input.workspaceId,
@@ -427,6 +470,7 @@ export class SupervisedMissionService {
       invalidatedApprovals: [],
       artefact: null,
       exportBody: null,
+      exportPdfBase64: null,
       job: idleJob(),
       usageCeiling: input.usageCeiling,
       usageConsumed: 0,
@@ -436,9 +480,112 @@ export class SupervisedMissionService {
       reviews: [],
       followUp: null,
       origin: input.origin ?? null,
-      updatedAt: new Date(input.nowMs).toISOString(),
+      researchMode,
+      researchGaps: researchPlan.externalGaps,
+      team,
+      activity: [
+        activityEvent({
+          at,
+          taskKey: null,
+          kind: "mission.created",
+          summary: `Brief saved. Specialist plan proposed with ${team.capabilityIds.length} Available Wave 1 roles. Research mode: ${researchPlan.label}.`,
+          actor: "human",
+        }),
+        activityEvent({
+          at,
+          taskKey: null,
+          kind: "plan.proposed",
+          summary: "Bounded specialist plan awaits approval. No specialist work has started.",
+          actor: "system",
+        }),
+      ],
+      updatedAt: at,
     };
-    return mission;
+    return withSyncedTeam(mission);
+  }
+
+  async approvePlan(input: {
+    workspaceId: string;
+    expectedVersion?: number;
+    id: string;
+    actorId: string;
+    nowMs: number;
+  }): Promise<SupervisedMission> {
+    const current = await this.must(input.workspaceId, input.id);
+    if (input.expectedVersion !== undefined && current.version !== input.expectedVersion) {
+      throw new MissionConflictError(
+        "This mission changed in another session. Your edits were not saved. Review the latest record before trying again.",
+      );
+    }
+    this.assertMutable(current);
+    if (!current.team) throw new Error("This mission has no specialist plan to approve.");
+    if (current.team.approvedAt) return current;
+    const at = new Date(input.nowMs).toISOString();
+    const team = {
+      ...current.team,
+      approvedAt: at,
+      approvedBy: input.actorId,
+    };
+    const next: SupervisedMission = withSyncedTeam({
+      ...current,
+      version: current.version + 1,
+      // Stay on brief until evidence is saved; approval only unlocks the team.
+      stage: current.evidence.length ? (current.stage === "brief" ? "evidence" : current.stage) : "brief",
+      team,
+      activity: pushActivity(
+        current,
+        activityEvent({
+          at,
+          taskKey: "frame_objective",
+          kind: "plan.approved",
+          summary: "You approved the specialist plan. Evidence and later steps may proceed.",
+          actor: "human",
+        }),
+      ),
+      updatedAt: at,
+    });
+    return this.store.save(next, current.version);
+  }
+
+  async setResearchMode(input: {
+    workspaceId: string;
+    expectedVersion?: number;
+    id: string;
+    mode: ResearchMode;
+    actorId: string;
+    nowMs: number;
+  }): Promise<SupervisedMission> {
+    const current = await this.must(input.workspaceId, input.id);
+    if (input.expectedVersion !== undefined && current.version !== input.expectedVersion) {
+      throw new MissionConflictError(
+        "This mission changed in another session. Your edits were not saved. Review the latest record before trying again.",
+      );
+    }
+    this.assertMutable(current);
+    if (!isResearchMode(input.mode)) throw new Error("Unknown research mode.");
+    const plan = planResearchMode(input.mode);
+    if (input.mode === "web" && !plan.executable) {
+      throw new Error(plan.blockReason ?? "Web research is not available.");
+    }
+    const at = new Date(input.nowMs).toISOString();
+    const next: SupervisedMission = {
+      ...current,
+      version: current.version + 1,
+      researchMode: input.mode,
+      researchGaps: plan.externalGaps,
+      activity: pushActivity(
+        current,
+        activityEvent({
+          at,
+          taskKey: "register_evidence",
+          kind: "research_mode.set",
+          summary: `Research mode set to ${plan.label}. Tools: ${plan.tools.map((t) => `${t.label}${t.available ? "" : " (unavailable)"}`).join("; ")}.`,
+          actor: "human",
+        }),
+      ),
+      updatedAt: at,
+    };
+    return this.store.save(next, current.version);
   }
 
   async saveEvidence(input: {
@@ -455,19 +602,32 @@ export class SupervisedMissionService {
       );
     }
     this.assertMutable(current);
+    assertPlanApproved(current);
     const evidence = normaliseEvidence(input.items);
     const hashed = invalidateForScope(
       { ...current, evidence },
       scopeHash(current.brief, evidence),
       input.nowMs,
     );
-    const next: SupervisedMission = {
+    const at = new Date(input.nowMs).toISOString();
+    const next: SupervisedMission = withSyncedTeam({
       ...hashed,
       evidence,
       version: current.version + 1,
       stage: hashed.proposal ? hashed.stage : "evidence",
-      updatedAt: new Date(input.nowMs).toISOString(),
-    };
+      exportPdfBase64: hashed.exportBody ? hashed.exportPdfBase64 : null,
+      activity: pushActivity(
+        hashed,
+        activityEvent({
+          at,
+          taskKey: "register_evidence",
+          kind: "evidence.saved",
+          summary: `Evidence register updated (${evidence.length} items). AI drafts remain distinct from founder-supplied statements.`,
+          actor: "human",
+        }),
+      ),
+      updatedAt: at,
+    });
     if (!hashed.proposal) next.stage = "evidence";
     return this.store.save(next, current.version);
   }
@@ -560,6 +720,14 @@ export class SupervisedMissionService {
     if (current.stage === "cancelled" || current.job.status === "cancelled") {
       throw new Error("Mission is cancelled.");
     }
+    assertPlanApproved(current);
+    const research = planResearchMode(current.researchMode ?? "provided");
+    if (!research.executable) {
+      throw new Error(
+        research.blockReason ??
+          "This research mode cannot run. Switch to Provided evidence or configure a search provider.",
+      );
+    }
     if (!current.evidence.length)
       throw new Error("Add supplied evidence before comparing options.");
     const hash = scopeHash(current.brief, current.evidence);
@@ -617,7 +785,11 @@ export class SupervisedMissionService {
       const prepared = this.prepareComparison(fresh, generation);
       const charged = prepared.generation.ran ? units : 0;
       if (fresh.usageConsumed + charged > fresh.usageCeiling) throw new UsageLimitError();
-      const committed: SupervisedMission = {
+      const at = new Date(input.nowMs).toISOString();
+      const researchGaps = [
+        ...new Set([...(fresh.researchGaps ?? []), ...planResearchMode(fresh.researchMode).externalGaps]),
+      ];
+      const committed: SupervisedMission = withSyncedTeam({
         ...fresh,
         version: fresh.version + 1,
         stage: "alternatives",
@@ -631,6 +803,8 @@ export class SupervisedMissionService {
         approval: null,
         artefact: null,
         exportBody: null,
+        exportPdfBase64: null,
+        researchGaps,
         job: {
           status: "completed",
           ownerId: input.workerId,
@@ -650,8 +824,18 @@ export class SupervisedMissionService {
               : prepared.generation.label,
           },
         ],
-        updatedAt: new Date(input.nowMs).toISOString(),
-      };
+        activity: pushActivity(
+          fresh,
+          activityEvent({
+            at,
+            taskKey: "draft_options",
+            kind: "options.compared",
+            summary: `Options stored. Generation: ${prepared.generation.label}. Specialist drafts are distinct from your later decision.`,
+            actor: prepared.generation.ran ? (prepared.generation.model ?? "model") : "system",
+          }),
+        ),
+        updatedAt: at,
+      });
       const saved = await this.store.save(committed, fresh.version);
       return { mission: saved, chargedUnits: charged };
     } catch (error) {
@@ -722,6 +906,7 @@ export class SupervisedMissionService {
       expectation: null,
       artefact: null,
       exportBody: null,
+      exportPdfBase64: null,
       updatedAt: approval.decidedAt,
     };
     return this.store.save(next, current.version);
@@ -767,13 +952,27 @@ export class SupervisedMissionService {
     if (current.stage === "cancelled") throw new Error("Mission is cancelled.");
     if (current.exportBody) return current;
     if (!current.artefact) throw new Error("Prepare the decision pack before export.");
-    const next: SupervisedMission = {
+    const at = new Date(input.nowMs).toISOString();
+    const bodies = exportBodies(current);
+    const next: SupervisedMission = withSyncedTeam({
       ...current,
       version: current.version + 1,
       stage: "exported",
-      exportBody: exportBody(current, current.artefact),
-      updatedAt: new Date(input.nowMs).toISOString(),
-    };
+      exportBody: bodies.exportBody,
+      exportPdfBase64: bodies.exportPdfBase64,
+      activity: pushActivity(
+        current,
+        activityEvent({
+          at,
+          taskKey: "assemble_pack",
+          kind: "pack.exported",
+          summary:
+            "Decision pack exported as Markdown and PDF. Linked sources are referenced, not bundled.",
+          actor: "human",
+        }),
+      ),
+      updatedAt: at,
+    });
     return this.store.save(next, current.version);
   }
 
@@ -818,6 +1017,7 @@ export class SupervisedMissionService {
       archivedPacks: archivePack(current, "Measurement plan changed", input.nowMs),
       artefact: null,
       exportBody: null,
+      exportPdfBase64: null,
       stage: "decision",
       updatedAt: recordedAt,
     };

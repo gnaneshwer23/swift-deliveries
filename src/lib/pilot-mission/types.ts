@@ -1,3 +1,6 @@
+import type { ResearchMode } from "./research-mode";
+import type { PilotActivityEvent, PilotTeamPlan } from "./specialist-team";
+
 /** Exact record stored when no model provider is configured. */
 export const NOT_RUN_LABEL = "not run — provider not configured";
 
@@ -11,6 +14,8 @@ export type Brief = {
   outcome: string;
   constraints: string;
 };
+
+export type { ResearchMode, PilotActivityEvent, PilotTeamPlan };
 
 export type EvidenceItem = {
   id: string;
@@ -181,6 +186,8 @@ export type SupervisedMission = {
     reason: string;
   }>;
   exportBody: string | null;
+  /** Base64 PDF of the same decision pack; optional for older missions. */
+  exportPdfBase64: string | null;
   job: JobState;
   usageCeiling: number;
   usageConsumed: number;
@@ -190,6 +197,14 @@ export type SupervisedMission = {
   reviews: OutcomeReview[];
   followUp: FollowUpProposal | null;
   origin: MissionOrigin | null;
+  /** Provided | Web | Combined — disclosed before execution. */
+  researchMode: ResearchMode;
+  /** Honest gaps when web research was selected but unavailable. */
+  researchGaps: string[];
+  /** Small Available Wave 1 specialist team for this pilot. */
+  team: PilotTeamPlan | null;
+  /** Persisted task events only — no fake chat or timer theatre. */
+  activity: PilotActivityEvent[];
   updatedAt: string;
 };
 
@@ -201,12 +216,12 @@ export type ApprovalClaim = {
 };
 
 export const PROGRESS_STEPS = [
-  { id: "brief", label: "Brief" },
+  { id: "brief", label: "Objective" },
   { id: "evidence", label: "Evidence" },
-  { id: "alternatives", label: "Alternatives" },
+  { id: "alternatives", label: "Options" },
   { id: "decision", label: "Decision" },
-  { id: "artefact", label: "Artefact" },
-  { id: "export", label: "Export" },
+  { id: "artefact", label: "Approved work" },
+  { id: "export", label: "Outcome" },
 ] as const;
 
 export function spendKey(scope: string): string {
@@ -260,7 +275,15 @@ export function nextRequiredAction(mission: SupervisedMission): {
         : "A worker owns this step.",
     };
   }
-  if (mission.stage === "brief") {
+  if (mission.stage === "brief" || (mission.team && !mission.team.approvedAt)) {
+    if (mission.team && !mission.team.approvedAt) {
+      return {
+        id: "approve_plan",
+        title: "Approve the specialist plan",
+        detail:
+          "Review which specialists own each task. Nothing runs until you approve this bounded plan.",
+      };
+    }
     return {
       id: "evidence",
       title: "Add supplied evidence",
@@ -271,7 +294,8 @@ export function nextRequiredAction(mission: SupervisedMission): {
     return {
       id: "compare",
       title: "Compare options",
-      detail: "One comparison is prepared from the saved brief and evidence.",
+      detail:
+        "Review the research mode and tools first. One comparison is prepared from the saved brief and evidence.",
     };
   }
   if (mission.stage === "alternatives") {

@@ -304,7 +304,7 @@ function CommandHome() {
   return (
     <CommandShell
       title="Product overview"
-      subtitle="A shared view of your product, the work behind it, and what happens next."
+      subtitle="Supervised decision loop: objective → evidence → options → decision → approved work → outcome → next mission."
       usage={{
         consumed: data.workspace.usageConsumed,
         ceiling: data.workspace.usageCeiling,
@@ -312,20 +312,21 @@ function CommandHome() {
     >
       <WorkspaceStopControl workspace={data.workspace} />
       <OwnerInbox />
-      <WorkspaceOverview
-        pipeline={
+      <ConversationPanel />
+      <WorkspaceOverview />
+      <SupervisedMissionStart />
+
+      <details className="ps-legacy">
+        <summary>Advanced mission planner · discovery, prototypes and product builds</summary>
+        <details className="ps-legacy mt-3">
+          <summary>Agents office (recent specialist missions — not the primary pilot path)</summary>
           <AgentOffice
             missions={data.recentMissions}
             tasks={data.recentTasks}
             tasksUnavailable={data.recentTasksUnavailable}
             usage={{ consumed: data.workspace.usageConsumed, ceiling: data.workspace.usageCeiling }}
           />
-        }
-      />
-      <SupervisedMissionStart />
-
-      <details className="ps-legacy">
-        <summary>Advanced mission planner · discovery, prototypes and product builds</summary>
+        </details>
         {/* Unified Mission Composer Card */}
         <section
           id="mission-composer"
@@ -521,7 +522,6 @@ function CommandHome() {
           </div>
         </section>
       </details>
-      <ConversationPanel />
       {/* Recent Missions & Supervision Ledger */}
       <section className="cc-panel" id="cc-missions">
         <div className="flex flex-wrap items-center justify-between gap-3">

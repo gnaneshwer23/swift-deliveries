@@ -3,8 +3,11 @@ import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
+import { ConversationPanel } from "@/components/command/conversation-panel";
+import { SpecialistTeamGraph } from "@/components/command/specialist-team-graph";
 import { SupervisedLearningLoop } from "@/components/command/supervised-learning-loop";
 import {
+  approveSupervisedPlan,
   cancelSupervisedMission,
   decideSupervisedMission,
   exportSupervisedMission,
@@ -13,7 +16,10 @@ import {
   reviseSupervisedBrief,
   runSupervisedComparison,
   saveSupervisedEvidence,
+  setSupervisedResearchMode,
 } from "@/lib/pilot-mission.functions";
+import { decisionPackFilenames } from "@/lib/pilot-mission/decision-pack";
+import { RESEARCH_MODE_LABELS, type ResearchMode } from "@/lib/pilot-mission/research-mode";
 import { PROGRESS_STEPS, stepState, type DecisionChoice } from "@/lib/pilot-mission/types";
 
 export const Route = createFileRoute("/_authenticated/command/supervised/$missionId")({
@@ -58,6 +64,32 @@ function SupervisedMissionPage() {
   const onError = (err: unknown) =>
     setError(err instanceof Error ? err.message : "The mission could not be updated.");
 
+  const approvePlan = useMutation({
+    mutationFn: () =>
+      approveSupervisedPlan({
+        data: { id: missionId, expectedVersion: query.data?.mission.version ?? 0 },
+      }),
+    onSuccess: async () => {
+      setError(null);
+      await invalidate();
+    },
+    onError,
+  });
+  const setResearch = useMutation({
+    mutationFn: (mode: ResearchMode) =>
+      setSupervisedResearchMode({
+        data: {
+          id: missionId,
+          expectedVersion: query.data?.mission.version ?? 0,
+          mode,
+        },
+      }),
+    onSuccess: async () => {
+      setError(null);
+      await invalidate();
+    },
+    onError,
+  });
   const compare = useMutation({
     mutationFn: () =>
       runSupervisedComparison({
@@ -169,6 +201,10 @@ function SupervisedMissionPage() {
           );
         })}
       </ol>
+      {mission.team ? (
+        <SpecialistTeamGraph team={mission.team} activity={mission.activity ?? []} />
+      ) : null}
+
       <section className="cc-panel" id="mission-next-action" aria-label="Next action">
         <h2 className="cc-panel-title">{next.title}</h2>
         <p className="cc-muted">{next.detail}</p>
@@ -181,6 +217,58 @@ function SupervisedMissionPage() {
             ? ` Generation: ${mission.proposal.generation.label}.`
             : " Comparison has not been stored yet."}
         </p>
+
+        <section className="mt-4" aria-label="Research mode">
+          <h3 className="cc-panel-title text-base">Research mode</h3>
+          <p className="cc-muted text-sm">
+            Shown before execution. Web results are never invented when a provider is missing.
+          </p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {(Object.keys(RESEARCH_MODE_LABELS) as ResearchMode[]).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                className={`cc-btn ${mission.researchMode === mode ? "cc-btn-primary" : "cc-btn-secondary"}`}
+                disabled={!open || setResearch.isPending || Boolean(mission.proposal)}
+                onClick={() => setResearch.mutate(mode)}
+              >
+                {RESEARCH_MODE_LABELS[mode]}
+              </button>
+            ))}
+          </div>
+          <ul className="ps-research-tools">
+            {query.data.research.tools.map((tool) => (
+              <li key={tool.id} data-available={tool.available}>
+                <strong>{tool.label}</strong>
+                {!tool.available ? " — unavailable" : ""}
+                <span className="cc-muted block text-sm">{tool.detail}</span>
+              </li>
+            ))}
+          </ul>
+          {query.data.research.blockReason ? (
+            <p className="cc-error mt-2" role="alert">
+              {query.data.research.blockReason}
+            </p>
+          ) : null}
+          {query.data.research.externalGaps.length ? (
+            <ul className="mt-2 text-sm">
+              {query.data.research.externalGaps.map((gap) => (
+                <li key={gap}>{gap}</li>
+              ))}
+            </ul>
+          ) : null}
+        </section>
+
+        {next.id === "approve_plan" ? (
+          <button
+            type="button"
+            className="cc-btn cc-btn-primary mt-3"
+            disabled={approvePlan.isPending}
+            onClick={() => approvePlan.mutate()}
+          >
+            {approvePlan.isPending ? "Approving…" : "Approve specialist plan"}
+          </button>
+        ) : null}
         {(next.id === "compare" || next.id === "retry" || next.id === "recover") &&
         query.data.modelConfigured ? (
           <label className="cc-muted mt-3 block">
@@ -228,11 +316,14 @@ function SupervisedMissionPage() {
           <ExportButton
             recordVersion={mission.version}
             missionId={missionId}
-            existing={mission.exportBody}
+            existingMd={mission.exportBody}
+            existingPdf={mission.exportPdfBase64}
             onError={onError}
           />
         ) : null}
       </section>
+
+      <ConversationPanel />
       <div
         id="mission-evidence"
         className="ps-record-anchor"
@@ -716,47 +807,71 @@ function DecisionForm({
 function ExportButton({
   recordVersion,
   missionId,
-  existing,
+  existingMd,
+  existingPdf,
   onError,
 }: {
   recordVersion: number;
   missionId: string;
-  existing: string | null;
+  existingMd: string | null;
+  existingPdf: string | null;
   onError: (error: unknown) => void;
 }) {
   const queryClient = useQueryClient();
+  const names = decisionPackFilenames(missionId);
   const save = useMutation({
     mutationFn: () =>
       exportSupervisedMission({ data: { id: missionId, expectedVersion: recordVersion } }),
     onSuccess: async (result) => {
-      const body = result.mission.exportBody;
-      if (body) download(body);
+      downloadPack(result.mission.exportBody, result.mission.exportPdfBase64, names);
       await queryClient.invalidateQueries({ queryKey: ["supervised"] });
     },
     onError,
   });
   return (
-    <button
-      type="button"
-      className="cc-btn cc-btn-primary mt-3"
-      disabled={save.isPending}
-      onClick={() => {
-        if (existing) download(existing);
-        else save.mutate();
-      }}
-    >
-      {save.isPending ? "Exporting…" : "Download decision pack"}
-    </button>
+    <div className="mt-3 flex flex-wrap gap-2">
+      <button
+        type="button"
+        className="cc-btn cc-btn-primary"
+        disabled={save.isPending}
+        onClick={() => {
+          if (existingMd) downloadPack(existingMd, existingPdf, names);
+          else save.mutate();
+        }}
+      >
+        {save.isPending ? "Exporting…" : "Download decision pack (PDF + Markdown)"}
+      </button>
+      <p className="cc-muted text-xs basis-full">
+        Linked sources are referenced only — they are not bundled in the download.
+      </p>
+    </div>
   );
 }
 
-function download(body: string) {
-  const url = URL.createObjectURL(new Blob([body], { type: "text/markdown;charset=utf-8" }));
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "decision-pack.md";
-  link.click();
-  URL.revokeObjectURL(url);
+function downloadPack(
+  markdown: string | null,
+  pdfBase64: string | null,
+  names: { md: string; pdf: string },
+) {
+  if (markdown) {
+    const url = URL.createObjectURL(new Blob([markdown], { type: "text/markdown;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = names.md;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+  if (pdfBase64) {
+    const binary = atob(pdfBase64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    const url = URL.createObjectURL(new Blob([bytes], { type: "application/pdf" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = names.pdf;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
 }
 
 function RecordStepPending({ title, detail }: { title: string; detail: string }) {

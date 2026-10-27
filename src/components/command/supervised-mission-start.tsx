@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { myProfileQuery } from "@/lib/profile-queries";
 import { getSupervisedMissionHome, startSupervisedMission } from "@/lib/pilot-mission.functions";
+import { RESEARCH_MODE_LABELS, type ResearchMode } from "@/lib/pilot-mission/research-mode";
 
 import { useSession } from "@/hooks/use-session";
 import { loadPilotBrief } from "@/lib/pilot/storage";
@@ -30,6 +31,7 @@ function MissionStartForm({ userId }: { userId: string }) {
   const [audience, setAudience] = useState("");
   const [outcome, setOutcome] = useState("A decision pack and an experiment brief.");
   const [constraints, setConstraints] = useState("");
+  const [researchMode, setResearchMode] = useState<ResearchMode>("provided");
   const [error, setError] = useState<string | null>(null);
 
   const [draftReady, setDraftReady] = useState(false);
@@ -75,6 +77,7 @@ function MissionStartForm({ userId }: { userId: string }) {
           audience: audience.trim(),
           outcome: outcome.trim(),
           constraints: constraints.trim(),
+          researchMode,
         },
       }),
     onSuccess: async (result) => {
@@ -100,8 +103,9 @@ function MissionStartForm({ userId }: { userId: string }) {
       <p className="cc-kicker">Start a mission</p>
       <h2 className="cc-panel-title">What product question are you exploring?</h2>
       <p className="cc-muted">
-        Save a brief, add evidence, compare options, record your decision, then export a decision
-        and experiment brief. One comparison runs only when a model provider is already configured.
+        Supervised decision loop with a small Available Wave 1 specialist team. Approve the plan,
+        add evidence, compare options, decide, export a decision pack (PDF + Markdown), then review
+        outcomes. Follow-ups never start without your approval.
       </p>
       {home.data ? (
         <p className="cc-muted text-sm">
@@ -196,6 +200,25 @@ function MissionStartForm({ userId }: { userId: string }) {
           value={constraints}
           onChange={(event) => setConstraints(event.target.value)}
         />
+        <label className="cc-label" htmlFor="supervised-research-mode">
+          Research mode
+        </label>
+        <select
+          id="supervised-research-mode"
+          className="cc-input"
+          value={researchMode}
+          onChange={(event) => setResearchMode(event.target.value as ResearchMode)}
+        >
+          {(Object.keys(RESEARCH_MODE_LABELS) as ResearchMode[]).map((mode) => (
+            <option key={mode} value={mode}>
+              {RESEARCH_MODE_LABELS[mode]}
+            </option>
+          ))}
+        </select>
+        <p className="cc-muted text-xs">
+          Tools are shown again before comparison. Without a search provider, web mode is blocked
+          and combined continues on provided evidence with external gaps marked.
+        </p>
         {error ? (
           <p className="cc-error" role="alert">
             {error}

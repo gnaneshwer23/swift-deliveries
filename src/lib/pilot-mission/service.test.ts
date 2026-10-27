@@ -81,9 +81,15 @@ async function readyMission(
     usageCeiling: ceiling,
     nowMs: 1_000,
   });
-  return service.saveEvidence({
+  const approved = await service.approvePlan({
     workspaceId,
     id: created.id,
+    actorId: "owner",
+    nowMs: 1_500,
+  });
+  return service.saveEvidence({
+    workspaceId,
+    id: approved.id,
     items: evidence,
     nowMs: 2_000,
   });
