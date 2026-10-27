@@ -214,7 +214,13 @@ function SupervisedMissionPage() {
       <PmBriefPanel mission={mission} />
 
       {mission.team ? (
-        <SpecialistTeamGraph team={mission.team} activity={mission.activity ?? []} />
+        <SpecialistTeamGraph
+          team={mission.team}
+          activity={mission.activity ?? []}
+          evidence={mission.evidence}
+          researchGaps={mission.researchGaps}
+          researchPassCompletedAt={mission.researchPassCompletedAt}
+        />
       ) : null}
 
       <section className="cc-panel" id="mission-next-action" aria-label="Next action">
@@ -955,8 +961,8 @@ function PmBriefPanel({ mission }: { mission: SupervisedMission }) {
         <div>
           <dt>Delivery team</dt>
           <dd>
-            {brief.team.initiatingAgent} initiating · {staffing.activeSpecialists} Wave 1 roles
-            active now
+            {brief.team.initiatingAgent} initiating · {staffing.activeSpecialists} Available roles
+            proposed now
             <span className="cc-muted block text-sm">
               {STAFFING_BAND_LABELS[staffing.band]} (catalogue intent {staffing.catalogueTargetMin}
               –{staffing.catalogueTargetMax}). {staffing.reason}

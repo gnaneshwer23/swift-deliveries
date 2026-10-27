@@ -1,8 +1,8 @@
 # Strategy: One-liner → PM brief → living work scene → decision pack
 
-**Status:** Phase B **shipped** on `main` (Option C Hybrid + research-first). Light Phase C work scene included.  
+**Status:** Phases **B–E shipped** on `main` (Option C Hybrid + research-first). Phase F voice still deferred.  
 **Date:** 27 October 2026  
-**Context repo:** `swift-deliveries` · prior vertical slice `c0361e7`; intake reshape follows this strategy  
+**Context repo:** `swift-deliveries` · prior Phase B tip `566626c`; C–E land after that tip  
 **Live pain reference:** `/command/supervised/{missionId}` previously felt like a questionnaire, not an agent-staffed build.
 
 Prior approved decisions still bind: decision pack first; supervised decision loop as default; web research only when configured; voice after typed path; defer agents office as primary / full ZIP / broad always-on 150-role catalogue.
@@ -24,7 +24,7 @@ The initiating experience is an **initiating PM agent** that:
 5. Runs **research-led case building** (market, competitors, sites) and only asks clarifying questions when the case cannot honestly proceed.
 6. Ends the first arc at an inspectable **decision pack** (and experiment brief), with humans owning every gate.
 
-Team size **scales with case complexity** (~20 for simple → ~100 for hard → hard ceiling ~150). Not 150 every time. Not a forever-fixed team of 8. **This ship:** Band S / Wave 1 (~8) active; higher bands labelled only.
+Team size **scales with case complexity** (~20 for simple → ~100 for hard → hard ceiling ~150 catalogue intent). Not 150 every time. Not a forever-fixed team of 8. **This ship:** Available Wave 1 subsets by band — **S=4 / M=6 / L=8 / XL=8** (cap at Available; catalogue ranges remain honesty labels).
 
 This is still the supervised decision loop — reframed as *staffed work you watch*, not *fields you complete*.
 
@@ -56,9 +56,9 @@ This is still the supervised decision loop — reframed as *staffed work you wat
 | --- | --- |
 | **A — Experience contract** | Done (this doc + founder “build”) |
 | **B — Intake reshape** | **Shipped** — one-liner primary; optional advanced collapse; PM brief before approve; research-first Combined default |
-| **C — Living scene** | **Light shipped** — graph + persisted activity; no fake timer theatre; full cinematic office deferred |
-| **D — Complexity-scaled staffing** | Deferred — bands labelled; only Band S Wave 1 staffed |
-| **E — Research-led case building** | Partial — Combined + honest gaps; full provider-driven research when keys configured |
+| **C — Living scene** | **Shipped (practical)** — after approve, research/work pass emits persisted events; actor chips + findings/gaps; no fake timer; full cinematic office deferred |
+| **D — Complexity-scaled staffing** | **Shipped (honest bands)** — S/M/L/XL → 4/6/8/8 Available Wave 1; count + band in PM brief; catalogue intent labelled; not all 150 |
+| **E — Research-led case building** | **Shipped** — post-approve pass writes findings or honest external gaps; Provided/Web/Combined respected; soft-seed keeps compare unblocked |
 | **F — Voice initiation** | Deferred — typed path first |
 
 ---

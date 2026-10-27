@@ -63,21 +63,23 @@ Shipped on `origin/main` as the first end-to-end pilot path for Command Centre, 
 
 ### Product loop name: **One-liner → PM brief → research scene**
 
-1. Founder gives **one business-case statement** (not a multi-field interview). Optional details stay collapsed.
+1. Founder gives **one business-case statement** (not a multi-field interview). Optional details stay collapsed. Homepage / `dx-psi-brief` one-liner continues post-auth into `/command#supervised-brief`.
 2. An initiating PM / problem-framing agent drafts a **PM brief**: restated problem, what will happen, rough cost, rough time, team/staffing band — before heavy execution.
 3. Typed Talk-to-DeliverX can start that supervised case (default path); advanced workforce drafts remain an explicit card choice.
-4. A bounded Available Wave 1 / **Band S** specialist team (8 roles active now) owns tasks; a **work scene** dramatises persisted activity (not timer theatre). Complexity bands S/M/L/XL are labelled for honesty; higher bands are not staffed this ship.
-5. Plan / PM-brief approval is a human gate before comparison advances.
-6. **Research-first default (Combined)**: specialists are expected to research; founder evidence is optional unless blocked. Tools disclosed; no invented web retrieval without a provider key.
+4. **Banded Available staffing (Phase D):** complexity S/M/L/XL proposes **4 / 6 / 8 / 8** Wave 1 roles (deterministic subset; catalogue intent ranges labelled; not all 150). Count + band appear in the PM brief before approve.
+5. Plan / PM-brief approval is a human gate. **After approve (Phases C+E):** a research/work pass auto-advances — persisted `task.*` / `research.pass.*` events, actor chips, findings/gaps in the work scene (no fake timer theatre).
+6. **Research-first default (Combined):** pass writes cited findings when EXA/Tavily/Brave is configured; otherwise marks honest external gaps and continues with provided/soft-seeded evidence. Soft-seed keeps compare unblocked on a questionnaire. No invented web retrieval.
 7. Decision pack export: Markdown + PDF with honesty labels, evidence register, assumptions/gaps, options, approval history, experiment brief, follow-up proposal that does not auto-start.
 
 Default `/command` view is this supervised loop (Talk + overview + supervised start). Agents office is nested under advanced planner — not primary.
 
+Strategy detail: `docs/roadmap-one-liner-pm-brief.md` (Phases B–E shipped; F deferred).
+
 ### Deferred (explicitly out of this slice)
 
 - Agents office as the primary Command surface
-- Enabling the full 150-role catalogue / live complexity-scaled assignment beyond the Wave 1 core
-- Voice / oral PM brief (typed path is shared; voice remains Phase 4b)
+- Enabling the full 150-role catalogue / Planned roles beyond Available Wave 1
+- Voice / oral PM brief (Phase F — typed path first; voice remains Phase 4b infra)
 - Full programme ZIP export
 - Claiming live web research without EXA / Tavily / Brave configured
 - Invented customer evidence or interviews

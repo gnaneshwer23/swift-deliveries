@@ -17,17 +17,17 @@ const brief = {
 };
 
 describe("founder vertical slice — specialist plan", () => {
-  it("staffs eight Available specialists with visible ownership on the plan", () => {
-    const plan = buildPilotTeamPlan();
+  it("staffs Available specialists by band with visible ownership on the plan", () => {
+    const plan = buildPilotTeamPlan({ band: "L" });
     expect(plan.capabilityIds).toEqual([
-      "DX-001",
       "DX-002",
       "DX-018",
       "DX-020",
+      "DX-001",
       "DX-021",
+      "DX-071",
       "DX-023",
       "DX-035",
-      "DX-071",
     ]);
     expect(plan.tasks.every((t) => t.ownerLabel.length > 0)).toBe(true);
     expect(plan.tasks.some((t) => t.actor === "human" && t.key === "human_decision")).toBe(true);
@@ -39,7 +39,7 @@ describe("founder vertical slice — specialist plan", () => {
     expect(owners.get("human_decision")).toBeNull();
   });
 
-  it("blocks evidence and comparison until the plan is approved", async () => {
+  it("blocks evidence and comparison until the plan is approved, then runs a research pass", async () => {
     const service = new SupervisedMissionService(new MemoryStore());
     const created = await service.create({
       id: crypto.randomUUID(),
@@ -71,13 +71,23 @@ describe("founder vertical slice — specialist plan", () => {
       id: created.id,
       actorId: "owner",
       nowMs: 2_000,
+      env: {},
     });
     expect(approved.team?.approvedAt).toBeTruthy();
-    // Research-first: placeholders are seeded at create, so the next gate is compare.
+    expect(approved.researchPassCompletedAt).toBeTruthy();
+    // Research-first: soft-seed + research pass → compare is next; scene shows work events.
     expect(approved.evidence.length).toBeGreaterThan(0);
     expect(nextRequiredAction(approved).id).toBe("compare");
     expect(approved.activity.some((e) => e.kind === "plan.approved")).toBe(true);
     expect(approved.activity.some((e) => e.kind === "pm_brief.drafted")).toBe(true);
+    expect(approved.activity.some((e) => e.kind === "research.pass.completed")).toBe(true);
+    expect(
+      approved.team?.tasks.find((t) => t.key === "register_evidence")?.status,
+    ).toBe("completed");
+    expect(
+      approved.team?.tasks.find((t) => t.key === "synthesise_findings")?.status,
+    ).toBe("completed");
+    expect(approved.team?.tasks.find((t) => t.key === "draft_options")?.status).toBe("ready");
   });
 
   it("defaults to combined research and soft-fills a one-liner brief", async () => {

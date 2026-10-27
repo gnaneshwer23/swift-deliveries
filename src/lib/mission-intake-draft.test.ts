@@ -10,15 +10,24 @@ describe("first mission intake", () => {
     const brief = BRIEF_PRESETS.team.brief;
     expect(restoreMissionIntake(null, brief.problem, brief)).toEqual(preparedMissionIntake(brief));
   });
-  it("keeps a newer edited onboarding question separate from unrelated brief details", () => {
+  it("prefers the prepared dx-psi-brief one-liner over a stale profile firstIdea", () => {
     const result = restoreMissionIntake(null, "A different question", BRIEF_PRESETS.team.brief);
-    expect(result.question).toBe("A different question");
-    expect(result.audience).toMatch(/Primary customers/i);
-    expect(result.constraints).toMatch(/Research first/i);
+    expect(result).toEqual(preparedMissionIntake(BRIEF_PRESETS.team.brief));
   });
-  it("preserves a deliberately blank intake instead of refilling it on reload", () => {
-    const local = { question: "", audience: "", outcome: "", constraints: "" };
+  it("keeps an edited session draft ahead of the prepared brief", () => {
+    const local = {
+      question: "Should we change pricing this quarter?",
+      audience: "Founders",
+      outcome: "A pricing decision.",
+      constraints: "No ads.",
+    };
     expect(restoreMissionIntake(local, "Old question", BRIEF_PRESETS.team.brief)).toEqual(local);
+  });
+  it("uses the prepared brief when the session draft question is blank", () => {
+    const local = { question: "", audience: "", outcome: "", constraints: "" };
+    expect(restoreMissionIntake(local, "Old question", BRIEF_PRESETS.team.brief)).toEqual(
+      preparedMissionIntake(BRIEF_PRESETS.team.brief),
+    );
   });
   it("rejects corrupted drafts instead of partially merging them", () => {
     expect(parseMissionIntake('{"question":"test"}')).toBeNull();

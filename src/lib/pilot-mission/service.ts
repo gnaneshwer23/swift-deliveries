@@ -16,7 +16,8 @@ import {
   planResearchMode,
   type ResearchMode,
 } from "./research-mode";
-import { expandOneLinerBrief, seedResearchEvidence } from "./pm-brief";
+import { estimateStaffingBand, expandOneLinerBrief, seedResearchEvidence } from "./pm-brief";
+import { runResearchPass } from "./research-pass";
 import {
   activityEvent,
   buildPilotTeamPlan,
@@ -232,9 +233,9 @@ function withSyncedTeam(mission: SupervisedMission): SupervisedMission {
 
 function pushActivity(
   mission: SupervisedMission,
-  event: ReturnType<typeof activityEvent>,
+  ...events: Array<ReturnType<typeof activityEvent>>
 ): PilotActivitySlice {
-  return [...(mission.activity ?? []), event].slice(-200);
+  return [...(mission.activity ?? []), ...events].slice(-200);
 }
 
 type PilotActivitySlice = SupervisedMission["activity"];
@@ -458,8 +459,9 @@ export class SupervisedMissionService {
     const researchMode = input.researchMode ?? "combined";
     if (!isResearchMode(researchMode)) throw new Error("Unknown research mode.");
     const researchPlan = planResearchMode(researchMode);
-    const team = buildPilotTeamPlan();
     const brief = normaliseBrief(input.brief);
+    const staffing = estimateStaffingBand(brief.question);
+    const team = buildPilotTeamPlan({ band: staffing.band });
     const evidence = seedResearchEvidence(researchMode);
     const initiating =
       team.tasks.find((t) => t.key === "frame_objective")?.ownerLabel ?? "Problem-Framing Agent";
@@ -488,20 +490,21 @@ export class SupervisedMissionService {
       origin: input.origin ?? null,
       researchMode,
       researchGaps: researchPlan.externalGaps,
+      researchPassCompletedAt: null,
       team,
       activity: [
         activityEvent({
           at,
           taskKey: null,
           kind: "mission.created",
-          summary: `One-liner case received. ${initiating} is preparing the PM brief and a bounded specialist plan (${team.capabilityIds.length} Wave 1 roles). Research mode: ${researchPlan.label}.`,
+          summary: `One-liner case received. ${initiating} is preparing the PM brief and a bounded specialist plan (${team.capabilityIds.length} Available roles, band ${staffing.band}). Research mode: ${researchPlan.label}.`,
           actor: "human",
         }),
         activityEvent({
           at,
           taskKey: "frame_objective",
           kind: "pm_brief.drafted",
-          summary: `${initiating} drafted the PM brief: plan, rough cost, time and team before heavy execution. Research placeholders seeded so specialists are not blocked on a questionnaire.`,
+          summary: `${initiating} drafted the PM brief: plan, rough cost, time and team (${team.capabilityIds.length} specialists, band ${staffing.band}) before heavy execution. Research placeholders seeded so specialists are not blocked on a questionnaire.`,
           actor: team.tasks.find((t) => t.key === "frame_objective")?.capabilityId ?? "DX-002",
         }),
         activityEvent({
@@ -523,6 +526,9 @@ export class SupervisedMissionService {
     id: string;
     actorId: string;
     nowMs: number;
+    /** Test seam — production uses the real search provider resolver. */
+    search?: Parameters<typeof runResearchPass>[0]["search"];
+    env?: Record<string, string | undefined>;
   }): Promise<SupervisedMission> {
     const current = await this.must(input.workspaceId, input.id);
     if (input.expectedVersion !== undefined && current.version !== input.expectedVersion) {
@@ -539,10 +545,10 @@ export class SupervisedMissionService {
       approvedAt: at,
       approvedBy: input.actorId,
     };
-    const next: SupervisedMission = withSyncedTeam({
+    const approvedBase: SupervisedMission = {
       ...current,
       version: current.version + 1,
-      // Stay on brief until evidence is saved; approval only unlocks the team.
+      // Soft-seeded evidence advances to the evidence stage; research pass runs next.
       stage: current.evidence.length ? (current.stage === "brief" ? "evidence" : current.stage) : "brief",
       team,
       activity: pushActivity(
@@ -551,10 +557,33 @@ export class SupervisedMissionService {
           at,
           taskKey: "frame_objective",
           kind: "plan.approved",
-          summary: "You approved the specialist plan. Evidence and later steps may proceed.",
+          summary:
+            "You approved the specialist plan. Specialists begin a research / work pass from persisted events.",
           actor: "human",
         }),
       ),
+      updatedAt: at,
+    };
+
+    // Phase C+E: auto-advance into a visible research pass (findings or honest gaps).
+    // Not billable. Never invents web retrieval when no provider is configured.
+    const pass = await runResearchPass({
+      mission: approvedBase,
+      at,
+      ...(input.env ? { env: input.env } : {}),
+      ...(input.search ? { search: input.search } : {}),
+    });
+    const next: SupervisedMission = withSyncedTeam({
+      ...approvedBase,
+      evidence: pass.evidence,
+      researchGaps: pass.researchGaps,
+      researchPassCompletedAt: pass.researchPassCompletedAt,
+      activity: pushActivity(approvedBase, ...pass.activity),
+      stage: pass.evidence.length
+        ? approvedBase.stage === "brief"
+          ? "evidence"
+          : approvedBase.stage
+        : approvedBase.stage,
       updatedAt: at,
     });
     return this.store.save(next, current.version);

@@ -2228,8 +2228,34 @@
 .ps-optional-evidence > summary { cursor: pointer; }
 .ps-scene-feed .ps-activity-log li[data-kind="pm_brief.drafted"],
 .ps-scene-feed .ps-activity-log li[data-kind="plan.proposed"],
-.ps-scene-feed .ps-activity-log li[data-kind="plan.approved"] {
+.ps-scene-feed .ps-activity-log li[data-kind="plan.approved"],
+.ps-scene-feed .ps-activity-log li[data-kind="research.pass.started"],
+.ps-scene-feed .ps-activity-log li[data-kind="research.pass.completed"],
+.ps-scene-feed .ps-activity-log li[data-kind="task.started"],
+.ps-scene-feed .ps-activity-log li[data-kind="task.completed"] {
   border-left-color: var(--psi-indigo, #3b4cca);
+}
+.ps-scene-findings ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.ps-scene-findings li {
+  padding: 8px 10px;
+  border-left: 3px solid var(--psi-border, #d0d4e0);
+  background: color-mix(in srgb, var(--psi-surface, #fff) 92%, var(--psi-indigo, #3b4cca) 8%);
+}
+.ps-scene-findings li[data-kind="gap"] {
+  border-left-color: var(--psi-amber, #b45309);
+}
+.ps-scene-findings li strong {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
 }
 @media (prefers-reduced-motion: reduce) {
   .ps-scene-actor[data-status="ready"] .ps-scene-pulse,

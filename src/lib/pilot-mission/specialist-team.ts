@@ -1,11 +1,14 @@
 /**
- * Small specialist team for the supervised decision pilot.
+ * Specialist team for the supervised decision pilot.
  * Uses only Available Wave 1 registry roles — not the full catalogue.
- * Education is one example business case; this is shared infrastructure.
+ * Complexity band selects a deterministic subset (S/M/L/XL → 4/6/8/8).
  */
 import { getCapability } from "@/lib/workforce/registry/load";
 import { validateTaskGraph, type GraphNode } from "@/lib/workforce/graph";
 import type { MissionStage, SupervisedMission } from "./types";
+
+/** Matches PM-brief complexity bands. Kept local to avoid import cycles. */
+export type StaffingBand = "S" | "M" | "L" | "XL";
 
 export const DECISION_LOOP_STEPS = [
   "objective",
@@ -69,6 +72,8 @@ export type PilotTeamPlan = {
   version: "pilot-team-v1";
   /** Assignable Wave 1 specialists staffing this mission. */
   capabilityIds: string[];
+  /** Complexity band that selected this subset. */
+  staffingBand: StaffingBand;
   tasks: PilotSpecialistTask[];
   approvedAt: string | null;
   approvedBy: string | null;
@@ -76,15 +81,65 @@ export type PilotTeamPlan = {
 
 const ROLE = (id: string, fallback: string) => getCapability(id)?.name ?? fallback;
 
-/** Bounded plan shown before any specialist work advances. */
-export function buildPilotTeamPlan(): PilotTeamPlan {
+/** Decision-loop spine — always included. */
+export const STAFFING_CORE_IDS = ["DX-002", "DX-018", "DX-020", "DX-001"] as const;
+/** Options / challenge path. */
+export const STAFFING_OPTIONS_IDS = ["DX-021", "DX-071"] as const;
+/** Post-decision delivery artefacts. */
+export const STAFFING_DELIVERY_IDS = ["DX-023", "DX-035"] as const;
+
+export const WAVE1_AVAILABLE_CAP = 8;
+
+/** Deterministic Available-only selection by band. Never pulls Planned / catalogue-150 roles. */
+export function selectCapabilityIdsForBand(band: StaffingBand): string[] {
+  if (band === "S") return [...STAFFING_CORE_IDS];
+  if (band === "M") return [...STAFFING_CORE_IDS, ...STAFFING_OPTIONS_IDS];
+  return [...STAFFING_CORE_IDS, ...STAFFING_OPTIONS_IDS, ...STAFFING_DELIVERY_IDS].slice(
+    0,
+    WAVE1_AVAILABLE_CAP,
+  );
+}
+
+function ownerFor(
+  preferred: string,
+  capabilityIds: readonly string[],
+  fallback: string,
+): { capabilityId: string; ownerLabel: string } {
+  const id = capabilityIds.includes(preferred) ? preferred : fallback;
+  const labels: Record<string, string> = {
+    "DX-001": "Chief of Staff Agent",
+    "DX-002": "Problem-Framing Agent",
+    "DX-018": "Evidence Integrity Agent",
+    "DX-020": "Research Synthesis Agent",
+    "DX-021": "Market Intelligence Agent",
+    "DX-023": "Product Requirements Agent",
+    "DX-035": "UX Prototype Agent",
+    "DX-071": "QA Reliability Agent",
+  };
+  return { capabilityId: id, ownerLabel: ROLE(id, labels[id] ?? id) };
+}
+
+/** Bounded plan shown before any specialist work advances. Sized by complexity band. */
+export function buildPilotTeamPlan(input?: { band?: StaffingBand }): PilotTeamPlan {
+  const band = input?.band ?? "M";
+  const capabilityIds = selectCapabilityIdsForBand(band);
+  const frame = ownerFor("DX-002", capabilityIds, "DX-002");
+  const evidence = ownerFor("DX-018", capabilityIds, "DX-018");
+  const synthesis = ownerFor("DX-020", capabilityIds, "DX-020");
+  const draft = ownerFor("DX-021", capabilityIds, "DX-001");
+  const challenge = ownerFor("DX-071", capabilityIds, "DX-020");
+  const structure = ownerFor("DX-001", capabilityIds, "DX-001");
+  const product = ownerFor("DX-023", capabilityIds, "DX-001");
+  const pack = ownerFor("DX-035", capabilityIds, "DX-001");
+  const follow = ownerFor("DX-001", capabilityIds, "DX-001");
+
   const tasks: PilotSpecialistTask[] = [
     {
       key: "frame_objective",
       title: "Frame the product objective",
       loopStep: "objective",
-      capabilityId: "DX-002",
-      ownerLabel: ROLE("DX-002", "Problem-Framing Agent"),
+      capabilityId: frame.capabilityId,
+      ownerLabel: frame.ownerLabel,
       dependsOn: [],
       status: "pending",
       uses: ["Mission brief (founder-supplied)"],
@@ -96,8 +151,8 @@ export function buildPilotTeamPlan(): PilotTeamPlan {
       key: "register_evidence",
       title: "Register evidence and claims",
       loopStep: "evidence",
-      capabilityId: "DX-018",
-      ownerLabel: ROLE("DX-018", "Evidence Integrity Agent"),
+      capabilityId: evidence.capabilityId,
+      ownerLabel: evidence.ownerLabel,
       dependsOn: ["frame_objective"],
       status: "pending",
       uses: ["Founder-supplied evidence", "Research mode selection"],
@@ -109,8 +164,8 @@ export function buildPilotTeamPlan(): PilotTeamPlan {
       key: "synthesise_findings",
       title: "Synthesise findings and gaps",
       loopStep: "evidence",
-      capabilityId: "DX-020",
-      ownerLabel: ROLE("DX-020", "Research Synthesis Agent"),
+      capabilityId: synthesis.capabilityId,
+      ownerLabel: synthesis.ownerLabel,
       dependsOn: ["register_evidence"],
       status: "pending",
       uses: ["Evidence register", "Assumptions flagged as such"],
@@ -122,8 +177,8 @@ export function buildPilotTeamPlan(): PilotTeamPlan {
       key: "draft_options",
       title: "Draft options",
       loopStep: "options",
-      capabilityId: "DX-021",
-      ownerLabel: ROLE("DX-021", "Market Intelligence Agent"),
+      capabilityId: draft.capabilityId,
+      ownerLabel: draft.ownerLabel,
       dependsOn: ["synthesise_findings"],
       status: "pending",
       uses: ["Findings", "Mission constraints"],
@@ -135,8 +190,8 @@ export function buildPilotTeamPlan(): PilotTeamPlan {
       key: "challenge_options",
       title: "Challenge options",
       loopStep: "options",
-      capabilityId: "DX-071",
-      ownerLabel: ROLE("DX-071", "QA Reliability Agent"),
+      capabilityId: challenge.capabilityId,
+      ownerLabel: challenge.ownerLabel,
       dependsOn: ["draft_options"],
       status: "pending",
       uses: ["Draft options", "Evidence gaps"],
@@ -148,8 +203,8 @@ export function buildPilotTeamPlan(): PilotTeamPlan {
       key: "structure_recommendation",
       title: "Structure recommendation for decision",
       loopStep: "decision",
-      capabilityId: "DX-001",
-      ownerLabel: ROLE("DX-001", "Chief of Staff Agent"),
+      capabilityId: structure.capabilityId,
+      ownerLabel: structure.ownerLabel,
       dependsOn: ["challenge_options"],
       status: "pending",
       uses: ["Options", "Challenge notes"],
@@ -174,8 +229,8 @@ export function buildPilotTeamPlan(): PilotTeamPlan {
       key: "product_brief",
       title: "Draft product / experiment brief",
       loopStep: "approved_work",
-      capabilityId: "DX-023",
-      ownerLabel: ROLE("DX-023", "Product Requirements Agent"),
+      capabilityId: product.capabilityId,
+      ownerLabel: product.ownerLabel,
       dependsOn: ["human_decision"],
       status: "pending",
       uses: ["Owner decision", "Measurement plan"],
@@ -187,8 +242,8 @@ export function buildPilotTeamPlan(): PilotTeamPlan {
       key: "assemble_pack",
       title: "Assemble decision pack",
       loopStep: "approved_work",
-      capabilityId: "DX-035",
-      ownerLabel: ROLE("DX-035", "UX Prototype Agent"),
+      capabilityId: pack.capabilityId,
+      ownerLabel: pack.ownerLabel,
       dependsOn: ["product_brief"],
       status: "pending",
       uses: ["Decision brief", "Experiment brief", "Provenance labels"],
@@ -213,8 +268,8 @@ export function buildPilotTeamPlan(): PilotTeamPlan {
       key: "propose_follow_up",
       title: "Propose follow-up mission",
       loopStep: "next_mission",
-      capabilityId: "DX-001",
-      ownerLabel: ROLE("DX-001", "Chief of Staff Agent"),
+      capabilityId: follow.capabilityId,
+      ownerLabel: follow.ownerLabel,
       dependsOn: ["outcome_observation"],
       status: "pending",
       uses: ["Outcome review"],
@@ -237,16 +292,8 @@ export function buildPilotTeamPlan(): PilotTeamPlan {
 
   return {
     version: "pilot-team-v1",
-    capabilityIds: [
-      "DX-001",
-      "DX-002",
-      "DX-018",
-      "DX-020",
-      "DX-021",
-      "DX-023",
-      "DX-035",
-      "DX-071",
-    ],
+    capabilityIds,
+    staffingBand: band,
     tasks,
     approvedAt: null,
     approvedBy: null,
@@ -268,9 +315,11 @@ export function syncTeamWithMission(
     | "reviews"
     | "followUp"
     | "team"
+    | "researchPassCompletedAt"
   >,
 ): PilotTeamPlan {
   const approved = Boolean(plan.approvedAt);
+  const researchDone = Boolean(mission.researchPassCompletedAt);
   const completed = new Set<string>();
 
   const mark = (key: string, when: boolean) => {
@@ -280,12 +329,14 @@ export function syncTeamWithMission(
   mark("frame_objective", approved && mission.stage !== "brief");
   mark(
     "register_evidence",
-    Boolean(mission.proposal) ||
+    researchDone ||
+      Boolean(mission.proposal) ||
       ["alternatives", "decision", "artefact", "exported"].includes(mission.stage),
   );
   mark(
     "synthesise_findings",
-    Boolean(mission.proposal) ||
+    researchDone ||
+      Boolean(mission.proposal) ||
       ["alternatives", "decision", "artefact", "exported"].includes(mission.stage),
   );
   mark(

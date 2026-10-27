@@ -34,14 +34,22 @@ describe("pm brief — one-liner expansion", () => {
 });
 
 describe("pm brief — staffing bands", () => {
-  it("keeps simple cases on Band S without enabling the full catalogue", () => {
+  it("sizes Band S to the Available core (4), not the full catalogue", () => {
     const band = estimateStaffingBand("Should we change one onboarding field label?");
     expect(band.band).toBe("S");
-    expect(band.activeSpecialists).toBe(8);
+    expect(band.activeSpecialists).toBe(4);
     expect(band.catalogueTargetMax).toBeLessThanOrEqual(20);
   });
 
-  it("labels market/competitor cases as Band L without staffing all 150", () => {
+  it("sizes Band M to core + options (6)", () => {
+    const band = estimateStaffingBand(
+      "Should we ask for a workspace goal earlier in the product setup flow?",
+    );
+    expect(band.band).toBe("M");
+    expect(band.activeSpecialists).toBe(6);
+  });
+
+  it("sizes Band L to the Available cap (8) without staffing all 150", () => {
     const band = estimateStaffingBand(
       "Map competitors and go-to-market pricing for an international launch across three segments.",
     );
@@ -59,8 +67,12 @@ describe("pm brief — research seed and artefact", () => {
   });
 
   it("builds a PM brief with plan, cost, time and team before approval", () => {
-    const team = buildPilotTeamPlan();
+    const staffing = estimateStaffingBand(
+      "Should we charge for onboarding analytics before launch?",
+    );
+    const team = buildPilotTeamPlan({ band: staffing.band });
     expect(team.approvedAt).toBeNull();
+    expect(team.capabilityIds).toHaveLength(staffing.activeSpecialists);
     const brief = buildPmBrief({
       brief: expandOneLinerBrief({
         question: "Should we charge for onboarding analytics before launch?",
@@ -77,7 +89,7 @@ describe("pm brief — research seed and artefact", () => {
     expect(brief.roughCost.band.length).toBeGreaterThan(0);
     expect(brief.roughCost.comparisonUnitsReserved).toBe(1);
     expect(brief.team.initiatingAgent.length).toBeGreaterThan(0);
-    expect(brief.team.staffing.activeSpecialists).toBe(8);
+    expect(brief.team.staffing.activeSpecialists).toBe(staffing.activeSpecialists);
     expect(brief.honesty).toMatch(/deterministic|simulated/i);
     expect(brief.askFounderOnlyWhen).toMatch(/decision/i);
   });

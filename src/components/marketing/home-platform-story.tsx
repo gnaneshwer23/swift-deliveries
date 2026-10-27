@@ -591,7 +591,11 @@ function PromptSection() {
     const text = idea.trim();
     // keep anything already written in the brief builder; only the question changes
     if (text) savePilotBrief({ ...EMPTY_BRIEF, ...loadPilotBrief(), problem: text.slice(0, 1000) });
-    void navigate({ to: "/onboarding" });
+    // Auth wall is expected; after login/onboarding continue into the supervised one-liner path.
+    void navigate({
+      to: "/onboarding",
+      search: { redirect: "/command#supervised-brief" },
+    });
   };
   return (
     <section className="hp-close">

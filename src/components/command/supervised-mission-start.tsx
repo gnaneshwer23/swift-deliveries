@@ -11,7 +11,7 @@ import {
 } from "@/lib/pilot-mission/pm-brief";
 
 import { useSession } from "@/hooks/use-session";
-import { loadPilotBrief } from "@/lib/pilot/storage";
+import { clearPilotBrief, loadPilotBrief } from "@/lib/pilot/storage";
 import type { ProductBrief } from "@/lib/marketing/product-resources";
 import {
   parseMissionIntake,
@@ -93,6 +93,7 @@ function MissionStartForm({ userId }: { userId: string }) {
         } catch {
           /* Optional draft. */
         }
+      clearPilotBrief();
       await queryClient.invalidateQueries({ queryKey: ["supervised"] });
       void navigate({
         to: "/command/supervised/$missionId",

@@ -1,10 +1,13 @@
 /**
  * PM brief for the supervised "one-liner → case" loop.
  * Derived from the founder statement + bounded team plan — not a second questionnaire.
- * Staffing bands describe intended scale; the pilot still activates the Wave 1 core
- * (not the full catalogue) until complexity-scaled assignment lands.
+ * Staffing bands select a deterministic Available Wave 1 subset (not the full catalogue).
  */
 import { planResearchMode, type ResearchMode } from "./research-mode";
+import {
+  selectCapabilityIdsForBand,
+  type StaffingBand,
+} from "./specialist-team";
 import type { Brief, EvidenceItem, SupervisedMission } from "./types";
 
 export const DEFAULT_MISSION_OUTCOME = "A decision pack and an experiment brief.";
@@ -14,19 +17,18 @@ export const RESEARCH_REFINE_AUDIENCE = "Primary customers — specialists will 
 export const RESEARCH_FIRST_CONSTRAINT =
   "Research first. Ask the founder only for decisions or real blockers. No customer contact or deployment without approval.";
 
-/** Founder-approved complexity bands (catalogue intent). Only Band S Wave 1 is staffed this ship. */
-export type StaffingBand = "S" | "M" | "L" | "XL";
+export type { StaffingBand };
 
 export const STAFFING_BAND_LABELS: Record<StaffingBand, string> = {
-  S: "Band S — Simple (~8–20)",
-  M: "Band M — Standard (~20–50)",
-  L: "Band L — Complex (~50–100)",
-  XL: "Band XL — Ceiling (≤150)",
+  S: "Band S — Simple (~8–20 catalogue intent)",
+  M: "Band M — Standard (~20–50 catalogue intent)",
+  L: "Band L — Complex (~50–100 catalogue intent)",
+  XL: "Band XL — Ceiling (≤150 catalogue intent)",
 };
 
 export type StaffingEstimate = {
   band: StaffingBand;
-  /** Roles active on this pilot mission (Wave 1 / Band S core). */
+  /** Roles active on this pilot mission (Available Wave 1 subset for the band). */
   activeSpecialists: number;
   /** Intended catalogue headcount band for this case complexity — not auto-enabled. */
   catalogueTargetMin: number;
@@ -71,49 +73,54 @@ const SIMPLE_HINTS =
   /\b(copy|wording|button|label|one step|single|tiny|small tweak|onboarding field|setup field)\b/i;
 
 /**
- * Heuristic complexity → staffing band label. Does not enable the full catalogue.
- * This ship always activates Wave 1 / Band S (~8); higher bands are honesty labels only.
+ * Heuristic complexity → staffing band.
+ * Active count is a deterministic Available Wave 1 subset (4 / 6 / 8 / 8).
+ * Catalogue min/max remain honesty labels — the full 150 is not enabled.
  */
 export function estimateStaffingBand(question: string): StaffingEstimate {
   const text = question.trim();
   const words = text.split(/\s+/).filter(Boolean).length;
   if (SIMPLE_HINTS.test(text) && words < 40) {
+    const band: StaffingBand = "S";
+    const activeSpecialists = selectCapabilityIdsForBand(band).length;
     return {
-      band: "S",
-      activeSpecialists: 8,
+      band,
+      activeSpecialists,
       catalogueTargetMin: 8,
       catalogueTargetMax: 20,
-      reason:
-        "Narrow product question — Band S Wave 1 core only; scale later if research widens scope.",
+      reason: `Narrow product question — ${activeSpecialists} Available Wave 1 specialists proposed (core spine). Catalogue intent ${8}–${20}; full catalogue not enabled.`,
     };
   }
   if (/\b(programme|program-scale|multi[- ]geo|enterprise rollout)\b/i.test(text) && words > 100) {
+    const band: StaffingBand = "XL";
+    const activeSpecialists = selectCapabilityIdsForBand(band).length;
     return {
-      band: "XL",
-      activeSpecialists: 8,
+      band,
+      activeSpecialists,
       catalogueTargetMin: 100,
       catalogueTargetMax: 150,
-      reason:
-        "Programme-scale signals — Band S Wave 1 runs now; XL catalogue staffing needs an explicit ceiling accept later.",
+      reason: `Programme-scale signals — ${activeSpecialists} Available Wave 1 specialists proposed (cap). Catalogue ceiling ≤150 needs an explicit later accept; Planned roles stay off.`,
     };
   }
   if (COMPLEX_HINTS.test(text) || words > 80) {
+    const band: StaffingBand = "L";
+    const activeSpecialists = selectCapabilityIdsForBand(band).length;
     return {
-      band: "L",
-      activeSpecialists: 8,
+      band,
+      activeSpecialists,
       catalogueTargetMin: 50,
       catalogueTargetMax: 100,
-      reason:
-        "Broad market or multi-thread case — Band S Wave 1 runs now; Band L catalogue staffing is labelled, not enabled.",
+      reason: `Broad market or multi-thread case — ${activeSpecialists} Available Wave 1 specialists proposed. Catalogue intent 50–100 labelled, not auto-staffed beyond Available.`,
     };
   }
+  const band: StaffingBand = "M";
+  const activeSpecialists = selectCapabilityIdsForBand(band).length;
   return {
-    band: "M",
-    activeSpecialists: 8,
+    band,
+    activeSpecialists,
     catalogueTargetMin: 20,
     catalogueTargetMax: 50,
-    reason:
-      "Standard decision case — Band S Wave 1 now; Band M catalogue staffing as research proves need.",
+    reason: `Standard decision case — ${activeSpecialists} Available Wave 1 specialists proposed (core + options). Catalogue intent 20–50 as research proves need.`,
   };
 }
 
@@ -172,6 +179,7 @@ export function buildPmBrief(
   const staffing = estimateStaffingBand(mission.brief.question);
   const research = planResearchMode(mission.researchMode ?? "combined");
   const team = mission.team;
+  const activeCount = team?.capabilityIds.length ?? staffing.activeSpecialists;
   const activeLabels = team
     ? [
         ...new Set(
@@ -188,7 +196,7 @@ export function buildPmBrief(
   const knowns = [
     "Founder supplied a one-liner business case.",
     `Research mode: ${research.label}.`,
-    `Active staffing this ship: ${staffing.activeSpecialists} Available Wave 1 specialists (Band S core).`,
+    `Proposed staffing: ${activeCount} Available Wave 1 specialists (${STAFFING_BAND_LABELS[staffing.band]}).`,
   ];
   const unknowns = [
     ...(mission.brief.audience === RESEARCH_REFINE_AUDIENCE
@@ -207,7 +215,7 @@ export function buildPmBrief(
       : ["No blocking unknowns listed yet — research will surface gaps."],
     whatWillHappen: [
       `${initiating} restates the case and proposes a bounded specialist plan.`,
-      "Research fills market and competitor gaps using the selected research mode — without inventing live web results when tools are missing.",
+      "After you approve, a research pass writes findings or honest external gaps into the evidence register.",
       "Specialists draft options; you decide. A decision pack (Markdown + PDF) is prepared only after your approval gates.",
       "Outcome review stays owner-supplied; follow-ups never start without your approval.",
     ],
@@ -222,7 +230,7 @@ export function buildPmBrief(
       missionCeiling: mission.usageCeiling,
       detail:
         mission.usageCeiling > 0
-          ? `Banded cost: roughly one comparison unit per options run (mission ceiling ${mission.usageCeiling}). Plan approval and evidence edits are not billable.`
+          ? `Banded cost: roughly one comparison unit per options run (mission ceiling ${mission.usageCeiling}). Plan approval and the research pass are not billable.`
           : "No comparison units remain on this mission allowance. You can still review the plan; billable comparison is blocked until usage is available.",
     },
     roughTime: {
@@ -238,7 +246,7 @@ export function buildPmBrief(
     team: {
       initiatingAgent: initiating,
       activeLabels,
-      staffing,
+      staffing: { ...staffing, activeSpecialists: activeCount },
     },
     research: {
       mode: research.mode,
@@ -254,6 +262,6 @@ export function buildPmBrief(
     askFounderOnlyWhen:
       "A real decision gate, a missing fact only you can supply, consent to contact customers, or approval to act externally.",
     honesty:
-      "Simulated / deterministic PM draft — no model call for this brief. Complexity bands above Band S are labels only until scaled staffing ships.",
+      "Simulated / deterministic PM draft — no model call for this brief. Active staffing is an Available Wave 1 subset sized by band; catalogue ranges above that are labels only (full 150 not enabled).",
   };
 }

@@ -201,6 +201,11 @@ export type SupervisedMission = {
   researchMode: ResearchMode;
   /** Honest gaps when web research was selected but unavailable. */
   researchGaps: string[];
+  /**
+   * When the post-approval research pass finished (findings and/or honest gaps).
+   * Null until plan approval triggers the pass. Additive document field — no SQL migration.
+   */
+  researchPassCompletedAt: string | null;
   /** Small Available Wave 1 specialist team for this pilot. */
   team: PilotTeamPlan | null;
   /** Persisted task events only — no fake chat or timer theatre. */
@@ -303,8 +308,9 @@ export function nextRequiredAction(mission: SupervisedMission): {
     return {
       id: "compare",
       title: "Compare options",
-      detail:
-        "Review research mode and tools first. One comparison is prepared from the brief and evidence register — including research gaps marked honestly when web tools are unavailable.",
+      detail: mission.researchPassCompletedAt
+        ? "Research pass is on the record (findings and/or honest gaps). Review the work scene, then let specialists compare options. Web hits are never invented when a provider is missing."
+        : "Review research mode and tools first. One comparison is prepared from the brief and evidence register — including research gaps marked honestly when web tools are unavailable.",
     };
   }
   if (mission.stage === "alternatives") {

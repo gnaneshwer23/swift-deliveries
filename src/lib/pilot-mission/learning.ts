@@ -31,7 +31,16 @@ export function withLearningDefaults(mission: SupervisedMission): SupervisedMiss
     exportPdfBase64: mission.exportPdfBase64 ?? null,
     researchMode: mission.researchMode ?? "provided",
     researchGaps: Array.isArray(mission.researchGaps) ? mission.researchGaps : [],
-    team: mission.team ?? null,
+    researchPassCompletedAt: mission.researchPassCompletedAt ?? null,
+    team: mission.team
+      ? {
+          ...mission.team,
+          staffingBand: mission.team.staffingBand ?? "M",
+          capabilityIds: Array.isArray(mission.team.capabilityIds)
+            ? mission.team.capabilityIds
+            : [],
+        }
+      : null,
     activity: Array.isArray(mission.activity) ? mission.activity : [],
   };
 }

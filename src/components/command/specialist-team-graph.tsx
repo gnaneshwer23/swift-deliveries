@@ -3,7 +3,7 @@ import {
   DECISION_LOOP_STEPS,
   type PilotTeamPlan,
 } from "@/lib/pilot-mission/specialist-team";
-import type { PilotActivityEvent } from "@/lib/pilot-mission/types";
+import type { EvidenceItem, PilotActivityEvent } from "@/lib/pilot-mission/types";
 
 function formatWhen(iso: string): string {
   const ms = Date.parse(iso);
@@ -19,9 +19,15 @@ function formatWhen(iso: string): string {
 export function SpecialistTeamGraph({
   team,
   activity,
+  evidence = [],
+  researchGaps = [],
+  researchPassCompletedAt = null,
 }: {
   team: PilotTeamPlan;
   activity: PilotActivityEvent[];
+  evidence?: EvidenceItem[];
+  researchGaps?: string[];
+  researchPassCompletedAt?: string | null;
 }) {
   const specialists = [
     ...new Map(
@@ -42,14 +48,28 @@ export function SpecialistTeamGraph({
     ["ready", "awaiting_approval", "blocked"].includes(s.status),
   );
   const recent = [...activity].reverse().slice(0, 12);
+  const findings = evidence.filter((e) => e.classification === "supplied");
+  const gaps = [
+    ...evidence.filter((e) => e.classification === "gap"),
+    ...researchGaps
+      .filter((g) => !evidence.some((e) => e.statement === g))
+      .map((statement) => ({
+        id: `gap:${statement.slice(0, 24)}`,
+        statement,
+        source: "Research gaps",
+        classification: "gap" as const,
+      })),
+  ];
+  const bandLabel = team.staffingBand ?? "M";
 
   return (
     <section className="cc-panel ps-work-scene" aria-label="Specialist work scene">
       <h2 className="cc-panel-title">Work scene</h2>
       <p className="cc-muted text-sm">
-        Living view of the bounded Wave 1 team. Presence and motion follow persisted events — not a
-        fake timer. {team.capabilityIds.length} specialists on this plan
-        {team.approvedAt ? "" : " (awaiting your approval before work advances)"}.
+        Living view of the proposed Available team (band {bandLabel}). Presence and motion follow
+        persisted events — not a fake timer. {team.capabilityIds.length} specialists on this plan
+        {team.approvedAt ? "" : " (awaiting your approval before work advances)"}
+        {researchPassCompletedAt ? " · research pass on the record" : ""}.
       </p>
 
       <div className="ps-scene-stage" aria-label="Specialists on stage">
@@ -93,6 +113,37 @@ export function SpecialistTeamGraph({
           );
         })}
       </ol>
+
+      {(findings.length > 0 || gaps.length > 0) && team.approvedAt ? (
+        <section className="mt-4 ps-scene-findings" aria-label="Findings and gaps">
+          <h3 className="cc-panel-title text-base">Findings and gaps</h3>
+          <p className="cc-muted text-sm">
+            From the research pass and evidence register. Gaps stay labelled — never invented as
+            retrieved research.
+          </p>
+          {findings.length ? (
+            <ul className="ps-scene-finding-list mt-2">
+              {findings.slice(0, 6).map((item) => (
+                <li key={item.id} data-kind="finding">
+                  <strong>Finding</strong>
+                  <span>{item.statement}</span>
+                  {item.source ? <span className="cc-muted text-xs block">{item.source}</span> : null}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {gaps.length ? (
+            <ul className="ps-scene-gap-list mt-2">
+              {gaps.slice(0, 6).map((item) => (
+                <li key={item.id} data-kind="gap">
+                  <strong>Gap</strong>
+                  <span>{item.statement}</span>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </section>
+      ) : null}
 
       <details className="ps-scene-tasks mt-4">
         <summary>Task ownership graph ({team.tasks.length})</summary>

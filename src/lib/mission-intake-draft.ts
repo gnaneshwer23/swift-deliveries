@@ -14,9 +14,9 @@ export { DEFAULT_MISSION_OUTCOME };
 export function preparedMissionIntake(brief: ProductBrief): MissionIntakeDraft {
   return {
     question: brief.problem.slice(0, 2000),
-    audience: brief.audience.slice(0, 2000),
-    outcome: (brief.objective || DEFAULT_MISSION_OUTCOME).slice(0, 2000),
-    constraints: brief.constraints.slice(0, 2000),
+    audience: (brief.audience.trim() || RESEARCH_REFINE_AUDIENCE).slice(0, 2000),
+    outcome: (brief.objective.trim() || DEFAULT_MISSION_OUTCOME).slice(0, 2000),
+    constraints: (brief.constraints.trim() || RESEARCH_FIRST_CONSTRAINT).slice(0, 2000),
   };
 }
 export function parseMissionIntake(raw: string | null): MissionIntakeDraft | null {
@@ -40,14 +40,19 @@ export function parseMissionIntake(raw: string | null): MissionIntakeDraft | nul
     return null;
   }
 }
+/**
+ * Prefer a session draft the user already edited.
+ * Otherwise prefer `dx-psi-brief` (homepage / brief builder) over a stale profile firstIdea
+ * so post-auth continuity opens the prepared one-liner → PM path.
+ */
 export function restoreMissionIntake(
   local: MissionIntakeDraft | null,
   question: string | undefined,
   brief: ProductBrief | null,
 ): MissionIntakeDraft {
+  if (local?.question.trim()) return local;
+  if (brief?.problem.trim()) return preparedMissionIntake(brief);
   if (local) return local;
-  if (brief && (!question?.trim() || question.trim() === brief.problem.trim()))
-    return preparedMissionIntake(brief);
   return {
     question: question?.slice(0, 2000) ?? "",
     audience: RESEARCH_REFINE_AUDIENCE,
