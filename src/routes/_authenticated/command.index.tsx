@@ -22,6 +22,7 @@ import { FlaskConical, Rocket, Search, ShieldCheck, Wrench } from "lucide-react"
 import { WorkspaceStopControl } from "@/components/command/workspace-stop";
 import { AgentOffice } from "@/components/command/agent-office";
 import { ConversationPanel } from "@/components/command/conversation-panel";
+import { OwnerInbox } from "@/components/command/owner-inbox";
 import { OWNER_WAITING } from "@/lib/agent-office";
 
 export const Route = createFileRoute("/_authenticated/command/")({
@@ -310,6 +311,7 @@ function CommandHome() {
       }}
     >
       <WorkspaceStopControl workspace={data.workspace} />
+      <OwnerInbox />
       <WorkspaceOverview
         pipeline={
           <AgentOffice

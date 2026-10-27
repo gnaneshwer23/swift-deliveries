@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
 import { MissionActivity } from "@/components/command/mission-activity";
 import { MissionEvidence } from "@/components/command/mission-evidence";
+import { LifecycleWheel } from "@/components/command/lifecycle-wheel";
 import { ConversationPanel } from "@/components/command/conversation-panel";
 import { missionBundleQuery } from "@/lib/workforce-queries";
 import {
@@ -75,6 +76,7 @@ function MissionDetail() {
     setActivityKey((k) => k + 1);
     await queryClient.invalidateQueries({ queryKey: ["command", "mission", missionId] });
     await queryClient.invalidateQueries({ queryKey: ["command", "bootstrap"] });
+    await queryClient.invalidateQueries({ queryKey: ["command", "inbox"] });
   };
 
   const clarify = useMutation({
@@ -381,7 +383,7 @@ function MissionDetail() {
 
           {/* 1. Clarification Stage */}
           {mission.status === "needs_clarification" ? (
-            <section className="cc-panel cc-panel-active-gate">
+            <section id="mission-clarify" className="cc-panel cc-panel-active-gate">
               <h2 className="cc-panel-title">Clarification needed before planning</h2>
               <p className="cc-muted mb-4">
                 Answer the required questions (or click <strong>Revise scope</strong> above) so the
@@ -415,6 +417,7 @@ function MissionDetail() {
           {/* 2. Plan & Mandatory Human Approval Gate */}
           {plan && mission.status !== "needs_clarification" ? (
             <section
+              id="mission-plan"
               className={`cc-panel${
                 mission.status === "awaiting_approval" || mission.status === "planned"
                   ? " cc-panel-active-gate"
@@ -592,7 +595,7 @@ function MissionDetail() {
           <ConversationPanel currentMissionId={missionId} />
 
           {/* 3. Task Graph & Step Execution */}
-          <section className="cc-panel">
+          <section id="mission-tasks" className="cc-panel">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="cc-panel-title mb-0">Task graph ({tasks.length})</h2>
               <div className="flex flex-wrap gap-2">
@@ -648,11 +651,23 @@ function MissionDetail() {
               <p className="cc-muted mt-4">Tasks appear after clarifications are complete.</p>
             ) : (
               <>
-                {mission.intent === "build" ? <StageTrack tasks={tasks} /> : null}
+                {mission.intent === "build" ? (
+                  <LifecycleWheel
+                    key={mission.id}
+                    tasks={tasks}
+                    artefacts={artefacts}
+                    onOpenArtefact={(id) => {
+                      setSelectedArtefactId(id);
+                      document
+                        .getElementById("mission-outputs")
+                        ?.scrollIntoView({ block: "start" });
+                    }}
+                  />
+                ) : null}
                 {runNote ? <p className="cc-muted mt-3 text-sm">{runNote}</p> : null}
                 <ol className="cc-task-list mt-4">
                   {tasks.map((t) => (
-                    <li key={t.id} className={`cc-task cc-task-${t.status}`}>
+                    <li key={t.id} id={`task-${t.id}`} className={`cc-task cc-task-${t.status}`}>
                       <div className="cc-task-head">
                         <strong>
                           {t.sortOrder + 1}. {t.title}
@@ -914,40 +929,6 @@ function MissionDetail() {
         </aside>
       </div>
     </CommandShell>
-  );
-}
-
-function stageState(tasks: WfMissionTask[], stage: LifecycleStage): string {
-  const inStage = tasks.filter((t) => t.stage === stage);
-  if (!inStage.length) return "idle";
-  if (inStage.some((t) => t.status === "failed")) return "failed";
-  if (inStage.some((t) => t.gate && t.status === "blocked")) return "gate";
-  if (inStage.every((t) => t.status === "completed" || t.status === "skipped")) return "done";
-  if (inStage.some((t) => t.status === "completed" || t.status === "running")) return "active";
-  return "idle";
-}
-
-const STAGE_STATE_TEXT: Record<string, string> = {
-  idle: "Not started",
-  active: "In progress",
-  done: "Complete",
-  gate: "Awaiting approval",
-  failed: "Stopped",
-};
-
-function StageTrack({ tasks }: { tasks: WfMissionTask[] }) {
-  return (
-    <ol className="cc-stage-track" aria-label="Product lifecycle stages">
-      {LIFECYCLE_STAGES.map((stage) => {
-        const state = stageState(tasks, stage);
-        return (
-          <li key={stage} className="cc-stage" data-state={state}>
-            <strong>{LIFECYCLE_STAGE_LABELS[stage]}</strong>
-            {STAGE_STATE_TEXT[state]}
-          </li>
-        );
-      })}
-    </ol>
   );
 }
 

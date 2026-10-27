@@ -31,6 +31,33 @@ The explorer does not add a direct assignment mutation. Available roles link to 
 
 At desktop widths, the department rail, network and inspector share one workspace. At compact widths, the inspector moves below the graph. Narrow phones start in a searchable list view with a collapsible department rail; network view remains selectable. Nodes and controls are native keyboard-operable buttons, selection is indicated with text and styling, and reduced-motion preferences are respected. No perpetual motion suggests agents are working while idle.
 
+## Lifecycle wheel (Phase 7a)
+
+A product-build mission page shows its lifecycle as a wheel of twelve segments, with a **List** view, one toggle away, that says the same thing. The twelve segments are a display mapping over the eight stored stages (`src/lib/workforce/lifecycle-wheel.ts`, version `wheel-v1`). Stored data is unchanged.
+
+- **One home per task.** Each segment belongs to exactly one stored stage, and every task in the product-mission plan lands in exactly one segment of its own stage. Discover splits into Market, Research and Foresight. Design splits into Experience and Architecture. Release splits into Release and Publish. Each human gate sits in the segment whose work it decides. A task with a key the mapping doesn't know falls to the first segment of its stored stage, so nothing drops off the wheel. Tests check all of this against the planner. Changing where a task lands needs a new version.
+- **Nothing moves unless a task did.** A segment's state comes only from its tasks: Not started, In progress, Awaiting your decision (a gate is waiting), Complete or Stopped. A segment with no tasks reads Not started. There is no animation apart from a short colour transition, which is turned off under reduced motion.
+- **Every state links to its record.** Selecting a segment lists its tasks. Each task links to its row in the task graph, where gates are decided, and each artefact it produced opens in the artefact viewer.
+- **Opening state.** The wheel opens on a waiting decision first. If there is none, it opens on a stopped stage, then work in progress, then the first unfinished stage.
+- **Accessibility.** Segments are focusable buttons named "n. Stage: state". The arrow keys move between them, and state is given in text as well as colour. The **List** view shows the stages in order, each opening in place. On phones (up to 640px) the list replaces the wheel.
+
+## Waiting on you (Phase 7b)
+
+The Command Centre home opens with **Waiting on you**: every decision any open mission is blocked on, in one list (`src/lib/workforce/owner-inbox.ts`, read by `getOwnerInbox`).
+
+- **Only what the rows say.** An item exists only because a mission or task row says it waits on the owner:
+  - a draft request to finish;
+  - planner questions to answer;
+  - a plan to approve or reject;
+  - a blocked human gate to decide;
+  - a blocked outside action whose mission hasn't approved acting externally;
+  - a paused mission to resume or cancel.
+- **Hidden behind a pause.** A paused mission shows only the resume item, not its gates, because nothing can move until it is resumed. Completed, failed and cancelled missions are left out.
+- **Each row opens where the decision is made.** The mission page has anchors for its questions (`#mission-clarify`), its plan (`#mission-plan`), its task graph (`#mission-tasks`) and each task (`#task-<id>`).
+- **Order.** Stage gates and outside actions come first, because they hold up work already under way. Then plans, questions, requests and paused missions. Within each kind, the longest wait comes first.
+- **Separate from the bootstrap read.** The home page's other panels read only the 12 newest missions. The inbox reads every open mission, up to 200 ordered by longest wait, with their blocked tasks. If there are more, it says so instead of dropping them silently. Any decision made on a mission page refreshes it.
+- **Honest failure.** If the inbox can't load, it says so, and each mission page still shows its own decisions.
+
 ## Verification and remaining gates
 
 TypeScript and production build pass. Lint passes with nine existing warnings. The full suite, including disposable local PostgreSQL checks, passes 192 tests with 16 environment-dependent tests skipped.
