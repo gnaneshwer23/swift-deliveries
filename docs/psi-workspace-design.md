@@ -58,6 +58,16 @@ The Command Centre home opens with **Waiting on you**: every decision any open m
 - **Separate from the bootstrap read.** The home page's other panels read only the 12 newest missions. The inbox reads every open mission, up to 200 ordered by longest wait, with their blocked tasks. If there are more, it says so instead of dropping them silently. Any decision made on a mission page refreshes it.
 - **Honest failure.** If the inbox can't load, it says so, and each mission page still shows its own decisions.
 
+## Plan dependencies (Phase 7c)
+
+Every mission page with tasks shows its plan as a dependency graph under **Dependencies** (`src/lib/workforce/dependency-view.ts`). The tasks are grouped into waves that can run side by side.
+
+- **Built on the scheduler's own rules.** Waves come from `executionWaves`, and "Ready to run" comes from `runnableTasks`. "Can't run: earlier work failed" comes from `unreachableTasks`. So the view never calls a task ready when the worker wouldn't run it, and never hides one an upstream failure has stranded.
+- **Decisions use the inbox's rules.** A blocked gate reads "Waiting on your decision". So does a blocked outside action while the mission hasn't approved acting externally, matching the inbox.
+- **Waits and unblocks.** Each card names what the task waits on and what it unblocks, and links to its row in the task graph.
+- **Refusing a broken plan.** If a plan has a loop, a missing dependency or a repeated key, the view says so instead of drawing it.
+- **Phones.** On a phone the waves stack top to bottom. Elsewhere they scroll sideways.
+
 ## Verification and remaining gates
 
 TypeScript and production build pass. Lint passes with nine existing warnings. The full suite, including disposable local PostgreSQL checks, passes 192 tests with 16 environment-dependent tests skipped.

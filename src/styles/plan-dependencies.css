@@ -1,0 +1,103 @@
+/* Plan dependencies: light surfaces, navy ink, blue for running, cyan for done, amber for you. */
+.pd {
+  --pd-navy: #14213d;
+  margin-top: 0.9rem;
+  border: 1px solid var(--psi-border, #dce2ee);
+  border-radius: 16px;
+  background: #fff;
+  padding: 0.75rem 1rem;
+  color: var(--pd-navy);
+}
+.pd-summary {
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+.pd-count,
+.pd-note {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--psi-muted, #647089);
+}
+.pd-note {
+  margin: 0.5rem 0 0;
+}
+.pd-waves {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(12rem, 1fr);
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+.pd-wave-title {
+  margin: 0 0 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--psi-muted, #647089);
+}
+.pd-nodes {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+.pd-node {
+  display: grid;
+  gap: 0.15rem;
+  border: 1px solid #d5dceb;
+  border-left-width: 4px;
+  border-radius: 10px;
+  padding: 0.5rem 0.6rem;
+  background: #fff;
+  font-size: 0.8rem;
+}
+.pd-node[data-state="done"] {
+  border-left-color: #0e7490;
+}
+.pd-node[data-state="running"],
+.pd-node[data-state="ready"] {
+  border-left-color: #2563eb;
+}
+.pd-node[data-state="waiting_you"] {
+  border-left-color: #b45309;
+  background: #fffbeb;
+}
+.pd-node[data-state="failed"],
+.pd-node[data-state="cannot_run"] {
+  border-left-color: #b42318;
+  background: #fef2f2;
+}
+.pd-node-title {
+  font-weight: 600;
+  color: #1d4ed8;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.pd-node-state {
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+.pd-rel {
+  font-size: 0.72rem;
+  color: var(--psi-text, #4e5b73);
+}
+
+/* Phones: waves stack top to bottom instead of scrolling sideways. */
+@media (max-width: 640px) {
+  .pd-waves {
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+    overflow-x: visible;
+  }
+}

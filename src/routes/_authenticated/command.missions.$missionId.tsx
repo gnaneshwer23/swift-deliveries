@@ -6,6 +6,7 @@ import { CommandShell } from "@/components/command/command-shell";
 import { MissionActivity } from "@/components/command/mission-activity";
 import { MissionEvidence } from "@/components/command/mission-evidence";
 import { LifecycleWheel } from "@/components/command/lifecycle-wheel";
+import { PlanDependencies } from "@/components/command/plan-dependencies";
 import { ConversationPanel } from "@/components/command/conversation-panel";
 import { missionBundleQuery } from "@/lib/workforce-queries";
 import {
@@ -664,6 +665,10 @@ function MissionDetail() {
                     }}
                   />
                 ) : null}
+                <PlanDependencies
+                  tasks={tasks}
+                  externalActionsApproved={mission.externalActionsApproved}
+                />
                 {runNote ? <p className="cc-muted mt-3 text-sm">{runNote}</p> : null}
                 <ol className="cc-task-list mt-4">
                   {tasks.map((t) => (
