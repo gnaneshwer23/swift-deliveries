@@ -176,7 +176,7 @@ function MissionDetail() {
       setActionError(null);
       await invalidate();
     },
-    onError: (e) => setActionError(e instanceof Error ? e.message : "Pause failed"),
+    onError: (e) => setActionError(e instanceof Error ? e.message : "Pause or resume failed"),
   });
 
   const decideGate = useMutation({
@@ -571,7 +571,7 @@ function MissionDetail() {
                     {step.isPending ? "Running…" : "Run next step →"}
                   </button>
                 )}
-                {mission.status === "blocked" &&
+                {(mission.status === "blocked" || mission.status === "queued") &&
                 !mission.externalActionsApproved &&
                 tasks.some((t) => t.isExternal && t.status === "blocked") ? (
                   <button

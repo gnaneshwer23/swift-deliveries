@@ -46,8 +46,9 @@ export function taskState(
   if (finished(task)) return "done";
   if (task.status === "failed") return "stopped";
   if (task.status === "blocked") return waitsOnOwner(task, mission) ? "waiting" : "stopped";
-  // pending: before approval the whole plan waits on the owner
-  if (!mission || OWNER_WAITING.includes(mission.status)) return "waiting";
+  // pending: before approval the whole plan waits on the owner, and a paused one waits to be resumed
+  if (!mission || OWNER_WAITING.includes(mission.status) || mission.status === "paused")
+    return "waiting";
   if (!MISSION_ACTIVE.includes(mission.status) && mission.status !== "blocked") return "stopped";
   // a task never runs on unfinished upstream work (lib/workforce/graph.ts)
   const upstream = siblings.filter((s) => (task.dependsOn ?? []).includes(s.key));

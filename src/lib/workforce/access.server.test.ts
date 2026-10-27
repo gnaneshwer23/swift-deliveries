@@ -153,7 +153,7 @@ describe("every mission handler is scoped before it reads or writes", () => {
     ...source.matchAll(/export const (\w+) = createServerFn[\s\S]*?(?=\nexport const |\n*$)/g),
   ].map((m) => ({ name: m[1]!, body: m[0] }));
   const WRITE =
-    /\.(insert|update|delete|upsert)\(|chargeWorkspaceUsage\(|query\(\s*`\s*(insert|update|delete)|(savePlanVersion|approvePlanVersion|approveExternalForPlan|appendEvent)\(/;
+    /\.(insert|update|delete|upsert)\(|chargeWorkspaceUsage\(|query\(\s*`\s*(insert|update|delete)|(savePlanVersion|approvePlanVersion|approveExternalForPlan|appendEvent|audit)\(/;
 
   it("finds the handlers it guards", () => {
     expect(handlers.filter((h) => /data\.missionId/.test(h.body)).length).toBeGreaterThanOrEqual(

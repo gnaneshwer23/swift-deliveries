@@ -90,12 +90,12 @@ describe("agent office", () => {
     expect(office.totals.waiting).toBe(0);
   });
 
-  it("shows the work of a paused mission as stopped, not next", () => {
+  it("shows the work of a paused mission as waiting for you, not next", () => {
     const office = buildAgentOffice(
       [mission("z", "paused")],
       [task("1", "z", "pending", ["DX-011"])],
     );
-    expect(office.items[0]!.state).toBe("stopped");
+    expect(office.items[0]!.state).toBe("waiting");
     expect(office.totals.next).toBe(0);
   });
 

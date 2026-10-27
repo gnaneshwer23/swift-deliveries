@@ -115,10 +115,23 @@ create or replace function public.wf_schema_version() returns integer language s
 commit;
 ```
 
-The rollback SQL was rehearsed on 27 October 2026 against a local database built from the test schema and 0024: it dropped the two tables and returned the schema version to 3, and 0024 then re-applied cleanly. 0024 was applied in one transaction to the preview branch and then, with the owner's approval, to production on 27 October 2026. On both, the owner index was created, row-level security is on for the two new tables, the status check includes `paused`, and `wf_schema_version()` returns 4. No table rows were read.
+The rollback SQL was rehearsed on 27 October 2026 against a local database built from the test schema and 0024: it dropped the two tables and returned the schema version to 3, and 0024 then re-applied cleanly. 0024 was applied in one transaction to the preview branch and then, with the owner's approval, to production on 27 October 2026. On both, the owner index was created, row-level security is on for the two new tables, the status check includes `paused`, and `wf_schema_version()` returns 4. No customer records were inspected; the only data the migration reads is its own duplicate-owner count before creating the owner index.
 
 The added columns and the owner index are left in place: dropping them would discard plan versions, approval bindings and the stop flag, and earlier builds ignore them. The event log and run ledger are dropped only when both are empty; earlier builds never read them. If either holds records, export them under the owner's data-handling instructions first, or keep the tables.
 
 ## 0025 corrections to 0024
 
-0025 changes no data. It lets deleting a mission or workspace cascade to its events, which 0024's append-only trigger blocked, while direct updates and deletes stay refused. It also drops the owner index 0024 added where an older unique index (`wf_workspaces_owner_uidx` in Neon) already covers `owner_id`. Applied to preview and then production on 27 October 2026; production now has one owner index (`wf_workspaces_owner_uidx`). No rollback is needed; the application reads neither. Re-running 0024 brings both back, so always run 0025 after it.
+0025 changes no data. It lets deleting a mission or workspace cascade to its events, which 0024's append-only trigger blocked, while direct updates and deletes stay refused. It also drops the owner index 0024 added where an older unique index (`wf_workspaces_owner_uidx` in Neon) already covers `owner_id`. Applied to preview and then production on 27 October 2026; production now has one owner index (`wf_workspaces_owner_uidx`). Re-running 0024 brings both back, so always run 0025 after it. Neither change is read by the application, so redeploying an earlier build needs no schema change. To reverse 0025 itself, with the owner's approval and a snapshot taken first:
+
+```sql
+begin;
+create or replace function public.wf_mission_events_append_only()
+returns trigger language plpgsql as $$
+begin
+  raise exception 'wf_mission_events is append-only';
+end $$;
+create unique index if not exists wf_workspaces_owner_id_unique on public.wf_workspaces (owner_id);
+commit;
+```
+
+This blocks deleting any mission or workspace that has events again, so only do it if the cascade itself is the problem.
