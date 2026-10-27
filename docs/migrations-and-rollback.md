@@ -18,7 +18,7 @@ Every new migration must be:
 
 ## Ledger
 
-The production Neon branch is `br-fancy-breeze-zatt9ocp` in project `spring-wind-48457918`. It has no migration-tracking table. `wf_schema_version()` returned 3 on 26 October 2026.
+The production Neon branch is `br-fancy-breeze-zatt9ocp` in project `spring-wind-48457918`. It has no migration-tracking table. `wf_schema_version()` returned 3 on 26 October 2026 and 4 after 0024 on 27 October 2026.
 
 | Migration                                                          | Production                                  | Preview (`br-lively-water-zavqzat5`) |
 | ------------------------------------------------------------------ | ------------------------------------------- | ------------------------------------ |
@@ -29,7 +29,7 @@ The production Neon branch is `br-fancy-breeze-zatt9ocp` in project `spring-wind
 | 0022 comparison reservations                                       | Applied 26 Oct 2026 with owner approval     | Applied 25 Oct 2026                  |
 | 0023 comparison reconciliations                                    | Applied 26 Oct 2026 with owner approval     | Applied 26 Oct 2026                  |
 | Row-level security on `psi_pilot_requests`                         | Enabled 26 Oct 2026 with owner approval     | Not applied                          |
-| 0024 durable missions (`wf_task_runs`, `wf_mission_events`, …)     | Not applied — needs owner approval          | Applied 27 Oct 2026                  |
+| 0024 durable missions (`wf_task_runs`, `wf_mission_events`, …)     | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 
 Migrations 0020–0023 were applied to production in a single transaction. The six `psi_*` tables are owned by the server role, have no client grants, and have row-level security enabled. No table rows were read during or after the change.
 
@@ -111,6 +111,6 @@ create or replace function public.wf_schema_version() returns integer language s
 commit;
 ```
 
-The rollback SQL was rehearsed on 27 October 2026 against a local database built from the test schema and 0024: it dropped the two tables and returned the schema version to 3, and 0024 then re-applied cleanly. On the preview branch, 0024 was applied in one transaction on 27 October 2026; the owner index was created and `wf_schema_version()` returns 4.
+The rollback SQL was rehearsed on 27 October 2026 against a local database built from the test schema and 0024: it dropped the two tables and returned the schema version to 3, and 0024 then re-applied cleanly. 0024 was applied in one transaction to the preview branch and then, with the owner's approval, to production on 27 October 2026. On both, the owner index was created, row-level security is on for the two new tables, the status check includes `paused`, and `wf_schema_version()` returns 4. No table rows were read.
 
 The added columns and the owner index are left in place: dropping them would discard plan versions, approval bindings and the stop flag, and earlier builds ignore them. The event log and run ledger are dropped because earlier builds never read them; export them first if they hold anything the owner wants kept.
