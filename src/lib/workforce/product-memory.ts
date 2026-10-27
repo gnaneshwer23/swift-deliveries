@@ -210,6 +210,12 @@ export type MemoryConflict = {
   resolution: string | null;
 };
 
+/** Conflicts get up to this share of the memory budget, so ordinary entries still fit. */
+export const MAX_CONFLICT_PROMPT_CHARS = 6_000;
+const CONFLICT_HEADING =
+  "Conflicting entries (keep both sides, say that they conflict, and do not average or merge them):";
+const CONFLICTS_LEFT_OUT_ROOM = 120;
+
 const entryText = (e: ProductMemoryEntry) => {
   const label =
     e.kind === "requirement" ? `Requirement ${e.refKey ?? ""}`.trim() : MEMORY_KIND_LABELS[e.kind];
@@ -221,8 +227,9 @@ const entryText = (e: ProductMemoryEntry) => {
  * budget. Each line keeps its label and source and says when it was last seen;
  * possibly stale entries say so. Founder sources that are still current can be
  * cited, so a sourced fact can be carried forward with its original source.
- * Conflicts the founder flagged always fit (their room is reserved), with both sides and the
- * founder's resolution once there is one.
+ * Conflicts the founder flagged come first, within their own share of the budget, open ones
+ * before resolved ones, with both sides and the founder's resolution once there is one. The
+ * whole block stays within MAX_MEMORY_PROMPT_CHARS.
  */
 export function memoryForPrompt(
   entries: readonly ProductMemoryEntry[],
@@ -233,35 +240,54 @@ export function memoryForPrompt(
   const withdrawn = withdrawnSourceTitles(entries);
   const byId = new Map(entries.map((e) => [e.id, e]));
   const safe = (t: string | null | undefined) => !containsLikelyPersonalIdentifiers(t ?? "");
-  // Conflicts come first so they always fit: both sides are shown, never merged.
+  // Conflicts come first, within their own share of the budget: both sides are shown, never merged.
   const conflictLines: string[] = [];
   let openConflicts = 0;
+  let conflictsLeftOut = 0;
+  let conflictBudget =
+    MAX_CONFLICT_PROMPT_CHARS - CONFLICT_HEADING.length - CONFLICTS_LEFT_OUT_ROOM;
   const inConflict = new Set<string>();
-  for (const c of conflicts) {
+  const shownInConflicts: ProductMemoryEntry[] = [];
+  // Open conflicts before resolved ones, so the budget never hides an open one behind history.
+  const ordered = [...conflicts].sort((x, y) => Number(!!x.resolvedAt) - Number(!!y.resolvedAt));
+  for (const c of ordered) {
     const a = byId.get(c.entryLow);
     const b = byId.get(c.entryHigh);
     if (!a || !b || a.retiredAt || b.retiredAt) continue;
     if (![entryText(a), entryText(b)].every(safe)) continue;
-    if (c.resolvedAt) {
-      if (!safe(c.resolution)) continue;
-      conflictLines.push(
-        `- RESOLVED CONFLICT: ${entryText(a)} ⟂ ${entryText(b)} — the founder's resolution: ${c.resolution}`,
-      );
+    if (c.resolvedAt && !safe(c.resolution)) continue;
+    const line = c.resolvedAt
+      ? `- RESOLVED CONFLICT: ${entryText(a)} ⟂ ${entryText(b)} — the founder's resolution: ${c.resolution}`
+      : `- CONFLICT: ${entryText(a)} ⟂ ${entryText(b)}${c.note && safe(c.note) ? ` — founder's note: ${c.note}` : ""}`;
+    if (line.length + 1 > conflictBudget) {
+      conflictsLeftOut += 1;
       continue;
     }
-    openConflicts += 1;
-    inConflict.add(a.id).add(b.id);
-    conflictLines.push(
-      `- CONFLICT: ${entryText(a)} ⟂ ${entryText(b)}${c.note && safe(c.note) ? ` — founder's note: ${c.note}` : ""}`,
-    );
+    conflictBudget -= line.length + 1;
+    conflictLines.push(line);
+    shownInConflicts.push(a, b);
+    if (!c.resolvedAt) {
+      openConflicts += 1;
+      inConflict.add(a.id).add(b.id);
+    }
   }
+  if (conflictsLeftOut)
+    conflictLines.push(
+      `- ${conflictsLeftOut} more flagged conflict(s) not shown for lack of room; do not assume these entries agree.`,
+    );
+  const conflictBlock = conflictLines.length ? [CONFLICT_HEADING, ...conflictLines] : [];
   const current = entries
     .filter((e) => !e.retiredAt && e.firstMissionId !== missionId)
     .sort((a, b) => b.lastSeenAt.localeCompare(a.lastSeenAt));
-  let budget = MAX_MEMORY_PROMPT_CHARS - conflictLines.join("\n").length;
+  let budget = MAX_MEMORY_PROMPT_CHARS - conflictBlock.join("\n").length - 1;
   const lines: string[] = [];
+  const shown = new Set<string>();
   const currentSources = new Map<string, string>();
   const cited = new Set<string>();
+  for (const e of shownInConflicts) {
+    shown.add(e.id);
+    if (e.citation) cited.add(e.citation.toLowerCase());
+  }
   for (const e of current) {
     // Screened again at use, so a stricter screen also covers older entries.
     if (containsLikelyPersonalIdentifiers(`${e.statement} ${e.citation ?? ""}`)) continue;
@@ -271,21 +297,16 @@ export function memoryForPrompt(
       continue;
     }
     const line = `- ${entryText(e)} — last seen ${e.lastSeenAt.slice(0, 10)}${s.stale ? ` — possibly stale: ${s.reason}` : ""}${inConflict.has(e.id) ? " — in conflict, see below" : ""}`;
-    if (line.length > budget) break;
-    budget -= line.length;
+    if (line.length + 1 > budget) break;
+    budget -= line.length + 1;
     lines.push(line);
+    shown.add(e.id);
     if (e.citation) cited.add(e.citation.toLowerCase());
   }
   // A founder source can be cited again only where the model was shown a fact that cites it.
   const citable = [...currentSources].filter(([k]) => cited.has(k)).map(([, title]) => title);
-  const all = conflictLines.length
-    ? [
-        ...lines,
-        "Conflicting entries (keep both sides, say that they conflict, and do not average or merge them):",
-        ...conflictLines,
-      ]
-    : lines;
+  const all = [...lines, ...conflictBlock];
   // The block cannot be closed from inside; entries stay data however they are written.
   const text = all.join("\n").replace(/<\/product_memory/gi, "<\\/product_memory");
-  return { text, citable, included: lines.length, conflicts: openConflicts };
+  return { text, citable, included: shown.size, conflicts: openConflicts };
 }

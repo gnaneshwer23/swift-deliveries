@@ -178,7 +178,9 @@ export async function flagConflict(
     actorId: string;
   },
 ): Promise<MemoryConflict> {
-  if (input.entryA === input.entryB) throw new Error("Choose two different entries.");
+  // Canonical form, so the stored order matches the database's entry_low < entry_high check.
+  const [low, high] = [input.entryA.toLowerCase(), input.entryB.toLowerCase()].sort();
+  if (low === high) throw new Error("Choose two different entries.");
   if (!(await conflictsAvailable(query)))
     throw new Error("Conflicts need a database update that has not been applied yet.");
   const found = await query(
@@ -186,10 +188,9 @@ export async function flagConflict(
       where workspace_id = $1::uuid and project_id = $2::uuid and retired_at is null
         and id = any($3::uuid[])
       for share`,
-    [input.workspaceId, input.projectId, `{${input.entryA},${input.entryB}}`] as never,
+    [input.workspaceId, input.projectId, `{${low},${high}}`] as never,
   );
   if (found.length !== 2) throw new Error("Both entries must be current entries of this product.");
-  const [low, high] = [input.entryA, input.entryB].sort();
   const rows = await query(
     `insert into wf_memory_conflicts (workspace_id, project_id, entry_low, entry_high, note, flagged_by)
      values ($1::uuid, $2::uuid, $3::uuid, $4::uuid, $5, $6)

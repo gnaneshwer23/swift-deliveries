@@ -47,7 +47,28 @@ export function citableSources(
 }
 
 /** Stages whose output weighs evidence, and so must state any conflict it was shown. */
-const CONFLICT_STAGES: readonly StageKey[] = ["charter", "market", "research", "prd", "evolution"];
+const CONFLICT_STAGES: readonly StageKey[] = [
+  "charter",
+  "market",
+  "research",
+  "prd",
+  "evolution",
+  "release",
+];
+
+const CONFLICT_WORD = /\bconflict(?:s|ed|ing)?\b/i;
+const NEGATED_CONFLICT =
+  /\b(?:no|not|never|none|without|nor)\b(?:\W+\w+){0,3}?\W+conflict(?:s|ed|ing)?\b/i;
+
+/**
+ * True when some sentence affirmatively says the evidence conflicts. A denial
+ * such as "no conflict is present" does not count.
+ */
+export function acknowledgesConflict(markdown: string): boolean {
+  return markdown
+    .split(/(?<=[.!?])\s+|\n+/)
+    .some((sentence) => CONFLICT_WORD.test(sentence) && !NEGATED_CONFLICT.test(sentence));
+}
 
 export type OutputCheck = { ok: boolean; failures: string[] };
 
@@ -243,7 +264,7 @@ export function checkStageOutput(
   if (CLAIMS_DEPLOYMENT.test(markdown))
     failures.push("claims a deployment or release that has not happened");
   // Conflicting evidence is kept and stated, never averaged away.
-  if (ctx.conflictsGiven && CONFLICT_STAGES.includes(stage) && !/\bconflict/i.test(markdown))
+  if (ctx.conflictsGiven && CONFLICT_STAGES.includes(stage) && !acknowledgesConflict(markdown))
     failures.push(
       "does not state the conflicting evidence it was given; keep both sides and say they conflict",
     );

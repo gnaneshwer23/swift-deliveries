@@ -2,7 +2,12 @@ import { describe, expect, it } from "vitest";
 import { FIXTURE_LABEL, STAGE_FIXTURES } from "./eval-fixtures";
 import { runFixtureChecks, runModelEvaluation, type StageGenerator } from "./evaluation";
 import { INSTRUCTION_VERSIONS, leadRole, roleInstructions, stageForTask } from "./instructions";
-import { checkStageOutput, citableSources, SOURCE_NAMES } from "./output-checks";
+import {
+  acknowledgesConflict,
+  checkStageOutput,
+  citableSources,
+  SOURCE_NAMES,
+} from "./output-checks";
 import { ROLE_SPECS } from "./roles";
 
 describe("role evaluation suites", () => {
@@ -118,5 +123,19 @@ Booking without messages.
       "Problem statement: 1 claim(s) without an evidence label",
     ]);
     expect(failures("### Today\n- [Inference] Tutors lose bookings.")).toEqual([]);
+  });
+});
+
+describe("acknowledging conflicting evidence", () => {
+  it("accepts an affirmative statement in any inflection", () => {
+    expect(acknowledgesConflict("The two call notes conflict on booking day.")).toBe(true);
+    expect(acknowledgesConflict("- [Inference] Conflicting evidence: Sundays and Mondays.")).toBe(
+      true,
+    );
+  });
+  it("rejects a denial or no mention", () => {
+    expect(acknowledgesConflict("No conflict is present.")).toBe(false);
+    expect(acknowledgesConflict("The sources are not in conflict.")).toBe(false);
+    expect(acknowledgesConflict("Tutors book on Sundays.")).toBe(false);
   });
 });

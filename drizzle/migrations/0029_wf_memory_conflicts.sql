@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS public.wf_memory_conflicts (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   workspace_id uuid NOT NULL REFERENCES public.wf_workspaces (id) ON DELETE CASCADE,
   project_id uuid NOT NULL,
-  -- Stored in a fixed order, so one pair has one row.
+  -- Stored in a fixed order, so a pair has one open row.
   entry_low uuid NOT NULL REFERENCES public.wf_product_memory (id) ON DELETE CASCADE,
   entry_high uuid NOT NULL REFERENCES public.wf_product_memory (id) ON DELETE CASCADE,
   note text CHECK (note IS NULL OR length(note) <= 1000),
@@ -22,6 +22,32 @@ CREATE TABLE IF NOT EXISTS public.wf_memory_conflicts (
   FOREIGN KEY (project_id, workspace_id)
     REFERENCES public.wf_projects (id, workspace_id) ON DELETE CASCADE
 );
+
+-- Both entries must belong to the conflict's own product and workspace.
+CREATE UNIQUE INDEX IF NOT EXISTS wf_product_memory_scope_uidx
+  ON public.wf_product_memory (id, project_id, workspace_id);
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint
+                  WHERE conname = 'wf_memory_conflicts_low_scope_fkey'
+                    AND conrelid = 'public.wf_memory_conflicts'::regclass) THEN
+    ALTER TABLE public.wf_memory_conflicts
+      ADD CONSTRAINT wf_memory_conflicts_low_scope_fkey
+      FOREIGN KEY (entry_low, project_id, workspace_id)
+      REFERENCES public.wf_product_memory (id, project_id, workspace_id) ON DELETE CASCADE;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint
+                  WHERE conname = 'wf_memory_conflicts_high_scope_fkey'
+                    AND conrelid = 'public.wf_memory_conflicts'::regclass) THEN
+    ALTER TABLE public.wf_memory_conflicts
+      ADD CONSTRAINT wf_memory_conflicts_high_scope_fkey
+      FOREIGN KEY (entry_high, project_id, workspace_id)
+      REFERENCES public.wf_product_memory (id, project_id, workspace_id) ON DELETE CASCADE;
+  END IF;
+END $$;
+
+-- One open conflict per pair. A pair can be flagged again after it is resolved, so
+-- resolved rows stay as history.
 CREATE UNIQUE INDEX IF NOT EXISTS wf_memory_conflicts_open_uidx
   ON public.wf_memory_conflicts (entry_low, entry_high)
   WHERE resolved_at IS NULL;

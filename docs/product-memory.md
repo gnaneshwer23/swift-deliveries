@@ -53,9 +53,11 @@ PRDs now have to source or label every claim about the problem and its users. Un
 
 When two entries cannot both be true, the founder ticks both on the Product memory page and marks them as conflicting, with an optional note. Neither entry is changed or merged.
 
-- Every later step on the product is shown both sides in a `CONFLICT:` line, with the note, and each entry is marked "in conflict". Room for conflicts is reserved, so the budget never squeezes them out.
-- A role-led step that weighs evidence (charter, market, research, PRD, evolution) and was shown an open conflict must say in its output that the evidence conflicts. Output that doesn't is rejected, then retried once with the reason. All role instructions now say to keep both sides and never average or merge them; every role moved up one instruction version.
-- Resolving a conflict records the founder's reasoning. Both entries stay, and later steps are shown the resolution alongside them.
+- Every later model step whose lead role reads product memory (see below) is shown both sides in a `CONFLICT:` line, with the note, and each entry is marked "in conflict". Roles that do not read product memory, such as UX, see neither conflicts nor resolutions.
+- Conflicts come first and get up to 6,000 of the 12,000 characters, open ones before resolved ones. If more are flagged than fit, the step is told how many were left out and not to assume those entries agree. The whole memory block stays within 12,000 characters.
+- A role-led step that weighs evidence (charter, market, research, PRD, evolution, release) and was shown an open conflict must say in its output that the evidence conflicts. A denial such as "no conflict" does not count. Output that doesn't is rejected, then retried once with the reason. All role instructions now say to keep both sides and never average or merge them; every role moved up one instruction version.
+- Resolving a conflict records the founder's reasoning. Both entries stay, and later steps that read product memory are shown the resolution alongside them.
+- A source cited by an entry shown in a conflict can be cited again, as for any other entry shown.
 
 ## What each role reads (Phase 3c)
 

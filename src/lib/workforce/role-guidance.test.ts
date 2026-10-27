@@ -87,17 +87,23 @@ describe("role guidance for a running task", () => {
   });
 
   it("gives each role only the context its definition allows", () => {
-    expect(contextScopesFor({ key: "research", capabilityIds: ["DX-018"] })).toContain(
+    expect(contextScopesFor({ key: "research", capabilityIds: ["DX-018"] })).toEqual([
+      "mission_request",
+      "upstream_artefacts",
       "founder_evidence",
-    );
+      "product_memory",
+    ]);
     // UX works from the requirements: no founder evidence, no product memory.
     expect(contextScopesFor({ key: "ux", capabilityIds: ["DX-035"] })).toEqual([
       "mission_request",
       "upstream_artefacts",
     ]);
     // A stage no defined role leads gets the default: everything but founder evidence.
-    expect(contextScopesFor({ key: "architecture", capabilityIds: [] })).not.toContain(
-      "founder_evidence",
-    );
+    expect(contextScopesFor({ key: "architecture", capabilityIds: [] })).toEqual([
+      "mission_request",
+      "clarification_answers",
+      "upstream_artefacts",
+      "product_memory",
+    ]);
   });
 });

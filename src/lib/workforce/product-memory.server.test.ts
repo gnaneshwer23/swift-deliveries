@@ -225,5 +225,18 @@ describe.skipIf(!url)("product memory against a real database", () => {
     await expect(
       tx((q) => flagConflict(q, { ...mine, entryA: own!.id, entryB: other!.id, actorId: "o" })),
     ).rejects.toThrow(/current entries of this product/);
+    // Same workspace, another product: still refused.
+    const ws = { workspaceId: mine.workspaceId };
+    const [p2] = await sql!`insert into wf_projects (workspace_id, name, created_by)
+      values (${mine.workspaceId}, 'Second app', 'o') returning id`;
+    const sibling = await mission({ ...ws, projectId: p2!["id"] as string });
+    await tx((q) =>
+      recordMemory(q, { ...sibling, originKind: "artefact", originId: "z" }, [fact("Sibling.")]),
+    );
+    const [near] = (await tx((q) => listProductMemory(q, sibling.workspaceId, sibling.projectId)))
+      .entries;
+    await expect(
+      tx((q) => flagConflict(q, { ...mine, entryA: own!.id, entryB: near!.id, actorId: "o" })),
+    ).rejects.toThrow(/current entries of this product/);
   });
 });

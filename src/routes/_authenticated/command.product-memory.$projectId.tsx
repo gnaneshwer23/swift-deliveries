@@ -237,7 +237,7 @@ const date = (iso: string) =>
   new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
 function entryLabel(e: Entry): string {
-  return `${e.refKey && e.kind === "requirement" ? `${e.refKey}: ` : ""}${e.statement}${e.citation ? ` (Source: ${e.citation})` : ""}`;
+  return `[${MEMORY_KIND_LABELS[e.kind]}] ${e.refKey && e.kind === "requirement" ? `${e.refKey}: ` : ""}${e.statement}${e.citation ? ` (Source: ${e.citation})` : ""}`;
 }
 
 function ConflictList({

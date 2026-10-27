@@ -190,7 +190,7 @@ Safe in either order. Code from before 0028 never reads the table. Code after it
 Rollback: redeploy the earlier build and leave everything in place; earlier builds ignore the table and the constraints. Only if the table itself must go, with the owner's approval, after the earlier build is live:
 
 1. Take a Neon snapshot of the production branch, or create a branch from it, and record its ID in the ledger.
-2. Drop the table only when it is empty. Memory is derived from artefacts, decisions and evidence that stay in their own tables, but it records when each entry was first and last seen, which cannot be rebuilt. Export it under the owner's data-handling instructions first, or keep the table.
+2. If 0029 is applied, roll it back first (its conflicts reference this table, so the drop below would fail). Then drop the table, only when it is empty. Memory is derived from artefacts, decisions and evidence that stay in their own tables, but it records when each entry was first and last seen, which cannot be rebuilt. Export it under the owner's data-handling instructions first, or keep the table.
 
 ```sql
 begin;
@@ -211,7 +211,7 @@ commit;
 
 ## 0029 conflicting evidence
 
-Adds `wf_memory_conflicts`: a link between two product-memory entries that the founder has marked as unable to both be true. Neither entry is changed or merged. Resolving a conflict records the founder's reasoning, who resolved it and when, and both entries stay. Each pair is stored once, in a fixed order, and has at most one open conflict. Server role only, row-level security on. Additive and re-runnable; no existing data is changed.
+Adds `wf_memory_conflicts`: a link between two product-memory entries that the founder has marked as unable to both be true. Neither entry is changed or merged. Resolving a conflict records the founder's reasoning, who resolved it and when, and both entries stay. Each pair is stored in a fixed order and has at most one open conflict; once resolved it can be flagged again, and the resolved rows stay as history. Composite foreign keys hold both entries to the conflict's own product and workspace, backed by a unique `(id, project_id, workspace_id)` index on `wf_product_memory`. Server role only, row-level security on. Additive and re-runnable; no existing data is changed.
 
 Safe in either order. Code from before 0029 never reads the table. Code after it checks for the table first: until it exists, the memory page does not offer conflicts and steps are shown none.
 
@@ -226,6 +226,7 @@ begin
     raise exception 'wf_memory_conflicts holds the founder''s conflict decisions; export them first. Nothing was changed.';
   end if;
   drop table public.wf_memory_conflicts;
+  drop index if exists public.wf_product_memory_scope_uidx;
 end $$;
 commit;
 ```

@@ -5,6 +5,7 @@ import {
   memoryForPrompt,
   memoryMatchKey,
   staleness,
+  MAX_MEMORY_PROMPT_CHARS,
   STALE_AFTER_DAYS,
   withdrawnSourceTitles,
   type ProductMemoryEntry,
@@ -269,5 +270,39 @@ describe("conflicting entries in the prompt", () => {
     const m = memoryForPrompt([a, { ...b, retiredAt: "2026-10-01" }], "this", now, [conflict]);
     expect(m.conflicts).toBe(0);
     expect(m.text).not.toContain("CONFLICT");
+  });
+
+  it("keeps many conflicts within the memory budget, open ones first", () => {
+    const long = "x".repeat(400);
+    const entries: ProductMemoryEntry[] = [];
+    const conflicts = [];
+    for (let i = 0; i < 40; i++) {
+      const lo = entry({ id: `l${i}`, statement: `${long} low ${i}` });
+      const hi = entry({ id: `h${i}`, statement: `${long} high ${i}` });
+      entries.push(lo, hi);
+      conflicts.push({
+        ...conflict,
+        id: `c${i}`,
+        entryLow: lo.id,
+        entryHigh: hi.id,
+        ...(i < 20 ? { resolvedAt: new Date(now).toISOString(), resolution: "Settled" } : {}),
+      });
+    }
+    const m = memoryForPrompt(entries, "this", now, conflicts);
+    expect(m.text.length).toBeLessThanOrEqual(MAX_MEMORY_PROMPT_CHARS);
+    expect(m.text).toMatch(/more flagged conflict\(s\) not shown/);
+    // Open conflicts were listed before the resolved ones.
+    expect(m.text).not.toContain("RESOLVED CONFLICT");
+    expect(m.conflicts).toBeGreaterThan(0);
+  });
+
+  it("counts and makes citable the entries shown only in a conflict", () => {
+    const source = entry({ id: "s", kind: "source", statement: "Survey sheet" });
+    // Entry b is from this mission, so it is shown only in the conflict line.
+    const m = memoryForPrompt([a, { ...b, firstMissionId: "this" }, source], "this", now, [
+      conflict,
+    ]);
+    expect(m.citable).toEqual(["Survey sheet"]);
+    expect(m.included).toBe(2);
   });
 });
