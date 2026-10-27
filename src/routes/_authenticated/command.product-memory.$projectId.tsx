@@ -19,7 +19,7 @@ const memoryQuery = (projectId: string) => ({
 export const Route = createFileRoute("/_authenticated/command/product-memory/$projectId")({
   head: () => ({
     meta: [
-      { title: "Product memory — Command Centre — DeliverX" },
+      { title: "Product memory — DeliverX Studio" },
       {
         name: "description",
         content:

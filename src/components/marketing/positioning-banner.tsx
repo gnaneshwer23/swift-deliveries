@@ -9,18 +9,18 @@ const COPY: Record<
   career: {
     lead: "Career evidence product.",
     body: "Experience, Launchpad and Prove build a defendable record. Looking for supervised AI labour instead?",
-    cta: "Open Command Centre →",
+    cta: "Open Studio →",
     to: "/signup",
   },
   workforce: {
-    lead: "Command Centre · Stage 1 preview.",
+    lead: "Studio · Stage 1 preview.",
     body: "Wave 1 Available capabilities under human approval — not the full 150-role catalogue.",
     cta: "How it works →",
     to: "/how-it-works",
   },
   workspace: {
     lead: "Professional Workspace is for live delivery teams.",
-    body: "Distinct from Command Centre (supervised AI missions) and from Experience (career simulation).",
+    body: "Distinct from Studio (supervised AI missions) and from Experience (career simulation).",
     cta: "Compare paths →",
     to: "/how-it-works",
   },

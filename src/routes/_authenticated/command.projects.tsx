@@ -9,7 +9,7 @@ import { createWfProject } from "@/lib/workforce.functions";
 export const Route = createFileRoute("/_authenticated/command/projects")({
   head: () => ({
     meta: [
-      { title: "Projects — Command Centre — DeliverX" },
+      { title: "Projects — DeliverX Studio" },
       {
         name: "description",
         content: "Product memory shelf — missions, artefacts and decisions for supervised builds.",
@@ -312,7 +312,7 @@ function CommandProjects() {
           <p className="cc-muted">
             No projects yet. Create one above, then start a mission from the{" "}
             <Link to="/command" className="underline">
-              Command Centre
+              Studio
             </Link>
             .
           </p>

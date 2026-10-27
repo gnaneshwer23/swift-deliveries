@@ -191,6 +191,9 @@ describe("end-to-end programme (simulated mode)", () => {
     expect(gates).toEqual(["gate_discovery", "gate_scope", "gate_design", "gate_release"]);
     const m = programmeMetrics(state, records);
     expect(m.engagedRoles).toBe(150);
+    expect(m.staffing.catalogueSelected).toBeLessThanOrEqual(m.staffing.catalogueCeiling);
+    expect(m.staffing.catalogueSelected).toBeLessThan(150); // banded cast — not always ceiling
+    expect(state.staffing?.band).toBeTruthy();
     expect(m.departments.every((d) => d.engaged === 10)).toBe(true);
     expect(m.decisions.total).toBe(5);
     expect(m.meetings).toBeGreaterThanOrEqual(10);

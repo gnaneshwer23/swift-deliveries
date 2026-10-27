@@ -42,7 +42,7 @@ import { CheckCircle2, Edit3, History, ShieldCheck, XCircle } from "lucide-react
 export const Route = createFileRoute("/_authenticated/command/missions/$missionId")({
   head: () => ({
     meta: [
-      { title: "Mission — Command Centre — DeliverX" },
+      { title: "Mission — DeliverX Studio" },
       {
         name: "description",
         content: "Clarify, approve, revise, run, and review a supervised AI mission.",
@@ -231,7 +231,7 @@ function MissionDetail() {
             {query.error instanceof Error ? query.error.message : "Mission not found"}
           </p>
           <Link to="/command" className="cc-btn cc-btn-secondary mt-4 inline-flex">
-            Back to Command Centre
+            Back to Studio
           </Link>
         </div>
       </CommandShell>
@@ -924,7 +924,7 @@ function MissionDetail() {
           </section>
 
           <Link to="/command" className="cc-btn cc-btn-secondary w-full justify-center">
-            ← Back to Command Centre
+            ← Back to Studio
           </Link>
         </aside>
       </div>

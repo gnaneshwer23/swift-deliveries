@@ -58,7 +58,7 @@ async function workspaceIdFor(supabase: DbClient, userId: string): Promise<strin
     .eq("owner_id", userId)
     .maybeSingle();
   if (res.error) throw new Error(res.error.message);
-  if (!res.data) throw new Error("Open the Command Centre once to create your workspace.");
+  if (!res.data) throw new Error("Open Studio once to create your workspace.");
   return res.data.id as string;
 }
 

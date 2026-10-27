@@ -49,12 +49,12 @@ export function AccountMenu({ user }: { user: User }) {
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link to="/command" className="flex items-center gap-2">
-            <Radar className="size-4" /> Command Centre
+            <Radar className="size-4" /> Studio
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link to="/command/programmes" className="flex items-center gap-2">
-            <LayoutDashboard className="size-4" /> Programmes Lab
+            <LayoutDashboard className="size-4" /> Programmes
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
