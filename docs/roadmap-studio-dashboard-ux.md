@@ -1,8 +1,8 @@
 # Studio dashboard UX — diagnosis & polish plan
 
-**Status:** Direction B **D1 + D2 shipping** (founder “complete b first”, 27 Oct 2026). D3/D4 held.  
+**Status:** Direction B **D1–D4 shipping** (founder “d1-d4”, 27 Oct 2026).  
 **Date:** 27 October 2026  
-**Live tip inspected:** https://www.deliverx.dev/command (~`de79e4d` era pre-ship)  
+**Live tip inspected:** https://www.deliverx.dev/command (~`7669a1c` D1+D2; D3/D4 this ship)  
 **Related (shipped spine, not superseded):** `docs/roadmap-briefing-experience.md`, `docs/roadmap-product-building-agents.md`  
 
 ---
@@ -140,8 +140,8 @@ Replace sidebar dashboard chrome with a stage frame (acts rail always visible; s
 | **D0 — Contract** | This doc | Close open decisions below | Founder “build D1…” (or named subset) | Done — “complete b first” |
 | **D1 — Overview composition** | `/command` only | One first-viewport composition; single focal continue; one-liner as the only hero form; remove Agents office block from index; cast panel off foyer; readiness chips demoted; truncate/title resume rows | First screen = continue **or** brief — no office, no cast grid, no advanced ledger visible without expand | **Shipping** |
 | **D2 — Quiet shell** | `CommandShell` | Soften usage/shield/Pilot; fix Studio/Studio breadcrumb; one primary CTA logic | Shell no longer reads as ops console; foyer still calm | **Shipping** |
-| **D3 — Mission theatre presence** | Supervised URL | Beat chips → stage focus; one focal gate CTA; process/band language to footnotes | Approve gate feels like Act IV, not a download dashboard | Held |
-| **D4 — Side rooms consistency** | Specialists / Projects | Cast-first and project shelf already shipped — visual alignment only if D1–D3 pass | Side rooms don’t reintroduce KPI walls | Held |
+| **D3 — Mission theatre presence** | Supervised URL | Beat chips → stage focus; one focal gate CTA; process/band language to footnotes | Approve gate feels like Act IV, not a download dashboard | **Shipping** |
+| **D4 — Side rooms consistency** | Specialists / Projects / Programmes / Agents office | Cast-first and project shelf already shipped — foyer-language stage headers; AO off purple ops chrome | Side rooms don’t reintroduce KPI walls | **Shipping** |
 
 Out of scope for this track unless reopened: new `/cases` route, programme rebuild, purple themes, fake cinematic timers, promoting voice or 150-role tourism.
 
@@ -158,8 +158,9 @@ Out of scope for this track unless reopened: new `/cases` route, programme rebui
 
 ---
 
-## 8. Ship note (D1 + D2)
+## 8. Ship note (D1–D4)
 
 - Overview: editorial stage · one Continue hero or one-liner brief · cast/office off · honesty in footnotes · Talk + advanced under fold.  
 - Shell: breadcrumb no longer `Studio / Studio` · usage / Pilot / shield under Account · `+ New case` · quieter nav active.  
-- Next: D3 mission theatre presence; D4 side-room visual alignment.
+- D3 theatre: beat rail as stage markers · one focal gate CTA · process/usage/band in footnotes · stronger Now composition · Acts/gates/honesty kept.  
+- D4 side rooms: Specialists / Projects / Programmes / Agents office use foyer brand + headline + lede; AO retuned off purple ops chrome.

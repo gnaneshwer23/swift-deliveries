@@ -97,16 +97,24 @@ function CommandProjects() {
   const shelfWithMissions = (shelf.data ?? []).filter((s) => s.missions.length > 0);
 
   return (
-    <CommandShell
-      title="Projects"
-      subtitle="Product memory shelf — missions, decisions and packs for a case family"
-      usage={usage}
-    >
-      <p className="cc-muted text-sm mb-4">
-        Supervised missions auto-attach a lightweight project when a family starts. Propose a
-        follow-up from here to open a new PM brief on the same shelf — nothing runs until you
-        approve that plan.
-      </p>
+    <CommandShell title="Projects" hideHeading usage={usage}>
+      <div className="ps-room">
+        <header className="ps-room-stage" aria-label="Projects">
+          <p className="ps-foyer-brand">DeliverX Studio</p>
+          <p className="cc-kicker">Projects</p>
+          <h1 className="ps-foyer-headline">Product memory shelf</h1>
+          <p className="ps-foyer-lede">
+            Missions, decisions and packs for a case family. Propose a follow-up from here — nothing
+            runs until you approve that plan.
+          </p>
+          <p className="ps-foyer-side-links">
+            <Link to="/command" hash="supervised-brief">
+              Brief a new case
+            </Link>
+            <span aria-hidden="true">·</span>
+            <Link to="/command/capabilities">Specialists</Link>
+          </p>
+        </header>
 
       <section className="cc-panel" aria-label="Product artefact shelf">
         <h2 className="cc-panel-title">Artefact shelf</h2>
@@ -354,6 +362,7 @@ function CommandProjects() {
           </ul>
         )}
       </section>
+      </div>
     </CommandShell>
   );
 }

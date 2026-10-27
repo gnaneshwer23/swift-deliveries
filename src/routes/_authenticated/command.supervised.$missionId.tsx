@@ -173,7 +173,7 @@ function SupervisedMissionPage() {
   return (
     <CommandShell
       title={mission.brief.question}
-      subtitle={next.title}
+      hideHeading
       {...(mission.usageCeiling > 0
         ? {
             usage: {
@@ -184,11 +184,12 @@ function SupervisedMissionPage() {
           }
         : {})}
     >
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+      <div className="ps-theatre-page-meta mb-4 flex flex-wrap items-center justify-between gap-3">
         <Link to="/command" hash="supervised-brief" className="cc-muted text-sm">
-          ← Workspace foyer
+          ← Studio foyer
         </Link>
         <div className="flex flex-wrap items-center gap-2">
+          <span className="cc-muted text-xs">{next.title}</span>
           {mission.projectId ? (
             <Link
               to="/command/product-memory/$projectId"

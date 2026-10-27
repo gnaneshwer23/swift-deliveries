@@ -69,7 +69,7 @@ export function AgentOffice({
       <header className="ao-head">
         <div>
           <span className="ao-overline">
-            Your agents office · {missions.length} most recent mission
+            Living desks · {missions.length} recent mission
             {missions.length === 1 ? "" : "s"}
           </span>
           <h2 id="ao-title">
@@ -82,15 +82,12 @@ export function AgentOffice({
                   : "Everyone is ready for the next mission"}
           </h2>
         </div>
-        <div className="ao-usage">
-          <small>Usage this period</small>
-          <strong>
-            {usage.consumed} of {usage.ceiling} credits
-          </strong>
-          <span className="ao-bar" style={{ ["--share" as string]: `${share * 100}%` }}>
+        <p className="ao-usage-note">
+          Usage {usage.consumed}/{usage.ceiling}
+          <span className="ao-bar" style={{ ["--share" as string]: `${share * 100}%` }} aria-hidden="true">
             <i />
           </span>
-        </div>
+        </p>
       </header>
 
       <div className="ao-body">

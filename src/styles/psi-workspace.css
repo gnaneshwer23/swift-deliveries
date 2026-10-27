@@ -2327,16 +2327,17 @@
   }
 }
 
-/* Briefing theatre (G1) — narrative stage, not ops progress grid */
+/* Briefing theatre (G1 + D3) — narrative stage, not ops progress grid */
 .ps-theatre {
-  margin: 8px 0 28px;
+  margin: 0 0 28px;
+  max-width: 46rem;
 }
 .ps-theatre-acts {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 6px;
   list-style: none;
-  margin: 0 0 20px;
+  margin: 0 0 24px;
   padding: 0;
 }
 .ps-theatre-act-btn {
@@ -2358,7 +2359,7 @@
 .ps-theatre-acts li[data-viewing="true"] .ps-theatre-act-btn {
   border-top-color: var(--psi-ink, #0f172a);
   color: var(--psi-ink, #0f172a);
-  background: color-mix(in srgb, var(--psi-indigo-soft, #eef1ff) 80%, white);
+  background: color-mix(in srgb, var(--psi-surface, #fff) 88%, var(--psi-ink, #0f172a) 4%);
   border-radius: 0 0 8px 8px;
 }
 .ps-theatre-act-now {
@@ -2373,16 +2374,123 @@
   padding: 4px 0 8px;
 }
 .ps-theatre-title {
-  font-size: 1.45rem;
-  letter-spacing: -0.02em;
-  line-height: 1.25;
+  font-family: var(--motion-display, "Albert Sans", Inter, sans-serif);
+  font-size: clamp(1.45rem, 2.2vw, 1.85rem);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
   margin: 4px 0 10px;
+  color: var(--psi-ink, #0f172a);
 }
 .ps-theatre-lede {
-  font-size: 1.05rem;
-  line-height: 1.5;
+  font-size: 1.02rem;
+  line-height: 1.55;
   margin: 0 0 14px;
-  max-width: 46rem;
+  max-width: 42rem;
+  color: var(--psi-ink, #0f172a);
+}
+.ps-theatre-nav {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--psi-muted);
+}
+.ps-act-now {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.ps-act-focus {
+  margin: 4px 0 8px;
+}
+.ps-act-waiting {
+  margin: 8px 0 0;
+  padding: 14px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--psi-muted);
+  border-top: 1px solid var(--psi-border, #dfe5f2);
+}
+.ps-theatre-gate {
+  margin-top: 18px;
+  padding: 16px 0 4px;
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  border-top: 1px solid var(--psi-border, #dfe5f2);
+}
+.ps-theatre-gate .cc-btn-primary {
+  min-height: 44px;
+  padding-inline: 1.25rem;
+  font-size: 15px;
+}
+.ps-theatre-gate-note,
+.ps-theatre-gate-done {
+  margin: 0;
+  font-size: 13px;
+  color: var(--psi-muted);
+  max-width: 36rem;
+}
+.ps-theatre-consent {
+  display: block;
+  font-size: 13px;
+  color: var(--psi-muted);
+  max-width: 36rem;
+  line-height: 1.45;
+}
+.ps-theatre-footnotes {
+  margin-top: 22px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--psi-border, #dfe5f2);
+  display: grid;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--psi-muted);
+}
+.ps-theatre-footnotes > details > summary {
+  cursor: pointer;
+  color: var(--psi-muted);
+}
+.ps-theatre-footnotes > details > summary::-webkit-details-marker {
+  display: none;
+}
+.ps-roadmap-beat-note {
+  display: block;
+  font-size: 13px;
+  color: var(--psi-muted);
+}
+/* Side rooms — foyer language (D4) */
+.ps-room {
+  display: grid;
+  gap: 24px;
+  max-width: 720px;
+}
+.ps-room-wide {
+  max-width: 960px;
+}
+.ps-room-stage {
+  display: grid;
+  gap: 8px;
+  padding: 4px 0 8px;
+}
+.ps-shell-room .ps-content {
+  padding-top: 8px;
+}
+.ps-room .cc-panel {
+  border-radius: 0;
+  border: 0;
+  border-top: 1px solid var(--psi-border, #dfe5f2);
+  background: transparent;
+  box-shadow: none;
+  padding: 18px 0;
+}
+.ps-room .cc-composer-card {
+  border-radius: 0;
+  border: 0;
+  border-top: 1px solid var(--psi-border, #dfe5f2);
+  background: transparent;
+  box-shadow: none;
+  padding: 18px 0;
 }
 .ps-honesty-badges {
   display: flex;
@@ -2433,12 +2541,12 @@
   margin: 16px 0 0;
   padding: 0;
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 .ps-roadmap-beats li {
-  padding: 12px 14px;
-  border-left: 3px solid var(--psi-indigo, #3b4cca);
-  background: color-mix(in srgb, var(--psi-surface, #fff) 92%, var(--psi-indigo, #3b4cca) 8%);
+  padding: 10px 0 10px 14px;
+  border-left: 2px solid var(--psi-ink, #0f172a);
+  background: transparent;
   display: grid;
   gap: 4px;
 }
@@ -2451,10 +2559,11 @@
   gap: 10px;
 }
 .ps-cast-board li {
-  padding: 12px;
-  border: 1px solid var(--psi-border, #dfe5f2);
-  border-radius: 12px;
-  background: linear-gradient(165deg, #fff 0%, #f4f7fc 100%);
+  padding: 12px 0;
+  border: 0;
+  border-top: 1px solid var(--psi-border, #dfe5f2);
+  border-radius: 0;
+  background: transparent;
   display: grid;
   gap: 4px;
   font-size: 13px;
@@ -2490,6 +2599,75 @@
   margin-top: 16px;
   padding-top: 12px;
   border-top: 1px solid var(--psi-border, #dfe5f2);
+}
+/* D3 beat rail — stage markers, not chip telemetry */
+.ps-build-stage {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0;
+  position: relative;
+}
+.ps-build-stage::before {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 14px;
+  height: 1px;
+  background: var(--psi-border, #dfe5f2);
+  z-index: 0;
+}
+.ps-build-stage-btn {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0 4px;
+  cursor: pointer;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  color: var(--psi-muted);
+  font-size: 11px;
+}
+.ps-build-stage-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid var(--psi-border, #dfe5f2);
+  background: var(--psi-surface, #fff);
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--psi-muted);
+}
+.ps-build-stage-label {
+  text-align: center;
+  line-height: 1.2;
+  max-width: 5.5rem;
+}
+.ps-build-stage li[data-state="done"] .ps-build-stage-mark {
+  border-color: var(--psi-indigo, #3b4cca);
+  color: var(--psi-indigo, #3b4cca);
+}
+.ps-build-stage li[data-state="current"] .ps-build-stage-mark,
+.ps-build-stage li[data-selected="true"] .ps-build-stage-mark {
+  border-color: var(--psi-ink, #0f172a);
+  background: var(--psi-ink, #0f172a);
+  color: #fff;
+}
+.ps-build-stage li[data-state="current"] .ps-build-stage-label,
+.ps-build-stage li[data-selected="true"] .ps-build-stage-label {
+  color: var(--psi-ink, #0f172a);
+  font-weight: 600;
+}
+.ps-build-stage li[data-state="blocked"] .ps-build-stage-btn {
+  opacity: 0.65;
 }
 .ps-shell-foyer .ps-content {
   padding-top: 8px;
@@ -2692,13 +2870,10 @@
 }
 .ps-focal-artefact {
   margin-top: 8px;
-  padding: 16px 18px;
-  border-left: 3px solid var(--psi-indigo, #3b4cca);
-  background: linear-gradient(
-    165deg,
-    #fff 0%,
-    color-mix(in srgb, var(--psi-indigo-soft, #eef1ff) 55%, white) 100%
-  );
+  padding: 16px 0;
+  border-left: 0;
+  border-top: 1px solid var(--psi-border, #dfe5f2);
+  background: transparent;
   display: grid;
   gap: 8px;
 }
@@ -2846,5 +3021,12 @@
   }
   .ps-build-beats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ps-build-stage {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px 0;
+  }
+  .ps-build-stage::before {
+    display: none;
   }
 }

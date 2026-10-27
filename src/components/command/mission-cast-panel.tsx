@@ -26,7 +26,7 @@ export function MissionCastPanel() {
 
   if (home.isPending) {
     return (
-      <section className="cc-panel ps-mission-cast" aria-label="Active cast">
+      <section className="ps-mission-cast" aria-label="Active cast">
         <p className="cc-muted">Loading active mission cast…</p>
       </section>
     );
@@ -34,10 +34,12 @@ export function MissionCastPanel() {
 
   if (!activeId || !mission.data) {
     return (
-      <section className="cc-panel ps-mission-cast" aria-label="Active cast">
+      <section className="ps-mission-cast" aria-label="Active cast">
         <p className="cc-kicker">Cast</p>
-        <h2 className="cc-panel-title">No active investigation</h2>
-        <p className="cc-muted">
+        <h2 className="ps-foyer-headline" style={{ fontSize: "clamp(1.2rem, 1.8vw, 1.45rem)" }}>
+          No active investigation
+        </h2>
+        <p className="ps-foyer-lede">
           Start a one-liner from Overview to staff a cast. The catalogue below is for exploring the
           bench — not the default story.
         </p>
@@ -55,15 +57,14 @@ export function MissionCastPanel() {
   const currentBeat = sequence.beats.find((b) => b.id === sequence.currentId);
 
   return (
-    <section className="cc-panel ps-mission-cast" aria-label="Active mission cast">
+    <section className="ps-mission-cast" aria-label="Active mission cast">
       <p className="cc-kicker">On this case</p>
-      <h2 className="cc-panel-title">{record.brief.question}</h2>
-      <p className="cc-muted text-sm">
-        {brief.team.initiatingAgent} · {brief.team.staffing.activeSpecialists} specialists ·{" "}
-        {STAFFING_BAND_LABELS[brief.team.staffing.band]}
-        {currentBeat
-          ? ` · current beat: ${currentBeat.label} · owner: ${currentBeat.owner.label}`
-          : ""}
+      <h2 className="ps-foyer-headline" style={{ fontSize: "clamp(1.2rem, 1.8vw, 1.45rem)" }}>
+        {record.brief.question}
+      </h2>
+      <p className="ps-foyer-lede">
+        {brief.team.initiatingAgent} · {brief.team.staffing.activeSpecialists} specialists
+        {currentBeat ? ` · now: ${currentBeat.label}` : ""}
       </p>
       <ul className="ps-cast-board mt-3">
         {cast.map((s) => (
@@ -78,21 +79,23 @@ export function MissionCastPanel() {
               {s.isCurrentOwner ? " · owns beat" : ""}
             </strong>
             <span>{s.contribution}</span>
-            <span className="cc-muted text-xs">Handoff: {s.handoff}</span>
           </li>
         ))}
       </ul>
-      <div className="mt-3 flex flex-wrap gap-2">
-        <Link
-          to="/command/supervised/$missionId"
-          params={{ missionId: record.id }}
-          className="cc-btn cc-btn-primary"
-        >
-          Open briefing theatre
-        </Link>
-        <a href="#an-catalogue" className="cc-btn cc-btn-secondary">
-          Explore the bench
-        </a>
+      <div className="ps-theatre-footnotes">
+        <p>{STAFFING_BAND_LABELS[brief.team.staffing.band]}</p>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            to="/command/supervised/$missionId"
+            params={{ missionId: record.id }}
+            className="cc-btn cc-btn-primary"
+          >
+            Open briefing theatre
+          </Link>
+          <a href="#an-catalogue" className="cc-btn cc-btn-secondary">
+            Explore the bench
+          </a>
+        </div>
       </div>
     </section>
   );

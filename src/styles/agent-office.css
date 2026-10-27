@@ -1,55 +1,58 @@
-/* Command Centre: the agents office */
+/* Studio agents office — foyer tokens (no purple glow) */
 .ao {
+  --ix-glow: var(--psi-indigo, #3b4cca);
+  --ix-glow-2: color-mix(in srgb, var(--psi-indigo, #3b4cca) 55%, white);
   margin: 0 0 28px;
-  padding: 22px;
-  border: 1px solid #e3e1f0;
-  border-radius: 22px;
-  background: #fbfaff;
+  padding: 8px 0 18px;
+  border: 0;
+  border-top: 1px solid var(--psi-border, #dfe5f2);
+  border-radius: 0;
+  background: transparent;
 }
 .ao-head {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
   align-items: flex-end;
   justify-content: space-between;
   margin-bottom: 14px;
 }
-.ao-overline,
-.ao-usage small {
+.ao-overline {
   display: block;
-  color: #6b4fd6;
+  color: var(--psi-muted, #5b6475);
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 .ao-head h2 {
   margin: 4px 0 0;
-  color: #1f1b2e;
-  font-size: clamp(20px, 2.2vw, 26px);
+  color: var(--psi-ink, #0f172a);
+  font-family: var(--motion-display, "Albert Sans", Inter, sans-serif);
+  font-size: clamp(1.2rem, 2vw, 1.45rem);
+  font-weight: 650;
   letter-spacing: -0.02em;
 }
-.ao-usage {
-  min-width: 200px;
-}
-.ao-usage strong {
-  display: block;
-  margin: 4px 0 6px;
-  color: #1f1b2e;
-  font-size: 14px;
+.ao-usage-note {
+  margin: 0;
+  min-width: 140px;
+  font-size: 11px;
+  color: var(--psi-muted, #5b6475);
+  display: grid;
+  gap: 4px;
 }
 .ao-bar {
   display: block;
-  height: 6px;
+  height: 3px;
   border-radius: 99px;
-  background: #e8e5f5;
+  background: #e2e8f0;
   overflow: hidden;
 }
 .ao-bar i {
   display: block;
   width: var(--share);
   height: 100%;
-  background: #7860cf;
+  background: var(--psi-ink, #0f172a);
 }
 .ao-body {
   display: grid;
@@ -59,11 +62,11 @@
 }
 .ao-stage {
   position: relative;
-  border-radius: 18px;
-  border: 1px solid #e3e1f0;
+  border-radius: 0;
+  border: 1px solid var(--psi-border, #dfe5f2);
   background:
-    radial-gradient(circle at 1px 1px, #ddd9ee 1px, transparent 0) 0 0 / 22px 22px,
-    linear-gradient(180deg, #ffffff, #f4f2fb);
+    radial-gradient(circle at 1px 1px, #dfe5f2 1px, transparent 0) 0 0 / 22px 22px,
+    linear-gradient(180deg, #ffffff, #f8fafc);
   overflow: hidden;
 }
 .ao-stage svg {
@@ -76,7 +79,7 @@
   z-index: 2;
   width: 120px;
   padding: 9px 11px;
-  border: 1px solid #e3e1f0;
+  border: 1px solid var(--psi-border, #dfe5f2);
   border-radius: 12px;
   background: #ffffffee;
   box-shadow: 0 10px 24px rgb(31 27 46 / 0.08);
@@ -88,11 +91,11 @@
 }
 .ao-card strong {
   display: block;
-  color: #1f1b2e;
+  color: var(--psi-ink, #0f172a);
   font-size: 13px;
 }
 .ao-card small {
-  color: #6f6a85;
+  color: var(--psi-muted, #5b6475);
   font-size: 11px;
 }
 .ao-card dl {
@@ -102,14 +105,14 @@
   margin: 6px 0 0;
 }
 .ao-card dt {
-  color: #6f6a85;
+  color: var(--psi-muted, #5b6475);
   font-size: 9.5px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 .ao-card dd {
   margin: 0;
-  color: #1f1b2e;
+  color: var(--psi-ink, #0f172a);
   font-size: 15px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -128,7 +131,7 @@
 }
 .ao-dept-list li {
   padding: 10px 12px;
-  border: 1px solid #e3e1f0;
+  border: 1px solid var(--psi-border, #dfe5f2);
   border-radius: 12px;
   background: #fff;
 }
@@ -136,7 +139,7 @@
   border-color: #e3c77d;
 }
 .ao-dept-list strong {
-  color: #1f1b2e;
+  color: var(--psi-ink, #0f172a);
   font-size: 13px;
 }
 .ao-dept-list dl {
@@ -145,7 +148,7 @@
   margin: 4px 0 0;
 }
 .ao-dept-list dt {
-  color: #6f6a85;
+  color: var(--psi-muted, #5b6475);
   font-size: 10px;
   text-transform: uppercase;
 }
@@ -155,19 +158,19 @@
 }
 .ao-dev {
   margin: 10px 2px 0;
-  color: #6f6a85;
+  color: var(--psi-muted, #5b6475);
   font-size: 12.5px;
   line-height: 1.5;
 }
 .ao-dev span {
-  color: #3d3752;
+  color: var(--psi-ink, #0f172a);
 }
 
 /* task panel */
 .ao-panel {
   padding: 16px;
-  border: 1px solid #e3e1f0;
-  border-radius: 18px;
+  border: 1px solid var(--psi-border, #dfe5f2);
+  border-radius: 0;
   background: #fff;
 }
 .ao-panel h3 {
@@ -187,24 +190,24 @@
   align-items: center;
   gap: 6px;
   padding: 5px 10px;
-  border: 1px solid #e3e1f0;
+  border: 1px solid var(--psi-border, #dfe5f2);
   border-radius: 99px;
   background: #fff;
-  color: #3d3752;
+  color: var(--psi-ink, #0f172a);
   font-size: 12px;
   cursor: pointer;
 }
 .ao-filters button span {
-  color: #6f6a85;
+  color: var(--psi-muted, #5b6475);
   font-variant-numeric: tabular-nums;
 }
 .ao-filters button[aria-pressed="true"] {
-  border-color: #34294d;
-  background: #34294d;
+  border-color: var(--psi-ink, #0f172a);
+  background: var(--psi-ink, #0f172a);
   color: #fff;
 }
 .ao-filters button[aria-pressed="true"] span {
-  color: #d9d3ef;
+  color: #e2e8f0;
 }
 .ao-filters button[data-state="waiting"]:not([aria-pressed="true"]) {
   border-color: #e3c77d;
@@ -212,12 +215,12 @@
 }
 .ao-desk-filter {
   margin-bottom: 10px;
-  border-color: #c9bdf2;
-  background: #f3f0ff;
+  border-color: #c5cddc;
+  background: #f4f7fc;
 }
 .ao-empty {
   margin: 8px 0 0;
-  color: #6f6a85;
+  color: var(--psi-muted, #5b6475);
   font-size: 13.5px;
   line-height: 1.55;
 }
@@ -235,27 +238,27 @@
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 3px 8px;
   padding: 10px 12px;
-  border: 1px solid #eeecf6;
+  border: 1px solid var(--psi-border, #dfe5f2);
   border-radius: 12px;
   color: inherit;
   text-decoration: none;
 }
 .ao-list a:hover,
 .ao-list a:focus-visible {
-  border-color: #c9bdf2;
+  border-color: #c5cddc;
 }
 .ao-list a > svg {
   grid-column: 2;
   grid-row: 1 / span 3;
   align-self: center;
-  color: #6f6a85;
+  color: var(--psi-muted, #5b6475);
 }
 .ao-pill {
   justify-self: start;
   padding: 2px 8px;
   border-radius: 99px;
-  background: #f1eff8;
-  color: #4a4460;
+  background: #f1f5f9;
+  color: var(--psi-muted, #5b6475);
   font-size: 10.5px;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -266,8 +269,8 @@
   color: #7a5a10;
 }
 .ao-list li[data-state="doing"] .ao-pill {
-  background: #efeaff;
-  color: #4b33b5;
+  background: #eef2ff;
+  color: var(--psi-indigo, #3b4cca);
 }
 .ao-list li[data-state="done"] .ao-pill {
   background: #eaf6ef;
@@ -278,25 +281,25 @@
   color: #8a2b2b;
 }
 .ao-list strong {
-  color: #1f1b2e;
+  color: var(--psi-ink, #0f172a);
   font-size: 13.5px;
   line-height: 1.35;
 }
 .ao-list small {
-  color: #6f6a85;
+  color: var(--psi-muted, #5b6475);
   font-size: 12px;
 }
 
 /* the drawing */
 .ix-office-lane {
   fill: none;
-  stroke: #cfc8ea;
+  stroke: #dfe5f2;
   stroke-width: 10;
   stroke-linecap: round;
   opacity: 0.55;
 }
 .ix-office-lanes [data-busy] .ix-office-lane {
-  stroke: #b9aaf0;
+  stroke: #c5cddc;
 }
 .ix-office-floor:not([data-busy]):not([data-waiting]) .ix-plate {
   opacity: 0.94;
@@ -311,10 +314,10 @@
   stroke-width: 1.2;
 }
 .ix-monitor {
-  fill: #34294d;
+  fill: var(--psi-ink, #0f172a);
 }
 .ix-monitor-top {
-  fill: #4a3d6b;
+  fill: #334155;
 }
 .ix-desk {
   cursor: default;
@@ -331,11 +334,11 @@
   stroke-width: 2;
 }
 .ix-desk[data-state="doing"] .ix-desk-ring {
-  fill: #7860cf1f;
-  stroke: #7860cf;
+  fill: var(--psi-indigo, #3b4cca)1f;
+  stroke: var(--psi-indigo, #3b4cca);
 }
 .ix-desk[data-state="doing"] .ix-monitor-top {
-  fill: #9d89f0;
+  fill: var(--psi-indigo, #3b4cca);
 }
 .ix-desk[data-state="waiting"] .ix-desk-ring {
   fill: #c7a24a1f;
@@ -353,21 +356,21 @@
 }
 .ix-desk[data-selected] .ix-desk-ring,
 .ix-desk:focus-visible .ix-desk-ring {
-  stroke: #34294d;
+  stroke: var(--psi-ink, #0f172a);
   stroke-width: 2.4;
 }
 .ix-desk-name rect {
   fill: #ffffff;
-  stroke: #e3e1f0;
+  stroke: var(--psi-border, #dfe5f2);
 }
 .ix-desk-name text {
-  fill: #3d3752;
+  fill: var(--psi-ink, #0f172a);
   font-weight: 600;
   letter-spacing: 0.02em;
 }
 .ix-desk[data-state="doing"] .ix-desk-name rect {
-  fill: #34294d;
-  stroke: #34294d;
+  fill: var(--psi-ink, #0f172a);
+  stroke: var(--psi-ink, #0f172a);
 }
 .ix-desk[data-state="doing"] .ix-desk-name text {
   fill: #fff;
@@ -403,7 +406,7 @@
 .ao-activity {
   margin-top: 18px;
   padding-top: 14px;
-  border-top: 1px solid #e3e1f0;
+  border-top: 1px solid var(--psi-border, #dfe5f2);
 }
 .ao-activity h3 {
   margin: 0 0 8px;
@@ -425,9 +428,9 @@
   line-height: 1.45;
 }
 .ao-activity time {
-  color: #6c6a80;
+  color: var(--psi-muted, #5b6475);
   font-variant-numeric: tabular-nums;
 }
 .ao-activity small {
-  color: #6c6a80;
+  color: var(--psi-muted, #5b6475);
 }

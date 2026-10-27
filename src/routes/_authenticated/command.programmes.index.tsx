@@ -99,14 +99,24 @@ function ProgrammesHome() {
     form.goals.trim().length >= 5;
 
   return (
-    <CommandShell
-      title="Programmes"
-      subtitle="Long-horizon product builds with Briefing → Strategy → Cast → Approve → Build Acts. Human gates stay human-only."
-    >
-      <p className="cc-muted text-sm mb-4">
-        Same Acts language as Studio theatre. For a single decision loop, start from Studio Overview
-        → one-liner. Cast scales by complexity toward the catalogue ceiling — not 150 on every case.
-      </p>
+    <CommandShell title="Programmes" hideHeading>
+      <div className="ps-room">
+        <header className="ps-room-stage" aria-label="Programmes">
+          <p className="ps-foyer-brand">DeliverX Studio</p>
+          <p className="cc-kicker">Programmes</p>
+          <h1 className="ps-foyer-headline">Long-horizon product builds</h1>
+          <p className="ps-foyer-lede">
+            Same Acts language as Studio theatre — Briefing → Strategy → Cast → Approve → Build.
+            Human gates stay human-only. For a single decision loop, start from Overview.
+          </p>
+          <p className="ps-foyer-side-links">
+            <Link to="/command" hash="supervised-brief">
+              Brief a case
+            </Link>
+            <span aria-hidden="true">·</span>
+            <Link to="/command/projects">Projects</Link>
+          </p>
+        </header>
       {features.isSuccess && !supported ? (
         <section className="cc-panel cc-panel-active-gate">
           <h2 className="cc-panel-title">Programmes are not enabled yet</h2>
@@ -284,6 +294,7 @@ function ProgrammesHome() {
           ))}
         </ul>
       </section>
+      </div>
     </CommandShell>
   );
 }

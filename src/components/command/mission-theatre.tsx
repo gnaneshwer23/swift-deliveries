@@ -52,7 +52,7 @@ export type MissionTheatreActions = {
 
 /**
  * Five-act briefing theatre on the supervised mission URL.
- * Honesty stays as badges; gates and decision pack remain.
+ * D3: one focal gate/CTA, beat rail as stage, process copy as footnotes.
  */
 export function MissionTheatre({
   mission,
@@ -109,19 +109,15 @@ export function MissionTheatre({
       </div>
 
       {theatre.planApproved && active !== "work" ? (
-        <p className="cc-muted text-sm mt-3">
-          <button
-            type="button"
-            className="cc-btn cc-btn-ghost"
-            onClick={() => setViewAct("work")}
-          >
+        <p className="ps-theatre-nav">
+          <button type="button" className="cc-btn cc-btn-ghost" onClick={() => setViewAct("work")}>
             Return to build stage →
           </button>
         </p>
       ) : null}
 
       {!theatre.planApproved && active !== "approve" && actions.next.id === "approve_plan" ? (
-        <p className="cc-muted text-sm mt-3">
+        <p className="ps-theatre-nav">
           <button
             type="button"
             className="cc-btn cc-btn-secondary"
@@ -154,6 +150,7 @@ function ActBriefing({
 }) {
   return (
     <section className="ps-act ps-act-briefing" aria-label="Technology briefing">
+      <p className="ps-foyer-brand">DeliverX Studio</p>
       <p className="cc-kicker">{brief.team.initiatingAgent}</p>
       <h2 className="ps-theatre-title">Here’s what I heard</h2>
       <p className="ps-theatre-lede">{brief.problemStatement}</p>
@@ -176,13 +173,13 @@ function ActBriefing({
           </ul>
         </div>
       </div>
-      <p className="cc-muted text-sm mt-3">
-        Ask you only when: {brief.askFounderOnlyWhen}
-      </p>
-      <details className="ps-theatre-footnote">
-        <summary>How this was produced</summary>
-        <p className="cc-muted text-sm">{brief.honesty}</p>
-      </details>
+      <div className="ps-theatre-footnotes">
+        <p>Ask you only when: {brief.askFounderOnlyWhen}</p>
+        <details>
+          <summary>How this was produced</summary>
+          <p>{brief.honesty}</p>
+        </details>
+      </div>
     </section>
   );
 }
@@ -190,12 +187,10 @@ function ActBriefing({
 function ActRoadmap({ brief }: { brief: PmBrief }) {
   return (
     <section className="ps-act ps-act-roadmap" aria-label="Strategy and roadmap">
+      <p className="ps-foyer-brand">DeliverX Studio</p>
       <p className="cc-kicker">Strategy</p>
       <h2 className="ps-theatre-title">Proposed approach</h2>
-      <p className="cc-muted">
-        {brief.roughTime.label}
-        <span className="block text-sm">{brief.roughTime.detail}</span>
-      </p>
+      <p className="ps-theatre-lede">{brief.roughTime.label}</p>
       <ol className="ps-roadmap-beats">
         {ROADMAP_BEATS.map((beat, index) => (
           <li key={beat.id}>
@@ -204,14 +199,16 @@ function ActRoadmap({ brief }: { brief: PmBrief }) {
             </strong>
             <span>{beat.detail}</span>
             {brief.whatWillHappen[index] ? (
-              <span className="cc-muted text-sm block">{brief.whatWillHappen[index]}</span>
+              <span className="ps-roadmap-beat-note">{brief.whatWillHappen[index]}</span>
             ) : null}
           </li>
         ))}
       </ol>
-      <p className="cc-muted text-sm mt-3">
-        Cost band: {brief.roughCost.band}. {brief.roughCost.detail}
-      </p>
+      <div className="ps-theatre-footnotes">
+        <p>
+          {brief.roughTime.detail} · Cost band {brief.roughCost.band}. {brief.roughCost.detail}
+        </p>
+      </div>
     </section>
   );
 }
@@ -230,15 +227,12 @@ function ActCast({
 
   return (
     <section className="ps-act ps-act-cast" aria-label="Cast and timeline">
+      <p className="ps-foyer-brand">DeliverX Studio</p>
       <p className="cc-kicker">Delivery cast</p>
       <h2 className="ps-theatre-title">Who delivers what</h2>
-      <p className="cc-muted">
+      <p className="ps-theatre-lede">
         {brief.team.initiatingAgent} initiating · {staffing.activeSpecialists} on this plan
-        {currentBeat
-          ? ` · now: ${currentBeat.label} (${currentBeat.owner.label})`
-          : sequence.planApproved
-            ? " · build sequence complete through Pack"
-            : ""}
+        {currentBeat ? ` · now: ${currentBeat.label}` : sequence.planApproved ? " · build complete through Pack" : ""}
       </p>
       <ul className="ps-cast-board">
         {cast.map((s) => (
@@ -253,19 +247,19 @@ function ActCast({
               {s.isCurrentOwner ? " · owns beat" : ""}
             </strong>
             <span>{s.contribution}</span>
-            <span className="cc-muted text-xs">Handoff: {s.handoff}</span>
           </li>
         ))}
       </ul>
-      <p className="cc-muted text-sm mt-3">
-        {STAFFING_BAND_LABELS[staffing.band]} · catalogue roster {staffing.catalogueSelected}/
-        {staffing.catalogueCeiling} ({staffing.catalogueAvailable} Available can run ·{" "}
-        {staffing.cataloguePlanned} Planned on roster only). Simple cases stay small; XL approaches
-        the ceiling — never fake-enables all 150 on every mission.
-      </p>
-      <Link to="/command/capabilities" className="cc-btn cc-btn-secondary mt-3 inline-flex">
-        Open cast on Specialists →
-      </Link>
+      <div className="ps-theatre-footnotes">
+        <p>
+          {STAFFING_BAND_LABELS[staffing.band]} · catalogue {staffing.catalogueSelected}/
+          {staffing.catalogueCeiling} ({staffing.catalogueAvailable} Available ·{" "}
+          {staffing.cataloguePlanned} Planned). Simple cases stay small — never fake-enables all 150.
+        </p>
+        <Link to="/command/capabilities" className="cc-btn cc-btn-secondary inline-flex">
+          Open cast on Specialists →
+        </Link>
+      </div>
     </section>
   );
 }
@@ -284,7 +278,8 @@ function ActApprove({
   const approved = Boolean(mission.team?.approvedAt);
   return (
     <section className="ps-act ps-act-approve" aria-label="Approve plan" id="mission-next-action">
-      <p className="cc-kicker">Your gate</p>
+      <p className="ps-foyer-brand">DeliverX Studio</p>
+      <p className="cc-kicker">Your gate · Act IV</p>
       <h2 className="ps-theatre-title">
         {approved ? "Plan approved" : "Approve this investigation plan"}
       </h2>
@@ -298,35 +293,42 @@ function ActApprove({
           <strong>Time</strong> {brief.roughTime.label}
         </li>
         <li>
-          <strong>Cost</strong> {brief.roughCost.band}
-        </li>
-        <li>
           <strong>Research</strong> {brief.research.stance}
         </li>
       </ul>
       {actions.error ? <p className="cc-error mt-2">{actions.error}</p> : null}
       {actions.usageWarning ? <p className="cc-error mt-2">{actions.usageWarning}</p> : null}
-      {!approved && actions.next.id === "approve_plan" ? (
-        <button
-          type="button"
-          className="cc-btn cc-btn-primary mt-4"
-          disabled={!actions.open || actions.approvePending}
-          onClick={actions.onApprove}
-        >
-          {actions.approvePending ? "Approving…" : "Approve PM brief & specialist plan"}
-        </button>
-      ) : null}
-      {approved ? (
-        <p className="cc-muted text-sm mt-3">
-          Approved {mission.team?.approvedAt ? new Date(mission.team.approvedAt).toLocaleString() : ""}.
-          Build stage is open.
+
+      <div className="ps-theatre-gate">
+        {!approved && actions.next.id === "approve_plan" ? (
+          <button
+            type="button"
+            className="cc-btn cc-btn-primary"
+            disabled={!actions.open || actions.approvePending}
+            onClick={actions.onApprove}
+          >
+            {actions.approvePending ? "Approving…" : "Approve plan"}
+          </button>
+        ) : null}
+        {approved ? (
+          <p className="ps-theatre-gate-done">
+            Approved{" "}
+            {mission.team?.approvedAt ? new Date(mission.team.approvedAt).toLocaleString() : ""}.
+            Build stage is open.
+          </p>
+        ) : (
+          <p className="ps-theatre-gate-note">
+            Nothing billable or external runs until you approve.
+          </p>
+        )}
+      </div>
+
+      <div className="ps-theatre-footnotes">
+        <p>
+          Cost band {brief.roughCost.band}. {brief.roughCost.detail} Web results are never invented
+          when a provider is missing.
         </p>
-      ) : (
-        <p className="cc-muted text-sm mt-3">
-          Nothing billable or external runs until you approve. Web results are never invented when a
-          provider is missing.
-        </p>
-      )}
+      </div>
     </section>
   );
 }
@@ -396,21 +398,106 @@ function BuildBeatRail({
   onSelect: (id: BuildBeatView["id"]) => void;
 }) {
   return (
-    <ol className="ps-build-beats" aria-label="Product build sequence">
-      {beats.map((beat) => (
-        <li key={beat.id} data-state={beat.state} data-selected={selectedId === beat.id ? "true" : undefined}>
+    <ol className="ps-build-stage" aria-label="Product build sequence">
+      {beats.map((beat, index) => (
+        <li
+          key={beat.id}
+          data-state={beat.state}
+          data-selected={selectedId === beat.id ? "true" : undefined}
+        >
           <button
             type="button"
-            className="ps-build-beat-btn"
+            className="ps-build-stage-btn"
             aria-current={selectedId === beat.id ? "step" : undefined}
             onClick={() => onSelect(beat.id)}
           >
-            <strong>{beat.label}</strong>
-            <span className="cc-muted text-xs">{beat.owner.label}</span>
+            <span className="ps-build-stage-mark" aria-hidden="true">
+              {index + 1}
+            </span>
+            <span className="ps-build-stage-label">{beat.label}</span>
           </button>
         </li>
       ))}
     </ol>
+  );
+}
+
+function FocalGate({
+  actions,
+  leaseUntil,
+}: {
+  actions: MissionTheatreActions;
+  leaseUntil: string | null;
+}) {
+  const next = actions.next;
+  const consentNeeded =
+    (next.id === "compare" || next.id === "retry" || next.id === "recover") &&
+    actions.modelConfigured;
+  const leaseBlocksRecover =
+    next.id === "recover" && Date.parse(leaseUntil ?? "") > Date.now();
+
+  return (
+    <div className="ps-theatre-gate" id="mission-next-action">
+      {actions.error ? <p className="cc-error">{actions.error}</p> : null}
+      {actions.usageWarning ? <p className="cc-error">{actions.usageWarning}</p> : null}
+
+      {consentNeeded ? (
+        <label className="ps-theatre-consent">
+          <input
+            type="checkbox"
+            checked={actions.consentedScope === actions.comparisonScope}
+            onChange={(e) =>
+              actions.setConsentedScope(e.target.checked ? actions.comparisonScope : null)
+            }
+          />{" "}
+          Allow this comparison to send the current brief and evidence to the configured provider
+          and reserve one comparison unit.
+        </label>
+      ) : null}
+
+      {next.id === "compare" || next.id === "retry" || next.id === "recover" ? (
+        <button
+          type="button"
+          className="cc-btn cc-btn-primary"
+          disabled={
+            actions.comparePending ||
+            (actions.modelConfigured && actions.consentedScope !== actions.comparisonScope) ||
+            leaseBlocksRecover
+          }
+          onClick={actions.onCompare}
+        >
+          {actions.comparePending
+            ? "Comparing…"
+            : next.id === "retry"
+              ? "Retry comparison"
+              : "Compare options"}
+        </button>
+      ) : null}
+
+      {next.id === "artefact" ? (
+        <button
+          type="button"
+          className="cc-btn cc-btn-primary"
+          disabled={actions.preparePending}
+          onClick={actions.onPrepare}
+        >
+          {actions.preparePending ? "Preparing…" : "Prepare decision pack"}
+        </button>
+      ) : null}
+
+      {next.id === "approve_prototype" ? (
+        <button
+          type="button"
+          className="cc-btn cc-btn-primary"
+          disabled={actions.prototypePending}
+          onClick={actions.onApprovePrototype}
+        >
+          {actions.prototypePending ? "Building prototype…" : "Approve sandboxed HTML prototype"}
+        </button>
+      ) : null}
+
+      {next.id === "export" ? actions.exportSlot : null}
+    </div>
   );
 }
 
@@ -429,20 +516,29 @@ function ActWork({
   const [viewBeatId, setViewBeatId] = useState<BuildBeatView["id"] | null>(null);
   const selectedId = viewBeatId ?? sequence.currentId ?? sequence.beats[0]?.id ?? null;
   const selected = sequence.beats.find((b) => b.id === selectedId) ?? null;
-  const focal = selected?.artefact ?? sequence.beats.find((b) => b.id === sequence.currentId)?.artefact;
+  const current = sequence.beats.find((b) => b.id === sequence.currentId) ?? null;
+  const focal =
+    selected?.artefact ?? sequence.beats.find((b) => b.id === sequence.currentId)?.artefact;
+  const nowBeat = selected ?? current;
+  const showGate =
+    !viewBeatId || viewBeatId === sequence.currentId || sequence.currentId === null;
 
   return (
     <section className="ps-act ps-act-work" aria-label="Product build stage">
-      <div className="ps-act-work-head">
-        <div>
-          <p className="cc-kicker">Product build</p>
-          <h2 className="ps-theatre-title">
-            {selected ? `${selected.label} · ${selected.owner.label}` : actions.next.title}
-          </h2>
-          <p className="cc-muted">
-            {selected?.handoff.detail ?? actions.next.detail}
-          </p>
-        </div>
+      <div className="ps-act-now">
+        <p className="ps-foyer-brand">DeliverX Studio</p>
+        <p className="cc-kicker">
+          {nowBeat ? `Now · ${nowBeat.label}` : "Product build"}
+          {nowBeat?.owner.actor === "human" ? " · your gate" : ""}
+        </p>
+        <h2 className="ps-theatre-title">
+          {nowBeat
+            ? `${nowBeat.owner.label} · ${nowBeat.label}`
+            : actions.next.title}
+        </h2>
+        <p className="ps-theatre-lede">
+          {nowBeat?.detail ?? actions.next.detail}
+        </p>
         <HonestyBadgeRow badges={badges} />
       </div>
 
@@ -453,43 +549,40 @@ function ActWork({
             selectedId={selectedId}
             onSelect={(id) => setViewBeatId(id)}
           />
-          {focal ? (
-            <ArtefactCard artefact={focal} />
-          ) : selected ? (
-            <p className="cc-muted text-sm mt-3">
-              {selected.state === "upcoming" || selected.handoff.status === "waiting_upstream"
-                ? selected.handoff.detail
-                : `${selected.owner.label} will produce the next artefact when this beat is ready.`}
-            </p>
+
+          <div className="ps-act-focus">
+            {focal ? (
+              <ArtefactCard artefact={focal} />
+            ) : nowBeat ? (
+              <p className="ps-act-waiting">
+                {nowBeat.state === "upcoming" || nowBeat.handoff.status === "waiting_upstream"
+                  ? nowBeat.handoff.detail
+                  : `${nowBeat.owner.label} will produce the next artefact when this beat is ready.`}
+              </p>
+            ) : null}
+          </div>
+
+          {showGate ? (
+            <FocalGate actions={actions} leaseUntil={mission.job.leaseUntil ?? null} />
           ) : null}
-          {selected ? (
-            <p className="cc-muted text-xs mt-2">
-              Contribution: {selected.contribution} · Handoff: {selected.handoff.status.replaceAll("_", " ")}
-            </p>
+          {!showGate && actions.exportSlot && mission.exportBody ? (
+            <div className="ps-theatre-gate">{actions.exportSlot}</div>
           ) : null}
         </>
       ) : (
-        <p className="cc-muted">Approve the plan to open the product-build sequence.</p>
+        <p className="ps-act-waiting">Approve the plan to open the product-build sequence.</p>
       )}
 
-      <div className="ps-work-actions" id="mission-next-action">
-        {actions.error ? <p className="cc-error">{actions.error}</p> : null}
-        {actions.usageWarning ? <p className="cc-error">{actions.usageWarning}</p> : null}
-        <p className="cc-muted text-sm mb-2">{actions.next.detail}</p>
-
-        <details className="ps-theatre-footnote">
+      <div className="ps-theatre-footnotes">
+        <details>
           <summary>Research mode & tools</summary>
           {(() => {
             const webTool = actions.research.tools.find((t) => t.id === "web_search");
             const webReady = Boolean(webTool?.available);
             return (
-              <p
-                className="ps-research-readiness-chip mt-2"
-                data-ready={webReady}
-                role="status"
-              >
+              <p className="ps-research-readiness-chip mt-2" data-ready={webReady} role="status">
                 {webReady
-                  ? webTool?.label ?? "Web research ready"
+                  ? (webTool?.label ?? "Web research ready")
                   : "Web research not configured"}
                 {mission.researchProvider
                   ? ` · last pass cited via ${mission.researchProvider}`
@@ -525,70 +618,20 @@ function ActWork({
             </p>
           ) : null}
         </details>
-
-        {(actions.next.id === "compare" ||
-          actions.next.id === "retry" ||
-          actions.next.id === "recover") &&
-        actions.modelConfigured ? (
-          <label className="cc-muted mt-3 block">
-            <input
-              type="checkbox"
-              checked={actions.consentedScope === actions.comparisonScope}
-              onChange={(e) =>
-                actions.setConsentedScope(e.target.checked ? actions.comparisonScope : null)
-              }
-            />{" "}
-            Allow this comparison to send the current brief and evidence to the configured provider
-            and reserve one comparison unit.
-          </label>
+        {selected ? (
+          <p>
+            Contribution: {selected.contribution} · Handoff:{" "}
+            {selected.handoff.status.replaceAll("_", " ")}
+            {selected.handoff.detail ? ` · ${selected.handoff.detail}` : ""}
+          </p>
         ) : null}
-        {actions.next.id === "compare" ||
-        actions.next.id === "retry" ||
-        actions.next.id === "recover" ? (
-          <button
-            type="button"
-            className="cc-btn cc-btn-primary mt-3"
-            disabled={
-              actions.comparePending ||
-              (actions.modelConfigured && actions.consentedScope !== actions.comparisonScope) ||
-              (actions.next.id === "recover" &&
-                Date.parse(mission.job.leaseUntil ?? "") > Date.now())
-            }
-            onClick={actions.onCompare}
-          >
-            {actions.comparePending
-              ? "Comparing…"
-              : actions.next.id === "retry"
-                ? "Retry comparison"
-                : "Compare options"}
-          </button>
-        ) : null}
-        {actions.next.id === "artefact" ? (
-          <button
-            type="button"
-            className="cc-btn cc-btn-primary mt-3"
-            disabled={actions.preparePending}
-            onClick={actions.onPrepare}
-          >
-            {actions.preparePending ? "Preparing…" : "Prepare decision pack"}
-          </button>
-        ) : null}
-        {actions.next.id === "approve_prototype" ? (
-          <button
-            type="button"
-            className="cc-btn cc-btn-primary mt-3"
-            disabled={actions.prototypePending}
-            onClick={actions.onApprovePrototype}
-          >
-            {actions.prototypePending
-              ? "Building prototype…"
-              : "Approve sandboxed HTML prototype"}
-          </button>
-        ) : null}
-        {actions.next.id === "export" || mission.exportBody ? actions.exportSlot : null}
-        <p className="cc-muted text-xs mt-3">
-          Time band: {brief.roughTime.label}. Usage {mission.usageConsumed}/{mission.usageCeiling}.
+        <p>
+          {brief.roughTime.label} · Usage {mission.usageConsumed}/{mission.usageCeiling} ·{" "}
+          {STAFFING_BAND_LABELS[brief.team.staffing.band]}
         </p>
+        {actions.next.id !== "export" && mission.exportBody ? (
+          <div className="mt-2">{actions.exportSlot}</div>
+        ) : null}
       </div>
     </section>
   );
