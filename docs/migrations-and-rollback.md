@@ -35,7 +35,7 @@ The production Neon branch is `br-fancy-breeze-zatt9ocp` in project `spring-wind
 | 0027 founder evidence (`wf_mission_evidence`)                      | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0028 product memory (`wf_product_memory`) and 0027 constraints     | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0029 conflicting evidence (`wf_memory_conflicts`)                  | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
-| 0030 conversations (`wf_conversations`, `wf_conversation_turns`)   | Not applied — needs owner approval          | Not applied                          |
+| 0030 conversations (`wf_conversations`, `wf_conversation_turns`)   | Not applied — needs owner approval          | Applied 27 Oct 2026                  |
 
 Migrations 0020–0023 were applied to production in a single transaction. The six `psi_*` tables are owned by the server role, have no client grants, and have row-level security enabled. No table rows were read during or after the change.
 
