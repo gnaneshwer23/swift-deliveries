@@ -71,9 +71,38 @@ describe("research pass honesty", () => {
     expect(result.provider).toBe("exa");
     expect(
       result.evidence.some(
-        (e) => e.classification === "supplied" && e.source.includes("example.com"),
+        (e) =>
+          e.classification === "supplied" &&
+          e.source.includes("example.com") &&
+          e.statement.includes("[Cited · exa]"),
       ),
     ).toBe(true);
+    expect(result.activity.some((e) => e.kind === "research.cited")).toBe(true);
+  });
+
+  it("writes cited findings via tavily without inventing when results are empty", async () => {
+    const search = vi.fn(async () => ({
+      provider: "tavily",
+      results: [],
+    }));
+    const result = await runResearchPass({
+      mission: {
+        brief: expandOneLinerBrief({ question: "Should we charge for analytics?" }),
+        evidence: seedResearchEvidence("combined"),
+        researchMode: "combined",
+        researchGaps: [],
+        activity: [],
+        team: buildPilotTeamPlan({ band: "M" }),
+      },
+      at: new Date(2_500).toISOString(),
+      env: { TAVILY_API_KEY: "test-key" },
+      search,
+    });
+    expect(search).toHaveBeenCalled();
+    expect(result.findingsCount).toBe(0);
+    expect(result.provider).toBe("tavily");
+    expect(result.researchGaps.some((g) => /no usable citations/i.test(g))).toBe(true);
+    expect(result.activity.some((e) => e.kind === "research.cited")).toBe(false);
   });
 
   it("does not invent web hits in provided mode", async () => {

@@ -1315,6 +1315,38 @@
 .ps-research-tools li[data-available="false"] {
   color: var(--psi-muted);
 }
+.ps-research-readiness {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 8px 0 4px;
+}
+.ps-research-readiness-chip {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--psi-border, #dfe5f2);
+  color: var(--psi-muted);
+  background: #f8fafc;
+}
+.ps-research-readiness-chip[data-ready="true"] {
+  border-color: #b7c9b7;
+  background: #f7faf7;
+  color: #1f4d2e;
+}
+.ps-research-readiness-chip[data-ready="false"] {
+  border-color: #e2d4b8;
+  background: #fbf8f1;
+  color: #6b5420;
+}
+.ps-focal-artefact .ps-honesty-badges span[data-honesty="cited"] {
+  border-color: #b7c9b7;
+  background: #f7faf7;
+  color: #1f4d2e;
+}
 @media (max-width: 760px) {
   .ps-decision-loop {
     grid-template-columns: repeat(2, minmax(0, 1fr));
