@@ -141,3 +141,97 @@ describe("direct model provider boundary", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 });
+
+describe("stage generation records every call and never falls back quietly", () => {
+  const input = {
+    mission: { title: "Fixture", requestText: "Fixture request", clarificationAnswers: {} },
+    task: {
+      title: "PRD",
+      description: "Write the PRD",
+      acceptanceCriteria: "Complete",
+      requiredSections: ["Requirements"],
+      produces: "prd" as const,
+    },
+    upstream: [],
+  };
+  const enable = () => {
+    vi.stubEnv("DXSI_MODEL_ENABLED", "true");
+    vi.stubEnv("OPENAI_API_KEY", "test");
+    vi.stubEnv("DXSI_OPENAI_MODEL", "fixture-model");
+    vi.stubEnv("DXSI_MODEL_ALLOWLIST", "fixture-model");
+  };
+  const reply = (content: string, init: { status?: number } = {}) =>
+    new Response(
+      JSON.stringify({
+        id: "chatcmpl-1",
+        usage: { prompt_tokens: 120, completion_tokens: 40 },
+        choices: [{ finish_reason: "stop", message: { content } }],
+      }),
+      { status: init.status ?? 200, headers: { "x-request-id": "req-abc" } },
+    );
+
+  it("uses a labelled simulated draft only when model mode is off", async () => {
+    vi.stubEnv("DXSI_MODEL_ENABLED", "false");
+    const r = await (await import("./model-runner.server")).generateStageContent(input);
+    expect(r).toMatchObject({ mode: "simulated", note: "model mode not enabled" });
+    expect(r.failure).toBeUndefined();
+  });
+
+  it("fails when model mode is on but not configured", async () => {
+    vi.stubEnv("DXSI_MODEL_ENABLED", "true");
+    vi.stubEnv("DXSI_PROVIDER", "openai");
+    const r = await (await import("./model-runner.server")).generateStageContent(input);
+    expect(r.failure?.class).toBe("not_configured");
+  });
+
+  it("records the provider, model, request id and tokens of a successful call", async () => {
+    enable();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => reply("## Requirements\n- R1: Book a lesson slot.")),
+    );
+    const r = await (
+      await import("./model-runner.server")
+    ).generateStageContent({
+      ...input,
+      instructionVersion: "DX-023@1",
+    });
+    expect(r).toMatchObject({ mode: "model", instructionVersion: "DX-023@1" });
+    expect(r.calls).toEqual([
+      expect.objectContaining({
+        provider: "openai",
+        model: "fixture-model",
+        requestId: "req-abc",
+        inputTokens: 120,
+        outputTokens: 40,
+        failure: null,
+      }),
+    ]);
+  });
+
+  it("classes a provider error as a failure, with the call recorded", async () => {
+    enable();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response("busy", { status: 503 })),
+    );
+    const r = await (await import("./model-runner.server")).generateStageContent(input);
+    expect(r.failure?.class).toBe("provider_error");
+    expect(r.calls).toHaveLength(1);
+  });
+
+  it("fails after two attempts that miss the checks, instead of using a simulated draft", async () => {
+    enable();
+    const fetchMock = vi.fn(async () => reply("## Something else\nnot the contract"));
+    vi.stubGlobal("fetch", fetchMock);
+    const r = await (
+      await import("./model-runner.server")
+    ).generateStageContent({
+      ...input,
+      extraCheck: () => null,
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(r.failure?.class).toBe("contract_failed");
+    expect(r.calls).toHaveLength(2);
+  });
+});

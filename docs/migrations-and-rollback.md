@@ -31,6 +31,7 @@ The production Neon branch is `br-fancy-breeze-zatt9ocp` in project `spring-wind
 | Row-level security on `psi_pilot_requests`                         | Enabled 26 Oct 2026 with owner approval     | Not applied                          |
 | 0024 durable missions (`wf_task_runs`, `wf_mission_events`, …)     | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0025 corrections to 0024                                           | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
+| 0026 run role and instruction version (`wf_task_runs`)             | Not applied — needs owner approval          | Pending                              |
 
 Migrations 0020–0023 were applied to production in a single transaction. The six `psi_*` tables are owned by the server role, have no client grants, and have row-level security enabled. No table rows were read during or after the change.
 
@@ -135,3 +136,9 @@ commit;
 ```
 
 This blocks deleting any mission or workspace that has events again, so only do it if the cascade itself is the problem.
+
+## 0026 run role and instruction version
+
+Adds `role_id`, `instruction_version` and `model_calls` to `wf_task_runs`, so each run records which role and instruction version produced it and how many model calls it made. Additive and re-runnable; no data is read or changed. Apply before deploying the code that writes these columns: the worker's commit step writes them, and a missing column would make every step fail. Code from before 0026 ignores the columns.
+
+Rollback: redeploy the earlier build and leave the columns; they are nullable or defaulted. Only if they must go, with the owner's approval: `alter table public.wf_task_runs drop column if exists role_id, drop column if exists instruction_version, drop column if exists model_calls;` (this discards those recorded values).

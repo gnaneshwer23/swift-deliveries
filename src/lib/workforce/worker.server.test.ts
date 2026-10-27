@@ -55,10 +55,14 @@ vi.mock("@/lib/db/neon.server", () => ({
 
 // Runs during a step's work, between claim and commit, to simulate what other actors do then.
 let duringWork: (() => Promise<void>) | null = null;
+// What the next model call returns; null means model mode is off (simulated draft).
+let nextGeneration: Record<string, unknown> | null = null;
+let lastGenerationInput: Record<string, unknown> | null = null;
 vi.mock("./model-runner.server", () => ({
-  generateStageContent: async () => {
+  generateStageContent: async (input: Record<string, unknown>) => {
+    lastGenerationInput = input;
     if (duringWork) await duringWork();
-    return { content: "", mode: "simulated", note: "test" };
+    return nextGeneration ?? { content: "", mode: "simulated", note: "test" };
   },
 }));
 
@@ -139,6 +143,8 @@ describe.skipIf(!url)("durable mission worker against a real database", () => {
   });
   beforeEach(async () => {
     duringWork = null;
+    nextGeneration = null;
+    lastGenerationInput = null;
     await sql!.unsafe(`truncate ${TABLES.map((t) => `${schema}.${t}`).join(", ")}`);
   });
   afterAll(async () => {
@@ -291,6 +297,90 @@ describe.skipIf(!url)("durable mission worker against a real database", () => {
     expect(failed[0]!["n"]).toBe(1);
     const runs = await sql!`select count(*)::int n from wf_task_runs`;
     expect(runs[0]!["n"]).toBe(0);
+  });
+
+  const call = (failure: string | null) => ({
+    provider: "fixture-provider",
+    model: "fixture-model",
+    requestId: "req-1",
+    inputTokens: 100,
+    outputTokens: 50,
+    latencyMs: 10,
+    failure,
+  });
+  const firstTaskRun = async (missionId: string) => {
+    const [task] = await sql!`select id, status, attempt from wf_mission_tasks
+      where mission_id = ${missionId} order by sort_order limit 1`;
+    const [run] = await sql!`select * from wf_task_runs where task_id = ${task!["id"] as string}`;
+    return { task: task!, run: run! };
+  };
+
+  it("retries a step whose model call failed for a passing reason, keeping nothing", async () => {
+    const ids = await approvedMission(1000, buildPlan);
+    nextGeneration = {
+      content: "",
+      mode: "simulated",
+      note: "model call timed out",
+      failure: { class: "timeout", detail: "model call timed out" },
+      calls: [call("timeout")],
+      instructionVersion: "DX-001@1",
+    };
+    expect((await step(ids)).note).toMatch(/tried again/);
+    const { task, run } = await firstTaskRun(ids.missionId);
+    expect(task).toMatchObject({ status: "pending", attempt: 1 });
+    expect(run).toMatchObject({ status: "failed", failure_class: "timeout", model_calls: 1 });
+    const kept = await sql!`select (select count(*)::int from wf_artefacts) a,
+      (select usage_consumed from wf_workspaces where id = ${ids.workspaceId}) u`;
+    expect(kept[0]).toMatchObject({ a: 0, u: 0 });
+  });
+
+  it("fails the step, never a simulated draft, when the model output fails its checks", async () => {
+    const ids = await approvedMission(1000, buildPlan);
+    nextGeneration = {
+      content: "",
+      mode: "simulated",
+      note: "failed",
+      failure: { class: "contract_failed", detail: "output failed its checks after two attempts" },
+      calls: [call(null), call(null)],
+    };
+    expect((await step(ids)).note).toMatch(/could not produce/);
+    const { task, run } = await firstTaskRun(ids.missionId);
+    expect(task["status"]).toBe("failed");
+    expect(run).toMatchObject({
+      failure_class: "contract_failed",
+      model_calls: 2,
+      input_tokens: 200,
+    });
+    const artefacts = await sql!`select count(*)::int n from wf_artefacts`;
+    expect(artefacts[0]!["n"]).toBe(0);
+  });
+
+  it("runs the lead role's instructions and records the model call on the run", async () => {
+    const { STAGE_FIXTURES } = await import("./registry/eval-fixtures");
+    const ids = await approvedMission(1000, buildPlan);
+    nextGeneration = {
+      content: STAGE_FIXTURES.find((f) => f.stage === "charter")!.good,
+      mode: "model",
+      model: "fixture-model",
+      calls: [call(null)],
+      instructionVersion: "DX-001@1",
+    };
+    await step(ids);
+    expect(lastGenerationInput!["extraInstructions"]).toMatch(/DX-001/);
+    expect(lastGenerationInput!["instructionVersion"]).toBe("DX-001@1");
+    const { task, run } = await firstTaskRun(ids.missionId);
+    expect(task["status"]).toBe("completed");
+    expect(run).toMatchObject({
+      status: "completed",
+      provider: "fixture-provider",
+      model: "fixture-model",
+      request_id: "req-1",
+      input_tokens: 100,
+      output_tokens: 50,
+      model_calls: 1,
+      role_id: "DX-001",
+      instruction_version: "DX-001@1",
+    });
   });
 
   it("lets only one of two concurrent workers take a task", async () => {

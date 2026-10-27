@@ -40,12 +40,54 @@ export type UpstreamArtefact = Pick<WfArtefact, "kind" | "title" | "content" | "
   requiredSections: string[];
 };
 
+/** Why a configured model did not produce accepted output. */
+export type ModelFailureClass =
+  | "not_configured"
+  | "timeout"
+  | "network"
+  | "rate_limited"
+  | "provider_error"
+  | "request_rejected"
+  | "refused"
+  | "incomplete"
+  | "empty"
+  | "contract_failed";
+
+/** Failures worth another attempt later; the rest fail the step. */
+export const TRANSIENT_MODEL_FAILURES: readonly ModelFailureClass[] = [
+  "timeout",
+  "network",
+  "rate_limited",
+  "provider_error",
+  "incomplete",
+];
+
+/** One call to a model provider, as recorded on the run. */
+export type ModelCallRecord = {
+  provider: string;
+  model: string;
+  requestId: string | null;
+  inputTokens: number | null;
+  outputTokens: number | null;
+  latencyMs: number;
+  failure: ModelFailureClass | null;
+};
+
 export type GeneratedContent = {
   content: string;
   mode: GenerationMode;
   model?: string;
   /** Why the run fell back to simulated mode, when it did. */
   note?: string;
+  /**
+   * Set when model mode is on but no accepted output came back. The step must
+   * then fail or retry; it never quietly uses a simulated draft instead.
+   */
+  failure?: { class: ModelFailureClass; detail: string };
+  /** Every provider call made for this output, in order. */
+  calls?: ModelCallRecord[];
+  /** The role instructions the output was written under, when a role led the stage. */
+  instructionVersion?: string;
 };
 
 type ArtefactDraft = Omit<WfArtefact, "id" | "createdAt" | "updatedAt">;
