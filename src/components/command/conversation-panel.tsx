@@ -19,10 +19,10 @@ import {
 import {
   cancelMission,
   createMission,
-  createWfProject,
   pauseMission,
   resumeMission,
 } from "@/lib/workforce.functions";
+import { commandCentreBootstrapQuery } from "@/lib/workforce-queries";
 import { INTENT_LABELS, MISSION_INTENTS, type MissionIntent } from "@/lib/workforce/types";
 
 const KEY = ["command", "conversation"];
@@ -38,11 +38,9 @@ const day = (iso: string) =>
  */
 export function ConversationPanel({
   currentMissionId,
-  projects = [],
 }: {
   /** The mission on screen, so "pause it" means this one. */
   currentMissionId?: string;
-  projects?: ReadonlyArray<{ id: string; name: string }>;
 }) {
   const queryClient = useQueryClient();
   const query = useQuery({ queryKey: KEY, queryFn: () => getConversation() });
@@ -82,6 +80,8 @@ export function ConversationPanel({
       );
       setText("");
       setCorrecting(false);
+      // Refetched for the new retention date and the server's window of lines.
+      void queryClient.invalidateQueries({ queryKey: KEY });
     },
     onError: fail("Could not send that."),
   });
@@ -144,6 +144,12 @@ export function ConversationPanel({
         )
       ) : (
         <>
+          {state?.earlierTurns ? (
+            <p className="text-xs text-slate-500 mb-2">
+              {state.earlierTurns} earlier {state.earlierTurns === 1 ? "line is" : "lines are"} kept
+              until the transcript is deleted, but not shown here.
+            </p>
+          ) : null}
           {turns.length ? (
             <ol className="space-y-2 mb-3" aria-label="Transcript">
               {turns.map((t) => (
@@ -152,7 +158,7 @@ export function ConversationPanel({
                   turn={t}
                   live={t.id === lastReply?.id}
                   currentMissionId={currentMissionId}
-                  projects={projects}
+                  conversationId={conversation.id}
                   onCorrect={() => {
                     setText(t.text);
                     setCorrecting(true);
@@ -178,6 +184,7 @@ export function ConversationPanel({
               rows={3}
               maxLength={4000}
               value={text}
+              disabled={say.isPending}
               onChange={(e) => setText(e.target.value)}
               placeholder="e.g. Find out why parents give up before booking a first lesson"
             />
@@ -236,13 +243,13 @@ function TurnRow({
   turn,
   live,
   currentMissionId,
-  projects,
+  conversationId,
   onCorrect,
 }: {
   turn: ConversationTurn;
   live: boolean;
   currentMissionId: string | undefined;
-  projects: ReadonlyArray<{ id: string; name: string }>;
+  conversationId: string;
   onCorrect: () => void;
 }) {
   if (turn.speaker === "founder")
@@ -260,8 +267,12 @@ function TurnRow({
   return (
     <li className="text-sm rounded border p-2" style={{ borderColor: "var(--x-border)" }}>
       <span className="font-medium">DeliverX</span>: {turn.text}
-      {turn.card && live ? (
-        <CardActions card={turn.card} currentMissionId={currentMissionId} projects={projects} />
+      {live ? (
+        <CardActions
+          card={turn.card}
+          currentMissionId={currentMissionId}
+          conversationId={conversationId}
+        />
       ) : null}
     </li>
   );
@@ -270,32 +281,40 @@ function TurnRow({
 function CardActions({
   card,
   currentMissionId,
-  projects,
+  conversationId,
 }: {
   card: UnderstoodCard;
   currentMissionId: string | undefined;
-  projects: ReadonlyArray<{ id: string; name: string }>;
+  conversationId: string;
 }) {
   switch (card.kind) {
     case "draft_mission":
-      return <DraftMissionCard card={card} projects={projects} />;
+      return <DraftMissionCard card={card} conversationId={conversationId} />;
     case "pause":
     case "cancel":
     case "resume":
       return <ControlCard kind={card.kind} target={card.target} />;
     case "status":
-    case "approval_refused":
-      return "mission" in card.target && card.target.mission.id !== currentMissionId ? (
-        <p className="mt-2">
-          <Link
-            to="/command/missions/$missionId"
-            params={{ missionId: card.target.mission.id }}
-            className="cc-btn"
-          >
-            Open “{card.target.mission.title}”
-          </Link>
+    case "approval_refused": {
+      // Each mission the request could mean, as a link: nothing here acts on it.
+      const options = (
+        "mission" in card.target ? [card.target.mission] : card.target.candidates
+      ).filter((m) => m.id !== currentMissionId);
+      return options.length ? (
+        <p className="mt-2 flex flex-wrap gap-2">
+          {options.map((m) => (
+            <Link
+              key={m.id}
+              to="/command/missions/$missionId"
+              params={{ missionId: m.id }}
+              className="cc-btn"
+            >
+              Open “{m.title}”
+            </Link>
+          ))}
         </p>
       ) : null;
+    }
     default:
       return null;
   }
@@ -304,13 +323,17 @@ function CardActions({
 /** The understood brief, editable, drafted only on a click once every check is ticked. */
 function DraftMissionCard({
   card,
-  projects,
+  conversationId,
 }: {
   card: Extract<UnderstoodCard, { kind: "draft_mission" }>;
-  projects: ReadonlyArray<{ id: string; name: string }>;
+  conversationId: string;
 }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const boot = useQuery(commandCentreBootstrapQuery).data;
+  const projects = boot?.projects ?? [];
+  // Build missions need a database update; offer them only where it is applied.
+  const buildAvailable = boot?.features.productMission ?? false;
   const [intent, setIntent] = useState<MissionIntent>(card.intent);
   const [requestText, setRequestText] = useState(card.requestText);
   const [projectId, setProjectId] = useState(
@@ -328,15 +351,16 @@ function DraftMissionCard({
           : [];
 
   const draft = useMutation({
-    mutationFn: async () => {
-      let pid = projectId;
-      if (card.product.match === "new") {
-        pid = (await createWfProject({ data: { name: "First project" } })).id;
-      }
-      return createMission({
-        data: { projectId: pid, intent, requestText: requestText.trim(), via: "conversation" },
-      });
-    },
+    // A new product is created by the server with the mission, in one transaction.
+    mutationFn: () =>
+      createMission({
+        data: {
+          ...(card.product.match === "new" ? { newProjectName: "First project" } : { projectId }),
+          intent,
+          requestText: requestText.trim(),
+          conversationId,
+        },
+      }),
     onMutate: () => setError(null),
     onSuccess: async (bundle) => {
       await queryClient.invalidateQueries({ queryKey: ["command"] });
@@ -348,10 +372,12 @@ function DraftMissionCard({
     onError: (e) => setError(e instanceof Error ? e.message : "Could not draft the mission."),
   });
 
+  const buildBlocked = intent === "build" && !buildAvailable;
   const ready =
     requestText.trim().length >= 3 &&
     (card.product.match === "new" || Boolean(projectId)) &&
-    checked.every(Boolean);
+    checked.every(Boolean) &&
+    !buildBlocked;
 
   return (
     <div className="mt-2 space-y-2">
@@ -363,12 +389,18 @@ function DraftMissionCard({
           onChange={(e) => setIntent(e.target.value as MissionIntent)}
         >
           {MISSION_INTENTS.map((i) => (
-            <option key={i} value={i}>
+            <option key={i} value={i} disabled={i === "build" && !buildAvailable}>
               {INTENT_LABELS[i]}
+              {i === "build" && !buildAvailable ? " (not enabled in this workspace yet)" : ""}
             </option>
           ))}
         </select>
       </label>
+      {buildBlocked ? (
+        <p className="cc-error">
+          Product builds are not enabled in this workspace yet. Choose another mission type.
+        </p>
+      ) : null}
       {card.product.match === "new" ? (
         <p>Product: a new one, “First project”, is created with the mission.</p>
       ) : (
@@ -395,7 +427,11 @@ function DraftMissionCard({
           rows={3}
           maxLength={4000}
           value={requestText}
-          onChange={(e) => setRequestText(e.target.value)}
+          onChange={(e) => {
+            setRequestText(e.target.value);
+            // A changed brief must be confirmed again: the ticks were for the earlier text.
+            setChecked((prev) => prev.map(() => false));
+          }}
         />
       </label>
       {card.confirm.length ? (
@@ -462,6 +498,8 @@ function ControlCard({
     },
     onError: (e) => setError(e instanceof Error ? e.message : "That did not work."),
   });
+  // A mission that cannot take the request gets no button; the reply says why.
+  if (target.match === "ineligible") return null;
   const options = "mission" in target ? [target.mission] : target.candidates;
   if (done) return <p className="mt-2">{done}</p>;
   if (!options.length)

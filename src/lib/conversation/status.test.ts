@@ -40,6 +40,21 @@ describe("spoken status", () => {
   it("points to the screen when something waits for a decision", () => {
     expect(
       spokenStatus({ title: "X", status: "blocked" }, [event(1, "gate.waiting", { taskId: "t" })]),
-    ).toMatch(/waited for your decision; it is shown on the mission page/);
+    ).toMatch(/is waiting for your decision; it is shown on the mission page/);
+  });
+
+  it("stops saying a decision is waiting once it has been made", () => {
+    expect(
+      spokenStatus({ title: "X", status: "running" }, [
+        event(1, "gate.waiting", { taskId: "t" }),
+        event(2, "gate.approved", { taskId: "t", actorKind: "user" }),
+      ]),
+    ).not.toMatch(/Something is waiting for your decision/);
+  });
+
+  it("counts finished steps over the whole log when given the total", () => {
+    expect(
+      spokenStatus({ title: "X", status: "running" }, [event(300, "task.started")], new Map(), 42),
+    ).toMatch(/^“X” is running\. 42 steps finished so far\./);
   });
 });

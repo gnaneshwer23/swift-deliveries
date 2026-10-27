@@ -519,7 +519,7 @@ function CommandHome() {
           </div>
         </section>
       </details>
-      <ConversationPanel projects={data.projects} />
+      <ConversationPanel />
       {/* Recent Missions & Supervision Ledger */}
       <section className="cc-panel" id="cc-missions">
         <div className="flex flex-wrap items-center justify-between gap-3">

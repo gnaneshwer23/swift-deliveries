@@ -27,6 +27,8 @@ export type MissionRef = { id: string; title: string; status: MissionStatus };
 /** Which mission a control request is about, and how sure we are. */
 export type MissionTarget =
   | { match: "current" | "named" | "only"; mission: MissionRef }
+  /** The mission meant is clear, but the request cannot apply to it in its current state. */
+  | { match: "ineligible"; mission: MissionRef }
   | { match: "ambiguous" | "none"; candidates: MissionRef[] };
 
 export type ProductTarget =
@@ -69,10 +71,13 @@ const STOP_SPEECH =
   /^(?:please )?(?:stop|stop talking|stop speaking|be quiet|quiet|shush|hush|silence|enough|that's enough)(?: please)?$/;
 const FILLER = "(?:the |this |that |my |our )?(?:[\\p{L}\\p{N}']+ ){0,4}?";
 
+const escape = (t: string) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 /**
  * A control request: the verb on its own ("cancel it"), the verb aimed at a
- * mission ("pause the tutor mission"), or the verb with a mission named. A brief
- * that merely contains the word ("an app to cancel subscriptions") is not one.
+ * mission ("pause the tutor mission"), or the verb aimed at a mission's title
+ * ("pause Tutor discovery"). A brief that merely contains the word ("an app to
+ * cancel subscriptions", "why students pause lessons") is not one.
  */
 function control(text: string, verbs: string, targets: string, titles: readonly string[]): boolean {
   // A pronoun counts only when it ends the request ("pause it"), never mid-sentence.
@@ -82,7 +87,13 @@ function control(text: string, verbs: string, targets: string, titles: readonly 
   );
   const aimed = new RegExp(`\\b(?:${verbs}) ${FILLER}(?:${targets})\\b`, "u");
   if (alone.test(text) || aimed.test(text)) return true;
-  return new RegExp(`\\b(?:${verbs})\\b`, "u").test(text) && titles.some((t) => wordsIn(text, t));
+  return titles.some((t) => {
+    const title = norm(t);
+    return (
+      title.length > 0 &&
+      new RegExp(`\\b(?:${verbs}) (?:the |my |our )?${escape(title)}(?: |$)`, "u").test(text)
+    );
+  });
 }
 
 const APPROVE_VERBS = "approve|sign off on|sign off|green ?light";
@@ -132,7 +143,10 @@ function ref(m: ConversationContext["missions"][number]): MissionRef {
   return { id: m.id, title: m.title, status: m.status };
 }
 
-/** Which mission a control request is about. Never guesses between several. */
+/**
+ * Which mission a request is about. Never guesses between several, and says so
+ * when the mission meant is in a state the request cannot apply to.
+ */
 export function resolveMission(
   said: string,
   ctx: ConversationContext,
@@ -142,10 +156,18 @@ export function resolveMission(
   const current = ctx.currentMissionId
     ? ctx.missions.find((m) => m.id === ctx.currentMissionId)
     : undefined;
+  const pick = (m: ConversationContext["missions"][number], match: "named" | "current") =>
+    eligible(m.status)
+      ? { match, mission: ref(m) }
+      : { match: "ineligible" as const, mission: ref(m) };
   const named = ctx.missions.filter((m) => wordsIn(text, m.title));
-  if (named.length === 1) return { match: "named", mission: ref(named[0]!) };
-  if (named.length > 1) return { match: "ambiguous", candidates: named.map(ref) };
-  if (current) return { match: "current", mission: ref(current) };
+  if (named.length === 1) return pick(named[0]!, "named");
+  if (named.length > 1) {
+    const usable = named.filter((m) => eligible(m.status));
+    if (usable.length === 1) return { match: "named", mission: ref(usable[0]!) };
+    return { match: usable.length ? "ambiguous" : "none", candidates: usable.map(ref) };
+  }
+  if (current) return pick(current, "current");
   const open = ctx.missions.filter((m) => eligible(m.status));
   if (open.length === 1) return { match: "only", mission: ref(open[0]!) };
   return { match: open.length ? "ambiguous" : "none", candidates: open.map(ref) };
@@ -173,6 +195,17 @@ function intentOf(text: string): MissionIntent {
 
 const isOpen = (s: MissionStatus) => !TERMINAL_MISSION_STATUSES.includes(s);
 
+/** The states each request can apply to; the server enforces the same rules. */
+const ELIGIBLE: Record<
+  "approval_refused" | "pause" | "cancel" | "resume",
+  (s: MissionStatus) => boolean
+> = {
+  approval_refused: isOpen,
+  cancel: isOpen,
+  pause: (s) => ["queued", "running", "blocked"].includes(s),
+  resume: (s) => s === "paused",
+};
+
 /** What the founder's words were understood to mean. Nothing here acts. */
 export function interpret(
   said: string,
@@ -185,25 +218,26 @@ export function interpret(
     return { kind: "unclear", question: "I didn't catch anything. Say or type your request." };
   if (STOP_SPEECH.test(text)) return { kind: "stop_speech" };
 
-  const negated = NEGATED_ACTION.test(text);
   const titles = ctx.missions.map((m) => m.title);
-  const asks = (verbs: string, targets = MISSION_TARGETS) =>
-    !negated && control(text, verbs, targets, titles);
+  const asks = (verbs: string, targets = MISSION_TARGETS) => control(text, verbs, targets, titles);
+  const kind: Extract<UnderstoodCard, { target: MissionTarget }>["kind"] | null =
+    GO_AHEAD.test(text) || asks(APPROVE_VERBS, APPROVE_TARGETS)
+      ? "approval_refused"
+      : asks("cancel|abort|kill|scrap|stop")
+        ? "cancel"
+        : asks("pause|hold") || /\bput (?:it|the mission|this mission) on hold\b/.test(text)
+          ? "pause"
+          : asks("resume|unpause|restart|continue|carry on")
+            ? "resume"
+            : null;
+  // "Don't cancel it" asks for nothing: it is neither a control nor a brief.
+  if (kind && NEGATED_ACTION.test(text))
+    return { kind: "unclear", question: "Understood: I won't. Nothing has changed." };
   // Approvals come first: a request that mixes approval with anything else is still refused.
-  if ((!negated && GO_AHEAD.test(text)) || asks(APPROVE_VERBS, APPROVE_TARGETS))
-    return { kind: "approval_refused", target: resolveMission(raw, ctx, isOpen) };
-  if (asks("cancel|abort|kill|scrap|stop"))
-    return { kind: "cancel", target: resolveMission(raw, ctx, isOpen) };
-  if (asks("pause|hold") || /\bput (?:it|the mission|this mission) on hold\b/.test(text))
-    return {
-      kind: "pause",
-      target: resolveMission(raw, ctx, (s) => ["queued", "running", "blocked"].includes(s)),
-    };
-  if (asks("resume|unpause|restart|continue|carry on"))
-    return { kind: "resume", target: resolveMission(raw, ctx, (s) => s === "paused") };
+  if (kind) return { kind, target: resolveMission(raw, ctx, ELIGIBLE[kind]) };
   // A long sentence that mentions progress is a brief, not a question about a mission.
   if (STATUS.test(text) && text.split(" ").length <= 10)
-    return { kind: "status", target: resolveMission(raw, ctx, isOpen) };
+    return { kind: "status", target: resolveMission(raw, ctx) };
 
   if (text.split(" ").length < 4)
     return {
@@ -229,6 +263,8 @@ export function interpret(
 const targetName = (t: MissionTarget) =>
   "mission" in t ? `“${t.mission.title}” (${STATUS_LABELS[t.mission.status].toLowerCase()})` : null;
 
+const DONE_TO = { pause: "paused", cancel: "cancelled", resume: "resumed" } as const;
+
 /** The assistant's reply for a card: says what was understood and what needs a click. */
 export function replyFor(card: UnderstoodCard): string {
   switch (card.kind) {
@@ -252,11 +288,17 @@ export function replyFor(card: UnderstoodCard): string {
     case "cancel":
     case "resume": {
       const verb = card.kind;
+      if (card.target.match === "ineligible")
+        return `${targetName(card.target)} can't be ${DONE_TO[verb]} in its current state, so there's nothing to click.`;
+      if (card.target.match === "none")
+        return `There's no mission that can be ${DONE_TO[verb]} right now.`;
       return targetName(card.target)
         ? `To ${verb} ${targetName(card.target)}, click ${verb[0]!.toUpperCase()}${verb.slice(1)} below. I won't ${verb} it on a spoken request alone.`
         : `Which mission should I ${verb}? Pick one below, then click to confirm.`;
     }
     case "approval_refused":
+      if (card.target.match === "ineligible")
+        return `${targetName(card.target)} has finished, so there is nothing left to approve. In any case, I can't approve anything: approvals need an on-screen click.`;
       return "I can't approve anything. Approvals need an on-screen click on the plan or the gate. I can open it for you.";
     case "stop_speech":
       return "Stopped talking. Your missions are unchanged.";

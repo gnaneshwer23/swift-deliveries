@@ -148,8 +148,48 @@ describe("control requests", () => {
     }
   });
 
-  it("does not act on a negated request", () => {
-    expect(interpret("don't cancel the mission", "speech", ctx).kind).not.toBe("cancel");
+  it("answers a negated request with nothing to do, never a draft", () => {
+    for (const t of ["don't cancel the mission", "do not put it on hold", "never approve the plan"])
+      expect(interpret(t, "speech", ctx), t).toEqual({
+        kind: "unclear",
+        question: "Understood: I won't. Nothing has changed.",
+      });
+  });
+
+  it("does not read a brief that mentions a mission's title as a control", () => {
+    const withTitle: ConversationContext = {
+      ...ctx,
+      missions: [
+        ...ctx.missions,
+        { id: "m5", title: "Pause lessons", status: "running", projectId: "p1" },
+      ],
+    };
+    expect(
+      interpret("Investigate why students pause lessons over summer", "typed", withTitle).kind,
+    ).toBe("draft_mission");
+    expect(interpret("pause Tutor booking discovery", "speech", withTitle)).toMatchObject({
+      kind: "pause",
+      target: { match: "named", mission: { id: "m1" } },
+    });
+  });
+
+  it("says so when the mission meant cannot take the request, and offers no button", () => {
+    const card = interpret("pause the old pricing study mission", "speech", ctx);
+    expect(card).toMatchObject({
+      kind: "pause",
+      target: { match: "ineligible", mission: { id: "m3" } },
+    });
+    expect(replyFor(card)).toBe(
+      "“Old pricing study” (completed) can't be paused in its current state, so there's nothing to click.",
+    );
+    expect(interpret("resume it", "speech", { ...ctx, currentMissionId: "m1" })).toMatchObject({
+      target: { match: "ineligible", mission: { id: "m1" } },
+    });
+    // Status applies to any mission, finished or not.
+    expect(interpret("status of old pricing study", "speech", ctx)).toMatchObject({
+      kind: "status",
+      target: { match: "named", mission: { id: "m3" } },
+    });
   });
 
   it("reports status for the mission in view", () => {

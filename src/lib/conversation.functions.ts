@@ -16,6 +16,8 @@ export type ConversationState = {
   available: boolean;
   conversation: Conversation | null;
   turns: ConversationTurn[];
+  /** Older lines kept but not returned, so the panel can say they exist. */
+  earlierTurns: number;
 };
 
 const retentionSchema = z
@@ -40,15 +42,16 @@ export const getConversation = createServerFn({ method: "GET" })
     const s = await store();
     return s.neonTransaction(async (_tx, query) => {
       if (!(await s.conversationsAvailable(query)))
-        return { available: false, conversation: null, turns: [] };
+        return { available: false, conversation: null, turns: [], earlierTurns: 0 };
       await s.purgeExpiredConversations(query);
       const latest = await s.latestConversation(query, workspace.id, userId);
-      if (!latest) return { available: true, conversation: null, turns: [] };
+      if (!latest) return { available: true, conversation: null, turns: [], earlierTurns: 0 };
       const read = await s.readConversation(query, workspace.id, userId, latest.id);
       return {
         available: true,
         conversation: read?.conversation ?? null,
         turns: read?.turns ?? [],
+        earlierTurns: read?.earlierTurns ?? 0,
       };
     });
   });
@@ -70,7 +73,7 @@ export const startConversation = createServerFn({ method: "POST" })
         userId,
         retentionDays: data.retentionDays as RetentionDays,
       });
-      return { available: true, conversation, turns: [] };
+      return { available: true, conversation, turns: [], earlierTurns: 0 };
     });
   });
 
@@ -99,16 +102,18 @@ export const sayToAssistant = createServerFn({ method: "POST" })
       const { workspace } = await ensureWorkspace(supabase, userId);
       const s = await store();
       const { respondToFounder } = await import("@/lib/conversation/respond.server");
-      return s.neonTransaction((_tx, query) =>
-        respondToFounder(query, {
+      return s.neonTransaction(async (_tx, query) => {
+        if (!(await s.conversationsAvailable(query)))
+          throw new Error("Conversations need a database update that has not been applied yet.");
+        return respondToFounder(query, {
           workspaceId: workspace.id,
           userId,
           conversationId: data.conversationId,
           text: data.text,
           input: data.input,
           currentMissionId: data.currentMissionId ?? null,
-        }),
-      );
+        });
+      });
     },
   );
 

@@ -238,7 +238,7 @@ Update the ledger with the date, the reason and the snapshot ID.
 
 ## 0030 conversations
 
-Adds `wf_conversations` and `wf_conversation_turns`: the founder's conversations with the assistant (`docs/conversation.md`). A turn holds text only; there is no column for audio. The assistant's turns carry the card of what it understood, as JSON. Each conversation has the retention period the founder chose (1, 7, 30 or 90 days), counted from its last turn, and is deleted when that passes. Turns are tied to their conversation's workspace by a composite foreign key and are deleted with it. Server role only, row-level security on. Additive and re-runnable; no existing data is read or changed.
+Adds `wf_conversations` and `wf_conversation_turns`: the founder's conversations with the assistant (`docs/conversation.md`). A turn holds text only; there is no column for audio. The assistant's turns carry the card of what it understood, as JSON; a check (`wf_conversation_turns_card_check`) keeps cards off the founder's lines and on every assistant line, and is added by name so a re-run brings an earlier copy of the table up to date. Each conversation has the retention period the founder chose (1, 7, 30 or 90 days), counted from its last turn, and is deleted when that passes. Turns are tied to their conversation's workspace by a composite foreign key and are deleted with it. Server role only, row-level security on. Additive and re-runnable; no existing data is read or changed.
 
 Safe in either order. Code from before 0030 never reads the tables. Code after it checks for them first: until they exist, the conversation panel says conversations are not available yet, and the worker tick deletes nothing.
 

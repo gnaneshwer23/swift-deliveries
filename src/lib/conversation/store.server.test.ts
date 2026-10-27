@@ -8,7 +8,9 @@ import {
   addTurn,
   conversationsAvailable,
   deleteConversation,
+  latestCardKind,
   latestConversation,
+  MAX_TURNS,
   purgeExpiredConversations,
   readConversation,
   startConversation,
@@ -230,6 +232,56 @@ describe.skipIf(!url)("conversations against a real database", () => {
         { n: number },
       ];
     expect(n).toBe(0);
+    const [{ c: left }] = (await sql!`select count(*)::int as c from wf_conversations
+      where id = ${c.id}`) as unknown as [{ c: number }];
+    expect(left).toBe(0);
+    expect(await tx((q) => readConversation(q, w.workspaceId, w.userId, c.id))).toBeNull();
+  });
+
+  it("stores a card only on the assistant's lines", async () => {
+    const w = await workspace();
+    const c = await tx((q) => startConversation(q, { ...w, retentionDays: 30 }));
+    await expect(
+      sql!`insert into wf_conversation_turns (conversation_id, workspace_id, speaker, input, text, card)
+        values (${c.id}, ${w.workspaceId}, 'founder', 'typed', 'hi', '{"kind":"stop_speech"}'::jsonb)`,
+    ).rejects.toThrow(/card_check/);
+    await expect(
+      sql!`insert into wf_conversation_turns (conversation_id, workspace_id, speaker, input, text)
+        values (${c.id}, ${w.workspaceId}, 'assistant', 'assistant', 'hi')`,
+    ).rejects.toThrow(/card_check/);
+  });
+
+  it("names the kind of the latest card, only for this founder's live conversation", async () => {
+    const w = await workspace();
+    const c = await tx((q) => startConversation(q, { ...w, retentionDays: 30 }));
+    expect(await tx((q) => latestCardKind(q, w.workspaceId, w.userId, c.id))).toBeNull();
+    await tx((q) =>
+      respondToFounder(q, {
+        ...w,
+        conversationId: c.id,
+        text: "Research how families choose a maths tutor",
+        input: "typed",
+      }),
+    );
+    expect(await tx((q) => latestCardKind(q, w.workspaceId, w.userId, c.id))).toBe("draft_mission");
+    expect(await tx((q) => latestCardKind(q, w.workspaceId, "someone-else", c.id))).toBeNull();
+    // A later line replaces the card that is current.
+    await tx((q) =>
+      respondToFounder(q, { ...w, conversationId: c.id, text: "stop", input: "typed" }),
+    );
+    expect(await tx((q) => latestCardKind(q, w.workspaceId, w.userId, c.id))).toBe("stop_speech");
+  });
+
+  it("says how many earlier lines are kept but not returned", async () => {
+    const w = await workspace();
+    const c = await tx((q) => startConversation(q, { ...w, retentionDays: 30 }));
+    await sql!`insert into wf_conversation_turns (conversation_id, workspace_id, speaker, input, text)
+      select ${c.id}, ${w.workspaceId}, 'founder', 'typed', 'line ' || g
+        from generate_series(1, ${MAX_TURNS + 3}) g`;
+    const read = await tx((q) => readConversation(q, w.workspaceId, w.userId, c.id));
+    expect(read!.turns).toHaveLength(MAX_TURNS);
+    expect(read!.earlierTurns).toBe(3);
+    expect(read!.turns.at(-1)!.text).toBe(`line ${MAX_TURNS + 3}`);
   });
 
   it("deletes conversations past their retention date, counted from the last line", async () => {
@@ -239,7 +291,7 @@ describe.skipIf(!url)("conversations against a real database", () => {
     await sql!`update wf_conversations set retain_until = now() - interval '1 minute'
       where id = ${old.id}`;
     expect(await tx((q) => readConversation(q, w.workspaceId, w.userId, old.id))).toBeNull();
-    expect(await tx(purgeExpiredConversations)).toBe(1);
+    expect(await tx((q) => purgeExpiredConversations(q))).toBe(1);
     expect((await tx((q) => latestConversation(q, w.workspaceId, w.userId)))?.id).toBe(kept.id);
     // A new line pushes the date out again by the chosen period.
     await sql!`update wf_conversations set retain_until = now() + interval '1 minute'
@@ -250,6 +302,18 @@ describe.skipIf(!url)("conversations against a real database", () => {
     const [row] = await sql!`select retain_until > now() + interval '23 hours' as ok
       from wf_conversations where id = ${kept.id}`;
     expect(row!["ok"]).toBe(true);
+  });
+
+  it("deletes expired conversations a batch at a time", async () => {
+    const w = await workspace();
+    for (let i = 0; i < 3; i++) {
+      const c = await tx((q) => startConversation(q, { ...w, retentionDays: 1 }));
+      await sql!`update wf_conversations set retain_until = now() - interval '1 minute'
+        where id = ${c.id}`;
+    }
+    expect(await tx((q) => purgeExpiredConversations(q, 2))).toBe(2);
+    expect(await tx((q) => purgeExpiredConversations(q, 2))).toBe(1);
+    expect(await tx((q) => purgeExpiredConversations(q, 2))).toBe(0);
   });
 
   it("refuses a retention period outside the allowed choices", async () => {

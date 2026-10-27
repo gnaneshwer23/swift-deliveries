@@ -9,7 +9,8 @@ import type { TurnInput, UnderstoodCard } from "./interpret";
 import type { Conversation, ConversationTurn, RetentionDays } from "./types";
 
 export const MAX_TURN_CHARS = 4000;
-const MAX_TURNS = 200;
+/** Lines returned for display; older ones are kept until the conversation expires. */
+export const MAX_TURNS = 200;
 
 /** True once 0030 is applied. Checked rather than caught, so a caller's transaction survives. */
 export async function conversationsAvailable(query: Executor): Promise<boolean> {
@@ -30,22 +31,35 @@ function mapConversation(row: Record<string, unknown>): Conversation {
 }
 
 function mapTurn(row: Record<string, unknown>): ConversationTurn {
-  return {
+  const base = {
     id: row["id"] as string,
-    speaker: row["speaker"] as ConversationTurn["speaker"],
-    input: row["input"] as ConversationTurn["input"],
     text: row["text"] as string,
-    card: (row["card"] as UnderstoodCard | null) ?? null,
     createdAt: iso(row["created_at"]),
   };
+  return row["speaker"] === "assistant"
+    ? { ...base, speaker: "assistant", input: "assistant", card: row["card"] as UnderstoodCard }
+    : { ...base, speaker: "founder", input: row["input"] as TurnInput, card: null };
 }
 
-/** Deletes every conversation past its retention date, with its lines. Returns how many. */
-export async function purgeExpiredConversations(query: Executor): Promise<number> {
+const PURGE_BATCH = 500;
+
+/**
+ * Deletes conversations past their retention date, with their lines, up to
+ * `limit` at a time so one call stays short however large the backlog is.
+ * Returns how many were deleted.
+ */
+export async function purgeExpiredConversations(
+  query: Executor,
+  limit = PURGE_BATCH,
+): Promise<number> {
   if (!(await conversationsAvailable(query))) return 0;
   const rows = await query(
-    `delete from wf_conversations where retain_until <= now() returning id`,
-    [],
+    `delete from wf_conversations where id in (
+       select id from wf_conversations where retain_until <= now()
+        order by retain_until limit $1
+        for update skip locked)
+     returning id`,
+    [limit] as never,
   );
   return rows.length;
 }
@@ -84,7 +98,7 @@ export async function readConversation(
   workspaceId: string,
   userId: string,
   conversationId: string,
-): Promise<{ conversation: Conversation; turns: ConversationTurn[] } | null> {
+): Promise<{ conversation: Conversation; turns: ConversationTurn[]; earlierTurns: number } | null> {
   const found = await query(
     `select * from wf_conversations
       where id = $1::uuid and workspace_id = $2::uuid and user_id = $3 and retain_until > now()`,
@@ -99,7 +113,17 @@ export async function readConversation(
       order by seq`,
     [conversationId, workspaceId] as never,
   );
-  return { conversation: mapConversation(found[0]), turns: turns.map(mapTurn) };
+  // Lines beyond the window are kept, and the founder is told how many are not shown.
+  const [total] = await query(
+    `select count(*)::int as n from wf_conversation_turns
+      where conversation_id = $1::uuid and workspace_id = $2::uuid`,
+    [conversationId, workspaceId] as never,
+  );
+  return {
+    conversation: mapConversation(found[0]),
+    turns: turns.map(mapTurn),
+    earlierTurns: Math.max(0, Number(total?.["n"] ?? 0) - turns.length),
+  };
 }
 
 /**
@@ -108,15 +132,10 @@ export async function readConversation(
  */
 export async function addTurn(
   query: Executor,
-  input: {
-    workspaceId: string;
-    userId: string;
-    conversationId: string;
-    speaker: "founder" | "assistant";
-    input: TurnInput | "assistant";
-    text: string;
-    card?: UnderstoodCard | null;
-  },
+  input: { workspaceId: string; userId: string; conversationId: string; text: string } & (
+    | { speaker: "founder"; input: TurnInput }
+    | { speaker: "assistant"; input: "assistant"; card: UnderstoodCard }
+  ),
 ): Promise<ConversationTurn> {
   const text = input.text.trim().slice(0, MAX_TURN_CHARS);
   if (!text) throw new Error("Nothing to add.");
@@ -138,7 +157,7 @@ export async function addTurn(
       input.speaker,
       input.input,
       text,
-      input.card ? JSON.stringify(input.card) : null,
+      input.speaker === "assistant" ? JSON.stringify(input.card) : null,
     ] as never,
   );
   return mapTurn(rows[0]!);
@@ -158,4 +177,27 @@ export async function deleteConversation(
     [conversationId, workspaceId, userId] as never,
   );
   return rows.length > 0;
+}
+
+/**
+ * The kind of card on the latest assistant line of this founder's live
+ * conversation, or null. Lets an action confirm it came from the current card.
+ */
+export async function latestCardKind(
+  query: Executor,
+  workspaceId: string,
+  userId: string,
+  conversationId: string,
+): Promise<UnderstoodCard["kind"] | null> {
+  if (!(await conversationsAvailable(query))) return null;
+  const rows = await query(
+    `select t.card ->> 'kind' as kind
+       from wf_conversation_turns t
+       join wf_conversations c on c.id = t.conversation_id and c.workspace_id = t.workspace_id
+      where c.id = $1::uuid and c.workspace_id = $2::uuid and c.user_id = $3
+        and c.retain_until > now() and t.speaker = 'assistant'
+      order by t.seq desc limit 1`,
+    [conversationId, workspaceId, userId] as never,
+  );
+  return (rows[0]?.["kind"] as UnderstoodCard["kind"] | undefined) ?? null;
 }

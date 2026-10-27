@@ -13,11 +13,8 @@ export type Conversation = {
   retainUntil: string;
 };
 
-export type ConversationTurn = {
-  id: string;
-  speaker: "founder" | "assistant";
-  input: TurnInput | "assistant";
-  text: string;
-  card: UnderstoodCard | null;
-  createdAt: string;
-};
+/** A line of a conversation. Founder lines never carry a card; assistant lines always do. */
+export type ConversationTurn = { id: string; text: string; createdAt: string } & (
+  | { speaker: "founder"; input: TurnInput; card: null }
+  | { speaker: "assistant"; input: "assistant"; card: UnderstoodCard }
+);

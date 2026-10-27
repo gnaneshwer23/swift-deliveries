@@ -39,6 +39,20 @@ CREATE TABLE IF NOT EXISTS public.wf_conversation_turns (
 );
 CREATE INDEX IF NOT EXISTS wf_conversation_turns_conversation_idx
   ON public.wf_conversation_turns (conversation_id, seq);
+-- Founder lines never carry a card; assistant lines always do. Added by name so a
+-- re-run also brings an earlier copy of this table up to date.
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+     WHERE conname = 'wf_conversation_turns_card_check'
+       AND conrelid = 'public.wf_conversation_turns'::regclass
+  ) THEN
+    ALTER TABLE public.wf_conversation_turns
+      ADD CONSTRAINT wf_conversation_turns_card_check
+      CHECK ((speaker = 'assistant') = (card IS NOT NULL));
+  END IF;
+END $$;
 
 -- Server role only: no client grants, row-level security on.
 REVOKE ALL ON public.wf_conversations FROM PUBLIC;

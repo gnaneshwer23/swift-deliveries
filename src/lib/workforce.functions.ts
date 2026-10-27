@@ -215,11 +215,19 @@ export const createMission = createServerFn({ method: "POST" })
   .validator((data: unknown) =>
     z
       .object({
-        projectId: z.string().uuid(),
+        /** An existing product, or a name for a new one created with the mission. */
+        projectId: z.string().uuid().optional(),
+        newProjectName: z.string().trim().min(2).max(120).optional(),
         intent: intentSchema,
         requestText: z.string().min(3).max(4000),
-        /** Where the brief came from: the form, or a card the founder confirmed in a conversation. */
-        via: z.enum(["form", "conversation"]).default("form"),
+        /**
+         * The conversation whose card the founder confirmed, if the brief came from one.
+         * Checked on the server before the mission records it as its origin.
+         */
+        conversationId: z.string().uuid().optional(),
+      })
+      .refine((d) => Boolean(d.projectId) !== Boolean(d.newProjectName), {
+        message: "Choose a product, or name a new one.",
       })
       .parse(data),
   )
@@ -228,14 +236,16 @@ export const createMission = createServerFn({ method: "POST" })
     const { workspace } = await ensureWorkspace(supabase, userId);
     const db = wfDb(supabase);
 
-    const project = await db
-      .from("wf_projects")
-      .select("id")
-      .eq("id", data.projectId)
-      .eq("workspace_id", workspace.id)
-      .maybeSingle();
-    if (project.error) throw new Error(project.error.message);
-    if (!project.data) throw new Error("Project not found in this workspace.");
+    if (data.projectId) {
+      const project = await db
+        .from("wf_projects")
+        .select("id")
+        .eq("id", data.projectId)
+        .eq("workspace_id", workspace.id)
+        .maybeSingle();
+      if (project.error) throw new Error(project.error.message);
+      if (!project.data) throw new Error("Project not found in this workspace.");
+    }
 
     if (data.intent === "build" && !(await productMissionSupported())) {
       throw new Error(
@@ -250,13 +260,30 @@ export const createMission = createServerFn({ method: "POST" })
 
     // Mission, plan, tasks, approval and events commit together or not at all.
     const { neonTransaction } = await import("@/lib/db/neon.server");
-    const missionId = await neonTransaction(async (_tx, query) => {
+    const { missionId, projectId } = await neonTransaction(async (_tx, query) => {
+      // The origin is recorded only when this founder's live conversation ends in a brief card.
+      if (data.conversationId) {
+        const { latestCardKind } = await import("@/lib/conversation/store.server");
+        const kind = await latestCardKind(query, workspace.id, userId, data.conversationId);
+        if (kind !== "draft_mission")
+          throw new Error("That card is no longer current. Send the brief again.");
+      }
+      // A new product is created with its first mission, so a failure leaves neither behind.
+      const projectId =
+        data.projectId ??
+        ((
+          await query(
+            `insert into wf_projects (workspace_id, name, created_by)
+             values ($1::uuid, $2, $3) returning id`,
+            [workspace.id, data.newProjectName, userId] as never,
+          )
+        )[0]!["id"] as string);
       const rows = await query(
         `insert into wf_missions (workspace_id, project_id, intent, title, request_text, status,
             clarification_answers, permission_ceiling, created_by)
          values ($1::uuid, $2::uuid, $3, $4, $5, $6, '{}'::jsonb, 'execute_internally', $7)
          returning id`,
-        [workspace.id, data.projectId, data.intent, title, requestText, status, userId] as never,
+        [workspace.id, projectId, data.intent, title, requestText, status, userId] as never,
       );
       const id = rows[0]!["id"] as string;
       await appendEvent(query, {
@@ -265,7 +292,7 @@ export const createMission = createServerFn({ method: "POST" })
         type: "mission.created",
         actorKind: "user",
         actorId: userId,
-        data: { intent: data.intent, via: data.via },
+        data: { intent: data.intent, via: data.conversationId ? "conversation" : "form" },
       });
       await savePlanVersion(query, {
         workspaceId: workspace.id,
@@ -275,9 +302,18 @@ export const createMission = createServerFn({ method: "POST" })
         actorId: userId,
         reason: "Plan drafted from the mission request",
       });
-      return id;
+      return { missionId: id, projectId };
     });
 
+    if (data.newProjectName)
+      await audit(db, {
+        workspaceId: workspace.id,
+        actorId: userId,
+        eventType: "project.created",
+        entityType: "project",
+        entityId: projectId,
+        metadata: { name: data.newProjectName },
+      });
     await audit(db, {
       workspaceId: workspace.id,
       missionId,

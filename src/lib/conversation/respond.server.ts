@@ -30,10 +30,15 @@ export async function loadContext(
     `select id, name from wf_projects where workspace_id = $1::uuid order by created_at`,
     [workspaceId] as never,
   );
+  // The latest missions, plus the one on screen even when it is older than those.
   const missions = await query(
-    `select id, title, status, project_id from wf_missions
-      where workspace_id = $1::uuid order by created_at desc limit ${CONTEXT_MISSIONS}`,
-    [workspaceId] as never,
+    `(select id, title, status, project_id, created_at from wf_missions
+        where workspace_id = $1::uuid order by created_at desc limit ${CONTEXT_MISSIONS})
+     union
+     select id, title, status, project_id, created_at from wf_missions
+      where workspace_id = $1::uuid and id = $2::uuid
+     order by created_at desc`,
+    [workspaceId, currentMissionId] as never,
   );
   return {
     projects: projects.map((p) => ({ id: p["id"] as string, name: p["name"] as string })),
@@ -66,10 +71,17 @@ async function statusText(
     `select id, title from wf_mission_tasks where mission_id = $1::uuid and workspace_id = $2::uuid`,
     [mission.id, workspaceId] as never,
   );
+  // Counted over the whole log: the events read above are only the latest.
+  const [finished] = await query(
+    `select count(*)::int as n from wf_mission_events
+      where workspace_id = $1::uuid and mission_id = $2::uuid and type = 'task.completed'`,
+    [workspaceId, mission.id] as never,
+  );
   return spokenStatus(
     mission,
     events.map(mapMissionEvent),
     new Map(tasks.map((t) => [t["id"] as string, t["title"] as string])),
+    Number(finished?.["n"] ?? 0),
   );
 }
 
