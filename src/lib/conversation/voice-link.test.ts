@@ -73,6 +73,21 @@ describe("voice session", () => {
     expect(v.current).toBe("listening");
   });
 
+  it("says so when the microphone can't open for a turn, and stays ready", async () => {
+    const connect: Connector = async () => ({
+      startTurn: async () => {
+        throw new Error("track ended");
+      },
+      endTurn() {},
+      close() {},
+    });
+    const { v, notices } = link(connect);
+    await v.start();
+    await v.talk();
+    expect(v.current).toBe("ready");
+    expect(notices).toEqual(["The microphone couldn't open. Try again, or type instead."]);
+  });
+
   it("ignores a transcript nobody asked for", async () => {
     const p = fakeProvider();
     const { v, said } = link(p.connect);

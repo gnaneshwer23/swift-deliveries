@@ -165,6 +165,10 @@ export class VoiceLink {
     this.starting = true;
     try {
       await this.conn.startTurn();
+    } catch {
+      if (generation === this.generation)
+        this.opts.onNotice("The microphone couldn't open. Try again, or type instead.");
+      return;
     } finally {
       if (generation === this.generation) this.starting = false;
     }

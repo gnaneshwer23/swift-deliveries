@@ -181,14 +181,14 @@ export const startVoiceSession = createServerFn({ method: "POST" })
       ] as never);
       const [row] = await query(
         `select count(*)::int as n from wf_audit_events
-          where workspace_id = $1::uuid and event_type = 'voice.session_started'
+          where workspace_id = $1::uuid and event_type = 'voice.session_requested'
             and created_at > now() - make_interval(mins => $2)`,
         [workspace.id, VOICE_WINDOW_MINUTES] as never,
       );
       if (Number(row?.["n"] ?? 0) >= VOICE_SESSIONS_PER_WINDOW) return false;
       await query(
         `insert into wf_audit_events (workspace_id, actor_id, event_type, entity_type, metadata)
-         values ($1::uuid, $2, 'voice.session_started', 'voice_session', $3::jsonb)`,
+         values ($1::uuid, $2, 'voice.session_requested', 'voice_session', $3::jsonb)`,
         [
           workspace.id,
           userId,
