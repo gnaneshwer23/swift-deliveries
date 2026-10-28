@@ -158,8 +158,9 @@ export const getCommandCentreBootstrap = createServerFn({ method: "GET" })
     if (missionsRes.error) throw new Error(missionsRes.error.message);
 
     const missionIds = (missionsRes.data ?? []).map((m: { id: string }) => m.id);
+    const readDb = await adminDb();
     const tasksRes = missionIds.length
-      ? await db
+      ? await readDb
           .from("wf_mission_tasks")
           .select("*")
           .eq("workspace_id", workspace.id)

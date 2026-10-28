@@ -340,11 +340,16 @@
 .ix-desk[data-state="doing"] .ix-monitor-top {
   fill: var(--psi-indigo, #3b4cca);
 }
-.ix-desk[data-state="waiting"] .ix-desk-ring {
+.ix-desk[data-state="awaiting_gate"] .ix-desk-ring {
   fill: #c7a24a1f;
   stroke: #c7a24a;
   stroke-dasharray: 4 4;
   animation: ix-wait 1.4s ease-in-out infinite;
+}
+.ix-desk[data-state="waiting"] .ix-desk-ring {
+  fill: #2a9d8f1f;
+  stroke: #2a9d8f;
+  stroke-dasharray: 5 3;
 }
 .ix-desk[data-state="stopped"] .ix-desk-ring {
   stroke: #c26161;
@@ -375,11 +380,18 @@
 .ix-desk[data-state="doing"] .ix-desk-name text {
   fill: #fff;
 }
-.ix-desk[data-state="waiting"] .ix-desk-name rect {
+.ix-desk[data-state="awaiting_gate"] .ix-desk-name rect {
   stroke: #c7a24a;
 }
+.ix-desk[data-state="waiting"] .ix-desk-name rect {
+  stroke: #2a9d8f;
+}
+.ao-list li[data-state="awaiting_gate"] .ao-pill {
+  background: #c7a24a1a;
+  color: #8a6b1a;
+}
 @media (prefers-reduced-motion: reduce) {
-  .ix-desk[data-state="waiting"] .ix-desk-ring {
+  .ix-desk[data-state="awaiting_gate"] .ix-desk-ring {
     animation: none;
   }
 }

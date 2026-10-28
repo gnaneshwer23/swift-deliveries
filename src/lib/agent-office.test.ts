@@ -27,7 +27,7 @@ const task = (
 describe("agent office", () => {
   it("reads a pending task by where its mission is", () => {
     const t = task("t", "m", "pending", []);
-    expect(taskState(t, mission("m", "awaiting_approval"))).toBe("waiting");
+    expect(taskState(t, mission("m", "awaiting_approval"))).toBe("awaiting_gate");
     expect(taskState(t, mission("m", "running"))).toBe("next");
     expect(taskState(t, mission("m", "cancelled"))).toBe("stopped");
     expect(taskState(task("t", "m", "running", []), mission("m", "running"))).toBe("doing");
@@ -38,8 +38,8 @@ describe("agent office", () => {
 
   it("treats a gate or an unapproved outside action as waiting on the owner", () => {
     const m = mission("m", "blocked");
-    expect(taskState(task("g", "m", "blocked", [], { gate: true }), m)).toBe("waiting");
-    expect(taskState(task("x", "m", "blocked", [], { isExternal: true }), m)).toBe("waiting");
+    expect(taskState(task("g", "m", "blocked", [], { gate: true }), m)).toBe("awaiting_gate");
+    expect(taskState(task("x", "m", "blocked", [], { isExternal: true }), m)).toBe("awaiting_gate");
     expect(taskState(task("c", "m", "blocked", []), m)).toBe("stopped");
   });
 
@@ -74,13 +74,21 @@ describe("agent office", () => {
         task("4", "b", "pending", ["DX-035"]),
       ],
     );
-    expect(office.totals).toEqual({ waiting: 2, doing: 1, next: 1, later: 0, done: 1, stopped: 0 });
+    expect(office.totals).toEqual({
+      awaiting_gate: 1,
+      waiting: 1,
+      doing: 1,
+      next: 1,
+      later: 0,
+      done: 1,
+      stopped: 0,
+    });
     const research = office.departments.find((d) => d.n === 2)!;
     expect(research.counts).toMatchObject({ doing: 1, next: 1 });
     expect(research.specialists.find((s) => s.id === "DX-018")!.state).toBe("doing");
-    expect(office.departments.find((d) => d.n === 4)!.specialists[0]!.state).toBe("waiting");
-    // waiting items lead, and the draft mission with no tasks is waiting on you
-    expect(office.items[0]!.state).toBe("waiting");
+    expect(office.departments.find((d) => d.n === 4)!.specialists[0]!.state).toBe("awaiting_gate");
+    // gate-wait and shaping items lead the list
+    expect(office.items[0]!.state).toBe("awaiting_gate");
     expect(office.items.some((i) => i.missionId === "c" && i.who === "You")).toBe(true);
   });
 
@@ -88,6 +96,14 @@ describe("agent office", () => {
     const office = buildAgentOffice([mission("p", "awaiting_approval")], []);
     expect(office.items[0]).toMatchObject({ missionId: "p", state: "stopped" });
     expect(office.totals.waiting).toBe(0);
+  });
+
+  it("shows pending work in a blocked mission as waiting, not up next", () => {
+    const m = mission("m", "blocked");
+    const gate = task("g", "m", "blocked", ["DX-001"], { gate: true });
+    const downstream = task("d", "m", "pending", ["DX-002"], { dependsOn: ["g"] });
+    expect(taskState(gate, m, [gate, downstream])).toBe("awaiting_gate");
+    expect(taskState(downstream, m, [gate, downstream])).toBe("waiting");
   });
 
   it("shows the work of a paused mission as waiting for you, not next", () => {

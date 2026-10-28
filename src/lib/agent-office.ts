@@ -18,14 +18,20 @@ export const OWNER_WAITING: readonly MissionStatus[] = [
   "planned",
   "awaiting_approval",
 ];
+
+/** Mission list filter: owner gates include blocked missions awaiting a decision. */
+export const MISSION_AWAITING_GATE: readonly MissionStatus[] = [...OWNER_WAITING, "blocked"];
+
 const MISSION_ACTIVE: readonly MissionStatus[] = ["queued", "running", "reviewing"];
 
 /**
- * What a task means for the person reading the office. `waiting` is any step
- * that needs the owner (a plan to approve, questions, a gate or an outside
- * action); `later` is runnable only after its upstream tasks finish.
+ * What a task means for the person reading the office.
+ * `awaiting_gate` — plan approval, human gates, or external approval (amber desks).
+ * `waiting` — draft, clarification, planned shaping, pause, or blocked-mission queue.
+ * `later` — runnable only after upstream tasks finish.
  */
-export type OfficeState = "waiting" | "doing" | "next" | "later" | "done" | "stopped";
+export type OfficeState =
+  "awaiting_gate" | "waiting" | "doing" | "next" | "later" | "done" | "stopped";
 
 const finished = (t: Pick<WfMissionTask, "status">) =>
   t.status === "completed" || t.status === "skipped";
@@ -45,11 +51,18 @@ export function taskState(
   if (task.status === "running") return "doing";
   if (finished(task)) return "done";
   if (task.status === "failed") return "stopped";
-  if (task.status === "blocked") return waitsOnOwner(task, mission) ? "waiting" : "stopped";
-  // pending: before approval the whole plan waits on the owner, and a paused one waits to be resumed
-  if (!mission || OWNER_WAITING.includes(mission.status) || mission.status === "paused")
+  if (task.status === "blocked") return waitsOnOwner(task, mission) ? "awaiting_gate" : "stopped";
+  if (!mission) return "waiting";
+  if (mission.status === "paused") return "waiting";
+  if (mission.status === "awaiting_approval") return "awaiting_gate";
+  if (
+    mission.status === "draft" ||
+    mission.status === "needs_clarification" ||
+    mission.status === "planned"
+  )
     return "waiting";
-  if (!MISSION_ACTIVE.includes(mission.status) && mission.status !== "blocked") return "stopped";
+  if (mission.status === "blocked") return "waiting";
+  if (!MISSION_ACTIVE.includes(mission.status)) return "stopped";
   // a task never runs on unfinished upstream work (lib/workforce/graph.ts)
   const upstream = siblings.filter((s) => (task.dependsOn ?? []).includes(s.key));
   return upstream.every(finished) ? "next" : "later";
@@ -86,8 +99,17 @@ const NAMES = new Map(
     .map((c) => [c.id, { name: c.name.replace(/ Agent$/, ""), department: c.department }]),
 );
 // a desk shows the most pressing thing its specialist is part of
-const PRIORITY: Array<OfficeState> = ["doing", "waiting", "stopped", "next", "later", "done"];
+const DESK_PRIORITY: OfficeState[] = [
+  "doing",
+  "awaiting_gate",
+  "waiting",
+  "stopped",
+  "next",
+  "later",
+  "done",
+];
 const empty = (): Record<OfficeState, number> => ({
+  awaiting_gate: 0,
   waiting: 0,
   doing: 0,
   next: 0,
@@ -164,12 +186,13 @@ export function buildAgentOffice(
   }
 
   const order: Record<OfficeState, number> = {
-    waiting: 0,
-    doing: 1,
-    stopped: 2,
-    next: 3,
-    later: 4,
-    done: 5,
+    awaiting_gate: 0,
+    waiting: 1,
+    doing: 2,
+    stopped: 3,
+    next: 4,
+    later: 5,
+    done: 6,
   };
   items.sort((a, b) => order[a.state] - order[b.state]);
 
@@ -181,7 +204,8 @@ export function buildAgentOffice(
       .filter((id) => NAMES.get(id)?.department === d.n)
       .map((id) => {
         const states = deskStates.get(id);
-        const state: OfficeSpecialist["state"] = PRIORITY.find((s) => states?.has(s)) ?? "idle";
+        const state: OfficeSpecialist["state"] =
+          DESK_PRIORITY.find((s) => states?.has(s)) ?? "idle";
         return { id, name: NAMES.get(id)!.name, state };
       });
     if (specialists.length === 0) inDevelopment.push({ n: d.n, short: d.short });

@@ -11,16 +11,18 @@ import type { WfMission, WfMissionTask } from "@/lib/workforce/types";
 import "@/styles/agent-office.css";
 
 const STATE_LABEL: Record<OfficeState, string> = {
-  waiting: "Waiting for you",
+  awaiting_gate: "Awaiting your gate",
+  waiting: "Needs your input",
   doing: "Working",
   next: "Up next",
   later: "Later",
   done: "Done",
   stopped: "Stopped",
 };
-const FILTERS: Array<"all" | OfficeState> = [
+const FILTERS: Array<"all" | OfficeState | "waiting_any"> = [
   "all",
-  "waiting",
+  "awaiting_gate",
+  "waiting_any",
   "doing",
   "stopped",
   "next",
@@ -41,7 +43,7 @@ export function AgentOffice({
   tasksUnavailable?: boolean;
 }) {
   const office = useMemo(() => buildAgentOffice(missions, tasks), [missions, tasks]);
-  const [filter, setFilter] = useState<"all" | OfficeState>("all");
+  const [filter, setFilter] = useState<"all" | OfficeState | "waiting_any">("all");
   const [desk, setDesk] = useState<string | null>(null);
   const [live, setLive] = useState(false);
   const ref = useRef<HTMLElement>(null);
@@ -58,9 +60,14 @@ export function AgentOffice({
   const deskName = office.departments
     .flatMap((d) => d.specialists)
     .find((s) => s.id === desk)?.name;
-  const items = office.items.filter(
-    (i) => (filter === "all" || i.state === filter) && (!desk || i.specialists.includes(desk)),
-  );
+  const items = office.items.filter((i) => {
+    const stateMatch =
+      filter === "all" ||
+      i.state === filter ||
+      (filter === "waiting_any" && (i.state === "waiting" || i.state === "awaiting_gate"));
+    return stateMatch && (!desk || i.specialists.includes(desk));
+  });
+  const ownerWaitTotal = office.totals.waiting + office.totals.awaiting_gate;
   const share = usage.ceiling > 0 ? Math.min(1, usage.consumed / usage.ceiling) : 0;
   const n = office.departments.length;
 
@@ -73,8 +80,8 @@ export function AgentOffice({
             {missions.length === 1 ? "" : "s"}
           </span>
           <h2 id="ao-title">
-            {office.totals.waiting > 0
-              ? `${office.totals.waiting} ${office.totals.waiting === 1 ? "item waits" : "items wait"} for you`
+            {ownerWaitTotal > 0
+              ? `${ownerWaitTotal} ${ownerWaitTotal === 1 ? "item waits" : "items wait"} for you`
               : office.totals.stopped > 0
                 ? `${office.totals.stopped} ${office.totals.stopped === 1 ? "item has" : "items have"} stopped`
                 : office.totals.doing > 0
@@ -109,7 +116,7 @@ export function AgentOffice({
                 <div
                   key={d.n}
                   className="ao-card"
-                  data-waiting={d.counts.waiting > 0 || undefined}
+                  data-waiting={d.counts.waiting + d.counts.awaiting_gate > 0 || undefined}
                   style={{ left: `${a.x * 100}%`, top: `${a.y * 100}%` }}
                 >
                   <strong>{d.short}</strong>
@@ -123,7 +130,10 @@ export function AgentOffice({
           </div>
           <ul className="ao-dept-list" aria-label="Departments">
             {office.departments.map((d) => (
-              <li key={d.n} data-waiting={d.counts.waiting > 0 || undefined}>
+              <li
+                key={d.n}
+                data-waiting={d.counts.waiting + d.counts.awaiting_gate > 0 || undefined}
+              >
                 <strong>{d.short}</strong>
                 <DeptCounts counts={d.counts} />
               </li>
@@ -150,17 +160,25 @@ export function AgentOffice({
               const count =
                 f === "all"
                   ? office.items.length
-                  : office.items.filter((i) => i.state === f).length;
+                  : f === "waiting_any"
+                    ? office.items.filter(
+                        (i) => i.state === "waiting" || i.state === "awaiting_gate",
+                      ).length
+                    : office.items.filter((i) => i.state === f).length;
               if (f !== "all" && count === 0) return null;
+              const label =
+                f === "all" ? "All" : f === "waiting_any" ? "Waiting for you" : STATE_LABEL[f];
+              const pressed = filter === f;
+              const filterState = f === "waiting_any" ? "waiting" : f;
               return (
                 <button
                   key={f}
                   type="button"
-                  aria-pressed={filter === f}
-                  data-state={f}
+                  aria-pressed={pressed}
+                  data-state={filterState}
                   onClick={() => setFilter(f)}
                 >
-                  {f === "all" ? "All" : STATE_LABEL[f]} <span>{count}</span>
+                  {label} <span>{count}</span>
                 </button>
               );
             })}
@@ -273,7 +291,15 @@ function DeptCounts({ counts }: { counts: Record<OfficeState, number> }) {
           <dd>{counts.done}</dd>
         </div>
       </dl>
-      {counts.waiting > 0 && <p className="ao-card-wait">{counts.waiting} waiting for you</p>}
+      {counts.waiting + counts.awaiting_gate > 0 && (
+        <p className="ao-card-wait">
+          {counts.awaiting_gate > 0 && counts.waiting > 0
+            ? `${counts.awaiting_gate} gate · ${counts.waiting} input`
+            : counts.awaiting_gate > 0
+              ? `${counts.awaiting_gate} awaiting gate`
+              : `${counts.waiting} needs input`}
+        </p>
+      )}
     </>
   );
 }

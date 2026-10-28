@@ -16,7 +16,7 @@ import {
 import { FlaskConical, Rocket, Search, ShieldCheck, Wrench } from "lucide-react";
 import { WorkspaceStopControl } from "@/components/command/workspace-stop";
 import { OwnerInbox } from "@/components/command/owner-inbox";
-import { OWNER_WAITING } from "@/lib/agent-office";
+import { MISSION_AWAITING_GATE } from "@/lib/agent-office";
 import type { getCommandCentreBootstrap } from "@/lib/workforce.functions";
 
 type CommandCentreBootstrap = Awaited<ReturnType<typeof getCommandCentreBootstrap>>;
@@ -147,11 +147,13 @@ export function CommandLegacyPlanner({ data }: { data: CommandCentreBootstrap })
   >("all");
 
   const selectedProjectId = projectId || data.projects[0]?.id || "";
-  const awaitingCount = data.recentMissions.filter((m) => OWNER_WAITING.includes(m.status)).length;
+  const awaitingCount = data.recentMissions.filter((m) =>
+    MISSION_AWAITING_GATE.includes(m.status),
+  ).length;
   const completedCount = data.recentMissions.filter((m) => m.status === "completed").length;
 
   const filteredMissions = data.recentMissions.filter((m) => {
-    if (missionFilter === "awaiting") return OWNER_WAITING.includes(m.status);
+    if (missionFilter === "awaiting") return MISSION_AWAITING_GATE.includes(m.status);
     if (missionFilter === "completed") return m.status === "completed";
     if (
       missionFilter === "investigate" ||
