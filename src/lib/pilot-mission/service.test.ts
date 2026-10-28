@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { notConfiguredGeneration } from "./generate";
 import { generationPlan, providerLabel } from "./generate.server";
 import { learningLinks } from "./learning";
@@ -788,6 +788,73 @@ describe("supervised mission outcome review", () => {
     );
     expect(restored?.reviews).toEqual([]);
     expect(restored?.workspaceId).toBe("alpha");
+  });
+});
+
+describe("research provider attribution", () => {
+  it("persists researchProvider when a provider ran but returned no citations", async () => {
+    const service = new SupervisedMissionService(new MemoryStore());
+    const created = await service.create({
+      id: crypto.randomUUID(),
+      workspaceId: "alpha",
+      ownerUserId: "owner",
+      brief,
+      usageCeiling: 4,
+      nowMs: 1_000,
+    });
+    const approved = await service.approvePlan({
+      workspaceId: "alpha",
+      id: created.id,
+      actorId: "owner",
+      nowMs: 1_500,
+      env: { TAVILY_API_KEY: "test-key" },
+      search: vi.fn(async () => ({ provider: "tavily", results: [] })),
+    });
+    expect(approved.researchProvider).toBe("tavily");
+    expect(approved.evidence.some((e) => /no usable citations/i.test(e.statement))).toBe(true);
+  });
+});
+
+describe("pause vs cancel", () => {
+  it("blocks research steps when paused but still allows cancel", async () => {
+    const service = new SupervisedMissionService(new MemoryStore());
+    const mission = await readyMission(service);
+    const paused = await service.saveStudioMeta({
+      workspaceId: "alpha",
+      id: mission.id,
+      investigationPaused: true,
+      actorId: "owner",
+      nowMs: 4_000,
+    });
+    expect(paused.studioMeta?.investigationPaused).toBe(true);
+    expect(paused.stage).not.toBe("cancelled");
+    await expect(
+      service.runAlternatives({
+        workspaceId: "alpha",
+        id: mission.id,
+        workerId: "worker",
+        nowMs: 4_500,
+        generator: { cost: 0, run: async () => notConfiguredGeneration() },
+      }),
+    ).rejects.toThrow(/paused/i);
+    const cancelled = await service.cancel({ workspaceId: "alpha", id: mission.id, nowMs: 5_000 });
+    expect(cancelled.stage).toBe("cancelled");
+    expect(cancelled.job.status).toBe("cancelled");
+  });
+
+  it("rejects studio preference updates after cancel", async () => {
+    const service = new SupervisedMissionService(new MemoryStore());
+    const mission = await readyMission(service);
+    await service.cancel({ workspaceId: "alpha", id: mission.id, nowMs: 3_000 });
+    await expect(
+      service.saveStudioMeta({
+        workspaceId: "alpha",
+        id: mission.id,
+        investigationPaused: true,
+        actorId: "owner",
+        nowMs: 3_500,
+      }),
+    ).rejects.toThrow(/cancelled/i);
   });
 });
 

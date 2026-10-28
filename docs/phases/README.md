@@ -20,3 +20,5 @@ Derived from the stamped business case `docs/business-case-deliverx-psi-v2.md`.
 Do not expand the business case for phase detail — put requirements in the phase spec.
 
 **Phase 1 vertical slice (A–G audit):** see `docs/psi-phase-1-vertical-slice-implementation-plan.md` and linked verification, capability matrix, gaps, and local demo docs.
+
+**Post-verification next steps (local slice):** [psi-phase-1-next-steps-shipped.md](../psi-phase-1-next-steps-shipped.md) — R1 fix, server-fn guard tests, pause vs cancel coverage.

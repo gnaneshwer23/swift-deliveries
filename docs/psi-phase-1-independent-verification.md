@@ -138,3 +138,9 @@ git show 98c0213 --stat
 ## Final verdict (exactly one)
 
 **Accept with listed limitations** — for the stated **local / test-backed** Phase 1 vertical slice (A–G) at `904838e`, with Neon, auth UI, live providers, notifier, Watchtower runner, and production readiness **explicitly out of scope** until separately verified.
+
+---
+
+## Follow-up slice (founder “build next steps”)
+
+See [psi-phase-1-next-steps-shipped.md](./psi-phase-1-next-steps-shipped.md) for the bounded local implementation after this review (R1 `researchProvider` fix, server-fn guard tests, pause vs cancel tests). Defect **R1** is addressed in service code; re-run Vitest to confirm.

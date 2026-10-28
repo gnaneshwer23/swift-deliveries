@@ -609,7 +609,7 @@ export class SupervisedMissionService {
       evidence: pass.evidence,
       researchGaps: pass.researchGaps,
       researchPassCompletedAt: pass.researchPassCompletedAt,
-      researchProvider: pass.findingsCount > 0 ? pass.provider : null,
+      researchProvider: pass.provider,
       activity: pushActivity(approvedBase, ...pass.activity),
       stage: pass.evidence.length
         ? approvedBase.stage === "brief"
