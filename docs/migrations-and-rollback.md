@@ -37,7 +37,7 @@ The production Neon branch is `br-fancy-breeze-zatt9ocp` in project `spring-wind
 | 0029 conflicting evidence (`wf_memory_conflicts`)                  | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0030 conversations (`wf_conversations`, `wf_conversation_turns`)   | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0031 voice measurements (`wf_voice_metrics`)                       | Not applied — needs owner approval          | Applied 27 Oct 2026                  |
-| 0032 PSI Stripe activations (`payment_taken`, Stripe ids)          | Not applied — needs owner approval          | Not applied — needs owner approval   |
+| 0032 PSI Stripe activations (`payment_taken`, Stripe ids)          | Not applied — **requesting owner approval** for production cutover (P1-5); do not apply until founder replies with explicit approve sentence | Not applied — needs owner approval   |
 
 Migrations 0020–0023 were applied to production in a single transaction. The six `psi_*` tables are owned by the server role, have no client grants, and have row-level security enabled. No table rows were read during or after the change.
 

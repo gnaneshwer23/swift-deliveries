@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CheckCircle2 } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
-import { isSandboxCheckout } from "@/lib/stripe";
+import { isLiveCheckout, isSandboxCheckout } from "@/lib/stripe";
 
 export const Route = createFileRoute("/checkout/return")({
   validateSearch: (search: Record<string, unknown>): { session_id?: string } => ({
@@ -44,6 +44,10 @@ function CheckoutReturnPage() {
           </p>
           {isSandboxCheckout ? (
             <p className="body-large mt-3">Sandbox mode — test cards only; not live billing.</p>
+          ) : isLiveCheckout ? (
+            <p className="body-large mt-3">
+              Live mode — entitlement appears in Studio only after the webhook confirms payment.
+            </p>
           ) : null}
           <Link to="/command" className="btn btn-primary mt-8 inline-flex">
             Continue to Studio

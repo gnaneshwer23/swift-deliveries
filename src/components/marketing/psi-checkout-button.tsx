@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useSession } from "@/hooks/use-session";
 import { createPsiCheckoutSession } from "@/lib/pilot/psi-checkout.functions";
 import type { PilotPlan } from "@/lib/pilot/model";
-import { isCheckoutEnabled, isSandboxCheckout } from "@/lib/stripe";
+import { isCheckoutEnabled, isLiveCheckout, isSandboxCheckout } from "@/lib/stripe";
 
 type Props = {
   plan: PilotPlan;
@@ -12,8 +12,8 @@ type Props = {
 };
 
 /**
- * Pricing CTA for PSI sandbox Checkout. Hidden unless the checkout flag and
- * publishable key are configured. Career Stripe checkout is never used here.
+ * Pricing CTA for PSI Checkout (sandbox or live). Hidden unless the checkout
+ * flag and publishable key are configured. Career Stripe checkout is never used.
  */
 export function PsiCheckoutButton({ plan, planName, featured }: Props) {
   const { user, loading } = useSession();
@@ -23,6 +23,16 @@ export function PsiCheckoutButton({ plan, planName, featured }: Props) {
   if (!isCheckoutEnabled) return null;
 
   const className = `dxl-btn ${featured ? "dxl-btn-primary" : "dxl-btn-ghost"}`;
+  const payLabel = isSandboxCheckout
+    ? `Pay ${planName} (sandbox)`
+    : isLiveCheckout
+      ? `Pay ${planName}`
+      : `Pay ${planName}`;
+  const signInLabel = isSandboxCheckout
+    ? "Sign in to pay (sandbox)"
+    : isLiveCheckout
+      ? "Sign in to pay"
+      : "Sign in to pay";
 
   if (loading) {
     return (
@@ -35,7 +45,7 @@ export function PsiCheckoutButton({ plan, planName, featured }: Props) {
   if (!user) {
     return (
       <Link to="/login" search={{ redirect: "/pricing" }} className={className}>
-        Sign in to pay ({isSandboxCheckout ? "sandbox" : "checkout"})
+        {signInLabel}
       </Link>
     );
   }
@@ -71,7 +81,7 @@ export function PsiCheckoutButton({ plan, planName, featured }: Props) {
             });
         }}
       >
-        {pending ? "Opening Checkout…" : `Pay ${planName}${isSandboxCheckout ? " (sandbox)" : ""}`}
+        {pending ? "Opening Checkout…" : payLabel}
       </button>
       {error ? (
         <p className="pricing-checkout-error" role="alert">

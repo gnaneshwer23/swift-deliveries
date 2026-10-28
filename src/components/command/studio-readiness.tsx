@@ -65,13 +65,19 @@ export function StudioReadiness() {
             plan.paymentTaken
               ? plan.paymentEnvironment === "sandbox"
                 ? "Paid via Stripe sandbox checkout"
-                : "Paid activation on this workspace"
+                : plan.paymentEnvironment === "live"
+                  ? "Paid via Stripe live checkout"
+                  : "Paid activation on this workspace"
               : "Manual operator activation — paymentTaken is false"
           }
         >
           {PILOT_PLAN_LABELS[plan.plan]} · {plan.remaining} mission
           {plan.remaining === 1 ? "" : "s"} left
-          {plan.paymentTaken && plan.paymentEnvironment === "sandbox" ? " · sandbox" : ""}
+          {plan.paymentTaken && plan.paymentEnvironment === "sandbox"
+            ? " · sandbox"
+            : plan.paymentTaken && plan.paymentEnvironment === "live"
+              ? " · paid"
+              : ""}
         </span>
       ) : (
         <span

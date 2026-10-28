@@ -1,8 +1,9 @@
-# PSI Stripe catalog (P1 sandbox)
+# PSI Stripe catalog (P1-5 live cutover path)
 
 **Date:** 28 October 2026  
-**Mode:** Stripe **sandbox** only (isolated sandbox `acct_1UVJJgLTPk6m3Dkt`). Not live cutover (P1-5).  
-**Entitlement store:** `psi_pilot_activations` — never career Supabase `subscriptions`.
+**Mode:** Code supports **live** Checkout when `PSI_PAYMENTS_LIVE_APPROVED=true` + live keys. Sandbox remains for Preview/dev only — once live is approved, Production must not fall back to sandbox.  
+**Entitlement store:** `psi_pilot_activations` — never career Supabase `subscriptions`.  
+**Founder actions:** [psi-live-cutover-needs.md](./psi-live-cutover-needs.md).
 
 ## Mapping table
 
@@ -14,9 +15,25 @@
 
 Allowances match the pricing page “Monthly missions” column. Operator manual activation may still set 1–24; self-serve uses these defaults from Checkout metadata / price metadata.
 
-## Sandbox Product / Price IDs (test)
+## Live Product / Price IDs
 
-Created 28 Oct 2026 in sandbox `acct_1UVJJgLTPk6m3Dkt` (claim before expiry; see founder env checklist).
+**Account:** `acct_1S6BMU2X2opf83VZ` (livemode). MCP could **list** this account but **could not create** Products (403 write upscope). Founder must create in [Dashboard → Products (live)](https://dashboard.stripe.com/products) — exact clicks in the needs list.
+
+App resolves prices by **lookup key** (not hardcoded `price_` IDs). Optional env overrides:
+
+- `PSI_STRIPE_PRICE_BUILDER` / `PSI_STRIPE_PRICE_FOUNDER` / `PSI_STRIPE_PRICE_STUDIO` — `price_…` IDs if lookup keys are unavailable.
+
+After creation, record Product/Price IDs here:
+
+| Plan | Product ID | Price ID | Lookup key |
+| --- | --- | --- | --- |
+| Builder | *(pending founder create)* | *(pending)* | `builder_monthly` |
+| Founder | *(pending founder create)* | *(pending)* | `founder_monthly` |
+| Studio | *(pending founder create)* | *(pending)* | `studio_monthly` |
+
+## Sandbox Product / Price IDs (test — P1 proof only)
+
+Created 28 Oct 2026 in sandbox `acct_1UVJJgLTPk6m3Dkt` (claim before expiry).
 
 | Plan | Product ID | Price ID | Lookup key |
 | --- | --- | --- | --- |
@@ -24,9 +41,15 @@ Created 28 Oct 2026 in sandbox `acct_1UVJJgLTPk6m3Dkt` (claim before expiry; see
 | Founder | `prod_VWN5wmcUpVj2Q3` | `price_1UVKLnLTPk6m3DktpKa239iv` | `founder_monthly` |
 | Studio | `prod_VWN6qLJhol1GAJ` | `price_1UVKLoLTPk6m3DkttQK95FMc` | `studio_monthly` |
 
-App resolves prices by **lookup key** (not hardcoded `price_` IDs). Optional env overrides:
+## Environment gates (P1-5)
 
-- `PSI_STRIPE_PRICE_BUILDER` / `PSI_STRIPE_PRICE_FOUNDER` / `PSI_STRIPE_PRICE_STUDIO` — `price_…` IDs if lookup keys are unavailable.
+| Condition | Behaviour |
+| --- | --- |
+| `PSI_PAYMENTS_KILL_SWITCH=true` | Refuse all new Checkout Sessions |
+| `VITE_PAYMENTS_CHECKOUT_ENABLED` ≠ `true` | No Pay UI; server refuses (“Checkout is not live.”) |
+| `PSI_PAYMENTS_LIVE_APPROVED=true` | **Require** `pk_live_` + `STRIPE_LIVE_API_KEY`; webhook `?env=live`; pricing copy says live |
+| Live approved missing | Sandbox path only (`pk_test_` + `STRIPE_SANDBOX_API_KEY`); never charge live |
+| Live approved + only sandbox keys | **Refuse** — no silent sandbox fallback on Production |
 
 ## Workspace binding
 
@@ -41,12 +64,20 @@ App resolves prices by **lookup key** (not hardcoded `price_` IDs). Optional env
 - Entitlement remains **allowance-shaped** (missions), not automatic renewal top-up in P1.
 - Fulfillment: `checkout.session.completed` + `checkout.session.async_payment_succeeded`, only when `payment_status` ≠ `unpaid`.
 - Success / return URL does **not** grant access.
+- Webhook URL (Production): `https://www.deliverx.dev/api/public/payments/webhook?env=live`
 
-## Tax / cancel / refund (stub)
+## Tax / cancel / refund
 
 - **Tax:** Stripe Tax / `automatic_tax` **off** until an active UK (or applicable) registration exists.
-- **Cancel:** Customer can cancel the Stripe subscription in Dashboard / future portal; activation row is not auto-revoked in P1 (operator may adjust). Document for P1-5.
+- **Cancel:** Customer can cancel the Stripe subscription in Dashboard / Customer Portal; activation row is not auto-revoked in P1 (operator may adjust).
 - **Refund:** Manual operator + Stripe Dashboard; do not invent automatic entitlement clawback in P1.
+
+## Kill switch (demonstrate stop)
+
+1. Set `PSI_PAYMENTS_KILL_SWITCH=true` on Vercel Production (or unset `VITE_PAYMENTS_CHECKOUT_ENABLED` and redeploy), **or**
+2. Remove / rotate `STRIPE_LIVE_API_KEY` and unset `PSI_PAYMENTS_LIVE_APPROVED`.
+
+New Checkout must refuse; existing activations are unchanged.
 
 ## Career catalog (do not reuse)
 
@@ -56,4 +87,6 @@ These lookup keys remain career-only and must never map to `psi_pilot_activation
 
 ## Honesty
 
-Until `VITE_PAYMENTS_CHECKOUT_ENABLED=true` **and** sandbox keys + prices resolve, pricing copy stays “Checkout is not live” / manual activation. With the flag on and test keys, UI must say **sandbox**, not live billing.
+- Without checkout flag → “Checkout is not live.”
+- With flag + `pk_test_` → sandbox copy only.
+- With flag + `pk_live_` + server `PSI_PAYMENTS_LIVE_APPROVED=true` → live copy. Never imply live while sandbox keys are the active path.

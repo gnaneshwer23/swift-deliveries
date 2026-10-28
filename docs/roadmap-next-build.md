@@ -2,7 +2,7 @@
 
 **Date:** 27 October 2026  
 **Tip audited:** `f688e80` (Studio D1–D4 on `main`) · Live: https://www.deliverx.dev  
-**Mode:** Plan + **P0 shipped** + **P1-1…P1-4 sandbox** (founder approved P1; stop before P1-5 live). Catalog: `docs/psi-stripe-catalog.md`. Smoke: `docs/psi-release-smoke-f688e80.md`. Provider posture: `docs/psi-provider-posture.md`.  
+**Mode:** Plan + **P0 shipped** + **P1-1…P1-4 sandbox** + **P1-5 live cutover path in code** (charges stay off until founder completes `docs/psi-live-cutover-needs.md`). Catalog: `docs/psi-stripe-catalog.md`. Smoke: `docs/psi-release-smoke-f688e80.md`. Provider posture: `docs/psi-provider-posture.md`.  
 **Related:** `docs/roadmap.md`, `docs/psi-production-readiness-plan.md`, `docs/psi-design-foundation.md`, `docs/paid-launch-phase-1.md`, `docs/roadmap-studio-dashboard-ux.md`, `docs/roadmap-product-building-agents.md`
 
 ---
@@ -128,10 +128,11 @@ Stripe Cursor plugin is authenticated. **Do not create Stripe products in this p
 | | |
 | --- | --- |
 | **Goal** | Accept real cards only after sandbox entitlement proof + P0-A greens. |
-| **Deliverables** | Live restricted key + live webhook secret; live Prices; runbook; kill switch (`VITE_PAYMENTS_CHECKOUT_ENABLED` / key removal). |
-| **Deps / secrets** | Live Stripe; tax registration if `automatic_tax`; founder go-live approve. |
+| **Deliverables** | Live restricted key + live webhook secret; live Prices; runbook; kill switch (`PSI_PAYMENTS_KILL_SWITCH` / unset checkout flag / key removal). **Code path shipped**; founder ops in `docs/psi-live-cutover-needs.md`. |
+| **Deps / secrets** | Live Stripe; tax registration if `automatic_tax`; founder go-live approve; Neon **0032** owner approval. |
 | **Demo criterion** | One real low-risk purchase (or Stripe live test policy as chosen) grants activation; stop-switch demonstrated. |
 | **Risk** | Skipping webhook in live; no rollback story for mistaken entitlement. |
+| **Status** | Cutover **code** ready; live Products MCP-blocked (403); Production charges **blocked** until needs list complete. Not a full readiness certification. |
 
 ---
 

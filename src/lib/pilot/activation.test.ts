@@ -8,6 +8,7 @@ import {
 import {
   ACCOUNT_DOES_NOT_ACTIVATE,
   ALLOWANCE_EXHAUSTED_COPY,
+  CHECKOUT_LIVE_COPY,
   CHECKOUT_NOT_LIVE_COPY,
   CHECKOUT_SANDBOX_COPY,
   MANUAL_ACTIVATION_COPY,
@@ -311,6 +312,12 @@ describe("commercial statements", () => {
     expect(pricingCheckoutCopy({ checkoutEnabled: true, sandbox: true })).toBe(
       CHECKOUT_SANDBOX_COPY,
     );
+    expect(
+      pricingCheckoutCopy({ checkoutEnabled: true, sandbox: false, live: true }),
+    ).toBe(CHECKOUT_LIVE_COPY);
+    expect(
+      pricingCheckoutCopy({ checkoutEnabled: true, sandbox: false, live: false }),
+    ).toBe(CHECKOUT_NOT_LIVE_COPY);
     expect(CHECKOUT_SANDBOX_COPY.toLowerCase()).toContain("sandbox");
   });
 });

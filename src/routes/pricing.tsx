@@ -11,11 +11,12 @@ import {
   PUBLISHED_OPERATOR_EMAIL,
   SUPPORT_RECOVERY_COPY,
 } from "@/lib/pilot/commercial-copy";
-import { isCheckoutEnabled, isSandboxCheckout } from "@/lib/stripe";
+import { isCheckoutEnabled, isLiveCheckout, isSandboxCheckout } from "@/lib/stripe";
 
 const checkoutCopy = pricingCheckoutCopy({
   checkoutEnabled: isCheckoutEnabled,
   sandbox: isSandboxCheckout,
+  live: isLiveCheckout,
 });
 
 export const Route = createFileRoute("/pricing")({
@@ -83,7 +84,11 @@ const QUESTIONS = [
     q: "Does requesting a plan start billing?",
     a: `${ACCOUNT_DOES_NOT_ACTIVATE} ${checkoutCopy} ${
       isCheckoutEnabled
-        ? "Sandbox Pay uses Stripe test cards and grants entitlement only after the webhook confirms payment."
+        ? isSandboxCheckout
+          ? "Sandbox Pay uses Stripe test cards and grants entitlement only after the webhook confirms payment."
+          : isLiveCheckout
+            ? "Pay charges a real card. Entitlement is granted only after the live webhook confirms payment."
+            : MANUAL_ACTIVATION_COPY
         : `Scope, availability and billing must be agreed before paid work starts. ${MANUAL_ACTIVATION_COPY}`
     }`,
   },
@@ -128,7 +133,9 @@ function Pricing() {
                   {isCheckoutEnabled
                     ? isSandboxCheckout
                       ? "Paid pilots · Sandbox checkout"
-                      : "Paid pilots · Self-serve checkout"
+                      : isLiveCheckout
+                        ? "Paid pilots · Live checkout"
+                        : "Paid pilots · By agreement"
                     : "Paid pilots · By agreement"}
                 </strong>
                 <p>

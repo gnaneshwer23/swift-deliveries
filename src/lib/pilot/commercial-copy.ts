@@ -12,17 +12,25 @@ export const CHECKOUT_NOT_LIVE_COPY = "Checkout is not live.";
 export const CHECKOUT_SANDBOX_COPY =
   "Sandbox checkout is available for testing with Stripe test cards. This is not live billing.";
 
+export const CHECKOUT_LIVE_COPY =
+  "Self-serve checkout is live. Real cards are charged. Entitlements are granted only after Stripe confirms payment via webhook.";
+
 export const ALLOWANCE_EXHAUSTED_COPY =
   "When the mission allowance is used, the next billable comparison in that workspace is blocked. The mission record stays readable and the work is not deleted. Another workspace is not affected.";
 
 export const SUPPORT_RECOVERY_COPY = `If a request fails or you need the record reviewed, email ${PUBLISHED_OPERATOR_EMAIL}. An authorised operator can read a stored enquiry. There is no promised reply time.`;
 
-/** Pricing honesty: keep “not live” until the flag is truly on with configured prices. */
+/**
+ * Pricing honesty: “not live” until checkout is on; sandbox labelled until
+ * the build uses pk_live_ (live copy only then — never while sandbox keys ship).
+ */
 export function pricingCheckoutCopy(input: {
   checkoutEnabled: boolean;
   sandbox: boolean;
+  live?: boolean;
 }): string {
   if (!input.checkoutEnabled) return CHECKOUT_NOT_LIVE_COPY;
   if (input.sandbox) return CHECKOUT_SANDBOX_COPY;
-  return "Self-serve checkout is enabled. Entitlements are granted only after Stripe confirms payment.";
+  if (input.live) return CHECKOUT_LIVE_COPY;
+  return CHECKOUT_NOT_LIVE_COPY;
 }

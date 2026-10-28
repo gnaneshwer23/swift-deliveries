@@ -5,20 +5,14 @@ import { createDirectStripeClient, getStripeErrorMessage, type StripeEnv } from 
 import { isPilotPlan, type PilotPlan } from "./model";
 import {
   CAREER_LOOKUP_KEYS,
-  isCheckoutFlagEnabled,
   offerForPlan,
   PSI_CATALOG,
   priceEnvOverride,
 } from "./psi-catalog";
+import { resolvePsiPaymentsMode } from "./psi-payments-mode";
 
 type CheckoutOk = { ok: true; url: string; sessionId: string; environment: StripeEnv };
 type CheckoutErr = { ok: false; message: string };
-
-function paymentsEnvironment(): StripeEnv {
-  const token = process.env["VITE_PAYMENTS_CLIENT_TOKEN"] ?? "";
-  if (token.startsWith("pk_live_")) return "live";
-  return "sandbox";
-}
 
 function allowedReturnHost(hostname: string): boolean {
   return (
@@ -55,7 +49,7 @@ async function resolvePsiPriceId(
   const price = prices.data[0];
   if (!price?.id) {
     return {
-      error: `Sandbox price for ${offer.lookupKey} is not configured. Set PSI_STRIPE_PRICE_${plan.toUpperCase()} or create the lookup key in Stripe test mode.`,
+      error: `Stripe price for ${offer.lookupKey} is not configured. Set PSI_STRIPE_PRICE_${plan.toUpperCase()} or create the lookup key on the active Stripe account (live or sandbox).`,
     };
   }
   return { priceId: price.id, lookupKey: offer.lookupKey };
@@ -74,31 +68,13 @@ export const createPsiCheckoutSession = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data, context }): Promise<CheckoutOk | CheckoutErr> => {
-    if (!isCheckoutFlagEnabled()) {
-      return { ok: false, message: "Checkout is not live." };
-    }
     if (!isPilotPlan(data.plan)) {
       return { ok: false, message: "Choose Builder, Founder or Studio." };
     }
 
-    const environment = paymentsEnvironment();
-    if (environment === "live" && process.env["PSI_PAYMENTS_LIVE_APPROVED"] !== "true") {
-      return {
-        ok: false,
-        message: "Live card charging is not approved. Use sandbox keys for P1.",
-      };
-    }
-
-    const stripeKey =
-      environment === "sandbox"
-        ? process.env["STRIPE_SANDBOX_API_KEY"]
-        : process.env["STRIPE_LIVE_API_KEY"];
-    if (!stripeKey) {
-      return {
-        ok: false,
-        message: "Checkout needs STRIPE_SANDBOX_API_KEY in the server environment.",
-      };
-    }
+    const mode = resolvePsiPaymentsMode();
+    if (!mode.ok) return { ok: false, message: mode.message };
+    const environment = mode.environment;
 
     for (const raw of [data.successUrl, data.cancelUrl]) {
       const url = new URL(raw);
