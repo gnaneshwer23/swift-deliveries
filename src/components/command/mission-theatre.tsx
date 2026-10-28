@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
+import { ListenBriefButton } from "@/components/command/listen-brief-button";
 import {
   buildSequence,
   castForMission,
@@ -155,6 +156,7 @@ function ActBriefing({
       <h2 className="ps-theatre-title">Here’s what I heard</h2>
       <p className="ps-theatre-lede">{brief.problemStatement}</p>
       <HonestyBadgeRow badges={badges} />
+      <ListenBriefButton brief={brief} />
       <div className="ps-theatre-columns">
         <div>
           <h3>Known</h3>
@@ -285,6 +287,7 @@ function ActApprove({
       </h2>
       <p className="ps-theatre-lede">{brief.problemStatement}</p>
       <HonestyBadgeRow badges={badges} />
+      <ListenBriefButton brief={brief} />
       <ul className="ps-approve-summary">
         <li>
           <strong>Cast</strong> {brief.team.activeLabels.slice(0, 6).join(" · ") || "Proposed team"}

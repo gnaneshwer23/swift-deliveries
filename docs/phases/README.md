@@ -7,7 +7,7 @@ Derived from the stamped business case `docs/business-case-deliverx-psi-v2.md`.
 | **P-A** Investigate entrance | [p-a-investigate-entrance.md](./p-a-investigate-entrance.md) | Shipped 28 Oct 2026 (no paid availability) |
 | **P-B** Continuation plan | [p-b-continuation-plan.md](./p-b-continuation-plan.md) | Shipped 28 Oct 2026 (no paid availability) |
 | **P-C** Case room | [p-c-case-room.md](./p-c-case-room.md) | Shipped 28 Oct 2026 (no paid availability) |
+| **P-D** Listen (+ learner later) | [p-d-listen-learner.md](./p-d-listen-learner.md) | Listen slice shipping; needs `ELEVENLABS_API_KEY` + `DXSI_TTS_ENABLED` |
 | **P-commerce** | TBD | Not authorised — required before selling affected missions |
-| **P-D** Listen + learner lens | TBD | Not authorised |
 
 Do not expand the business case for phase detail — put requirements in the phase spec.

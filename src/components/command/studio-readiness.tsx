@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getVoiceAvailability } from "@/lib/conversation.functions";
+import { getTtsAvailability, getVoiceAvailability } from "@/lib/conversation.functions";
 import { getWorkspacePilotActivation } from "@/lib/pilot/psi-checkout.functions";
 import { PILOT_PLAN_LABELS } from "@/lib/pilot/model";
 import { commandCentreBootstrapQuery } from "@/lib/workforce-queries";
@@ -13,6 +13,11 @@ export function StudioReadiness() {
   const voice = useQuery({
     queryKey: ["command", "voice"],
     queryFn: () => getVoiceAvailability(),
+    staleTime: 5 * 60_000,
+  });
+  const tts = useQuery({
+    queryKey: ["command", "tts"],
+    queryFn: () => getTtsAvailability(),
     staleTime: 5 * 60_000,
   });
   const activation = useQuery({
@@ -56,6 +61,20 @@ export function StudioReadiness() {
           : voice.data?.problem
             ? "Voice misconfigured"
             : "Voice not configured"}
+      </span>
+      <span
+        className="ps-research-readiness-chip"
+        data-ready={tts.data?.enabled ? "true" : "false"}
+        title={
+          tts.data?.problem ??
+          (tts.data?.enabled
+            ? `Listen TTS · ElevenLabs voice ${tts.data.voiceId}`
+            : "Listen uses browser speech until DXSI_TTS_ENABLED=true and ELEVENLABS_API_KEY are set")
+        }
+      >
+        {tts.data?.enabled
+          ? `Listen · ${tts.data.voiceId.slice(0, 8)}…`
+          : "Listen · browser"}
       </span>
       {plan ? (
         <span

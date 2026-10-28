@@ -261,3 +261,15 @@ export function buildPmBrief(
       "Simulated / deterministic PM draft — no model call for this brief. Runnable specialists are Available Wave 1 sized by band; catalogue roster scales toward 150 for complex cases. Planned roles stay labelled and never run until Available.",
   };
 }
+
+/** Same words as the on-screen PM brief — used for Listen (ElevenLabs or browser). */
+export function pmBriefListenScript(brief: PmBrief): string {
+  return [
+    `Here's what I heard. ${brief.problemStatement}`,
+    `Known. ${brief.knowns.join(" ")}`,
+    `Unknown. ${brief.unknowns.join(" ")}`,
+    `What will happen. ${brief.whatWillHappen.join(" ")}`,
+    `Time band: ${brief.roughTime.label}. Cost band: ${brief.roughCost.band}.`,
+    `I'll ask you only when: ${brief.askFounderOnlyWhen}`,
+  ].join("\n\n");
+}

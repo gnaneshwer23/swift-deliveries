@@ -172,6 +172,55 @@ export const getVoiceAvailability = createServerFn({ method: "GET" })
     };
   });
 
+export type TtsAvailability = {
+  enabled: boolean;
+  problem: string | null;
+  voiceId: string;
+};
+
+/** Whether ElevenLabs listen is configured (browser speech always remains a fallback). */
+export const getTtsAvailability = createServerFn({ method: "GET" })
+  .middleware([requireAuth])
+  .handler(async (): Promise<TtsAvailability> => {
+    const { ttsConfig } = await import("@/lib/conversation/tts.server");
+    const config = ttsConfig();
+    return {
+      enabled: config.enabled,
+      problem: config.enabled ? null : config.problem,
+      voiceId: config.voiceId,
+    };
+  });
+
+export type SynthesizeSpeechResult =
+  | { ok: true; contentType: string; base64: string; voiceId: string; provider: "elevenlabs" }
+  | { ok: false; problem: string; voiceId: string };
+
+/** Synthesize the same on-screen text for Listen. Never approves or mutates a mission. */
+export const synthesizeSpeechFn = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z.object({ text: z.string().min(1).max(4000) }).parse(data),
+  )
+  .handler(async ({ data }): Promise<SynthesizeSpeechResult> => {
+    const { ttsConfig, synthesizeSpeech } = await import("@/lib/conversation/tts.server");
+    const config = ttsConfig();
+    if (!config.enabled) {
+      return {
+        ok: false,
+        problem: config.problem ?? "Listen provider is not configured.",
+        voiceId: config.voiceId,
+      };
+    }
+    const audio = await synthesizeSpeech(data.text, config);
+    return {
+      ok: true,
+      contentType: audio.contentType,
+      base64: audio.base64,
+      voiceId: audio.voiceId,
+      provider: audio.provider,
+    };
+  });
+
 /** Session tokens a workspace may mint in the window below. */
 export const VOICE_SESSIONS_PER_WINDOW = 20;
 const VOICE_WINDOW_MINUTES = 10;
