@@ -109,6 +109,8 @@ export function WorkspaceFoyer() {
 
       <footer className="ps-foyer-footnotes">
         <p className="ps-foyer-side-links">
+          <Link to="/command/portfolio">Portfolio</Link>
+          <span aria-hidden="true">·</span>
           <Link to="/command/capabilities" hash="agents-office">
             Agents office
           </Link>

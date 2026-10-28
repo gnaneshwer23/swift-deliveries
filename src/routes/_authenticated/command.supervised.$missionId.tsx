@@ -8,12 +8,16 @@ import { CaseRoomPanel } from "@/components/command/case-room-panel";
 import { CommerceDisclosurePanel } from "@/components/command/commerce-disclosure-panel";
 import { LearnerLensPanel } from "@/components/command/learner-lens-panel";
 import { MissionTheatre } from "@/components/command/mission-theatre";
+import { ProjectRoomNav } from "@/components/command/project-room-nav";
 import { SupervisedLearningLoop } from "@/components/command/supervised-learning-loop";
+import { WatchtowerPanel } from "@/components/command/watchtower-panel";
 import {
   approveSupervisedPlan,
   approveSupervisedPrototype,
   cancelSupervisedMission,
   decideSupervisedMission,
+  exportSupervisedExecutivePack,
+  exportSupervisedFullArchive,
   exportSupervisedMission,
   exportSupervisedMissionZip,
   getSupervisedMission,
@@ -227,46 +231,55 @@ function SupervisedMissionPage() {
         </div>
       </div>
 
-      <MissionTheatre
-        mission={mission}
-        actions={{
-          open,
-          next,
-          usageWarning,
-          error,
-          research: query.data.research,
-          modelConfigured: query.data.modelConfigured,
-          comparisonScope: query.data.comparisonScope,
-          consentedScope,
-          setConsentedScope,
-          approvePending: approvePlan.isPending,
-          onApprove: () => approvePlan.mutate(),
-          setResearchPending: setResearch.isPending,
-          onSetResearch: (mode) => setResearch.mutate(mode),
-          comparePending: compare.isPending,
-          onCompare: () => compare.mutate(),
-          preparePending: prepare.isPending,
-          onPrepare: () => prepare.mutate(),
-          prototypePending: approvePrototype.isPending,
-          onApprovePrototype: () => approvePrototype.mutate(),
-          exportSlot:
-            next.id === "export" || mission.exportBody ? (
-              <ExportButton
-                recordVersion={mission.version}
-                missionId={missionId}
-                existingMd={mission.exportBody}
-                existingPdf={mission.exportPdfBase64}
-                onError={onError}
-              />
-            ) : null,
-        }}
-      />
+      <div id="pr-briefings">
+        <MissionTheatre
+          mission={mission}
+          actions={{
+            open,
+            next,
+            usageWarning,
+            error,
+            research: query.data.research,
+            modelConfigured: query.data.modelConfigured,
+            comparisonScope: query.data.comparisonScope,
+            consentedScope,
+            setConsentedScope,
+            approvePending: approvePlan.isPending,
+            onApprove: () => approvePlan.mutate(),
+            setResearchPending: setResearch.isPending,
+            onSetResearch: (mode) => setResearch.mutate(mode),
+            comparePending: compare.isPending,
+            onCompare: () => compare.mutate(),
+            preparePending: prepare.isPending,
+            onPrepare: () => prepare.mutate(),
+            prototypePending: approvePrototype.isPending,
+            onApprovePrototype: () => approvePrototype.mutate(),
+            exportSlot:
+              next.id === "export" || mission.exportBody ? (
+                <ExportButton
+                  recordVersion={mission.version}
+                  missionId={missionId}
+                  existingMd={mission.exportBody}
+                  existingPdf={mission.exportPdfBase64}
+                  onError={onError}
+                />
+              ) : null,
+          }}
+        />
+      </div>
+
+      <ProjectRoomNav mission={mission} />
 
       <details className="ps-legacy mt-4">
         <summary>Talk to DeliverX (optional · revise beside the mission)</summary>
         <ConversationPanel currentMissionId={missionId} />
       </details>
 
+      <div
+        id="pr-evidence"
+        className="ps-record-anchor"
+        data-active={recordSection === "mission-evidence" || recordSection === "pr-evidence"}
+      >
       <div
         id="mission-evidence"
         className="ps-record-anchor"
@@ -297,6 +310,7 @@ function SupervisedMissionPage() {
           </section>
         ) : null}
       </div>
+      </div>
       <BriefEditor
         recordVersion={mission.version}
         missionId={missionId}
@@ -317,7 +331,7 @@ function SupervisedMissionPage() {
           />
         )}
         {mission.team || (mission.activity?.length ?? 0) > 0 ? (
-          <section className="cc-panel" aria-label="Research team">
+          <section className="cc-panel" aria-label="Research team" id="pr-team">
             <h2 className="cc-panel-title">Research team</h2>
             <p className="cc-muted text-sm">
               Specialists assigned to investigate this idea. Activity is persisted task events—not
@@ -478,14 +492,21 @@ function SupervisedMissionPage() {
           </section>
         ) : null}
         {mission.caseRoom ? (
-          <CaseRoomPanel
-            mission={mission}
-            recordVersion={mission.version}
-            missionId={missionId}
-            onDone={invalidate}
-            onError={onError}
-          />
-        ) : null}
+          <div id="pr-flow">
+            <div id="pr-artefacts">
+              <CaseRoomPanel
+                mission={mission}
+                recordVersion={mission.version}
+                missionId={missionId}
+                onDone={invalidate}
+                onError={onError}
+              />
+            </div>
+          </div>
+        ) : (
+          <div id="pr-flow" />
+        )}
+        <div id="pr-decisions" />
         {mission.invalidatedApprovals.length ? (
           <section className="cc-panel" aria-label="Cleared approvals">
             <h2 className="cc-panel-title">Cleared approvals</h2>
@@ -502,6 +523,11 @@ function SupervisedMissionPage() {
           </section>
         ) : null}
       </div>
+      <div
+        id="pr-build"
+        className="ps-record-anchor"
+        data-active={recordSection === "mission-delivery" || recordSection === "pr-build"}
+      >
       <div
         id="mission-delivery"
         className="ps-record-anchor"
@@ -541,6 +567,12 @@ function SupervisedMissionPage() {
           </section>
         ) : null}
       </div>
+      </div>
+      <div
+        id="pr-outcomes"
+        className="ps-record-anchor"
+        data-active={recordSection === "mission-feedback" || recordSection === "pr-outcomes"}
+      >
       <div
         id="mission-feedback"
         className="ps-record-anchor"
@@ -560,6 +592,14 @@ function SupervisedMissionPage() {
         <LearnerLensPanel mission={mission} />
         <SupervisedLearningLoop mission={mission} onDone={invalidate} onError={onError} />
       </div>
+      </div>
+      <WatchtowerPanel
+        mission={mission}
+        recordVersion={mission.version}
+        missionId={missionId}
+        onDone={invalidate}
+        onError={onError}
+      />
     </CommandShell>
   );
 }
@@ -913,19 +953,37 @@ function ExportButton({
     },
     onError,
   });
+  const downloadZip = (files: Array<{ path: string; content: string }>, filename: string) => {
+    const archive = createZip(files);
+    const url = URL.createObjectURL(
+      new Blob([archive.buffer as ArrayBuffer], { type: "application/zip" }),
+    );
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
   const zip = useMutation({
     mutationFn: () => exportSupervisedMissionZip({ data: { id: missionId } }),
-    onSuccess: ({ files, filename }) => {
-      const archive = createZip(files);
-      const url = URL.createObjectURL(
-        new Blob([archive.buffer as ArrayBuffer], { type: "application/zip" }),
-      );
+    onSuccess: ({ files, filename }) => downloadZip(files, filename),
+    onError,
+  });
+  const executive = useMutation({
+    mutationFn: () => exportSupervisedExecutivePack({ data: { id: missionId } }),
+    onSuccess: ({ markdown, filename }) => {
+      const url = URL.createObjectURL(new Blob([markdown], { type: "text/markdown" }));
       const a = document.createElement("a");
       a.href = url;
       a.download = filename;
       a.click();
       URL.revokeObjectURL(url);
     },
+    onError,
+  });
+  const fullArchive = useMutation({
+    mutationFn: () => exportSupervisedFullArchive({ data: { id: missionId } }),
+    onSuccess: ({ files, filename }) => downloadZip(files, filename),
     onError,
   });
   return (
@@ -944,14 +1002,30 @@ function ExportButton({
       <button
         type="button"
         className="cc-btn cc-btn-secondary"
+        disabled={executive.isPending}
+        onClick={() => executive.mutate()}
+      >
+        {executive.isPending ? "Preparing…" : "Executive pack"}
+      </button>
+      <button
+        type="button"
+        className="cc-btn cc-btn-secondary"
         disabled={zip.isPending || !existingMd}
         onClick={() => zip.mutate()}
       >
-        {zip.isPending ? "Packaging…" : "Download full pack (.zip)"}
+        {zip.isPending ? "Packaging…" : "Decision ZIP"}
+      </button>
+      <button
+        type="button"
+        className="cc-btn cc-btn-secondary"
+        disabled={fullArchive.isPending || !existingMd}
+        onClick={() => fullArchive.mutate()}
+      >
+        {fullArchive.isPending ? "Packaging…" : "Full project archive"}
       </button>
       <p className="cc-muted text-xs basis-full">
-        ZIP includes decision pack, evidence register, prototype HTML when built, and an honesty
-        manifest. Linked source URLs are referenced only — not fetched into the archive.
+        Executive pack is the short recommendation story. Full archive adds continuation/case-room
+        summaries and an archive manifest. Linked URLs and secrets are never bundled.
       </p>
     </div>
   );

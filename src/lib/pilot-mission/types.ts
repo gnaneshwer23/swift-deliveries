@@ -3,10 +3,12 @@ import type { ContinuationPlan } from "./continuation-plan";
 import type { ResearchMode } from "./research-mode";
 import type { PilotActivityEvent, PilotTeamPlan } from "./specialist-team";
 import type { AgentRecommendation, DecisionChoice, HumanNextPath } from "./verdict";
+import type { WatchtowerConfig } from "./watchtower";
 
 export type { AgentRecommendation, DecisionChoice, HumanNextPath } from "./verdict";
 export type { ContinuationPlan } from "./continuation-plan";
 export type { CaseRoom, CaseStepGate } from "./case-room";
+export type { WatchtowerConfig } from "./watchtower";
 
 /** Exact record stored when no model provider is configured. */
 export const NOT_RUN_LABEL = "not run — provider not configured";
@@ -269,6 +271,10 @@ export type SupervisedMission = {
    * Act C case room for this mission (same persistent case). Additive — null until P-B plan exists.
    */
   caseRoom: CaseRoom | null;
+  /**
+   * PT-6 Watchtower preferences. Additive — null/undefined means unset; checks do not run until a runner exists.
+   */
+  watchtower?: WatchtowerConfig | null;
   /** Persisted task events only — no fake chat or timer theatre. */
   activity: PilotActivityEvent[];
   /**

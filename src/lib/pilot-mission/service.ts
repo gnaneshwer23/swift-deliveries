@@ -55,6 +55,7 @@ import {
   normalizeDecisionChoice,
   pathAgreesWithRecommendation,
 } from "./verdict";
+import { saveWatchtowerConfig, type WatchtowerFrequency } from "./watchtower";
 
 export class MissionNotFoundError extends Error {
   constructor(message = "Mission not found.") {
@@ -518,6 +519,7 @@ export class SupervisedMissionService {
       team,
       continuationPlan: null,
       caseRoom: null,
+      watchtower: null,
       projectId: input.projectId ?? null,
       activity: [
         activityEvent({
@@ -1063,6 +1065,65 @@ export class SupervisedMissionService {
           taskKey: "human_decision",
           kind: "case_room.step_gate",
           summary: `Human recorded case step gate “${input.gate}”. Does not start a new mission.`,
+          actor: input.actorId,
+        }),
+      ),
+      updatedAt: at,
+    };
+    return this.store.save(next, current.version);
+  }
+
+  async saveWatchtower(input: {
+    workspaceId: string;
+    expectedVersion?: number;
+    id: string;
+    enabled: boolean;
+    topics: string[];
+    competitors: string[];
+    sourcesNote: string;
+    frequency: WatchtowerFrequency;
+    geography: string;
+    budgetCeilingUnits: number;
+    notify: "off" | "digest" | "important";
+    pauseUntil: string | null;
+    actorId: string;
+    nowMs: number;
+  }): Promise<SupervisedMission> {
+    const current = await this.must(input.workspaceId, input.id);
+    if (input.expectedVersion !== undefined && current.version !== input.expectedVersion) {
+      throw new MissionConflictError(
+        "This mission changed in another session. Your edits were not saved. Review the latest record before trying again.",
+      );
+    }
+    this.assertOpen(current);
+    const watchtower = saveWatchtowerConfig(
+      {
+        enabled: input.enabled,
+        topics: input.topics,
+        competitors: input.competitors,
+        sourcesNote: input.sourcesNote,
+        frequency: input.frequency,
+        geography: input.geography,
+        budgetCeilingUnits: input.budgetCeilingUnits,
+        notify: input.notify,
+        pauseUntil: input.pauseUntil,
+      },
+      input.nowMs,
+    );
+    const at = new Date(input.nowMs).toISOString();
+    const next: SupervisedMission = {
+      ...current,
+      version: current.version + 1,
+      watchtower,
+      activity: pushActivity(
+        current,
+        activityEvent({
+          at,
+          taskKey: null,
+          kind: "watchtower.config_saved",
+          summary: watchtower.enabled
+            ? `Watchtower preferences saved (${watchtower.frequency}). Checks do not run until a scheduled runner exists.`
+            : "Watchtower preferences saved as off. No continuous monitoring is claimed.",
           actor: input.actorId,
         }),
       ),

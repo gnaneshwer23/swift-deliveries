@@ -2169,6 +2169,74 @@
 .ps-record-anchor {
   scroll-margin-top: 24px;
 }
+.ps-project-room {
+  margin: 1.25rem 0 1.5rem;
+}
+.ps-project-room-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--psi-border, #dfe5f2);
+}
+.ps-project-room-link {
+  font-size: 0.8rem;
+  color: var(--psi-muted, #5b6b84);
+  text-decoration: none;
+}
+.ps-project-room-link:hover {
+  color: var(--psi-ink, #0f172a);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.ps-project-overview-dl {
+  display: grid;
+  gap: 0.55rem 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+}
+.ps-project-overview-dl dt {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--psi-muted, #5b6b84);
+}
+.ps-project-overview-dl dd {
+  margin: 0.15rem 0 0;
+}
+.ps-similar-ideas {
+  margin: 0.75rem 0;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--psi-border, #dfe5f2);
+  border-radius: 10px;
+  background: #f8fafc;
+}
+.ps-similar-ideas-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.55rem;
+}
+.ps-similar-ideas-link {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--psi-ink, #0f172a);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+#pr-briefings,
+#pr-evidence,
+#pr-team,
+#pr-flow,
+#pr-artefacts,
+#pr-decisions,
+#pr-build,
+#pr-outcomes,
+#pr-monitoring,
+#pr-overview {
+  scroll-margin-top: 24px;
+}
 .ps-record-pending {
   display: none;
 }

@@ -49,6 +49,7 @@ import { Route as VerifyCredentialIdRouteImport } from './routes/verify.$credent
 import { Route as AuthenticatedCommandIndexRouteImport } from './routes/_authenticated/command.index'
 import { Route as AuthenticatedCommandCapabilitiesRouteImport } from './routes/_authenticated/command.capabilities'
 import { Route as AuthenticatedCommandPilotRequestsRouteImport } from './routes/_authenticated/command.pilot-requests'
+import { Route as AuthenticatedCommandPortfolioRouteImport } from './routes/_authenticated/command.portfolio'
 import { Route as AuthenticatedCommandProjectsRouteImport } from './routes/_authenticated/command.projects'
 import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated/workspace.index'
 import { Route as AuthenticatedWorkspaceApplicationsRouteImport } from './routes/_authenticated/workspace.applications'
@@ -286,6 +287,12 @@ const AuthenticatedCommandPilotRequestsRoute =
     path: '/pilot-requests',
     getParentRoute: () => AuthenticatedCommandRoute,
   } as any)
+const AuthenticatedCommandPortfolioRoute =
+  AuthenticatedCommandPortfolioRouteImport.update({
+    id: '/portfolio',
+    path: '/portfolio',
+    getParentRoute: () => AuthenticatedCommandRoute,
+  } as any)
 const AuthenticatedCommandProjectsRoute =
   AuthenticatedCommandProjectsRouteImport.update({
     id: '/projects',
@@ -515,6 +522,7 @@ export interface FileRoutesByFullPath {
   '/resources/': typeof ResourcesIndexRoute
   '/command/capabilities': typeof AuthenticatedCommandCapabilitiesRoute
   '/command/pilot-requests': typeof AuthenticatedCommandPilotRequestsRoute
+  '/command/portfolio': typeof AuthenticatedCommandPortfolioRoute
   '/command/projects': typeof AuthenticatedCommandProjectsRoute
   '/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
@@ -586,6 +594,7 @@ export interface FileRoutesByTo {
   '/resources': typeof ResourcesIndexRoute
   '/command/capabilities': typeof AuthenticatedCommandCapabilitiesRoute
   '/command/pilot-requests': typeof AuthenticatedCommandPilotRequestsRoute
+  '/command/portfolio': typeof AuthenticatedCommandPortfolioRoute
   '/command/projects': typeof AuthenticatedCommandProjectsRoute
   '/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
@@ -660,6 +669,7 @@ export interface FileRoutesById {
   '/resources/': typeof ResourcesIndexRoute
   '/_authenticated/command/capabilities': typeof AuthenticatedCommandCapabilitiesRoute
   '/_authenticated/command/pilot-requests': typeof AuthenticatedCommandPilotRequestsRoute
+  '/_authenticated/command/portfolio': typeof AuthenticatedCommandPortfolioRoute
   '/_authenticated/command/projects': typeof AuthenticatedCommandProjectsRoute
   '/_authenticated/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
   '/_authenticated/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
@@ -735,6 +745,7 @@ export interface FileRouteTypes {
     | '/resources/'
     | '/command/capabilities'
     | '/command/pilot-requests'
+    | '/command/portfolio'
     | '/command/projects'
     | '/workspace/applications'
     | '/workspace/capability'
@@ -806,6 +817,7 @@ export interface FileRouteTypes {
     | '/resources'
     | '/command/capabilities'
     | '/command/pilot-requests'
+    | '/command/portfolio'
     | '/command/projects'
     | '/workspace/applications'
     | '/workspace/capability'
@@ -879,6 +891,7 @@ export interface FileRouteTypes {
     | '/resources/'
     | '/_authenticated/command/capabilities'
     | '/_authenticated/command/pilot-requests'
+    | '/_authenticated/command/portfolio'
     | '/_authenticated/command/projects'
     | '/_authenticated/workspace/applications'
     | '/_authenticated/workspace/capability'
@@ -1238,6 +1251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCommandPilotRequestsRouteImport
       parentRoute: typeof AuthenticatedCommandRoute
     }
+    '/_authenticated/command/portfolio': {
+      id: '/_authenticated/command/portfolio'
+      path: '/portfolio'
+      fullPath: '/command/portfolio'
+      preLoaderRoute: typeof AuthenticatedCommandPortfolioRouteImport
+      parentRoute: typeof AuthenticatedCommandRoute
+    }
     '/_authenticated/command/projects': {
       id: '/_authenticated/command/projects'
       path: '/projects'
@@ -1468,6 +1488,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedCommandRouteChildren {
   AuthenticatedCommandCapabilitiesRoute: typeof AuthenticatedCommandCapabilitiesRoute
   AuthenticatedCommandPilotRequestsRoute: typeof AuthenticatedCommandPilotRequestsRoute
+  AuthenticatedCommandPortfolioRoute: typeof AuthenticatedCommandPortfolioRoute
   AuthenticatedCommandProjectsRoute: typeof AuthenticatedCommandProjectsRoute
   AuthenticatedCommandIndexRoute: typeof AuthenticatedCommandIndexRoute
   AuthenticatedCommandMissionsMissionIdRoute: typeof AuthenticatedCommandMissionsMissionIdRoute
@@ -1481,6 +1502,7 @@ const AuthenticatedCommandRouteChildren: AuthenticatedCommandRouteChildren = {
   AuthenticatedCommandCapabilitiesRoute: AuthenticatedCommandCapabilitiesRoute,
   AuthenticatedCommandPilotRequestsRoute:
     AuthenticatedCommandPilotRequestsRoute,
+  AuthenticatedCommandPortfolioRoute: AuthenticatedCommandPortfolioRoute,
   AuthenticatedCommandProjectsRoute: AuthenticatedCommandProjectsRoute,
   AuthenticatedCommandIndexRoute: AuthenticatedCommandIndexRoute,
   AuthenticatedCommandMissionsMissionIdRoute:

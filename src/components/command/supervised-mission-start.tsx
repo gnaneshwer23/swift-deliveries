@@ -1,6 +1,6 @@
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { myProfileQuery } from "@/lib/profile-queries";
 import { getSupervisedMissionHome, startSupervisedMission } from "@/lib/pilot-mission.functions";
 import { RESEARCH_MODE_LABELS, type ResearchMode } from "@/lib/pilot-mission/research-mode";
@@ -9,6 +9,7 @@ import {
   RESEARCH_FIRST_CONSTRAINT,
   RESEARCH_REFINE_AUDIENCE,
 } from "@/lib/pilot-mission/pm-brief";
+import { findSimilarIdeas } from "@/lib/pilot-mission/similar-ideas";
 
 import { useSession } from "@/hooks/use-session";
 import { clearPilotBrief, loadPilotBrief } from "@/lib/pilot/storage";
@@ -113,6 +114,13 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
   });
 
   const isHero = tone === "hero";
+  const similar = useMemo(() => {
+    const prior =
+      home.data?.ready === true
+        ? home.data.missions.map((m) => ({ id: m.id, question: m.question }))
+        : [];
+    return findSimilarIdeas(question, prior, 3);
+  }, [home.data, question]);
 
   return (
     <section
@@ -277,6 +285,30 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
           </div>
         </details>
 
+        {similar.length > 0 ? (
+          <div className="ps-similar-ideas" role="region" aria-label="Similar cases in this workspace">
+            <p className="cc-muted text-xs mb-2">
+              Similar cases already in this workspace (suggestion only — nothing is merged):
+            </p>
+            <ul className="ps-similar-ideas-list">
+              {similar.map((item) => (
+                <li key={item.missionId}>
+                  <Link
+                    to="/command/supervised/$missionId"
+                    params={{ missionId: item.missionId }}
+                    className="ps-similar-ideas-link"
+                  >
+                    {item.question}
+                  </Link>
+                  <p className="cc-muted text-xs mb-0">{item.basis.join(" · ")}</p>
+                </li>
+              ))}
+            </ul>
+            <p className="cc-muted text-xs mt-2 mb-0">
+              Open an existing case to continue it, or start a separate Investigation below.
+            </p>
+          </div>
+        ) : null}
         {error ? (
           <p className="cc-error" role="alert">
             {error}

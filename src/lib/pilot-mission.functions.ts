@@ -463,6 +463,47 @@ export const recordSupervisedCaseStepGate = createServerFn({ method: "POST" })
     return view(mission, null);
   });
 
+export const saveSupervisedWatchtower = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        expectedVersion: z.number().int().positive(),
+        enabled: z.boolean(),
+        topics: z.array(z.string().max(200)).max(12),
+        competitors: z.array(z.string().max(200)).max(12),
+        sourcesNote: z.string().max(2000).optional().default(""),
+        frequency: z.enum(["off", "weekly", "monthly"]),
+        geography: z.string().max(200).optional().default(""),
+        budgetCeilingUnits: z.number().int().min(0).max(100),
+        notify: z.enum(["off", "digest", "important"]),
+        pauseUntil: z.string().max(40).nullable().optional().default(null),
+      })
+      .parse(data),
+  )
+  .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
+    const workspace = await workspaceFor(context.supabase, context.userId);
+    const { service } = await serviceFor();
+    const mission = await service.saveWatchtower({
+      workspaceId: workspace.id,
+      id: data.id,
+      expectedVersion: data.expectedVersion,
+      enabled: data.enabled,
+      topics: data.topics,
+      competitors: data.competitors,
+      sourcesNote: data.sourcesNote,
+      frequency: data.frequency,
+      geography: data.geography,
+      budgetCeilingUnits: data.budgetCeilingUnits,
+      notify: data.notify,
+      pauseUntil: data.pauseUntil,
+      actorId: context.userId,
+      nowMs: Date.now(),
+    });
+    return view(mission, null);
+  });
+
 export const prepareSupervisedArtefact = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .validator((data: unknown) =>
@@ -515,6 +556,43 @@ export const exportSupervisedMissionZip = createServerFn({ method: "POST" })
       }
       const { buildSupervisedZip } = await import("@/lib/pilot-mission/supervised-zip");
       return buildSupervisedZip(mission);
+    },
+  );
+
+/** PT-3 executive pack (Markdown only). */
+export const exportSupervisedExecutivePack = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(async ({ context, data }): Promise<{ markdown: string; filename: string }> => {
+    const workspace = await workspaceFor(context.supabase, context.userId);
+    const { service } = await serviceFor();
+    const mission = await service.get(workspace.id, data.id);
+    if (!mission) throw new Error("Mission not found in this workspace.");
+    const { buildExecutivePackMarkdown } = await import("@/lib/pilot-mission/executive-pack");
+    return {
+      markdown: buildExecutivePackMarkdown(mission),
+      filename: `executive-pack-${mission.id.slice(0, 8)}.md`,
+    };
+  });
+
+/** PT-3 full project archive ZIP. */
+export const exportSupervisedFullArchive = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(
+    async ({
+      context,
+      data,
+    }): Promise<{ files: Array<{ path: string; content: string }>; title: string; filename: string }> => {
+      const workspace = await workspaceFor(context.supabase, context.userId);
+      const { service } = await serviceFor();
+      const mission = await service.get(workspace.id, data.id);
+      if (!mission) throw new Error("Mission not found in this workspace.");
+      if (!mission.artefact) {
+        throw new Error("Prepare the decision pack before downloading the full archive.");
+      }
+      const { buildFullArchiveZip } = await import("@/lib/pilot-mission/executive-pack");
+      return buildFullArchiveZip(mission);
     },
   );
 

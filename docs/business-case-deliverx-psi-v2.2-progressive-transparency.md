@@ -1,6 +1,6 @@
 # DeliverX PSI — Progressive transparency (proposed v2.2 amendment)
 
-**Status:** **Stamped** for phase planning (28 Oct 2026). First authorised phase: **PT-1**.  
+**Status:** **Stamped** (28 Oct 2026). **PT-1…PT-6 shipped** (founder “pt2-pt6”).  
 **Parent:** `docs/business-case-deliverx-psi-v2.md` (v2.1)  
 **Recorded:** 28 October 2026  
 **Intent:** Progressive transparency — calm front stage, background company work, inspectable record.
@@ -12,9 +12,9 @@
 | Rule | Meaning |
 | --- | --- |
 | v2.1 + this amendment | Together define intended experience; conflicts on front-stage UX resolve toward this amendment |
-| Authorised build | Only named phases — first **PT-1** (`docs/phases/pt-1-intelligence-canvas.md`) |
-| Later PT phases | Still need separate `go build` (PT-2…PT-6) |
-| Shipped spine | P-A → P-paid remains live; PT-1 refines the investigation front stage |
+| Authorised build | Named phases only — PT-1 then PT-2…PT-6 (founder “pt2-pt6”) |
+| Watchtower honesty | Preferences persist; scheduled checks do not run until a runner is separately authorised |
+| Shipped spine | P-A → P-paid + PT-1…PT-6 live on Studio |
 
 ---
 
@@ -133,20 +133,16 @@ Shipped today already covers parts of the left column in stub or theatre form (m
 
 ---
 
-## Proposed phase derivation (not authorised)
-
-Exact first slice still needs a separate founder `go build` after stamp.
+## Phase derivation (shipped)
 
 | Phase | Demo criterion | Notes |
 | --- | --- | --- |
-| **PT-1** Intelligence Canvas + PM briefing polish | Short idea → real background research → event-backed canvas → briefing with separated assessments + actionable SWOT | Refines P-A front stage; durable leave/return |
-| **PT-2** Project room IA | Persistent nav (overview → outcomes); Act A remains reachable | Refines P-C |
-| **PT-3** Executive + full archive | Two export levels + honest manifest | Extends pack/ZIP |
-| **PT-4** Portfolio Command Centre | Search/filters/decisions due; no multi-graph wall | Expansion |
-| **PT-5** Similar-idea assist | Suggest reuse/extend/separate with basis; no auto-merge | Expansion |
-| **PT-6** Watchtower | Optional scheduled monitoring + impact brief + budget | Expansion + commerce |
-
-Recommended order matches §12 of the founder direction: Canvas/briefing → project room → continuation depth → archive → portfolio → Watchtower.
+| **PT-1** Intelligence Canvas + PM briefing polish | Short idea → real background research → event-backed canvas → briefing with separated assessments + actionable SWOT | Shipped |
+| **PT-2** Project room IA | Persistent nav (overview → monitoring); Act A remains reachable | Shipped |
+| **PT-3** Executive + full archive | Two export levels + honest manifest | Shipped |
+| **PT-4** Portfolio Command Centre | Search/filters/decisions due; no multi-graph wall | Shipped |
+| **PT-5** Similar-idea assist | Suggest reuse/extend/separate with basis; no auto-merge | Shipped |
+| **PT-6** Watchtower | Monitoring preferences + budget; no continuous runner yet | Shipped (preferences only) |
 
 ---
 
@@ -180,3 +176,4 @@ Recommended order matches §12 of the founder direction: Canvas/briefing → pro
 | --- | --- |
 | 28 Oct 2026 | Progressive-transparency direction recorded for approval; not stamped. |
 | 28 Oct 2026 | Founder “build” → **stamped**; **PT-1 authorised**. |
+| 28 Oct 2026 | Founder “pt2-pt6” → **PT-2…PT-6 authorised and shipped** (Watchtower = preferences only). |

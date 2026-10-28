@@ -45,6 +45,7 @@ export function withLearningDefaults(mission: SupervisedMission): SupervisedMiss
       : null,
     continuationPlan: mission.continuationPlan ?? null,
     caseRoom: mission.caseRoom ?? null,
+    watchtower: mission.watchtower ?? null,
     activity: Array.isArray(mission.activity) ? mission.activity : [],
     projectId: mission.projectId ?? null,
   };
