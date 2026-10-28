@@ -94,7 +94,8 @@ const BEAT_META: Record<
   },
   decide: {
     label: "Decide",
-    detail: "You accept an option or request more evidence.",
+    detail:
+      "Record a next path (test, revise, gather evidence, or close). Disagreeing does not erase the agent recommendation.",
     taskKeys: ["human_decision"],
   },
   pack: {

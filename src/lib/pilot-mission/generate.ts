@@ -84,23 +84,32 @@ export function draftOptions(input: { question: string; evidence: EvidenceItem[]
   const gap = input.evidence.find((item) => item.classification === "gap");
   const assumption = input.evidence.find((item) => item.classification === "assumption");
   const first = supplied ?? assumption ?? input.evidence[0];
+  const cited =
+    supplied &&
+    (/\[Cited/i.test(supplied.statement) || /tavily|exa|brave|https?:\/\//i.test(supplied.source));
   return [
     {
       id: "investigate-supplied",
-      title: first
-        ? `Investigate: ${first.statement.slice(0, 90)}`
-        : "Investigate the saved question",
-      tradeoff: "Uses only the saved material. It does not create observations.",
+      title: cited
+        ? "Investigate using cited findings on the register"
+        : first
+          ? "Investigate from the saved evidence"
+          : "Investigate the saved question",
+      tradeoff: first
+        ? `Uses only the saved material (basis ${first.id}). It does not create observations. ${first.statement.slice(0, 140)}`
+        : "Uses only the saved material. It does not create observations.",
       basis: first?.id ?? "gap",
     },
     {
       id: "close-gap",
       title: gap
-        ? `Hold for: ${gap.statement.slice(0, 90)}`
+        ? "Hold until a material evidence gap is closed"
         : "Hold until the missing evidence is supplied",
-      tradeoff: input.question
-        ? "Keeps the question open where the saved material does not support a change."
-        : "Keeps the question open.",
+      tradeoff: gap
+        ? `${input.question ? "Keeps the question open where the saved material does not support a change. " : ""}${gap.statement.slice(0, 160)}`
+        : input.question
+          ? "Keeps the question open where the saved material does not support a change."
+          : "Keeps the question open.",
       basis: gap?.id ?? "gap",
     },
   ];

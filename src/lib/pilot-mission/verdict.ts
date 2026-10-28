@@ -78,25 +78,36 @@ export function pathAgreesWithRecommendation(
 
 /**
  * Deterministic recommendation from mission evidence — Stage 1 stub until model keys exist.
- * Empty/failed retrieval → executionLimited; prefer revise/do-not-pursue only with substance.
+ * Research provider / empty retrieval → executionLimited.
+ * Missing *model* for options is not a research failure (simulated options still use the register).
  */
 export function deriveAgentRecommendation(mission: SupervisedMission): RecommendationDraft {
   const gaps = mission.evidence.filter((e) => e.classification === "gap");
   const supplied = mission.evidence.filter((e) => e.classification === "supplied");
   const assumptions = mission.evidence.filter((e) => e.classification === "assumption");
   const researchGaps = mission.researchGaps ?? [];
-  const generationGaps = mission.proposal?.generation.gaps ?? [];
   const genCitations = mission.proposal?.generation.citations ?? [];
 
-  const providerGap = [...researchGaps, ...generationGaps].some((g) =>
+  const citedFindings = supplied.filter(
+    (e) =>
+      /\[Cited/i.test(e.statement) ||
+      /tavily|exa|brave/i.test(e.source) ||
+      /^https?:\/\//i.test(e.source),
+  );
+  const researchSucceeded =
+    Boolean(mission.researchProvider) || citedFindings.length > 0;
+
+  /** Only research-pass failures — never option-generation “model not configured”. */
+  const researchExecutionFailed = researchGaps.some((g) =>
     /not configured|unavailable|provider|no useful|0 hit|zero hit|could not|failed/i.test(g),
   );
-  const noCitationsWhenWebExpected =
+  const webExpectedEmpty =
     (mission.researchMode === "web" || mission.researchMode === "combined") &&
-    genCitations.length === 0 &&
-    (mission.researchPassCompletedAt != null || researchGaps.length > 0);
+    mission.researchPassCompletedAt != null &&
+    !researchSucceeded &&
+    supplied.length === 0;
 
-  if (providerGap || (noCitationsWhenWebExpected && supplied.length === 0 && gaps.length === 0)) {
+  if (researchExecutionFailed || webExpectedEmpty) {
     return {
       recommendation: "pause_pending_evidence",
       rationale:
@@ -137,11 +148,15 @@ export function deriveAgentRecommendation(mission: SupervisedMission): Recommend
     };
   }
 
-  if (supplied.length >= 1 || genCitations.length >= 1) {
+  if (supplied.length >= 1 || genCitations.length >= 1 || researchSucceeded) {
+    const modelGap = (mission.proposal?.generation.gaps ?? []).some((g) =>
+      /model provider|not configured|provider not configured/i.test(g),
+    );
     return {
       recommendation: "proceed_bounded_test",
-      rationale:
-        "Enough support exists to justify a specific bounded next test—not a prediction of business success.",
+      rationale: modelGap
+        ? "Cited or supplied findings support a bounded next test—not a prediction of business success. Option drafts are simulated because a model provider is not configured; that is not a research failure."
+        : "Enough support exists to justify a specific bounded next test—not a prediction of business success.",
       executionLimited: false,
     };
   }

@@ -107,6 +107,48 @@ describe("P-A verdict model", () => {
     expect(draft.executionLimited).toBe(false);
   });
 
+  it("does not treat missing option-model as a research execution failure", () => {
+    const draft = deriveAgentRecommendation(
+      baseMission({
+        researchMode: "combined",
+        researchPassCompletedAt: new Date().toISOString(),
+        researchProvider: "tavily",
+        evidence: [
+          {
+            id: "e3",
+            statement: "[Cited · tavily] Meal-prep subscriptions suit scheduled office deliveries.",
+            source: "https://example.com/meal-prep",
+            classification: "supplied",
+          },
+          {
+            id: "e2",
+            statement: "Specialists should research before asking the founder.",
+            source: "Research-first default",
+            classification: "gap",
+          },
+        ],
+        proposal: {
+          action: "compare_options",
+          version: 1,
+          scopeHash: "scope".padEnd(16, "0"),
+          options: [{ id: "o1", title: "Test", tradeoff: "t", basis: "e3" }],
+          generation: {
+            ran: false,
+            label: "not run — provider not configured",
+            provider: null,
+            model: null,
+            output: "",
+            citations: [],
+            gaps: ["Model provider is not configured."],
+          },
+        },
+      }),
+    );
+    expect(draft.recommendation).toBe("proceed_bounded_test");
+    expect(draft.executionLimited).toBe(false);
+    expect(draft.rationale).toMatch(/simulated|model provider/i);
+  });
+
   it("detects disagreement without erasing alignment helper", () => {
     expect(pathAgreesWithRecommendation("close_case", "do_not_pursue")).toBe(true);
     expect(
