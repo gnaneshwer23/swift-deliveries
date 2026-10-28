@@ -167,32 +167,32 @@ export const getSupervisedMissionHome = createServerFn({ method: "GET" })
           const next = nextRequiredAction(mission);
           const { investigationPaused, openQuestionCount } = studioInboxFields(mission);
           return {
-          id: mission.id,
-          question: mission.brief.question,
-          stage: mission.stage,
-          nextTitle: next.title,
-          next,
-          investigationPaused,
-          openQuestionCount,
-          objective: mission.brief.outcome,
-          generation: mission.proposal?.generation.label ?? "No comparison recorded",
-          decisionRecorded: !!mission.approval,
-          outputReady: !!mission.artefact,
-          observationRecorded: !!mission.observation,
-          jobStatus: mission.job.status,
-          hasFollowUp: mission.followUp?.status === "approved",
-          updatedAt: mission.updatedAt,
-          usageConsumed: mission.usageConsumed,
-          usageCeiling: mission.usageCeiling,
-          favourite: Boolean(mission.studioMeta?.favourite),
-          archived: Boolean(mission.studioMeta?.archived),
-          monitoringStatus: mission.watchtower?.enabled
-            ? mission.watchtower.lastSuccessfulCheckAt || mission.watchtower.nextScheduledCheckAt
-              ? `Last ${mission.watchtower.lastSuccessfulCheckAt ?? "none"} · next ${mission.watchtower.nextScheduledCheckAt ?? "none"}`
-              : `Preferences (${mission.watchtower.frequency}) — runner not live`
-            : "Monitoring off",
-          links: learningLinks(mission),
-        };
+            id: mission.id,
+            question: mission.brief.question,
+            stage: mission.stage,
+            nextTitle: next.title,
+            next,
+            investigationPaused,
+            openQuestionCount,
+            objective: mission.brief.outcome,
+            generation: mission.proposal?.generation.label ?? "No comparison recorded",
+            decisionRecorded: !!mission.approval,
+            outputReady: !!mission.artefact,
+            observationRecorded: !!mission.observation,
+            jobStatus: mission.job.status,
+            hasFollowUp: mission.followUp?.status === "approved",
+            updatedAt: mission.updatedAt,
+            usageConsumed: mission.usageConsumed,
+            usageCeiling: mission.usageCeiling,
+            favourite: Boolean(mission.studioMeta?.favourite),
+            archived: Boolean(mission.studioMeta?.archived),
+            monitoringStatus: mission.watchtower?.enabled
+              ? mission.watchtower.lastSuccessfulCheckAt || mission.watchtower.nextScheduledCheckAt
+                ? `Last ${mission.watchtower.lastSuccessfulCheckAt ?? "none"} · next ${mission.watchtower.nextScheduledCheckAt ?? "none"}`
+                : `Preferences (${mission.watchtower.frequency}) — runner not live`
+              : "Monitoring off",
+            links: learningLinks(mission),
+          };
         }),
       };
     } catch (error) {
@@ -591,13 +591,22 @@ export const exportSupervisedMissionZip = createServerFn({ method: "POST" })
     async ({
       context,
       data,
-    }): Promise<{ files: Array<{ path: string; content: string }>; title: string; filename: string }> => {
+    }): Promise<{
+      files: Array<{ path: string; content: string }>;
+      title: string;
+      filename: string;
+    }> => {
       const workspace = await workspaceFor(context.supabase, context.userId);
       const { service } = await serviceFor();
       const mission = await service.get(workspace.id, data.id);
       if (!mission) throw new Error("Mission not found in this workspace.");
       if (!mission.artefact) {
-        throw new Error("Prepare and export the decision pack before downloading the ZIP.");
+        throw new Error("Prepare the decision pack before downloading the ZIP.");
+      }
+      if (!mission.exportBody) {
+        throw new Error(
+          "Export the decision pack (Markdown and PDF) before downloading the ZIP archive.",
+        );
       }
       const { buildSupervisedZip } = await import("@/lib/pilot-mission/supervised-zip");
       return buildSupervisedZip(mission);
@@ -628,7 +637,11 @@ export const exportSupervisedFullArchive = createServerFn({ method: "POST" })
     async ({
       context,
       data,
-    }): Promise<{ files: Array<{ path: string; content: string }>; title: string; filename: string }> => {
+    }): Promise<{
+      files: Array<{ path: string; content: string }>;
+      title: string;
+      filename: string;
+    }> => {
       const workspace = await workspaceFor(context.supabase, context.userId);
       const { service } = await serviceFor();
       const mission = await service.get(workspace.id, data.id);

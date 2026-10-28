@@ -5,15 +5,14 @@
 import {
   AGENT_RECOMMENDATION_LABELS,
   deriveAgentRecommendation,
+  HUMAN_NEXT_PATH_LABELS,
+  normalizeDecisionChoice,
   type AgentRecommendation,
+  type HumanNextPath,
 } from "./verdict";
 import type { SupervisedMission } from "./types";
 
-export type AssessmentDimension =
-  | "feasibility"
-  | "demand"
-  | "proposition"
-  | "next_investment";
+export type AssessmentDimension = "feasibility" | "demand" | "proposition" | "next_investment";
 
 export type AssessmentReading = "supported" | "weak" | "unknown" | "not_assessed";
 
@@ -49,6 +48,11 @@ export type PmBriefingPack = {
   alternatives: string[];
   swot: ActionableSwotItem[];
   smallestNextStep: string;
+  humanNextPath: HumanNextPath | null;
+  humanNextPathLabel: string | null;
+  /** Human path recorded and differs from agent recommendation. */
+  disagreesWithRecommendation: boolean;
+  humanDecisionNote: string | null;
   roleDisclosure: string;
   honesty: string;
 };
@@ -93,12 +97,7 @@ export function buildPmBriefingPack(mission: SupervisedMission): PmBriefingPack 
     {
       dimension: "feasibility",
       title: "Technically feasible?",
-      reading:
-        techSupport.length > 0
-          ? "supported"
-          : ready
-            ? "unknown"
-            : "not_assessed",
+      reading: techSupport.length > 0 ? "supported" : ready ? "unknown" : "not_assessed",
       summary:
         techSupport.length > 0
           ? "Record includes signals that the proposed functionality is plausible to implement — not a delivery commitment."
@@ -197,8 +196,7 @@ export function buildPmBriefingPack(mission: SupervisedMission): PmBriefingPack 
       basis: `${altSignals[0].id}: ${altSignals[0].statement.slice(0, 160)}`,
       implication:
         "Do not position a common feature alone as differentiation without segment-specific evidence.",
-      nextQuestion:
-        "Is there a workflow those alternatives serve poorly for your target customer?",
+      nextQuestion: "Is there a workflow those alternatives serve poorly for your target customer?",
     });
   }
   if (swot.length === 0 && ready) {
@@ -227,6 +225,10 @@ export function buildPmBriefingPack(mission: SupervisedMission): PmBriefingPack 
       (o) => `${o.title} — ${o.tradeoff}${o.basis ? ` (basis: ${o.basis})` : ""}`,
     ) ?? [];
 
+  const approval = mission.approval;
+  const humanNextPath = approval ? normalizeDecisionChoice(approval.choice) : null;
+  const disagreesWithRecommendation = approval?.disagreesWithRecommendation === true;
+
   return {
     version: "pm-briefing-v1",
     ready,
@@ -241,6 +243,10 @@ export function buildPmBriefingPack(mission: SupervisedMission): PmBriefingPack 
     alternatives,
     swot,
     smallestNextStep,
+    humanNextPath,
+    humanNextPathLabel: humanNextPath ? HUMAN_NEXT_PATH_LABELS[humanNextPath] : null,
+    disagreesWithRecommendation,
+    humanDecisionNote: approval?.note?.trim() ? approval.note.trim() : null,
     roleDisclosure:
       "This briefing is from the DeliverX AI product manager role — not a human reviewer unless a human later attests.",
     honesty: draft.executionLimited
@@ -249,4 +255,66 @@ export function buildPmBriefingPack(mission: SupervisedMission): PmBriefingPack 
         ? "Options used a configured model; assessments still cite the evidence register."
         : "Option drafts may be simulated; assessments do not invent interviews or customers.",
   };
+}
+
+/** Focused briefing markdown — same narrative as the Quiet Studio summary. */
+export function buildPmBriefingMarkdown(mission: SupervisedMission): string {
+  const pack = buildPmBriefingPack(mission);
+  if (!pack.ready) {
+    return `# Product briefing\n\nNot ready — compare options first.\n`;
+  }
+  return [
+    `# Product briefing`,
+    ``,
+    pack.roleDisclosure,
+    pack.honesty,
+    ``,
+    `## Recommendation`,
+    pack.recommendationLabel ?? "Pending",
+    pack.recommendationRationale,
+    ``,
+    `## Supporting evidence`,
+    ...(pack.supporting.length
+      ? pack.supporting.map((l) => `- ${l}`)
+      : ["- None on the register yet."]),
+    ``,
+    `## Counterevidence & gaps`,
+    ...(pack.counterevidence.length
+      ? pack.counterevidence.map((l) => `- ${l}`)
+      : ["- None labelled yet."]),
+    ``,
+    `## Important unknowns`,
+    ...(pack.unknowns.length ? pack.unknowns.map((l) => `- ${l}`) : ["- None labelled yet."]),
+    ``,
+    pack.disagreesWithRecommendation && pack.humanNextPathLabel
+      ? [
+          `## Human decision (differs from recommendation)`,
+          `- Agent recommendation on record: ${pack.recommendationLabel ?? "Pending"}`,
+          `- Human next path: ${pack.humanNextPathLabel}`,
+          `- The recommendation is not erased when you choose a different path.`,
+          pack.humanDecisionNote ? `- Note: ${pack.humanDecisionNote}` : "",
+          ``,
+        ].join("\n")
+      : pack.humanNextPathLabel
+        ? [`## Human next path`, `- ${pack.humanNextPathLabel}`, ``].join("\n")
+        : "",
+    `## Smallest defensible next step`,
+    pack.smallestNextStep,
+    ``,
+    `## Separate assessments`,
+    ...pack.assessments.map(
+      (a) =>
+        `- ${a.title} — ${a.reading.replaceAll("_", " ")}. ${a.summary}${
+          a.basisIds.length ? ` (basis: ${a.basisIds.join(", ")})` : ""
+        }`,
+    ),
+    ``,
+    `## Actionable SWOT`,
+    ...pack.swot.map(
+      (s) =>
+        `- **${s.kind}:** ${s.statement}\n  - Basis: ${s.basis}\n  - Implication: ${s.implication}\n  - Next question: ${s.nextQuestion}`,
+    ),
+  ]
+    .filter((line) => line !== "")
+    .join("\n");
 }

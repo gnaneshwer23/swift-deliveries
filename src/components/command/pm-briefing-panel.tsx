@@ -33,6 +33,26 @@ export function PmBriefingPanel({ mission }: { mission: SupervisedMission }) {
         </>
       ) : null}
 
+      {pack.disagreesWithRecommendation && pack.humanNextPathLabel ? (
+        <div className="ps-pm-briefing-disagree" role="status">
+          <h4 className="ps-pm-briefing-h">Human path vs recommendation</h4>
+          <p className="text-sm">
+            Recommendation stays on the record: <strong>{pack.recommendationLabel}</strong>
+          </p>
+          <p className="text-sm">
+            Your authorised path: <strong>{pack.humanNextPathLabel}</strong>
+          </p>
+          {pack.humanDecisionNote ? (
+            <p className="cc-muted text-sm">Note: {pack.humanDecisionNote}</p>
+          ) : null}
+        </div>
+      ) : pack.humanNextPathLabel ? (
+        <>
+          <h4 className="ps-pm-briefing-h">Human next path</h4>
+          <p className="text-sm">{pack.humanNextPathLabel}</p>
+        </>
+      ) : null}
+
       <h4 className="ps-pm-briefing-h">Separate assessments</h4>
       <ul className="ps-pm-assessments">
         {pack.assessments.map((item) => (

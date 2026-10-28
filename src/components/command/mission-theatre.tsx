@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { InvestigationExperience } from "@/components/command/investigation-experience";
 import { IntelligenceCanvasPanel } from "@/components/command/intelligence-canvas-panel";
 import { ListenBriefButton } from "@/components/command/listen-brief-button";
+import { FocusedPmBriefing } from "@/components/command/focused-pm-briefing";
 import { PmBriefingPanel } from "@/components/command/pm-briefing-panel";
 import {
   buildSequence,
@@ -657,6 +658,7 @@ function ActWork({
           onError={onError}
         />
       </div>
+      <FocusedPmBriefing mission={mission} />
       {nowLine}
       {gateBlock}
     </>

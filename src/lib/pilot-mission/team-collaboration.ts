@@ -21,10 +21,7 @@ export const INVESTIGATION_TASK_KEYS = [
 export type InvestigationTaskKey = (typeof INVESTIGATION_TASK_KEYS)[number];
 
 export type CollaborationEdgeKind =
-  | "planned_dependency"
-  | "actual_share"
-  | "actual_use"
-  | "resulting_artefact";
+  "planned_dependency" | "actual_share" | "actual_use" | "resulting_artefact";
 
 export type SpecialistAssignment = {
   taskKey: string;
@@ -315,10 +312,7 @@ export function applyOptionsComparedCollaboration(input: {
   return record;
 }
 
-function handoffChainForFinding(
-  record: TeamCollaborationRecord,
-  findingId: string,
-): string[] {
+function handoffChainForFinding(record: TeamCollaborationRecord, findingId: string): string[] {
   const orderedKeys: InvestigationTaskKey[] = [
     "register_evidence",
     "synthesise_findings",
@@ -351,14 +345,10 @@ export function applyRecommendationCollaboration(input: {
   const findingIds = primarySuppliedFindingIds(input.evidence);
   const primaryId =
     findingIds.find((id) =>
-      input.record.handoffs.some(
-        (h) => h.sourceFindingId === id || h.evidenceIds.includes(id),
-      ),
+      input.record.handoffs.some((h) => h.sourceFindingId === id || h.evidenceIds.includes(id)),
     ) ?? findingIds[0];
 
-  const derivedFromHandoffIds = primaryId
-    ? handoffChainForFinding(input.record, primaryId)
-    : [];
+  const derivedFromHandoffIds = primaryId ? handoffChainForFinding(input.record, primaryId) : [];
 
   const recommendation: AgentRecommendationRef = {
     recommendation: input.draft.recommendation,
@@ -405,8 +395,85 @@ export function traceFindingToRecommendation(
   };
 }
 
-export function ensureTeamCollaboration(mission: SupervisedMission): TeamCollaborationRecord | null {
+export function ensureTeamCollaboration(
+  mission: SupervisedMission,
+): TeamCollaborationRecord | null {
   if (mission.teamCollaboration) return mission.teamCollaboration;
   if (!mission.team) return null;
   return initTeamCollaboration(mission.team, mission.updatedAt);
+}
+
+const EDGE_EXPORT_LABELS: Record<CollaborationEdgeKind, string> = {
+  planned_dependency: "Planned dependency",
+  actual_share: "Information shared",
+  actual_use: "Downstream use",
+  resulting_artefact: "Resulting artefact",
+};
+
+/** Download-facing collaboration record — structured summaries only, no fabricated dialogue. */
+export function buildTeamCollaborationMarkdown(mission: SupervisedMission): string | null {
+  const record = ensureTeamCollaboration(mission);
+  if (!record) return null;
+
+  const lines: string[] = [
+    `## Recorded team collaboration`,
+    ``,
+    `Structured assignments and handoffs from persisted events. Simulated drafts are labelled.`,
+    ``,
+    `## Assignments`,
+    ...record.assignments.map(
+      (a) =>
+        `- **${a.ownerLabel}** (${a.taskKey}${a.capabilityId ? ` · ${a.capabilityId}` : ""}): ${a.why}`,
+    ),
+    ``,
+  ];
+
+  if (record.handoffs.length) {
+    lines.push(`## Handoffs`, ``);
+    for (const h of record.handoffs.filter((x) => !x.id.endsWith("-use"))) {
+      lines.push(
+        `### ${h.fromTaskKey} → ${h.toTaskKey}`,
+        `- Production: ${h.productionLabel}`,
+        `- Finding: ${h.findingSummary}`,
+        `- Request: ${h.request}`,
+        h.evidenceIds.length ? `- Evidence ids: ${h.evidenceIds.join(", ")}` : "",
+        h.uncertainty ? `- Uncertainty: ${h.uncertainty}` : "",
+        h.actualResult ? `- Result: ${h.actualResult}` : "",
+        ``,
+      );
+    }
+  } else {
+    lines.push(`## Handoffs`, `- None recorded yet.`, ``);
+  }
+
+  lines.push(
+    `## Information flow`,
+    ...record.edges.map(
+      (e) =>
+        `- ${EDGE_EXPORT_LABELS[e.kind]}: ${e.fromTaskKey} → ${e.toTaskKey} — ${e.label}${
+          e.evidenceIds?.length ? ` (evidence: ${e.evidenceIds.join(", ")})` : ""
+        }`,
+    ),
+    ``,
+  );
+
+  if (record.recommendation) {
+    const primaryId = record.recommendation.sourceFindingIds[0];
+    const trace =
+      primaryId && mission.evidence.length
+        ? traceFindingToRecommendation(record, primaryId, mission.evidence)
+        : null;
+    lines.push(
+      `## Agent recommendation (collaboration record)`,
+      `- ${AGENT_RECOMMENDATION_LABELS[record.recommendation.recommendation]}`,
+      `- Rationale: ${record.recommendation.rationale}`,
+      record.recommendation.executionLimited ? `- Execution-limited: yes` : "",
+      trace
+        ? `- Evidence trace: finding \`${trace.findingId}\` via handoffs ${trace.handoffIds.join(" → ")}.`
+        : "",
+      ``,
+    );
+  }
+
+  return lines.filter((line) => line !== "").join("\n");
 }
