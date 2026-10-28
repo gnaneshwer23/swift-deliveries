@@ -65,6 +65,7 @@ function baseMission(over: Partial<SupervisedMission> = {}): SupervisedMission {
     researchProvider: null,
     team: null,
     continuationPlan: null,
+    caseRoom: null,
     activity: [],
     projectId: null,
     updatedAt: new Date().toISOString(),

@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
 import { ConversationPanel } from "@/components/command/conversation-panel";
+import { CaseRoomPanel } from "@/components/command/case-room-panel";
 import { MissionTheatre } from "@/components/command/mission-theatre";
 import { SupervisedLearningLoop } from "@/components/command/supervised-learning-loop";
 import {
@@ -473,6 +474,15 @@ function SupervisedMissionPage() {
               Download continuation plan
             </button>
           </section>
+        ) : null}
+        {mission.caseRoom ? (
+          <CaseRoomPanel
+            mission={mission}
+            recordVersion={mission.version}
+            missionId={missionId}
+            onDone={invalidate}
+            onError={onError}
+          />
         ) : null}
         {mission.invalidatedApprovals.length ? (
           <section className="cc-panel" aria-label="Cleared approvals">

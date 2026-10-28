@@ -398,6 +398,33 @@ export const decideSupervisedMission = createServerFn({ method: "POST" })
     return view(mission, null);
   });
 
+export const recordSupervisedCaseStepGate = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        expectedVersion: z.number().int().positive(),
+        gate: z.enum(["proceed", "revise", "pause", "stop"]),
+        note: z.string().max(2000).optional().default(""),
+      })
+      .parse(data),
+  )
+  .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
+    const workspace = await workspaceFor(context.supabase, context.userId);
+    const { service } = await serviceFor();
+    const mission = await service.recordCaseStepGate({
+      workspaceId: workspace.id,
+      id: data.id,
+      expectedVersion: data.expectedVersion,
+      gate: data.gate,
+      note: data.note,
+      actorId: context.userId,
+      nowMs: Date.now(),
+    });
+    return view(mission, null);
+  });
+
 export const prepareSupervisedArtefact = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .validator((data: unknown) =>

@@ -47,6 +47,7 @@ import {
   type OutcomeReview,
   type SupervisedMission,
 } from "./types";
+import { applyCaseStepGate, buildCaseRoom, type CaseStepGate } from "./case-room";
 import { buildContinuationPlan } from "./continuation-plan";
 import {
   deriveAgentRecommendation,
@@ -516,6 +517,7 @@ export class SupervisedMissionService {
       researchProvider: null,
       team,
       continuationPlan: null,
+      caseRoom: null,
       projectId: input.projectId ?? null,
       activity: [
         activityEvent({
@@ -989,17 +991,27 @@ export class SupervisedMissionService {
       exportBody: null,
       exportPdfBase64: null,
       continuationPlan: null,
+      caseRoom: null,
       updatedAt: decidedAt,
     };
     const continuationPlan = buildContinuationPlan({
       mission: withApproval,
       nowMs: input.nowMs,
     });
-    const next: SupervisedMission = {
+    const withPlan: SupervisedMission = {
       ...withApproval,
       continuationPlan,
+    };
+    const caseRoom = buildCaseRoom({
+      mission: withPlan,
+      plan: continuationPlan,
+      nowMs: input.nowMs,
+    });
+    const next: SupervisedMission = {
+      ...withPlan,
+      caseRoom,
       activity: pushActivity(
-        withApproval,
+        withPlan,
         activityEvent({
           at: decidedAt,
           taskKey: "human_decision",
@@ -1007,7 +1019,54 @@ export class SupervisedMissionService {
           summary: `Act B continuation plan drafted for path “${humanNextPath}” (${continuationPlan.roles.length} continuation roles). Distinct from the Act A research team.`,
           actor: "system",
         }),
+        activityEvent({
+          at: decidedAt,
+          taskKey: null,
+          kind: "case_room.opened",
+          summary: `Act C case room opened on the same case (${caseRoom.folders.length} agent folders, ${caseRoom.artefacts.length} artefacts, ${caseRoom.flowEdges.length} flow edges).`,
+          actor: "system",
+        }),
       ),
+    };
+    return this.store.save(next, current.version);
+  }
+
+  async recordCaseStepGate(input: {
+    workspaceId: string;
+    expectedVersion?: number;
+    id: string;
+    gate: CaseStepGate;
+    note: string;
+    actorId: string;
+    nowMs: number;
+  }): Promise<SupervisedMission> {
+    const current = await this.must(input.workspaceId, input.id);
+    if (input.expectedVersion !== undefined && current.version !== input.expectedVersion) {
+      throw new MissionConflictError(
+        "This mission changed in another session. Your edits were not saved. Review the latest record before trying again.",
+      );
+    }
+    this.assertOpen(current);
+    if (!current.caseRoom) {
+      throw new Error("Open the case room after recording a next path first.");
+    }
+    const at = new Date(input.nowMs).toISOString();
+    const caseRoom = applyCaseStepGate(current.caseRoom, input.gate, input.note, input.nowMs);
+    const next: SupervisedMission = {
+      ...current,
+      version: current.version + 1,
+      caseRoom,
+      activity: pushActivity(
+        current,
+        activityEvent({
+          at,
+          taskKey: "human_decision",
+          kind: "case_room.step_gate",
+          summary: `Human recorded case step gate “${input.gate}”. Does not start a new mission.`,
+          actor: input.actorId,
+        }),
+      ),
+      updatedAt: at,
     };
     return this.store.save(next, current.version);
   }

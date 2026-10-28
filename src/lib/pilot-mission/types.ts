@@ -1,3 +1,4 @@
+import type { CaseRoom, CaseStepGate } from "./case-room";
 import type { ContinuationPlan } from "./continuation-plan";
 import type { ResearchMode } from "./research-mode";
 import type { PilotActivityEvent, PilotTeamPlan } from "./specialist-team";
@@ -5,6 +6,7 @@ import type { AgentRecommendation, DecisionChoice, HumanNextPath } from "./verdi
 
 export type { AgentRecommendation, DecisionChoice, HumanNextPath } from "./verdict";
 export type { ContinuationPlan } from "./continuation-plan";
+export type { CaseRoom, CaseStepGate } from "./case-room";
 
 /** Exact record stored when no model provider is configured. */
 export const NOT_RUN_LABEL = "not run — provider not configured";
@@ -263,6 +265,10 @@ export type SupervisedMission = {
    * Distinct from the Act A research `team`. Additive — null on older missions.
    */
   continuationPlan: ContinuationPlan | null;
+  /**
+   * Act C case room for this mission (same persistent case). Additive — null until P-B plan exists.
+   */
+  caseRoom: CaseRoom | null;
   /** Persisted task events only — no fake chat or timer theatre. */
   activity: PilotActivityEvent[];
   /**
