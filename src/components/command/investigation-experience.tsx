@@ -50,7 +50,10 @@ export function InvestigationExperience({
           </ul>
         </div>
 
-        <ul className="ps-investigation-static" aria-label="Investigation keywords">
+        <ul
+          className="ps-investigation-static ps-investigation-static-a11y"
+          aria-label="Investigation keywords"
+        >
           {experience.keywords.length ? (
             experience.keywords.map((kw) => (
               <li key={kw.id}>

@@ -4,7 +4,7 @@
  * No fabricated agent dialogue — structured summaries and event labels only.
  */
 import type { PilotSpecialistTask, PilotTeamPlan } from "./specialist-team";
-import type { EvidenceItem, SupervisedMission } from "./types";
+import type { EvidenceItem, OptionDraft, SupervisedMission } from "./types";
 import type { AgentRecommendation, RecommendationDraft } from "./verdict";
 import { AGENT_RECOMMENDATION_LABELS } from "./verdict";
 
@@ -70,6 +70,9 @@ export type AgentRecommendationRef = {
   derivedFromHandoffIds: string[];
   sourceFindingIds: string[];
   recordedAt: string;
+  /** How the recommendation was produced — never implied as model output unless true. */
+  productionLabel: "deterministic rules" | "model" | "human";
+  modelId: string | null;
 };
 
 export type TeamCollaborationRecord = {
@@ -86,6 +89,12 @@ export type CollaborationTrace = {
   handoffIds: string[];
   recommendation: AgentRecommendationRef;
 };
+
+const WAVE1_TRACE_TRANSITIONS: ReadonlyArray<[InvestigationTaskKey, InvestigationTaskKey]> = [
+  ["register_evidence", "synthesise_findings"],
+  ["synthesise_findings", "draft_options"],
+  ["draft_options", "structure_recommendation"],
+];
 
 function taskActor(task: PilotSpecialistTask): string {
   return task.capabilityId ?? task.ownerLabel;
@@ -150,7 +159,29 @@ function upsertHandoff(
     ...(handoff.evidenceIds.length ? { evidenceIds: handoff.evidenceIds } : {}),
   };
   const edges = [...record.edges.filter((e) => e.id !== edge.id), edge];
-  return { ...record, handoffs, edges };
+  let next: TeamCollaborationRecord = { ...record, handoffs, edges };
+  if (handoff.consumedAt) {
+    const useHandoff: TeamHandoff = { ...handoff, id: `${handoff.id}-use` };
+    next = upsertHandoffUseEdge(next, useHandoff);
+  }
+  return next;
+}
+
+function upsertHandoffUseEdge(
+  record: TeamCollaborationRecord,
+  handoff: TeamHandoff,
+): TeamCollaborationRecord {
+  const edge: CollaborationEdge = {
+    id: `edge-actual_use-${handoff.id}`,
+    kind: "actual_use",
+    fromTaskKey: handoff.fromTaskKey,
+    toTaskKey: handoff.toTaskKey,
+    label: handoff.findingSummary.slice(0, 120),
+    handoffId: handoff.id,
+    ...(handoff.evidenceIds.length ? { evidenceIds: handoff.evidenceIds } : {}),
+  };
+  const edges = [...record.edges.filter((e) => e.id !== edge.id), edge];
+  return { ...record, edges };
 }
 
 function taskByKey(team: PilotTeamPlan, key: string): PilotSpecialistTask | undefined {
@@ -166,6 +197,92 @@ function primarySuppliedFindingIds(evidence: EvidenceItem[]): string[] {
         !/^Research pass/i.test(e.source),
     )
     .map((e) => e.id);
+}
+
+/** Findings cited in option drafts or generation — not every row on the register. */
+export function evidenceIdsUsedInComparison(
+  evidence: EvidenceItem[],
+  options?: OptionDraft[],
+): string[] {
+  const valid = new Set(evidence.map((e) => e.id));
+  const used = new Set<string>();
+  for (const opt of options ?? []) {
+    const basis = opt.basis?.trim();
+    if (basis && valid.has(basis)) used.add(basis);
+    for (const item of evidence) {
+      if (opt.tradeoff.includes(item.id) || opt.title.includes(item.id)) used.add(item.id);
+    }
+  }
+  if (used.size) return [...used];
+  const primary = primarySuppliedFindingIds(evidence);
+  return primary[0] ? [primary[0]] : [];
+}
+
+/** Persisted collaboration on the mission, initializing when the team exists but the field is null. */
+export function collaborationRecordForUpdate(
+  mission: SupervisedMission,
+  at: string,
+): TeamCollaborationRecord | null {
+  if (!mission.team) return null;
+  return mission.teamCollaboration ?? initTeamCollaboration(mission.team, at);
+}
+
+export function clearStaleRecommendation(
+  record: TeamCollaborationRecord,
+  evidence: EvidenceItem[],
+): TeamCollaborationRecord {
+  if (!record.recommendation) return record;
+  const supplied = new Set(primarySuppliedFindingIds(evidence));
+  const stale = record.recommendation.sourceFindingIds.some((id) => !supplied.has(id));
+  if (!stale) return record;
+  return {
+    ...record,
+    recommendation: null,
+    edges: record.edges.filter((e) => e.id !== "edge-artefact-recommendation"),
+  };
+}
+
+/** Evidence register edits — does not claim synthesis or specialist consumption. */
+export function applyEvidenceRegisterCollaboration(input: {
+  record: TeamCollaborationRecord;
+  team: PilotTeamPlan;
+  evidence: EvidenceItem[];
+  at: string;
+}): TeamCollaborationRecord {
+  const from = taskByKey(input.team, "register_evidence");
+  const to = taskByKey(input.team, "synthesise_findings");
+  if (!from || !to) return input.record;
+
+  const findingIds = primarySuppliedFindingIds(input.evidence);
+  const gapCount = input.evidence.filter((e) => e.classification === "gap").length;
+  const primaryId = findingIds[0] ?? null;
+  const primary = primaryId ? input.evidence.find((e) => e.id === primaryId) : undefined;
+
+  const handoff: TeamHandoff = {
+    id: "ho-evidence-register-update",
+    fromTaskKey: from.key,
+    toTaskKey: to.key,
+    fromActor: taskActor(from),
+    toActor: taskActor(to),
+    sourceTaskKey: from.key,
+    findingSummary: primary
+      ? `Registered finding ${primary.id}: ${primary.statement.slice(0, 160)}`
+      : `Evidence register updated (${findingIds.length} supplied, ${gapCount} gap note(s)).`,
+    sourceFindingId: primaryId,
+    request: "Findings await synthesis when a research pass completes.",
+    evidenceIds: primaryId ? [primaryId] : findingIds.slice(0, 12),
+    uncertainty:
+      gapCount > 0
+        ? `${gapCount} gap(s) remain on the register; options must not invent retrieval.`
+        : null,
+    expectedDownstream: "Synthesis memo for draft_options (not recorded until a pass runs).",
+    actualResult: "Evidence register saved — synthesis handoff not consumed.",
+    sharedAt: input.at,
+    consumedAt: null,
+    productionLabel: "persisted event",
+  };
+
+  return upsertHandoff(input.record, handoff, "actual_share");
 }
 
 export function applyResearchPassCollaboration(input: {
@@ -196,39 +313,36 @@ export function applyResearchPassCollaboration(input: {
       : `Evidence register updated (${findingIds.length} supplied, ${gapCount} gap note(s)).`,
     sourceFindingId: primaryId,
     request: "Group findings, assumptions and gaps for the options step.",
-    evidenceIds: findingIds.slice(0, 12),
+    evidenceIds: primaryId ? [primaryId] : findingIds.slice(0, 12),
     uncertainty:
       gapCount > 0
         ? `${gapCount} gap(s) remain on the register; options must not invent retrieval.`
         : null,
     expectedDownstream: "Synthesis memo consumable by draft_options.",
-    actualResult: `Synthesis recorded on the evidence register${input.provider ? ` (${input.provider})` : ""}.`,
+    actualResult: `Research pass synthesis recorded on the evidence register${input.provider ? ` (${input.provider})` : ""}.`,
     sharedAt: input.at,
     consumedAt: input.at,
     productionLabel: "persisted event",
   };
 
-  let next = upsertHandoff(input.record, handoff, "actual_share");
-  next = upsertHandoff(next, { ...handoff, id: "ho-evidence-to-synthesis-use" }, "actual_use");
-  return next;
+  return upsertHandoff(input.record, handoff, "actual_share");
 }
 
 export function applyOptionsComparedCollaboration(input: {
   record: TeamCollaborationRecord;
   team: PilotTeamPlan;
   evidence: EvidenceItem[];
+  options?: OptionDraft[];
   generationLabel: string;
   generationRan: boolean;
   at: string;
 }): TeamCollaborationRecord {
   const synth = taskByKey(input.team, "synthesise_findings");
   const draft = taskByKey(input.team, "draft_options");
-  const challenge = taskByKey(input.team, "challenge_options");
-  const structure = taskByKey(input.team, "structure_recommendation");
-  if (!synth || !draft || !challenge || !structure) return input.record;
+  if (!synth || !draft) return input.record;
 
-  const findingIds = primarySuppliedFindingIds(input.evidence);
-  const productionLabel: TeamHandoff["productionLabel"] = input.generationRan
+  const findingIds = evidenceIdsUsedInComparison(input.evidence, input.options);
+  const optionsProductionLabel: TeamHandoff["productionLabel"] = input.generationRan
     ? "model"
     : "simulated draft";
 
@@ -241,68 +355,28 @@ export function applyOptionsComparedCollaboration(input: {
     fromActor: taskActor(synth),
     toActor: taskActor(draft),
     sourceTaskKey: synth.key,
-    findingSummary: "Findings and gaps from synthesis feed option drafting.",
+    findingSummary:
+      "Comparison output stored for draft_options (challenge and recommendation steps not run).",
     sourceFindingId: findingIds[0] ?? null,
-    request: "Draft option set with trade-offs grounded in the register.",
-    evidenceIds: findingIds.slice(0, 12),
+    request: "Option set stored from comparison — independent challenge not recorded here.",
+    evidenceIds: findingIds,
     uncertainty: null,
-    expectedDownstream: "Option set for challenge and recommendation.",
-    actualResult: `Options stored (${input.generationLabel}).`,
+    expectedDownstream: "Human decision on stored options.",
+    actualResult: `Options stored (${input.generationLabel}). Specialist challenge/recommendation handoffs are not recorded until those steps run.`,
     sharedAt: input.at,
-    consumedAt: input.at,
-    productionLabel,
+    consumedAt: null,
+    productionLabel: optionsProductionLabel,
   };
   record = upsertHandoff(record, toDraft, "actual_share");
-  record = upsertHandoff(record, { ...toDraft, id: "ho-synthesis-to-options-use" }, "actual_use");
-
-  const toChallenge: TeamHandoff = {
-    id: "ho-options-to-challenge",
-    fromTaskKey: draft.key,
-    toTaskKey: challenge.key,
-    fromActor: taskActor(draft),
-    toActor: taskActor(challenge),
-    sourceTaskKey: draft.key,
-    findingSummary: "Draft options require independent challenge before recommendation.",
-    sourceFindingId: null,
-    request: "Stress-test trade-offs and missing evidence.",
-    evidenceIds: findingIds.slice(0, 8),
-    uncertainty: "Challenge may surface gaps not resolved in drafting.",
-    expectedDownstream: "Challenge notes for structure_recommendation.",
-    actualResult: "Challenge pass recorded with comparison output.",
-    sharedAt: input.at,
-    consumedAt: input.at,
-    productionLabel,
-  };
-  record = upsertHandoff(record, toChallenge, "actual_share");
-
-  const toStructure: TeamHandoff = {
-    id: "ho-challenge-to-recommendation",
-    fromTaskKey: challenge.key,
-    toTaskKey: structure.key,
-    fromActor: taskActor(challenge),
-    toActor: taskActor(structure),
-    sourceTaskKey: challenge.key,
-    findingSummary: "Challenged options ready for four-outcome recommendation.",
-    sourceFindingId: findingIds[0] ?? null,
-    request: "Produce diligence recommendation (test / revise / pause / do not pursue).",
-    evidenceIds: findingIds.slice(0, 12),
-    uncertainty: null,
-    expectedDownstream: "Agent recommendation for human next-path choice.",
-    actualResult: "Recommendation draft prepared from evidence register.",
-    sharedAt: input.at,
-    consumedAt: input.at,
-    productionLabel,
-  };
-  record = upsertHandoff(record, toStructure, "actual_share");
 
   const artefactEdge: CollaborationEdge = {
     id: "edge-artefact-proposal",
     kind: "resulting_artefact",
-    fromTaskKey: structure.key,
-    toTaskKey: structure.key,
+    fromTaskKey: draft.key,
+    toTaskKey: "human_decision",
     label: "Comparison proposal stored on mission record",
     artefactRef: "proposal:compare_options",
-    evidenceIds: findingIds.slice(0, 8),
+    evidenceIds: findingIds,
   };
   record = {
     ...record,
@@ -312,51 +386,106 @@ export function applyOptionsComparedCollaboration(input: {
   return record;
 }
 
-function handoffChainForFinding(record: TeamCollaborationRecord, findingId: string): string[] {
-  const orderedKeys: InvestigationTaskKey[] = [
-    "register_evidence",
-    "synthesise_findings",
-    "draft_options",
-    "challenge_options",
-    "structure_recommendation",
-  ];
-  const ids: string[] = [];
-  for (let i = 0; i < orderedKeys.length - 1; i++) {
-    const from = orderedKeys[i]!;
-    const to = orderedKeys[i + 1]!;
-    const match = record.handoffs.find(
-      (h) =>
-        h.fromTaskKey === from &&
-        h.toTaskKey === to &&
-        !h.id.endsWith("-use") &&
-        (h.sourceFindingId === findingId || h.evidenceIds.includes(findingId)),
+function handoffForTransition(
+  record: TeamCollaborationRecord,
+  findingId: string,
+  from: string,
+  to: string,
+): TeamHandoff | undefined {
+  const matches = record.handoffs.filter(
+    (h) =>
+      h.fromTaskKey === from &&
+      h.toTaskKey === to &&
+      !h.id.endsWith("-use") &&
+      h.id !== "ho-evidence-register-update" &&
+      (h.sourceFindingId === findingId || h.evidenceIds.includes(findingId)),
+  );
+  if (from === "register_evidence" && to === "synthesise_findings") {
+    return (
+      matches.find((h) => h.id === "ho-evidence-to-synthesis") ??
+      matches.find((h) => h.consumedAt !== null)
     );
-    if (match) ids.push(match.id);
+  }
+  return matches[0];
+}
+
+function handoffChainForFinding(
+  record: TeamCollaborationRecord,
+  findingId: string,
+  transitions: ReadonlyArray<
+    [InvestigationTaskKey, InvestigationTaskKey]
+  > = WAVE1_TRACE_TRANSITIONS,
+): string[] {
+  const ids: string[] = [];
+  for (const [from, to] of transitions) {
+    const match = handoffForTransition(record, findingId, from, to);
+    if (!match) return [];
+    ids.push(match.id);
   }
   return ids;
 }
 
 export function applyRecommendationCollaboration(input: {
   record: TeamCollaborationRecord;
+  team: PilotTeamPlan;
   evidence: EvidenceItem[];
   draft: RecommendationDraft;
   at: string;
 }): TeamCollaborationRecord {
-  const findingIds = primarySuppliedFindingIds(input.evidence);
+  const findingIds = evidenceIdsUsedInComparison(input.evidence);
   const primaryId =
     findingIds.find((id) =>
       input.record.handoffs.some((h) => h.sourceFindingId === id || h.evidenceIds.includes(id)),
     ) ?? findingIds[0];
 
-  const derivedFromHandoffIds = primaryId ? handoffChainForFinding(input.record, primaryId) : [];
+  const preDecisionTransitions = WAVE1_TRACE_TRANSITIONS.slice(0, 2);
+  const preChain = primaryId
+    ? handoffChainForFinding(input.record, primaryId, preDecisionTransitions)
+    : [];
+  if (primaryId && preChain.length !== preDecisionTransitions.length) {
+    return { ...input.record, recommendation: null };
+  }
+
+  const draftTask = taskByKey(input.team, "draft_options");
+  const structure = taskByKey(input.team, "structure_recommendation");
+  let record = input.record;
+
+  if (draftTask && structure && primaryId) {
+    const toStructure: TeamHandoff = {
+      id: "ho-options-to-recommendation",
+      fromTaskKey: draftTask.key,
+      toTaskKey: structure.key,
+      fromActor: taskActor(draftTask),
+      toActor: taskActor(structure),
+      sourceTaskKey: draftTask.key,
+      findingSummary:
+        "Deterministic recommendation recorded from evidence register (not model-produced).",
+      sourceFindingId: primaryId,
+      request: "Map register state to diligence recommendation.",
+      evidenceIds: [primaryId],
+      uncertainty: input.draft.executionLimited
+        ? "Execution-limited retrieval on the register."
+        : null,
+      expectedDownstream: "Human next-path choice.",
+      actualResult: `Recommendation: ${AGENT_RECOMMENDATION_LABELS[input.draft.recommendation]}.`,
+      sharedAt: input.at,
+      consumedAt: input.at,
+      productionLabel: "persisted event",
+    };
+    record = upsertHandoff(record, toStructure, "actual_share");
+  }
+
+  const chainIds = primaryId ? handoffChainForFinding(record, primaryId) : [];
 
   const recommendation: AgentRecommendationRef = {
     recommendation: input.draft.recommendation,
     rationale: input.draft.rationale,
     executionLimited: input.draft.executionLimited,
-    derivedFromHandoffIds,
+    derivedFromHandoffIds: chainIds,
     sourceFindingIds: primaryId ? [primaryId] : findingIds.slice(0, 1),
     recordedAt: input.at,
+    productionLabel: "deterministic rules",
+    modelId: null,
   };
 
   const edge: CollaborationEdge = {
@@ -370,9 +499,9 @@ export function applyRecommendationCollaboration(input: {
   };
 
   return {
-    ...input.record,
+    ...record,
     recommendation,
-    edges: [...input.record.edges.filter((e) => e.id !== edge.id), edge],
+    edges: [...record.edges.filter((e) => e.id !== edge.id), edge],
   };
 }
 
@@ -386,7 +515,13 @@ export function traceFindingToRecommendation(
   const item = evidence.find((e) => e.id === findingId);
   if (!item) return null;
   const handoffIds = handoffChainForFinding(record, findingId);
-  if (!handoffIds.length) return null;
+  if (handoffIds.length !== WAVE1_TRACE_TRANSITIONS.length) return null;
+  if (
+    record.recommendation.derivedFromHandoffIds.length !== WAVE1_TRACE_TRANSITIONS.length ||
+    !handoffIds.every((id, i) => record.recommendation!.derivedFromHandoffIds[i] === id)
+  ) {
+    return null;
+  }
   return {
     findingId,
     findingStatement: item.statement,
@@ -466,11 +601,12 @@ export function buildTeamCollaborationMarkdown(mission: SupervisedMission): stri
     lines.push(
       `## Agent recommendation (collaboration record)`,
       `- ${AGENT_RECOMMENDATION_LABELS[record.recommendation.recommendation]}`,
+      `- Production: ${record.recommendation.productionLabel}${record.recommendation.modelId ? ` (${record.recommendation.modelId})` : ""}`,
       `- Rationale: ${record.recommendation.rationale}`,
       record.recommendation.executionLimited ? `- Execution-limited: yes` : "",
       trace
         ? `- Evidence trace: finding \`${trace.findingId}\` via handoffs ${trace.handoffIds.join(" → ")}.`
-        : "",
+        : `- Evidence trace: incomplete — not every specialist step is on the record.`,
       ``,
     );
   }

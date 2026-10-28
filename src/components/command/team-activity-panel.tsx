@@ -17,7 +17,15 @@ const EDGE_LABELS: Record<CollaborationEdgeKind, string> = {
 export function TeamActivityPanel({ mission }: { mission: SupervisedMission }) {
   const inspection = buildMissionInspection(mission);
   const record = ensureTeamCollaboration(mission);
-  if (!record) return null;
+  if (!record) {
+    return (
+      <section className="cc-panel" aria-label="Team activity and handoffs" id="pr-team-activity">
+        <h2 className="cc-panel-title">Team activity</h2>
+        <p className="cc-muted text-sm">No team activity is recorded for this mission.</p>
+      </section>
+    );
+  }
+  const persistedOnly = Boolean(mission.teamCollaboration);
 
   const primaryFindingId = record.recommendation?.sourceFindingIds[0];
   const trace =
@@ -29,8 +37,9 @@ export function TeamActivityPanel({ mission }: { mission: SupervisedMission }) {
     <section className="cc-panel" aria-label="Team activity and handoffs" id="pr-team-activity">
       <h2 className="cc-panel-title">Team activity</h2>
       <p className="cc-muted text-sm">
-        Structured assignments and handoffs from persisted events — not staged agent chat. Simulated
-        drafts are labelled honestly.
+        {persistedOnly
+          ? "Structured assignments and handoffs from persisted events — not staged agent chat. Simulated drafts are labelled honestly."
+          : "Assignments below are derived from the approved plan only — no persisted handoffs or recommendation trace yet."}
       </p>
 
       {inspection.decisionAttention ? (
@@ -158,6 +167,10 @@ export function TeamActivityPanel({ mission }: { mission: SupervisedMission }) {
             {record.recommendation.executionLimited ? " · execution-limited" : ""}
           </p>
           <p className="cc-muted text-sm">{record.recommendation.rationale}</p>
+          <p className="text-xs cc-muted mt-1">
+            Production: {record.recommendation.productionLabel}
+            {record.recommendation.modelId ? ` · ${record.recommendation.modelId}` : ""}
+          </p>
           {trace ? (
             <p className="text-xs cc-muted mt-2">
               Trace: finding {trace.findingId} via handoffs {trace.handoffIds.join(" → ")}.

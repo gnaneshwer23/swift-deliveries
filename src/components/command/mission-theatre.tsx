@@ -589,7 +589,7 @@ function ActWork({
   const nowBeat = selected ?? current;
   const showGate = !viewBeatId || viewBeatId === sequence.currentId || sequence.currentId === null;
 
-  const canvas = (
+  const canvas = quiet ? null : (
     <IntelligenceCanvasPanel
       mission={mission}
       missionId={missionId}
@@ -623,7 +623,11 @@ function ActWork({
   const fullBuild = (
     <>
       <div className="ps-act-investigation-primary">
-        {canvas}
+        {canvas ?? (
+          <p className="cc-muted text-sm">
+            Map and controls are in the investigation panel above (quiet view).
+          </p>
+        )}
         <PmBriefingPanel mission={mission} />
       </div>
       {nowLine}

@@ -3,7 +3,7 @@
  * Keywords, status, and agent lines come from persisted activity, teamCollaboration,
  * and research fields only — never timer-fake progress or fabricated dialogue.
  */
-import { ensureTeamCollaboration } from "./team-collaboration";
+import type { TeamCollaborationRecord } from "./team-collaboration";
 import type { SupervisedMission } from "./types";
 import { nextRequiredAction } from "./types";
 
@@ -60,6 +60,8 @@ const STATE_LABELS: Record<InvestigationRunState, string> = {
   complete: "Investigation complete",
 };
 
+const RECENT_UPDATE_LIMIT = 8;
+
 function keywordFromActivity(
   event: SupervisedMission["activity"][number],
 ): InvestigationKeyword | null {
@@ -90,23 +92,15 @@ function keywordsFromMission(mission: SupervisedMission): InvestigationKeyword[]
     if (out.length >= 8) break;
   }
 
-  const collab = ensureTeamCollaboration(mission);
+  const collab: TeamCollaborationRecord | null = mission.teamCollaboration;
   if (collab) {
     for (const handoff of [...collab.handoffs].reverse()) {
+      if (handoff.id.endsWith("-use")) continue;
       push({
         id: `kw-handoff-${handoff.id}`,
         label: handoff.toTaskKey.replace(/_/g, " "),
         source: "teamCollaboration",
         basis: `handoff:${handoff.id}`,
-      });
-      if (out.length >= 8) break;
-    }
-    for (const assignment of collab.assignments) {
-      push({
-        id: `kw-assign-${assignment.taskKey}`,
-        label: assignment.taskKey.replace(/_/g, " "),
-        source: "teamCollaboration",
-        basis: `assignment:${assignment.taskKey}`,
       });
       if (out.length >= 8) break;
     }
@@ -136,6 +130,7 @@ function keywordsFromMission(mission: SupervisedMission): InvestigationKeyword[]
 
 function updatesFromMission(mission: SupervisedMission): InvestigationAgentUpdate[] {
   const rows: InvestigationAgentUpdate[] = [];
+  const seenHandoffKeys = new Set<string>();
 
   for (const event of mission.activity ?? []) {
     rows.push({
@@ -148,10 +143,14 @@ function updatesFromMission(mission: SupervisedMission): InvestigationAgentUpdat
     });
   }
 
-  const collab = ensureTeamCollaboration(mission);
+  const collab = mission.teamCollaboration;
   if (collab) {
     for (const handoff of collab.handoffs) {
+      if (handoff.id.endsWith("-use")) continue;
       if (!handoff.findingSummary.trim()) continue;
+      const dedupeKey = `${handoff.fromTaskKey}:${handoff.toTaskKey}:${handoff.findingSummary.slice(0, 80)}`;
+      if (seenHandoffKeys.has(dedupeKey)) continue;
+      seenHandoffKeys.add(dedupeKey);
       rows.push({
         id: `handoff-${handoff.id}`,
         at: handoff.sharedAt,
@@ -183,21 +182,34 @@ function updatesFromMission(mission: SupervisedMission): InvestigationAgentUpdat
 
   return rows
     .sort((a, b) => a.at.localeCompare(b.at))
-    .slice(-4)
+    .slice(-RECENT_UPDATE_LIMIT)
     .reverse();
 }
 
-export function deriveInvestigationRunState(mission: SupervisedMission): InvestigationRunState {
+function leaseStillValid(mission: SupervisedMission, nowMs: number): boolean {
+  if (mission.job.status !== "leased") return false;
+  const until = Date.parse(mission.job.leaseUntil ?? "");
+  return Number.isFinite(until) && until > nowMs;
+}
+
+export function deriveInvestigationRunState(
+  mission: SupervisedMission,
+  nowMs: number = Date.now(),
+): InvestigationRunState {
   if (mission.stage === "cancelled") return "idle";
   if (!mission.team?.approvedAt) return "idle";
-
-  if (mission.studioMeta?.investigationPaused) return "interrupted";
-  if (mission.job.status === "failed") return "interrupted";
 
   const next = nextRequiredAction(mission);
   if (next.id === "cancelled" || next.id === "follow_up_approved") return "idle";
 
-  if (mission.job.status === "leased") return "running";
+  if (leaseStillValid(mission, nowMs)) return "running";
+
+  if (mission.job.status === "leased") {
+    return next.id === "recover" ? "interrupted" : "waiting";
+  }
+
+  if (mission.studioMeta?.investigationPaused) return "interrupted";
+  if (mission.job.status === "failed") return "interrupted";
 
   const investigationOpen =
     !mission.approval &&
@@ -235,8 +247,11 @@ export function deriveInvestigationRunState(mission: SupervisedMission): Investi
   return "waiting";
 }
 
-export function buildInvestigationExperience(mission: SupervisedMission): InvestigationExperience {
-  const state = deriveInvestigationRunState(mission);
+export function buildInvestigationExperience(
+  mission: SupervisedMission,
+  nowMs: number = Date.now(),
+): InvestigationExperience {
+  const state = deriveInvestigationRunState(mission, nowMs);
   const next = nextRequiredAction(mission);
   const active = Boolean(mission.team?.approvedAt) && mission.stage !== "cancelled";
 
