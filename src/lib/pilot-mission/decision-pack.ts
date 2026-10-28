@@ -5,6 +5,13 @@
  */
 import { RESEARCH_MODE_LABELS, type ResearchMode } from "./research-mode";
 import type { SupervisedMission } from "./types";
+import {
+  AGENT_RECOMMENDATION_LABELS,
+  HUMAN_NEXT_PATH_LABELS,
+  deriveAgentRecommendation,
+  normalizeDecisionChoice,
+  researchTeamLines,
+} from "./verdict";
 
 export type DecisionPackHonesty = {
   generationLabel: string;
@@ -120,25 +127,55 @@ export function buildDecisionPackMarkdown(mission: SupervisedMission): string {
       ? researchGaps.map((g) => `- Research: ${g}`).join("\n")
       : "- No research-mode external gaps recorded.",
     ``,
-    `## 3. Options and recommendation`,
+    `## 3. Diligence recommendation (Act A)`,
+    (() => {
+      const stored = approval?.agentRecommendation;
+      const draft = stored
+        ? {
+            recommendation: stored,
+            rationale: approval?.recommendationRationale ?? "",
+            executionLimited: approval?.executionLimited === true,
+          }
+        : deriveAgentRecommendation(mission);
+      const path = approval ? normalizeDecisionChoice(approval.choice) : null;
+      return [
+        `Agent recommendation: ${AGENT_RECOMMENDATION_LABELS[draft.recommendation]}`,
+        `Rationale: ${draft.rationale || "Not recorded."}`,
+        draft.executionLimited
+          ? "Execution note: recommendation reflects provider/retrieval limits — not an evidence-based market pause."
+          : "Execution note: diligence ran within the declared scope (or simulation).",
+        path
+          ? `Human next path: ${HUMAN_NEXT_PATH_LABELS[path]}${
+              approval?.disagreesWithRecommendation
+                ? " — differs from recommendation; recommendation remains on the record."
+                : ""
+            }`
+          : "Human next path: not recorded yet.",
+      ].join("\n");
+    })(),
+    ``,
+    `### Research team (investigate)`,
+    researchTeamLines(mission).map((l) => `- ${l}`).join("\n") ||
+      "- No research-team ownership recorded.",
+    ``,
+    `## 4. Options compared`,
     proposal
       ? proposal.options
           .map(
             (o) =>
-              `- ${o.id}: ${o.title}. Trade-off: ${o.tradeoff}. Basis: ${o.basis}.${option?.id === o.id ? " ← selected" : ""}`,
+              `- ${o.id}: ${o.title}. Trade-off: ${o.tradeoff}. Basis: ${o.basis}.${option?.id === o.id ? " ← selected for the authorised path" : ""}`,
           )
           .join("\n")
       : "- Options have not been compared yet.",
-    option ? `Recommendation draft selected by owner: ${option.title}` : "No option selected.",
     ``,
-    `## 4. Human decisions and approval history`,
+    `## 5. Human decisions and approval history`,
     approvalHistory,
     ``,
-    `## 5. Product / experiment brief`,
+    `## 6. Product / experiment brief`,
     mission.artefact?.experimentBrief ??
       "Not prepared yet. Record the decision and measurement plan first.",
     ``,
-    `## 6. Execution and review status`,
+    `## 7. Execution and review status`,
     `Mission stage: ${mission.stage}`,
     `Job: ${mission.job.status}${mission.job.lastError ? ` (${mission.job.lastError})` : ""}`,
     `Usage: ${mission.usageConsumed} / ${mission.usageCeiling}`,
@@ -152,7 +189,7 @@ export function buildDecisionPackMarkdown(mission: SupervisedMission): string {
     `### Persisted activity (task events only)`,
     activityLines,
     ``,
-    `## 7. Proposed next step and outcome-review plan`,
+    `## 8. Proposed next step and outcome-review plan`,
     followUpLines,
     mission.expectation
       ? `Outcome-review plan: compare owner-supplied observation to expected metric “${mission.expectation.expectedMetric}” within “${mission.expectation.observationWindow}”. Uncertainty stays in words.`

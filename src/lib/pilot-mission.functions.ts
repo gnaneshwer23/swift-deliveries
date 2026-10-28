@@ -364,7 +364,15 @@ export const decideSupervisedMission = createServerFn({ method: "POST" })
         version: z.number().int(),
         scopeHash: z.string().min(16).max(128),
         optionId: z.string().min(1).max(40),
-        choice: z.enum(["accept", "request_more_evidence"]),
+        choice: z.enum([
+          "authorise_bounded_test",
+          "authorise_revise",
+          "authorise_gather_evidence",
+          "close_case",
+          "founder_requested_continuation",
+          "accept",
+          "request_more_evidence",
+        ]),
         note: z.string().max(2000).optional().default(""),
       })
       .parse(data),

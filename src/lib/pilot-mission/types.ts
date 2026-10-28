@@ -1,5 +1,8 @@
 import type { ResearchMode } from "./research-mode";
 import type { PilotActivityEvent, PilotTeamPlan } from "./specialist-team";
+import type { AgentRecommendation, DecisionChoice, HumanNextPath } from "./verdict";
+
+export type { AgentRecommendation, DecisionChoice, HumanNextPath } from "./verdict";
 
 /** Exact record stored when no model provider is configured. */
 export const NOT_RUN_LABEL = "not run — provider not configured";
@@ -49,17 +52,25 @@ export type Proposal = {
   generation: GenerationResult;
 };
 
-export type DecisionChoice = "accept" | "request_more_evidence";
-
 export type ApprovalRecord = {
   action: "compare_options";
   version: number;
   scopeHash: string;
   optionId: string;
+  /** Human next-path (or legacy accept / request_more_evidence). */
   choice: DecisionChoice;
   note: string;
   actorId: string;
   decidedAt: string;
+  /** Agent recommendation at decide time (P-A). Absent on older missions. */
+  agentRecommendation?: AgentRecommendation;
+  /** Normalized human path when choice was legacy. */
+  humanNextPath?: HumanNextPath;
+  /** True when human path does not align with the agent recommendation. */
+  disagreesWithRecommendation?: boolean;
+  /** True when recommendation was driven by provider/execution limits. */
+  executionLimited?: boolean;
+  recommendationRationale?: string;
 };
 
 export type InvalidatedApproval = ApprovalRecord & { reason: string };
@@ -358,8 +369,9 @@ export function nextRequiredAction(mission: SupervisedMission): {
   if (mission.stage === "alternatives") {
     return {
       id: "decide",
-      title: "Record your decision",
-      detail: "The decision applies to this proposal version and scope only.",
+      title: "Record your next path",
+      detail:
+        "Choose test, revise, gather evidence, or close. Disagreeing does not erase the agent recommendation.",
     };
   }
   if (mission.stage === "decision") {

@@ -28,7 +28,12 @@ export const ROADMAP_BEATS = [
   { id: "frame", label: "Frame", detail: "Restate the case and bound the investigation." },
   { id: "research", label: "Research", detail: "Gather findings or label honest gaps." },
   { id: "options", label: "Options", detail: "Specialists draft alternatives with tradeoffs." },
-  { id: "decide", label: "Your decision", detail: "You accept an option or request more evidence." },
+  {
+    id: "decide",
+    label: "Your next path",
+    detail:
+      "Record a next path (test, revise, gather evidence, or close). Disagreeing does not erase the agent recommendation.",
+  },
   { id: "pack", label: "Pack", detail: "Decision pack you can inspect and export." },
   {
     id: "prototype",

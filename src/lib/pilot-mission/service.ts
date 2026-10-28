@@ -47,6 +47,12 @@ import {
   type OutcomeReview,
   type SupervisedMission,
 } from "./types";
+import {
+  deriveAgentRecommendation,
+  isInconclusivePath,
+  normalizeDecisionChoice,
+  pathAgreesWithRecommendation,
+} from "./verdict";
 
 export class MissionNotFoundError extends Error {
   constructor(message = "Mission not found.") {
@@ -280,7 +286,8 @@ function buildPack(mission: SupervisedMission): ArtefactPack {
     )
     .join("\n");
   const alternativeLines = others.map((item) => `- ${item.title} — ${item.tradeoff}`).join("\n");
-  const inconclusive = approval.choice === "request_more_evidence";
+  const humanPath = normalizeDecisionChoice(approval.choice);
+  const inconclusive = isInconclusivePath(humanPath);
   const provenance = [
     `Generation: ${proposal.generation.label}`,
     proposal.generation.provider ? `Provider: ${proposal.generation.provider}` : "",
@@ -309,9 +316,17 @@ function buildPack(mission: SupervisedMission): ArtefactPack {
     evidenceLines,
     ``,
     `## Decision`,
+    approval.agentRecommendation
+      ? `Agent recommendation: ${approval.agentRecommendation}${approval.recommendationRationale ? ` — ${approval.recommendationRationale}` : ""}`
+      : "",
+    `Human next path: ${humanPath}${
+      approval.disagreesWithRecommendation
+        ? " (founder-requested path differs from the recommendation; recommendation remains on the record)"
+        : ""
+    }`,
     inconclusive
-      ? `The owner requested more evidence before a product change. Selected hold: ${option.title}`
-      : `The owner accepted: ${option.title}`,
+      ? `Inconclusive / hold path relative to option: ${option.title}`
+      : `Selected option for the authorised path: ${option.title}`,
     approval.note ? `Note: ${approval.note}` : "",
     ``,
     `## Alternatives that remain on the record`,
@@ -940,15 +955,25 @@ export class SupervisedMissionService {
     ) {
       return current;
     }
+    const draft = deriveAgentRecommendation(current);
+    const humanNextPath = normalizeDecisionChoice(input.choice);
     const approval: ApprovalRecord = {
       action: "compare_options",
       version: input.claim.version,
       scopeHash: input.claim.scopeHash,
       optionId: input.claim.optionId,
-      choice: input.choice,
+      choice: humanNextPath,
       note: input.note.trim().slice(0, 2000),
       actorId: input.actorId,
       decidedAt: new Date(input.nowMs).toISOString(),
+      agentRecommendation: draft.recommendation,
+      humanNextPath,
+      disagreesWithRecommendation: !pathAgreesWithRecommendation(
+        humanNextPath,
+        draft.recommendation,
+      ),
+      executionLimited: draft.executionLimited,
+      recommendationRationale: draft.rationale,
     };
     const next: SupervisedMission = {
       ...current,

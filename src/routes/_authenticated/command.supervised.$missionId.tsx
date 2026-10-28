@@ -23,7 +23,15 @@ import {
 import { decisionPackFilenames } from "@/lib/pilot-mission/decision-pack";
 import { createZip } from "@/lib/programme/zip";
 import { type ResearchMode } from "@/lib/pilot-mission/research-mode";
-import { type DecisionChoice } from "@/lib/pilot-mission/types";
+import { type DecisionChoice, type SupervisedMission } from "@/lib/pilot-mission/types";
+import {
+  AGENT_RECOMMENDATION_LABELS,
+  HUMAN_NEXT_PATH_LABELS,
+  deriveAgentRecommendation,
+  normalizeDecisionChoice,
+  researchTeamLines,
+  type HumanNextPath,
+} from "@/lib/pilot-mission/verdict";
 
 export const Route = createFileRoute("/_authenticated/command/supervised/$missionId")({
   head: () => ({
@@ -301,6 +309,32 @@ function SupervisedMissionPage() {
             detail="No comparison is stored yet. Follow the next required action to add evidence and compare options."
           />
         )}
+        {mission.team || (mission.activity?.length ?? 0) > 0 ? (
+          <section className="cc-panel" aria-label="Research team">
+            <h2 className="cc-panel-title">Research team</h2>
+            <p className="cc-muted text-sm">
+              Specialists assigned to investigate this idea. Activity is persisted task events—not
+              staged chat.
+            </p>
+            <ul className="mt-3 grid gap-2 text-sm">
+              {researchTeamLines(mission).slice(0, 12).map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+            {(mission.activity?.length ?? 0) > 0 ? (
+              <ol className="mt-4 grid gap-1 text-sm cc-muted">
+                {[...(mission.activity ?? [])]
+                  .slice(-8)
+                  .reverse()
+                  .map((event) => (
+                    <li key={`${event.at}-${event.kind}-${event.summary.slice(0, 24)}`}>
+                      {event.actor} · {event.kind}: {event.summary}
+                    </li>
+                  ))}
+              </ol>
+            ) : null}
+          </section>
+        ) : null}
         {mission.proposal ? (
           <section className="cc-panel" aria-label="Alternatives">
             <h2 className="cc-panel-title">Alternatives</h2>
@@ -328,6 +362,7 @@ function SupervisedMissionPage() {
                 recordVersion={mission.version}
                 key={mission.proposal.scopeHash}
                 missionId={missionId}
+                mission={mission}
                 action={mission.proposal.action}
                 version={mission.proposal.version}
                 scopeHash={mission.proposal.scopeHash}
@@ -343,10 +378,17 @@ function SupervisedMissionPage() {
         ) : null}
         {mission.approval ? (
           <section className="cc-panel" id="decision" aria-label="Decision">
-            <h2 className="cc-panel-title">Owner decision</h2>
+            <h2 className="cc-panel-title">Recommendation and next path</h2>
             <p>
-              {mission.approval.choice === "accept" ? "Accepted" : "More evidence requested"}:{" "}
+              {mission.approval.agentRecommendation
+                ? `Agent: ${AGENT_RECOMMENDATION_LABELS[mission.approval.agentRecommendation]}. `
+                : ""}
+              Human path:{" "}
+              {HUMAN_NEXT_PATH_LABELS[normalizeDecisionChoice(mission.approval.choice)]}. Option{" "}
               {mission.approval.optionId}
+              {mission.approval.disagreesWithRecommendation
+                ? " — path differs from recommendation (recommendation remains on the record)."
+                : ""}
             </p>
             {mission.approval.note ? <p className="cc-muted">{mission.approval.note}</p> : null}
             <p className="cc-muted text-sm">
@@ -648,6 +690,7 @@ function BriefEditor({
 function DecisionForm({
   recordVersion,
   missionId,
+  mission,
   action,
   version,
   scopeHash,
@@ -657,6 +700,7 @@ function DecisionForm({
 }: {
   recordVersion: number;
   missionId: string;
+  mission: SupervisedMission;
   action: "compare_options";
   version: number;
   scopeHash: string;
@@ -664,8 +708,9 @@ function DecisionForm({
   onDone: () => Promise<void>;
   onError: (error: unknown) => void;
 }) {
+  const draft = deriveAgentRecommendation(mission);
   const [optionId, setOptionId] = useState(options[0]?.id ?? "");
-  const [choice, setChoice] = useState<DecisionChoice>("accept");
+  const [choice, setChoice] = useState<HumanNextPath>("authorise_bounded_test");
   const [note, setNote] = useState("");
   const decide = useMutation({
     mutationFn: () =>
@@ -677,7 +722,7 @@ function DecisionForm({
           version,
           scopeHash,
           optionId,
-          choice,
+          choice: choice as DecisionChoice,
           note,
         },
       }),
@@ -692,8 +737,19 @@ function DecisionForm({
         decide.mutate();
       }}
     >
+      <div className="cc-panel" aria-label="Agent recommendation">
+        <p className="text-sm font-medium">
+          Agent recommendation: {AGENT_RECOMMENDATION_LABELS[draft.recommendation]}
+        </p>
+        <p className="cc-muted text-sm">{draft.rationale}</p>
+        {draft.executionLimited ? (
+          <p className="cc-muted text-sm">
+            Execution limitation — not an evidence-based market pause.
+          </p>
+        ) : null}
+      </div>
       <label className="cc-label" htmlFor="decision-option">
-        Option
+        Option on the record
       </label>
       <select
         id="decision-option"
@@ -708,16 +764,19 @@ function DecisionForm({
         ))}
       </select>
       <label className="cc-label" htmlFor="decision-choice">
-        Decision
+        Your next authorised path
       </label>
       <select
         id="decision-choice"
         className="cc-input"
         value={choice}
-        onChange={(event) => setChoice(event.target.value as DecisionChoice)}
+        onChange={(event) => setChoice(event.target.value as HumanNextPath)}
       >
-        <option value="accept">Accept this option</option>
-        <option value="request_more_evidence">Request more evidence</option>
+        {(Object.keys(HUMAN_NEXT_PATH_LABELS) as HumanNextPath[]).map((path) => (
+          <option key={path} value={path}>
+            {HUMAN_NEXT_PATH_LABELS[path]}
+          </option>
+        ))}
       </select>
       <textarea
         className="cc-input cc-textarea"
@@ -725,13 +784,14 @@ function DecisionForm({
         rows={2}
         value={note}
         onChange={(event) => setNote(event.target.value)}
+        placeholder="Optional note — disagreement does not erase the recommendation"
       />
       <button
         type="submit"
         className="cc-btn cc-btn-primary"
         disabled={decide.isPending || !optionId}
       >
-        {decide.isPending ? "Recording…" : "Record decision"}
+        {decide.isPending ? "Recording…" : "Record next path"}
       </button>
     </form>
   );
