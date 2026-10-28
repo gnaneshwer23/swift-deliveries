@@ -3580,3 +3580,177 @@
 .ps-quiet-mission-page {
   max-width: 52rem;
 }
+
+/* Phase 3 — mandala investigation (event-backed; reduced-motion list fallback) */
+.ps-investigation-experience {
+  padding: 14px 16px 12px;
+  background: var(--psi-surface, #fff);
+}
+.ps-investigation-experience-head {
+  margin-bottom: 10px;
+}
+.ps-investigation-status {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--psi-ink, #1a2332);
+}
+.ps-investigation-leave {
+  margin: 4px 0 0;
+}
+.ps-investigation-visual {
+  position: relative;
+  min-height: 200px;
+  display: grid;
+  place-items: center;
+  margin: 8px 0 12px;
+}
+.ps-investigation-mandala {
+  position: relative;
+  width: min(100%, 280px);
+  aspect-ratio: 1;
+}
+.ps-investigation-mandala-core {
+  position: absolute;
+  inset: 32%;
+  border-radius: 50%;
+  border: 1px solid var(--psi-border, #dfe5f2);
+  background: radial-gradient(circle at 35% 30%, #f4f7fc, #e8eef8 55%, #dfe8f4);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 0 0 6px rgba(67, 97, 238, 0.06);
+}
+.ps-investigation-mandala-core[data-state="running"] {
+  box-shadow: 0 0 0 6px rgba(67, 97, 238, 0.12);
+  animation: ps-mandala-pulse 3.2s ease-in-out infinite;
+}
+.ps-investigation-mandala-core-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--psi-muted, #5a6578);
+}
+.ps-investigation-orbit {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  inset: 0;
+  animation: ps-mandala-orbit 48s linear infinite;
+}
+.ps-investigation-orbit-item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: rotate(calc(var(--orbit-index) * 45deg)) translateY(-118px)
+    rotate(calc(var(--orbit-index) * -45deg));
+  font-size: 0.68rem;
+  max-width: 5.5rem;
+  text-align: center;
+  line-height: 1.15;
+  color: var(--psi-text, #334155);
+  padding: 2px 4px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid var(--psi-border, #dfe5f2);
+}
+.ps-investigation-static {
+  display: none;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  gap: 6px;
+}
+.ps-investigation-static li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.85rem;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--psi-border, #dfe5f2);
+  background: var(--psi-surface-muted, #f8fafc);
+}
+.ps-investigation-updates {
+  list-style: none;
+  margin: 0 0 10px;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.ps-investigation-updates li {
+  font-size: 0.82rem;
+  line-height: 1.35;
+  padding: 6px 0;
+  border-top: 1px solid var(--psi-border, #dfe5f2);
+}
+.ps-investigation-updates li:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+.ps-investigation-update-actor {
+  display: block;
+  font-weight: 600;
+  color: var(--psi-indigo, #4361ee);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.ps-investigation-update-summary {
+  color: var(--psi-text, #334155);
+}
+.ps-investigation-updates-empty {
+  margin: 0 0 10px;
+}
+.ps-investigation-map-inspect {
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+.ps-investigation-map-inspect > summary {
+  cursor: pointer;
+  color: var(--psi-muted, #5a6578);
+}
+@keyframes ps-mandala-orbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes ps-mandala-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ps-investigation-mandala,
+  .ps-investigation-mandala-core[data-state="running"] {
+    animation: none !important;
+  }
+  .ps-investigation-mandala {
+    display: none;
+  }
+  .ps-investigation-static {
+    display: grid;
+  }
+  .ps-investigation-visual {
+    min-height: unset;
+  }
+}
+@media (max-width: 640px) {
+  .ps-investigation-orbit-item {
+    font-size: 0.62rem;
+    max-width: 4.5rem;
+    transform: rotate(calc(var(--orbit-index) * 45deg)) translateY(-100px)
+      rotate(calc(var(--orbit-index) * -45deg));
+  }
+  .ps-investigation-experience {
+    padding: 12px 12px 10px;
+  }
+}

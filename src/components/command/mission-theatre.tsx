@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
+import { InvestigationExperience } from "@/components/command/investigation-experience";
 import { IntelligenceCanvasPanel } from "@/components/command/intelligence-canvas-panel";
 import { ListenBriefButton } from "@/components/command/listen-brief-button";
 import { PmBriefingPanel } from "@/components/command/pm-briefing-panel";
@@ -115,9 +116,7 @@ export function MissionTheatre({
       )}
 
       <div className="ps-theatre-stage" data-act={active}>
-        {active === "briefing" ? (
-          <ActBriefing brief={brief} badges={badges} quiet={quiet} />
-        ) : null}
+        {active === "briefing" ? <ActBriefing brief={brief} badges={badges} quiet={quiet} /> : null}
         {active === "roadmap" ? <ActRoadmap brief={brief} quiet={quiet} /> : null}
         {active === "cast" ? <ActCast mission={mission} brief={brief} quiet={quiet} /> : null}
         {active === "approve" ? (
@@ -386,8 +385,8 @@ function ActApprove({
       {!quiet ? (
         <div className="ps-theatre-footnotes">
           <p>
-            Cost band {brief.roughCost.band}. {brief.roughCost.detail} Web results are never invented
-            when a provider is missing.
+            Cost band {brief.roughCost.band}. {brief.roughCost.detail} Web results are never
+            invented when a provider is missing.
           </p>
         </div>
       ) : null}
@@ -649,7 +648,15 @@ function ActWork({
 
   const quietBuild = (
     <>
-      <div className="ps-quiet-canvas-wrap">{canvas}</div>
+      <div className="ps-quiet-canvas-wrap">
+        <InvestigationExperience
+          mission={mission}
+          missionId={missionId}
+          recordVersion={mission.version}
+          onDone={onDone}
+          onError={onError}
+        />
+      </div>
       {nowLine}
       {gateBlock}
     </>
