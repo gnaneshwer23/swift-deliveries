@@ -2,6 +2,7 @@ import type { CaseRoom, CaseStepGate } from "./case-room";
 import type { ContinuationPlan } from "./continuation-plan";
 import type { ResearchMode } from "./research-mode";
 import type { PilotActivityEvent, PilotTeamPlan } from "./specialist-team";
+import type { TeamCollaborationRecord } from "./team-collaboration";
 import type { AgentRecommendation, DecisionChoice, HumanNextPath } from "./verdict";
 import type { StudioMeta } from "./studio-meta";
 import type { WatchtowerConfig } from "./watchtower";
@@ -11,6 +12,7 @@ export type { ContinuationPlan } from "./continuation-plan";
 export type { CaseRoom, CaseStepGate } from "./case-room";
 export type { StudioMeta } from "./studio-meta";
 export type { WatchtowerConfig } from "./watchtower";
+export type { TeamCollaborationRecord } from "./team-collaboration";
 
 /** Exact record stored when no model provider is configured. */
 export const NOT_RUN_LABEL = "not run — provider not configured";
@@ -283,6 +285,11 @@ export type SupervisedMission = {
   studioMeta?: StudioMeta | null;
   /** Persisted task events only — no fake chat or timer theatre. */
   activity: PilotActivityEvent[];
+  /**
+   * Phase 2 — investigation-team assignments, handoffs and flow edges.
+   * Additive document field — null on missions created before Phase 2.
+   */
+  teamCollaboration: TeamCollaborationRecord | null;
   /**
    * Lightweight product-memory shelf (`wf_projects.id`) for this mission family.
    * Additive document field — null on older missions until attached.

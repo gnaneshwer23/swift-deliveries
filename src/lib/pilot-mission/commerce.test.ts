@@ -85,6 +85,7 @@ describe("P-commerce", () => {
       usageCeiling: 2,
       usageConsumed: 2,
       caseRoom: null,
+      teamCollaboration: null,
       continuationPlan: null,
       approval: null,
     } as Parameters<typeof commerceSnapshot>[0];

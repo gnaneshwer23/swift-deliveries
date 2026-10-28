@@ -53,6 +53,7 @@ function baseMission(over: Partial<SupervisedMission> = {}): SupervisedMission {
     team: null,
     continuationPlan: null,
     caseRoom: null,
+    teamCollaboration: null,
     activity: [],
     projectId: null,
     updatedAt: new Date().toISOString(),

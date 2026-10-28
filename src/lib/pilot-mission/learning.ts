@@ -49,6 +49,7 @@ export function withLearningDefaults(mission: SupervisedMission): SupervisedMiss
     studioMeta: mission.studioMeta ?? null,
     activity: Array.isArray(mission.activity) ? mission.activity : [],
     projectId: mission.projectId ?? null,
+    teamCollaboration: mission.teamCollaboration ?? null,
   };
 }
 
