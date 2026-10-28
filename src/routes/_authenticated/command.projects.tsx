@@ -6,6 +6,7 @@ import { CommandShell } from "@/components/command/command-shell";
 import { getSupervisedProjectShelf, startSupervisedMission } from "@/lib/pilot-mission.functions";
 import { commandCentreBootstrapQuery, wfProjectsQuery } from "@/lib/workforce-queries";
 import { createWfProject } from "@/lib/workforce.functions";
+import { attentionChipTone, missionNeedsAttention } from "@/lib/pilot-mission/portfolio";
 
 export const Route = createFileRoute("/_authenticated/command/projects")({
   head: () => ({
@@ -107,7 +108,7 @@ function CommandProjects() {
       <div className="ps-room">
         <header className="ps-room-stage" aria-label="Projects">
           <p className="ps-foyer-brand">DeliverX Studio</p>
-          <p className="cc-kicker">Projects</p>
+          <p className="cc-kicker ps-exec-kicker">Projects</p>
           <h1 className="ps-foyer-headline">Product memory shelf</h1>
           <p className="ps-foyer-lede">
             Missions, decisions and packs for a case family. Expand a row when you need detail —
@@ -202,7 +203,7 @@ function CommandProjects() {
         </details>
 
         <section className="ps-room-section" aria-label="Product artefact shelf">
-          <h2 className="ps-room-subhead">On the shelf</h2>
+          <h2 className="ps-exec-section-kicker">On the shelf</h2>
           {shelf.isLoading || projects.isLoading ? (
             <p className="cc-muted">Loading product memory…</p>
           ) : shelf.isError ? (
@@ -219,7 +220,7 @@ function CommandProjects() {
               .
             </p>
           ) : (
-            <ul className="ps-project-quiet-list">
+            <ul className="ps-project-quiet-list ps-exec-shelf-list">
               {projectRows.map((p) => {
                 const s = shelfById.get(p.id);
                 const missionCount = s?.missions.length ?? 0;
@@ -227,11 +228,13 @@ function CommandProjects() {
                 const expanded = expandedProjectId === p.id;
                 const draft = followUpByProject[p.id] ?? "";
                 const canPropose = draft.trim().length >= 8;
+                const leadMission = s?.missions.find((m) => missionNeedsAttention(m.nextActionId));
+                const shelfLead = s?.missions[0];
 
                 return (
                   <li
                     key={p.id}
-                    className={`ps-project-quiet-row${expanded ? " is-expanded" : ""}`}
+                    className={`ps-project-quiet-row ps-exec-shelf-row${expanded ? " is-expanded" : ""}`}
                   >
                     <button
                       type="button"
@@ -246,8 +249,19 @@ function CommandProjects() {
                           {artefactCount > 0
                             ? ` · ${artefactCount} artefact${artefactCount === 1 ? "" : "s"}`
                             : ""}
+                          {shelfLead
+                            ? ` · ${shelfLead.stageLabel} · Next: ${shelfLead.nextAction}`
+                            : ""}
                         </span>
                       </span>
+                      {leadMission ? (
+                        <span
+                          className="ps-exec-chip"
+                          data-tone={attentionChipTone(leadMission.nextActionId)}
+                        >
+                          {leadMission.nextAction}
+                        </span>
+                      ) : null}
                       <ChevronDown
                         className="ps-project-quiet-chevron"
                         size={18}
