@@ -15,7 +15,7 @@
 | Founder | **£99** | month | `founder_monthly` | 4 |
 | Studio | **£299** | month | `studio_monthly` | 12 |
 
-Founder replied **prices confirmed** (binding). Use these when creating live Products/Prices.
+Founder replied **prices confirmed** (binding).
 
 ---
 
@@ -31,21 +31,25 @@ Founder replied **prices confirmed** (binding). Use these when creating live Pro
 
 ---
 
-## 3. Stripe Dashboard — live Products / Prices
+## 3. Stripe live Products / Prices — **IDs recorded 28 Oct 2026**
 
 **Account (live):** `acct_1S6BMU2X2opf83VZ` (Gnaneshwerjadav).  
-MCP could authenticate **read** on this account but **could not write** Products (403). Create manually:
+Founder-supplied Product IDs read in livemode. MCP write still **403** — lookup keys were **not** fixed by agents.
 
-1. Open [https://dashboard.stripe.com/products](https://dashboard.stripe.com/products) — ensure toggle is **Live** (not Test).
-2. For each plan, **Create product**:
-   - Name: `DeliverX Builder` / `DeliverX Founder` / `DeliverX Studio`
-   - Description: PSI pilot; mission allowance 1 / 4 / 12
-   - Metadata: `catalog=psi`, `plan=builder|founder|studio`, `missionAllowance=1|4|12`
-3. Pricing: **Recurring · Monthly · GBP · 29 / 99 / 299**
-4. **More pricing options → Lookup key:** `builder_monthly` / `founder_monthly` / `studio_monthly` (exact strings)
-5. Save. Paste Product ID + Price ID back into chat (or into `docs/psi-stripe-catalog.md`).
+| Plan | Product ID | Price ID | £ / mo | Stripe product name | Lookup key (observed) |
+| --- | --- | --- | --- | --- | --- |
+| Builder | `prod_VHO45CEWLNQ3qF` | `price_1UGpI02X2opf83VZ9RIaw4Ky` | 29 | `builder_monthly` | **`experience_monthly`** (wrong) |
+| Founder | `prod_VWUi8xEiee1ACW` | `price_1UVRjW2X2opf83VZ0E9zN7bi` | 99 | `founder_monthly` | *(null)* |
+| Studio | `prod_VWUj2JF7yL89go` | `price_1UVRjr2X2opf83VZmm3F4UtY` | 299 | `studio_monthly` | *(null)* |
 
-Optional: set Vercel `PSI_STRIPE_PRICE_*` to the three `price_…` IDs as overrides.
+**Vercel Production** already has `PSI_STRIPE_PRICE_BUILDER|FOUNDER|STUDIO` set to the three Price IDs above (Preview left alone — sandbox prices differ).
+
+### Optional Dashboard cleanup (recommended)
+
+1. Open [Products (live)](https://dashboard.stripe.com/products).
+2. On each Price → set lookup key to `builder_monthly` / `founder_monthly` / `studio_monthly` (Builder: replace `experience_monthly`).
+3. On Builder product → set default price to `price_1UGpI02X2opf83VZ9RIaw4Ky`.
+4. Optional metadata: `catalog=psi`, `plan=…`, `missionAllowance=1|4|12`.
 
 ---
 
@@ -61,9 +65,9 @@ Prefer **restricted API keys (RAK)** (`rk_live_…`) over unrestricted `sk_live_
 | `PSI_PAYMENTS_LIVE_APPROVED` | literal `true` | Flip **last**, after webhook + 0032 + prices |
 | `VITE_PAYMENTS_CHECKOUT_ENABLED` | literal `true` | Shows Pay on `/pricing`; unset to stop UI |
 | `PSI_PAYMENTS_KILL_SWITCH` | leave unset / `false` | Set `true` to refuse all new Checkout |
-| `PSI_STRIPE_PRICE_BUILDER` | optional `price_…` | Only if lookup keys fail |
-| `PSI_STRIPE_PRICE_FOUNDER` | optional `price_…` | |
-| `PSI_STRIPE_PRICE_STUDIO` | optional `price_…` | |
+| `PSI_STRIPE_PRICE_BUILDER` | `price_1UGpI02X2opf83VZ9RIaw4Ky` | **Set** on Production 28 Oct 2026 |
+| `PSI_STRIPE_PRICE_FOUNDER` | `price_1UVRjW2X2opf83VZ0E9zN7bi` | **Set** on Production 28 Oct 2026 |
+| `PSI_STRIPE_PRICE_STUDIO` | `price_1UVRjr2X2opf83VZmm3F4UtY` | **Set** on Production 28 Oct 2026 |
 
 Sandbox vars (`STRIPE_SANDBOX_API_KEY`, `PAYMENTS_SANDBOX_WEBHOOK_SECRET`, `pk_test_…`) are for Preview/dev — **do not** set them as Production’s active path once `PSI_PAYMENTS_LIVE_APPROVED=true`.
 
@@ -110,9 +114,11 @@ Set / verify these on project `swift-deliveries` (`prj_KXbLoh586LlAsKD6c8zk2HGDj
 - `TAVILY_API_KEY` (research)
 - Model mode only if you want Model drafts: `DXSI_MODEL_ENABLED`, `DXSI_PROVIDER`, `DXSI_MODEL`, `DXSI_MODEL_ALLOWLIST`, provider key (`OPENAI_API_KEY` / gateway / OpenRouter)
 
-### Optional price overrides
+### Price overrides — **DONE on Production**
 
-- `PSI_STRIPE_PRICE_BUILDER`, `PSI_STRIPE_PRICE_FOUNDER`, `PSI_STRIPE_PRICE_STUDIO`
+- `PSI_STRIPE_PRICE_BUILDER=price_1UGpI02X2opf83VZ9RIaw4Ky`
+- `PSI_STRIPE_PRICE_FOUNDER=price_1UVRjW2X2opf83VZ0E9zN7bi`
+- `PSI_STRIPE_PRICE_STUDIO=price_1UVRjr2X2opf83VZmm3F4UtY`
 
 ### Kill switch demo
 
@@ -134,12 +140,14 @@ Set / verify these on project `swift-deliveries` (`prj_KXbLoh586LlAsKD6c8zk2HGDj
 
 | Blocker | Why |
 | --- | --- |
-| Live Products/Prices | MCP write 403 — Dashboard create required (amounts confirmed) |
+| Live Products/Prices IDs | **Cleared** — IDs recorded; Production price env set |
+| Lookup-key cleanup | Optional Dashboard fix (`experience_monthly` → `builder_monthly`; set Founder/Studio keys) |
 | Migration 0032 | **Cleared** on production 28 Oct 2026 |
-| Live keys + webhook secret | Not in git; you set Vercel Production |
+| `pk_live_…` + `rk_live_…` / `sk_live_…` | Not in git; you set Vercel Production |
+| Live webhook + `whsec_…` | Dashboard create + `PAYMENTS_LIVE_WEBHOOK_SECRET` |
 | `PSI_PAYMENTS_LIVE_APPROVED` | Must be your deliberate flip **last** — agents will not set it |
 | Signed-in P0-A smoke | Remains **red** without your browser session — not certified production-ready overall |
 
 ## Stripe MCP re-consent (optional)
 
-If you want agents to create live Products next time: open the Stripe MCP reconsent URL from the Stripe plugin and grant **live write** for `acct_1S6BMU2X2opf83VZ`.
+If you want agents to fix live lookup keys next time: open the Stripe MCP reconsent URL from the Stripe plugin and grant **live write** for `acct_1S6BMU2X2opf83VZ`.
