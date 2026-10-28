@@ -37,6 +37,8 @@ describe("workspace attention", () => {
       { id: "done", next: { id: "follow_up_approved" }, updatedAt: "2026-10-28" },
     ];
     expect(pickCurrentMission(records)?.id).toBe("fresh");
-    expect(pickCurrentMission([{ id: "x", next: { id: "cancelled" }, updatedAt: "2026-10-28" }])).toBeNull();
+    expect(
+      pickCurrentMission([{ id: "x", next: { id: "cancelled" }, updatedAt: "2026-10-28" }]),
+    ).toBeNull();
   });
 });

@@ -1,7 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth/middleware";
-import { createDirectStripeClient, getStripeErrorMessage, type StripeEnv } from "@/lib/stripe.server";
+import {
+  createDirectStripeClient,
+  getStripeErrorMessage,
+  type StripeEnv,
+} from "@/lib/stripe.server";
 import { isPilotPlan, type PilotPlan } from "./model";
 import { CAREER_LOOKUP_KEYS, offerForPlan, priceEnvOverride } from "./psi-catalog";
 import { buildPsiCheckoutSessionCreateParams } from "./psi-checkout-session";
@@ -79,7 +83,10 @@ export const createPsiCheckoutSession = createServerFn({ method: "POST" })
       const db = neonDb();
       const ensured = await ensureWorkspace(db, context.userId);
       const workspaceId = (data.workspaceId ?? ensured.workspace.id).toLowerCase();
-      if (data.workspaceId && data.workspaceId.toLowerCase() !== ensured.workspace.id.toLowerCase()) {
+      if (
+        data.workspaceId &&
+        data.workspaceId.toLowerCase() !== ensured.workspace.id.toLowerCase()
+      ) {
         const workspace = await db
           .from("wf_workspaces")
           .select("id")

@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  buildLearnerLensMarkdown,
-  buildLearnerSummary,
-} from "./learner-lens";
+import { buildLearnerLensMarkdown, buildLearnerSummary } from "./learner-lens";
 import { MemoryStore, SupervisedMissionService } from "./service";
 
 const brief = {

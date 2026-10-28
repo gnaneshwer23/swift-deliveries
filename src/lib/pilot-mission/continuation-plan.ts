@@ -70,9 +70,7 @@ function role(
   why: string,
   plannedArtefacts: string[],
 ): ContinuationRole {
-  const label = capabilityId
-    ? (getCapability(capabilityId)?.name ?? fallbackLabel)
-    : fallbackLabel;
+  const label = capabilityId ? (getCapability(capabilityId)?.name ?? fallbackLabel) : fallbackLabel;
   return { capabilityId, label, responsibility, why, plannedArtefacts };
 }
 
@@ -129,79 +127,132 @@ function titles(kind: ContinuationKind): { title: string; summary: string } {
 function rolesFor(kind: ContinuationKind): ContinuationRole[] {
   if (kind === "close") {
     return [
-      role(null, "Founder (you)", "Confirm close and retain the decision pack", "Human authority to end this case", [
-        "close-summary",
-      ]),
+      role(
+        null,
+        "Founder (you)",
+        "Confirm close and retain the decision pack",
+        "Human authority to end this case",
+        ["close-summary"],
+      ),
     ];
   }
   if (kind === "evidence_collection") {
     return [
-      role("DX-018", "Evidence Integrity", "Define missing evidence and acceptance criteria", "Stops fake completion of diligence", [
-        "evidence-collection-plan",
-        "research-memo",
-      ]),
-      role("DX-020", "Research Synthesis", "Assemble findings once inputs arrive", "Turns collected evidence into a usable brief", [
-        "research-memo",
-      ]),
-      role("DX-002", "Product Manager", "Hold the gate until inputs land", "Keeps execution blocked honestly", [
-        "chosen-path-brief",
-      ]),
-      role(null, "Founder (you)", "Supply proprietary or interview evidence when required", "Only you can provide some inputs", [
-        "owner-evidence",
-      ]),
+      role(
+        "DX-018",
+        "Evidence Integrity",
+        "Define missing evidence and acceptance criteria",
+        "Stops fake completion of diligence",
+        ["evidence-collection-plan", "research-memo"],
+      ),
+      role(
+        "DX-020",
+        "Research Synthesis",
+        "Assemble findings once inputs arrive",
+        "Turns collected evidence into a usable brief",
+        ["research-memo"],
+      ),
+      role(
+        "DX-002",
+        "Product Manager",
+        "Hold the gate until inputs land",
+        "Keeps execution blocked honestly",
+        ["chosen-path-brief"],
+      ),
+      role(
+        null,
+        "Founder (you)",
+        "Supply proprietary or interview evidence when required",
+        "Only you can provide some inputs",
+        ["owner-evidence"],
+      ),
     ];
   }
   if (kind === "reframe_investigate") {
     return [
-      role("DX-020", "Research Synthesis", "Reframe opportunity from counterevidence", "Avoids polishing a weak proposition", [
-        "research-memo",
-      ]),
-      role("DX-001", "Strategy", "Propose a narrower proposition to test", "Makes revise concrete", [
-        "chosen-path-brief",
-        "reframing-plan",
-      ]),
-      role("DX-071", "Challenge", "Attack the reframed claim", "Surfaces remaining risk before build", [
-        "challenge-note",
-      ]),
-      role("DX-002", "Product Manager", "Keep scope bounded to investigation", "Prevents premature PRD/build", [
-        "chosen-path-brief",
-      ]),
+      role(
+        "DX-020",
+        "Research Synthesis",
+        "Reframe opportunity from counterevidence",
+        "Avoids polishing a weak proposition",
+        ["research-memo"],
+      ),
+      role(
+        "DX-001",
+        "Strategy",
+        "Propose a narrower proposition to test",
+        "Makes revise concrete",
+        ["chosen-path-brief", "reframing-plan"],
+      ),
+      role(
+        "DX-071",
+        "Challenge",
+        "Attack the reframed claim",
+        "Surfaces remaining risk before build",
+        ["challenge-note"],
+      ),
+      role(
+        "DX-002",
+        "Product Manager",
+        "Keep scope bounded to investigation",
+        "Prevents premature PRD/build",
+        ["chosen-path-brief"],
+      ),
     ];
   }
   // bounded_test + founder_requested share a delivery-shaped but bounded cast
   const core: ContinuationRole[] = [
-    role("DX-002", "Product Manager", "Own the bounded test scope and gates", "Keeps the experiment specific", [
-      "chosen-path-brief",
-      "test-evidence-plan",
-    ]),
-    role("DX-018", "Evidence Integrity", "Define what would falsify the test", "Protects honesty of the experiment", [
-      "test-evidence-plan",
-      "research-memo",
-    ]),
-    role("DX-001", "Strategy", "State the change under test and exclusions", "Clarifies what success would mean", [
-      "chosen-path-brief",
-    ]),
-    role("DX-021", "Options / Spec", "Draft the minimal change description", "Only when a product change is in scope", [
-      "prd-lite",
-    ]),
-    role("DX-023", "UX Prototype", "Prepare a sandboxed prototype only after a later human gate", "Prototype is not implied by this plan alone", [
-      "prototype-brief",
-    ]),
+    role(
+      "DX-002",
+      "Product Manager",
+      "Own the bounded test scope and gates",
+      "Keeps the experiment specific",
+      ["chosen-path-brief", "test-evidence-plan"],
+    ),
+    role(
+      "DX-018",
+      "Evidence Integrity",
+      "Define what would falsify the test",
+      "Protects honesty of the experiment",
+      ["test-evidence-plan", "research-memo"],
+    ),
+    role(
+      "DX-001",
+      "Strategy",
+      "State the change under test and exclusions",
+      "Clarifies what success would mean",
+      ["chosen-path-brief"],
+    ),
+    role(
+      "DX-021",
+      "Options / Spec",
+      "Draft the minimal change description",
+      "Only when a product change is in scope",
+      ["prd-lite"],
+    ),
+    role(
+      "DX-023",
+      "UX Prototype",
+      "Prepare a sandboxed prototype only after a later human gate",
+      "Prototype is not implied by this plan alone",
+      ["prototype-brief"],
+    ),
   ];
   if (kind === "founder_requested_with_risks") {
     core.push(
-      role("DX-071", "Challenge", "Keep unresolved risks visible on every artefact", "Disagreement must not look like endorsement", [
-        "unresolved-risk-register",
-      ]),
+      role(
+        "DX-071",
+        "Challenge",
+        "Keep unresolved risks visible on every artefact",
+        "Disagreement must not look like endorsement",
+        ["unresolved-risk-register"],
+      ),
     );
   }
   return core;
 }
 
-function artefactsFor(
-  kind: ContinuationKind,
-  roles: ContinuationRole[],
-): PlannedArtefact[] {
+function artefactsFor(kind: ContinuationKind, roles: ContinuationRole[]): PlannedArtefact[] {
   const byType = new Map<string, PlannedArtefact>();
   const add = (type: string, ownerLabel: string, note: string) => {
     if (!byType.has(type)) byType.set(type, { type, ownerLabel, note });
@@ -211,7 +262,11 @@ function artefactsFor(
     return [...byType.values()];
   }
   if (kind === "evidence_collection") {
-    add("evidence-collection-plan", "Evidence Integrity", "What to gather, from whom, and completion criteria.");
+    add(
+      "evidence-collection-plan",
+      "Evidence Integrity",
+      "What to gather, from whom, and completion criteria.",
+    );
     add("research-memo", "Research Synthesis", "Memo once inputs arrive — not before.");
     add("chosen-path-brief", "Product Manager", "Holds the pause gate and missing-input list.");
     return [...byType.values()];
@@ -314,7 +369,8 @@ function roadmapFor(
     id: "gate",
     title: "Human gate before Act C execution / prototype",
     ownerLabel: "Founder (you)",
-    detail: "Nothing external runs without an explicit approval. This plan alone does not start Act C.",
+    detail:
+      "Nothing external runs without an explicit approval. This plan alone does not start Act C.",
     blocked: false,
     blockedReason: null,
   });
@@ -335,8 +391,7 @@ export function buildContinuationPlan(input: {
   const disagrees = approval.disagreesWithRecommendation === true;
   const executionLimited = approval.executionLimited === true;
   const executionBlocked =
-    kind === "evidence_collection" ||
-    (kind === "founder_requested_with_risks" && executionLimited);
+    kind === "evidence_collection" || (kind === "founder_requested_with_risks" && executionLimited);
   const executionBlockedReason = executionBlocked
     ? kind === "evidence_collection"
       ? "Waiting on missing evidence inputs declared in Act A. Collection may be planned; execution of downstream build steps stays blocked."
@@ -416,8 +471,7 @@ export function buildContinuationPlanMarkdown(
   const artefacts = plan.plannedArtefacts
     .map((a) => `- ${a.type} · ${a.ownerLabel} — ${a.note}`)
     .join("\n");
-  const risks =
-    plan.unresolvedRisks.map((r) => `- ${r}`).join("\n") || "- None recorded.";
+  const risks = plan.unresolvedRisks.map((r) => `- ${r}`).join("\n") || "- None recorded.";
   const notIncluded = plan.notIncluded.map((n) => `- ${n}`).join("\n");
 
   return [

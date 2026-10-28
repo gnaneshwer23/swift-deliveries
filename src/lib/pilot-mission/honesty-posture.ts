@@ -5,12 +5,7 @@ import type { SupervisedMission } from "./types";
 import { commerceUnitFor } from "./commerce";
 
 export type InterviewEvidenceLabel =
-  | "planning"
-  | "rehearsal"
-  | "recruitment"
-  | "completed"
-  | "analysis"
-  | "not_interview";
+  "planning" | "rehearsal" | "recruitment" | "completed" | "analysis" | "not_interview";
 
 export type HonestyPosture = {
   version: "honesty-v1";
@@ -57,7 +52,9 @@ export function buildHonestyPosture(mission: SupervisedMission): HonestyPosture 
     })
     .filter(Boolean) as HonestyPosture["interviewLabels"];
 
-  const dated = mission.evidence.filter((e) => /\b20\d{2}-\d{2}-\d{2}\b|\b20\d{2}\b/.test(e.statement + e.source));
+  const dated = mission.evidence.filter((e) =>
+    /\b20\d{2}-\d{2}-\d{2}\b|\b20\d{2}\b/.test(e.statement + e.source),
+  );
   const undatedSupplied = mission.evidence.filter(
     (e) => e.classification === "supplied" && !/\b20\d{2}/.test(e.statement + e.source),
   );
@@ -87,10 +84,9 @@ export function buildHonestyPosture(mission: SupervisedMission): HonestyPosture 
     notifications: mission.studioMeta?.notifyWhenReady
       ? "Notify-when-ready preference is on. Delivery channels are not active yet — check the case record."
       : "Notify-when-ready is off. Digests/mute/dedupe ship with the notifier.",
-    recovery:
-      mission.job.lastError
-        ? `Last job failure on record: ${mission.job.lastError}. Durable lease/reconnect — failures are stored, not hidden.`
-        : "No job failure on record. Execution uses durable leases; reconnect shows the saved stage.",
+    recovery: mission.job.lastError
+      ? `Last job failure on record: ${mission.job.lastError}. Durable lease/reconnect — failures are stored, not hidden.`
+      : "No job failure on record. Execution uses durable leases; reconnect shows the saved stage.",
     accountability:
       "Counterevidence and gaps stay on the register when you disagree with a recommendation. Source independence is preferred over single-model agreement.",
     accessibility:

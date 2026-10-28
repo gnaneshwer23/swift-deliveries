@@ -54,7 +54,9 @@ export function buildDecisionRoadmapEntries(mission: SupervisedMission): Roadmap
       detail: mission.researchProvider
         ? `Research cited via ${mission.researchProvider}. Gaps stay labelled when tools are missing.`
         : "Research pass on record (simulated or supplied evidence only).",
-      productionLabel: mission.researchProvider ? "model-assisted retrieval" : honesty.generationLabel,
+      productionLabel: mission.researchProvider
+        ? "model-assisted retrieval"
+        : honesty.generationLabel,
     });
   }
 
@@ -69,14 +71,17 @@ export function buildDecisionRoadmapEntries(mission: SupervisedMission): Roadmap
     });
   }
 
-  const rec = mission.approval?.agentRecommendation ?? deriveAgentRecommendation(mission).recommendation;
+  const rec =
+    mission.approval?.agentRecommendation ?? deriveAgentRecommendation(mission).recommendation;
   if (mission.proposal || mission.approval) {
     entries.push({
       at: mission.approval?.decidedAt ?? null,
       kind: "recommendation",
       title: "Agent recommendation",
       detail: AGENT_RECOMMENDATION_LABELS[rec],
-      productionLabel: mission.proposal?.generation.label,
+      ...(mission.proposal?.generation.label
+        ? { productionLabel: mission.proposal.generation.label }
+        : {}),
     });
   }
 

@@ -22,15 +22,13 @@ export const isCheckoutEnabled =
   (clientToken?.startsWith("pk_test_") || clientToken?.startsWith("pk_live_"));
 
 /** True only when Pay is on and the build uses a test publishable key. */
-export const isSandboxCheckout =
-  isCheckoutEnabled && Boolean(clientToken?.startsWith("pk_test_"));
+export const isSandboxCheckout = isCheckoutEnabled && Boolean(clientToken?.startsWith("pk_test_"));
 
 /**
  * True only when Pay is on and the build uses pk_live_.
  * Server still requires PSI_PAYMENTS_LIVE_APPROVED before charging cards.
  */
-export const isLiveCheckout =
-  isCheckoutEnabled && Boolean(clientToken?.startsWith("pk_live_"));
+export const isLiveCheckout = isCheckoutEnabled && Boolean(clientToken?.startsWith("pk_live_"));
 
 function paymentsEnvironment(): StripeEnv {
   if (clientToken?.startsWith("pk_test_")) return "sandbox";

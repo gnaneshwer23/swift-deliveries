@@ -74,11 +74,7 @@ async function fetchJson(url: string, init: RequestInit): Promise<unknown> {
   }
 }
 
-async function searchTavily(
-  query: string,
-  count: number,
-  apiKey: string,
-): Promise<RawResult[]> {
+async function searchTavily(query: string, count: number, apiKey: string): Promise<RawResult[]> {
   const client = tavily({
     apiKey,
     clientSource: "deliverx-supervised",

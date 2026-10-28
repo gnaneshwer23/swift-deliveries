@@ -77,7 +77,7 @@ function mission(overrides: Partial<SupervisedMission> = {}): SupervisedMission 
     activity: [],
     projectId: null,
     updatedAt: "2026-10-27T00:00:00Z",
-  } as SupervisedMission;
+  } as unknown as SupervisedMission;
   return { ...base, ...overrides };
 }
 

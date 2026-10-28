@@ -43,7 +43,11 @@ export type PaidStripeFields = {
 
 export type PaidFulfillResult =
   | { ok: true; activation: PilotActivation; already: boolean }
-  | { ok: false; reason: "unpaid" | "not_psi" | "career" | "invalid" | "conflict"; message: string };
+  | {
+      ok: false;
+      reason: "unpaid" | "not_psi" | "career" | "invalid" | "conflict";
+      message: string;
+    };
 
 const WORKSPACE_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

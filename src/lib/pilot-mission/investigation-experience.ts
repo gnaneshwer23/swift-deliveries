@@ -224,10 +224,9 @@ export function deriveInvestigationRunState(mission: SupervisedMission): Investi
 
   if (mission.researchPassCompletedAt && mission.proposal) return "complete";
 
-  if (!mission.researchPassCompletedAt || mission.job.status === "leased") {
+  if (!mission.researchPassCompletedAt) {
     const kinds = (mission.activity ?? []).map((e) => e.kind);
-    const researchMotion =
-      kinds.some((k) => /research|evidence|pass|task/i.test(k)) || mission.job.status === "leased";
+    const researchMotion = kinds.some((k) => /research|evidence|pass|task/i.test(k));
     if (researchMotion || !mission.researchPassCompletedAt) return "running";
   }
 

@@ -27,9 +27,7 @@ function esc(v: string): string {
 /** Deterministic sandboxed HTML from the decision — Simulated draft when no model ran. */
 export function simulatedPrototypeHtml(mission: SupervisedMission): string {
   const option = mission.proposal?.options.find((o) => o.id === mission.approval?.optionId);
-  const title = esc(
-    (mission.artefact?.title ?? option?.title ?? "Product prototype").slice(0, 80),
-  );
+  const title = esc((mission.artefact?.title ?? option?.title ?? "Product prototype").slice(0, 80));
   const goal = esc(mission.brief.question.trim().slice(0, 180));
   const decision = esc(
     option

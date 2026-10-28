@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  actState,
-  honestyBadges,
-  theatreState,
-  type TheatreState,
-} from "./theatre";
+import { actState, honestyBadges, theatreState, type TheatreState } from "./theatre";
 import type { SupervisedMission } from "./types";
 
 function baseMission(overrides: Partial<SupervisedMission> = {}): SupervisedMission {
@@ -70,6 +65,9 @@ function baseMission(overrides: Partial<SupervisedMission> = {}): SupervisedMiss
         },
       ],
     },
+    continuationPlan: null,
+    caseRoom: null,
+    teamCollaboration: null,
     activity: [],
     updatedAt: new Date().toISOString(),
     projectId: null,

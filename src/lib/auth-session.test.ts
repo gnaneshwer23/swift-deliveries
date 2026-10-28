@@ -1,7 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const getUser = vi.fn<[], Promise<{ id: string; email: string; user_metadata: {} } | null>>();
-const getToken = vi.fn<[], Promise<string | null>>();
+const getUser =
+  vi.fn<
+    () => Promise<{ id: string; email: string; user_metadata: Record<string, unknown> } | null>
+  >();
+const getToken = vi.fn<() => Promise<string | null>>();
 
 vi.mock("@/lib/auth/client", () => ({
   auth: { getUser, getToken },

@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { deriveQuietStatus } from "./quiet-status";
+import { buildPilotTeamPlan } from "./specialist-team";
 import type { SupervisedMission } from "./types";
+
+const approvedTeam = {
+  ...buildPilotTeamPlan({ band: "M" }),
+  approvedAt: "2026-01-01",
+  approvedBy: "u",
+};
 
 function base(overrides: Partial<SupervisedMission> = {}): SupervisedMission {
   const seed = {
@@ -42,7 +49,7 @@ function base(overrides: Partial<SupervisedMission> = {}): SupervisedMission {
     activity: [],
     projectId: null,
     updatedAt: "2026-10-27T00:00:00Z",
-  } as SupervisedMission;
+  } as unknown as SupervisedMission;
   return { ...seed, ...overrides };
 }
 
@@ -51,7 +58,7 @@ describe("deriveQuietStatus", () => {
     const s = deriveQuietStatus(
       base({
         job: { ...base().job, status: "leased" },
-        team: { tasks: [], approvedAt: "2026-01-01", approvedBy: "u" },
+        team: approvedTeam,
         stage: "evidence",
       }),
     );
@@ -62,7 +69,7 @@ describe("deriveQuietStatus", () => {
   it("marks approve_plan as needs your decision", () => {
     const s = deriveQuietStatus(
       base({
-        team: { tasks: [{ id: "t" } as never], approvedAt: null, approvedBy: null },
+        team: buildPilotTeamPlan({ band: "M" }),
       }),
     );
     expect(s.presence).toBe("needs_you");

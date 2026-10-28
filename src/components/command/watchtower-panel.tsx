@@ -39,8 +39,14 @@ export function WatchtowerPanel({
           id: missionId,
           expectedVersion: recordVersion,
           enabled,
-          topics: topics.split(",").map((t) => t.trim()).filter(Boolean),
-          competitors: competitors.split(",").map((t) => t.trim()).filter(Boolean),
+          topics: topics
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean),
+          competitors: competitors
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean),
           sourcesNote,
           frequency,
           geography,
@@ -74,11 +80,7 @@ export function WatchtowerPanel({
         }}
       >
         <label className="cc-label">
-          <input
-            type="checkbox"
-            checked={enabled}
-            onChange={(e) => setEnabled(e.target.checked)}
-          />{" "}
+          <input type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} />{" "}
           Enable preferences (does not start a runner)
         </label>
         <label className="cc-label" htmlFor="wt-topics">

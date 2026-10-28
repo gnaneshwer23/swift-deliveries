@@ -4,13 +4,7 @@
  */
 import { PHASES, PHASE_LABELS, type PhaseKey, type ProgrammeState } from "./types";
 
-export const PROGRAMME_ACTS = [
-  "briefing",
-  "roadmap",
-  "cast",
-  "approve",
-  "work",
-] as const;
+export const PROGRAMME_ACTS = ["briefing", "roadmap", "cast", "approve", "work"] as const;
 
 export type ProgrammeAct = (typeof PROGRAMME_ACTS)[number];
 

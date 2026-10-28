@@ -16,7 +16,7 @@ export function MissionCastPanel() {
   });
   const activeId =
     home.data?.ready && home.data.missions.length
-      ? pickCurrentMission(home.data.missions)?.id ?? null
+      ? (pickCurrentMission(home.data.missions)?.id ?? null)
       : null;
   const mission = useQuery({
     queryKey: ["supervised", "mission", activeId],
@@ -34,14 +34,22 @@ export function MissionCastPanel() {
 
   if (!activeId || !mission.data) {
     return (
-      <section id="cast-on-stage" className="ps-mission-cast ps-mission-cast-empty" aria-label="Active cast">
+      <section
+        id="cast-on-stage"
+        className="ps-mission-cast ps-mission-cast-empty"
+        aria-label="Active cast"
+      >
         <p className="ps-foyer-act">Cast</p>
         <h2 className="ps-room-subhead">No case on stage yet</h2>
         <p className="ps-foyer-lede">
           Brief a one-liner on Overview. Specialists appear here with ownership — not from opening
           the full catalogue.
         </p>
-        <Link to="/command" hash="supervised-brief" className="cc-btn cc-btn-primary mt-3 inline-flex">
+        <Link
+          to="/command"
+          hash="supervised-brief"
+          className="cc-btn cc-btn-primary mt-3 inline-flex"
+        >
           Brief a case
         </Link>
       </section>

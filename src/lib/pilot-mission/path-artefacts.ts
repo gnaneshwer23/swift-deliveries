@@ -20,8 +20,14 @@ export function pathArtefactGuide(path: HumanNextPath): PathArtefactGuide {
         pathLabel,
         expectedArtefacts: [
           { type: "Experiment brief", note: "Hypothesis, metric, window — human-gated." },
-          { type: "Measurement plan", note: "What you will observe; DeliverX does not invent results." },
-          { type: "Optional sandboxed prototype", note: "Only after a separate prototype approval." },
+          {
+            type: "Measurement plan",
+            note: "What you will observe; DeliverX does not invent results.",
+          },
+          {
+            type: "Optional sandboxed prototype",
+            note: "Only after a separate prototype approval.",
+          },
         ],
         notAutomatic: "Choosing this path does not start a product build by itself.",
       };
@@ -45,7 +51,10 @@ export function pathArtefactGuide(path: HumanNextPath): PathArtefactGuide {
         pathLabel,
         expectedArtefacts: [
           { type: "Revised proposition note", note: "What changed and why." },
-          { type: "Fresh investigation brief", note: "New scope for a follow-up Investigation unit." },
+          {
+            type: "Fresh investigation brief",
+            note: "New scope for a follow-up Investigation unit.",
+          },
         ],
         notAutomatic: "Revision does not silently replace the prior record.",
       };
@@ -67,7 +76,8 @@ export function pathArtefactGuide(path: HumanNextPath): PathArtefactGuide {
           { type: "Continuation plan", note: "Unresolved risks labelled on the record." },
           { type: "Case-room artefacts", note: "Only after step gates you approve." },
         ],
-        notAutomatic: "Does not start silent build — continuation still requires case-room human gates.",
+        notAutomatic:
+          "Does not start silent build — continuation still requires case-room human gates.",
       };
     default: {
       const _exhaustive: never = path;

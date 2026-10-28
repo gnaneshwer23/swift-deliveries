@@ -52,12 +52,7 @@ export const DECISION_LOOP_LABELS: Record<DecisionLoopStep, string> = {
 };
 
 export type PilotTaskStatus =
-  | "pending"
-  | "ready"
-  | "blocked"
-  | "awaiting_approval"
-  | "completed"
-  | "skipped";
+  "pending" | "ready" | "blocked" | "awaiting_approval" | "completed" | "skipped";
 
 export type PilotSpecialistTask = {
   key: string;
@@ -435,9 +430,7 @@ function withPrototypeTasks(plan: PilotTeamPlan): PilotTeamPlan {
   return {
     ...plan,
     tasks: tasks.map((task) =>
-      task.key === "outcome_observation"
-        ? { ...task, dependsOn: ["build_prototype"] }
-        : task,
+      task.key === "outcome_observation" ? { ...task, dependsOn: ["build_prototype"] } : task,
     ),
   };
 }
@@ -503,10 +496,7 @@ export function syncTeamWithMission(
   mark("assemble_pack", Boolean(mission.exportBody));
   mark("approve_prototype", Boolean(mission.prototype));
   mark("build_prototype", Boolean(mission.prototype));
-  mark(
-    "outcome_observation",
-    Boolean(mission.observation) || Boolean(mission.reviews.length),
-  );
+  mark("outcome_observation", Boolean(mission.observation) || Boolean(mission.reviews.length));
   mark("propose_follow_up", mission.followUp?.status === "approved");
 
   const tasks = plan.tasks.map((task) => {

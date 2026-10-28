@@ -210,436 +210,447 @@ function SupervisedMissionPage() {
         : {})}
     >
       <div className="ps-quiet-mission-page">
-      <div className="ps-theatre-page-meta mb-2 flex flex-wrap items-center justify-between gap-3">
-        <Link to="/command" className="cc-muted text-sm">
-          ← Studio
-        </Link>
-        <div className="flex flex-wrap items-center gap-2">
-          {mission.projectId ? (
-            <Link
-              to="/command/product-memory/$projectId"
-              params={{ projectId: mission.projectId }}
-              className="cc-muted text-sm"
-            >
-              Product memory
-            </Link>
-          ) : null}
-          {open ? (
-            <button
-              type="button"
-              className="cc-btn cc-btn-ghost"
-              disabled={cancel.isPending}
-              onClick={() => cancel.mutate()}
-            >
-              Cancel
-            </button>
-          ) : null}
+        <div className="ps-theatre-page-meta mb-2 flex flex-wrap items-center justify-between gap-3">
+          <Link to="/command" className="cc-muted text-sm">
+            ← Studio
+          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            {mission.projectId ? (
+              <Link
+                to="/command/product-memory/$projectId"
+                params={{ projectId: mission.projectId }}
+                className="cc-muted text-sm"
+              >
+                Product memory
+              </Link>
+            ) : null}
+            {open ? (
+              <button
+                type="button"
+                className="cc-btn cc-btn-ghost"
+                disabled={cancel.isPending}
+                onClick={() => cancel.mutate()}
+              >
+                Cancel
+              </button>
+            ) : null}
+          </div>
         </div>
-      </div>
 
-      <MissionInspectionStrip mission={mission} missionId={missionId} />
+        <MissionInspectionStrip mission={mission} missionId={missionId} />
 
-      <QuietMissionBar
-        mission={mission}
-        downloadSlot={
-          mission.artefact || mission.exportBody ? (
-            <ExportButton
-              recordVersion={mission.version}
-              missionId={missionId}
-              existingMd={mission.exportBody}
-              existingPdf={mission.exportPdfBase64}
-              onError={onError}
-              compact
-            />
-          ) : null
-        }
-      />
-
-      <div id="pr-briefings">
-        <MissionTheatre
-          quiet
+        <QuietMissionBar
           mission={mission}
-          missionId={missionId}
-          onDone={invalidate}
-          onError={onError}
-          actions={{
-            open,
-            next,
-            usageWarning,
-            error,
-            research: query.data.research,
-            modelConfigured: query.data.modelConfigured,
-            comparisonScope: query.data.comparisonScope,
-            consentedScope,
-            setConsentedScope,
-            approvePending: approvePlan.isPending,
-            onApprove: () => approvePlan.mutate(),
-            setResearchPending: setResearch.isPending,
-            onSetResearch: (mode) => setResearch.mutate(mode),
-            comparePending: compare.isPending,
-            onCompare: () => compare.mutate(),
-            preparePending: prepare.isPending,
-            onPrepare: () => prepare.mutate(),
-            prototypePending: approvePrototype.isPending,
-            onApprovePrototype: () => approvePrototype.mutate(),
-            exportSlot:
-              next.id === "export" || mission.exportBody ? (
-                <ExportButton
-                  recordVersion={mission.version}
-                  missionId={missionId}
-                  existingMd={mission.exportBody}
-                  existingPdf={mission.exportPdfBase64}
-                  onError={onError}
-                />
-              ) : null,
-          }}
+          downloadSlot={
+            mission.artefact || mission.exportBody ? (
+              <ExportButton
+                recordVersion={mission.version}
+                missionId={missionId}
+                existingMd={mission.exportBody}
+                existingPdf={mission.exportPdfBase64}
+                onError={onError}
+                compact
+              />
+            ) : null
+          }
         />
-      </div>
 
-      <details className="ps-quiet-inspect" id="mission-inspect">
-        <summary>Inspect full record</summary>
-
-      <details className="ps-quiet-inspect mt-3" id="mission-team-activity">
-        <summary>View team activity</summary>
-        <TeamActivityPanel mission={mission} />
-      </details>
-
-      <ProjectRoomNav mission={mission} />
-
-      <details className="ps-legacy mt-4">
-        <summary>Talk to DeliverX (optional · revise beside the mission)</summary>
-        <ConversationPanel currentMissionId={missionId} />
-      </details>
-
-      <div
-        id="pr-evidence"
-        className="ps-record-anchor"
-        data-active={recordSection === "mission-evidence" || recordSection === "pr-evidence"}
-      >
-      <div
-        id="mission-evidence"
-        className="ps-record-anchor"
-        data-active={recordSection === "mission-evidence"}
-      >
-        <EvidenceEditor
-          recordVersion={mission.version}
-          missionId={missionId}
-          initial={mission.evidence}
-          locked={!open}
-          onDone={invalidate}
-          onError={onError}
-        />
-        {mission.evidence.length ? (
-          <section className="cc-panel" aria-label="Evidence">
-            <h2 className="cc-panel-title">Evidence</h2>
-            <ul className="mt-3 grid gap-2">
-              {mission.evidence.map((item) => (
-                <li key={item.id}>
-                  <strong>
-                    {item.id} · {item.classification}
-                  </strong>
-                  <p>{item.statement}</p>
-                  {item.source ? <p className="cc-muted text-sm">Source: {item.source}</p> : null}
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-      </div>
-      </div>
-      <BriefEditor
-        recordVersion={mission.version}
-        missionId={missionId}
-        initial={mission.brief}
-        locked={!open}
-        onDone={invalidate}
-        onError={onError}
-      />
-      <div
-        id="mission-judgement"
-        className="ps-record-anchor"
-        data-active={recordSection === "mission-judgement"}
-      >
-        {!mission.proposal && (
-          <RecordStepPending
-            title="Options and decision"
-            detail="No comparison is stored yet. Follow the next required action to add evidence and compare options."
+        <div id="pr-briefings">
+          <MissionTheatre
+            quiet
+            mission={mission}
+            missionId={missionId}
+            onDone={invalidate}
+            onError={onError}
+            actions={{
+              open,
+              next,
+              usageWarning,
+              error,
+              research: query.data.research,
+              modelConfigured: query.data.modelConfigured,
+              comparisonScope: query.data.comparisonScope,
+              consentedScope,
+              setConsentedScope,
+              approvePending: approvePlan.isPending,
+              onApprove: () => approvePlan.mutate(),
+              setResearchPending: setResearch.isPending,
+              onSetResearch: (mode) => setResearch.mutate(mode),
+              comparePending: compare.isPending,
+              onCompare: () => compare.mutate(),
+              preparePending: prepare.isPending,
+              onPrepare: () => prepare.mutate(),
+              prototypePending: approvePrototype.isPending,
+              onApprovePrototype: () => approvePrototype.mutate(),
+              exportSlot:
+                next.id === "export" || mission.exportBody ? (
+                  <ExportButton
+                    recordVersion={mission.version}
+                    missionId={missionId}
+                    existingMd={mission.exportBody}
+                    existingPdf={mission.exportPdfBase64}
+                    onError={onError}
+                  />
+                ) : null,
+            }}
           />
-        )}
-        {mission.team || (mission.activity?.length ?? 0) > 0 ? (
-          <section className="cc-panel" aria-label="Research team" id="pr-team">
-            <h2 className="cc-panel-title">Research team</h2>
-            <p className="cc-muted text-sm">
-              Specialists assigned to investigate this idea. Activity is persisted task events—not
-              staged chat.
-            </p>
-            <ul className="mt-3 grid gap-2 text-sm">
-              {researchTeamLines(mission).slice(0, 12).map((line) => (
-                <li key={line}>{line}</li>
-              ))}
-            </ul>
-            {(mission.activity?.length ?? 0) > 0 ? (
-              <ol className="mt-4 grid gap-1 text-sm cc-muted">
-                {[...(mission.activity ?? [])]
-                  .slice(-8)
-                  .reverse()
-                  .map((event) => (
-                    <li key={`${event.at}-${event.kind}-${event.summary.slice(0, 24)}`}>
-                      {event.actor} · {event.kind}: {event.summary}
-                    </li>
-                  ))}
-              </ol>
-            ) : null}
-          </section>
-        ) : null}
-        {mission.proposal ? (
-          <section className="cc-panel" aria-label="Alternatives">
-            <h2 className="cc-panel-title">Alternatives</h2>
-            <p className="cc-muted text-sm">
-              Proposal version {mission.proposal.version}. Scope{" "}
-              {mission.proposal.scopeHash.slice(0, 12)}.
-            </p>
-            <ul className="mt-3 grid gap-3">
-              {mission.proposal.options.map((option) => (
-                <li key={option.id} className="cc-panel">
-                  <strong>{option.title}</strong>
-                  <p className="cc-muted">{option.tradeoff}</p>
-                  <p className="cc-muted text-sm">Basis: {option.basis}</p>
-                </li>
-              ))}
-            </ul>
-            {mission.proposal.generation.gaps.length ? (
-              <p className="cc-muted mt-3 text-sm">
-                Gaps: {mission.proposal.generation.gaps.join(" · ")}
-              </p>
-            ) : null}
-            {mission.stage === "alternatives" ||
-            (mission.stage === "decision" && !mission.artefact) ? (
-              <DecisionForm
-                recordVersion={mission.version}
-                key={mission.proposal.scopeHash}
-                missionId={missionId}
-                mission={mission}
-                action={mission.proposal.action}
-                version={mission.proposal.version}
-                scopeHash={mission.proposal.scopeHash}
-                options={mission.proposal.options.map((option) => ({
-                  id: option.id,
-                  title: option.title,
-                }))}
-                onDone={invalidate}
-                onError={onError}
-              />
-            ) : null}
-          </section>
-        ) : null}
-        {mission.approval ? (
-          <section className="cc-panel" id="decision" aria-label="Decision">
-            <h2 className="cc-panel-title">Recommendation and next path</h2>
-            <p>
-              {mission.approval.agentRecommendation
-                ? `Agent: ${AGENT_RECOMMENDATION_LABELS[mission.approval.agentRecommendation]}. `
-                : ""}
-              Human path:{" "}
-              {HUMAN_NEXT_PATH_LABELS[normalizeDecisionChoice(mission.approval.choice)]}. Option{" "}
-              {mission.approval.optionId}
-              {mission.approval.disagreesWithRecommendation
-                ? " — path differs from recommendation (recommendation remains on the record)."
-                : ""}
-            </p>
-            {mission.approval.note ? <p className="cc-muted">{mission.approval.note}</p> : null}
-            <p className="cc-muted text-sm">
-              Bound to {mission.approval.action} version {mission.approval.version}.
-            </p>
-          </section>
-        ) : null}
-        {mission.continuationPlan ? (
-          <section className="cc-panel" id="continuation-plan" aria-label="Continuation plan">
-            <h2 className="cc-panel-title">{mission.continuationPlan.title}</h2>
-            <p className="cc-muted text-sm">{mission.continuationPlan.summary}</p>
-            <p className="cc-muted mt-2 text-sm">
-              Continuation team for this path — distinct from the Act A research team. Size follows
-              the work.
-            </p>
-            {mission.continuationPlan.executionBlocked ? (
-              <p className="cc-error mt-2 text-sm" role="status">
-                Execution blocked: {mission.continuationPlan.executionBlockedReason}
-              </p>
-            ) : null}
-            <h3 className="mt-4 text-sm font-medium">Roles</h3>
-            <ul className="mt-2 grid gap-3 text-sm">
-              {mission.continuationPlan.roles.map((role) => (
-                <li key={`${role.capabilityId ?? "human"}-${role.label}`}>
-                  <strong>{role.label}</strong>
-                  {role.capabilityId ? (
-                    <span className="cc-muted"> ({role.capabilityId})</span>
-                  ) : null}
-                  <p className="cc-muted">{role.responsibility}</p>
-                  <p className="cc-muted text-xs">Why: {role.why}</p>
-                </li>
-              ))}
-            </ul>
-            <h3 className="mt-4 text-sm font-medium">Roadmap</h3>
-            <ol className="mt-2 grid gap-2 text-sm">
-              {mission.continuationPlan.roadmap.map((step) => (
-                <li key={step.id}>
-                  <strong>{step.title}</strong> · {step.ownerLabel}
-                  {step.blocked ? (
-                    <span className="cc-error"> — blocked: {step.blockedReason}</span>
-                  ) : null}
-                  <p className="cc-muted">{step.detail}</p>
-                </li>
-              ))}
-            </ol>
-            <h3 className="mt-4 text-sm font-medium">Planned artefacts</h3>
-            <ul className="mt-2 grid gap-1 text-sm">
-              {mission.continuationPlan.plannedArtefacts.map((artefact) => (
-                <li key={artefact.type}>
-                  {artefact.type} · {artefact.ownerLabel} — {artefact.note}
-                </li>
-              ))}
-            </ul>
-            {mission.continuationPlan.unresolvedRisks.length ? (
-              <>
-                <h3 className="mt-4 text-sm font-medium">Unresolved risks</h3>
-                <ul className="mt-2 grid gap-1 text-sm cc-muted">
-                  {mission.continuationPlan.unresolvedRisks.map((risk) => (
-                    <li key={risk.slice(0, 48)}>{risk}</li>
-                  ))}
-                </ul>
-              </>
-            ) : null}
-            <button
-              type="button"
-              className="cc-btn cc-btn-secondary mt-4"
-              onClick={() => {
-                const md = buildContinuationPlanMarkdown(mission, mission.continuationPlan!);
-                const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = continuationPlanFilename(mission.id);
-                a.click();
-                URL.revokeObjectURL(url);
-              }}
+        </div>
+
+        <details className="ps-quiet-inspect" id="mission-inspect">
+          <summary>Inspect full record</summary>
+
+          <details className="ps-quiet-inspect mt-3" id="mission-team-activity">
+            <summary>View team activity</summary>
+            <TeamActivityPanel mission={mission} />
+          </details>
+
+          <ProjectRoomNav mission={mission} />
+
+          <details className="ps-legacy mt-4">
+            <summary>Talk to DeliverX (optional · revise beside the mission)</summary>
+            <ConversationPanel currentMissionId={missionId} />
+          </details>
+
+          <div
+            id="pr-evidence"
+            className="ps-record-anchor"
+            data-active={recordSection === "mission-evidence" || recordSection === "pr-evidence"}
+          >
+            <div
+              id="mission-evidence"
+              className="ps-record-anchor"
+              data-active={recordSection === "mission-evidence"}
             >
-              Download continuation plan
-            </button>
-          </section>
-        ) : null}
-        {mission.caseRoom ? (
-          <div id="pr-flow">
-            <div id="pr-artefacts">
-              <CaseRoomPanel
-                mission={mission}
+              <EvidenceEditor
                 recordVersion={mission.version}
                 missionId={missionId}
+                initial={mission.evidence}
+                locked={!open}
                 onDone={invalidate}
                 onError={onError}
               />
+              {mission.evidence.length ? (
+                <section className="cc-panel" aria-label="Evidence">
+                  <h2 className="cc-panel-title">Evidence</h2>
+                  <ul className="mt-3 grid gap-2">
+                    {mission.evidence.map((item) => (
+                      <li key={item.id}>
+                        <strong>
+                          {item.id} · {item.classification}
+                        </strong>
+                        <p>{item.statement}</p>
+                        {item.source ? (
+                          <p className="cc-muted text-sm">Source: {item.source}</p>
+                        ) : null}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ) : null}
             </div>
           </div>
-        ) : (
-          <div id="pr-flow" />
-        )}
-        <div id="pr-decisions">
-          <PathArtefactsPanel mission={mission} />
-        </div>
-        {mission.invalidatedApprovals.length ? (
-          <section className="cc-panel" aria-label="Cleared approvals">
-            <h2 className="cc-panel-title">Cleared approvals</h2>
-            <ul className="mt-2 grid gap-2">
-              {mission.invalidatedApprovals.map((approval) => (
-                <li key={`${approval.scopeHash}-${approval.decidedAt}`}>
-                  <p>{approval.reason}</p>
-                  <p className="cc-muted text-sm">
-                    Version {approval.version} · {approval.optionId}
+          <BriefEditor
+            recordVersion={mission.version}
+            missionId={missionId}
+            initial={mission.brief}
+            locked={!open}
+            onDone={invalidate}
+            onError={onError}
+          />
+          <div
+            id="mission-judgement"
+            className="ps-record-anchor"
+            data-active={recordSection === "mission-judgement"}
+          >
+            {!mission.proposal && (
+              <RecordStepPending
+                title="Options and decision"
+                detail="No comparison is stored yet. Follow the next required action to add evidence and compare options."
+              />
+            )}
+            {mission.team || (mission.activity?.length ?? 0) > 0 ? (
+              <section className="cc-panel" aria-label="Research team" id="pr-team">
+                <h2 className="cc-panel-title">Research team</h2>
+                <p className="cc-muted text-sm">
+                  Specialists assigned to investigate this idea. Activity is persisted task
+                  events—not staged chat.
+                </p>
+                <ul className="mt-3 grid gap-2 text-sm">
+                  {researchTeamLines(mission)
+                    .slice(0, 12)
+                    .map((line) => (
+                      <li key={line}>{line}</li>
+                    ))}
+                </ul>
+                {(mission.activity?.length ?? 0) > 0 ? (
+                  <ol className="mt-4 grid gap-1 text-sm cc-muted">
+                    {[...(mission.activity ?? [])]
+                      .slice(-8)
+                      .reverse()
+                      .map((event) => (
+                        <li key={`${event.at}-${event.kind}-${event.summary.slice(0, 24)}`}>
+                          {event.actor} · {event.kind}: {event.summary}
+                        </li>
+                      ))}
+                  </ol>
+                ) : null}
+              </section>
+            ) : null}
+            {mission.proposal ? (
+              <section className="cc-panel" aria-label="Alternatives">
+                <h2 className="cc-panel-title">Alternatives</h2>
+                <p className="cc-muted text-sm">
+                  Proposal version {mission.proposal.version}. Scope{" "}
+                  {mission.proposal.scopeHash.slice(0, 12)}.
+                </p>
+                <ul className="mt-3 grid gap-3">
+                  {mission.proposal.options.map((option) => (
+                    <li key={option.id} className="cc-panel">
+                      <strong>{option.title}</strong>
+                      <p className="cc-muted">{option.tradeoff}</p>
+                      <p className="cc-muted text-sm">Basis: {option.basis}</p>
+                    </li>
+                  ))}
+                </ul>
+                {mission.proposal.generation.gaps.length ? (
+                  <p className="cc-muted mt-3 text-sm">
+                    Gaps: {mission.proposal.generation.gaps.join(" · ")}
                   </p>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-      </div>
-      <div
-        id="pr-build"
-        className="ps-record-anchor"
-        data-active={recordSection === "mission-delivery" || recordSection === "pr-build"}
-      >
-      <div
-        id="mission-delivery"
-        className="ps-record-anchor"
-        data-active={recordSection === "mission-delivery"}
-      >
-        {!mission.artefact && (
-          <RecordStepPending
-            title="Decision pack"
-            detail="No decision pack is stored yet. Record the owner decision and measurement plan before preparing reviewable work."
-          />
-        )}
-        {mission.artefact ? (
-          <section className="cc-panel" aria-label="Decision pack">
-            <h2 className="cc-panel-title">{mission.artefact.title}</h2>
-            <pre className="mt-3 whitespace-pre-wrap text-sm">{mission.artefact.decisionBrief}</pre>
-            <pre className="mt-3 whitespace-pre-wrap text-sm">
-              {mission.artefact.experimentBrief}
-            </pre>
-          </section>
-        ) : null}
-        {mission.archivedPacks?.length ? (
-          <section className="cc-panel" aria-label="Archived decision packs">
-            <h2 className="cc-panel-title">Previous pack versions</h2>
-            <p className="cc-muted text-sm">
-              Earlier packs remain attached to this mission when a measurement plan changes.
-            </p>
-            <div className="mt-3 grid gap-3">
-              {mission.archivedPacks.map((entry) => (
-                <details key={`${entry.recordVersion}-${entry.archivedAt}`} className="cc-card">
-                  <summary className="cursor-pointer font-medium">
-                    Version {entry.recordVersion} · {entry.reason}
-                  </summary>
-                  <pre className="mt-3 whitespace-pre-wrap text-sm">{entry.pack.decisionBrief}</pre>
-                </details>
-              ))}
+                ) : null}
+                {mission.stage === "alternatives" ||
+                (mission.stage === "decision" && !mission.artefact) ? (
+                  <DecisionForm
+                    recordVersion={mission.version}
+                    key={mission.proposal.scopeHash}
+                    missionId={missionId}
+                    mission={mission}
+                    action={mission.proposal.action}
+                    version={mission.proposal.version}
+                    scopeHash={mission.proposal.scopeHash}
+                    options={mission.proposal.options.map((option) => ({
+                      id: option.id,
+                      title: option.title,
+                    }))}
+                    onDone={invalidate}
+                    onError={onError}
+                  />
+                ) : null}
+              </section>
+            ) : null}
+            {mission.approval ? (
+              <section className="cc-panel" id="decision" aria-label="Decision">
+                <h2 className="cc-panel-title">Recommendation and next path</h2>
+                <p>
+                  {mission.approval.agentRecommendation
+                    ? `Agent: ${AGENT_RECOMMENDATION_LABELS[mission.approval.agentRecommendation]}. `
+                    : ""}
+                  Human path:{" "}
+                  {HUMAN_NEXT_PATH_LABELS[normalizeDecisionChoice(mission.approval.choice)]}. Option{" "}
+                  {mission.approval.optionId}
+                  {mission.approval.disagreesWithRecommendation
+                    ? " — path differs from recommendation (recommendation remains on the record)."
+                    : ""}
+                </p>
+                {mission.approval.note ? <p className="cc-muted">{mission.approval.note}</p> : null}
+                <p className="cc-muted text-sm">
+                  Bound to {mission.approval.action} version {mission.approval.version}.
+                </p>
+              </section>
+            ) : null}
+            {mission.continuationPlan ? (
+              <section className="cc-panel" id="continuation-plan" aria-label="Continuation plan">
+                <h2 className="cc-panel-title">{mission.continuationPlan.title}</h2>
+                <p className="cc-muted text-sm">{mission.continuationPlan.summary}</p>
+                <p className="cc-muted mt-2 text-sm">
+                  Continuation team for this path — distinct from the Act A research team. Size
+                  follows the work.
+                </p>
+                {mission.continuationPlan.executionBlocked ? (
+                  <p className="cc-error mt-2 text-sm" role="status">
+                    Execution blocked: {mission.continuationPlan.executionBlockedReason}
+                  </p>
+                ) : null}
+                <h3 className="mt-4 text-sm font-medium">Roles</h3>
+                <ul className="mt-2 grid gap-3 text-sm">
+                  {mission.continuationPlan.roles.map((role) => (
+                    <li key={`${role.capabilityId ?? "human"}-${role.label}`}>
+                      <strong>{role.label}</strong>
+                      {role.capabilityId ? (
+                        <span className="cc-muted"> ({role.capabilityId})</span>
+                      ) : null}
+                      <p className="cc-muted">{role.responsibility}</p>
+                      <p className="cc-muted text-xs">Why: {role.why}</p>
+                    </li>
+                  ))}
+                </ul>
+                <h3 className="mt-4 text-sm font-medium">Roadmap</h3>
+                <ol className="mt-2 grid gap-2 text-sm">
+                  {mission.continuationPlan.roadmap.map((step) => (
+                    <li key={step.id}>
+                      <strong>{step.title}</strong> · {step.ownerLabel}
+                      {step.blocked ? (
+                        <span className="cc-error"> — blocked: {step.blockedReason}</span>
+                      ) : null}
+                      <p className="cc-muted">{step.detail}</p>
+                    </li>
+                  ))}
+                </ol>
+                <h3 className="mt-4 text-sm font-medium">Planned artefacts</h3>
+                <ul className="mt-2 grid gap-1 text-sm">
+                  {mission.continuationPlan.plannedArtefacts.map((artefact) => (
+                    <li key={artefact.type}>
+                      {artefact.type} · {artefact.ownerLabel} — {artefact.note}
+                    </li>
+                  ))}
+                </ul>
+                {mission.continuationPlan.unresolvedRisks.length ? (
+                  <>
+                    <h3 className="mt-4 text-sm font-medium">Unresolved risks</h3>
+                    <ul className="mt-2 grid gap-1 text-sm cc-muted">
+                      {mission.continuationPlan.unresolvedRisks.map((risk) => (
+                        <li key={risk.slice(0, 48)}>{risk}</li>
+                      ))}
+                    </ul>
+                  </>
+                ) : null}
+                <button
+                  type="button"
+                  className="cc-btn cc-btn-secondary mt-4"
+                  onClick={() => {
+                    const md = buildContinuationPlanMarkdown(mission, mission.continuationPlan!);
+                    const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = continuationPlanFilename(mission.id);
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }}
+                >
+                  Download continuation plan
+                </button>
+              </section>
+            ) : null}
+            {mission.caseRoom ? (
+              <div id="pr-flow">
+                <div id="pr-artefacts">
+                  <CaseRoomPanel
+                    mission={mission}
+                    recordVersion={mission.version}
+                    missionId={missionId}
+                    onDone={invalidate}
+                    onError={onError}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div id="pr-flow" />
+            )}
+            <div id="pr-decisions">
+              <PathArtefactsPanel mission={mission} />
             </div>
-          </section>
-        ) : null}
-      </div>
-      </div>
-      <div
-        id="pr-outcomes"
-        className="ps-record-anchor"
-        data-active={recordSection === "mission-feedback" || recordSection === "pr-outcomes"}
-      >
-      <div
-        id="mission-feedback"
-        className="ps-record-anchor"
-        data-active={recordSection === "mission-feedback"}
-      >
-        {((!mission.approval && !mission.origin) || mission.stage === "cancelled") && (
-          <RecordStepPending
-            title="Outcome review"
-            detail={
-              mission.stage === "cancelled"
-                ? "This mission is cancelled. Its saved record is retained; no follow-up is started."
-                : "Record a decision before planning what to measure. Later, supply an observed result and review it before proposing another mission."
-            }
+            {mission.invalidatedApprovals.length ? (
+              <section className="cc-panel" aria-label="Cleared approvals">
+                <h2 className="cc-panel-title">Cleared approvals</h2>
+                <ul className="mt-2 grid gap-2">
+                  {mission.invalidatedApprovals.map((approval) => (
+                    <li key={`${approval.scopeHash}-${approval.decidedAt}`}>
+                      <p>{approval.reason}</p>
+                      <p className="cc-muted text-sm">
+                        Version {approval.version} · {approval.optionId}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+          </div>
+          <div
+            id="pr-build"
+            className="ps-record-anchor"
+            data-active={recordSection === "mission-delivery" || recordSection === "pr-build"}
+          >
+            <div
+              id="mission-delivery"
+              className="ps-record-anchor"
+              data-active={recordSection === "mission-delivery"}
+            >
+              {!mission.artefact && (
+                <RecordStepPending
+                  title="Decision pack"
+                  detail="No decision pack is stored yet. Record the owner decision and measurement plan before preparing reviewable work."
+                />
+              )}
+              {mission.artefact ? (
+                <section className="cc-panel" aria-label="Decision pack">
+                  <h2 className="cc-panel-title">{mission.artefact.title}</h2>
+                  <pre className="mt-3 whitespace-pre-wrap text-sm">
+                    {mission.artefact.decisionBrief}
+                  </pre>
+                  <pre className="mt-3 whitespace-pre-wrap text-sm">
+                    {mission.artefact.experimentBrief}
+                  </pre>
+                </section>
+              ) : null}
+              {mission.archivedPacks?.length ? (
+                <section className="cc-panel" aria-label="Archived decision packs">
+                  <h2 className="cc-panel-title">Previous pack versions</h2>
+                  <p className="cc-muted text-sm">
+                    Earlier packs remain attached to this mission when a measurement plan changes.
+                  </p>
+                  <div className="mt-3 grid gap-3">
+                    {mission.archivedPacks.map((entry) => (
+                      <details
+                        key={`${entry.recordVersion}-${entry.archivedAt}`}
+                        className="cc-card"
+                      >
+                        <summary className="cursor-pointer font-medium">
+                          Version {entry.recordVersion} · {entry.reason}
+                        </summary>
+                        <pre className="mt-3 whitespace-pre-wrap text-sm">
+                          {entry.pack.decisionBrief}
+                        </pre>
+                      </details>
+                    ))}
+                  </div>
+                </section>
+              ) : null}
+            </div>
+          </div>
+          <div
+            id="pr-outcomes"
+            className="ps-record-anchor"
+            data-active={recordSection === "mission-feedback" || recordSection === "pr-outcomes"}
+          >
+            <div
+              id="mission-feedback"
+              className="ps-record-anchor"
+              data-active={recordSection === "mission-feedback"}
+            >
+              {((!mission.approval && !mission.origin) || mission.stage === "cancelled") && (
+                <RecordStepPending
+                  title="Outcome review"
+                  detail={
+                    mission.stage === "cancelled"
+                      ? "This mission is cancelled. Its saved record is retained; no follow-up is started."
+                      : "Record a decision before planning what to measure. Later, supply an observed result and review it before proposing another mission."
+                  }
+                />
+              )}
+              <CommerceDisclosurePanel mission={mission} />
+              <LearnerLensPanel mission={mission} />
+              <SupervisedLearningLoop mission={mission} onDone={invalidate} onError={onError} />
+              <HonestyPosturePanel mission={mission} />
+            </div>
+          </div>
+          <WatchtowerPanel
+            mission={mission}
+            recordVersion={mission.version}
+            missionId={missionId}
+            onDone={invalidate}
+            onError={onError}
           />
-        )}
-        <CommerceDisclosurePanel mission={mission} />
-        <LearnerLensPanel mission={mission} />
-        <SupervisedLearningLoop mission={mission} onDone={invalidate} onError={onError} />
-        <HonestyPosturePanel mission={mission} />
-      </div>
-      </div>
-      <WatchtowerPanel
-        mission={mission}
-        recordVersion={mission.version}
-        missionId={missionId}
-        onDone={invalidate}
-        onError={onError}
-      />
-      </details>
+        </details>
       </div>
     </CommandShell>
   );
@@ -1040,7 +1051,11 @@ function ExportButton({
           else save.mutate();
         }}
       >
-        {save.isPending ? "Exporting…" : compact ? "Decision pack" : "Download decision pack (PDF + Markdown)"}
+        {save.isPending
+          ? "Exporting…"
+          : compact
+            ? "Decision pack"
+            : "Download decision pack (PDF + Markdown)"}
       </button>
       <button
         type="button"
@@ -1071,7 +1086,8 @@ function ExportButton({
       {!compact ? (
         <p className="cc-muted text-xs basis-full">
           Downloads include a decision roadmap (human gates, agent tasks, recommendation, path,
-          artefacts) with honest simulated vs model labels. Linked URLs and secrets are never bundled.
+          artefacts) with honest simulated vs model labels. Linked URLs and secrets are never
+          bundled.
         </p>
       ) : (
         <p className="cc-muted text-xs basis-full mb-0">
@@ -1119,4 +1135,3 @@ function RecordStepPending({ title, detail }: { title: string; detail: string })
     </section>
   );
 }
-

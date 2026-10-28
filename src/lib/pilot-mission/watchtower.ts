@@ -64,8 +64,14 @@ export function saveWatchtowerConfig(
   return {
     version: "watchtower-v1",
     enabled: input.enabled && input.frequency !== "off",
-    topics: input.topics.map((t) => t.trim()).filter(Boolean).slice(0, 12),
-    competitors: input.competitors.map((t) => t.trim()).filter(Boolean).slice(0, 12),
+    topics: input.topics
+      .map((t) => t.trim())
+      .filter(Boolean)
+      .slice(0, 12),
+    competitors: input.competitors
+      .map((t) => t.trim())
+      .filter(Boolean)
+      .slice(0, 12),
     sourcesNote: input.sourcesNote.trim().slice(0, 2000),
     frequency: input.frequency,
     geography: input.geography.trim().slice(0, 200),

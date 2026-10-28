@@ -8,7 +8,7 @@ function baseMission(over: Partial<SupervisedMission> = {}): SupervisedMission {
     workspaceId: "w",
     ownerUserId: "u",
     version: 1,
-    stage: "draft",
+    stage: "brief",
     brief: {
       question: "Should we open weekday breakfasts?",
       audience: "Founders",

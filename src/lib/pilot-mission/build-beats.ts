@@ -19,11 +19,7 @@ export const BUILD_BEAT_IDS = [
 export type BuildBeatId = (typeof BUILD_BEAT_IDS)[number];
 
 export type BeatHandoffStatus =
-  | "waiting_upstream"
-  | "in_progress"
-  | "awaiting_you"
-  | "handed_off"
-  | "blocked";
+  "waiting_upstream" | "in_progress" | "awaiting_you" | "handed_off" | "blocked";
 
 export type ArtefactHonestyMode = "simulated" | "model" | "human" | "gap" | "cited";
 
@@ -73,10 +69,7 @@ export type BuildSequence = {
   currentOwner: BuildBeatView["owner"] | null;
 };
 
-const BEAT_META: Record<
-  BuildBeatId,
-  { label: string; detail: string; taskKeys: string[] }
-> = {
+const BEAT_META: Record<BuildBeatId, { label: string; detail: string; taskKeys: string[] }> = {
   frame: {
     label: "Frame",
     detail: "Restate the case and bound the investigation.",
@@ -159,10 +152,7 @@ function beatDone(mission: SupervisedMission, id: BuildBeatId): boolean {
   }
 }
 
-function pickOwner(
-  tasks: PilotSpecialistTask[],
-  keys: string[],
-): BuildBeatView["owner"] {
+function pickOwner(tasks: PilotSpecialistTask[], keys: string[]): BuildBeatView["owner"] {
   for (const key of keys) {
     const task = tasks.find((t) => t.key === key);
     if (task && ["ready", "awaiting_approval", "blocked", "completed"].includes(task.status)) {
@@ -217,12 +207,7 @@ function handoffFor(
     };
   }
   const relevant = tasks.filter((t) => keys.includes(t.key));
-  if (
-    id === "prototype" &&
-    !done &&
-    upstreamReady &&
-    !mission.prototype
-  ) {
+  if (id === "prototype" && !done && upstreamReady && !mission.prototype) {
     return {
       status: "awaiting_you",
       detail: "Human gate — approve before the UX Prototype Agent builds sandboxed HTML.",
@@ -350,17 +335,14 @@ function focalArtefact(
       const proto = mission.prototype;
       if (!proto) return null;
       const failed = proto.checks.filter((c) => !c.passed).map((c) => c.label);
-      const gaps = [
-        ...(proto.failureDetail ? [proto.failureDetail] : []),
-        ...failed,
-      ];
+      const gaps = [...(proto.failureDetail ? [proto.failureDetail] : []), ...failed];
       return {
         kind: "prototype_html",
         title: proto.title,
         summary: proto.verified
           ? "Sandboxed HTML prototype — static checks passed. Not a production deploy."
-          : proto.failureDetail ??
-            "Sandboxed HTML prototype — static verify reported failures (visible below).",
+          : (proto.failureDetail ??
+            "Sandboxed HTML prototype — static verify reported failures (visible below)."),
         honesty: {
           mode: proto.honesty.mode,
           label: proto.honesty.label,
@@ -381,9 +363,7 @@ function focalArtefact(
 export function buildSequence(mission: SupervisedMission): BuildSequence {
   const planApproved = Boolean(mission.team?.approvedAt);
   const honesty = artefactHonesty(mission);
-  const synced = mission.team
-    ? syncTeamWithMission(mission.team, mission)
-    : null;
+  const synced = mission.team ? syncTeamWithMission(mission.team, mission) : null;
   const tasks = synced?.tasks ?? [];
 
   const doneFlags = Object.fromEntries(
@@ -410,11 +390,13 @@ export function buildSequence(mission: SupervisedMission): BuildSequence {
     let state: BuildBeatView["state"] = "upcoming";
     if (done) state = "done";
     else if (id === currentId) {
-      state = handoff.status === "blocked" || handoff.status === "waiting_upstream" ? "blocked" : "current";
+      state =
+        handoff.status === "blocked" || handoff.status === "waiting_upstream"
+          ? "blocked"
+          : "current";
     } else if (!upstreamReady) state = "upcoming";
 
-    const artefact =
-      done || id === currentId ? focalArtefact(mission, id, honesty) : null;
+    const artefact = done || id === currentId ? focalArtefact(mission, id, honesty) : null;
 
     return {
       id,
@@ -479,16 +461,14 @@ export function castForMission(mission: SupervisedMission): Array<{
         Boolean(currentBeat) &&
         currentBeat!.owner.capabilityId === task.capabilityId &&
         currentBeat!.owner.actor === "specialist";
-      const beatForTask = sequence.beats.find((b) =>
-        BEAT_META[b.id].taskKeys.includes(task.key),
-      );
+      const beatForTask = sequence.beats.find((b) => BEAT_META[b.id].taskKeys.includes(task.key));
       rows.push({
         id,
         label: task.ownerLabel,
         contribution: task.produces,
         handoff: ownsCurrent
           ? currentBeat!.handoff.detail
-          : beatForTask?.handoff.detail ?? task.blockedReason ?? task.status.replaceAll("_", " "),
+          : (beatForTask?.handoff.detail ?? task.blockedReason ?? task.status.replaceAll("_", " ")),
         status: task.status,
         actor: "specialist",
         isCurrentOwner: ownsCurrent,

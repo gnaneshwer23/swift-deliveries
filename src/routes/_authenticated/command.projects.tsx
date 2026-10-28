@@ -116,252 +116,254 @@ function CommandProjects() {
           </p>
         </header>
 
-      <section className="cc-panel" aria-label="Product artefact shelf">
-        <h2 className="cc-panel-title">Artefact shelf</h2>
-        {shelf.isLoading ? (
-          <p className="cc-muted">Loading product memory…</p>
-        ) : shelf.isError ? (
-          <p className="cc-error">
-            {shelf.error instanceof Error ? shelf.error.message : "Failed to load shelf"}
-          </p>
-        ) : shelfWithMissions.length === 0 ? (
-          <p className="cc-muted">
-            No attached missions yet. Start a one-liner from{" "}
-            <Link to="/command" hash="supervised-brief" className="underline">
-              Overview
-            </Link>{" "}
-            — the project shelf fills as beats complete.
-          </p>
-        ) : (
-          <ul className="ps-project-shelf">
-            {shelfWithMissions.map((s) => {
-              const draft = followUpByProject[s.projectId] ?? "";
-              const canPropose = draft.trim().length >= 8;
-              return (
-                <li key={s.projectId} className="ps-project-shelf-item">
-                  <div className="ps-project-shelf-head">
-                    <strong>{s.name}</strong>
-                    <span className="cc-muted text-sm">
-                      {s.missions.length} mission{s.missions.length === 1 ? "" : "s"} ·{" "}
-                      {s.missions.reduce((n, m) => n + m.artefacts.length, 0)} artefact
-                      {s.missions.reduce((n, m) => n + m.artefacts.length, 0) === 1 ? "" : "s"} ·{" "}
-                      {s.missions.reduce((n, m) => n + m.decisions.length, 0)} decision
-                      {s.missions.reduce((n, m) => n + m.decisions.length, 0) === 1 ? "" : "s"}
-                    </span>
-                  </div>
-                  {s.description ? <p className="cc-muted text-sm">{s.description}</p> : null}
-                  <ul className="ps-project-shelf-missions">
-                    {s.missions.map((m) => (
-                      <li key={m.missionId} className="ps-project-shelf-mission-block">
-                        <Link
-                          to="/command/supervised/$missionId"
-                          params={{ missionId: m.missionId }}
-                          className="ps-project-shelf-mission"
-                        >
-                          <strong>{m.question}</strong>
-                          <span className="cc-muted text-xs">
-                            {m.stageLabel}
-                            {m.beatsTotal > 0
-                              ? ` · Beats ${m.beatsDone}/${m.beatsTotal}`
-                              : ""}
-                            {m.researchProvider ? ` · Cited · ${m.researchProvider}` : ""}
-                          </span>
-                          <span className="ps-project-shelf-next text-xs">
-                            Next: {m.nextAction}
-                            {m.openGaps > 0
-                              ? ` · ${m.openGaps} labelled gap${m.openGaps === 1 ? "" : "s"}`
-                              : ""}
-                          </span>
-                        </Link>
-                        {m.artefacts.length > 0 ? (
-                          <ul className="ps-project-shelf-artefacts">
-                            {m.artefacts.map((a) => (
-                              <li key={`${m.missionId}-${a.kind}-${a.title}`}>
-                                <span>
-                                  {a.title}
-                                  {a.state === "current" ? (
-                                    <span className="cc-muted text-xs"> · in progress</span>
-                                  ) : null}
-                                </span>
-                                <span className="ps-honesty-badges">
-                                  <span>{a.honesty}</span>
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="cc-muted text-xs">
-                            No completed artefacts yet — open the mission to approve the plan or
-                            advance the current beat.
-                          </p>
-                        )}
-                        {m.decisions.length > 0 ? (
-                          <ul className="ps-project-shelf-decisions">
-                            {m.decisions.map((d) => (
-                              <li key={`${m.missionId}-${d.at}`}>
-                                Decision: {d.summary}
-                                <span className="cc-muted text-xs">
-                                  {" "}
-                                  · {new Date(d.at).toLocaleString()}
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="cc-muted text-xs">No owner decision recorded yet.</p>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
+        <section className="cc-panel" aria-label="Product artefact shelf">
+          <h2 className="cc-panel-title">Artefact shelf</h2>
+          {shelf.isLoading ? (
+            <p className="cc-muted">Loading product memory…</p>
+          ) : shelf.isError ? (
+            <p className="cc-error">
+              {shelf.error instanceof Error ? shelf.error.message : "Failed to load shelf"}
+            </p>
+          ) : shelfWithMissions.length === 0 ? (
+            <p className="cc-muted">
+              No attached missions yet. Start a one-liner from{" "}
+              <Link to="/command" hash="supervised-brief" className="underline">
+                Overview
+              </Link>{" "}
+              — the project shelf fills as beats complete.
+            </p>
+          ) : (
+            <ul className="ps-project-shelf">
+              {shelfWithMissions.map((s) => {
+                const draft = followUpByProject[s.projectId] ?? "";
+                const canPropose = draft.trim().length >= 8;
+                return (
+                  <li key={s.projectId} className="ps-project-shelf-item">
+                    <div className="ps-project-shelf-head">
+                      <strong>{s.name}</strong>
+                      <span className="cc-muted text-sm">
+                        {s.missions.length} mission{s.missions.length === 1 ? "" : "s"} ·{" "}
+                        {s.missions.reduce((n, m) => n + m.artefacts.length, 0)} artefact
+                        {s.missions.reduce((n, m) => n + m.artefacts.length, 0) === 1
+                          ? ""
+                          : "s"} · {s.missions.reduce((n, m) => n + m.decisions.length, 0)} decision
+                        {s.missions.reduce((n, m) => n + m.decisions.length, 0) === 1 ? "" : "s"}
+                      </span>
+                    </div>
+                    {s.description ? <p className="cc-muted text-sm">{s.description}</p> : null}
+                    <ul className="ps-project-shelf-missions">
+                      {s.missions.map((m) => (
+                        <li key={m.missionId} className="ps-project-shelf-mission-block">
+                          <Link
+                            to="/command/supervised/$missionId"
+                            params={{ missionId: m.missionId }}
+                            className="ps-project-shelf-mission"
+                          >
+                            <strong>{m.question}</strong>
+                            <span className="cc-muted text-xs">
+                              {m.stageLabel}
+                              {m.beatsTotal > 0 ? ` · Beats ${m.beatsDone}/${m.beatsTotal}` : ""}
+                              {m.researchProvider ? ` · Cited · ${m.researchProvider}` : ""}
+                            </span>
+                            <span className="ps-project-shelf-next text-xs">
+                              Next: {m.nextAction}
+                              {m.openGaps > 0
+                                ? ` · ${m.openGaps} labelled gap${m.openGaps === 1 ? "" : "s"}`
+                                : ""}
+                            </span>
+                          </Link>
+                          {m.artefacts.length > 0 ? (
+                            <ul className="ps-project-shelf-artefacts">
+                              {m.artefacts.map((a) => (
+                                <li key={`${m.missionId}-${a.kind}-${a.title}`}>
+                                  <span>
+                                    {a.title}
+                                    {a.state === "current" ? (
+                                      <span className="cc-muted text-xs"> · in progress</span>
+                                    ) : null}
+                                  </span>
+                                  <span className="ps-honesty-badges">
+                                    <span>{a.honesty}</span>
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="cc-muted text-xs">
+                              No completed artefacts yet — open the mission to approve the plan or
+                              advance the current beat.
+                            </p>
+                          )}
+                          {m.decisions.length > 0 ? (
+                            <ul className="ps-project-shelf-decisions">
+                              {m.decisions.map((d) => (
+                                <li key={`${m.missionId}-${d.at}`}>
+                                  Decision: {d.summary}
+                                  <span className="cc-muted text-xs">
+                                    {" "}
+                                    · {new Date(d.at).toLocaleString()}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="cc-muted text-xs">No owner decision recorded yet.</p>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
 
-                  <div className="ps-project-follow-up" aria-label={`Propose follow-up for ${s.name}`}>
-                    <label className="cc-label" htmlFor={`follow-up-${s.projectId}`}>
-                      Propose follow-up mission
-                    </label>
-                    <p className="cc-muted text-xs mb-2">
-                      Opens a new PM brief on this product shelf. You still approve the plan —
-                      nothing is auto-authorised.
-                    </p>
-                    <textarea
-                      id={`follow-up-${s.projectId}`}
-                      className="cc-input cc-textarea"
-                      rows={2}
-                      value={draft}
-                      onChange={(e) =>
-                        setFollowUpByProject((prev) => ({
-                          ...prev,
-                          [s.projectId]: e.target.value,
-                        }))
-                      }
-                      placeholder="Next product question for this case family…"
-                    />
-                    {followUpError && followUpProjectId === s.projectId ? (
-                      <p className="cc-error mt-2">{followUpError}</p>
-                    ) : null}
-                    <button
-                      type="button"
-                      className="cc-btn cc-btn-primary mt-2"
-                      disabled={
-                        !canPropose ||
-                        (proposeFollowUp.isPending && followUpProjectId === s.projectId)
-                      }
-                      onClick={() => {
-                        setFollowUpError(null);
-                        setFollowUpProjectId(s.projectId);
-                        proposeFollowUp.mutate({
-                          projectId: s.projectId,
-                          question: draft.trim(),
-                        });
-                      }}
+                    <div
+                      className="ps-project-follow-up"
+                      aria-label={`Propose follow-up for ${s.name}`}
                     >
-                      {proposeFollowUp.isPending && followUpProjectId === s.projectId
-                        ? "Proposing…"
-                        : "Propose follow-up"}
-                    </button>
-                  </div>
+                      <label className="cc-label" htmlFor={`follow-up-${s.projectId}`}>
+                        Propose follow-up mission
+                      </label>
+                      <p className="cc-muted text-xs mb-2">
+                        Opens a new PM brief on this product shelf. You still approve the plan —
+                        nothing is auto-authorised.
+                      </p>
+                      <textarea
+                        id={`follow-up-${s.projectId}`}
+                        className="cc-input cc-textarea"
+                        rows={2}
+                        value={draft}
+                        onChange={(e) =>
+                          setFollowUpByProject((prev) => ({
+                            ...prev,
+                            [s.projectId]: e.target.value,
+                          }))
+                        }
+                        placeholder="Next product question for this case family…"
+                      />
+                      {followUpError && followUpProjectId === s.projectId ? (
+                        <p className="cc-error mt-2">{followUpError}</p>
+                      ) : null}
+                      <button
+                        type="button"
+                        className="cc-btn cc-btn-primary mt-2"
+                        disabled={
+                          !canPropose ||
+                          (proposeFollowUp.isPending && followUpProjectId === s.projectId)
+                        }
+                        onClick={() => {
+                          setFollowUpError(null);
+                          setFollowUpProjectId(s.projectId);
+                          proposeFollowUp.mutate({
+                            projectId: s.projectId,
+                            question: draft.trim(),
+                          });
+                        }}
+                      >
+                        {proposeFollowUp.isPending && followUpProjectId === s.projectId
+                          ? "Proposing…"
+                          : "Propose follow-up"}
+                      </button>
+                    </div>
 
-                  <Link
-                    to="/command/product-memory/$projectId"
-                    params={{ projectId: s.projectId }}
-                    className="cc-btn cc-btn-secondary mt-2 inline-flex"
-                  >
-                    Open product memory
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </section>
-
-      <section className="cc-panel">
-        <h2 className="cc-panel-title">Create project</h2>
-        <label className="cc-label" htmlFor="name">
-          Name
-        </label>
-        <input
-          id="name"
-          className="cc-input"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="e.g. Sponsor reporting pilot"
-        />
-        <label className="cc-label mt-3" htmlFor="desc">
-          Description (optional)
-        </label>
-        <textarea
-          id="desc"
-          className="cc-input cc-textarea"
-          rows={3}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Why this project exists"
-        />
-        {error ? <p className="cc-error mt-3">{error}</p> : null}
-        <button
-          type="button"
-          className="cc-btn cc-btn-primary mt-4"
-          disabled={create.isPending || name.trim().length < 2}
-          onClick={() => create.mutate()}
-        >
-          {create.isPending ? "Creating…" : "Create project"}
-        </button>
-      </section>
-
-      <section className="cc-panel">
-        <h2 className="cc-panel-title">Your projects</h2>
-        {projects.isLoading ? (
-          <p className="cc-muted">Loading projects…</p>
-        ) : projects.isError ? (
-          <p className="cc-error">
-            {projects.error instanceof Error ? projects.error.message : "Failed to load"}
-          </p>
-        ) : !projects.data?.length ? (
-          <p className="cc-muted">
-            No projects yet. Create one above, then start a mission from the{" "}
-            <Link to="/command" className="underline">
-              Studio
-            </Link>
-            .
-          </p>
-        ) : (
-          <ul className="cc-mission-list">
-            {projects.data.map((p) => {
-              const attached = shelfById.get(p.id);
-              return (
-                <li key={p.id} className="cc-mission-row static">
-                  <div>
-                    <strong>{p.name}</strong>
-                    <span className="cc-muted">
-                      {p.description || "No description"} · created{" "}
-                      {new Date(p.createdAt).toLocaleDateString()}
-                      {attached
-                        ? ` · ${attached.missions.length} supervised mission${attached.missions.length === 1 ? "" : "s"}`
-                        : ""}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
                     <Link
                       to="/command/product-memory/$projectId"
-                      params={{ projectId: p.id }}
-                      className="cc-btn cc-btn-secondary"
+                      params={{ projectId: s.projectId }}
+                      className="cc-btn cc-btn-secondary mt-2 inline-flex"
                     >
-                      Product memory
+                      Open product memory
                     </Link>
-                    <Link
-                      to="/command"
-                      hash="supervised-brief"
-                      className="cc-btn cc-btn-secondary"
-                    >
-                      New mission
-                    </Link>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </section>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
+
+        <section className="cc-panel">
+          <h2 className="cc-panel-title">Create project</h2>
+          <label className="cc-label" htmlFor="name">
+            Name
+          </label>
+          <input
+            id="name"
+            className="cc-input"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="e.g. Sponsor reporting pilot"
+          />
+          <label className="cc-label mt-3" htmlFor="desc">
+            Description (optional)
+          </label>
+          <textarea
+            id="desc"
+            className="cc-input cc-textarea"
+            rows={3}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Why this project exists"
+          />
+          {error ? <p className="cc-error mt-3">{error}</p> : null}
+          <button
+            type="button"
+            className="cc-btn cc-btn-primary mt-4"
+            disabled={create.isPending || name.trim().length < 2}
+            onClick={() => create.mutate()}
+          >
+            {create.isPending ? "Creating…" : "Create project"}
+          </button>
+        </section>
+
+        <section className="cc-panel">
+          <h2 className="cc-panel-title">Your projects</h2>
+          {projects.isLoading ? (
+            <p className="cc-muted">Loading projects…</p>
+          ) : projects.isError ? (
+            <p className="cc-error">
+              {projects.error instanceof Error ? projects.error.message : "Failed to load"}
+            </p>
+          ) : !projects.data?.length ? (
+            <p className="cc-muted">
+              No projects yet. Create one above, then start a mission from the{" "}
+              <Link to="/command" className="underline">
+                Studio
+              </Link>
+              .
+            </p>
+          ) : (
+            <ul className="cc-mission-list">
+              {projects.data.map((p) => {
+                const attached = shelfById.get(p.id);
+                return (
+                  <li key={p.id} className="cc-mission-row static">
+                    <div>
+                      <strong>{p.name}</strong>
+                      <span className="cc-muted">
+                        {p.description || "No description"} · created{" "}
+                        {new Date(p.createdAt).toLocaleDateString()}
+                        {attached
+                          ? ` · ${attached.missions.length} supervised mission${attached.missions.length === 1 ? "" : "s"}`
+                          : ""}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <Link
+                        to="/command/product-memory/$projectId"
+                        params={{ projectId: p.id }}
+                        className="cc-btn cc-btn-secondary"
+                      >
+                        Product memory
+                      </Link>
+                      <Link
+                        to="/command"
+                        hash="supervised-brief"
+                        className="cc-btn cc-btn-secondary"
+                      >
+                        New mission
+                      </Link>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
       </div>
     </CommandShell>
   );

@@ -84,7 +84,11 @@ export function AgentOffice({
         </div>
         <p className="ao-usage-note">
           Usage {usage.consumed}/{usage.ceiling}
-          <span className="ao-bar" style={{ ["--share" as string]: `${share * 100}%` }} aria-hidden="true">
+          <span
+            className="ao-bar"
+            style={{ ["--share" as string]: `${share * 100}%` }}
+            aria-hidden="true"
+          >
             <i />
           </span>
         </p>

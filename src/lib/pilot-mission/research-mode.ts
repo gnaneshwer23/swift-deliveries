@@ -37,9 +37,10 @@ export function isResearchMode(value: string): value is ResearchMode {
   return (RESEARCH_MODES as readonly string[]).includes(value);
 }
 
-export function webResearchConfigured(
-  env: Record<string, string | undefined> = process.env,
-): { configured: boolean; provider: string | null } {
+export function webResearchConfigured(env: Record<string, string | undefined> = process.env): {
+  configured: boolean;
+  provider: string | null;
+} {
   const provider = resolveSearchProvider(env);
   return { configured: Boolean(provider), provider: provider?.name ?? null };
 }
@@ -95,9 +96,7 @@ export function planResearchMode(
   };
   const webTool: ResearchToolDisclosure = {
     id: "web_search",
-    label: web.configured
-      ? `Web search (${web.provider})`
-      : "Web search (no provider configured)",
+    label: web.configured ? `Web search (${web.provider})` : "Web search (no provider configured)",
     available: web.configured,
     detail: web.configured
       ? `Results come from ${web.provider}. Citations keep URLs; linked pages are not bundled in the export.`

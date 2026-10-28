@@ -7,8 +7,7 @@ import type { StripeEnv } from "@/lib/stripe.server";
 import { isCheckoutFlagEnabled } from "./psi-catalog";
 
 export type PsiPaymentsModeResult =
-  | { ok: true; environment: StripeEnv }
-  | { ok: false; message: string };
+  { ok: true; environment: StripeEnv } | { ok: false; message: string };
 
 /** Immediate stop: no new Checkout Sessions (live or sandbox). */
 export function isPaymentsKillSwitchOn(
@@ -81,7 +80,8 @@ export function resolvePsiPaymentsMode(
   if (token && !token.startsWith("pk_test_")) {
     return {
       ok: false,
-      message: "VITE_PAYMENTS_CLIENT_TOKEN must be a Stripe publishable key (pk_test_ or pk_live_).",
+      message:
+        "VITE_PAYMENTS_CLIENT_TOKEN must be a Stripe publishable key (pk_test_ or pk_live_).",
     };
   }
   if (!sandboxKey) {

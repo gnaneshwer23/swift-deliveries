@@ -124,13 +124,10 @@ export function buildLearnerSummary(mission: SupervisedMission): LearnerSummary 
       });
     }
 
-    const recommendation =
-      approval.agentRecommendation ??
-      null;
+    const recommendation = approval.agentRecommendation ?? null;
     if (recommendation) {
       const disagreed =
-        approval.disagreesWithRecommendation === true ||
-        path === "founder_requested_continuation";
+        approval.disagreesWithRecommendation === true || path === "founder_requested_continuation";
       judgements.push({
         id: "act-a-path",
         title: "Act A path vs recommendation",
@@ -164,10 +161,7 @@ export function buildLearnerSummary(mission: SupervisedMission): LearnerSummary 
         );
       } else if (path === "close_case") {
         prompts.push(
-          prompt(
-            "close-reopen",
-            "What new evidence would justify reopening this case later?",
-          ),
+          prompt("close-reopen", "What new evidence would justify reopening this case later?"),
         );
       } else if (path === "authorise_revise") {
         prompts.push(
@@ -185,9 +179,7 @@ export function buildLearnerSummary(mission: SupervisedMission): LearnerSummary 
     contributions.push({
       kind: "case_gate",
       title: "Case-room step gate you recorded",
-      detail: `${GATE_LABELS[room.stepGate]}${
-        room.stepGateNote ? ` — ${room.stepGateNote}` : ""
-      }`,
+      detail: `${GATE_LABELS[room.stepGate]}${room.stepGateNote ? ` — ${room.stepGateNote}` : ""}`,
       at: room.stepGateAt,
     });
     judgements.push({
@@ -285,9 +277,8 @@ export function buildLearnerLensMarkdown(mission: SupervisedMission): string {
     summary.contributions.map((c) => `- **${c.title}:** ${c.detail}`).join("\n") ||
     "- None recorded yet.";
   const judgementLines =
-    summary.judgements
-      .map((j) => `- **${j.title}** — ${j.stance}. ${j.detail}`)
-      .join("\n") || "- No judgement moments recorded yet.";
+    summary.judgements.map((j) => `- **${j.title}** — ${j.stance}. ${j.detail}`).join("\n") ||
+    "- No judgement moments recorded yet.";
   const promptLines =
     summary.prompts.map((p) => `- ${p.prompt} _(optional; does not block execution)_`).join("\n") ||
     "- No reflection prompts for the current stage.";

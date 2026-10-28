@@ -94,8 +94,7 @@ export function deriveAgentRecommendation(mission: SupervisedMission): Recommend
       /tavily|exa|brave/i.test(e.source) ||
       /^https?:\/\//i.test(e.source),
   );
-  const researchSucceeded =
-    Boolean(mission.researchProvider) || citedFindings.length > 0;
+  const researchSucceeded = Boolean(mission.researchProvider) || citedFindings.length > 0;
 
   /** Only research-pass failures — never option-generation “model not configured”. */
   const researchExecutionFailed = researchGaps.some((g) =>
@@ -117,9 +116,7 @@ export function deriveAgentRecommendation(mission: SupervisedMission): Recommend
   }
 
   const stopSignals = [...gaps, ...assumptions].filter((e) =>
-    /already (exists|built)|saturated|not scalable|no demand|regulatory|illegal/i.test(
-      e.statement,
-    ),
+    /already (exists|built)|saturated|not scalable|no demand|regulatory|illegal/i.test(e.statement),
   );
   if (stopSignals.length >= 2 && supplied.length === 0) {
     return {

@@ -6,24 +6,12 @@ import {
   expectationLines,
   withLearningDefaults,
 } from "./learning";
-import {
-  buildDecisionPackMarkdown,
-  buildDecisionPackPdf,
-  pdfToBase64,
-} from "./decision-pack";
-import {
-  isResearchMode,
-  planResearchMode,
-  type ResearchMode,
-} from "./research-mode";
+import { buildDecisionPackMarkdown, buildDecisionPackPdf, pdfToBase64 } from "./decision-pack";
+import { isResearchMode, planResearchMode, type ResearchMode } from "./research-mode";
 import { estimateStaffingBand, expandOneLinerBrief, seedResearchEvidence } from "./pm-brief";
 import { runResearchPass } from "./research-pass";
 import { buildMissionPrototype } from "./prototype";
-import {
-  activityEvent,
-  buildPilotTeamPlan,
-  syncTeamWithMission,
-} from "./specialist-team";
+import { activityEvent, buildPilotTeamPlan, syncTeamWithMission } from "./specialist-team";
 import {
   applyOptionsComparedCollaboration,
   applyRecommendationCollaboration,
@@ -61,7 +49,7 @@ import {
   normalizeDecisionChoice,
   pathAgreesWithRecommendation,
 } from "./verdict";
-import { saveStudioMeta } from "./studio-meta";
+import { saveStudioMeta, type StudioMeta } from "./studio-meta";
 import { saveWatchtowerConfig, type WatchtowerFrequency } from "./watchtower";
 
 export class MissionNotFoundError extends Error {
@@ -587,7 +575,11 @@ export class SupervisedMissionService {
       ...current,
       version: current.version + 1,
       // Soft-seeded evidence advances to the evidence stage; research pass runs next.
-      stage: current.evidence.length ? (current.stage === "brief" ? "evidence" : current.stage) : "brief",
+      stage: current.evidence.length
+        ? current.stage === "brief"
+          ? "evidence"
+          : current.stage
+        : "brief",
       team,
       activity: pushActivity(
         current,
@@ -891,7 +883,10 @@ export class SupervisedMissionService {
       if (fresh.usageConsumed + charged > fresh.usageCeiling) throw new UsageLimitError();
       const at = new Date(input.nowMs).toISOString();
       const researchGaps = [
-        ...new Set([...(fresh.researchGaps ?? []), ...planResearchMode(fresh.researchMode).externalGaps]),
+        ...new Set([
+          ...(fresh.researchGaps ?? []),
+          ...planResearchMode(fresh.researchMode).externalGaps,
+        ]),
       ];
       const collabAfterCompare =
         fresh.team && fresh.teamCollaboration
@@ -1286,7 +1281,7 @@ export class SupervisedMissionService {
     const at = new Date(input.nowMs).toISOString();
     const verifySummary = proto.verified
       ? "Static sandbox checks passed."
-      : proto.failureDetail ?? "Static verify reported failures.";
+      : (proto.failureDetail ?? "Static verify reported failures.");
     const next: SupervisedMission = withSyncedTeam({
       ...current,
       version: current.version + 1,
@@ -1580,16 +1575,14 @@ export class SupervisedMissionService {
       );
     }
     if (current.stage === "cancelled") throw new Error("Mission is cancelled.");
-    const studioMeta = saveStudioMeta(
-      {
-        favourite: input.favourite,
-        archived: input.archived,
-        notifyWhenReady: input.notifyWhenReady,
-        investigationPaused: input.investigationPaused,
-      },
-      current.studioMeta,
-      input.nowMs,
-    );
+    const metaPatch: Partial<Omit<StudioMeta, "version" | "honesty" | "updatedAt">> = {};
+    if (input.favourite !== undefined) metaPatch.favourite = input.favourite;
+    if (input.archived !== undefined) metaPatch.archived = input.archived;
+    if (input.notifyWhenReady !== undefined) metaPatch.notifyWhenReady = input.notifyWhenReady;
+    if (input.investigationPaused !== undefined) {
+      metaPatch.investigationPaused = input.investigationPaused;
+    }
+    const studioMeta = saveStudioMeta(metaPatch, current.studioMeta, input.nowMs);
     const at = new Date(input.nowMs).toISOString();
     const next: SupervisedMission = {
       ...current,

@@ -6,13 +6,7 @@ import type { SupervisedMission } from "./types";
 import { nextRequiredAction } from "./types";
 
 export type CanvasNodeKind =
-  | "idea"
-  | "market"
-  | "needs"
-  | "alternatives"
-  | "risks"
-  | "assumptions"
-  | "evidence";
+  "idea" | "market" | "needs" | "alternatives" | "risks" | "assumptions" | "evidence";
 
 export type CanvasNodeState = "idle" | "active" | "settled" | "blocked" | "review";
 
@@ -109,8 +103,7 @@ export function buildIntelligenceCanvas(mission: SupervisedMission): Intelligenc
     !mission.proposal &&
     kinds.some((k) => /research|evidence|pass\.started/i.test(k));
   const researchSettled = Boolean(mission.researchPassCompletedAt) || citedItems.length > 0;
-  const blocked =
-    (mission.researchGaps ?? []).length > 0 && !researchSettled && planOn;
+  const blocked = (mission.researchGaps ?? []).length > 0 && !researchSettled && planOn;
   const hasContradiction =
     citedItems.length > 0 &&
     gapItems.some((g) => /contradict|conflict|disagree|vs\b/i.test(g.statement));
@@ -166,9 +159,7 @@ export function buildIntelligenceCanvas(mission: SupervisedMission): Intelligenc
       id: "alternatives",
       label: "Existing alternatives",
       state: citedItems.some((e) =>
-        /competitor|alternative|already|existing|franchise|restaurant|café|cafe/i.test(
-          e.statement,
-        ),
+        /competitor|alternative|already|existing|franchise|restaurant|café|cafe/i.test(e.statement),
       )
         ? hasContradiction
           ? "review"
@@ -206,11 +197,7 @@ export function buildIntelligenceCanvas(mission: SupervisedMission): Intelligenc
       id: "assumptions",
       label: "Commercial assumptions",
       state:
-        assumptionItems.length >= 2
-          ? "review"
-          : assumptionItems.length === 1
-            ? "active"
-            : "idle",
+        assumptionItems.length >= 2 ? "review" : assumptionItems.length === 1 ? "active" : "idle",
       eventBasis: assumptionItems.slice(0, 4).map((e) => e.id),
       detail:
         assumptionItems.length > 0
@@ -301,7 +288,8 @@ export function buildIntelligenceCanvas(mission: SupervisedMission): Intelligenc
       {
         id: "background",
         label: "Continue in background",
-        detail: "Leave anytime — durable events keep the case; nothing invents progress while you are away.",
+        detail:
+          "Leave anytime — durable events keep the case; nothing invents progress while you are away.",
         available: true,
       },
       {

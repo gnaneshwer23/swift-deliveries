@@ -6,11 +6,7 @@ import type { PilotPlan } from "./model";
 
 export const PSI_CATALOG = "psi" as const;
 
-export const PSI_LOOKUP_KEYS = [
-  "builder_monthly",
-  "founder_monthly",
-  "studio_monthly",
-] as const;
+export const PSI_LOOKUP_KEYS = ["builder_monthly", "founder_monthly", "studio_monthly"] as const;
 
 export type PsiLookupKey = (typeof PSI_LOOKUP_KEYS)[number];
 

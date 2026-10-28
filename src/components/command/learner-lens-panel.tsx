@@ -40,9 +40,7 @@ export function LearnerLensPanel({ mission }: { mission: SupervisedMission }) {
       {summary.prompts.length ? (
         <>
           <h3 className="mt-4 text-sm font-medium">Reflection (optional)</h3>
-          <p className="cc-muted text-xs">
-            These prompts do not block Compare, Decide, or Export.
-          </p>
+          <p className="cc-muted text-xs">These prompts do not block Compare, Decide, or Export.</p>
           <ul className="mt-2 grid gap-2">
             {summary.prompts.map((item) => (
               <li key={item.id} className="text-sm cc-muted">

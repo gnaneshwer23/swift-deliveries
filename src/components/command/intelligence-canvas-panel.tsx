@@ -1,9 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { buildIntelligenceCanvas } from "@/lib/pilot-mission/intelligence-canvas";
-import {
-  cancelSupervisedMission,
-  saveSupervisedStudioMeta,
-} from "@/lib/pilot-mission.functions";
+import { cancelSupervisedMission, saveSupervisedStudioMeta } from "@/lib/pilot-mission.functions";
 import type { SupervisedMission } from "@/lib/pilot-mission/types";
 
 /** PT-1 / R2 — calm investigation map; controls are honest about notify/pause limits. */
@@ -25,10 +22,7 @@ export function IntelligenceCanvasPanel({
   const paused = Boolean(mission.studioMeta?.investigationPaused);
 
   const saveMeta = useMutation({
-    mutationFn: (patch: {
-      notifyWhenReady?: boolean;
-      investigationPaused?: boolean;
-    }) =>
+    mutationFn: (patch: { notifyWhenReady?: boolean; investigationPaused?: boolean }) =>
       saveSupervisedStudioMeta({
         data: { id: missionId, expectedVersion: recordVersion, ...patch },
       }),
@@ -138,7 +132,9 @@ export function IntelligenceCanvasPanel({
           return null;
         })}
       </div>
-      <p className="cc-muted text-xs mt-2">{mission.studioMeta?.honesty ?? canvas.controls[1]?.detail}</p>
+      <p className="cc-muted text-xs mt-2">
+        {mission.studioMeta?.honesty ?? canvas.controls[1]?.detail}
+      </p>
     </section>
   );
 }
