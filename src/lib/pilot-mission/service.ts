@@ -25,6 +25,12 @@ import {
   syncTeamWithMission,
 } from "./specialist-team";
 import {
+  applyOptionsComparedCollaboration,
+  applyRecommendationCollaboration,
+  applyResearchPassCollaboration,
+  initTeamCollaboration,
+} from "./team-collaboration";
+import {
   LEASE_MS,
   OWNER_SUPPLIED_OBSERVATION_LABEL,
   nextRequiredAction,
@@ -522,6 +528,7 @@ export class SupervisedMissionService {
       caseRoom: null,
       watchtower: null,
       projectId: input.projectId ?? null,
+      teamCollaboration: initTeamCollaboration(team, at),
       activity: [
         activityEvent({
           at,
@@ -604,12 +611,23 @@ export class SupervisedMissionService {
       ...(input.env ? { env: input.env } : {}),
       ...(input.search ? { search: input.search } : {}),
     });
+    const collabAfterPass =
+      approvedBase.team && approvedBase.teamCollaboration
+        ? applyResearchPassCollaboration({
+            record: approvedBase.teamCollaboration,
+            team: approvedBase.team,
+            evidence: pass.evidence,
+            at,
+            provider: pass.provider,
+          })
+        : approvedBase.teamCollaboration;
     const next: SupervisedMission = withSyncedTeam({
       ...approvedBase,
       evidence: pass.evidence,
       researchGaps: pass.researchGaps,
       researchPassCompletedAt: pass.researchPassCompletedAt,
       researchProvider: pass.provider,
+      teamCollaboration: collabAfterPass,
       activity: pushActivity(approvedBase, ...pass.activity),
       stage: pass.evidence.length
         ? approvedBase.stage === "brief"
@@ -684,12 +702,23 @@ export class SupervisedMissionService {
       input.nowMs,
     );
     const at = new Date(input.nowMs).toISOString();
+    const collabAfterEvidence =
+      hashed.team && hashed.teamCollaboration
+        ? applyResearchPassCollaboration({
+            record: hashed.teamCollaboration,
+            team: hashed.team,
+            evidence,
+            at,
+            provider: hashed.researchProvider,
+          })
+        : hashed.teamCollaboration;
     const next: SupervisedMission = withSyncedTeam({
       ...hashed,
       evidence,
       version: current.version + 1,
       stage: hashed.proposal ? hashed.stage : "evidence",
       exportPdfBase64: hashed.exportBody ? hashed.exportPdfBase64 : null,
+      teamCollaboration: collabAfterEvidence,
       activity: pushActivity(
         hashed,
         activityEvent({
@@ -864,6 +893,17 @@ export class SupervisedMissionService {
       const researchGaps = [
         ...new Set([...(fresh.researchGaps ?? []), ...planResearchMode(fresh.researchMode).externalGaps]),
       ];
+      const collabAfterCompare =
+        fresh.team && fresh.teamCollaboration
+          ? applyOptionsComparedCollaboration({
+              record: fresh.teamCollaboration,
+              team: fresh.team,
+              evidence: fresh.evidence,
+              generationLabel: prepared.generation.label,
+              generationRan: prepared.generation.ran,
+              at,
+            })
+          : fresh.teamCollaboration;
       const committed: SupervisedMission = withSyncedTeam({
         ...fresh,
         version: fresh.version + 1,
@@ -881,6 +921,7 @@ export class SupervisedMissionService {
         exportBody: null,
         exportPdfBase64: null,
         researchGaps,
+        teamCollaboration: collabAfterCompare,
         job: {
           status: "completed",
           ownerId: input.workerId,
@@ -1012,9 +1053,19 @@ export class SupervisedMissionService {
       plan: continuationPlan,
       nowMs: input.nowMs,
     });
+    const collabAfterRec =
+      withPlan.teamCollaboration && withPlan.team
+        ? applyRecommendationCollaboration({
+            record: withPlan.teamCollaboration,
+            evidence: withPlan.evidence,
+            draft,
+            at: decidedAt,
+          })
+        : withPlan.teamCollaboration;
     const next: SupervisedMission = {
       ...withPlan,
       caseRoom,
+      teamCollaboration: collabAfterRec,
       activity: pushActivity(
         withPlan,
         activityEvent({

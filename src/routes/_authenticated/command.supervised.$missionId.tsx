@@ -12,6 +12,7 @@ import { QuietMissionBar } from "@/components/command/quiet-mission-bar";
 import { HonestyPosturePanel } from "@/components/command/honesty-posture-panel";
 import { PathArtefactsPanel } from "@/components/command/path-artefacts-panel";
 import { ProjectRoomNav } from "@/components/command/project-room-nav";
+import { TeamActivityPanel } from "@/components/command/team-activity-panel";
 import { SupervisedLearningLoop } from "@/components/command/supervised-learning-loop";
 import { WatchtowerPanel } from "@/components/command/watchtower-panel";
 import {
@@ -294,6 +295,11 @@ function SupervisedMissionPage() {
 
       <details className="ps-quiet-inspect" id="mission-inspect">
         <summary>Inspect full record</summary>
+
+      <details className="ps-quiet-inspect mt-3" id="mission-team-activity">
+        <summary>View team activity</summary>
+        <TeamActivityPanel mission={mission} />
+      </details>
 
       <ProjectRoomNav mission={mission} />
 
