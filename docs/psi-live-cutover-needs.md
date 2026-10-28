@@ -51,6 +51,16 @@ Founder-supplied Product IDs read in livemode. MCP write still **403** — looku
 3. On Builder product → set default price to `price_1UGpI02X2opf83VZ9RIaw4Ky`.
 4. Optional metadata: `catalog=psi`, `plan=…`, `missionAllowance=1|4|12`.
 
+### Managed Payments (required for founder curl parity)
+
+PSI Checkout now sends `managed_payments[enabled]=true` (same shape as your pasted curl). Before live Pay works:
+
+1. Enable Managed Payments and accept ToS: [https://dashboard.stripe.com/settings/managed-payments](https://dashboard.stripe.com/settings/managed-payments).
+2. On each live Product (`prod_VHO45CEWLNQ3qF`, `prod_VWUi8xEiee1ACW`, `prod_VWUj2JF7yL89go`) set a tax code labeled **Eligible for Managed Payments**.
+3. No extra env var and no `Stripe-Version` override — server already uses SDK API `2026-03-25.dahlia` (≥ `2025-03-31.basil`).
+
+If Session create fails with a Managed Payments / eligibility error, fix Dashboard enrollment/tax codes — agents cannot invent account features.
+
 ---
 
 ## 4. Stripe secrets (paste into Vercel Production only — never into git/chat)
@@ -142,6 +152,7 @@ Set / verify these on project `swift-deliveries` (`prj_KXbLoh586LlAsKD6c8zk2HGDj
 | --- | --- |
 | Live Products/Prices IDs | **Cleared** — IDs recorded; Production price env set |
 | Lookup-key cleanup | Optional Dashboard fix (`experience_monthly` → `builder_monthly`; set Founder/Studio keys) |
+| Managed Payments enrollment + eligible tax codes | Dashboard ToS + product tax codes — required once code sends `managed_payments.enabled` |
 | Migration 0032 | **Cleared** on production 28 Oct 2026 |
 | `pk_live_…` + `rk_live_…` / `sk_live_…` | Not in git; you set Vercel Production |
 | Live webhook + `whsec_…` | Dashboard create + `PAYMENTS_LIVE_WEBHOOK_SECRET` |

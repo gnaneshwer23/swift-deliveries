@@ -73,10 +73,21 @@ Do **not** put these sandbox `price_…` IDs on Production `PSI_STRIPE_PRICE_*`.
 ## Billing shape
 
 - Stripe **subscription** monthly Prices (marketing says monthly).
+- Checkout Session create matches founder Managed Payments pattern: `mode=subscription`, `line_items[0]` price + quantity `1`, `managed_payments.enabled=true`, `success_url` / `cancel_url` (deliverx.dev return paths from the client), session + subscription metadata for workspace/plan.
+- Server API version stays **`2026-03-25.dahlia`** (Stripe Node SDK pin). Managed Payments requires **`2025-03-31.basil` or later** — we already satisfy that; do **not** downgrade to the Dashboard curl’s basil header.
+- `managed_payments` is sent via a typed intersection: SDK **22.0.2** does not yet declare the field (same approach as legacy career checkout). No secret or `Stripe-Version` header override is required beyond the client `apiVersion`.
 - Entitlement remains **allowance-shaped** (missions), not automatic renewal top-up in P1.
 - Fulfillment: `checkout.session.completed` + `checkout.session.async_payment_succeeded`, only when `payment_status` ≠ `unpaid`.
 - Success / return URL does **not** grant access.
 - Webhook URL (Production): `https://www.deliverx.dev/api/public/payments/webhook?env=live`
+
+## Managed Payments (founder Dashboard)
+
+Code always passes `managed_payments[enabled]=true`. Stripe will reject Session create until the account is enrolled:
+
+1. Accept Managed Payments terms at [Dashboard → Managed Payments](https://dashboard.stripe.com/settings/managed-payments).
+2. Set each PSI Product’s **tax code** to one labeled *Eligible for Managed Payments* ([eligibility](https://docs.stripe.com/payments/managed-payments/eligibility)).
+3. Do **not** set `automatic_tax` / `payment_method_types` on our Session create (unsupported with Managed Payments; we omit them).
 
 ## Tax / cancel / refund
 

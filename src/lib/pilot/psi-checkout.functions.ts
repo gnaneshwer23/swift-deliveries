@@ -3,12 +3,8 @@ import { z } from "zod";
 import { requireAuth } from "@/lib/auth/middleware";
 import { createDirectStripeClient, getStripeErrorMessage, type StripeEnv } from "@/lib/stripe.server";
 import { isPilotPlan, type PilotPlan } from "./model";
-import {
-  CAREER_LOOKUP_KEYS,
-  offerForPlan,
-  PSI_CATALOG,
-  priceEnvOverride,
-} from "./psi-catalog";
+import { CAREER_LOOKUP_KEYS, offerForPlan, priceEnvOverride } from "./psi-catalog";
+import { buildPsiCheckoutSessionCreateParams } from "./psi-checkout-session";
 import { resolvePsiPaymentsMode } from "./psi-payments-mode";
 
 type CheckoutOk = { ok: true; url: string; sessionId: string; environment: StripeEnv };
@@ -121,29 +117,19 @@ export const createPsiCheckoutSession = createServerFn({ method: "POST" })
       const resolved = await resolvePsiPriceId(stripe, data.plan);
       if ("error" in resolved) return { ok: false, message: resolved.error };
 
-      const offer = offerForPlan(data.plan);
-      const metadata = {
-        catalog: PSI_CATALOG,
-        userId: context.userId,
-        workspaceId,
-        plan: data.plan,
-        missionAllowance: String(offer.missionAllowance),
-        lookupKey: resolved.lookupKey,
-      };
-
-      const session = await stripe.checkout.sessions.create({
-        mode: "subscription",
-        line_items: [{ price: resolved.priceId, quantity: 1 }],
-        success_url: data.successUrl.includes("{CHECKOUT_SESSION_ID}")
-          ? data.successUrl
-          : `${data.successUrl}${data.successUrl.includes("?") ? "&" : "?"}session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: data.cancelUrl,
-        client_reference_id: context.userId,
-        ...(context.userEmail ? { customer_email: context.userEmail } : {}),
-        metadata,
-        subscription_data: { metadata },
-        integration_identifier: `psi_checkout_${randomSuffix()}`,
-      });
+      const session = await stripe.checkout.sessions.create(
+        buildPsiCheckoutSessionCreateParams({
+          plan: data.plan,
+          priceId: resolved.priceId,
+          lookupKey: resolved.lookupKey,
+          userId: context.userId,
+          workspaceId,
+          userEmail: context.userEmail,
+          successUrl: data.successUrl,
+          cancelUrl: data.cancelUrl,
+          integrationSuffix: randomSuffix(),
+        }),
+      );
 
       if (!session.url) {
         return { ok: false, message: "Stripe did not return a Checkout URL." };
