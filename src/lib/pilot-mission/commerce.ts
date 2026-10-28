@@ -152,6 +152,9 @@ export function commerceSnapshot(mission: SupervisedMission): CommerceSnapshot {
       ? "Execution limitation is on the record — remedy is retry/restore, not a sold evidence-based pause."
       : "Evidence-based pause (when recommended) is distinct from provider failure.",
     "Paid availability of Investigation/Continuation units is not enabled on this deployment.",
+    mission.watchtower?.enabled
+      ? `Watchtower preferences on (${mission.watchtower.frequency}); monitoring allowance is a separate commercial model and is not charged until a scheduled runner ships. Budget ceiling preference: ${mission.watchtower.budgetCeilingUnits} units.`
+      : "Watchtower / monitoring allowance is separate from Investigation and Continuation — preferences only until a runner ships.",
   ];
 
   return {

@@ -55,6 +55,7 @@ import {
   normalizeDecisionChoice,
   pathAgreesWithRecommendation,
 } from "./verdict";
+import { saveStudioMeta } from "./studio-meta";
 import { saveWatchtowerConfig, type WatchtowerFrequency } from "./watchtower";
 
 export class MissionNotFoundError extends Error {
@@ -566,6 +567,7 @@ export class SupervisedMissionService {
       );
     }
     this.assertMutable(current);
+    this.assertNotPaused(current);
     if (!current.team) throw new Error("This mission has no specialist plan to approve.");
     if (current.team.approvedAt) return current;
     const at = new Date(input.nowMs).toISOString();
@@ -792,6 +794,7 @@ export class SupervisedMissionService {
     if (current.stage === "cancelled" || current.job.status === "cancelled") {
       throw new Error("Mission is cancelled.");
     }
+    this.assertNotPaused(current);
     assertPlanApproved(current);
     const research = planResearchMode(current.researchMode ?? "provided");
     if (!research.executable) {
@@ -1146,6 +1149,7 @@ export class SupervisedMissionService {
     }
     if (current.artefact && current.stage !== "cancelled") return current;
     this.assertOpen(current);
+    this.assertNotPaused(current);
     const pack = buildPack(current);
     const next: SupervisedMission = {
       ...current,
@@ -1507,9 +1511,69 @@ export class SupervisedMissionService {
     return row;
   }
 
+  async saveStudioMeta(input: {
+    workspaceId: string;
+    expectedVersion?: number;
+    id: string;
+    favourite?: boolean;
+    archived?: boolean;
+    notifyWhenReady?: boolean;
+    investigationPaused?: boolean;
+    actorId: string;
+    nowMs: number;
+  }): Promise<SupervisedMission> {
+    const current = await this.must(input.workspaceId, input.id);
+    if (input.expectedVersion !== undefined && current.version !== input.expectedVersion) {
+      throw new MissionConflictError(
+        "This mission changed in another session. Your edits were not saved. Review the latest record before trying again.",
+      );
+    }
+    if (current.stage === "cancelled") throw new Error("Mission is cancelled.");
+    const studioMeta = saveStudioMeta(
+      {
+        favourite: input.favourite,
+        archived: input.archived,
+        notifyWhenReady: input.notifyWhenReady,
+        investigationPaused: input.investigationPaused,
+      },
+      current.studioMeta,
+      input.nowMs,
+    );
+    const at = new Date(input.nowMs).toISOString();
+    const next: SupervisedMission = {
+      ...current,
+      version: current.version + 1,
+      studioMeta,
+      activity: pushActivity(
+        current,
+        activityEvent({
+          at,
+          taskKey: null,
+          kind: "studio.meta_saved",
+          summary: studioMeta.investigationPaused
+            ? "Investigation paused by preference. Resume to continue research steps."
+            : studioMeta.notifyWhenReady
+              ? "Studio preferences saved (notify-when-ready on). Push/email is not active until a notifier exists."
+              : "Studio preferences saved (favourite/archive/notify/pause).",
+          actor: input.actorId,
+        }),
+      ),
+      updatedAt: at,
+    };
+    return this.store.save(next, current.version);
+  }
+
   private assertOpen(mission: SupervisedMission): void {
     if (mission.stage === "cancelled") throw new Error("Mission is cancelled.");
     if (mission.stage === "exported") throw new Error("This mission is already exported.");
+  }
+
+  private assertNotPaused(mission: SupervisedMission): void {
+    if (mission.studioMeta?.investigationPaused) {
+      throw new Error(
+        "This investigation is paused. Resume from the Intelligence Canvas controls before further research steps.",
+      );
+    }
   }
 
   private assertMutable(mission: SupervisedMission): void {

@@ -60,9 +60,15 @@ export type MissionTheatreActions = {
  */
 export function MissionTheatre({
   mission,
+  missionId,
+  onDone,
+  onError,
   actions,
 }: {
   mission: SupervisedMission;
+  missionId: string;
+  onDone: () => Promise<void>;
+  onError: (error: unknown) => void;
   actions: MissionTheatreActions;
 }) {
   const theatre = theatreState(mission);
@@ -550,7 +556,13 @@ function ActWork({
 
       {sequence.planApproved ? (
         <>
-          <IntelligenceCanvasPanel mission={mission} />
+          <IntelligenceCanvasPanel
+            mission={mission}
+            missionId={missionId}
+            recordVersion={mission.version}
+            onDone={onDone}
+            onError={onError}
+          />
           <PmBriefingPanel mission={mission} />
 
           <BuildBeatRail

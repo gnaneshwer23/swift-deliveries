@@ -3,11 +3,13 @@ import type { ContinuationPlan } from "./continuation-plan";
 import type { ResearchMode } from "./research-mode";
 import type { PilotActivityEvent, PilotTeamPlan } from "./specialist-team";
 import type { AgentRecommendation, DecisionChoice, HumanNextPath } from "./verdict";
+import type { StudioMeta } from "./studio-meta";
 import type { WatchtowerConfig } from "./watchtower";
 
 export type { AgentRecommendation, DecisionChoice, HumanNextPath } from "./verdict";
 export type { ContinuationPlan } from "./continuation-plan";
 export type { CaseRoom, CaseStepGate } from "./case-room";
+export type { StudioMeta } from "./studio-meta";
 export type { WatchtowerConfig } from "./watchtower";
 
 /** Exact record stored when no model provider is configured. */
@@ -275,6 +277,10 @@ export type SupervisedMission = {
    * PT-6 Watchtower preferences. Additive — null/undefined means unset; checks do not run until a runner exists.
    */
   watchtower?: WatchtowerConfig | null;
+  /**
+   * R2/R7 studio preferences (favourite, archive, notify, soft pause). Additive.
+   */
+  studioMeta?: StudioMeta | null;
   /** Persisted task events only — no fake chat or timer theatre. */
   activity: PilotActivityEvent[];
   /**

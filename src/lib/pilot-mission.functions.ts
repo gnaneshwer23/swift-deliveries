@@ -178,6 +178,13 @@ export const getSupervisedMissionHome = createServerFn({ method: "GET" })
           updatedAt: mission.updatedAt,
           usageConsumed: mission.usageConsumed,
           usageCeiling: mission.usageCeiling,
+          favourite: Boolean(mission.studioMeta?.favourite),
+          archived: Boolean(mission.studioMeta?.archived),
+          monitoringStatus: mission.watchtower?.enabled
+            ? mission.watchtower.lastSuccessfulCheckAt || mission.watchtower.nextScheduledCheckAt
+              ? `Last ${mission.watchtower.lastSuccessfulCheckAt ?? "none"} · next ${mission.watchtower.nextScheduledCheckAt ?? "none"}`
+              : `Preferences (${mission.watchtower.frequency}) — runner not live`
+            : "Monitoring off",
           links: learningLinks(mission),
         })),
       };
@@ -457,6 +464,37 @@ export const recordSupervisedCaseStepGate = createServerFn({ method: "POST" })
       expectedVersion: data.expectedVersion,
       gate: data.gate,
       note: data.note,
+      actorId: context.userId,
+      nowMs: Date.now(),
+    });
+    return view(mission, null);
+  });
+
+export const saveSupervisedStudioMeta = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        expectedVersion: z.number().int().positive(),
+        favourite: z.boolean().optional(),
+        archived: z.boolean().optional(),
+        notifyWhenReady: z.boolean().optional(),
+        investigationPaused: z.boolean().optional(),
+      })
+      .parse(data),
+  )
+  .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
+    const workspace = await workspaceFor(context.supabase, context.userId);
+    const { service } = await serviceFor();
+    const mission = await service.saveStudioMeta({
+      workspaceId: workspace.id,
+      id: data.id,
+      expectedVersion: data.expectedVersion,
+      favourite: data.favourite,
+      archived: data.archived,
+      notifyWhenReady: data.notifyWhenReady,
+      investigationPaused: data.investigationPaused,
       actorId: context.userId,
       nowMs: Date.now(),
     });

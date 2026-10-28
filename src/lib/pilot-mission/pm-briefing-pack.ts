@@ -46,8 +46,10 @@ export type PmBriefingPack = {
   supporting: string[];
   counterevidence: string[];
   unknowns: string[];
+  alternatives: string[];
   swot: ActionableSwotItem[];
   smallestNextStep: string;
+  roleDisclosure: string;
   honesty: string;
 };
 
@@ -220,6 +222,11 @@ export function buildPmBriefingPack(mission: SupervisedMission): PmBriefingPack 
             ? "Close or archive this proposition; keep findings for later reuse with dates."
             : "Complete research and options so a recommendation can land.";
 
+  const alternatives =
+    mission.proposal?.options.map(
+      (o) => `${o.title} — ${o.tradeoff}${o.basis ? ` (basis: ${o.basis})` : ""}`,
+    ) ?? [];
+
   return {
     version: "pm-briefing-v1",
     ready,
@@ -231,8 +238,11 @@ export function buildPmBriefingPack(mission: SupervisedMission): PmBriefingPack 
     supporting,
     counterevidence,
     unknowns,
+    alternatives,
     swot,
     smallestNextStep,
+    roleDisclosure:
+      "This briefing is from the DeliverX AI product manager role — not a human reviewer unless a human later attests.",
     honesty: draft.executionLimited
       ? "Execution limitation on the record — not an evidence-based market pause."
       : mission.proposal?.generation.ran

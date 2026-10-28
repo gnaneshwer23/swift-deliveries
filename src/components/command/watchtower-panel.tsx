@@ -59,7 +59,12 @@ export function WatchtowerPanel({
       <p className="cc-muted text-sm">{WATCHTOWER_HONESTY}</p>
       <p className="cc-muted mt-1 text-xs">
         Last successful check: {existing.lastSuccessfulCheckAt ?? "none"} · Next scheduled:{" "}
-        {existing.nextScheduledCheckAt ?? "none"} · Failures: {existing.lastFailure ?? "none"}
+        {existing.nextScheduledCheckAt ?? "none"} · Failures: {existing.lastFailure ?? "none"} ·
+        Stale sources: not evaluated until a runner exists
+      </p>
+      <p className="cc-muted text-xs">
+        Alerts will interpret relevance and propose responses — they will not declare an idea
+        unviable. Monitoring allowance is separate from Investigation/Continuation units.
       </p>
       <form
         className="mt-3 grid gap-2"

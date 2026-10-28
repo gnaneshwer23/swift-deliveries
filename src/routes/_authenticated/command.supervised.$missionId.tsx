@@ -8,6 +8,8 @@ import { CaseRoomPanel } from "@/components/command/case-room-panel";
 import { CommerceDisclosurePanel } from "@/components/command/commerce-disclosure-panel";
 import { LearnerLensPanel } from "@/components/command/learner-lens-panel";
 import { MissionTheatre } from "@/components/command/mission-theatre";
+import { HonestyPosturePanel } from "@/components/command/honesty-posture-panel";
+import { PathArtefactsPanel } from "@/components/command/path-artefacts-panel";
 import { ProjectRoomNav } from "@/components/command/project-room-nav";
 import { SupervisedLearningLoop } from "@/components/command/supervised-learning-loop";
 import { WatchtowerPanel } from "@/components/command/watchtower-panel";
@@ -234,6 +236,9 @@ function SupervisedMissionPage() {
       <div id="pr-briefings">
         <MissionTheatre
           mission={mission}
+          missionId={missionId}
+          onDone={invalidate}
+          onError={onError}
           actions={{
             open,
             next,
@@ -506,7 +511,9 @@ function SupervisedMissionPage() {
         ) : (
           <div id="pr-flow" />
         )}
-        <div id="pr-decisions" />
+        <div id="pr-decisions">
+          <PathArtefactsPanel mission={mission} />
+        </div>
         {mission.invalidatedApprovals.length ? (
           <section className="cc-panel" aria-label="Cleared approvals">
             <h2 className="cc-panel-title">Cleared approvals</h2>
@@ -591,6 +598,7 @@ function SupervisedMissionPage() {
         <CommerceDisclosurePanel mission={mission} />
         <LearnerLensPanel mission={mission} />
         <SupervisedLearningLoop mission={mission} onDone={invalidate} onError={onError} />
+        <HonestyPosturePanel mission={mission} />
       </div>
       </div>
       <WatchtowerPanel

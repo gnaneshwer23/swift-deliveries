@@ -34,6 +34,13 @@ export type CanvasEdge = {
   eventBacked: boolean;
 };
 
+export type CanvasControl = {
+  id: "background" | "notify" | "inspect" | "pause" | "cancel";
+  label: string;
+  detail: string;
+  available: boolean;
+};
+
 export type IntelligenceCanvas = {
   version: "canvas-v1";
   statusLine: string;
@@ -41,6 +48,7 @@ export type IntelligenceCanvas = {
   nodes: CanvasNode[];
   edges: CanvasEdge[];
   inspectHint: string;
+  controls: CanvasControl[];
 };
 
 function cited(mission: SupervisedMission) {
@@ -274,9 +282,14 @@ export function buildIntelligenceCanvas(mission: SupervisedMission): Intelligenc
     },
   ];
 
+  const paused = Boolean(mission.studioMeta?.investigationPaused);
+  const notifyOn = Boolean(mission.studioMeta?.notifyWhenReady);
+
   return {
     version: "canvas-v1",
-    statusLine: statusLineFor(mission),
+    statusLine: paused
+      ? "Investigation paused by preference. Resume to continue research steps."
+      : statusLineFor(mission),
     leaveAllowed:
       planOn && !mission.approval
         ? "Research in progress. You can leave this page — work continues from persisted events."
@@ -284,5 +297,41 @@ export function buildIntelligenceCanvas(mission: SupervisedMission): Intelligenc
     nodes,
     edges,
     inspectHint: "Inspect activity",
+    controls: [
+      {
+        id: "background",
+        label: "Continue in background",
+        detail: "Leave anytime — durable events keep the case; nothing invents progress while you are away.",
+        available: true,
+      },
+      {
+        id: "notify",
+        label: notifyOn ? "Notify when ready (on)" : "Notify when ready",
+        detail: notifyOn
+          ? "Preference saved. Email/push delivery is not active until a notifier exists — check this case."
+          : "Save a preference to be notified. Delivery channels are not live yet.",
+        available: mission.stage !== "cancelled",
+      },
+      {
+        id: "inspect",
+        label: "Inspect activity",
+        detail: "Open the evidence and activity record for this case.",
+        available: true,
+      },
+      {
+        id: "pause",
+        label: paused ? "Resume investigation" : "Pause investigation",
+        detail: paused
+          ? "Resume allows further research and comparison steps."
+          : "Soft pause blocks further research steps without cancelling the case.",
+        available: mission.stage !== "cancelled" && mission.stage !== "exported",
+      },
+      {
+        id: "cancel",
+        label: "Cancel mission",
+        detail: "Stops the case permanently; the saved record is retained.",
+        available: mission.stage !== "cancelled" && mission.stage !== "exported",
+      },
+    ],
   };
 }

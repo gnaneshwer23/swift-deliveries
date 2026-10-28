@@ -17,6 +17,7 @@ export function PmBriefingPanel({ mission }: { mission: SupervisedMission }) {
     <section className="ps-pm-briefing" aria-label="Product briefing">
       <p className="cc-kicker">Your product briefing is ready</p>
       <h3 className="ps-pm-briefing-title">Product briefing</h3>
+      <p className="cc-muted text-sm">{pack.roleDisclosure}</p>
       <p className="cc-muted text-sm">{pack.honesty}</p>
 
       <h4 className="ps-pm-briefing-h">What we understood</h4>
@@ -63,6 +64,28 @@ export function PmBriefingPanel({ mission }: { mission: SupervisedMission }) {
           <h4 className="ps-pm-briefing-h">Counterevidence & gaps</h4>
           <ul className="text-sm cc-muted">
             {pack.counterevidence.map((line) => (
+              <li key={line.slice(0, 40)}>{line}</li>
+            ))}
+          </ul>
+        </>
+      ) : null}
+
+      {pack.alternatives.length ? (
+        <>
+          <h4 className="ps-pm-briefing-h">Alternatives on the record</h4>
+          <ul className="text-sm cc-muted">
+            {pack.alternatives.map((line) => (
+              <li key={line.slice(0, 40)}>{line}</li>
+            ))}
+          </ul>
+        </>
+      ) : null}
+
+      {pack.unknowns.length ? (
+        <>
+          <h4 className="ps-pm-briefing-h">Important unknowns</h4>
+          <ul className="text-sm cc-muted">
+            {pack.unknowns.map((line) => (
               <li key={line.slice(0, 40)}>{line}</li>
             ))}
           </ul>

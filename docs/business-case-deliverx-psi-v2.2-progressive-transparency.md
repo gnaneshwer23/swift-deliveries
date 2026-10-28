@@ -58,78 +58,61 @@ Shipped today already covers parts of the left column in stub or theatre form (m
 
 ---
 
-## Proposed requirements (for approval)
+## Requirements (R1–R9) — shipped 28 Oct 2026
 
-### R1 — Opening
+Honest limits remain labelled: file attachments deferred; notify delivery and Watchtower runner not live; monitoring allowance not charged until a runner ships.
 
-- One large idea input (+ optional attachments); not a long questionnaire.
-- Short interpretation before research; ask only when the answer materially changes scope.
-- Before research: show scope, sources, limits, and allowance consumption (commitment visible).
+### R1 — Opening — **done**
 
-### R2 — Intelligence Canvas (investigation front stage)
+- One large idea input; attachments explicitly deferred with paste-into-evidence note.
+- Short interpretation before research (commitment panel).
+- Before start: scope, sources, limits, and Investigation allowance commitment visible.
 
-- Abstract intelligence canvas (not cartoon office agents as the primary UX).
-- Nodes/edges and motion that imply action must map to **persisted events**; decorative ambient motion may be non-semantic.
-- Plain-language status line; no invented percentages or fake countdowns.
-- Controls: continue in background · notify when ready · inspect activity · pause/cancel.
-- Honesty: never stage “interviewing customers” without authorised interview work.
+### R2 — Intelligence Canvas — **done**
 
-### R3 — PM briefing
+- Abstract event-backed canvas; plain-language status; no fake interview theatre.
+- Controls: continue in background · notify when ready (preference) · inspect activity · pause/resume · cancel.
 
-- Polished transition when ready; named AI role (not implied human review unless true).
-- Separate: technical feasibility · customer-problem evidence · defensible proposition · worth next investment.
-- Structure: understood idea · four-outcome recommendation · support · counterevidence · alternatives · actionable SWOT · unknowns · smallest defensible next step.
-- SWOT items: basis + implication + next question (not generic boxes).
-- Keep four outcomes: bounded test · revise · pause pending evidence · do not pursue.
+### R3 — PM briefing — **done**
 
-### R4 — Path choice → continuation
+- Named AI PM role disclosure; separate feasibility / demand / proposition / investment.
+- Recommendation, support, counterevidence, alternatives, unknowns, actionable SWOT, smallest next step.
 
-- Choices end the briefing; no automatic build.
-- Artefacts follow the path (interview guide / experiment / revised proposition / plan — not always PRD/code).
-- Continuation team and plan only after approval + commercial rules.
+### R4 — Path choice → continuation — **done**
 
-### R5 — Project room
+- Choices end the briefing; path artefact guide (experiment / evidence / revise / close / founder continuation).
+- Continuation team only after approval + commercial rules (existing spine).
 
-- Persistent project; Act A briefing and evidence remain accessible.
-- Nav: Overview · Briefings · Evidence · Team · Information flow · Artefacts · Decisions · Build & verification · Outcomes · Monitoring.
-- Overview: objective, recommendation, approved work, decisions due, gaps, recent changes, next review.
-- Specialist folder and handoff edges remain inspectable (recorded actions/sources — not hidden chain-of-thought).
+### R5 — Project room — **done**
 
-### R6 — History and downloads
+- Persistent nav Overview → Monitoring; Act A remains reachable; overview summary.
 
-- Executive pack vs full project archive (permission-aware).
-- Manifest: included files, linked-only sources, exclusions, versions, generation time.
-- No secrets, other customers’ data, or hidden model reasoning in exports.
+### R6 — History and downloads — **done**
 
-### R7 — Portfolio Command Centre
+- Executive pack vs full archive; honest manifest exclusions.
 
-- Search, filters, favourites, archives, decisions due, outcomes due, monitoring status.
-- Do not render every project’s agent graph on one page.
-- Similar-idea suggestions with basis; never auto-merge; preserve date/limitations/permissions on reused evidence.
-- Workspace isolation mandatory.
+### R7 — Portfolio Command Centre — **done**
 
-### R8 — Watchtower (optional)
+- Search, stage, attention, favourites, archives, decisions/outcomes due, monitoring status; similar-idea assist; no agent-graph wall.
 
-- Monitor approved sources; explain relevance; propose response — not continuous autonomous product change.
-- Per-project: sources, frequency, geography, budget ceiling, notifications, pause/renewal.
-- Show last success, failures, stale sources, next check.
-- Alerts interpret; they do not declare “idea unviable.”
-- Separate commercial model (monitoring allowance).
+### R8 — Watchtower — **done (preferences)**
 
-### R9 — Cross-cutting honesty
+- Per-project preferences; last/next/failures/stale shown honestly as unset until runner; alerts copy; separate monitoring allowance disclosed; no continuous autonomous change claimed.
 
-| Gap | Requirement |
+### R9 — Cross-cutting honesty — **done (surface)**
+
+| Gap | Shipped posture |
 | --- | --- |
-| Buildability vs desirability | Separate assessments |
-| Interviews | Label planning / rehearsal / recruitment / completed / analysis |
-| Cost | Separate mission, continuation, storage, monitoring allowances |
-| Stale evidence | Date findings; recheck before reuse |
-| Notifications | Thresholds, digests, mute, dedupe |
-| Recovery | Durable execution, reconnect, truthful failures |
-| Accountability | Source independence; preserve counterevidence |
-| Accessibility | Reduced motion, summaries, keyboard, list views |
-| Deliverables | Approve specific outputs and release authority |
-| Data lifecycle | Retention, deletion, redaction, permissions |
+| Buildability vs desirability | Separate PM assessments |
+| Interviews | Label planning / rehearsal / recruitment / completed / analysis when wording matches |
+| Cost | Investigation / Continuation / monitoring ceilings disclosed separately |
+| Stale evidence | Date cues + undated supplied guidance on honesty panel |
+| Notifications | Preference + honesty that digests/mute/dedupe await notifier |
+| Recovery | Job failure surfaced; durable leave/return copy |
+| Accountability | Counterevidence preserved; recommendation kept on disagreement |
+| Accessibility | List views, keyboard links, non-semantic motion note |
+| Deliverables | Human gates for plan / path / prototype / case steps |
+| Data lifecycle | Workspace-scoped exports; admin retention path disclosed |
 
 ---
 
@@ -177,3 +160,4 @@ Shipped today already covers parts of the left column in stub or theatre form (m
 | 28 Oct 2026 | Progressive-transparency direction recorded for approval; not stamped. |
 | 28 Oct 2026 | Founder “build” → **stamped**; **PT-1 authorised**. |
 | 28 Oct 2026 | Founder “pt2-pt6” → **PT-2…PT-6 authorised and shipped** (Watchtower = preferences only). |
+| 28 Oct 2026 | Founder “complete them” → **R1–R9 closed** with labelled honesty limits (attachments / notifier / Watchtower runner). |

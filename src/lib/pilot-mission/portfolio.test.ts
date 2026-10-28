@@ -34,7 +34,7 @@ const rows: PortfolioMissionRow[] = [
   },
 ];
 
-describe("PT-4 portfolio helpers", () => {
+describe("PT-4 / R7 portfolio helpers", () => {
   it("filters by attention and search without inventing cases", () => {
     const attention = filterPortfolio(rows, { query: "", stage: "", attentionOnly: true });
     expect(attention.map((r) => r.id)).toEqual(["1", "3"]);
@@ -45,6 +45,42 @@ describe("PT-4 portfolio helpers", () => {
     });
     expect(search).toHaveLength(1);
     expect(search[0]!.id).toBe("2");
+  });
+
+  it("hides archives by default and can favourites-only", () => {
+    const withArchive = [
+      ...rows,
+      {
+        id: "4",
+        question: "Archived cafe idea",
+        stage: "exported",
+        nextTitle: "Done",
+        nextId: "done",
+        decisionRecorded: true,
+        observationRecorded: true,
+        updatedAt: "2026-10-26T12:00:00Z",
+        archived: true,
+        favourite: true,
+        monitoringStatus: "Monitoring off",
+      },
+    ];
+    expect(
+      filterPortfolio(withArchive, {
+        query: "",
+        stage: "",
+        attentionOnly: false,
+        includeArchived: false,
+      }).map((r) => r.id),
+    ).not.toContain("4");
+    expect(
+      filterPortfolio(withArchive, {
+        query: "",
+        stage: "",
+        attentionOnly: false,
+        favouritesOnly: true,
+        includeArchived: true,
+      }).map((r) => r.id),
+    ).toEqual(["4"]);
   });
 
   it("summarises decisions and outcomes due", () => {

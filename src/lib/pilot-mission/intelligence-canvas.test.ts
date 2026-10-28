@@ -65,6 +65,13 @@ describe("PT-1 Intelligence Canvas", () => {
     expect(canvas.nodes.find((n) => n.id === "market")?.state).toBe("idle");
     expect(JSON.stringify(canvas).toLowerCase()).not.toContain("interviewing customers");
     expect(canvas.statusLine.toLowerCase()).toMatch(/approve/);
+    expect(canvas.controls.map((c) => c.id)).toEqual([
+      "background",
+      "notify",
+      "inspect",
+      "pause",
+      "cancel",
+    ]);
   });
 
   it("activates market from plan approval / research events", async () => {
@@ -90,6 +97,7 @@ describe("PT-1 PM briefing pack", () => {
       "next_investment",
     ]);
     expect(pack.recommendation).toBeTruthy();
+    expect(pack.roleDisclosure.toLowerCase()).toMatch(/ai product manager/);
     expect(pack.swot.length).toBeGreaterThan(0);
     for (const item of pack.swot) {
       expect(item.basis.length).toBeGreaterThan(5);

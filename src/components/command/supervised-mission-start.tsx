@@ -9,6 +9,7 @@ import {
   RESEARCH_FIRST_CONSTRAINT,
   RESEARCH_REFINE_AUDIENCE,
 } from "@/lib/pilot-mission/pm-brief";
+import { buildInvestigationCommitment } from "@/lib/pilot-mission/investigation-commitment";
 import { findSimilarIdeas } from "@/lib/pilot-mission/similar-ideas";
 
 import { useSession } from "@/hooks/use-session";
@@ -121,6 +122,20 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
         : [];
     return findSimilarIdeas(question, prior, 3);
   }, [home.data, question]);
+
+  const commitment = useMemo(() => {
+    if (!home.data?.ready) return null;
+    return buildInvestigationCommitment({
+      question,
+      researchMode,
+      researchProviderConfigured: Boolean(home.data.researchProvider?.configured),
+      researchProviderLabel:
+        home.data.researchProvider?.label ?? home.data.providerLabel ?? "Not configured",
+      investigationRemaining: home.data.investigationAllowance?.remaining ?? null,
+      canStart: home.data.canStartInvestigation === true,
+      blockedReason: home.data.startInvestigationBlockedReason,
+    });
+  }, [home.data, question, researchMode]);
 
   return (
     <section
@@ -285,6 +300,34 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
           </div>
         </details>
 
+        {commitment ? (
+          <details className="ps-commitment" open={question.trim().length >= 8}>
+            <summary>Before you start — commitment</summary>
+            <p className="text-sm mt-2">{commitment.interpretation}</p>
+            <h4 className="text-xs font-medium mt-3 mb-1">Scope</h4>
+            <ul className="cc-muted text-xs">
+              {commitment.scope.map((line) => (
+                <li key={line.slice(0, 40)}>{line}</li>
+              ))}
+            </ul>
+            <h4 className="text-xs font-medium mt-2 mb-1">Sources</h4>
+            <ul className="cc-muted text-xs">
+              {commitment.sources.map((line) => (
+                <li key={line.slice(0, 40)}>{line}</li>
+              ))}
+            </ul>
+            <h4 className="text-xs font-medium mt-2 mb-1">Limits</h4>
+            <ul className="cc-muted text-xs">
+              {commitment.limits.map((line) => (
+                <li key={line.slice(0, 40)}>{line}</li>
+              ))}
+            </ul>
+            <p className="text-sm mt-2" role="status">
+              {commitment.allowanceLine}
+            </p>
+            <p className="cc-muted text-xs mt-1 mb-0">{commitment.attachmentsNote}</p>
+          </details>
+        ) : null}
         {similar.length > 0 ? (
           <div className="ps-similar-ideas" role="region" aria-label="Similar cases in this workspace">
             <p className="cc-muted text-xs mb-2">
