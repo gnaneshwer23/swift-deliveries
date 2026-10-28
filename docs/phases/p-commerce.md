@@ -1,10 +1,10 @@
 # Phase P-commerce — Mission consumption rules (pre-paid availability)
 
-**Status:** Shipping rules + enforcement disclosure (founder: “build next steps” 28 Oct 2026)  
+**Status:** Shipped 28 Oct 2026  
 **Parent case:** `docs/business-case-deliverx-psi-v2.md` §8 / §16  
-**Paid availability:** **Not** turned on — this phase ships rules, hard-stops, remedies, and customer disclosure so Investigation/Continuation can later be sold honestly  
+**Paid availability:** Follow-on in [p-paid.md](./p-paid.md) (Investigation via existing checkout)  
 **Depends on:** P-A (verdict + executionLimited), mission usage ceiling  
-**Out of scope:** Live Stripe SKUs for Investigation/Continuation, price list changes, turning on paid availability flags
+**Out of scope:** Separate Continuation SKU (later), price list changes
 
 ---
 

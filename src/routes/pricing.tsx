@@ -6,6 +6,9 @@ import { PsiCheckoutButton } from "@/components/marketing/psi-checkout-button";
 import {
   ACCOUNT_DOES_NOT_ACTIVATE,
   ALLOWANCE_EXHAUSTED_COPY,
+  COMMERCE_REMEDY_ON_PRICING_COPY,
+  CONTINUATION_ON_PRICING_COPY,
+  INVESTIGATION_ON_PRICING_COPY,
   MANUAL_ACTIVATION_COPY,
   pricingCheckoutCopy,
   PUBLISHED_OPERATOR_EMAIL,
@@ -24,7 +27,7 @@ export const Route = createFileRoute("/pricing")({
     pageHead(
       "/pricing",
       "Pricing & Pilot — Choose your product scope | DeliverX",
-      "Compare proposed paid pilots: Builder £29, Founder £99 and Studio £299 per month. Clear mission scope, usage limits and human approval.",
+      "Compare Investigation pilots: Builder £29, Founder £99 and Studio £299 per month. Clear Investigation scope, Continuation honesty, usage limits and human approval.",
     ),
   component: Pricing,
 });
@@ -39,10 +42,11 @@ export const PLANS = [
     people: "1 owner",
     missions: 1,
     usage: 5,
-    focus: "Explore one product question.",
+    focus: "One Investigation into a product question.",
     features: [
-      "Brief, evidence review and decision record",
-      "Experiment planning and project export",
+      "1 Investigation mission / month",
+      "Decision pack + next-step outline",
+      "Continuation separately scoped",
     ],
   },
   {
@@ -54,8 +58,12 @@ export const PLANS = [
     people: "Up to 3 collaborators",
     missions: 4,
     usage: 20,
-    focus: "Develop your next product direction.",
-    features: ["Evidence-to-decision mission scope", "Decision reviews and pilot onboarding"],
+    focus: "Several Investigations toward a clearer product direction.",
+    features: [
+      "4 Investigation missions / month",
+      "Evidence-to-decision pack",
+      "Continuation separately scoped",
+    ],
   },
   {
     id: "studio",
@@ -66,28 +74,32 @@ export const PLANS = [
     people: "Up to 10 collaborators",
     missions: 12,
     usage: 60,
-    focus: "Coordinate questions across products.",
-    features: ["Cross-discipline mission planning", "Team onboarding and a monthly pilot review"],
+    focus: "Investigations across a product portfolio.",
+    features: [
+      "12 Investigation missions / month",
+      "Cross-product diligence packs",
+      "Continuation separately scoped",
+    ],
   },
 ] as const;
 
 const QUESTIONS = [
   {
-    q: "What counts as one mission?",
-    a: "One bounded product objective with agreed inputs and deliverables. For example: investigate an onboarding problem and prepare a decision brief. It is not an unlimited end-to-end product build.",
+    q: "What counts as one Investigation?",
+    a: `${INVESTIGATION_ON_PRICING_COPY} ${CONTINUATION_ON_PRICING_COPY}`,
   },
   {
     q: "What happens when my allowance is used?",
-    a: `${ALLOWANCE_EXHAUSTED_COPY} Additional usage needs a new agreement. There is no automatic overage charge. Model budgets above are proposed limits, not an unlimited token allowance.`,
+    a: `${ALLOWANCE_EXHAUSTED_COPY} Additional Investigations need a new agreement. There is no automatic overage charge. Model budgets above are proposed limits, not an unlimited token allowance. ${COMMERCE_REMEDY_ON_PRICING_COPY}`,
   },
   {
     q: "Does requesting a plan start billing?",
     a: `${ACCOUNT_DOES_NOT_ACTIVATE} ${checkoutCopy} ${
       isCheckoutEnabled
         ? isSandboxCheckout
-          ? "Sandbox Pay uses Stripe test cards and grants entitlement only after the webhook confirms payment."
+          ? "Sandbox Pay uses Stripe test cards and grants Investigation entitlement only after the webhook confirms payment."
           : isLiveCheckout
-            ? "Pay charges a real card. Entitlement is granted only after the live webhook confirms payment."
+            ? "Pay charges a real card. Investigation entitlement is granted only after the live webhook confirms payment."
             : MANUAL_ACTIVATION_COPY
         : `Scope, availability and billing must be agreed before paid work starts. ${MANUAL_ACTIVATION_COPY}`
     }`,
@@ -97,8 +109,8 @@ const QUESTIONS = [
     a: "The 150-role catalogue describes the product disciplines. Only enabled capabilities can run. Your pilot agreement identifies the available capabilities; a catalogue role is not a promise of an independently operating agent.",
   },
   {
-    q: "Does a pilot include a prototype or deployment?",
-    a: "A prototype requires an agreed extension. Automatic deployment and connected outcome collection are not included promises. Outputs disclose model or simulated generation. You inspect the work and supply genuine observations for review.",
+    q: "Does a pilot include Continuation, a prototype or deployment?",
+    a: `${CONTINUATION_ON_PRICING_COPY} A prototype requires an agreed extension. Automatic deployment and connected outcome collection are not included promises. Outputs disclose model or simulated generation.`,
   },
   { q: "How do I get help or review a failed request?", a: SUPPORT_RECOVERY_COPY },
 ];
@@ -132,15 +144,15 @@ function Pricing() {
                 <strong>
                   {isCheckoutEnabled
                     ? isSandboxCheckout
-                      ? "Paid pilots · Sandbox checkout"
+                      ? "Investigation pilots · Sandbox checkout"
                       : isLiveCheckout
-                        ? "Paid pilots · Live checkout"
-                        : "Paid pilots · By agreement"
-                    : "Paid pilots · By agreement"}
+                        ? "Investigation pilots · Live checkout"
+                        : "Investigation pilots · By agreement"
+                    : "Investigation pilots · By agreement"}
                 </strong>
                 <p>
-                  Proposed offers for Builder, Founder and Studio. {checkoutCopy} Requesting a plan
-                  does not charge you.
+                  Builder, Founder and Studio sell Investigation capacity. {checkoutCopy}{" "}
+                  {CONTINUATION_ON_PRICING_COPY} Requesting a plan does not charge you.
                 </p>
               </div>
               <a href="#pilot-process">How activation works</a>

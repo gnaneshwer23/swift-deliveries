@@ -79,7 +79,7 @@ export function StudioReadiness() {
               : "Manual operator activation — paymentTaken is false"
           }
         >
-          {PILOT_PLAN_LABELS[plan.plan]} · {plan.remaining} mission
+          {PILOT_PLAN_LABELS[plan.plan]} · {plan.remaining} Investigation
           {plan.remaining === 1 ? "" : "s"} left
           {plan.paymentTaken && plan.paymentEnvironment === "sandbox"
             ? " · sandbox"
@@ -91,9 +91,9 @@ export function StudioReadiness() {
         <span
           className="ps-research-readiness-chip"
           data-ready="false"
-          title="No pilot activation on this workspace yet"
+          title="No Investigation pilot activation on this workspace yet — demo cases still use the workspace usage ceiling"
         >
-          No paid pilot
+          No Investigation pilot
         </span>
       )}
     </div>

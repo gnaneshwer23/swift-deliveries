@@ -137,6 +137,11 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
           {home.data.researchProvider?.configured
             ? home.data.researchProvider.label
             : home.data.providerLabel}
+          {home.data.ready && home.data.investigationAllowance
+            ? ` · ${home.data.investigationAllowance.remaining} Investigation${
+                home.data.investigationAllowance.remaining === 1 ? "" : "s"
+              } left on plan`
+            : ""}
         </p>
       ) : null}
       {home.isError && (
@@ -148,6 +153,11 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
         </p>
       )}
       {home.data && !home.data.ready ? <p className="cc-error">{home.data.reason}</p> : null}
+      {home.data?.ready && home.data.startInvestigationBlockedReason ? (
+        <p className="cc-error" role="alert">
+          {home.data.startInvestigationBlockedReason}
+        </p>
+      ) : null}
       {prepared && (
         <div className="intake-prepared-note">
           <p>A prepared brief is available in this browser. Use it as the one-liner, or edit below.</p>
@@ -283,7 +293,8 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
               (audience.length > 0 && audience.length > 400) ||
               home.isPending ||
               home.isError ||
-              home.data?.ready !== true
+              home.data?.ready !== true ||
+              home.data?.canStartInvestigation === false
             }
             onClick={() => start.mutate()}
           >

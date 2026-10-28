@@ -21,6 +21,10 @@ import { projectShelfItems } from "./pilot-mission/build-beats";
 import { commerceHardStopMessage } from "./pilot-mission/commerce";
 import { learningLinks } from "./pilot-mission/learning";
 import {
+  assertCanStartInvestigation,
+  type PilotAllowanceSnapshot,
+} from "./pilot/paid-availability";
+import {
   planResearchMode,
   researchProviderReadiness,
   RESEARCH_MODES,
@@ -63,6 +67,29 @@ async function settleUsage(db: Db, mission: SupervisedMission): Promise<string |
     return null;
   } catch (error) {
     return error instanceof Error ? error.message : "Workspace usage was not updated.";
+  }
+}
+
+async function pilotAllowanceFor(workspaceId: string): Promise<PilotAllowanceSnapshot | null> {
+  try {
+    const db = await database();
+    const res = await db
+      .from("psi_pilot_activations")
+      .select("mission_allowance, missions_consumed")
+      .eq("workspace_id", workspaceId)
+      .maybeSingle();
+    if (res.error || !res.data) return null;
+    const row = res.data as Record<string, unknown>;
+    const missionAllowance = Number(row["mission_allowance"]);
+    const missionsConsumed = Number(row["missions_consumed"]);
+    if (!Number.isFinite(missionAllowance) || !Number.isFinite(missionsConsumed)) return null;
+    return {
+      missionAllowance,
+      missionsConsumed,
+      remaining: Math.max(0, missionAllowance - missionsConsumed),
+    };
+  } catch {
+    return null;
   }
 }
 
@@ -124,12 +151,17 @@ export const getSupervisedMissionHome = createServerFn({ method: "GET" })
       const { service } = await serviceFor();
       const missions = await service.list(workspace.id);
       const researchProvider = researchProviderReadiness();
+      const investigationAllowance = await pilotAllowanceFor(workspace.id);
+      const startGate = assertCanStartInvestigation(investigationAllowance);
       return {
         ready: true as const,
         reason: null,
         providerLabel: providerLabel(),
         researchProvider,
         usage: { ceiling: workspace.usageCeiling, consumed: workspace.usageConsumed },
+        investigationAllowance,
+        canStartInvestigation: startGate.ok,
+        startInvestigationBlockedReason: startGate.ok ? null : startGate.message,
         missions: missions.map((mission) => ({
           id: mission.id,
           question: mission.brief.question,
@@ -157,6 +189,9 @@ export const getSupervisedMissionHome = createServerFn({ method: "GET" })
           providerLabel: providerLabel(),
           researchProvider: researchProviderReadiness(),
           usage: null,
+          investigationAllowance: null,
+          canStartInvestigation: false,
+          startInvestigationBlockedReason: error.message,
           missions: [],
         };
       }
@@ -232,6 +267,8 @@ export const startSupervisedMission = createServerFn({ method: "POST" })
   .validator((data: unknown) => startBriefSchema.parse(data))
   .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
     const workspace = await workspaceFor(context.supabase, context.userId);
+    const startGate = assertCanStartInvestigation(await pilotAllowanceFor(workspace.id));
+    if (!startGate.ok) throw new Error(startGate.message);
     const { service } = await serviceFor();
     const remaining = Math.max(0, workspace.usageCeiling - workspace.usageConsumed);
     const projectId = await resolveMissionProjectId({
