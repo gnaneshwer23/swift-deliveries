@@ -135,7 +135,7 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
       {home.data ? (
         <p className="ps-brief-status" role="status">
           {home.data.researchProvider?.configured
-            ? `Web research ready · ${home.data.researchProvider.label}`
+            ? home.data.researchProvider.label
             : home.data.providerLabel}
         </p>
       ) : null}
