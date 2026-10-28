@@ -12,6 +12,7 @@ import { QuietMissionBar } from "@/components/command/quiet-mission-bar";
 import { HonestyPosturePanel } from "@/components/command/honesty-posture-panel";
 import { PathArtefactsPanel } from "@/components/command/path-artefacts-panel";
 import { ProjectRoomNav } from "@/components/command/project-room-nav";
+import { MissionInspectionStrip } from "@/components/command/mission-inspection-strip";
 import { TeamActivityPanel } from "@/components/command/team-activity-panel";
 import { SupervisedLearningLoop } from "@/components/command/supervised-learning-loop";
 import { WatchtowerPanel } from "@/components/command/watchtower-panel";
@@ -235,6 +236,8 @@ function SupervisedMissionPage() {
           ) : null}
         </div>
       </div>
+
+      <MissionInspectionStrip mission={mission} missionId={missionId} />
 
       <QuietMissionBar
         mission={mission}

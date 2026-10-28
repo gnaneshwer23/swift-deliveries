@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { getSupervisedMissionHome } from "@/lib/pilot-mission.functions";
-import { orderAttention } from "@/lib/workspace-attention";
+import { buildStudioInbox } from "@/lib/pilot-mission/studio-inbox";
 import { QuietStudioNotifications } from "@/components/command/quiet-studio-notifications";
 import { SupervisedMissionStart } from "@/components/command/supervised-mission-start";
 import { StudioReadiness } from "@/components/command/studio-readiness";
@@ -16,10 +16,8 @@ export function WorkspaceFoyer() {
     queryFn: () => getSupervisedMissionHome(),
   });
   const missions = home.data?.missions ?? [];
-  const attention = orderAttention(missions).filter(
-    (m) => !["cancelled", "follow_up_approved"].includes(m.next.id),
-  );
-  const current = attention[0] ?? null;
+  const inbox = buildStudioInbox(missions);
+  const current = inbox[0] ?? null;
 
   return (
     <div className="ps-foyer ps-foyer-first-viewport ps-quiet-foyer">
@@ -56,7 +54,7 @@ export function WorkspaceFoyer() {
           {current ? (
             <p className="ps-quiet-bar-status" data-presence="needs_you" role="status">
               <span className="ps-quiet-bar-status-label">Needs your decision</span>
-              <span className="ps-quiet-bar-status-detail">{current.nextTitle}</span>
+              <span className="ps-quiet-bar-status-detail">{current.headline}</span>
             </p>
           ) : (
             <p className="ps-quiet-bar-status" data-presence="idle" role="status">

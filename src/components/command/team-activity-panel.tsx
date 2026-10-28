@@ -3,6 +3,7 @@ import {
   ensureTeamCollaboration,
   traceFindingToRecommendation,
 } from "@/lib/pilot-mission/team-collaboration";
+import { buildMissionInspection } from "@/lib/pilot-mission/mission-inspection";
 import { AGENT_RECOMMENDATION_LABELS } from "@/lib/pilot-mission/verdict";
 import type { SupervisedMission } from "@/lib/pilot-mission/types";
 
@@ -14,6 +15,7 @@ const EDGE_LABELS: Record<CollaborationEdgeKind, string> = {
 };
 
 export function TeamActivityPanel({ mission }: { mission: SupervisedMission }) {
+  const inspection = buildMissionInspection(mission);
   const record = ensureTeamCollaboration(mission);
   if (!record) return null;
 
@@ -30,6 +32,16 @@ export function TeamActivityPanel({ mission }: { mission: SupervisedMission }) {
         Structured assignments and handoffs from persisted events — not staged agent chat. Simulated
         drafts are labelled honestly.
       </p>
+
+      {inspection.decisionAttention ? (
+        <div className="cc-panel mt-4 ps-inspection-attention" role="status">
+          <h3 className="cc-subhead">Decision needing your attention</h3>
+          <p>
+            <strong>{inspection.decisionAttention.title}</strong>
+          </p>
+          <p className="cc-muted text-sm">{inspection.decisionAttention.detail}</p>
+        </div>
+      ) : null}
 
       <h3 className="cc-subhead mt-4">Investigation assignments</h3>
       <ul className="mt-2 grid gap-2 text-sm">
@@ -78,6 +90,22 @@ export function TeamActivityPanel({ mission }: { mission: SupervisedMission }) {
         <p className="cc-muted text-sm mt-3">Handoffs appear after plan approval and specialist work.</p>
       )}
 
+      {inspection.unresolvedQuestions.length ? (
+        <>
+          <h3 className="cc-subhead mt-4">Unresolved questions</h3>
+          <ul className="mt-2 grid gap-2 text-sm">
+            {inspection.unresolvedQuestions.map((q) => (
+              <li key={q.id} className="cc-panel">
+                <p className="text-xs cc-muted">
+                  {q.fromTaskKey} → {q.toTaskKey} · handoff {q.handoffId}
+                </p>
+                <p>{q.uncertainty}</p>
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : null}
+
       <h3 className="cc-subhead mt-4">Information flow</h3>
       <ul className="mt-2 grid gap-1 text-xs cc-muted">
         {record.edges.map((e) => (
@@ -86,6 +114,39 @@ export function TeamActivityPanel({ mission }: { mission: SupervisedMission }) {
           </li>
         ))}
       </ul>
+
+      {inspection.outputs.length ? (
+        <>
+          <h3 className="cc-subhead mt-4">Outputs on record</h3>
+          <ul className="mt-2 grid gap-2 text-sm">
+            {inspection.outputs.map((o) => (
+              <li key={o.id} className="cc-panel">
+                <strong>{o.label}</strong>
+                {o.productionLabel ? (
+                  <span className="cc-muted text-xs"> · {o.productionLabel}</span>
+                ) : null}
+                {o.detail ? <p className="cc-muted mt-1">{o.detail}</p> : null}
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : null}
+
+      {inspection.evidenceOnRecord.length ? (
+        <>
+          <h3 className="cc-subhead mt-4">Evidence and gaps</h3>
+          <ul className="mt-2 grid gap-2 text-sm">
+            {inspection.evidenceOnRecord.map((e) => (
+              <li key={e.id}>
+                <strong>
+                  {e.id} · {e.classification}
+                </strong>
+                <p className="cc-muted">{e.statement}</p>
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : null}
 
       {record.recommendation ? (
         <div className="cc-panel mt-4">
