@@ -1,12 +1,9 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { CAREER_SUITE_ENABLED } from "@/lib/features";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { CheckCircle2 } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
+import { isSandboxCheckout } from "@/lib/stripe";
 
 export const Route = createFileRoute("/checkout/return")({
-  beforeLoad: () => {
-    if (!CAREER_SUITE_ENABLED) throw redirect({ to: "/" });
-  },
   validateSearch: (search: Record<string, unknown>): { session_id?: string } => ({
     ...(typeof search["session_id"] === "string" ? { session_id: search["session_id"] } : {}),
   }),
@@ -15,12 +12,12 @@ export const Route = createFileRoute("/checkout/return")({
       { title: "Payment status — DeliverX" },
       {
         name: "description",
-        content: "Review your DeliverX payment status and continue to your workspace.",
+        content: "Review your DeliverX payment status and continue to Studio.",
       },
       { property: "og:title", content: "Payment status — DeliverX" },
       {
         property: "og:description",
-        content: "Review your DeliverX payment status and continue to your workspace.",
+        content: "Review your DeliverX payment status and continue to Studio.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -38,15 +35,18 @@ function CheckoutReturnPage() {
         <div className="container max-w-2xl">
           <CheckCircle2 className="size-9 text-primary" aria-hidden="true" />
           <h1 className="heading-1 mt-5">
-            {sessionId ? "Payment received" : "Payment status unavailable"}
+            {sessionId ? "Checkout submitted" : "Payment status unavailable"}
           </h1>
           <p className="body-large mt-4">
             {sessionId
-              ? "Your access is being updated. Continue to your workspace to get started."
+              ? "This page does not grant access. Entitlement is written only after Stripe confirms payment via webhook. Open Studio in a moment to see your plan and remaining missions."
               : "We could not confirm a completed checkout from this page."}
           </p>
-          <Link to="/workspace" className="btn btn-primary mt-8 inline-flex">
-            Continue to workspace
+          {isSandboxCheckout ? (
+            <p className="body-large mt-3">Sandbox mode — test cards only; not live billing.</p>
+          ) : null}
+          <Link to="/command" className="btn btn-primary mt-8 inline-flex">
+            Continue to Studio
           </Link>
         </div>
       </section>

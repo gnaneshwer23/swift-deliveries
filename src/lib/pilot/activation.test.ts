@@ -9,7 +9,9 @@ import {
   ACCOUNT_DOES_NOT_ACTIVATE,
   ALLOWANCE_EXHAUSTED_COPY,
   CHECKOUT_NOT_LIVE_COPY,
+  CHECKOUT_SANDBOX_COPY,
   MANUAL_ACTIVATION_COPY,
+  pricingCheckoutCopy,
   PUBLISHED_OPERATOR_EMAIL,
   SUPPORT_RECOVERY_COPY,
 } from "./commercial-copy";
@@ -303,5 +305,12 @@ describe("commercial statements", () => {
     expect(text.toLowerCase()).not.toContain("purchase");
     expect(CHECKOUT_NOT_LIVE_COPY).toContain("not live");
     expect(ACCOUNT_DOES_NOT_ACTIVATE).toContain("does not activate");
+    expect(pricingCheckoutCopy({ checkoutEnabled: false, sandbox: false })).toBe(
+      CHECKOUT_NOT_LIVE_COPY,
+    );
+    expect(pricingCheckoutCopy({ checkoutEnabled: true, sandbox: true })).toBe(
+      CHECKOUT_SANDBOX_COPY,
+    );
+    expect(CHECKOUT_SANDBOX_COPY.toLowerCase()).toContain("sandbox");
   });
 });

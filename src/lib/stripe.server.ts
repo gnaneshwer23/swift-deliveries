@@ -14,9 +14,26 @@ export function getConnectionApiKey(env: StripeEnv): string {
   return env === "sandbox" ? getEnv("STRIPE_SANDBOX_API_KEY") : getEnv("STRIPE_LIVE_API_KEY");
 }
 
+/**
+ * Direct Stripe SDK client (preferred for PSI sandbox). Uses restricted or secret
+ * keys against api.stripe.com — no Lovable gateway.
+ */
+export function createDirectStripeClient(env: StripeEnv): Stripe {
+  return new Stripe(getConnectionApiKey(env), {
+    apiVersion: "2026-03-25.dahlia",
+  });
+}
+
+/**
+ * Legacy career checkout path via Lovable connector gateway. Prefer
+ * {@link createDirectStripeClient} for new PSI payments.
+ */
 export function createStripeClient(env: StripeEnv): Stripe {
   const connectionApiKey = getConnectionApiKey(env);
-  const lovableApiKey = getEnv("LOVABLE_API_KEY");
+  const lovableApiKey = process.env["LOVABLE_API_KEY"];
+  if (!lovableApiKey) {
+    return createDirectStripeClient(env);
+  }
 
   return new Stripe(connectionApiKey, {
     apiVersion: "2026-03-25.dahlia",

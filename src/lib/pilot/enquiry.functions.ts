@@ -215,8 +215,9 @@ function missingActivationStore(
 }
 
 function mapActivation(row: Record<string, unknown> | null): PilotActivation | null {
-  if (!row || typeof row["id"] !== "string" || typeof row["request_id"] !== "string") return null;
-  if (row["payment_taken"] === true) return null;
+  if (!row || typeof row["id"] !== "string") return null;
+  const requestId = row["request_id"];
+  if (requestId !== null && requestId !== undefined && typeof requestId !== "string") return null;
   const plan = row["plan"];
   const allowance = Number(row["mission_allowance"]);
   const consumed = Number(row["missions_consumed"]);
@@ -226,15 +227,29 @@ function mapActivation(row: Record<string, unknown> | null): PilotActivation | n
   if (!Number.isInteger(allowance) || !Number.isInteger(consumed)) return null;
   return {
     id: row["id"],
-    requestId: row["request_id"],
+    requestId: typeof requestId === "string" ? requestId : null,
     workspaceId: workspaceId.toLowerCase(),
     plan,
     missionAllowance: allowance,
     missionsConsumed: consumed,
-    paymentTaken: false,
+    paymentTaken: row["payment_taken"] === true,
     exhaustion: "block_next_billable_comparison",
     activatedBy: String(row["activated_by"] ?? ""),
     activatedAt: String(row["activated_at"] ?? ""),
+    stripeCheckoutSessionId:
+      typeof row["stripe_checkout_session_id"] === "string"
+        ? row["stripe_checkout_session_id"]
+        : null,
+    stripeCustomerId:
+      typeof row["stripe_customer_id"] === "string" ? row["stripe_customer_id"] : null,
+    stripeSubscriptionId:
+      typeof row["stripe_subscription_id"] === "string" ? row["stripe_subscription_id"] : null,
+    stripePriceLookupKey:
+      typeof row["stripe_price_lookup_key"] === "string" ? row["stripe_price_lookup_key"] : null,
+    paymentEnvironment:
+      row["payment_environment"] === "sandbox" || row["payment_environment"] === "live"
+        ? row["payment_environment"]
+        : null,
   };
 }
 
@@ -335,7 +350,7 @@ function publicActivation(row: PilotActivation | null): OperatorActivation | nul
     plan: row.plan,
     missionAllowance: row.missionAllowance,
     missionsConsumed: row.missionsConsumed,
-    paymentTaken: false,
+    paymentTaken: row.paymentTaken,
     exhaustion: "block_next_billable_comparison",
   };
 }
@@ -350,9 +365,62 @@ async function listActivations(db: Db, ids: string[]): Promise<Map<string, Pilot
   }
   for (const row of (res.data ?? []) as Record<string, unknown>[]) {
     const mapped = mapActivation(row);
-    if (mapped) found.set(mapped.requestId, mapped);
+    if (mapped?.requestId) found.set(mapped.requestId, mapped);
   }
   return found;
+}
+
+export function paidActivationRepository(db: Db): import("./paid-activation").PaidActivationRepository {
+  return {
+    async findByCheckoutSession(sessionId) {
+      const res = await db
+        .from("psi_pilot_activations")
+        .select("*")
+        .eq("stripe_checkout_session_id", sessionId)
+        .maybeSingle();
+      if (res.error) {
+        if (missingActivationStore(res.error)) return null;
+        throw new Error(res.error.message);
+      }
+      return mapActivation(res.data as Record<string, unknown> | null);
+    },
+    async findByWorkspace(workspaceId) {
+      return activationRepository(db).findByWorkspace(workspaceId);
+    },
+    async insertPaid(row) {
+      const res = await db
+        .from("psi_pilot_activations")
+        .insert({
+          id: row.id,
+          request_id: row.requestId,
+          workspace_id: row.workspaceId,
+          plan: row.plan,
+          mission_allowance: row.missionAllowance,
+          missions_consumed: 0,
+          payment_taken: true,
+          exhaustion: row.exhaustion,
+          activated_by: row.activatedBy,
+          activated_at: row.activatedAt,
+          stripe_checkout_session_id: row.stripeCheckoutSessionId,
+          stripe_customer_id: row.stripeCustomerId,
+          stripe_subscription_id: row.stripeSubscriptionId,
+          stripe_price_lookup_key: row.stripePriceLookupKey,
+          payment_environment: row.paymentEnvironment,
+        })
+        .select("*")
+        .maybeSingle();
+      if (res.error || !res.data) {
+        if (missingActivationStore(res.error)) throw new ActivationStoreUnavailableError();
+        if (res.error?.code === "23505" || /duplicate|unique/i.test(res.error?.message ?? "")) {
+          throw new ActivationConflictError();
+        }
+        throw new Error(res.error?.message ?? "Insert failed");
+      }
+      const mapped = mapActivation(res.data as Record<string, unknown>);
+      if (!mapped) throw new Error("Insert failed");
+      return mapped;
+    },
+  };
 }
 
 async function suggestedWorkspaces(db: Db, ownerIds: string[]): Promise<Map<string, string[]>> {
@@ -443,7 +511,7 @@ export type OperatorActivation = {
   plan: PilotPlan;
   missionAllowance: number;
   missionsConsumed: number;
-  paymentTaken: false;
+  paymentTaken: boolean;
   exhaustion: "block_next_billable_comparison";
 };
 

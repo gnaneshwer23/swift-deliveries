@@ -30,15 +30,22 @@ export class ActivationConflictError extends Error {
 
 export type PilotActivation = {
   id: string;
-  requestId: string;
+  /** Null when activation came from Stripe Checkout without a prior enquiry. */
+  requestId: string | null;
   workspaceId: string;
   plan: PilotPlan;
   missionAllowance: number;
   missionsConsumed: number;
-  paymentTaken: false;
+  /** False for manual operator activation; true only after paid Stripe fulfilment. */
+  paymentTaken: boolean;
   exhaustion: typeof EXHAUSTION_POLICY;
   activatedBy: string;
   activatedAt: string;
+  stripeCheckoutSessionId?: string | null;
+  stripeCustomerId?: string | null;
+  stripeSubscriptionId?: string | null;
+  stripePriceLookupKey?: string | null;
+  paymentEnvironment?: "sandbox" | "live" | null;
 };
 
 export type ActivationRepository = {

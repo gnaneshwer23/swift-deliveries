@@ -37,6 +37,7 @@ The production Neon branch is `br-fancy-breeze-zatt9ocp` in project `spring-wind
 | 0029 conflicting evidence (`wf_memory_conflicts`)                  | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0030 conversations (`wf_conversations`, `wf_conversation_turns`)   | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0031 voice measurements (`wf_voice_metrics`)                       | Not applied — needs owner approval          | Applied 27 Oct 2026                  |
+| 0032 PSI Stripe activations (`payment_taken`, Stripe ids)          | Not applied — needs owner approval          | Not applied — needs owner approval   |
 
 Migrations 0020–0023 were applied to production in a single transaction. The six `psi_*` tables are owned by the server role, have no client grants, and have row-level security enabled. No table rows were read during or after the change.
 
@@ -294,3 +295,11 @@ commit;
 ```
 
 If the owner accepts losing the measurements, empty the table first with `delete from public.wf_voice_metrics;` in the same transaction. Record that acceptance here. The snapshot is then the only copy. Update the ledger with the date, the reason and the snapshot ID.
+
+## 0032 PSI Stripe activations
+
+Allows `payment_taken = true` on `psi_pilot_activations`, makes `request_id` nullable for self-serve Checkout without a prior enquiry, and adds Stripe identity columns (`stripe_checkout_session_id`, customer/subscription ids, lookup key, `payment_environment`) with a unique partial index on the Checkout Session id for webhook idempotency. Additive and re-runnable. Does **not** change legacy Supabase `subscriptions`. Production apply requires owner approval after sandbox proof (P1-3).
+
+**Order.** Apply before deploying code that inserts `payment_taken = true`. Code that only reads activations and ignores unknown columns remains safe; code that still assumes `payment_taken = false` must be updated first (this tip does).
+
+**Rollback.** Prefer redeploying code that stops writing Stripe columns. To reverse schema only with owner approval, after a Neon snapshot: drop the new indexes/columns and restore a `payment_taken = false` check **only if no row has `payment_taken = true`**. If any paid row exists, do not re-impose the false-only check.

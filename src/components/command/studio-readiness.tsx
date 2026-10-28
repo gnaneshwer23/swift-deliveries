@@ -1,9 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { getVoiceAvailability } from "@/lib/conversation.functions";
+import { getWorkspacePilotActivation } from "@/lib/pilot/psi-checkout.functions";
+import { PILOT_PLAN_LABELS } from "@/lib/pilot/model";
 import { commandCentreBootstrapQuery } from "@/lib/workforce-queries";
 
 /**
- * Honest readiness chips for Studio foyer: model mode + voice.
+ * Honest readiness chips for Studio foyer: model mode + voice + paid plan footnote.
  * Never invents keys; discloses Simulated / not configured clearly.
  */
 export function StudioReadiness() {
@@ -13,7 +15,13 @@ export function StudioReadiness() {
     queryFn: () => getVoiceAvailability(),
     staleTime: 5 * 60_000,
   });
+  const activation = useQuery({
+    queryKey: ["command", "pilot-activation"],
+    queryFn: () => getWorkspacePilotActivation(),
+    staleTime: 60_000,
+  });
   const model = boot.data?.features.modelMode;
+  const plan = activation.data?.activation;
 
   return (
     <div className="ps-studio-readiness ps-studio-readiness-footnote" aria-label="Studio readiness">
@@ -49,6 +57,31 @@ export function StudioReadiness() {
             ? "Voice misconfigured"
             : "Voice not configured"}
       </span>
+      {plan ? (
+        <span
+          className="ps-research-readiness-chip"
+          data-ready={plan.remaining > 0 ? "true" : "false"}
+          title={
+            plan.paymentTaken
+              ? plan.paymentEnvironment === "sandbox"
+                ? "Paid via Stripe sandbox checkout"
+                : "Paid activation on this workspace"
+              : "Manual operator activation — paymentTaken is false"
+          }
+        >
+          {PILOT_PLAN_LABELS[plan.plan]} · {plan.remaining} mission
+          {plan.remaining === 1 ? "" : "s"} left
+          {plan.paymentTaken && plan.paymentEnvironment === "sandbox" ? " · sandbox" : ""}
+        </span>
+      ) : (
+        <span
+          className="ps-research-readiness-chip"
+          data-ready="false"
+          title="No pilot activation on this workspace yet"
+        >
+          No paid pilot
+        </span>
+      )}
     </div>
   );
 }

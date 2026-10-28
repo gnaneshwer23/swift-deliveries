@@ -3,6 +3,7 @@ import type Stripe from "stripe";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { createStripeClient, getStripeErrorMessage, type StripeEnv } from "@/lib/stripe.server";
 
+/** Legacy career catalog only. PSI Builder/Founder/Studio use createPsiCheckoutSession. */
 const PRICE_IDS = [
   "experience_monthly",
   "launchpad_monthly",
@@ -11,6 +12,8 @@ const PRICE_IDS = [
   "career_sprint_pass",
 ] as const;
 type PriceId = (typeof PRICE_IDS)[number];
+
+const PSI_LOOKUP_KEYS = new Set(["builder_monthly", "founder_monthly", "studio_monthly"]);
 
 type CheckoutResult = { clientSecret: string } | { error: string };
 
@@ -49,6 +52,9 @@ async function resolveOrCreateCustomer(
 export const createCheckoutSession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((data: { priceId: PriceId; returnUrl: string; environment: StripeEnv }) => {
+    if (PSI_LOOKUP_KEYS.has(data.priceId)) {
+      throw new Error("PSI plans use createPsiCheckoutSession, not career checkout");
+    }
     if (!PRICE_IDS.includes(data.priceId)) throw new Error("Unknown plan");
     if (data.environment !== "sandbox" && data.environment !== "live")
       throw new Error("Invalid environment");

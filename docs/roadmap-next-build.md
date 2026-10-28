@@ -2,7 +2,7 @@
 
 **Date:** 27 October 2026  
 **Tip audited:** `f688e80` (Studio D1–D4 on `main`) · Live: https://www.deliverx.dev  
-**Mode:** Plan + **P0 shipped** (founder approved P0, not P1 Stripe). Smoke: `docs/psi-release-smoke-f688e80.md`. Provider posture: `docs/psi-provider-posture.md`.  
+**Mode:** Plan + **P0 shipped** + **P1-1…P1-4 sandbox** (founder approved P1; stop before P1-5 live). Catalog: `docs/psi-stripe-catalog.md`. Smoke: `docs/psi-release-smoke-f688e80.md`. Provider posture: `docs/psi-provider-posture.md`.  
 **Related:** `docs/roadmap.md`, `docs/psi-production-readiness-plan.md`, `docs/psi-design-foundation.md`, `docs/paid-launch-phase-1.md`, `docs/roadmap-studio-dashboard-ux.md`, `docs/roadmap-product-building-agents.md`
 
 ---

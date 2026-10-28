@@ -10,9 +10,13 @@ const clientToken =
   typeof envToken === "string" && envToken.startsWith("pk_") ? envToken : LIVE_PUBLISHABLE_KEY;
 
 const checkoutFlag = import.meta.env["VITE_PAYMENTS_CHECKOUT_ENABLED"];
+/** Explicit opt-in only — missing flag means checkout UI stays off (manual / sandbox honesty). */
 export const isCheckoutEnabled =
-  (checkoutFlag === "true" || checkoutFlag === undefined) &&
+  checkoutFlag === "true" &&
   (clientToken?.startsWith("pk_test_") || clientToken?.startsWith("pk_live_"));
+
+export const isSandboxCheckout =
+  isCheckoutEnabled && Boolean(clientToken?.startsWith("pk_test_"));
 
 function paymentsEnvironment(): StripeEnv {
   if (clientToken?.startsWith("pk_test_")) return "sandbox";

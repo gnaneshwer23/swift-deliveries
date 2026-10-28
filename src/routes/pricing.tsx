@@ -2,14 +2,21 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check, ShieldCheck } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { pageHead } from "@/components/marketing/page-head";
+import { PsiCheckoutButton } from "@/components/marketing/psi-checkout-button";
 import {
   ACCOUNT_DOES_NOT_ACTIVATE,
   ALLOWANCE_EXHAUSTED_COPY,
-  CHECKOUT_NOT_LIVE_COPY,
   MANUAL_ACTIVATION_COPY,
+  pricingCheckoutCopy,
   PUBLISHED_OPERATOR_EMAIL,
   SUPPORT_RECOVERY_COPY,
 } from "@/lib/pilot/commercial-copy";
+import { isCheckoutEnabled, isSandboxCheckout } from "@/lib/stripe";
+
+const checkoutCopy = pricingCheckoutCopy({
+  checkoutEnabled: isCheckoutEnabled,
+  sandbox: isSandboxCheckout,
+});
 
 export const Route = createFileRoute("/pricing")({
   head: () =>
@@ -74,7 +81,11 @@ const QUESTIONS = [
   },
   {
     q: "Does requesting a plan start billing?",
-    a: `${ACCOUNT_DOES_NOT_ACTIVATE} ${CHECKOUT_NOT_LIVE_COPY} Scope, availability and billing must be agreed before paid work starts. ${MANUAL_ACTIVATION_COPY}`,
+    a: `${ACCOUNT_DOES_NOT_ACTIVATE} ${checkoutCopy} ${
+      isCheckoutEnabled
+        ? "Sandbox Pay uses Stripe test cards and grants entitlement only after the webhook confirms payment."
+        : `Scope, availability and billing must be agreed before paid work starts. ${MANUAL_ACTIVATION_COPY}`
+    }`,
   },
   {
     q: "Are all 150 specialists available to run?",
@@ -113,9 +124,15 @@ function Pricing() {
             <div className="pricing-availability">
               <span className="pricing-status-dot" aria-hidden="true" />
               <div>
-                <strong>Paid pilots · By agreement</strong>
+                <strong>
+                  {isCheckoutEnabled
+                    ? isSandboxCheckout
+                      ? "Paid pilots · Sandbox checkout"
+                      : "Paid pilots · Self-serve checkout"
+                    : "Paid pilots · By agreement"}
+                </strong>
                 <p>
-                  Proposed offers, not active subscriptions. Checkout is not live. Requesting a plan
+                  Proposed offers for Builder, Founder and Studio. {checkoutCopy} Requesting a plan
                   does not charge you.
                 </p>
               </div>
@@ -144,10 +161,21 @@ function Pricing() {
                     <span>/ month</span>
                   </div>
                   <p className="pricing-focus">{plan.focus}</p>
+                  <PsiCheckoutButton
+                    plan={plan.id}
+                    planName={plan.name}
+                    featured={plan.id === "founder"}
+                  />
                   <Link
                     to="/pilot"
                     search={{ plan: plan.id }}
-                    className={`dxl-btn ${plan.id === "founder" ? "dxl-btn-primary" : "dxl-btn-ghost"}`}
+                    className={`dxl-btn ${
+                      isCheckoutEnabled
+                        ? "dxl-btn-ghost"
+                        : plan.id === "founder"
+                          ? "dxl-btn-primary"
+                          : "dxl-btn-ghost"
+                    }`}
                   >
                     Request {plan.name} pilot
                   </Link>

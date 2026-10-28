@@ -3,6 +3,15 @@ import type { StripeEnv } from "@/lib/stripe.server";
 import { verifyWebhook } from "@/lib/stripe.server";
 import { buildPassRow } from "@/lib/pass-purchase";
 import { shouldApplySubscriptionUpdate } from "@/lib/subscription-update";
+import {
+  fulfillPaidActivation,
+  isPsiCheckoutSession,
+  parseCheckoutSessionForPsi,
+} from "@/lib/pilot/paid-activation";
+import {
+  ActivationConflictError,
+  ActivationStoreUnavailableError,
+} from "@/lib/pilot/activation";
 
 function getPriceId(subscription: any): string | undefined {
   const price = subscription.items?.data?.[0]?.price;
@@ -14,6 +23,13 @@ async function upsertSubscription(subscription: any, environment: StripeEnv) {
   const priceId = getPriceId(subscription);
   const item = subscription.items?.data?.[0];
   if (!userId || !priceId || !item) throw new Error("Subscription is missing access metadata");
+  // PSI subscriptions fulfil via checkout.session.* into psi_pilot_activations — never here.
+  if (
+    subscription.metadata?.catalog === "psi" ||
+    ["builder_monthly", "founder_monthly", "studio_monthly"].includes(priceId)
+  ) {
+    return;
+  }
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const periodStart = item.current_period_start ?? subscription.current_period_start;
   const periodEnd = item.current_period_end ?? subscription.current_period_end;
@@ -68,6 +84,28 @@ async function upsertPassPurchase(session: any, environment: StripeEnv) {
   if (error) throw error;
 }
 
+async function fulfillPsiCheckout(session: any, environment: StripeEnv) {
+  const input = parseCheckoutSessionForPsi(session, environment, new Date().toISOString());
+  if (!input) return;
+  const { neonDb } = await import("@/lib/db/neon.server");
+  const { paidActivationRepository } = await import("@/lib/pilot/enquiry.functions");
+  const repo = paidActivationRepository(neonDb());
+  try {
+    const result = await fulfillPaidActivation(input, repo);
+    if (!result.ok && result.reason !== "unpaid" && result.reason !== "not_psi" && result.reason !== "career") {
+      throw new Error(result.message);
+    }
+  } catch (error) {
+    if (error instanceof ActivationConflictError) {
+      const existing = await repo.findByCheckoutSession(input.checkoutSessionId);
+      if (existing) return;
+      throw error;
+    }
+    if (error instanceof ActivationStoreUnavailableError) throw error;
+    throw error;
+  }
+}
+
 async function setSubscriptionStatus(subscription: any, environment: StripeEnv, status: string) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { error } = await supabaseAdmin
@@ -88,7 +126,15 @@ async function handleWebhook(request: Request, environment: StripeEnv) {
   if (
     ["checkout.session.completed", "checkout.session.async_payment_succeeded"].includes(event.type)
   ) {
-    if (object.payment_status !== "unpaid") await upsertPassPurchase(object, environment);
+    if (object.payment_status === "unpaid") return;
+    if (isPsiCheckoutSession(object)) {
+      await fulfillPsiCheckout(object, environment);
+      return;
+    }
+    await upsertPassPurchase(object, environment);
+    return;
+  }
+  if (event.type === "checkout.session.async_payment_failed") {
     return;
   }
   if (
