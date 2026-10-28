@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
@@ -32,6 +32,21 @@ const ADVANCED_NAV = [
 ] as const;
 
 type NavItem = (typeof PRIMARY_NAV)[number] | (typeof ADVANCED_NAV)[number];
+
+const EXECUTIVE_FONT_LINK_ID = "ps-executive-fonts";
+
+/** Stitch executive dispatch accents — Portfolio, Advanced routes, mission dossiers only. */
+export function isExecutiveStudioRoute(pathname: string): boolean {
+  return (
+    pathname.startsWith("/command/portfolio") ||
+    pathname.startsWith("/command/projects") ||
+    pathname.startsWith("/command/capabilities") ||
+    pathname.startsWith("/command/programmes") ||
+    pathname.startsWith("/command/supervised") ||
+    pathname.startsWith("/command/missions") ||
+    pathname.startsWith("/command/product-memory")
+  );
+}
 
 function navLinkActive(item: NavItem, pathname: string, _locationHash: string): boolean {
   const { to, label } = item;
@@ -111,7 +126,19 @@ export function CommandShell({
   const name = user?.user_metadata.full_name ?? user?.email ?? "Studio owner";
   const remaining = usage ? Math.max(0, usage.ceiling - usage.consumed) : null;
   const isStudioHome = title === "Studio" || pathname === "/command";
+  const executiveMode = isExecutiveStudioRoute(pathname);
   const advancedActive = ADVANCED_NAV.some((item) => navLinkActive(item, pathname, locationHash));
+
+  useEffect(() => {
+    if (!executiveMode || typeof document === "undefined") return;
+    if (document.getElementById(EXECUTIVE_FONT_LINK_ID)) return;
+    const link = document.createElement("link");
+    link.id = EXECUTIVE_FONT_LINK_ID;
+    link.rel = "stylesheet";
+    link.href =
+      "https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap";
+    document.head.appendChild(link);
+  }, [executiveMode]);
   const breadcrumb = isStudioHome ? (
     <span>Studio</span>
   ) : (
@@ -124,7 +151,7 @@ export function CommandShell({
     <div
       className={`dxa cc-shell psi-workspace${networkMode ? " ps-network-shell" : ""}${
         hideHeading ? " ps-shell-foyer" : ""
-      }${foyerMode ? " ps-shell-foyer-calm" : ""}`}
+      }${foyerMode ? " ps-shell-foyer-calm" : ""}${executiveMode ? " ps-executive" : ""}`}
       onKeyDown={(event) => {
         if (event.key === "Escape") setOpen(false);
       }}

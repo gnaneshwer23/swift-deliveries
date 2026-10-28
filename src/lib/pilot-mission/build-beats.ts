@@ -499,6 +499,7 @@ export function projectShelfItems(mission: SupervisedMission): {
   stage: string;
   stageLabel: string;
   nextAction: string;
+  nextActionId: string;
   beatsDone: number;
   beatsTotal: number;
   currentBeat: string | null;
@@ -555,6 +556,7 @@ export function projectShelfItems(mission: SupervisedMission): {
         : `Stage · ${mission.stage}`
       : "Awaiting plan approval",
     nextAction: next.title,
+    nextActionId: next.id,
     beatsDone,
     beatsTotal: sequence.beats.length,
     currentBeat: current?.label ?? null,

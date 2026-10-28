@@ -38,6 +38,20 @@ const ATTENTION_IDS = new Set([
   "recover",
 ]);
 
+export function missionNeedsAttention(nextId: string): boolean {
+  return ATTENTION_IDS.has(nextId);
+}
+
+export type AttentionChipTone = "pending" | "urgent" | "review" | "neutral";
+
+export function attentionChipTone(nextId: string): AttentionChipTone {
+  if (["decide", "approve_plan", "compare", "approve_prototype", "approve_follow_up"].includes(nextId))
+    return "pending";
+  if (["retry", "recover"].includes(nextId)) return "urgent";
+  if (["observation", "review", "expectation"].includes(nextId)) return "review";
+  return "neutral";
+}
+
 export function filterPortfolio(
   rows: PortfolioMissionRow[],
   filters: PortfolioFilters,
@@ -48,7 +62,7 @@ export function filterPortfolio(
       if (!filters.includeArchived && row.archived) return false;
       if (filters.favouritesOnly && !row.favourite) return false;
       if (filters.stage && row.stage !== filters.stage) return false;
-      if (filters.attentionOnly && !ATTENTION_IDS.has(row.nextId)) return false;
+      if (filters.attentionOnly && !missionNeedsAttention(row.nextId)) return false;
       if (!q) return true;
       return (
         row.question.toLowerCase().includes(q) ||

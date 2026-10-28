@@ -3945,3 +3945,197 @@
     padding: 12px 12px 10px;
   }
 }
+
+/* Stitch executive dispatch — scoped to `.ps-executive` (Portfolio / Advanced / dossiers) */
+.psi-workspace.ps-executive {
+  --exec-canvas: #f8fafc;
+  --exec-card: #ffffff;
+  --exec-well: #f1f5f9;
+  --exec-ink: #0f172a;
+  --exec-muted: #64748b;
+  --exec-border: #e2e8f0;
+  --exec-border-strong: #cbd5e1;
+  --exec-success-bg: #ecfdf5;
+  --exec-success-border: #a7f3d0;
+  --exec-success-ink: #065f46;
+  --exec-pending-bg: #fffbeb;
+  --exec-pending-border: #fde68a;
+  --exec-pending-ink: #92400e;
+  --exec-urgent-bg: #fef2f2;
+  --exec-urgent-border: #fecaca;
+  --exec-urgent-ink: #991b1b;
+  --exec-review-bg: #eff4ff;
+  --exec-review-border: #dce9ff;
+  --exec-review-ink: #334155;
+  --exec-font-display: "Hanken Grotesk", Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+  --exec-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --exec-radius-sm: 4px;
+  --exec-radius-lg: 8px;
+  --exec-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.psi-workspace.ps-executive .ps-room-stage h1,
+.psi-workspace.ps-executive .ps-foyer-headline {
+  font-family: var(--exec-font-display);
+  letter-spacing: -0.02em;
+}
+
+.psi-workspace.ps-executive .ps-exec-section-kicker,
+.psi-workspace.ps-executive .cc-kicker.ps-exec-kicker {
+  font-family: var(--exec-font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 0.875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--exec-muted);
+  margin: 0;
+}
+
+.psi-workspace.ps-executive .ps-exec-card {
+  background: var(--exec-card);
+  border: 1px solid var(--exec-border);
+  border-radius: var(--exec-radius-lg);
+  box-shadow: var(--exec-shadow-card);
+  padding: 14px 16px;
+  display: grid;
+  gap: 10px;
+}
+
+.psi-workspace.ps-executive .ps-exec-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.psi-workspace.ps-executive .ps-exec-card-head h3 {
+  margin: 4px 0 0;
+  font-family: var(--exec-font-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.35;
+  color: var(--exec-ink);
+}
+
+.psi-workspace.ps-executive .ps-exec-card-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.psi-workspace.ps-executive .ps-exec-meta {
+  font-family: var(--exec-font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  color: var(--exec-muted);
+}
+
+.psi-workspace.ps-executive .ps-exec-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: var(--exec-radius-sm);
+  border: 1px solid var(--exec-border);
+  font-family: var(--exec-font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.25;
+  color: var(--exec-muted);
+  background: var(--exec-well);
+  white-space: nowrap;
+}
+
+.psi-workspace.ps-executive .ps-exec-chip[data-tone="pending"] {
+  background: var(--exec-pending-bg);
+  border-color: var(--exec-pending-border);
+  color: var(--exec-pending-ink);
+}
+
+.psi-workspace.ps-executive .ps-exec-chip[data-tone="urgent"] {
+  background: var(--exec-urgent-bg);
+  border-color: var(--exec-urgent-border);
+  color: var(--exec-urgent-ink);
+}
+
+.psi-workspace.ps-executive .ps-exec-chip[data-tone="review"] {
+  background: var(--exec-review-bg);
+  border-color: var(--exec-review-border);
+  color: var(--exec-review-ink);
+}
+
+.psi-workspace.ps-executive .ps-exec-chip[data-tone="success"] {
+  background: var(--exec-success-bg);
+  border-color: var(--exec-success-border);
+  color: var(--exec-success-ink);
+}
+
+.psi-workspace.ps-executive .ps-exec-attention-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.psi-workspace.ps-executive .ps-exec-filter-well {
+  background: var(--exec-card);
+  border: 1px solid var(--exec-border);
+  border-radius: var(--exec-radius-lg);
+  padding: 12px 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+}
+
+.psi-workspace.ps-executive .ps-exec-summary-strip {
+  font-family: var(--exec-font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  color: var(--exec-muted);
+}
+
+.psi-workspace.ps-executive .ps-exec-case-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.psi-workspace.ps-executive .ps-project-quiet-row.ps-exec-shelf-row {
+  background: var(--exec-card);
+  border: 1px solid var(--exec-border);
+  border-radius: var(--exec-radius-lg);
+  margin-bottom: 10px;
+  box-shadow: var(--exec-shadow-card);
+}
+
+.psi-workspace.ps-executive .ps-project-quiet-list.ps-exec-shelf-list {
+  border-top: 0;
+  display: grid;
+  gap: 0;
+}
+
+.psi-workspace.ps-executive .ps-exec-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--exec-ink);
+  color: #fff;
+  font-family: var(--exec-font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+}
