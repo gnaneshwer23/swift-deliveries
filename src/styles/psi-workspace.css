@@ -3089,6 +3089,112 @@
   display: grid;
   gap: 16px;
 }
+.ps-project-manage {
+  border-top: 1px solid var(--ps-line);
+  padding-top: 0.75rem;
+}
+.ps-project-manage > summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--psi-ink);
+  padding: 8px 0;
+}
+.ps-project-manage > summary::-webkit-details-marker {
+  display: none;
+}
+.ps-project-manage-body {
+  display: grid;
+  gap: 16px;
+  padding-bottom: 8px;
+}
+.ps-project-manage-create {
+  padding: 12px 0;
+  border-top: 1px solid var(--ps-line);
+}
+.ps-project-manage-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.ps-project-manage-list li {
+  display: grid;
+  gap: 6px;
+  padding: 10px 0;
+  border-top: 1px solid var(--ps-line);
+}
+.ps-project-quiet-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--ps-line);
+}
+.ps-project-quiet-row {
+  border-bottom: 1px solid var(--ps-line);
+}
+.ps-project-quiet-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 4px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+.ps-project-quiet-trigger:hover {
+  background: color-mix(in srgb, var(--psi-canvas) 92%, var(--psi-ink) 8%);
+}
+.ps-project-quiet-main {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.ps-project-quiet-chevron {
+  flex-shrink: 0;
+  color: var(--psi-muted);
+  transition: transform 0.15s ease;
+}
+.ps-project-quiet-row.is-expanded .ps-project-quiet-chevron {
+  transform: rotate(180deg);
+}
+.ps-project-quiet-body {
+  padding: 0 4px 16px;
+  display: grid;
+  gap: 12px;
+}
+.pg-intake-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--psi-muted);
+}
+.pg-intake-steps li {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--ps-line);
+}
+.pg-intake-steps li[data-current] {
+  color: var(--psi-ink);
+  border-color: var(--psi-ink);
+}
+.pg-intake-steps li[data-done] {
+  opacity: 0.55;
+}
 .ps-mission-cast {
   margin-bottom: 8px;
   display: grid;

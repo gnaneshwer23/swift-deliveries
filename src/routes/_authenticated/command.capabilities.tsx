@@ -43,7 +43,6 @@ function SpecialistsStudio() {
     <CommandShell
       title="Specialists"
       hideHeading
-      networkMode
       usage={
         data
           ? { consumed: data.workspace.usageConsumed, ceiling: data.workspace.usageCeiling }
@@ -118,7 +117,7 @@ function SpecialistsStudio() {
               Browse the wider bench when you need it. Planned roles stay labelled — they never
               pretend to run. This is not the default story of the Studio.
             </p>
-            <AgentNetworkExplorer />
+            <AgentNetworkExplorer embedded />
           </div>
         </details>
       </div>

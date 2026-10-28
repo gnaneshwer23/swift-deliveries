@@ -201,7 +201,7 @@ export function CommandLegacyPlanner({ data }: { data: CommandCentreBootstrap })
 
   return (
     <div className="mt-3 grid gap-3">
-      <OwnerInbox />
+      <OwnerInbox previewLimit={3} />
       <WorkspaceStopControl workspace={data.workspace} />
       <section
         id="mission-composer"
