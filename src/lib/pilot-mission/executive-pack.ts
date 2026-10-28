@@ -2,6 +2,7 @@
  * PT-3 — Executive pack (short) vs full archive (extends supervised ZIP).
  */
 import { buildContinuationPlanMarkdown } from "./continuation-plan";
+import { buildDecisionRoadmapMarkdown } from "./decision-roadmap";
 import { buildDecisionPackMarkdown, honestyFor } from "./decision-pack";
 import { buildPmBriefingPack } from "./pm-briefing-pack";
 import { buildSupervisedZip, type SupervisedZipFile } from "./supervised-zip";
@@ -52,6 +53,8 @@ export function buildExecutivePackMarkdown(mission: SupervisedMission): string {
     ``,
     `## Next step`,
     briefing.smallestNextStep,
+    ``,
+    buildDecisionRoadmapMarkdown(mission),
     ``,
     `## Honesty`,
     honesty.note,

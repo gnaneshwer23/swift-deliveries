@@ -4,6 +4,7 @@
  * Linked sources are referenced; they are not bundled.
  */
 import { buildCommerceDisclosureMarkdown } from "./commerce";
+import { buildDecisionRoadmapMarkdown } from "./decision-roadmap";
 import { buildLearnerLensMarkdown } from "./learner-lens";
 import { buildPmBriefingPack } from "./pm-briefing-pack";
 import { RESEARCH_MODE_LABELS, type ResearchMode } from "./research-mode";
@@ -231,6 +232,8 @@ export function buildDecisionPackMarkdown(mission: SupervisedMission): string {
     buildLearnerLensMarkdown(mission),
     ``,
     buildCommerceDisclosureMarkdown(mission),
+    ``,
+    buildDecisionRoadmapMarkdown(mission),
     ``,
     `## Provenance`,
     mission.artefact?.provenance ?? honesty.note,

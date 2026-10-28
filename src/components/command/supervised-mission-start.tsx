@@ -231,33 +231,29 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
           id="supervised-question"
           className="cc-input cc-textarea ps-brief-textarea"
           maxLength={2000}
-          rows={isHero ? 4 : 3}
+          rows={isHero ? 3 : 3}
           placeholder="e.g. Should we charge for onboarding analytics before launch, or keep it free to learn faster?"
           value={question}
           onChange={(event) => setQuestion(event.target.value)}
           disabled={voiceBusy}
         />
 
-        <details className="ps-intake-advanced">
-          <summary>Voice instead of typing</summary>
-          <div className="ps-voice-one-liner mt-3" aria-label="Voice one-liner">
-            <p className="cc-muted text-xs mb-2">
-              Spoken words fill the one-liner. You still click Brief the PM — nothing is approved by
-              voice alone.
-            </p>
-            <VoiceControls
-              disabled={!draftReady || start.isPending}
-              speakReplies={speakReplies}
-              onSpeakRepliesChange={setSpeakReplies}
-              onBusyChange={setVoiceBusy}
-              onTranscript={(text) => {
-                const line = text.trim();
-                if (!line) return;
-                setQuestion((current) => (current.trim() ? `${current.trim()} ${line}` : line));
-              }}
-            />
-          </div>
-        </details>
+        <div className="ps-brief-voice-inline" aria-label="Voice one-liner">
+          <p className="cc-muted text-xs mb-2">
+            Or use voice — transcript fills the line above. Brief the PM still requires a click.
+          </p>
+          <VoiceControls
+            disabled={!draftReady || start.isPending}
+            speakReplies={speakReplies}
+            onSpeakRepliesChange={setSpeakReplies}
+            onBusyChange={setVoiceBusy}
+            onTranscript={(text) => {
+              const line = text.trim();
+              if (!line) return;
+              setQuestion((current) => (current.trim() ? `${current.trim()} ${line}` : line));
+            }}
+          />
+        </div>
 
         <details className="ps-intake-advanced">
           <summary>Optional details (research-first defaults)</summary>

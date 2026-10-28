@@ -7,6 +7,7 @@ import {
   buildDecisionPackPdf,
   honestyFor,
 } from "./decision-pack";
+import { buildDecisionRoadmapMarkdown } from "./decision-roadmap";
 import type { SupervisedMission } from "./types";
 
 const slug = (s: string) =>
@@ -66,6 +67,11 @@ ${honesty.note}
   add("decision-pack/decision-pack.md", md, {
     bundled: true,
     note: "Decision pack markdown",
+  });
+
+  add("decision-roadmap/decision-roadmap.md", buildDecisionRoadmapMarkdown(mission), {
+    bundled: true,
+    note: "Human gates, agent work, recommendation, path, artefacts",
   });
 
   const pdfBytes = buildDecisionPackPdf(md);

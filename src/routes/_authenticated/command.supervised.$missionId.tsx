@@ -8,6 +8,7 @@ import { CaseRoomPanel } from "@/components/command/case-room-panel";
 import { CommerceDisclosurePanel } from "@/components/command/commerce-disclosure-panel";
 import { LearnerLensPanel } from "@/components/command/learner-lens-panel";
 import { MissionTheatre } from "@/components/command/mission-theatre";
+import { QuietMissionBar } from "@/components/command/quiet-mission-bar";
 import { HonestyPosturePanel } from "@/components/command/honesty-posture-panel";
 import { PathArtefactsPanel } from "@/components/command/path-artefacts-panel";
 import { ProjectRoomNav } from "@/components/command/project-room-nav";
@@ -195,6 +196,7 @@ function SupervisedMissionPage() {
     <CommandShell
       title={mission.brief.question}
       hideHeading
+      foyerMode
       {...(mission.usageCeiling > 0
         ? {
             usage: {
@@ -205,12 +207,12 @@ function SupervisedMissionPage() {
           }
         : {})}
     >
-      <div className="ps-theatre-page-meta mb-4 flex flex-wrap items-center justify-between gap-3">
-        <Link to="/command" hash="supervised-brief" className="cc-muted text-sm">
-          ← Studio foyer
+      <div className="ps-quiet-mission-page">
+      <div className="ps-theatre-page-meta mb-2 flex flex-wrap items-center justify-between gap-3">
+        <Link to="/command" className="cc-muted text-sm">
+          ← Studio
         </Link>
         <div className="flex flex-wrap items-center gap-2">
-          <span className="cc-muted text-xs">{next.title}</span>
           {mission.projectId ? (
             <Link
               to="/command/product-memory/$projectId"
@@ -227,14 +229,31 @@ function SupervisedMissionPage() {
               disabled={cancel.isPending}
               onClick={() => cancel.mutate()}
             >
-              Cancel mission
+              Cancel
             </button>
           ) : null}
         </div>
       </div>
 
+      <QuietMissionBar
+        mission={mission}
+        downloadSlot={
+          mission.artefact || mission.exportBody ? (
+            <ExportButton
+              recordVersion={mission.version}
+              missionId={missionId}
+              existingMd={mission.exportBody}
+              existingPdf={mission.exportPdfBase64}
+              onError={onError}
+              compact
+            />
+          ) : null
+        }
+      />
+
       <div id="pr-briefings">
         <MissionTheatre
+          quiet
           mission={mission}
           missionId={missionId}
           onDone={invalidate}
@@ -272,6 +291,9 @@ function SupervisedMissionPage() {
           }}
         />
       </div>
+
+      <details className="ps-quiet-inspect" id="mission-inspect">
+        <summary>Inspect full record</summary>
 
       <ProjectRoomNav mission={mission} />
 
@@ -608,6 +630,8 @@ function SupervisedMissionPage() {
         onDone={invalidate}
         onError={onError}
       />
+      </details>
+      </div>
     </CommandShell>
   );
 }
@@ -943,12 +967,14 @@ function ExportButton({
   existingMd,
   existingPdf,
   onError,
+  compact = false,
 }: {
   recordVersion: number;
   missionId: string;
   existingMd: string | null;
   existingPdf: string | null;
   onError: (error: unknown) => void;
+  compact?: boolean;
 }) {
   const queryClient = useQueryClient();
   const names = decisionPackFilenames(missionId);
@@ -995,7 +1021,7 @@ function ExportButton({
     onError,
   });
   return (
-    <div className="mt-3 flex flex-wrap gap-2">
+    <div className={`ps-quiet-downloads${compact ? " ps-quiet-downloads-compact" : ""}`}>
       <button
         type="button"
         className="cc-btn cc-btn-primary"
@@ -1005,7 +1031,7 @@ function ExportButton({
           else save.mutate();
         }}
       >
-        {save.isPending ? "Exporting…" : "Download decision pack (PDF + Markdown)"}
+        {save.isPending ? "Exporting…" : compact ? "Decision pack" : "Download decision pack (PDF + Markdown)"}
       </button>
       <button
         type="button"
@@ -1013,15 +1039,7 @@ function ExportButton({
         disabled={executive.isPending}
         onClick={() => executive.mutate()}
       >
-        {executive.isPending ? "Preparing…" : "Executive pack"}
-      </button>
-      <button
-        type="button"
-        className="cc-btn cc-btn-secondary"
-        disabled={zip.isPending || !existingMd}
-        onClick={() => zip.mutate()}
-      >
-        {zip.isPending ? "Packaging…" : "Decision ZIP"}
+        {executive.isPending ? "Preparing…" : "Executive + roadmap"}
       </button>
       <button
         type="button"
@@ -1029,12 +1047,28 @@ function ExportButton({
         disabled={fullArchive.isPending || !existingMd}
         onClick={() => fullArchive.mutate()}
       >
-        {fullArchive.isPending ? "Packaging…" : "Full project archive"}
+        {fullArchive.isPending ? "Packaging…" : "Full archive"}
       </button>
-      <p className="cc-muted text-xs basis-full">
-        Executive pack is the short recommendation story. Full archive adds continuation/case-room
-        summaries and an archive manifest. Linked URLs and secrets are never bundled.
-      </p>
+      {!compact ? (
+        <button
+          type="button"
+          className="cc-btn cc-btn-secondary"
+          disabled={zip.isPending || !existingMd}
+          onClick={() => zip.mutate()}
+        >
+          {zip.isPending ? "Packaging…" : "Decision ZIP"}
+        </button>
+      ) : null}
+      {!compact ? (
+        <p className="cc-muted text-xs basis-full">
+          Downloads include a decision roadmap (human gates, agent tasks, recommendation, path,
+          artefacts) with honest simulated vs model labels. Linked URLs and secrets are never bundled.
+        </p>
+      ) : (
+        <p className="cc-muted text-xs basis-full mb-0">
+          Roadmap and evidence trail are in the pack — not on this screen.
+        </p>
+      )}
     </div>
   );
 }

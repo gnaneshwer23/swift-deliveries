@@ -60,12 +60,15 @@ export function MissionTheatre({
   onDone,
   onError,
   actions,
+  quiet = true,
 }: {
   mission: SupervisedMission;
   missionId: string;
   onDone: () => Promise<void>;
   onError: (error: unknown) => void;
   actions: MissionTheatreActions;
+  /** Calm default: gate + canvas; beat rails and PM walls live under Inspect. */
+  quiet?: boolean;
 }) {
   const theatre = theatreState(mission);
   const [viewAct, setViewAct] = useState<TheatreAct | null>(null);
@@ -73,46 +76,68 @@ export function MissionTheatre({
   const brief = buildPmBrief(mission);
   const badges = honestyBadges(mission);
 
+  const actRail = (
+    <ol className="ps-theatre-acts" aria-label="Investigation acts">
+      {THEATRE_ACTS.map((act) => {
+        const state = actState(theatre, act);
+        const viewing = active === act;
+        return (
+          <li key={act} data-state={state} data-viewing={viewing ? "true" : undefined}>
+            <button
+              type="button"
+              className="ps-theatre-act-btn"
+              aria-current={viewing ? "step" : undefined}
+              onClick={() => setViewAct(act)}
+            >
+              <span className="ps-theatre-act-label">{THEATRE_ACT_LABELS[act]}</span>
+              {state === "current" && !viewAct ? (
+                <span className="ps-theatre-act-now">Now</span>
+              ) : null}
+            </button>
+          </li>
+        );
+      })}
+    </ol>
+  );
+
   return (
-    <div className="ps-theatre" aria-label="Mission briefing theatre">
-      <ol className="ps-theatre-acts" aria-label="Investigation acts">
-        {THEATRE_ACTS.map((act) => {
-          const state = actState(theatre, act);
-          const viewing = active === act;
-          return (
-            <li key={act} data-state={state} data-viewing={viewing ? "true" : undefined}>
-              <button
-                type="button"
-                className="ps-theatre-act-btn"
-                aria-current={viewing ? "step" : undefined}
-                onClick={() => setViewAct(act)}
-              >
-                <span className="ps-theatre-act-label">{THEATRE_ACT_LABELS[act]}</span>
-                {state === "current" && !viewAct ? (
-                  <span className="ps-theatre-act-now">Now</span>
-                ) : null}
-              </button>
-            </li>
-          );
-        })}
-      </ol>
+    <div
+      className={`ps-theatre${quiet ? " ps-quiet-mode" : ""}`}
+      aria-label="Mission briefing theatre"
+    >
+      {quiet ? (
+        <details className="ps-quiet-acts">
+          <summary>Inspect acts</summary>
+          {actRail}
+        </details>
+      ) : (
+        actRail
+      )}
 
       <div className="ps-theatre-stage" data-act={active}>
-        {active === "briefing" ? <ActBriefing brief={brief} badges={badges} /> : null}
-        {active === "roadmap" ? <ActRoadmap brief={brief} /> : null}
-        {active === "cast" ? <ActCast mission={mission} brief={brief} /> : null}
+        {active === "briefing" ? (
+          <ActBriefing brief={brief} badges={badges} quiet={quiet} />
+        ) : null}
+        {active === "roadmap" ? <ActRoadmap brief={brief} quiet={quiet} /> : null}
+        {active === "cast" ? <ActCast mission={mission} brief={brief} quiet={quiet} /> : null}
         {active === "approve" ? (
-          <ActApprove mission={mission} brief={brief} badges={badges} actions={actions} />
+          <ActApprove
+            mission={mission}
+            brief={brief}
+            badges={badges}
+            actions={actions}
+            quiet={quiet}
+          />
         ) : null}
         {active === "work" ? (
           <ActWork
             mission={mission}
             missionId={missionId}
             brief={brief}
-            badges={badges}
             actions={actions}
             onDone={onDone}
             onError={onError}
+            quiet={quiet}
           />
         ) : null}
       </div>
@@ -153,12 +178,17 @@ function HonestyBadgeRow({ badges }: { badges: Array<{ id: string; label: string
 function ActBriefing({
   brief,
   badges,
+  quiet,
 }: {
   brief: PmBrief;
   badges: Array<{ id: string; label: string }>;
+  quiet?: boolean;
 }) {
   return (
-    <section className="ps-act ps-act-briefing" aria-label="Technology briefing">
+    <section
+      className={`ps-act ps-act-briefing${quiet ? " ps-quiet-trim" : ""}`}
+      aria-label="Technology briefing"
+    >
       <p className="ps-foyer-brand">DeliverX Studio</p>
       <p className="cc-kicker">{brief.team.initiatingAgent}</p>
       <h2 className="ps-theatre-title">Here’s what I heard</h2>
@@ -194,9 +224,12 @@ function ActBriefing({
   );
 }
 
-function ActRoadmap({ brief }: { brief: PmBrief }) {
+function ActRoadmap({ brief, quiet }: { brief: PmBrief; quiet?: boolean }) {
   return (
-    <section className="ps-act ps-act-roadmap" aria-label="Strategy and roadmap">
+    <section
+      className={`ps-act ps-act-roadmap${quiet ? " ps-quiet-trim" : ""}`}
+      aria-label="Strategy and roadmap"
+    >
       <p className="ps-foyer-brand">DeliverX Studio</p>
       <p className="cc-kicker">Strategy</p>
       <h2 className="ps-theatre-title">Proposed approach</h2>
@@ -223,14 +256,25 @@ function ActRoadmap({ brief }: { brief: PmBrief }) {
   );
 }
 
-function ActCast({ mission, brief }: { mission: SupervisedMission; brief: PmBrief }) {
+function ActCast({
+  mission,
+  brief,
+  quiet,
+}: {
+  mission: SupervisedMission;
+  brief: PmBrief;
+  quiet?: boolean;
+}) {
   const staffing = brief.team.staffing;
   const cast = castForMission(mission);
   const sequence = buildSequence(mission);
   const currentBeat = sequence.beats.find((b) => b.id === sequence.currentId);
 
   return (
-    <section className="ps-act ps-act-cast" aria-label="Cast and timeline">
+    <section
+      className={`ps-act ps-act-cast${quiet ? " ps-quiet-trim" : ""}`}
+      aria-label="Cast and timeline"
+    >
       <p className="ps-foyer-brand">DeliverX Studio</p>
       <p className="cc-kicker">Delivery cast</p>
       <h2 className="ps-theatre-title">Who delivers what</h2>
@@ -278,24 +322,30 @@ function ActApprove({
   brief,
   badges,
   actions,
+  quiet,
 }: {
   mission: SupervisedMission;
   brief: PmBrief;
   badges: Array<{ id: string; label: string }>;
   actions: MissionTheatreActions;
+  quiet?: boolean;
 }) {
   const approved = Boolean(mission.team?.approvedAt);
   return (
-    <section className="ps-act ps-act-approve" aria-label="Approve plan" id="mission-next-action">
-      <p className="ps-foyer-brand">DeliverX Studio</p>
+    <section
+      className={`ps-act ps-act-approve${quiet ? " ps-quiet-trim" : ""}`}
+      aria-label="Approve plan"
+      id="mission-next-action"
+    >
+      {!quiet ? <p className="ps-foyer-brand">DeliverX Studio</p> : null}
       <p className="cc-kicker">Your gate · Act IV</p>
       <h2 className="ps-theatre-title">
         {approved ? "Plan approved" : "Approve this investigation plan"}
       </h2>
-      <p className="ps-theatre-lede">{brief.problemStatement}</p>
-      <HonestyBadgeRow badges={badges} />
-      <ListenBriefButton brief={brief} />
-      <ul className="ps-approve-summary">
+      {!quiet ? <p className="ps-theatre-lede">{brief.problemStatement}</p> : null}
+      {!quiet ? <HonestyBadgeRow badges={badges} /> : null}
+      {!quiet ? <ListenBriefButton brief={brief} /> : null}
+      <ul className={`ps-approve-summary${quiet ? " ps-quiet-trim-body" : ""}`}>
         <li>
           <strong>Cast</strong> {brief.team.activeLabels.slice(0, 6).join(" · ") || "Proposed team"}
         </li>
@@ -333,12 +383,14 @@ function ActApprove({
         )}
       </div>
 
-      <div className="ps-theatre-footnotes">
-        <p>
-          Cost band {brief.roughCost.band}. {brief.roughCost.detail} Web results are never invented
-          when a provider is missing.
-        </p>
-      </div>
+      {!quiet ? (
+        <div className="ps-theatre-footnotes">
+          <p>
+            Cost band {brief.roughCost.band}. {brief.roughCost.detail} Web results are never invented
+            when a provider is missing.
+          </p>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -514,18 +566,18 @@ function ActWork({
   mission,
   missionId,
   brief,
-  badges,
   actions,
   onDone,
   onError,
+  quiet,
 }: {
   mission: SupervisedMission;
   missionId: string;
   brief: PmBrief;
-  badges: Array<{ id: string; label: string }>;
   actions: MissionTheatreActions;
   onDone: () => Promise<void>;
   onError: (error: unknown) => void;
+  quiet?: boolean;
 }) {
   const sequence = buildSequence(mission);
   const [viewBeatId, setViewBeatId] = useState<BuildBeatView["id"] | null>(null);
@@ -537,61 +589,91 @@ function ActWork({
   const nowBeat = selected ?? current;
   const showGate = !viewBeatId || viewBeatId === sequence.currentId || sequence.currentId === null;
 
+  const canvas = (
+    <IntelligenceCanvasPanel
+      mission={mission}
+      missionId={missionId}
+      recordVersion={mission.version}
+      onDone={onDone}
+      onError={onError}
+    />
+  );
+
+  const gateBlock = (
+    <>
+      {showGate ? (
+        <FocalGate actions={actions} leaseUntil={mission.job.leaseUntil ?? null} />
+      ) : null}
+      {!showGate && actions.exportSlot && mission.exportBody ? (
+        <div className="ps-theatre-gate">{actions.exportSlot}</div>
+      ) : null}
+    </>
+  );
+
+  const nowLine = (
+    <div className="ps-act-now ps-act-now-compact">
+      <p className="cc-kicker">
+        {nowBeat ? `Now · ${nowBeat.label}` : "Product build"}
+        {nowBeat?.owner.actor === "human" ? " · your gate" : ""}
+      </p>
+      <p className="ps-theatre-lede ps-act-now-line">{nowBeat?.detail ?? actions.next.detail}</p>
+    </div>
+  );
+
+  const fullBuild = (
+    <>
+      <div className="ps-act-investigation-primary">
+        {canvas}
+        <PmBriefingPanel mission={mission} />
+      </div>
+      {nowLine}
+      <BuildBeatRail
+        beats={sequence.beats}
+        selectedId={selectedId}
+        onSelect={(id) => setViewBeatId(id)}
+      />
+      <div className="ps-act-focus">
+        {focal ? (
+          <ArtefactCard artefact={focal} />
+        ) : nowBeat ? (
+          <p className="ps-act-waiting">
+            {nowBeat.state === "upcoming" || nowBeat.handoff.status === "waiting_upstream"
+              ? nowBeat.handoff.detail
+              : `${nowBeat.owner.label} will produce the next artefact when this beat is ready.`}
+          </p>
+        ) : null}
+      </div>
+      {gateBlock}
+    </>
+  );
+
+  const quietBuild = (
+    <>
+      <div className="ps-quiet-canvas-wrap">{canvas}</div>
+      {nowLine}
+      {gateBlock}
+    </>
+  );
+
   return (
     <section className="ps-act ps-act-work" aria-label="Product build stage">
       {sequence.planApproved ? (
-        <>
-          <div className="ps-act-investigation-primary">
-            <IntelligenceCanvasPanel
-              mission={mission}
-              missionId={missionId}
-              recordVersion={mission.version}
-              onDone={onDone}
-              onError={onError}
-            />
-            <PmBriefingPanel mission={mission} />
-          </div>
-
-          <div className="ps-act-now ps-act-now-compact">
-            <p className="cc-kicker">
-              {nowBeat ? `Now · ${nowBeat.label}` : "Product build"}
-              {nowBeat?.owner.actor === "human" ? " · your gate" : ""}
-            </p>
-            <p className="ps-theatre-lede ps-act-now-line">
-              {nowBeat?.detail ?? actions.next.detail}
-            </p>
-          </div>
-
-          <BuildBeatRail
-            beats={sequence.beats}
-            selectedId={selectedId}
-            onSelect={(id) => setViewBeatId(id)}
-          />
-
-          <div className="ps-act-focus">
-            {focal ? (
-              <ArtefactCard artefact={focal} />
-            ) : nowBeat ? (
-              <p className="ps-act-waiting">
-                {nowBeat.state === "upcoming" || nowBeat.handoff.status === "waiting_upstream"
-                  ? nowBeat.handoff.detail
-                  : `${nowBeat.owner.label} will produce the next artefact when this beat is ready.`}
-              </p>
-            ) : null}
-          </div>
-
-          {showGate ? (
-            <FocalGate actions={actions} leaseUntil={mission.job.leaseUntil ?? null} />
-          ) : null}
-          {!showGate && actions.exportSlot && mission.exportBody ? (
-            <div className="ps-theatre-gate">{actions.exportSlot}</div>
-          ) : null}
-        </>
+        quiet ? (
+          <>
+            {quietBuild}
+            <details className="ps-quiet-build-inspect">
+              <summary>Inspect build sequence &amp; PM briefing</summary>
+              {fullBuild}
+            </details>
+          </>
+        ) : (
+          fullBuild
+        )
       ) : (
         <p className="ps-act-waiting">Approve the plan to open the product-build sequence.</p>
       )}
 
-      <div className="ps-theatre-footnotes">
+      <div className={`ps-theatre-footnotes${quiet ? " ps-quiet-trim-body" : ""}`}>
         <details>
           <summary>Research mode & tools</summary>
           {(() => {
