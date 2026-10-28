@@ -1,12 +1,13 @@
 # WHAT I NEED FROM YOU — PSI live payments cutover (P1-5)
 
 **Date:** 28 October 2026  
-**Code path:** shipped in repo (see `docs/psi-stripe-catalog.md`). Live charges stay **off** until you complete every item below and set the Production env vars.  
-**Honesty:** This is the Stripe live cutover path — **not** a full `psi-production-readiness-plan` certification. Signed-in smoke remains **red** until you run it.
+**Code path:** shipped in repo (see `docs/psi-stripe-catalog.md`). Live charges stay **off** until you complete every remaining item below and set the Production env vars.  
+**Honesty:** This is the Stripe live cutover path — **not** a full `psi-production-readiness-plan` certification. Signed-in smoke remains **red** until you run it.  
+**Agents must not** invent Stripe live keys or set `PSI_PAYMENTS_LIVE_APPROVED` — that flip is yours alone.
 
 ---
 
-## 1. Confirm prices (reply yes / change)
+## 1. Confirm prices — **DONE 28 Oct 2026**
 
 | Plan | Amount | Interval | Lookup key | Mission allowance |
 | --- | --- | --- | --- | --- |
@@ -14,26 +15,19 @@
 | Founder | **£99** | month | `founder_monthly` | 4 |
 | Studio | **£299** | month | `studio_monthly` | 12 |
 
-Reply **“prices confirmed”** or send revised GBP amounts / allowances before creating live Prices.
+Founder replied **prices confirmed** (binding). Use these when creating live Products/Prices.
 
 ---
 
-## 2. Neon migration 0032 — **explicit approval required**
+## 2. Neon migration 0032 — **DONE 28 Oct 2026 (production)**
 
 **File:** `drizzle/migrations/0032_psi_pilot_activations_stripe.sql`  
 **Production Neon branch:** `br-fancy-breeze-zatt9ocp` (project `spring-wind-48457918`)  
-**Ledger status today:** **Not applied** — needs owner approval (`docs/migrations-and-rollback.md`).
+**Ledger status:** **Applied** 28 Oct 2026 after exact approve sentence (`docs/migrations-and-rollback.md`). File blob `8f5178636508c0e06df99ec32a7ee70e546b301b` (commit `c7d4bb1`).
 
-**What it does (additive, re-runnable):**
+**Verified post-apply (catalog only):** `payment_taken = false` check dropped; `request_id` nullable; columns `stripe_checkout_session_id`, `stripe_customer_id`, `stripe_subscription_id`, `stripe_price_lookup_key`, `payment_environment`; unique partial index on session id; subscription index; `payment_environment` ∈ {sandbox, live}.
 
-- Drops `payment_taken = false`-only check so paid activations can store `payment_taken = true`
-- Makes `request_id` nullable (self-serve Checkout without a prior enquiry)
-- Adds Stripe columns + unique index on `stripe_checkout_session_id`
-
-**Ask:** Reply exactly **“Approve apply 0032 to production Neon `br-fancy-breeze-zatt9ocp`”** (and optionally Preview `br-lively-water-zavqzat5`).  
-I will **not** apply 0032 until that sentence appears in chat. Safe path after approval: snapshot/branch if you want, then run the SQL once against the production pooled URL under your migration role; update the ledger date.
-
-Without 0032, live webhooks that insert paid activations will fail.
+**Preview** `br-lively-water-zavqzat5` was **not** approved and was **not** applied.
 
 ---
 
@@ -140,10 +134,10 @@ Set / verify these on project `swift-deliveries` (`prj_KXbLoh586LlAsKD6c8zk2HGDj
 
 | Blocker | Why |
 | --- | --- |
-| Live Products/Prices | MCP write 403 — Dashboard create required |
-| Migration 0032 | Needs your explicit Neon approval sentence |
-| Live keys + webhook secret | Not in git; you set Vercel |
-| `PSI_PAYMENTS_LIVE_APPROVED` | Must be your deliberate flip |
+| Live Products/Prices | MCP write 403 — Dashboard create required (amounts confirmed) |
+| Migration 0032 | **Cleared** on production 28 Oct 2026 |
+| Live keys + webhook secret | Not in git; you set Vercel Production |
+| `PSI_PAYMENTS_LIVE_APPROVED` | Must be your deliberate flip **last** — agents will not set it |
 | Signed-in P0-A smoke | Remains **red** without your browser session — not certified production-ready overall |
 
 ## Stripe MCP re-consent (optional)

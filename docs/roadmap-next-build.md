@@ -129,10 +129,10 @@ Stripe Cursor plugin is authenticated. **Do not create Stripe products in this p
 | --- | --- |
 | **Goal** | Accept real cards only after sandbox entitlement proof + P0-A greens. |
 | **Deliverables** | Live restricted key + live webhook secret; live Prices; runbook; kill switch (`PSI_PAYMENTS_KILL_SWITCH` / unset checkout flag / key removal). **Code path shipped**; founder ops in `docs/psi-live-cutover-needs.md`. |
-| **Deps / secrets** | Live Stripe; tax registration if `automatic_tax`; founder go-live approve; Neon **0032** owner approval. |
+| **Deps / secrets** | Live Stripe; tax registration if `automatic_tax`; founder go-live approve. Neon **0032** production apply **done** 28 Oct 2026 (`br-fancy-breeze-zatt9ocp`; blob `8f51786`). Prices **confirmed** (Builder £29/1, Founder £99/4, Studio £299/12). |
 | **Demo criterion** | One real low-risk purchase (or Stripe live test policy as chosen) grants activation; stop-switch demonstrated. |
 | **Risk** | Skipping webhook in live; no rollback story for mistaken entitlement. |
-| **Status** | Cutover **code** ready; live Products MCP-blocked (403); Production charges **blocked** until needs list complete. Not a full readiness certification. |
+| **Status** | Cutover **code** ready; **0032 applied** + prices confirmed 28 Oct 2026. Still need founder: live Products/Prices, Vercel live env + webhook, then **`PSI_PAYMENTS_LIVE_APPROVED` last**. Agents must not invent live keys or flip that flag. Not a full readiness certification. |
 
 ---
 

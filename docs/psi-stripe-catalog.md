@@ -5,13 +5,21 @@
 **Entitlement store:** `psi_pilot_activations` — never career Supabase `subscriptions`.  
 **Founder actions:** [psi-live-cutover-needs.md](./psi-live-cutover-needs.md).
 
+## Founder confirmations (28 Oct 2026)
+
+| Item | Status |
+| --- | --- |
+| Prices + allowances (Builder £29 / 1, Founder £99 / 4, Studio £299 / 12) | **Confirmed** by founder |
+| Neon migration 0032 on production `br-fancy-breeze-zatt9ocp` | **Applied** 28 Oct 2026 (file blob `8f5178636508c0e06df99ec32a7ee70e546b301b`; see `docs/migrations-and-rollback.md`) |
+| Live Products/Prices, Vercel live env, webhook, `PSI_PAYMENTS_LIVE_APPROVED` | **Still required** — not set by agents; see needs list |
+
 ## Mapping table
 
 | Plan | Published price | Lookup key | Mission allowance | Exhaustion |
 | --- | --- | --- | --- | --- |
-| Builder | £29 / month | `builder_monthly` | **1** | `block_next_billable_comparison` |
-| Founder | £99 / month | `founder_monthly` | **4** | `block_next_billable_comparison` |
-| Studio | £299 / month | `studio_monthly` | **12** | `block_next_billable_comparison` |
+| Builder | £29 / month (**confirmed**) | `builder_monthly` | **1** | `block_next_billable_comparison` |
+| Founder | £99 / month (**confirmed**) | `founder_monthly` | **4** | `block_next_billable_comparison` |
+| Studio | £299 / month (**confirmed**) | `studio_monthly` | **12** | `block_next_billable_comparison` |
 
 Allowances match the pricing page “Monthly missions” column. Operator manual activation may still set 1–24; self-serve uses these defaults from Checkout metadata / price metadata.
 
