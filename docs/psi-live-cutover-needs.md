@@ -53,7 +53,7 @@ Founder-supplied Product IDs read in livemode. MCP write still **403** — looku
 
 ### Managed Payments (required for founder curl parity)
 
-PSI Checkout now sends `managed_payments[enabled]=true` (same shape as your pasted curl). Before live Pay works:
+PSI Checkout now sends founder hosted snippet fields (`ui_mode=hosted_page`, collection flags, `integration_identifier=hosted_web_0001`, `origin_context=web`, …) plus `managed_payments[enabled]=true`. Before live Pay works:
 
 1. Enable Managed Payments and accept ToS: [https://dashboard.stripe.com/settings/managed-payments](https://dashboard.stripe.com/settings/managed-payments).
 2. On each live Product (`prod_VHO45CEWLNQ3qF`, `prod_VWUi8xEiee1ACW`, `prod_VWUj2JF7yL89go`) set a tax code labeled **Eligible for Managed Payments**.

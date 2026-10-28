@@ -21,15 +21,6 @@ function allowedReturnHost(hostname: string): boolean {
   );
 }
 
-function randomSuffix(length = 8): string {
-  const alphabet = "abcdefghijklmnopqrstuvwxyz";
-  let out = "";
-  for (let i = 0; i < length; i += 1) {
-    out += alphabet[Math.floor(Math.random() * alphabet.length)]!;
-  }
-  return out;
-}
-
 async function resolvePsiPriceId(
   stripe: ReturnType<typeof createDirectStripeClient>,
   plan: PilotPlan,
@@ -127,7 +118,6 @@ export const createPsiCheckoutSession = createServerFn({ method: "POST" })
           userEmail: context.userEmail,
           successUrl: data.successUrl,
           cancelUrl: data.cancelUrl,
-          integrationSuffix: randomSuffix(),
         }),
       );
 

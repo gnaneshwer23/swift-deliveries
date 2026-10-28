@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  PSI_CHECKOUT_INTEGRATION_IDENTIFIER,
   buildPsiCheckoutSessionCreateParams,
   withCheckoutSessionIdPlaceholder,
 } from "./psi-checkout-session";
@@ -32,19 +33,25 @@ describe("buildPsiCheckoutSessionCreateParams", () => {
     workspaceId: "11111111-1111-4111-8111-111111111111",
     successUrl: "https://www.deliverx.dev/checkout/return?session_id={CHECKOUT_SESSION_ID}",
     cancelUrl: "https://www.deliverx.dev/pricing",
-    integrationSuffix: "testrandom",
   };
 
-  it("matches founder Managed Payments subscription shape", () => {
+  it("matches founder hosted Checkout + Managed Payments shape", () => {
     const params = buildPsiCheckoutSessionCreateParams(base);
 
     expect(params.mode).toBe("subscription");
+    expect(params.ui_mode).toBe("hosted_page");
     expect(params.line_items).toEqual([{ price: base.priceId, quantity: 1 }]);
     expect(params.managed_payments).toEqual({ enabled: true });
     expect(params.success_url).toBe(base.successUrl);
     expect(params.cancel_url).toBe(base.cancelUrl);
+    expect(params.billing_address_collection).toBe("auto");
+    expect(params.payment_method_collection).toBe("always");
+    expect(params.allow_promotion_codes).toBe(false);
+    expect(params.submit_type).toBe("auto");
+    expect(params.integration_identifier).toBe(PSI_CHECKOUT_INTEGRATION_IDENTIFIER);
+    expect(params.integration_identifier).toBe("hosted_web_0001");
+    expect(params.origin_context).toBe("web");
     expect(params.client_reference_id).toBe(base.userId);
-    expect(params.integration_identifier).toBe("psi_checkout_testrandom");
   });
 
   it("sets workspace/plan metadata on session and subscription", () => {

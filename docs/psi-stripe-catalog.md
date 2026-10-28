@@ -73,7 +73,8 @@ Do **not** put these sandbox `price_…` IDs on Production `PSI_STRIPE_PRICE_*`.
 ## Billing shape
 
 - Stripe **subscription** monthly Prices (marketing says monthly).
-- Checkout Session create matches founder Managed Payments pattern: `mode=subscription`, `line_items[0]` price + quantity `1`, `managed_payments.enabled=true`, `success_url` / `cancel_url` (deliverx.dev return paths from the client), session + subscription metadata for workspace/plan.
+- Checkout Session create matches founder hosted snippet + Managed Payments: `mode=subscription`, `ui_mode=hosted_page`, `line_items[0]` price + quantity `1`, `billing_address_collection=auto`, `payment_method_collection=always`, `allow_promotion_codes=false`, `submit_type=auto`, `integration_identifier=hosted_web_0001`, `origin_context=web`, `managed_payments.enabled=true`, `success_url` / `cancel_url` (deliverx.dev return paths from the client), session + subscription metadata for workspace/plan. Client redirects to `session.url` (303-equivalent).
+- Verified against API **`2026-03-25.dahlia`**: `ui_mode=hosted_page`, `integration_identifier`, `origin_context`, and `submit_type` are all accepted (and typed in SDK 22.0.2). `managed_payments` is **not** mutually exclusive with this hosted snippet — keep both.
 - Server API version stays **`2026-03-25.dahlia`** (Stripe Node SDK pin). Managed Payments requires **`2025-03-31.basil` or later** — we already satisfy that; do **not** downgrade to the Dashboard curl’s basil header.
 - `managed_payments` is sent via a typed intersection: SDK **22.0.2** does not yet declare the field (same approach as legacy career checkout). No secret or `Stripe-Version` header override is required beyond the client `apiVersion`.
 - Entitlement remains **allowance-shaped** (missions), not automatic renewal top-up in P1.
