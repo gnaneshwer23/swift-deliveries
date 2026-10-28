@@ -22,6 +22,8 @@ import { commerceHardStopMessage } from "./pilot-mission/commerce";
 import { learningLinks } from "./pilot-mission/learning";
 import {
   assertCanStartInvestigation,
+  PILOT_ACTIVATION_MIGRATION_HINT,
+  type InvestigationAllowanceLoad,
   type PilotAllowanceSnapshot,
 } from "./pilot/paid-availability";
 import {
@@ -71,7 +73,9 @@ async function settleUsage(db: Db, mission: SupervisedMission): Promise<string |
   }
 }
 
-async function pilotAllowanceFor(workspaceId: string): Promise<PilotAllowanceSnapshot | null> {
+async function loadInvestigationAllowance(
+  workspaceId: string,
+): Promise<InvestigationAllowanceLoad> {
   try {
     const db = await database();
     const res = await db
@@ -79,19 +83,51 @@ async function pilotAllowanceFor(workspaceId: string): Promise<PilotAllowanceSna
       .select("mission_allowance, missions_consumed")
       .eq("workspace_id", workspaceId)
       .maybeSingle();
-    if (res.error || !res.data) return null;
+    if (res.error) {
+      const msg = res.error.message ?? "Database error";
+      if (/unknown table/i.test(msg)) {
+        return { status: "failed", reason: PILOT_ACTIVATION_MIGRATION_HINT };
+      }
+      if (/expected at most 1 row/i.test(msg)) {
+        return {
+          status: "failed",
+          reason:
+            "Multiple pilot activations exist for this workspace; an operator must reconcile the record.",
+        };
+      }
+      return {
+        status: "failed",
+        reason: "Investigation allowance could not be read from storage.",
+      };
+    }
+    if (!res.data) return { status: "demo" };
     const row = res.data as Record<string, unknown>;
     const missionAllowance = Number(row["mission_allowance"]);
     const missionsConsumed = Number(row["missions_consumed"]);
-    if (!Number.isFinite(missionAllowance) || !Number.isFinite(missionsConsumed)) return null;
+    if (!Number.isFinite(missionAllowance) || !Number.isFinite(missionsConsumed)) {
+      return {
+        status: "failed",
+        reason: "Investigation allowance on this workspace has invalid stored values.",
+      };
+    }
     return {
-      missionAllowance,
-      missionsConsumed,
-      remaining: Math.max(0, missionAllowance - missionsConsumed),
+      status: "active",
+      snapshot: {
+        missionAllowance,
+        missionsConsumed,
+        remaining: Math.max(0, missionAllowance - missionsConsumed),
+      },
     };
   } catch {
-    return null;
+    return {
+      status: "failed",
+      reason: "Investigation allowance could not be read from storage.",
+    };
   }
+}
+
+function pilotAllowanceSnapshot(load: InvestigationAllowanceLoad): PilotAllowanceSnapshot | null {
+  return load.status === "active" ? load.snapshot : null;
 }
 
 const briefFields = {
@@ -154,7 +190,8 @@ export const getSupervisedMissionHome = createServerFn({ method: "GET" })
       const { service } = await serviceFor();
       const missions = await service.list(workspace.id);
       const researchProvider = researchProviderReadiness();
-      const investigationAllowance = await pilotAllowanceFor(workspace.id);
+      const allowanceLoad = await loadInvestigationAllowance(workspace.id);
+      const investigationAllowance = pilotAllowanceSnapshot(allowanceLoad);
       const startGate = assertCanStartInvestigation(investigationAllowance);
       return {
         ready: true as const,
@@ -163,6 +200,14 @@ export const getSupervisedMissionHome = createServerFn({ method: "GET" })
         researchProvider,
         usage: { ceiling: workspace.usageCeiling, consumed: workspace.usageConsumed },
         investigationAllowance,
+        investigationAllowanceLoad:
+          allowanceLoad.status === "active"
+            ? ("active" as const)
+            : allowanceLoad.status === "demo"
+              ? ("demo" as const)
+              : ("failed" as const),
+        investigationAllowanceLoadReason:
+          allowanceLoad.status === "failed" ? allowanceLoad.reason : null,
         canStartInvestigation: startGate.ok,
         startInvestigationBlockedReason: startGate.ok ? null : startGate.message,
         missions: missions.map((mission) => {
@@ -208,6 +253,8 @@ export const getSupervisedMissionHome = createServerFn({ method: "GET" })
           researchProvider: researchProviderReadiness(),
           usage: null,
           investigationAllowance: null,
+          investigationAllowanceLoad: "failed" as const,
+          investigationAllowanceLoadReason: error.message,
           canStartInvestigation: false,
           startInvestigationBlockedReason: error.message,
           missions: [],
@@ -285,7 +332,9 @@ export const startSupervisedMission = createServerFn({ method: "POST" })
   .validator((data: unknown) => startBriefSchema.parse(data))
   .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
     const workspace = await workspaceFor(context.supabase, context.userId);
-    const startGate = assertCanStartInvestigation(await pilotAllowanceFor(workspace.id));
+    const startGate = assertCanStartInvestigation(
+      pilotAllowanceSnapshot(await loadInvestigationAllowance(workspace.id)),
+    );
     if (!startGate.ok) throw new Error(startGate.message);
     const { service } = await serviceFor();
     const remaining = Math.max(0, workspace.usageCeiling - workspace.usageConsumed);

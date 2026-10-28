@@ -1,6 +1,10 @@
 /**
  * R1 — Pre-research commitment: scope, sources, limits, allowance (visible before spend).
  */
+import {
+  investigationAllowanceDemoLine,
+  type InvestigationAllowanceLoad,
+} from "../pilot/paid-availability";
 import { RESEARCH_MODE_LABELS, type ResearchMode } from "./research-mode";
 
 export type InvestigationCommitment = {
@@ -32,7 +36,8 @@ export function buildInvestigationCommitment(input: {
   researchMode: ResearchMode;
   researchProviderConfigured: boolean;
   researchProviderLabel: string;
-  investigationRemaining: number | null;
+  allowanceLoad: InvestigationAllowanceLoad;
+  workspaceUsage?: { ceiling: number; consumed: number } | null;
   canStart: boolean;
   blockedReason: string | null;
 }): InvestigationCommitment {
@@ -52,14 +57,21 @@ export function buildInvestigationCommitment(input: {
   ];
   if (input.blockedReason) limits.push(input.blockedReason);
 
-  const allowanceLine =
-    input.investigationRemaining === null
-      ? "Investigation allowance could not be loaded."
-      : input.canStart
-        ? `${input.investigationRemaining} Investigation unit${
-            input.investigationRemaining === 1 ? "" : "s"
-          } remaining on this workspace plan. Starting a case commits one Investigation when the plan is approved and work begins under paid rules.`
-        : `Cannot start: ${input.blockedReason ?? "Investigation allowance exhausted or unavailable."}`;
+  const allowanceLine = (() => {
+    const load = input.allowanceLoad;
+    if (load.status === "failed") return load.reason;
+    if (load.status === "demo") {
+      if (input.workspaceUsage) return investigationAllowanceDemoLine(input.workspaceUsage);
+      return "No paid pilot plan on this workspace yet. Demo mode uses the workspace usage ceiling until Builder, Founder, or Studio is activated.";
+    }
+    const remaining = load.snapshot.remaining;
+    if (input.canStart) {
+      return `${remaining} Investigation unit${
+        remaining === 1 ? "" : "s"
+      } remaining on this workspace plan. Starting a case commits one Investigation when the plan is approved and work begins under paid rules.`;
+    }
+    return `Cannot start: ${input.blockedReason ?? "Investigation allowance exhausted or unavailable."}`;
+  })();
 
   return {
     version: "commitment-v1",

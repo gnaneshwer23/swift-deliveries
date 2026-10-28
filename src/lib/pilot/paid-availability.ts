@@ -21,6 +21,23 @@ export type PilotAllowanceSnapshot = {
   missionsConsumed: number;
 };
 
+/** Result of reading `psi_pilot_activations` for a workspace — not the same as “failed to load”. */
+export type InvestigationAllowanceLoad =
+  | { status: "active"; snapshot: PilotAllowanceSnapshot }
+  | { status: "demo" }
+  | { status: "failed"; reason: string };
+
+export const PILOT_ACTIVATION_MIGRATION_HINT =
+  "Pilot activation storage is not available on this database (apply migration drizzle/migrations/0021_psi_pilot_activations.sql).";
+
+export function investigationAllowanceDemoLine(usage: {
+  ceiling: number;
+  consumed: number;
+}): string {
+  const remaining = Math.max(0, usage.ceiling - usage.consumed);
+  return `No paid pilot plan on this workspace yet. Demo mode uses the workspace usage ceiling (${remaining} of ${usage.ceiling} units remain). Builder, Founder, or Studio activation sets Investigation allowance separately.`;
+}
+
 /** True when self-serve checkout can sell Investigation capacity (env flag). */
 export function isInvestigationPaidAvailable(
   env: NodeJS.ProcessEnv | Record<string, string | undefined> = process.env,

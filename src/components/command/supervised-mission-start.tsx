@@ -10,6 +10,7 @@ import {
   RESEARCH_REFINE_AUDIENCE,
 } from "@/lib/pilot-mission/pm-brief";
 import { buildInvestigationCommitment } from "@/lib/pilot-mission/investigation-commitment";
+import type { InvestigationAllowanceLoad } from "@/lib/pilot/paid-availability";
 import { findSimilarIdeas } from "@/lib/pilot-mission/similar-ideas";
 
 import { useSession } from "@/hooks/use-session";
@@ -21,6 +22,47 @@ import {
   restoreMissionIntake,
 } from "@/lib/mission-intake-draft";
 import { VoiceControls } from "@/components/command/voice-controls";
+
+function investigationAllowanceLoadFromHome(home: {
+  investigationAllowance: {
+    remaining: number;
+    missionAllowance: number;
+    missionsConsumed: number;
+  } | null;
+  investigationAllowanceLoad?: "active" | "demo" | "failed";
+  investigationAllowanceLoadReason?: string | null;
+}): InvestigationAllowanceLoad {
+  if (home.investigationAllowanceLoad === "demo") return { status: "demo" };
+  if (home.investigationAllowanceLoad === "failed") {
+    return {
+      status: "failed",
+      reason:
+        home.investigationAllowanceLoadReason ??
+        "Investigation allowance could not be read from storage.",
+    };
+  }
+  if (home.investigationAllowance) {
+    return { status: "active", snapshot: home.investigationAllowance };
+  }
+  return { status: "demo" };
+}
+
+function allowanceStatusSuffix(home: {
+  investigationAllowance: { remaining: number } | null;
+  investigationAllowanceLoad?: "active" | "demo" | "failed";
+  usage: { ceiling: number; consumed: number } | null;
+}): string {
+  if (home.investigationAllowanceLoad === "failed") return "";
+  if (home.investigationAllowance) {
+    const n = home.investigationAllowance.remaining;
+    return ` · ${n} Investigation${n === 1 ? "" : "s"} left on plan`;
+  }
+  if (home.usage) {
+    const left = Math.max(0, home.usage.ceiling - home.usage.consumed);
+    return ` · Demo ceiling: ${left} of ${home.usage.ceiling} units`;
+  }
+  return " · No pilot plan (demo mode)";
+}
 
 export function SupervisedMissionStart({
   tone = "hero",
@@ -134,7 +176,8 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
       researchProviderConfigured: Boolean(home.data.researchProvider?.configured),
       researchProviderLabel:
         home.data.researchProvider?.label ?? home.data.providerLabel ?? "Not configured",
-      investigationRemaining: home.data.investigationAllowance?.remaining ?? null,
+      allowanceLoad: investigationAllowanceLoadFromHome(home.data),
+      workspaceUsage: home.data.usage,
       canStart: home.data.canStartInvestigation === true,
       blockedReason: home.data.startInvestigationBlockedReason,
     });
@@ -165,11 +208,7 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
             {home.data.researchProvider?.configured
               ? home.data.researchProvider.label
               : home.data.providerLabel}
-            {home.data.ready && home.data.investigationAllowance
-              ? ` · ${home.data.investigationAllowance.remaining} Investigation${
-                  home.data.investigationAllowance.remaining === 1 ? "" : "s"
-                } left on plan`
-              : ""}
+            {home.data.ready ? allowanceStatusSuffix(home.data) : ""}
           </p>
         </details>
       ) : home.data ? (
@@ -177,11 +216,12 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
           {home.data.researchProvider?.configured
             ? home.data.researchProvider.label
             : home.data.providerLabel}
-          {home.data.ready && home.data.investigationAllowance
-            ? ` · ${home.data.investigationAllowance.remaining} Investigation${
-                home.data.investigationAllowance.remaining === 1 ? "" : "s"
-              } left on plan`
-            : ""}
+          {home.data.ready ? allowanceStatusSuffix(home.data) : ""}
+        </p>
+      ) : null}
+      {home.data?.ready && home.data.investigationAllowanceLoad === "failed" ? (
+        <p className="cc-error" role="alert">
+          {home.data.investigationAllowanceLoadReason}
         </p>
       ) : null}
       {home.isError && (
