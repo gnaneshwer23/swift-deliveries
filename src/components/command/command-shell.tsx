@@ -18,6 +18,7 @@ import { getPilotOperatorAccess } from "@/lib/pilot/enquiry.functions";
 import { useSignOut } from "@/hooks/use-sign-out";
 import { useSession } from "@/hooks/use-session";
 import { BrandLogo } from "@/components/brand-logo";
+import { isExecutiveStudioRoute } from "@/lib/command/executive-studio-routes";
 import "@/styles/psi-workspace.css";
 
 const PRIMARY_NAV = [

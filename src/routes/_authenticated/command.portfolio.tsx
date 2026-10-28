@@ -339,9 +339,7 @@ function PortfolioPage() {
                   <span
                     className="ps-exec-chip"
                     data-tone={
-                      missionNeedsAttention(row.nextId)
-                        ? attentionChipTone(row.nextId)
-                        : "neutral"
+                      missionNeedsAttention(row.nextId) ? attentionChipTone(row.nextId) : "neutral"
                     }
                   >
                     {row.nextTitle}

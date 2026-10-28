@@ -45,7 +45,9 @@ export function missionNeedsAttention(nextId: string): boolean {
 export type AttentionChipTone = "pending" | "urgent" | "review" | "neutral";
 
 export function attentionChipTone(nextId: string): AttentionChipTone {
-  if (["decide", "approve_plan", "compare", "approve_prototype", "approve_follow_up"].includes(nextId))
+  if (
+    ["decide", "approve_plan", "compare", "approve_prototype", "approve_follow_up"].includes(nextId)
+  )
     return "pending";
   if (["retry", "recover"].includes(nextId)) return "urgent";
   if (["observation", "review", "expectation"].includes(nextId)) return "review";
