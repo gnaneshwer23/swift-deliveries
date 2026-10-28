@@ -2,12 +2,11 @@
  * Full supervised mission ZIP: decision pack + meaningful artefacts with honesty
  * about what is / is not bundled. Reuses programme createZip; never invents files.
  */
-import {
-  buildDecisionPackMarkdown,
-  buildDecisionPackPdf,
-  honestyFor,
-} from "./decision-pack";
+import { honestyFor } from "./decision-pack";
 import { buildDecisionRoadmapMarkdown } from "./decision-roadmap";
+import { authorisedDecisionPackMarkdown, authorisedDecisionPackPdfBytes } from "./export-snapshot";
+import { buildPmBriefingMarkdown } from "./pm-briefing-pack";
+import { buildTeamCollaborationMarkdown } from "./team-collaboration";
 import type { SupervisedMission } from "./types";
 
 const slug = (s: string) =>
@@ -47,7 +46,9 @@ export function buildSupervisedZip(
 - **Generation:** ${honesty.generationLabel}
 
 ## What is bundled
-- Decision pack (Markdown + plain-text PDF as base64)
+- Decision pack (Markdown + plain-text PDF as base64) from the authorised export snapshot when present
+- Product briefing summary and decision roadmap
+- Recorded team collaboration (assignments / handoffs) when present
 - Evidence register (statements + source *references* only)
 - Sandboxed HTML prototype when the prototype beat completed
 - This manifest of honesty labels
@@ -63,10 +64,12 @@ ${honesty.note}
     { bundled: true, note: "Honesty README" },
   );
 
-  const md = buildDecisionPackMarkdown(mission);
+  const md = authorisedDecisionPackMarkdown(mission);
   add("decision-pack/decision-pack.md", md, {
     bundled: true,
-    note: "Decision pack markdown",
+    note: mission.exportBody
+      ? "Decision pack markdown (authorised export snapshot)"
+      : "Decision pack markdown (draft — export in-app to freeze snapshot)",
   });
 
   add("decision-roadmap/decision-roadmap.md", buildDecisionRoadmapMarkdown(mission), {
@@ -74,7 +77,20 @@ ${honesty.note}
     note: "Human gates, agent work, recommendation, path, artefacts",
   });
 
-  const pdfBytes = buildDecisionPackPdf(md);
+  add("briefing/product-briefing.md", buildPmBriefingMarkdown(mission), {
+    bundled: true,
+    note: "Focused PM briefing — recommendation, evidence, unknowns, next step",
+  });
+
+  const collabMd = buildTeamCollaborationMarkdown(mission);
+  if (collabMd) {
+    add("team-collaboration/team-collaboration.md", collabMd, {
+      bundled: true,
+      note: "Persisted assignments and handoffs",
+    });
+  }
+
+  const pdfBytes = authorisedDecisionPackPdfBytes(mission);
   let binary = "";
   for (let i = 0; i < pdfBytes.length; i++) binary += String.fromCharCode(pdfBytes[i]!);
   add("decision-pack/decision-pack.pdf.base64.txt", btoa(binary), {
@@ -129,6 +145,8 @@ ${honesty.note}
         generationLabel: honesty.generationLabel,
         sourcesBundled: false,
         prototypeBundled: Boolean(mission.prototype?.html),
+        teamCollaborationBundled: Boolean(collabMd),
+        exportSnapshotFrozen: Boolean(mission.exportBody),
         simulated: honesty.productionMode === "simulated" || honesty.productionMode === "mixed",
         inventory,
         researchGaps: gaps.slice(0, 40),

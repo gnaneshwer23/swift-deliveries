@@ -7,6 +7,7 @@ import { buildCommerceDisclosureMarkdown } from "./commerce";
 import { buildDecisionRoadmapMarkdown } from "./decision-roadmap";
 import { buildLearnerLensMarkdown } from "./learner-lens";
 import { buildPmBriefingPack } from "./pm-briefing-pack";
+import { buildTeamCollaborationMarkdown } from "./team-collaboration";
 import { RESEARCH_MODE_LABELS, type ResearchMode } from "./research-mode";
 import type { SupervisedMission } from "./types";
 import {
@@ -123,7 +124,9 @@ export function buildDecisionPackMarkdown(mission: SupervisedMission): string {
       : "- None labelled as assumptions.",
     ``,
     `### Uncertainties, contradictions and external gaps`,
-    gaps.length ? gaps.map((e) => `- Gap: ${e.statement}`).join("\n") : "- No evidence gaps labelled.",
+    gaps.length
+      ? gaps.map((e) => `- Gap: ${e.statement}`).join("\n")
+      : "- No evidence gaps labelled.",
     generationGaps.length
       ? generationGaps.map((g) => `- Generation gap: ${g}`).join("\n")
       : "- No generation gaps recorded.",
@@ -159,8 +162,9 @@ export function buildDecisionPackMarkdown(mission: SupervisedMission): string {
     })(),
     ``,
     `### Research team (investigate)`,
-    researchTeamLines(mission).map((l) => `- ${l}`).join("\n") ||
-      "- No research-team ownership recorded.",
+    researchTeamLines(mission)
+      .map((l) => `- ${l}`)
+      .join("\n") || "- No research-team ownership recorded.",
     ``,
     `## 4. Options compared`,
     proposal
@@ -210,6 +214,33 @@ export function buildDecisionPackMarkdown(mission: SupervisedMission): string {
           : "Recommendation: pending",
         `Rationale: ${briefing.recommendationRationale}`,
         ``,
+        `### Supporting evidence`,
+        ...(briefing.supporting.length
+          ? briefing.supporting.map((l) => `- ${l}`)
+          : ["- None on the register yet."]),
+        ``,
+        `### Counterevidence & gaps`,
+        ...(briefing.counterevidence.length
+          ? briefing.counterevidence.map((l) => `- ${l}`)
+          : ["- None labelled yet."]),
+        ``,
+        `### Important unknowns`,
+        ...(briefing.unknowns.length
+          ? briefing.unknowns.map((l) => `- ${l}`)
+          : ["- None labelled yet."]),
+        ``,
+        briefing.disagreesWithRecommendation && briefing.humanNextPathLabel
+          ? [
+              `### Human decision vs agent recommendation`,
+              `- Agent recommendation remains on the record: ${briefing.recommendationLabel ?? "Pending"}`,
+              `- Human next path: ${briefing.humanNextPathLabel}`,
+              `- Choosing a different path does not erase the recommendation.`,
+              briefing.humanDecisionNote ? `- Human note: ${briefing.humanDecisionNote}` : "",
+            ].join("\n")
+          : briefing.humanNextPathLabel
+            ? `### Human next path\n- ${briefing.humanNextPathLabel}`
+            : "",
+        ``,
         `### Separate assessments`,
         ...briefing.assessments.map(
           (a) =>
@@ -228,6 +259,9 @@ export function buildDecisionPackMarkdown(mission: SupervisedMission): string {
         briefing.honesty,
       ].join("\n");
     })(),
+    ``,
+    buildTeamCollaborationMarkdown(mission) ??
+      `## Recorded team collaboration\nNot recorded on this mission.`,
     ``,
     buildLearnerLensMarkdown(mission),
     ``,

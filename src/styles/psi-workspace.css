@@ -3430,6 +3430,36 @@
   gap: 8px;
   margin-top: 14px;
 }
+.ps-pm-briefing-focused {
+  margin: 12px 0 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--psi-border, #dfe5f2);
+  border-radius: 12px;
+  background: var(--psi-surface-raised, #f8fafc);
+}
+.ps-pm-briefing-focused-grid {
+  display: grid;
+  gap: 12px;
+  margin: 12px 0 0;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+.ps-pm-briefing-focused-grid dt {
+  font-size: 0.75rem;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--psi-muted, #64748b);
+  margin-bottom: 4px;
+}
+.ps-pm-briefing-focused-grid dd {
+  margin: 0;
+}
+.ps-pm-briefing-disagree {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--psi-accent, #4f46e5) 35%, transparent);
+  background: color-mix(in srgb, var(--psi-accent, #4f46e5) 6%, transparent);
+}
 @media (max-width: 720px) {
   .ps-intel-nodes { grid-template-columns: 1fr; }
 }

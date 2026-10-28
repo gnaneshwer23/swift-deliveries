@@ -46,8 +46,9 @@ function mission(overrides: Partial<SupervisedMission> = {}): SupervisedMission 
       ownerCapabilityId: "DX-035",
       ownerLabel: "UX Prototype Agent",
     },
-    exportBody: null,
+    exportBody: "# Decision pack\n\n## Honesty labels\n",
     exportPdfBase64: null,
+    teamCollaboration: null,
     job: {
       status: "idle",
       ownerId: null,
@@ -82,6 +83,8 @@ describe("supervised ZIP export", () => {
     expect(filename).toMatch(/\.zip$/);
     const paths = files.map((f) => f.path);
     expect(paths.some((p) => p.endsWith("decision-pack/decision-pack.md"))).toBe(true);
+    expect(paths.some((p) => p.endsWith("briefing/product-briefing.md"))).toBe(true);
+    expect(paths.some((p) => p.endsWith("decision-roadmap/decision-roadmap.md"))).toBe(true);
     expect(paths.some((p) => p.endsWith("evidence/evidence-register.md"))).toBe(true);
     expect(paths.some((p) => p.endsWith("prototype/prototype.html"))).toBe(true);
     expect(paths.some((p) => p.endsWith("project-manifest.json"))).toBe(true);
