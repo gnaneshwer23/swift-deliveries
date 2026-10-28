@@ -9,6 +9,7 @@ import {
   FlaskConical,
   FolderKanban,
   Inbox,
+  LayoutGrid,
   Menu,
   ShieldCheck,
   UsersRound,
@@ -22,6 +23,7 @@ import "@/styles/psi-workspace.css";
 
 const NAV = [
   { to: "/command", label: "Studio", icon: Compass },
+  { to: "/command/portfolio", label: "Portfolio", icon: LayoutGrid },
   {
     to: "/command/capabilities",
     hash: "agents-office",
@@ -40,6 +42,7 @@ export function CommandShell({
   usage,
   networkMode = false,
   hideHeading = false,
+  foyerMode = false,
 }: {
   title: string;
   networkMode?: boolean;
@@ -50,6 +53,8 @@ export function CommandShell({
     | undefined;
   /** Overview foyer owns the first-viewport composition — skip duplicate page H1. */
   hideHeading?: boolean;
+  /** Calm Studio foyer — soften chrome that reads like an ops dashboard. */
+  foyerMode?: boolean;
 }) {
   const { pathname, hash: locationHash } = useRouterState({
     select: (s) => ({ pathname: s.location.pathname, hash: s.location.hash }),
@@ -77,7 +82,7 @@ export function CommandShell({
     <div
       className={`dxa cc-shell psi-workspace${networkMode ? " ps-network-shell" : ""}${
         hideHeading ? " ps-shell-foyer" : ""
-      }`}
+      }${foyerMode ? " ps-shell-foyer-calm" : ""}`}
       onKeyDown={(event) => {
         if (event.key === "Escape") setOpen(false);
       }}
@@ -117,11 +122,13 @@ export function CommandShell({
                 ? pathname === "/command" ||
                   pathname.startsWith("/command/supervised") ||
                   pathname.startsWith("/command/missions")
-                : label === "Agents office"
-                  ? onCapabilities && hashIsOffice
-                  : label === "Specialists"
-                    ? onCapabilities && !hashIsOffice
-                    : pathname.startsWith(to);
+                : label === "Portfolio"
+                  ? pathname.startsWith("/command/portfolio")
+                  : label === "Agents office"
+                    ? onCapabilities && hashIsOffice
+                    : label === "Specialists"
+                      ? onCapabilities && !hashIsOffice
+                      : pathname.startsWith(to);
             return (
               <Link
                 key={hash ? `${to}#${hash}` : `${to}-${label}`}
@@ -200,9 +207,11 @@ export function CommandShell({
       <main className="ps-main" inert={open}>
         <div className="ps-topbar">
           {breadcrumb}
-          <Link to="/command" hash="supervised-brief" className="ps-new-mission">
-            + New case
-          </Link>
+          {foyerMode && pathname === "/command" ? null : (
+            <Link to="/command" hash="supervised-brief" className="ps-new-mission">
+              + New case
+            </Link>
+          )}
         </div>
         {!hideHeading ? (
           <header className="ps-page-heading">

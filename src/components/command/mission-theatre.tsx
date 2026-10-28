@@ -10,11 +10,7 @@ import {
   type FocalArtefact,
 } from "@/lib/pilot-mission/build-beats";
 import { commerceSnapshot } from "@/lib/pilot-mission/commerce";
-import {
-  buildPmBrief,
-  STAFFING_BAND_LABELS,
-  type PmBrief,
-} from "@/lib/pilot-mission/pm-brief";
+import { buildPmBrief, STAFFING_BAND_LABELS, type PmBrief } from "@/lib/pilot-mission/pm-brief";
 import {
   actState,
   honestyBadges,
@@ -106,15 +102,18 @@ export function MissionTheatre({
         {active === "roadmap" ? <ActRoadmap brief={brief} /> : null}
         {active === "cast" ? <ActCast mission={mission} brief={brief} /> : null}
         {active === "approve" ? (
-          <ActApprove
+          <ActApprove mission={mission} brief={brief} badges={badges} actions={actions} />
+        ) : null}
+        {active === "work" ? (
+          <ActWork
             mission={mission}
+            missionId={missionId}
             brief={brief}
             badges={badges}
             actions={actions}
+            onDone={onDone}
+            onError={onError}
           />
-        ) : null}
-        {active === "work" ? (
-          <ActWork mission={mission} brief={brief} badges={badges} actions={actions} />
         ) : null}
       </div>
 
@@ -224,13 +223,7 @@ function ActRoadmap({ brief }: { brief: PmBrief }) {
   );
 }
 
-function ActCast({
-  mission,
-  brief,
-}: {
-  mission: SupervisedMission;
-  brief: PmBrief;
-}) {
+function ActCast({ mission, brief }: { mission: SupervisedMission; brief: PmBrief }) {
   const staffing = brief.team.staffing;
   const cast = castForMission(mission);
   const sequence = buildSequence(mission);
@@ -243,7 +236,11 @@ function ActCast({
       <h2 className="ps-theatre-title">Who delivers what</h2>
       <p className="ps-theatre-lede">
         {brief.team.initiatingAgent} initiating · {staffing.activeSpecialists} on this plan
-        {currentBeat ? ` · now: ${currentBeat.label}` : sequence.planApproved ? " · build complete through Pack" : ""}
+        {currentBeat
+          ? ` · now: ${currentBeat.label}`
+          : sequence.planApproved
+            ? " · build complete through Pack"
+            : ""}
       </p>
       <ul className="ps-cast-board">
         {cast.map((s) => (
@@ -265,7 +262,8 @@ function ActCast({
         <p>
           {STAFFING_BAND_LABELS[staffing.band]} · catalogue {staffing.catalogueSelected}/
           {staffing.catalogueCeiling} ({staffing.catalogueAvailable} Available ·{" "}
-          {staffing.cataloguePlanned} Planned). Simple cases stay small — never fake-enables all 150.
+          {staffing.cataloguePlanned} Planned). Simple cases stay small — never fake-enables all
+          150.
         </p>
         <Link to="/command/capabilities" className="cc-btn cc-btn-secondary inline-flex">
           Open cast on Specialists →
@@ -445,8 +443,7 @@ function FocalGate({
   const consentNeeded =
     (next.id === "compare" || next.id === "retry" || next.id === "recover") &&
     actions.modelConfigured;
-  const leaseBlocksRecover =
-    next.id === "recover" && Date.parse(leaseUntil ?? "") > Date.now();
+  const leaseBlocksRecover = next.id === "recover" && Date.parse(leaseUntil ?? "") > Date.now();
 
   return (
     <div className="ps-theatre-gate" id="mission-next-action">
@@ -515,14 +512,20 @@ function FocalGate({
 
 function ActWork({
   mission,
+  missionId,
   brief,
   badges,
   actions,
+  onDone,
+  onError,
 }: {
   mission: SupervisedMission;
+  missionId: string;
   brief: PmBrief;
   badges: Array<{ id: string; label: string }>;
   actions: MissionTheatreActions;
+  onDone: () => Promise<void>;
+  onError: (error: unknown) => void;
 }) {
   const sequence = buildSequence(mission);
   const [viewBeatId, setViewBeatId] = useState<BuildBeatView["id"] | null>(null);
@@ -532,38 +535,32 @@ function ActWork({
   const focal =
     selected?.artefact ?? sequence.beats.find((b) => b.id === sequence.currentId)?.artefact;
   const nowBeat = selected ?? current;
-  const showGate =
-    !viewBeatId || viewBeatId === sequence.currentId || sequence.currentId === null;
+  const showGate = !viewBeatId || viewBeatId === sequence.currentId || sequence.currentId === null;
 
   return (
     <section className="ps-act ps-act-work" aria-label="Product build stage">
-      <div className="ps-act-now">
-        <p className="ps-foyer-brand">DeliverX Studio</p>
-        <p className="cc-kicker">
-          {nowBeat ? `Now · ${nowBeat.label}` : "Product build"}
-          {nowBeat?.owner.actor === "human" ? " · your gate" : ""}
-        </p>
-        <h2 className="ps-theatre-title">
-          {nowBeat
-            ? `${nowBeat.owner.label} · ${nowBeat.label}`
-            : actions.next.title}
-        </h2>
-        <p className="ps-theatre-lede">
-          {nowBeat?.detail ?? actions.next.detail}
-        </p>
-        <HonestyBadgeRow badges={badges} />
-      </div>
-
       {sequence.planApproved ? (
         <>
-          <IntelligenceCanvasPanel
-            mission={mission}
-            missionId={missionId}
-            recordVersion={mission.version}
-            onDone={onDone}
-            onError={onError}
-          />
-          <PmBriefingPanel mission={mission} />
+          <div className="ps-act-investigation-primary">
+            <IntelligenceCanvasPanel
+              mission={mission}
+              missionId={missionId}
+              recordVersion={mission.version}
+              onDone={onDone}
+              onError={onError}
+            />
+            <PmBriefingPanel mission={mission} />
+          </div>
+
+          <div className="ps-act-now ps-act-now-compact">
+            <p className="cc-kicker">
+              {nowBeat ? `Now · ${nowBeat.label}` : "Product build"}
+              {nowBeat?.owner.actor === "human" ? " · your gate" : ""}
+            </p>
+            <p className="ps-theatre-lede ps-act-now-line">
+              {nowBeat?.detail ?? actions.next.detail}
+            </p>
+          </div>
 
           <BuildBeatRail
             beats={sequence.beats}

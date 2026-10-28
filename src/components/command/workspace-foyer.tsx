@@ -8,8 +8,8 @@ import { StudioReadiness } from "@/components/command/studio-readiness";
 import { ConversationPanel } from "@/components/command/conversation-panel";
 
 /**
- * Studio foyer (Direction B): one composition — continue the freshest case, or brief a new one.
- * Cast, Agents office, and ops tools live elsewhere (Specialists / under the fold).
+ * Studio foyer: one calm first viewport — brand, continue or one-liner intake.
+ * Cast, Agents office, and ops tools stay under the fold.
  */
 export function WorkspaceFoyer() {
   const home = useQuery({
@@ -24,7 +24,7 @@ export function WorkspaceFoyer() {
   const others = attention.slice(1);
 
   return (
-    <div className="ps-foyer">
+    <div className="ps-foyer ps-foyer-first-viewport">
       {home.isPending ? (
         <p className="ps-foyer-loading" role="status">
           Opening the stage…
@@ -33,7 +33,9 @@ export function WorkspaceFoyer() {
         <div role="alert" className="ps-foyer-stage">
           <p className="ps-foyer-brand">DeliverX Studio</p>
           <h2 className="ps-foyer-headline">Saved work could not load</h2>
-          <p className="ps-foyer-lede">{home.data?.reason || "Check your connection and try again."}</p>
+          <p className="ps-foyer-lede">
+            {home.data?.reason || "Check your connection and try again."}
+          </p>
           <div className="ps-foyer-cta">
             <button
               type="button"
@@ -92,13 +94,12 @@ export function WorkspaceFoyer() {
           ) : null}
         </section>
       ) : (
-        <section className="ps-foyer-stage ps-foyer-stage-brief" aria-label="Start">
+        <section className="ps-foyer-stage ps-foyer-stage-open" aria-label="Start">
           <p className="ps-foyer-brand">DeliverX Studio</p>
-          <p className="ps-foyer-act">Act I · Brief</p>
-          <h2 className="ps-foyer-headline">One product question. Agents build from there.</h2>
+          <h2 className="ps-foyer-headline">Describe one product question.</h2>
           <p className="ps-foyer-lede">
-            A PM briefs the plan, cast, cost and time. You approve. Specialists research and produce
-            artefacts — nothing external without your yes.
+            A PM briefs the plan; you approve. Specialists research and produce artefacts — nothing
+            external without your yes.
           </p>
         </section>
       )}
@@ -116,21 +117,13 @@ export function WorkspaceFoyer() {
           </Link>
           <span aria-hidden="true">·</span>
           <Link to="/command/capabilities">Specialists</Link>
-          <span aria-hidden="true">·</span>
-          <Link to="/command/projects">Projects</Link>
         </p>
         <details>
-          <summary>How work is produced</summary>
+          <summary>How work is produced &amp; optional voice</summary>
           <StudioReadiness />
-          <p className="cc-muted text-xs mt-2 mb-0">
+          <p className="cc-muted text-xs mt-2 mb-3">
             Artefacts disclose Simulated draft or the model id. Search and voice stay off when keys
             are missing — never invented.
-          </p>
-        </details>
-        <details id="studio-talk">
-          <summary>Talk to DeliverX (typed + voice)</summary>
-          <p className="cc-muted text-sm mt-2 mb-3">
-            Same spine as the one-liner. Nothing is approved by voice alone.
           </p>
           <ConversationPanel />
         </details>

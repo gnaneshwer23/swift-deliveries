@@ -155,7 +155,21 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
           <h3 className="ps-brief-heading">One statement is enough</h3>
         </>
       )}
-      {home.data ? (
+      {home.data && isHero ? (
+        <details className="ps-intake-advanced">
+          <summary>Plan allowance &amp; research providers</summary>
+          <p className="ps-brief-status mt-2" role="status">
+            {home.data.researchProvider?.configured
+              ? home.data.researchProvider.label
+              : home.data.providerLabel}
+            {home.data.ready && home.data.investigationAllowance
+              ? ` · ${home.data.investigationAllowance.remaining} Investigation${
+                  home.data.investigationAllowance.remaining === 1 ? "" : "s"
+                } left on plan`
+              : ""}
+          </p>
+        </details>
+      ) : home.data ? (
         <p className="ps-brief-status" role="status">
           {home.data.researchProvider?.configured
             ? home.data.researchProvider.label
@@ -183,7 +197,9 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
       ) : null}
       {prepared && (
         <div className="intake-prepared-note">
-          <p>A prepared brief is available in this browser. Use it as the one-liner, or edit below.</p>
+          <p>
+            A prepared brief is available in this browser. Use it as the one-liner, or edit below.
+          </p>
           <button
             type="button"
             className="cc-btn cc-btn-ghost"
@@ -301,7 +317,7 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
         </details>
 
         {commitment ? (
-          <details className="ps-commitment" open={question.trim().length >= 8}>
+          <details className="ps-commitment">
             <summary>Before you start — commitment</summary>
             <p className="text-sm mt-2">{commitment.interpretation}</p>
             <h4 className="text-xs font-medium mt-3 mb-1">Scope</h4>
@@ -329,7 +345,11 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
           </details>
         ) : null}
         {similar.length > 0 ? (
-          <div className="ps-similar-ideas" role="region" aria-label="Similar cases in this workspace">
+          <div
+            className="ps-similar-ideas"
+            role="region"
+            aria-label="Similar cases in this workspace"
+          >
             <p className="cc-muted text-xs mb-2">
               Similar cases already in this workspace (suggestion only — nothing is merged):
             </p>

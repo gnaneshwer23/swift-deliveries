@@ -3281,37 +3281,15 @@
 
 /* PT-1 Intelligence Canvas + PM briefing */
 .ps-intel-canvas {
-  margin: 16px 0 20px;
-  padding: 16px 0;
-  border-top: 1px solid var(--psi-border, #dfe5f2);
-}
-.ps-intel-canvas-title {
-  font-family: var(--motion-display, "Albert Sans", Inter, sans-serif);
-  font-size: 1.05rem;
-  font-weight: 650;
-  margin: 0 0 6px;
-}
-.ps-intel-canvas-status {
   margin: 0 0 4px;
-  font-size: 0.95rem;
-}
-.ps-intel-nodes {
-  list-style: none;
-  margin: 14px 0 10px;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-.ps-intel-nodes li {
-  border-left: 3px solid #dfe5f2;
-  padding: 8px 10px;
-  background: color-mix(in srgb, var(--psi-surface, #fff) 92
-/* PT-1 Intelligence Canvas + PM briefing */
-.ps-intel-canvas {
-  margin: 16px 0 20px;
-  padding: 16px 0;
-  border-top: 1px solid var(--psi-border, #dfe5f2);
+  padding: 20px 18px;
+  border: 1px solid color-mix(in srgb, var(--psi-border, #dfe5f2) 85%, var(--psi-indigo) 8%);
+  border-radius: 16px;
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--psi-lavender, #f2effb) 55%, #fff) 0%,
+    var(--psi-surface, #fff) 48%
+  );
 }
 .ps-intel-canvas-title {
   font-family: var(--motion-display, "Albert Sans", Inter, sans-serif);
@@ -3363,10 +3341,69 @@
   gap: 2px;
 }
 .ps-intel-controls { margin: 0; }
+.ps-act-investigation-primary {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.ps-act-investigation-primary .ps-pm-briefing {
+  margin-top: 0;
+  border-top: 0;
+  padding-top: 8px;
+}
+.ps-act-now-compact {
+  margin: 12px 0 6px;
+  padding-top: 12px;
+  border-top: 1px solid var(--psi-border, #dfe5f2);
+}
+.ps-act-now-compact .ps-act-now-line {
+  margin-bottom: 0;
+  font-size: 0.95rem;
+  color: var(--psi-muted);
+}
+.ps-act-work {
+  max-width: 52rem;
+}
+.ps-project-room-overview {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--psi-muted);
+}
+.ps-project-room-overview > summary {
+  cursor: pointer;
+  list-style: none;
+  margin-bottom: 8px;
+}
+.ps-project-room-overview > summary::-webkit-details-marker {
+  display: none;
+}
+.ps-project-room-overview-panel {
+  margin-top: 8px;
+}
 .ps-pm-briefing {
   margin: 8px 0 20px;
   padding: 16px 0;
   border-top: 1px solid var(--psi-border, #dfe5f2);
+}
+.ps-shell-foyer-calm .ps-topbar {
+  border-bottom-color: transparent;
+}
+.ps-shell-foyer-calm .ps-sidebar .ps-nav-link:not(.is-active) {
+  opacity: 0.82;
+}
+.ps-foyer-first-viewport {
+  min-height: min(72vh, 640px);
+  align-content: start;
+}
+.ps-foyer-stage-open {
+  padding-bottom: 0;
+}
+.ps-foyer-below-fold {
+  margin-top: 48px;
+}
+.ps-foyer-footnotes {
+  margin-top: auto;
+  padding-top: 28px;
 }
 .ps-pm-briefing-title {
   font-family: var(--motion-display, "Albert Sans", Inter, sans-serif);
