@@ -38,7 +38,7 @@ The production Neon branch is `br-fancy-breeze-zatt9ocp` in project `spring-wind
 | 0030 conversations (`wf_conversations`, `wf_conversation_turns`)   | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0031 voice measurements (`wf_voice_metrics`)                       | Not applied — needs owner approval          | Applied 27 Oct 2026                  |
 | 0032 PSI Stripe activations (`payment_taken`, Stripe ids)          | Applied **28 Oct 2026** with owner approval (`Approve apply 0032 to production Neon br-fancy-breeze-zatt9ocp`); file blob `8f5178636508c0e06df99ec32a7ee70e546b301b` (commit `c7d4bb138f5e98834458d8e204d89210c7a0b236`) | Not applied — needs owner approval   |
-| 0033 reconciliation FK `ON DELETE CASCADE`                         | Not applied — needs owner approval          | Not applied                          |
+| 0033 reconciliation FK `ON DELETE CASCADE`                         | Applied **28 Oct 2026** with owner approval (`ok from me`); file blob `91cab77bb93e85ed5491018c6c398e73a899eeb9` (commit `1caac36a490d5af96b09914f299373f180fc801a`) | Not applied                          |
 
 Migrations 0020–0023 were applied to production in a single transaction. The six `psi_*` tables are owned by the server role, have no client grants, and have row-level security enabled. No table rows were read during or after the change.
 
@@ -310,5 +310,7 @@ Allows `payment_taken = true` on `psi_pilot_activations`, makes `request_id` nul
 ## 0033 reconciliation FK cascade
 
 Replaces the default `NO ACTION` foreign key from `psi_comparison_reconciliations` to `psi_comparison_reservations` with `ON DELETE CASCADE`, so deleting a reservation or mission does not leave undeletable reconciliation orphans.
+
+**Production apply (28 Oct 2026).** Owner approved with `ok from me` for production Neon `br-fancy-breeze-zatt9ocp` (project `spring-wind-48457918`). Applied via `DATABASE_URL_UNPOOLED` from local `.env.local` after confirming `neon.branch_id = br-fancy-breeze-zatt9ocp`. Catalog-only preflight: FK existed without `ON DELETE CASCADE`. Post-apply verify: `confdeltype = c` (`CASCADE`), constraint def includes `ON DELETE CASCADE`. No table rows were read. Preview branch was not updated.
 
 **Rollback.** With owner approval after a Neon snapshot, drop and re-add the foreign key without `ON DELETE CASCADE` only if no automated cascade deletes have been relied on in production.
