@@ -42,8 +42,13 @@ async function tick(request: Request): Promise<Response> {
   // their own: a purge failure never stops the worker, nor a worker failure the purge.
   const conversationsDeleted = await purgeConversations();
   const result = await runWorkerTick({ deadline: Date.now() + BUDGET_MS });
+  const { drainQueuedResearchPasses } =
+    await import("@/lib/pilot-mission/research-pass-worker.server");
+  const researchPass = await drainQueuedResearchPasses({
+    deadlineMs: Date.now() + BUDGET_MS,
+  });
   return Response.json(
-    { ...result, conversationsDeleted },
+    { ...result, conversationsDeleted, researchPass },
     { headers: { "cache-control": "no-store" } },
   );
 }

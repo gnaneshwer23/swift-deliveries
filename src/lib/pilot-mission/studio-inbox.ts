@@ -6,7 +6,7 @@ import { countUnresolvedQuestions } from "./mission-inspection";
 import type { SupervisedMission } from "./types";
 import { nextRequiredAction } from "./types";
 
-export type StudioInboxKind = "gate" | "paused" | "open_questions";
+export type StudioInboxKind = "gate" | "paused" | "open_questions" | "research_queued";
 
 export type StudioInboxItem = {
   /** Stable dedupe key — one row per mission in the foyer inbox. */
@@ -29,6 +29,7 @@ export type StudioInboxMissionRow = {
   updatedAt: string;
   investigationPaused?: boolean;
   openQuestionCount?: number;
+  researchPassQueued?: boolean;
 };
 
 const SKIP_NEXT = new Set(["cancelled", "follow_up_approved"]);
@@ -42,6 +43,7 @@ function inboxKinds(row: StudioInboxMissionRow): StudioInboxKind[] {
   }
   if (row.investigationPaused) kinds.push("paused");
   if ((row.openQuestionCount ?? 0) > 0) kinds.push("open_questions");
+  if (row.researchPassQueued) kinds.push("research_queued");
   return kinds;
 }
 
@@ -55,6 +57,11 @@ function buildDetail(row: StudioInboxMissionRow, kinds: StudioInboxKind[]): stri
     const n = row.openQuestionCount ?? 0;
     parts.push(
       `${n} open question${n === 1 ? "" : "s"} on team handoffs (Inspect → team activity).`,
+    );
+  }
+  if (kinds.includes("research_queued")) {
+    parts.push(
+      "Research pass is queued — it finishes on reload or the worker tick, not only while a tab stays open.",
     );
   }
   return parts.join(" ");
@@ -115,10 +122,12 @@ export function buildStudioInbox(rows: readonly StudioInboxMissionRow[]): Studio
 export function studioInboxFields(mission: SupervisedMission): {
   investigationPaused: boolean;
   openQuestionCount: number;
+  researchPassQueued: boolean;
 } {
   return {
     investigationPaused: Boolean(mission.studioMeta?.investigationPaused),
     openQuestionCount: countUnresolvedQuestions(mission),
+    researchPassQueued: Boolean(mission.researchPassQueuedAt && !mission.researchPassCompletedAt),
   };
 }
 

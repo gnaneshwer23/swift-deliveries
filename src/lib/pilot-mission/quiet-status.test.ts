@@ -44,6 +44,7 @@ function base(overrides: Partial<SupervisedMission> = {}): SupervisedMission {
     researchMode: "combined",
     researchGaps: [],
     researchPassCompletedAt: null,
+    researchPassQueuedAt: null,
     researchProvider: null,
     team: { tasks: [], approvedAt: null, approvedBy: null },
     activity: [],

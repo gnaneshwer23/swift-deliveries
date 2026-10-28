@@ -73,6 +73,6 @@ export function buildInvestigationCommitment(input: {
     limits,
     allowanceLine,
     attachmentsNote:
-      "File attachments are not supported on this intake yet. Paste key quotes into Evidence after the case starts.",
+      "File uploads and OCR are not supported. Optionally paste text excerpts below at intake, or add supplied evidence on the case after it starts.",
   };
 }

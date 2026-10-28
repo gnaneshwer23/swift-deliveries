@@ -44,6 +44,7 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
   const [audience, setAudience] = useState(RESEARCH_REFINE_AUDIENCE);
   const [outcome, setOutcome] = useState(DEFAULT_MISSION_OUTCOME);
   const [constraints, setConstraints] = useState(RESEARCH_FIRST_CONSTRAINT);
+  const [intakeEvidenceNote, setIntakeEvidenceNote] = useState("");
   const [researchMode, setResearchMode] = useState<ResearchMode>("combined");
   const [error, setError] = useState<string | null>(null);
   const [speakReplies, setSpeakReplies] = useState(false);
@@ -69,6 +70,7 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
     setAudience(restored.audience || RESEARCH_REFINE_AUDIENCE);
     setOutcome(restored.outcome || DEFAULT_MISSION_OUTCOME);
     setConstraints(restored.constraints || RESEARCH_FIRST_CONSTRAINT);
+    setIntakeEvidenceNote(restored.intakeEvidenceNote ?? "");
     hydratedUser.current = userId;
     setDraftReady(true);
   }, [userId, profile.isLoading, profile.data]);
@@ -77,12 +79,12 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
     try {
       sessionStorage.setItem(
         draftKey,
-        JSON.stringify({ question, audience, outcome, constraints }),
+        JSON.stringify({ question, audience, outcome, constraints, intakeEvidenceNote }),
       );
     } catch {
       setStorageWarning(true);
     }
-  }, [draftReady, draftKey, question, audience, outcome, constraints]);
+  }, [draftReady, draftKey, question, audience, outcome, constraints, intakeEvidenceNote]);
 
   const start = useMutation({
     mutationFn: () =>
@@ -93,6 +95,7 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
           outcome: outcome.trim(),
           constraints: constraints.trim(),
           researchMode,
+          intakeEvidenceNote: intakeEvidenceNote.trim() || null,
         },
       }),
     onSuccess: async (result) => {
@@ -309,6 +312,18 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
                 ? ` ${home.data.researchProvider.detail}`
                 : " Without a search provider key, web results are not invented — gaps are marked on the record."}
             </p>
+            <label className="cc-label" htmlFor="supervised-intake-evidence">
+              Optional evidence paste (text only)
+            </label>
+            <textarea
+              id="supervised-intake-evidence"
+              className="cc-input cc-textarea"
+              rows={3}
+              maxLength={2000}
+              placeholder="Paste quotes, call notes, or survey excerpts — no file upload or OCR."
+              value={intakeEvidenceNote}
+              onChange={(event) => setIntakeEvidenceNote(event.target.value)}
+            />
           </div>
         </details>
 

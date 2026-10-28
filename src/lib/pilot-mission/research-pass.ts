@@ -1,3 +1,6 @@
+/** Job idempotency key while a queued research pass holds a lease. */
+export const RESEARCH_PASS_JOB_KEY = "research-pass";
+
 /**
  * Post-approval research pass for the supervised decision loop.
  * Writes findings or honest external gaps into the evidence register.

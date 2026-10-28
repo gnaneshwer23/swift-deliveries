@@ -44,6 +44,7 @@ function baseMission(overrides: Partial<SupervisedMission> = {}): SupervisedMiss
     researchMode: "combined",
     researchGaps: ["Web search not configured"],
     researchPassCompletedAt: null,
+    researchPassQueuedAt: null,
     researchProvider: null,
     team,
     continuationPlan: null,
@@ -248,6 +249,7 @@ describe("castForMission (P2)", () => {
         stage: "evidence",
         team,
         researchPassCompletedAt: null,
+    researchPassQueuedAt: null,
       }),
     );
     expect(cast.some((c) => c.actor === "specialist")).toBe(true);
