@@ -12,7 +12,16 @@ export const Route = createFileRoute("/_authenticated")({
     const redirectTarget = safeProductRedirect(location.href);
     if (!user) throw redirect({ to: "/login", search: { redirect: redirectTarget } });
     // Personalised setup happens once, before anything else.
-    const profile = await context.queryClient.ensureQueryData(myProfileQuery);
+    let profile;
+    try {
+      profile = await context.queryClient.ensureQueryData(myProfileQuery);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (/unauthorized|sign in|auth/i.test(message)) {
+        throw redirect({ to: "/login", search: { redirect: redirectTarget } });
+      }
+      throw error;
+    }
     if (!profile && location.pathname !== "/onboarding") {
       throw redirect({ to: "/onboarding", search: { redirect: redirectTarget }, replace: true });
     }

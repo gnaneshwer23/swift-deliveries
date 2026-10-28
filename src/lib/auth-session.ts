@@ -2,7 +2,8 @@ import { auth, type AppUser } from "@/lib/auth/client";
 
 /**
  * Resolves the signed-in user, retrying briefly so that a session created by
- * an OAuth or email-link redirect has time to land.
+ * an OAuth or email-link redirect has time to land. Server functions need a
+ * readable JWT (`auth.getToken()`), not just a session cookie.
  */
 export async function waitForSession(timeoutMs?: number): Promise<AppUser | null> {
   const explicit = timeoutMs !== undefined;
@@ -11,11 +12,18 @@ export async function waitForSession(timeoutMs?: number): Promise<AppUser | null
   const fromRedirect =
     typeof window !== "undefined" && /[?&](code|token|state)=/.test(window.location.search);
   // Signed-out visitors hitting a protected page should redirect immediately.
-  // Sign-in, sign-up and the auth callback pass an explicit budget and must poll.
-  const deadline = explicit || fromRedirect ? budget : 0;
+  const signedOutBudget = explicit || fromRedirect ? budget : 0;
+  // When a session exists, allow a short window for the JWT to hydrate.
+  const tokenBudget = explicit || fromRedirect ? budget : 2000;
+
   for (;;) {
     const user = await auth.getUser();
-    if (user || Date.now() - started >= deadline) return user;
+    if (user) {
+      if (await auth.getToken()) return user;
+      if (Date.now() - started >= tokenBudget) return null;
+    } else if (Date.now() - started >= signedOutBudget) {
+      return null;
+    }
     await new Promise((r) => setTimeout(r, 200));
   }
 }
