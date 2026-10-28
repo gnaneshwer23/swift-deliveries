@@ -309,16 +309,13 @@ function CommandHome() {
     >
       <WorkspaceFoyer />
 
-      <details className="ps-legacy mt-6">
-        <summary>Studio tools under the fold (inbox, stop) — not the foyer</summary>
+      <details className="ps-legacy ps-foyer-advanced mt-10">
+        <summary>Advanced · inbox, stop, specialist planner</summary>
         <div className="mt-3 grid gap-3">
           <OwnerInbox />
           <WorkspaceStopControl workspace={data.workspace} />
         </div>
-      </details>
-
-      <details className="ps-legacy mt-4">
-        <summary>Advanced tools · specialist planner & mission ledger (not the foyer)</summary>
+        <div className="mt-6">
         {/* Unified Mission Composer Card */}
         <section
           id="mission-composer"
@@ -589,6 +586,7 @@ function CommandHome() {
             </ul>
           )}
         </section>
+        </div>
       </details>
     </CommandShell>
   );

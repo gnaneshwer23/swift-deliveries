@@ -122,28 +122,21 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
     >
       {isHero ? (
         <>
-          <p className="cc-kicker">Business case</p>
-          <h3 className="cc-panel-title">Give a one-liner</h3>
-          <p className="cc-muted">
-            A PM restates the problem, plan, rough cost, time and team — then researches before
-            asking for more. You approve gates; you are not interviewed for every field.
-          </p>
+          <label className="ps-brief-prompt" htmlFor="supervised-question">
+            Your one-liner
+          </label>
         </>
       ) : (
         <>
-          <p className="cc-kicker">Or start fresh</p>
-          <h3 className="cc-panel-title mb-1">Brief a new case</h3>
-          <p className="cc-muted text-sm">
-            One statement is enough. The plan waits for your approval before work runs.
-          </p>
+          <p className="ps-foyer-act">New case</p>
+          <h3 className="ps-brief-heading">One statement is enough</h3>
         </>
       )}
       {home.data ? (
-        <p className="ps-brief-status cc-muted text-xs mb-0" role="status">
-          {home.data.providerLabel}
-          {home.data.researchProvider
-            ? ` · ${home.data.researchProvider.label}`
-            : ""}
+        <p className="ps-brief-status" role="status">
+          {home.data.researchProvider?.configured
+            ? `Web research ready · ${home.data.researchProvider.label}`
+            : home.data.providerLabel}
         </p>
       ) : null}
       {home.isError && (
@@ -179,43 +172,46 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
           This browser cannot keep an unsaved draft. Start the case before leaving.
         </p>
       )}
-      <fieldset disabled={!draftReady || start.isPending} className="mt-4 grid gap-3">
-        <label className="cc-label" htmlFor="supervised-question">
-          Business case <span className="cc-muted text-xs">(one statement, 8–2,000 characters)</span>
-        </label>
+      <fieldset disabled={!draftReady || start.isPending} className="ps-brief-fields">
+        {!isHero ? (
+          <label className="cc-label" htmlFor="supervised-question">
+            Business case
+          </label>
+        ) : null}
         <textarea
           id="supervised-question"
-          className="cc-input cc-textarea"
+          className="cc-input cc-textarea ps-brief-textarea"
           maxLength={2000}
-          rows={3}
+          rows={isHero ? 4 : 3}
           placeholder="e.g. Should we charge for onboarding analytics before launch, or keep it free to learn faster?"
           value={question}
           onChange={(event) => setQuestion(event.target.value)}
           disabled={voiceBusy}
         />
 
-        <div className="ps-voice-one-liner" aria-label="Voice one-liner">
-          <p className="cc-muted text-xs mb-2">
-            Voice uses the same spine as typing — spoken words become this one-liner. Nothing is
-            approved by voice; you still click Brief the PM. If tokens are missing, the panel says
-            so and typing still works.
-          </p>
-          <VoiceControls
-            disabled={!draftReady || start.isPending}
-            speakReplies={speakReplies}
-            onSpeakRepliesChange={setSpeakReplies}
-            onBusyChange={setVoiceBusy}
-            onTranscript={(text) => {
-              const line = text.trim();
-              if (!line) return;
-              // Same spine as typing: spoken words become the one-liner; Brief the PM still requires a click.
-              setQuestion((current) => (current.trim() ? `${current.trim()} ${line}` : line));
-            }}
-          />
-        </div>
+        <details className="ps-intake-advanced">
+          <summary>Voice instead of typing</summary>
+          <div className="ps-voice-one-liner mt-3" aria-label="Voice one-liner">
+            <p className="cc-muted text-xs mb-2">
+              Spoken words fill the one-liner. You still click Brief the PM — nothing is approved by
+              voice alone.
+            </p>
+            <VoiceControls
+              disabled={!draftReady || start.isPending}
+              speakReplies={speakReplies}
+              onSpeakRepliesChange={setSpeakReplies}
+              onBusyChange={setVoiceBusy}
+              onTranscript={(text) => {
+                const line = text.trim();
+                if (!line) return;
+                setQuestion((current) => (current.trim() ? `${current.trim()} ${line}` : line));
+              }}
+            />
+          </div>
+        </details>
 
         <details className="ps-intake-advanced">
-          <summary>Optional details (defaults are research-first)</summary>
+          <summary>Optional details (research-first defaults)</summary>
           <div className="mt-3 grid gap-3">
             <label className="cc-label" htmlFor="supervised-audience">
               Audience override

@@ -26,28 +26,36 @@ export function WorkspaceFoyer() {
   return (
     <div className="ps-foyer">
       {home.isPending ? (
-        <p className="cc-muted" role="status">
-          Loading saved work…
+        <p className="ps-foyer-loading" role="status">
+          Opening the stage…
         </p>
       ) : home.isError || (home.data && !home.data.ready) ? (
-        <div role="alert" className="cc-panel">
-          <p>{home.data?.reason || "Saved work could not load."}</p>
-          <button
-            type="button"
-            className="cc-btn cc-btn-secondary mt-3"
-            disabled={home.isFetching}
-            onClick={() => void home.refetch()}
-          >
-            {home.isFetching ? "Retrying…" : "Retry"}
-          </button>
+        <div role="alert" className="ps-foyer-stage">
+          <p className="ps-foyer-brand">DeliverX Studio</p>
+          <h2 className="ps-foyer-headline">Saved work could not load</h2>
+          <p className="ps-foyer-lede">{home.data?.reason || "Check your connection and try again."}</p>
+          <div className="ps-foyer-cta">
+            <button
+              type="button"
+              className="cc-btn cc-btn-primary"
+              disabled={home.isFetching}
+              onClick={() => void home.refetch()}
+            >
+              {home.isFetching ? "Retrying…" : "Retry"}
+            </button>
+          </div>
         </div>
       ) : hero ? (
         <section className="ps-foyer-stage" aria-label="Continue">
           <p className="ps-foyer-brand">DeliverX Studio</p>
-          <p className="cc-kicker">Continue</p>
+          <p className="ps-foyer-act">On stage · needs you</p>
           <h2 className="ps-foyer-headline">{hero.question}</h2>
           <p className="ps-foyer-lede">
-            {attentionLabel(hero.next.id)} · {hero.nextTitle}
+            <span className="ps-foyer-gate">{attentionLabel(hero.next.id)}</span>
+            <span className="ps-foyer-gate-sep" aria-hidden="true">
+              —
+            </span>
+            {hero.nextTitle}
           </p>
           <div className="ps-foyer-cta">
             <Link
@@ -55,17 +63,17 @@ export function WorkspaceFoyer() {
               params={{ missionId: hero.id }}
               className="cc-btn cc-btn-primary"
             >
-              Continue
+              Open the briefing
               <ArrowUpRight className="inline size-4" aria-hidden="true" />
             </Link>
             <a href="#supervised-brief" className="cc-btn cc-btn-secondary">
-              Brief a new case
+              Start another case
             </a>
           </div>
           {others.length > 0 ? (
             <details className="ps-foyer-more">
               <summary>
-                {others.length} other {others.length === 1 ? "case" : "cases"} needing you
+                {others.length} other {others.length === 1 ? "case" : "cases"} waiting
               </summary>
               <ul className="ps-foyer-quiet-list">
                 {others.map((m) => (
@@ -82,52 +90,52 @@ export function WorkspaceFoyer() {
               </ul>
             </details>
           ) : null}
-          <p className="ps-foyer-side-links">
-            <Link to="/command/capabilities" hash="agents-office">
-              Agents office
-            </Link>
-            <span aria-hidden="true">·</span>
-            <Link to="/command/capabilities">Specialists</Link>
-          </p>
         </section>
       ) : (
         <section className="ps-foyer-stage ps-foyer-stage-brief" aria-label="Start">
           <p className="ps-foyer-brand">DeliverX Studio</p>
-          <p className="cc-kicker">Start</p>
-          <h2 className="ps-foyer-headline">One product question. Specialists take it from here.</h2>
+          <p className="ps-foyer-act">Act I · Brief</p>
+          <h2 className="ps-foyer-headline">One product question. Agents build from there.</h2>
           <p className="ps-foyer-lede">
-            Brief the case, review the plan, approve what moves. Nothing external runs without you.
+            A PM briefs the plan, cast, cost and time. You approve. Specialists research and produce
+            artefacts — nothing external without your yes.
           </p>
         </section>
       )}
 
-      <div className={hero ? "ps-foyer-secondary" : undefined}>
+      <div className={hero ? "ps-foyer-secondary" : "ps-foyer-primary-brief"}>
         <SupervisedMissionStart tone={hero ? "secondary" : "hero"} />
       </div>
 
-      <details className="ps-legacy mt-2" id="studio-talk">
-        <summary>Talk to DeliverX (typed + voice) — same path as the brief</summary>
-        <p className="cc-muted text-sm mt-2 mb-3">
-          Speech becomes a transcript that uses the same cards as typing. Nothing is approved by
-          voice alone — you still click. If voice keys are missing, the controls say so honestly;
-          typing always works.
-        </p>
-        <ConversationPanel />
-      </details>
-
       <footer className="ps-foyer-footnotes">
+        <p className="ps-foyer-side-links">
+          <Link to="/command/capabilities" hash="agents-office">
+            Agents office
+          </Link>
+          <span aria-hidden="true">·</span>
+          <Link to="/command/capabilities">Specialists</Link>
+          <span aria-hidden="true">·</span>
+          <Link to="/command/projects">Projects</Link>
+        </p>
         <details>
-          <summary>How this workspace produces work</summary>
+          <summary>How work is produced</summary>
           <StudioReadiness />
           <p className="cc-muted text-xs mt-2 mb-0">
-            Artefacts disclose Simulated draft or the model id used. Voice and search stay off when
-            keys are missing — they are never invented.
+            Artefacts disclose Simulated draft or the model id. Search and voice stay off when keys
+            are missing — never invented.
           </p>
+        </details>
+        <details id="studio-talk">
+          <summary>Talk to DeliverX (typed + voice)</summary>
+          <p className="cc-muted text-sm mt-2 mb-3">
+            Same spine as the one-liner. Nothing is approved by voice alone.
+          </p>
+          <ConversationPanel />
         </details>
         {missions.length > 1 ? (
           <p className="cc-muted text-xs mb-0">
-            {missions.length} saved investigations
-            {attention.length > 0 ? ` · ${attention.length} need attention` : ""}.
+            {missions.length} saved cases
+            {attention.length > 0 ? ` · ${attention.length} need you` : ""}.
           </p>
         ) : null}
       </footer>
