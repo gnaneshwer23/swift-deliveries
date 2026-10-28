@@ -21,6 +21,7 @@ import {
   theatreState,
   type TheatreAct,
 } from "@/lib/pilot-mission/theatre";
+import { commerceSnapshot } from "@/lib/pilot-mission/commerce";
 import type { SupervisedMission } from "@/lib/pilot-mission/types";
 import { RESEARCH_MODE_LABELS, type ResearchMode } from "@/lib/pilot-mission/research-mode";
 
@@ -629,7 +630,8 @@ function ActWork({
           </p>
         ) : null}
         <p>
-          {brief.roughTime.label} · Usage {mission.usageConsumed}/{mission.usageCeiling} ·{" "}
+          {brief.roughTime.label} · {commerceSnapshot(mission).unitLabel} · Usage{" "}
+          {mission.usageConsumed}/{mission.usageCeiling} ·{" "}
           {STAFFING_BAND_LABELS[brief.team.staffing.band]}
         </p>
         {actions.next.id !== "export" && mission.exportBody ? (

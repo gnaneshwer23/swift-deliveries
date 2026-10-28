@@ -1,9 +1,10 @@
 /**
- * Optional ElevenLabs TTS for “listen” to the same PM-brief text (P-D).
+ * Optional ElevenLabs TTS (kept for experiments). Product Listen uses browser
+ * speech only — cloud TTS is off by product choice (cost).
  * Voice id is configuration, not a secret. API key stays server-side.
  */
 
-/** Founder-selected ElevenLabs voice (28 Oct 2026). */
+/** Legacy founder-selected ElevenLabs voice (28 Oct 2026); unused by product Listen. */
 export const DEFAULT_TTS_VOICE_ID = "Aa6nEBJJMKJwJkCx8VU2";
 
 const TIMEOUT_MS = 45_000;
@@ -19,8 +20,8 @@ export function ttsVoiceId(env: Record<string, string | undefined> = process.env
 }
 
 /**
- * Listen/TTS is off unless DXSI_TTS_ENABLED=true and ELEVENLABS_API_KEY is set.
- * When off, the client may fall back to browser speechSynthesis (same words).
+ * Cloud Listen/TTS stays off unless DXSI_TTS_ENABLED=true and ELEVENLABS_API_KEY
+ * is set. Product UI does not call this path; browser speech is the Listen surface.
  */
 export function ttsConfig(env: Record<string, string | undefined> = process.env): TtsConfig {
   const voiceId = ttsVoiceId(env);

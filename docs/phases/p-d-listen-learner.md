@@ -1,30 +1,21 @@
 # Phase P-D — Listen + learner lens
 
-**Status:** Listen shipped; learner lens shipping (founder: “build next step” 28 Oct 2026; no paid availability)  
+**Status:** Listen + learner lens shipped (founder: browser voice preferred 28 Oct 2026; no paid availability)  
 **Parent case:** `docs/business-case-deliverx-psi-v2.md` §4 / §16 P-D  
-**Voice id (founder):** `Aa6nEBJJMKJwJkCx8VU2` (`DXSI_TTS_VOICE_ID`; also code default)  
 **Paid availability:** Not in scope  
-**Out of scope:** Separate student product, career/CV surfaces, execution blockers disguised as teaching, P-commerce, agent-activity dashboards as “learning”
+**Out of scope:** Separate student product, career/CV surfaces, execution blockers disguised as teaching, agent-activity dashboards as “learning”, cloud TTS spend
 
 ---
 
-## Listen (shipped)
+## Listen (shipped — browser speech)
 
 | Item | Behaviour |
 | --- | --- |
 | Same words | `pmBriefListenScript` matches on-screen PM brief |
-| Provider | ElevenLabs when `DXSI_TTS_ENABLED=true` + `ELEVENLABS_API_KEY` |
-| Fallback | Browser `speechSynthesis` if TTS off or fails |
+| Provider | Browser `speechSynthesis` only (device voice; no cloud charge) |
+| Cloud TTS | Off by product choice — ElevenLabs helpers remain experimental / unused by product Listen |
 | UI | Listen / Stop on briefing + approve acts |
 | Safety | Listen never approves or mutates a mission |
-
-### Still needed from founder (runtime voice)
-
-1. Set Production (and Preview if demos) `ELEVENLABS_API_KEY`  
-2. Set `DXSI_TTS_ENABLED=true` after the key is in place  
-3. Redeploy so runtime picks them up  
-
-`DXSI_TTS_VOICE_ID=Aa6nEBJJMKJwJkCx8VU2` is recorded as the default and set on Vercel as plain config.
 
 ---
 
@@ -82,3 +73,4 @@ Someone can explain: *“Here is what I contributed and how I judged—not how b
 | --- | --- |
 | 28 Oct 2026 | Founder supplied ElevenLabs voice id `Aa6nEBJJMKJwJkCx8VU2`. Listen wired with browser fallback. |
 | 28 Oct 2026 | Learner lens authorised as next step after Listen + verdict fix demo. |
+| 28 Oct 2026 | Founder: prefer browser speech; ElevenLabs too expensive. Product Listen no longer calls cloud TTS. |

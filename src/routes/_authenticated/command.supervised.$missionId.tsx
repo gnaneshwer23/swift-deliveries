@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
 import { ConversationPanel } from "@/components/command/conversation-panel";
 import { CaseRoomPanel } from "@/components/command/case-room-panel";
+import { CommerceDisclosurePanel } from "@/components/command/commerce-disclosure-panel";
 import { LearnerLensPanel } from "@/components/command/learner-lens-panel";
 import { MissionTheatre } from "@/components/command/mission-theatre";
 import { SupervisedLearningLoop } from "@/components/command/supervised-learning-loop";
@@ -555,6 +556,7 @@ function SupervisedMissionPage() {
             }
           />
         )}
+        <CommerceDisclosurePanel mission={mission} />
         <LearnerLensPanel mission={mission} />
         <SupervisedLearningLoop mission={mission} onDone={invalidate} onError={onError} />
       </div>

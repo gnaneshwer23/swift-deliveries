@@ -3,6 +3,7 @@
  * Labels distinguish human, model, and simulated contributions.
  * Linked sources are referenced; they are not bundled.
  */
+import { buildCommerceDisclosureMarkdown } from "./commerce";
 import { buildLearnerLensMarkdown } from "./learner-lens";
 import { RESEARCH_MODE_LABELS, type ResearchMode } from "./research-mode";
 import type { SupervisedMission } from "./types";
@@ -197,6 +198,8 @@ export function buildDecisionPackMarkdown(mission: SupervisedMission): string {
       : "Outcome-review plan: record expectation before treating a later result as a review of this decision.",
     ``,
     buildLearnerLensMarkdown(mission),
+    ``,
+    buildCommerceDisclosureMarkdown(mission),
     ``,
     `## Provenance`,
     mission.artefact?.provenance ?? honesty.note,

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getTtsAvailability, getVoiceAvailability } from "@/lib/conversation.functions";
+import { getVoiceAvailability } from "@/lib/conversation.functions";
 import { getWorkspacePilotActivation } from "@/lib/pilot/psi-checkout.functions";
 import { PILOT_PLAN_LABELS } from "@/lib/pilot/model";
 import { commandCentreBootstrapQuery } from "@/lib/workforce-queries";
@@ -7,17 +7,13 @@ import { commandCentreBootstrapQuery } from "@/lib/workforce-queries";
 /**
  * Honest readiness chips for Studio foyer: model mode + voice + paid plan footnote.
  * Never invents keys; discloses Simulated / not configured clearly.
+ * Listen uses the browser’s own speech — no cloud TTS charge.
  */
 export function StudioReadiness() {
   const boot = useQuery(commandCentreBootstrapQuery);
   const voice = useQuery({
     queryKey: ["command", "voice"],
     queryFn: () => getVoiceAvailability(),
-    staleTime: 5 * 60_000,
-  });
-  const tts = useQuery({
-    queryKey: ["command", "tts"],
-    queryFn: () => getTtsAvailability(),
     staleTime: 5 * 60_000,
   });
   const activation = useQuery({
@@ -64,17 +60,10 @@ export function StudioReadiness() {
       </span>
       <span
         className="ps-research-readiness-chip"
-        data-ready={tts.data?.enabled ? "true" : "false"}
-        title={
-          tts.data?.problem ??
-          (tts.data?.enabled
-            ? `Listen TTS · ElevenLabs voice ${tts.data.voiceId}`
-            : "Listen uses browser speech until DXSI_TTS_ENABLED=true and ELEVENLABS_API_KEY are set")
-        }
+        data-ready="true"
+        title="Listen reads the on-screen PM brief with this device’s speechSynthesis. Cloud TTS is off by product choice."
       >
-        {tts.data?.enabled
-          ? `Listen · ${tts.data.voiceId.slice(0, 8)}…`
-          : "Listen · browser"}
+        Listen · browser
       </span>
       {plan ? (
         <span

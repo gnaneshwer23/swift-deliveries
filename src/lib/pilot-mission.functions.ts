@@ -18,6 +18,7 @@ import {
   UsageLimitError,
 } from "./pilot-mission/service";
 import { projectShelfItems } from "./pilot-mission/build-beats";
+import { commerceHardStopMessage } from "./pilot-mission/commerce";
 import { learningLinks } from "./pilot-mission/learning";
 import {
   planResearchMode,
@@ -108,7 +109,7 @@ function view(mission: SupervisedMission, usageWarning: string | null): Supervis
   return {
     mission,
     next: nextRequiredAction(mission),
-    usageWarning,
+    usageWarning: usageWarning ?? commerceHardStopMessage(mission),
     comparisonScope: scopeHash(mission.brief, mission.evidence),
     modelConfigured: generationPlan(process.env, "").cost > 0,
     research: planResearchMode(mission.researchMode ?? "provided"),

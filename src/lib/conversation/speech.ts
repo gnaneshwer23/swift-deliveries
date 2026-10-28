@@ -1,7 +1,7 @@
 /**
- * Spoken replies: prefer ElevenLabs when the server has TTS configured
- * (founder voice id), otherwise the browser's own speech. The words heard
- * match the text shown. Stopping speech never touches a mission.
+ * Spoken replies use the browser's own speechSynthesis (no cloud TTS charge).
+ * The words heard match the text shown. Stopping speech never touches a mission.
+ * Optional ElevenLabs helpers remain for experiments; product Listen does not call them.
  */
 
 let currentAudio: HTMLAudioElement | null = null;
