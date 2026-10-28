@@ -98,6 +98,27 @@
 .ps-nav-link:hover {
   background: #f4f5f7;
 }
+.ps-nav-advanced {
+  margin-top: 8px;
+}
+.ps-nav-advanced summary {
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--psi-muted, #64748b);
+  padding: 6px 12px;
+  list-style: none;
+}
+.ps-nav-advanced summary::-webkit-details-marker {
+  display: none;
+}
+.ps-nav-advanced-links {
+  display: grid;
+  gap: 2px;
+  margin-top: 4px;
+}
 .ps-nav-link.is-active {
   background: #f4f5f7;
   color: var(--psi-ink);
@@ -3555,6 +3576,11 @@
   font-size: 0.72rem;
   font-weight: 650;
   color: var(--psi-ink-muted, #5a6578);
+}
+.ps-quiet-notif-detail {
+  display: block;
+  margin-top: 4px;
+  line-height: 1.35;
 }
 .ps-quiet-notif-next {
   font-size: 0.85rem;

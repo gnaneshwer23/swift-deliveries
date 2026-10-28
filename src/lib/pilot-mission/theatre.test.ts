@@ -42,6 +42,7 @@ function baseMission(overrides: Partial<SupervisedMission> = {}): SupervisedMiss
     researchMode: "combined",
     researchGaps: ["Web search not configured"],
     researchPassCompletedAt: null,
+    researchPassQueuedAt: null,
     researchProvider: null,
     team: {
       version: "pilot-team-v1",

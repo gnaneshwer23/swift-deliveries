@@ -26,6 +26,9 @@ export function QuietStudioNotifications({ missions }: { missions: MissionRow[] 
                 {item.headline}
                 <ArrowUpRight className="inline size-3.5" aria-hidden="true" />
               </span>
+              {item.detail ? (
+                <span className="ps-quiet-notif-detail cc-muted text-xs">{item.detail}</span>
+              ) : null}
             </Link>
           </li>
         ))}

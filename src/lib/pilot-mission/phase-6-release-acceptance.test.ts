@@ -391,6 +391,7 @@ describe("Phase 6 — release acceptance (MemoryStore fixtures)", () => {
       researchMode: "combined",
       researchGaps: ["Web research provider not configured"],
       researchPassCompletedAt: new Date().toISOString(),
+      researchPassQueuedAt: null,
       researchProvider: null,
       team: null,
       continuationPlan: null,

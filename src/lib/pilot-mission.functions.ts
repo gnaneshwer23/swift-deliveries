@@ -112,6 +112,8 @@ const startBriefSchema = z.object({
   researchMode: z.enum(RESEARCH_MODES).optional().default("combined"),
   /** Attach to an existing product shelf. Plan is never auto-approved. */
   projectId: z.string().uuid().optional().nullable(),
+  /** Optional founder paste — text-only supplied evidence (no file upload). */
+  intakeEvidenceNote: z.string().trim().max(2000).optional().nullable(),
 });
 
 const evidenceSchema = z
@@ -165,7 +167,8 @@ export const getSupervisedMissionHome = createServerFn({ method: "GET" })
         startInvestigationBlockedReason: startGate.ok ? null : startGate.message,
         missions: missions.map((mission) => {
           const next = nextRequiredAction(mission);
-          const { investigationPaused, openQuestionCount } = studioInboxFields(mission);
+          const { investigationPaused, openQuestionCount, researchPassQueued } =
+            studioInboxFields(mission);
           return {
             id: mission.id,
             question: mission.brief.question,
@@ -174,6 +177,7 @@ export const getSupervisedMissionHome = createServerFn({ method: "GET" })
             next,
             investigationPaused,
             openQuestionCount,
+            researchPassQueued,
             objective: mission.brief.outcome,
             generation: mission.proposal?.generation.label ?? "No comparison recorded",
             decisionRecorded: !!mission.approval,
@@ -305,6 +309,7 @@ export const startSupervisedMission = createServerFn({ method: "POST" })
       usageCeiling: remaining,
       nowMs: Date.now(),
       projectId,
+      intakeEvidenceNote: data.intakeEvidenceNote ?? null,
     });
     return view(mission, null);
   });
@@ -315,8 +320,16 @@ export const getSupervisedMission = createServerFn({ method: "GET" })
   .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
     const workspace = await workspaceFor(context.supabase, context.userId);
     const { db, service } = await serviceFor();
-    const mission = await service.get(workspace.id, data.id);
+    let mission = await service.get(workspace.id, data.id);
     if (!mission) throw new Error("Mission not found.");
+    if (mission.researchPassQueuedAt && !mission.researchPassCompletedAt) {
+      mission = await service.runQueuedResearchPass({
+        workspaceId: workspace.id,
+        id: data.id,
+        workerId: `reload-${context.userId}`,
+        nowMs: Date.now(),
+      });
+    }
     return view(mission, await settleUsage(db, mission));
   });
 
@@ -790,6 +803,7 @@ export const approveSupervisedPlan = createServerFn({ method: "POST" })
       expectedVersion: data.expectedVersion,
       actorId: context.userId,
       nowMs: Date.now(),
+      deferResearchPass: true,
     });
     return view(mission, null);
   });

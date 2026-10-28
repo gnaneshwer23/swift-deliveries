@@ -21,19 +21,73 @@ import { useSession } from "@/hooks/use-session";
 import { BrandLogo } from "@/components/brand-logo";
 import "@/styles/psi-workspace.css";
 
-const NAV = [
+const PRIMARY_NAV = [
   { to: "/command", label: "Studio", icon: Compass },
   { to: "/command/portfolio", label: "Portfolio", icon: LayoutGrid },
+] as const;
+
+const ADVANCED_NAV = [
+  { to: "/command/projects", label: "Projects", icon: FolderKanban },
   {
     to: "/command/capabilities",
     hash: "agents-office",
     label: "Agents office",
     icon: Building2,
   },
-  { to: "/command/projects", label: "Projects", icon: FolderKanban },
   { to: "/command/capabilities", label: "Specialists", icon: UsersRound },
   { to: "/command/programmes", label: "Programmes", icon: FlaskConical },
 ] as const;
+
+type NavItem = (typeof PRIMARY_NAV)[number] | (typeof ADVANCED_NAV)[number];
+
+function navLinkActive(item: NavItem, pathname: string, locationHash: string): boolean {
+  const { to, label } = item;
+  const hash = "hash" in item ? item.hash : undefined;
+  const onCapabilities = pathname.startsWith("/command/capabilities");
+  const hashIsOffice = locationHash === "#agents-office" || locationHash === "agents-office";
+  if (label === "Studio") {
+    return (
+      pathname === "/command" ||
+      pathname.startsWith("/command/supervised") ||
+      pathname.startsWith("/command/missions")
+    );
+  }
+  if (label === "Portfolio") return pathname.startsWith("/command/portfolio");
+  if (label === "Agents office") return onCapabilities && hashIsOffice;
+  if (label === "Specialists") return onCapabilities && !hashIsOffice;
+  return pathname.startsWith(to);
+}
+
+function NavLinks({
+  items,
+  pathname,
+  locationHash,
+  onNavigate,
+}: {
+  items: readonly NavItem[];
+  pathname: string;
+  locationHash: string;
+  onNavigate: () => void;
+}) {
+  return items.map((item) => {
+    const { to, label, icon: Icon } = item;
+    const hash = "hash" in item ? item.hash : undefined;
+    const active = navLinkActive(item, pathname, locationHash);
+    return (
+      <Link
+        key={hash ? `${to}#${hash}` : `${to}-${label}`}
+        to={to}
+        {...(hash ? { hash } : {})}
+        aria-current={active ? "page" : undefined}
+        className={`ps-nav-link ${active ? "is-active" : ""}`}
+        onClick={onNavigate}
+      >
+        <Icon size={18} />
+        <span>{label}</span>
+      </Link>
+    );
+  });
+}
 
 export function CommandShell({
   title,
@@ -70,6 +124,7 @@ export function CommandShell({
   const name = user?.user_metadata.full_name ?? user?.email ?? "Studio owner";
   const remaining = usage ? Math.max(0, usage.ceiling - usage.consumed) : null;
   const isStudioHome = title === "Studio" || pathname === "/command";
+  const advancedActive = ADVANCED_NAV.some((item) => navLinkActive(item, pathname, locationHash));
   const breadcrumb = isStudioHome ? (
     <span>Studio</span>
   ) : (
@@ -111,38 +166,23 @@ export function CommandShell({
           </div>
         </div>
         <nav aria-label="Studio navigation">
-          {NAV.map((item) => {
-            const { to, label, icon: Icon } = item;
-            const hash = "hash" in item ? item.hash : undefined;
-            const onCapabilities = pathname.startsWith("/command/capabilities");
-            const hashIsOffice =
-              locationHash === "#agents-office" || locationHash === "agents-office";
-            const active =
-              label === "Studio"
-                ? pathname === "/command" ||
-                  pathname.startsWith("/command/supervised") ||
-                  pathname.startsWith("/command/missions")
-                : label === "Portfolio"
-                  ? pathname.startsWith("/command/portfolio")
-                  : label === "Agents office"
-                    ? onCapabilities && hashIsOffice
-                    : label === "Specialists"
-                      ? onCapabilities && !hashIsOffice
-                      : pathname.startsWith(to);
-            return (
-              <Link
-                key={hash ? `${to}#${hash}` : `${to}-${label}`}
-                to={to}
-                {...(hash ? { hash } : {})}
-                aria-current={active ? "page" : undefined}
-                className={`ps-nav-link ${active ? "is-active" : ""}`}
-                onClick={() => setOpen(false)}
-              >
-                <Icon size={18} />
-                <span>{label}</span>
-              </Link>
-            );
-          })}
+          <NavLinks
+            items={PRIMARY_NAV}
+            pathname={pathname}
+            locationHash={locationHash}
+            onNavigate={() => setOpen(false)}
+          />
+          <details className="ps-nav-advanced" open={advancedActive || undefined}>
+            <summary>Advanced</summary>
+            <div className="ps-nav-advanced-links">
+              <NavLinks
+                items={ADVANCED_NAV}
+                pathname={pathname}
+                locationHash={locationHash}
+                onNavigate={() => setOpen(false)}
+              />
+            </div>
+          </details>
         </nav>
         <div className="ps-sidebar-bottom">
           <Link to="/" className="ps-site-link">
@@ -158,7 +198,11 @@ export function CommandShell({
               </div>
             </summary>
             <div className="ps-account-panel">
-              {usage ? (
+              {usage && foyerMode ? (
+                <p className="cc-muted text-xs mb-2">
+                  Usage for this view: {usage.consumed} / {usage.ceiling} units.
+                </p>
+              ) : usage ? (
                 <div className="ps-budget">
                   <div>
                     <span>

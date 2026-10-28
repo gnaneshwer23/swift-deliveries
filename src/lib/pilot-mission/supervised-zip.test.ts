@@ -68,6 +68,7 @@ function mission(overrides: Partial<SupervisedMission> = {}): SupervisedMission 
     researchMode: "combined",
     researchGaps: [],
     researchPassCompletedAt: null,
+    researchPassQueuedAt: null,
     researchProvider: null,
     team: null,
     activity: [],

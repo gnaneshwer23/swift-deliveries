@@ -259,6 +259,11 @@ export type SupervisedMission = {
    */
   researchPassCompletedAt: string | null;
   /**
+   * When plan approval queued a post-approval research pass (durable worker / reload may finish it).
+   * Cleared when `researchPassCompletedAt` is set. Additive document field.
+   */
+  researchPassQueuedAt: string | null;
+  /**
    * Search provider that returned cited findings on the research pass (`tavily` / `exa` / `brave`).
    * Null when the pass ran without a configured provider or returned only gaps.
    * Additive document field — no SQL migration.

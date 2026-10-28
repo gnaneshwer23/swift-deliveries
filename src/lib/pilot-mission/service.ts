@@ -9,7 +9,7 @@ import {
 import { buildDecisionPackMarkdown, buildDecisionPackPdf, pdfToBase64 } from "./decision-pack";
 import { isResearchMode, planResearchMode, type ResearchMode } from "./research-mode";
 import { estimateStaffingBand, expandOneLinerBrief, seedResearchEvidence } from "./pm-brief";
-import { runResearchPass } from "./research-pass";
+import { RESEARCH_PASS_JOB_KEY, runResearchPass } from "./research-pass";
 import { buildMissionPrototype } from "./prototype";
 import { activityEvent, buildPilotTeamPlan, syncTeamWithMission } from "./specialist-team";
 import {
@@ -455,6 +455,8 @@ export class SupervisedMissionService {
     researchMode?: ResearchMode;
     /** Optional product-memory project for this mission family. */
     projectId?: string | null;
+    /** Optional founder paste at intake — stored as supplied evidence (no file upload). */
+    intakeEvidenceNote?: string | null;
   }): Promise<SupervisedMission> {
     return this.store.save(this.initialMission(input), 0);
   }
@@ -469,6 +471,7 @@ export class SupervisedMissionService {
     origin?: MissionOrigin | null;
     researchMode?: ResearchMode;
     projectId?: string | null;
+    intakeEvidenceNote?: string | null;
   }): SupervisedMission {
     if (!Number.isInteger(input.usageCeiling) || input.usageCeiling < 0) {
       throw new Error("Usage ceiling must be a whole number.");
@@ -480,7 +483,20 @@ export class SupervisedMissionService {
     const brief = normaliseBrief(input.brief);
     const staffing = estimateStaffingBand(brief.question);
     const team = buildPilotTeamPlan({ band: staffing.band });
-    const evidence = seedResearchEvidence(researchMode);
+    let evidence = seedResearchEvidence(researchMode);
+    const intakeNote = input.intakeEvidenceNote?.trim();
+    if (intakeNote && intakeNote.length >= 3) {
+      const note = intakeNote.slice(0, 2000);
+      evidence = [
+        ...evidence,
+        {
+          id: `e-intake-${input.nowMs}`,
+          statement: note,
+          source: "Founder intake paste (text only — no file upload or OCR)",
+          classification: "supplied" as const,
+        },
+      ];
+    }
     const initiating =
       team.tasks.find((t) => t.key === "frame_objective")?.ownerLabel ?? "Problem-Framing Agent";
     const mission: SupervisedMission = {
@@ -510,6 +526,7 @@ export class SupervisedMissionService {
       researchMode,
       researchGaps: researchPlan.externalGaps,
       researchPassCompletedAt: null,
+      researchPassQueuedAt: null,
       researchProvider: null,
       team,
       continuationPlan: null,
@@ -554,6 +571,8 @@ export class SupervisedMissionService {
     /** Test seam — production uses the real search provider resolver. */
     search?: Parameters<typeof runResearchPass>[0]["search"];
     env?: Record<string, string | undefined>;
+    /** When true, persist approval + queue only (research pass runs via worker or mission reload). */
+    deferResearchPass?: boolean;
   }): Promise<SupervisedMission> {
     const current = await this.must(input.workspaceId, input.id);
     if (input.expectedVersion !== undefined && current.version !== input.expectedVersion) {
@@ -581,6 +600,7 @@ export class SupervisedMissionService {
           : current.stage
         : "brief",
       team,
+      researchPassQueuedAt: at,
       activity: pushActivity(
         current,
         activityEvent({
@@ -588,47 +608,140 @@ export class SupervisedMissionService {
           taskKey: "frame_objective",
           kind: "plan.approved",
           summary:
-            "You approved the specialist plan. Specialists begin a research / work pass from persisted events.",
+            "You approved the specialist plan. A research / work pass is queued from persisted events.",
           actor: "human",
+        }),
+        activityEvent({
+          at,
+          taskKey: "register_evidence",
+          kind: "research.pass.queued",
+          summary:
+            "Research pass queued. It can finish on reload or the scheduled worker — not only while this browser tab stays open.",
+          actor: "system",
         }),
       ),
       updatedAt: at,
     };
 
-    // Phase C+E: auto-advance into a visible research pass (findings or honest gaps).
-    // Not billable. Never invents web retrieval when no provider is configured.
-    const pass = await runResearchPass({
-      mission: approvedBase,
-      at,
+    const queued = await this.store.save(approvedBase, current.version);
+    if (input.deferResearchPass) return queued;
+    return this.runQueuedResearchPass({
+      workspaceId: input.workspaceId,
+      id: input.id,
+      workerId: input.actorId,
+      nowMs: input.nowMs,
       ...(input.env ? { env: input.env } : {}),
       ...(input.search ? { search: input.search } : {}),
     });
-    const collabAfterPass =
-      approvedBase.team && approvedBase.teamCollaboration
-        ? applyResearchPassCollaboration({
-            record: approvedBase.teamCollaboration,
-            team: approvedBase.team,
-            evidence: pass.evidence,
-            at,
-            provider: pass.provider,
-          })
-        : approvedBase.teamCollaboration;
-    const next: SupervisedMission = withSyncedTeam({
-      ...approvedBase,
-      evidence: pass.evidence,
-      researchGaps: pass.researchGaps,
-      researchPassCompletedAt: pass.researchPassCompletedAt,
-      researchProvider: pass.provider,
-      teamCollaboration: collabAfterPass,
-      activity: pushActivity(approvedBase, ...pass.activity),
-      stage: pass.evidence.length
-        ? approvedBase.stage === "brief"
-          ? "evidence"
-          : approvedBase.stage
-        : approvedBase.stage,
+  }
+
+  /** Run a persisted post-approval research pass (lease + idempotent job key). */
+  async runQueuedResearchPass(input: {
+    workspaceId: string;
+    id: string;
+    workerId: string;
+    nowMs: number;
+    search?: Parameters<typeof runResearchPass>[0]["search"];
+    env?: Record<string, string | undefined>;
+  }): Promise<SupervisedMission> {
+    const current = await this.must(input.workspaceId, input.id);
+    if (!current.researchPassQueuedAt || current.researchPassCompletedAt) return current;
+    if (!current.team?.approvedAt) return current;
+
+    if (
+      current.job.status === "leased" &&
+      current.job.idempotencyKey === RESEARCH_PASS_JOB_KEY &&
+      current.job.ownerId &&
+      current.job.ownerId !== input.workerId &&
+      Date.parse(current.job.leaseUntil ?? "") > input.nowMs
+    ) {
+      return current;
+    }
+
+    const at = new Date(input.nowMs).toISOString();
+    const leased: SupervisedMission = {
+      ...current,
+      version: current.version + 1,
+      job: {
+        status: "leased",
+        ownerId: input.workerId,
+        leaseUntil: new Date(input.nowMs + LEASE_MS).toISOString(),
+        attempts: current.job.attempts + 1,
+        lastError: null,
+        idempotencyKey: RESEARCH_PASS_JOB_KEY,
+      },
       updatedAt: at,
-    });
-    return this.store.save(next, current.version);
+    };
+    await this.store.save(leased, current.version);
+
+    try {
+      const pass = await runResearchPass({
+        mission: leased,
+        at,
+        ...(input.env ? { env: input.env } : {}),
+        ...(input.search ? { search: input.search } : {}),
+      });
+      const fresh = await this.must(input.workspaceId, input.id);
+      if (
+        fresh.job.ownerId !== input.workerId ||
+        fresh.job.status !== "leased" ||
+        fresh.job.idempotencyKey !== RESEARCH_PASS_JOB_KEY
+      ) {
+        throw new MissionConflictError("Research pass lease recovered by another worker.");
+      }
+      const collabAfterPass =
+        fresh.team && fresh.teamCollaboration
+          ? applyResearchPassCollaboration({
+              record: fresh.teamCollaboration,
+              team: fresh.team,
+              evidence: pass.evidence,
+              at,
+              provider: pass.provider,
+            })
+          : fresh.teamCollaboration;
+      const next: SupervisedMission = withSyncedTeam({
+        ...fresh,
+        version: fresh.version + 1,
+        evidence: pass.evidence,
+        researchGaps: pass.researchGaps,
+        researchPassCompletedAt: pass.researchPassCompletedAt,
+        researchPassQueuedAt: null,
+        researchProvider: pass.provider,
+        teamCollaboration: collabAfterPass,
+        job: idleJob(fresh.job.attempts),
+        activity: pushActivity(fresh, ...pass.activity),
+        stage: pass.evidence.length
+          ? fresh.stage === "brief"
+            ? "evidence"
+            : fresh.stage
+          : fresh.stage,
+        updatedAt: at,
+      });
+      return this.store.save(next, fresh.version);
+    } catch (error) {
+      const fresh = await this.store.get(input.workspaceId, input.id);
+      if (
+        fresh &&
+        fresh.job.ownerId === input.workerId &&
+        fresh.job.status === "leased" &&
+        fresh.job.idempotencyKey === RESEARCH_PASS_JOB_KEY
+      ) {
+        const failed: SupervisedMission = {
+          ...fresh,
+          version: fresh.version + 1,
+          job: {
+            ...fresh.job,
+            status: "failed",
+            ownerId: null,
+            leaseUntil: null,
+            lastError: error instanceof Error ? error.message : "Research pass failed.",
+          },
+          updatedAt: at,
+        };
+        await this.store.save(failed, fresh.version);
+      }
+      throw error instanceof Error ? error : new Error("Research pass failed.");
+    }
   }
 
   async setResearchMode(input: {

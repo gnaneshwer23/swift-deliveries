@@ -9,6 +9,7 @@ export type MissionIntakeDraft = {
   audience: string;
   outcome: string;
   constraints: string;
+  intakeEvidenceNote?: string;
 };
 export { DEFAULT_MISSION_OUTCOME };
 export function preparedMissionIntake(brief: ProductBrief): MissionIntakeDraft {
@@ -30,12 +31,16 @@ export function parseMissionIntake(raw: string | null): MissionIntakeDraft | nul
       )
     )
       return null;
-    return {
+    const draft: MissionIntakeDraft = {
       question: value.question.slice(0, 2000),
       audience: value.audience.slice(0, 2000),
       outcome: value.outcome.slice(0, 2000),
       constraints: value.constraints.slice(0, 2000),
     };
+    if (typeof value.intakeEvidenceNote === "string") {
+      draft.intakeEvidenceNote = value.intakeEvidenceNote.slice(0, 2000);
+    }
+    return draft;
   } catch {
     return null;
   }
@@ -58,5 +63,6 @@ export function restoreMissionIntake(
     audience: RESEARCH_REFINE_AUDIENCE,
     outcome: DEFAULT_MISSION_OUTCOME,
     constraints: RESEARCH_FIRST_CONSTRAINT,
+    intakeEvidenceNote: "",
   };
 }

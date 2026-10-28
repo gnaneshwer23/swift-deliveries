@@ -53,6 +53,19 @@ describe("Phase 4 studio inbox", () => {
     expect(inbox[0]?.detail).toContain("2 open questions");
   });
 
+  it("surfaces queued research passes in the inbox detail", () => {
+    const inbox = buildStudioInbox([
+      row({
+        id: "m-research",
+        researchPassQueued: true,
+        next: { id: "evidence", title: "Review evidence", detail: "Optional supplied items." },
+        nextTitle: "Review evidence",
+      }),
+    ]);
+    expect(inbox[0]?.kinds).toContain("research_queued");
+    expect(inbox[0]?.detail).toMatch(/queued/i);
+  });
+
   it("skips terminal and in-progress-only comparison rows", () => {
     const inbox = buildStudioInbox([
       row({

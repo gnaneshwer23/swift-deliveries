@@ -55,6 +55,7 @@ function mission(over: Partial<SupervisedMission> = {}): SupervisedMission {
     researchMode: "combined",
     researchGaps: [],
     researchPassCompletedAt: null,
+    researchPassQueuedAt: null,
     researchProvider: null,
     team: null,
     continuationPlan: null,
