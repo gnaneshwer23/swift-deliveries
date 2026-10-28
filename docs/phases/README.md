@@ -1,5 +1,7 @@
 # DeliverX phases
 
+**Current reconciliation:** [Q0 quiet background investigation contract](./q0-background-investigation-contract.md) records the latest motion and on-demand collaboration direction, capability gaps, and proposed Q1-Q6 proof gates. Q0 is documentation-only; subsequent phases and releases require separate approval. Historical P/PT delivery statuses below are not fresh runtime verification.
+
 Derived from the stamped business case `docs/business-case-deliverx-psi-v2.md`.
 
 | Phase | Spec | Authorisation |
