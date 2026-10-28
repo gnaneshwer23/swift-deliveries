@@ -83,23 +83,72 @@ Sandbox vars (`STRIPE_SANDBOX_API_KEY`, `PAYMENTS_SANDBOX_WEBHOOK_SECRET`, `pk_t
 
 ---
 
-## 5. Stripe webhook (live) — Dashboard clicks
+## 5. Stripe webhook (live) — Workbench / new Dashboard (no Test toggle)
 
-1. [https://dashboard.stripe.com/webhooks](https://dashboard.stripe.com/webhooks) — **Live** mode.
-2. **Add endpoint**
-3. Endpoint URL (exact):
+Stripe replaced the old **Test mode** switch with an **account picker** (business vs Sandbox). Live webhooks only exist on the **live business account**, not inside a Sandbox.
 
-   `https://www.deliverx.dev/api/public/payments/webhook?env=live`
+### A. Land on the live business account first
 
-4. Events to send:
+1. Open [https://dashboard.stripe.com](https://dashboard.stripe.com) and sign in.
+2. Top-left **account switcher** (business name / avatar):
+   - If you see a **Sandbox** banner or the name of a sandbox → you are **not** live.
+   - Click the switcher → pick your **live business** (e.g. Gnaneshwerjadav / `acct_1S6BMU2X2opf83VZ`).
+   - Do **not** choose **Switch to sandbox** / **Open sandbox**.
+3. Confirm: no orange/purple sandbox banner; URL is `dashboard.stripe.com/…` without a sandbox account id in the path.
+
+### B. Open Webhooks in Workbench (this is where “webhook set” lives now)
+
+Direct link (while on live account): [https://dashboard.stripe.com/webhooks](https://dashboard.stripe.com/webhooks)
+
+Or click path:
+
+1. Bottom or side: **Developers** → **Workbench** (or press **`~`**).
+2. Workbench tabs → **Webhooks** (sometimes labeled **Event destinations**).
+3. You should see a list of destinations (may be empty). Button: **Create an event destination** / **Create new destination**.
+
+If that page looks empty or only shows sandbox endpoints, go back to **A** — you are still in a Sandbox.
+
+### C. Create the live destination (exact choices)
+
+1. Click **Create an event destination** (or **Create new destination**).
+2. **Listen to** → **Events on your account** / **Your account** (not Connected accounts).
+3. **Payload** → **Snapshot** (required for DeliverX — do **not** choose Thin; our handler expects classic `event.type` + full objects).
+4. **API version** → keep account default / match server (`2026-03-25.dahlia` if offered).
+5. **Select events** — search and tick **only** these six:
+
    - `checkout.session.completed`
    - `checkout.session.async_payment_succeeded`
    - `checkout.session.async_payment_failed`
    - `customer.subscription.updated`
    - `customer.subscription.deleted`
    - `invoice.payment_failed`
-5. Reveal **Signing secret** → set `PAYMENTS_LIVE_WEBHOOK_SECRET` on Vercel Production.
-6. After deploy, send a test event or complete one low-risk live purchase and confirm a row in `psi_pilot_activations` with `payment_environment = 'live'`.
+
+6. **Continue** → destination type **Webhook** / **Webhook endpoint**.
+7. **Endpoint URL** (exact, copy-paste):
+
+   `https://www.deliverx.dev/api/public/payments/webhook?env=live`
+
+8. Optional description: `DeliverX PSI live entitlements`.
+9. **Create destination** / **Add endpoint**.
+
+### D. Where the Signing secret is (this is `PAYMENTS_LIVE_WEBHOOK_SECRET`)
+
+1. After create, Stripe opens the destination’s **settings** page (or click the new row in the Webhooks list).
+2. Find **Signing secret** — value starts with `whsec_…`.
+3. Click **Reveal** / **Reveal secret** → copy once.
+4. Vercel → project `swift-deliveries` → **Settings → Environment Variables → Production** → add:
+
+   - Name: `PAYMENTS_LIVE_WEBHOOK_SECRET`
+   - Value: the `whsec_…` you just copied
+   - Target: **Production** only
+
+5. **Redeploy Production** after saving the env var (env changes do not apply to already-running deploys).
+
+### E. Prove it
+
+1. On the same destination page → **Send test event** (pick `checkout.session.completed`) **or** complete one low-risk live purchase after you flip live-approved.
+2. Delivery log should show **2xx**. A failed signature means wrong/missing `PAYMENTS_LIVE_WEBHOOK_SECRET` or Sandbox secret pasted into Production.
+3. Confirm a row in `psi_pilot_activations` with `payment_environment = 'live'` only after a real paid live Checkout (test events alone may not create entitlements).
 
 ---
 
@@ -154,8 +203,8 @@ Set / verify these on project `swift-deliveries` (`prj_KXbLoh586LlAsKD6c8zk2HGDj
 | Lookup-key cleanup | Optional Dashboard fix (`experience_monthly` → `builder_monthly`; set Founder/Studio keys) |
 | Managed Payments enrollment + eligible tax codes | Dashboard ToS + product tax codes — required once code sends `managed_payments.enabled` |
 | Migration 0032 | **Cleared** on production 28 Oct 2026 |
-| `pk_live_…` + `rk_live_…` / `sk_live_…` | Not in git; you set Vercel Production |
-| Live webhook + `whsec_…` | Dashboard create + `PAYMENTS_LIVE_WEBHOOK_SECRET` |
+| `pk_live_…` + `rk_live_…` / `sk_live_…` | **Cleared on Production** (presence checked; values not printed) |
+| Live webhook + `whsec_…` | **Still missing** — create destination (step 5) then set `PAYMENTS_LIVE_WEBHOOK_SECRET` |
 | `PSI_PAYMENTS_LIVE_APPROVED` | Must be your deliberate flip **last** — agents will not set it |
 | Signed-in P0-A smoke | Remains **red** without your browser session — not certified production-ready overall |
 
