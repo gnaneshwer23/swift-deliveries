@@ -3530,6 +3530,16 @@
   font-size: 0.85rem;
   color: var(--psi-ink-muted, #5a6578);
 }
+.ps-mission-inbox-strip {
+  margin: 0 0 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--psi-border, #dfe5f2);
+  background: var(--psi-surface-muted, #f8f9fc);
+}
+.ps-inspection-attention {
+  border-left: 3px solid var(--psi-accent, #2563eb);
+}
 .ps-quiet-inspect {
   margin-top: 28px;
   padding-top: 8px;

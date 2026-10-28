@@ -30,6 +30,7 @@ import {
   RESEARCH_MODES,
   type ResearchMode,
 } from "./pilot-mission/research-mode";
+import { studioInboxFields } from "./pilot-mission/studio-inbox";
 import { nextRequiredAction, type SupervisedMission } from "./pilot-mission/types";
 
 type DbClient = { from: (table: string) => unknown };
@@ -162,12 +163,17 @@ export const getSupervisedMissionHome = createServerFn({ method: "GET" })
         investigationAllowance,
         canStartInvestigation: startGate.ok,
         startInvestigationBlockedReason: startGate.ok ? null : startGate.message,
-        missions: missions.map((mission) => ({
+        missions: missions.map((mission) => {
+          const next = nextRequiredAction(mission);
+          const { investigationPaused, openQuestionCount } = studioInboxFields(mission);
+          return {
           id: mission.id,
           question: mission.brief.question,
           stage: mission.stage,
-          nextTitle: nextRequiredAction(mission).title,
-          next: nextRequiredAction(mission),
+          nextTitle: next.title,
+          next,
+          investigationPaused,
+          openQuestionCount,
           objective: mission.brief.outcome,
           generation: mission.proposal?.generation.label ?? "No comparison recorded",
           decisionRecorded: !!mission.approval,
@@ -186,7 +192,8 @@ export const getSupervisedMissionHome = createServerFn({ method: "GET" })
               : `Preferences (${mission.watchtower.frequency}) — runner not live`
             : "Monitoring off",
           links: learningLinks(mission),
-        })),
+        };
+        }),
       };
     } catch (error) {
       if (error instanceof MissionStoreUnavailableError) {
