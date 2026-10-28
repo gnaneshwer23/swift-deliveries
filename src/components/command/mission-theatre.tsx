@@ -1,12 +1,15 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
+import { IntelligenceCanvasPanel } from "@/components/command/intelligence-canvas-panel";
 import { ListenBriefButton } from "@/components/command/listen-brief-button";
+import { PmBriefingPanel } from "@/components/command/pm-briefing-panel";
 import {
   buildSequence,
   castForMission,
   type BuildBeatView,
   type FocalArtefact,
 } from "@/lib/pilot-mission/build-beats";
+import { commerceSnapshot } from "@/lib/pilot-mission/commerce";
 import {
   buildPmBrief,
   STAFFING_BAND_LABELS,
@@ -21,7 +24,6 @@ import {
   theatreState,
   type TheatreAct,
 } from "@/lib/pilot-mission/theatre";
-import { commerceSnapshot } from "@/lib/pilot-mission/commerce";
 import type { SupervisedMission } from "@/lib/pilot-mission/types";
 import { RESEARCH_MODE_LABELS, type ResearchMode } from "@/lib/pilot-mission/research-mode";
 
@@ -548,6 +550,9 @@ function ActWork({
 
       {sequence.planApproved ? (
         <>
+          <IntelligenceCanvasPanel mission={mission} />
+          <PmBriefingPanel mission={mission} />
+
           <BuildBeatRail
             beats={sequence.beats}
             selectedId={selectedId}

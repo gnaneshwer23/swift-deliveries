@@ -5,6 +5,7 @@
  */
 import { buildCommerceDisclosureMarkdown } from "./commerce";
 import { buildLearnerLensMarkdown } from "./learner-lens";
+import { buildPmBriefingPack } from "./pm-briefing-pack";
 import { RESEARCH_MODE_LABELS, type ResearchMode } from "./research-mode";
 import type { SupervisedMission } from "./types";
 import {
@@ -196,6 +197,36 @@ export function buildDecisionPackMarkdown(mission: SupervisedMission): string {
     mission.expectation
       ? `Outcome-review plan: compare owner-supplied observation to expected metric “${mission.expectation.expectedMetric}” within “${mission.expectation.observationWindow}”. Uncertainty stays in words.`
       : "Outcome-review plan: record expectation before treating a later result as a review of this decision.",
+    ``,
+    (() => {
+      const briefing = buildPmBriefingPack(mission);
+      if (!briefing.ready) return `## Product briefing\nNot ready — compare options first.`;
+      return [
+        `## Product briefing`,
+        `Understood idea: ${briefing.understoodIdea}`,
+        briefing.recommendationLabel
+          ? `Recommendation: ${briefing.recommendationLabel}`
+          : "Recommendation: pending",
+        `Rationale: ${briefing.recommendationRationale}`,
+        ``,
+        `### Separate assessments`,
+        ...briefing.assessments.map(
+          (a) =>
+            `- ${a.title} — ${a.reading.replaceAll("_", " ")}. ${a.summary}${
+              a.basisIds.length ? ` (basis: ${a.basisIds.join(", ")})` : ""
+            }`,
+        ),
+        ``,
+        `### Actionable SWOT`,
+        ...briefing.swot.map(
+          (s) =>
+            `- **${s.kind}:** ${s.statement}\n  - Basis: ${s.basis}\n  - Implication: ${s.implication}\n  - Next question: ${s.nextQuestion}`,
+        ),
+        ``,
+        `Smallest defensible next step: ${briefing.smallestNextStep}`,
+        briefing.honesty,
+      ].join("\n");
+    })(),
     ``,
     buildLearnerLensMarkdown(mission),
     ``,

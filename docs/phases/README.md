@@ -10,5 +10,8 @@ Derived from the stamped business case `docs/business-case-deliverx-psi-v2.md`.
 | **P-D** Listen + learner lens | [p-d-listen-learner.md](./p-d-listen-learner.md) | Shipped 28 Oct 2026; Listen = browser speech (no cloud TTS) |
 | **P-commerce** | [p-commerce.md](./p-commerce.md) | Rules + disclosure shipped 28 Oct 2026 |
 | **P-paid** | [p-paid.md](./p-paid.md) | Investigation paid availability shipping 28 Oct 2026 (Continuation SKU later) |
+| **PT-1** Intelligence Canvas + briefing | [pt-1-intelligence-canvas.md](./pt-1-intelligence-canvas.md) | Shipping 28 Oct 2026 (v2.2 progressive transparency) |
+
+**Later (not authorised):** PT-2…PT-6 — see [business-case-deliverx-psi-v2.2-progressive-transparency.md](../business-case-deliverx-psi-v2.2-progressive-transparency.md).
 
 Do not expand the business case for phase detail — put requirements in the phase spec.

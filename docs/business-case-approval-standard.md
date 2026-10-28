@@ -3,8 +3,9 @@
 **Status:** Canonical case **stamped** for phase planning (28 Oct 2026).  
 **Not:** blanket approval to implement all Acts, deploy commerce changes, or rebuild beyond authorised phases.  
 **Canonical case:** `docs/business-case-deliverx-psi-v2.md` (v2.1)  
-**First authorised phase:** `docs/phases/p-a-investigate-entrance.md`  
-**History:** `docs/business-case-deliverx-psi.md` (v1) retained; conflicts resolve in favour of v2.1.
+**Amendment (stamped):** `docs/business-case-deliverx-psi-v2.2-progressive-transparency.md` — progressive transparency; **PT-1** authorised.  
+**Authorised product spine:** P-A → P-paid + PT-1 under `docs/phases/`  
+**History:** `docs/business-case-deliverx-psi.md` (v1) retained; front-stage UX conflicts resolve toward v2.2.
 
 ---
 
