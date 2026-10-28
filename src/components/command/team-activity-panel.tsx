@@ -1,7 +1,10 @@
+import { useState } from "react";
+import { SpecialistHandoffTraceSheet } from "@/components/command/specialist-handoff-trace-sheet";
 import {
   type CollaborationEdgeKind,
   ensureTeamCollaboration,
   traceFindingToRecommendation,
+  type TeamHandoff,
 } from "@/lib/pilot-mission/team-collaboration";
 import { buildMissionInspection } from "@/lib/pilot-mission/mission-inspection";
 import { AGENT_RECOMMENDATION_LABELS } from "@/lib/pilot-mission/verdict";
@@ -15,6 +18,7 @@ const EDGE_LABELS: Record<CollaborationEdgeKind, string> = {
 };
 
 export function TeamActivityPanel({ mission }: { mission: SupervisedMission }) {
+  const [handoffInspect, setHandoffInspect] = useState<TeamHandoff | null>(null);
   const inspection = buildMissionInspection(mission);
   const record = ensureTeamCollaboration(mission);
   if (!record) {
@@ -34,6 +38,7 @@ export function TeamActivityPanel({ mission }: { mission: SupervisedMission }) {
       : null;
 
   return (
+    <>
     <section className="cc-panel" aria-label="Team activity and handoffs" id="pr-team-activity">
       <h2 className="cc-panel-title">Team activity</h2>
       <p className="cc-muted text-sm">
@@ -91,6 +96,13 @@ export function TeamActivityPanel({ mission }: { mission: SupervisedMission }) {
                     <p className="text-xs cc-muted">Uncertainty: {h.uncertainty}</p>
                   ) : null}
                   {h.actualResult ? <p className="mt-1">{h.actualResult}</p> : null}
+                  <button
+                    type="button"
+                    className="cc-btn cc-btn-ghost text-xs mt-2"
+                    onClick={() => setHandoffInspect(h)}
+                  >
+                    Inspect handoff &amp; trace
+                  </button>
                 </li>
               ))}
           </ol>
@@ -183,5 +195,14 @@ export function TeamActivityPanel({ mission }: { mission: SupervisedMission }) {
         </div>
       ) : null}
     </section>
+    <SpecialistHandoffTraceSheet
+      mission={mission}
+      handoff={handoffInspect}
+      open={handoffInspect !== null}
+      onOpenChange={(open) => {
+        if (!open) setHandoffInspect(null);
+      }}
+    />
+    </>
   );
 }

@@ -1,6 +1,7 @@
-/** Stitch executive dispatch accents — Portfolio, Advanced routes, mission dossiers only. */
+/** Stitch executive dispatch — Studio foyer (B), Portfolio, Advanced routes, mission dossiers. */
 export function isExecutiveStudioRoute(pathname: string): boolean {
   return (
+    pathname === "/command" ||
     pathname.startsWith("/command/portfolio") ||
     pathname.startsWith("/command/projects") ||
     pathname.startsWith("/command/capabilities") ||

@@ -35,7 +35,7 @@ export function MissionInspectionStrip({
         hash="mission-team-activity"
         className="cc-muted text-xs mt-2 inline-block"
       >
-        Inspect team activity ↓
+        Inspect team activity & handoffs ↓
       </Link>
     </aside>
   );
