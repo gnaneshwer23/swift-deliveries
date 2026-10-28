@@ -8,6 +8,7 @@ import {
   WORKFORCE_DEPARTMENTS,
   WORKFORCE_INTENTS,
 } from "@/lib/marketing/workforce-summary";
+import { awaitsExternalApproval } from "@/lib/workforce/permissions";
 import type { MissionStatus, WfMission, WfMissionTask } from "@/lib/workforce/types";
 
 /** Missions that cannot move until the owner acts. */
@@ -32,8 +33,7 @@ const finished = (t: Pick<WfMissionTask, "status">) =>
 /** A blocked task the owner can release: a human gate, or an outside action to approve. */
 function waitsOnOwner(task: WfMissionTask, mission: WfMission | undefined) {
   if (task.gate) return true;
-  const outside = task.isExternal || task.permissionRequired === "act_externally";
-  return outside && !mission?.externalActionsApproved;
+  return awaitsExternalApproval(task, Boolean(mission?.externalActionsApproved));
 }
 
 export function taskState(
