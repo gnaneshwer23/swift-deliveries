@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { auth } from "@/lib/auth/client";
+import { auth, authConfigErrorMessage, getAuthConfigIssue } from "@/lib/auth/client";
 import { waitForSession } from "@/lib/auth-session";
 import { formatAuthError } from "@/lib/auth-errors";
 import { authCallbackUrl, isGoogleAuthEnabled, signInWithGoogle } from "@/lib/auth-oauth";
@@ -49,6 +49,7 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [googleEnabled, setGoogleEnabled] = useState(false);
+  const authConfigIssue = getAuthConfigIssue();
 
   useEffect(() => {
     let active = true;
@@ -105,6 +106,12 @@ function LoginPage() {
         Pick up where your product team left off.
       </p>
 
+      {authConfigIssue && (
+        <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600" role="alert">
+          {authConfigErrorMessage(authConfigIssue)}
+        </p>
+      )}
+
       {googleEnabled && (
         <>
           <GoogleButton loading={loading} onClick={handleGoogle} label="Continue with Google" />
@@ -155,7 +162,7 @@ function LoginPage() {
             {error}
           </p>
         )}
-        <button type="submit" className="form-submit" disabled={loading}>
+        <button type="submit" className="form-submit" disabled={loading || !!authConfigIssue}>
           {loading ? (
             <>
               <Loader2 className="size-4 animate-spin" aria-hidden="true" />

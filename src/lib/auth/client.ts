@@ -7,6 +7,11 @@
  */
 import { createInternalNeonAuth } from "@neondatabase/auth";
 import { BetterAuthVanillaAdapter } from "@neondatabase/auth/vanilla";
+import {
+  authConfigErrorMessage,
+  getAuthConfigIssue,
+  isAuthConfigured as browserAuthConfigured,
+} from "@/lib/auth/config";
 
 export type AppUser = {
   id: string;
@@ -45,14 +50,15 @@ type BetterAuthClient = {
 };
 
 export const AUTH_CHANGE_EVENT = "dx-auth-change";
-const AUTH_URL = import.meta.env["VITE_NEON_AUTH_URL"] as string | undefined;
+const AUTH_URL = (import.meta.env["VITE_NEON_AUTH_URL"] as string | undefined)?.trim() || undefined;
 
 let instance: { client: BetterAuthClient; getJWTToken: () => Promise<string | null> } | null = null;
 
 function neon() {
-  if (!AUTH_URL) throw new Error("Sign-in is not configured yet. Please try again shortly.");
+  const issue = getAuthConfigIssue(AUTH_URL);
+  if (issue) throw new Error(authConfigErrorMessage(issue));
   if (!instance) {
-    const internal = createInternalNeonAuth(AUTH_URL, { adapter: BetterAuthVanillaAdapter() });
+    const internal = createInternalNeonAuth(AUTH_URL!, { adapter: BetterAuthVanillaAdapter() });
     instance = {
       client: internal.adapter as unknown as BetterAuthClient,
       getJWTToken: internal.getJWTToken,
@@ -62,8 +68,10 @@ function neon() {
 }
 
 export function isAuthConfigured(): boolean {
-  return !!AUTH_URL;
+  return browserAuthConfigured(AUTH_URL);
 }
+
+export { authConfigErrorMessage, getAuthConfigIssue } from "@/lib/auth/config";
 
 function emit() {
   if (typeof window !== "undefined") window.dispatchEvent(new Event(AUTH_CHANGE_EVENT));
