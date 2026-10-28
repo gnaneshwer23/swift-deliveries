@@ -18,3 +18,5 @@ Derived from the stamped business case `docs/business-case-deliverx-psi-v2.md`.
 | **PT-6** Watchtower preferences | [pt-6-watchtower.md](./pt-6-watchtower.md) | Shipped 28 Oct 2026 (no scheduled runner yet) |
 
 Do not expand the business case for phase detail — put requirements in the phase spec.
+
+**Phase 1 vertical slice (A–G audit):** see `docs/psi-phase-1-vertical-slice-implementation-plan.md` and linked verification, capability matrix, gaps, and local demo docs.
