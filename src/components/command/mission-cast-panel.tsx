@@ -26,25 +26,23 @@ export function MissionCastPanel() {
 
   if (home.isPending) {
     return (
-      <section className="ps-mission-cast" aria-label="Active cast">
-        <p className="cc-muted">Loading active mission cast…</p>
+      <section id="cast-on-stage" className="ps-mission-cast" aria-label="Active cast">
+        <p className="cc-muted">Loading cast…</p>
       </section>
     );
   }
 
   if (!activeId || !mission.data) {
     return (
-      <section className="ps-mission-cast" aria-label="Active cast">
-        <p className="cc-kicker">Cast</p>
-        <h2 className="ps-foyer-headline" style={{ fontSize: "clamp(1.2rem, 1.8vw, 1.45rem)" }}>
-          No active investigation
-        </h2>
+      <section id="cast-on-stage" className="ps-mission-cast ps-mission-cast-empty" aria-label="Active cast">
+        <p className="ps-foyer-act">Cast</p>
+        <h2 className="ps-room-subhead">No case on stage yet</h2>
         <p className="ps-foyer-lede">
-          Start a one-liner from Overview to staff a cast. The catalogue below is for exploring the
-          bench — not the default story.
+          Brief a one-liner on Overview. Specialists appear here with ownership — not from opening
+          the full catalogue.
         </p>
         <Link to="/command" hash="supervised-brief" className="cc-btn cc-btn-primary mt-3 inline-flex">
-          Start a mission
+          Brief a case
         </Link>
       </section>
     );
@@ -57,14 +55,13 @@ export function MissionCastPanel() {
   const currentBeat = sequence.beats.find((b) => b.id === sequence.currentId);
 
   return (
-    <section className="ps-mission-cast" aria-label="Active mission cast">
-      <p className="cc-kicker">On this case</p>
-      <h2 className="ps-foyer-headline" style={{ fontSize: "clamp(1.2rem, 1.8vw, 1.45rem)" }}>
-        {record.brief.question}
-      </h2>
+    <section id="cast-on-stage" className="ps-mission-cast" aria-label="Active mission cast">
+      <p className="ps-foyer-act">On this case</p>
+      <h2 className="ps-room-subhead">{record.brief.question}</h2>
       <p className="ps-foyer-lede">
-        {brief.team.initiatingAgent} · {brief.team.staffing.activeSpecialists} specialists
-        {currentBeat ? ` · now: ${currentBeat.label}` : ""}
+        {brief.team.initiatingAgent}
+        {currentBeat ? ` · now owning: ${currentBeat.label}` : ""}
+        <span className="ps-cast-band"> · {STAFFING_BAND_LABELS[brief.team.staffing.band]}</span>
       </p>
       <ul className="ps-cast-board mt-3">
         {cast.map((s) => (
@@ -83,7 +80,6 @@ export function MissionCastPanel() {
         ))}
       </ul>
       <div className="ps-theatre-footnotes">
-        <p>{STAFFING_BAND_LABELS[brief.team.staffing.band]}</p>
         <div className="flex flex-wrap gap-2">
           <Link
             to="/command/supervised/$missionId"
