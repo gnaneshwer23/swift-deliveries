@@ -2,6 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
 import { buildStudioInbox, type StudioInboxMissionRow } from "@/lib/pilot-mission/studio-inbox";
 
+const INBOX_PREVIEW_LIMIT = 3;
+
 type MissionRow = StudioInboxMissionRow;
 
 /** Compact deduplicated inbox — one row per case needing the founder. */
@@ -9,11 +11,14 @@ export function QuietStudioNotifications({ missions }: { missions: MissionRow[] 
   const inbox = buildStudioInbox(missions);
   if (inbox.length === 0) return null;
 
+  const preview = inbox.slice(0, INBOX_PREVIEW_LIMIT);
+  const overflow = inbox.length - preview.length;
+
   return (
     <aside className="ps-quiet-notifications" aria-label="Inbox">
       <p className="ps-quiet-notifications-kicker">Needs you</p>
       <ul>
-        {inbox.map((item) => (
+        {preview.map((item) => (
           <li key={item.key}>
             <Link
               to="/command/supervised/$missionId"
@@ -33,10 +38,15 @@ export function QuietStudioNotifications({ missions }: { missions: MissionRow[] 
           </li>
         ))}
       </ul>
-      <p className="cc-muted text-xs mt-2 mb-0">
-        In-app only — email and push are not sent until separately approved. Notify preferences on a
-        case are stored honestly.
-      </p>
+      {overflow > 0 ? (
+        <p className="ps-quiet-notifications-more cc-muted text-xs mt-2 mb-0">
+          {overflow} more waiting in{" "}
+          <Link to="/command/portfolio" className="underline">
+            Portfolio
+          </Link>
+          .
+        </p>
+      ) : null}
     </aside>
   );
 }

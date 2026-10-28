@@ -102,7 +102,7 @@ function readable(value: string) {
   return value.replaceAll("_", " ").replaceAll("-", " ");
 }
 
-export function AgentNetworkExplorer() {
+export function AgentNetworkExplorer({ embedded = false }: { embedded?: boolean }) {
   const capabilities = listCapabilities();
   const departments = listDepartments();
   const { user } = useSession();
@@ -186,68 +186,80 @@ export function AgentNetworkExplorer() {
   const name = user?.user_metadata.full_name ?? "Workspace owner";
   return (
     <div
-      className="an-app"
+      className={`an-app${embedded ? " an-app-embedded" : ""}`}
       onKeyDown={(event) => {
         if (event.key === "Escape") setAccountOpen(false);
       }}
     >
-      <header className="an-header">
-        <BrandLogo to="/command" className="an-brand" />
-        <nav aria-label="Product navigation">
-          <Link to="/command" activeOptions={{ exact: true }}>
-            Overview
-          </Link>
-          <Link to="/command/capabilities" aria-current="page">
-            Specialists
-          </Link>
-          <Link to="/command/projects">Projects</Link>
-          <Link to="/command/programmes">Programmes</Link>
-        </nav>
-        <div className="an-header-end">
-          <ShieldCheck size={15} />
-          <span>Human supervised</span>
-          <div className="an-account">
-            <button
-              className="an-user"
-              title={name}
-              aria-label="Account menu"
-              aria-expanded={accountOpen}
-              onClick={() => setAccountOpen(!accountOpen)}
-            >
-              {name[0]?.toUpperCase()}
-            </button>
-            {accountOpen && (
-              <div className="an-account-menu">
-                <strong>{name}</strong>
-                <Link to="/onboarding" onClick={() => setAccountOpen(false)}>
-                  Edit workspace setup
-                </Link>
-                <button onClick={() => void signOut()}>Sign out</button>
+      {!embedded ? (
+        <>
+          <header className="an-header">
+            <BrandLogo to="/command" className="an-brand" />
+            <nav aria-label="Product navigation">
+              <Link to="/command" activeOptions={{ exact: true }}>
+                Overview
+              </Link>
+              <Link to="/command/capabilities" aria-current="page">
+                Specialists
+              </Link>
+              <Link to="/command/projects">Projects</Link>
+              <Link to="/command/programmes">Programmes</Link>
+            </nav>
+            <div className="an-header-end">
+              <ShieldCheck size={15} />
+              <span>Human supervised</span>
+              <div className="an-account">
+                <button
+                  className="an-user"
+                  title={name}
+                  aria-label="Account menu"
+                  aria-expanded={accountOpen}
+                  onClick={() => setAccountOpen(!accountOpen)}
+                >
+                  {name[0]?.toUpperCase()}
+                </button>
+                {accountOpen && (
+                  <div className="an-account-menu">
+                    <strong>{name}</strong>
+                    <Link to="/onboarding" onClick={() => setAccountOpen(false)}>
+                      Edit workspace setup
+                    </Link>
+                    <button onClick={() => void signOut()}>Sign out</button>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
+          </header>
+          <div className="an-heading" id="explore-bench">
+            <div>
+              <p>Explore the bench</p>
+              <h1>Specialist catalogue</h1>
+              <span>
+                Secondary to the active cast above. Browse roles when you need the wider bench — not
+                as the default story.
+              </span>
+            </div>
+            <div className="an-summary">
+              <strong>
+                {capabilities.length}
+                <small>catalogue roles</small>
+              </strong>
+              <strong>
+                {capabilities.filter((c) => c.lifecycle_status === "available").length}
+                <small>available for planning</small>
+              </strong>
+            </div>
           </div>
-        </div>
-      </header>
-      <div className="an-heading" id="explore-bench">
-        <div>
-          <p>Explore the bench</p>
-          <h1>Specialist catalogue</h1>
-          <span>
-            Secondary to the active cast above. Browse roles when you need the wider bench — not as
-            the default story.
+        </>
+      ) : (
+        <div className="an-embedded-summary" id="explore-bench">
+          <span className="cc-muted text-sm">
+            {capabilities.length} catalogue roles ·{" "}
+            {capabilities.filter((c) => c.lifecycle_status === "available").length} available for
+            planning
           </span>
         </div>
-        <div className="an-summary">
-          <strong>
-            {capabilities.length}
-            <small>catalogue roles</small>
-          </strong>
-          <strong>
-            {capabilities.filter((c) => c.lifecycle_status === "available").length}
-            <small>available for planning</small>
-          </strong>
-        </div>
-      </div>
+      )}
       <div className="an-toolbar">
         <div className="an-search">
           <Search size={16} />

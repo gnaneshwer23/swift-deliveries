@@ -22,6 +22,19 @@
   background: radial-gradient(ellipse at 50% 32%, #eef5ff33, transparent 65%);
   font-size: 13px;
 }
+.an-app-embedded {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  font-size: inherit;
+}
+.an-app-embedded .an-toolbar {
+  margin-top: 8px;
+}
+.an-embedded-summary {
+  margin-bottom: 4px;
+}
 .an-header {
   display: flex;
   align-items: center;

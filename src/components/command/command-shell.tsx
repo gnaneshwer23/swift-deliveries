@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   ArrowUpRight,
-  Building2,
   Compass,
   FlaskConical,
   FolderKanban,
@@ -28,23 +27,14 @@ const PRIMARY_NAV = [
 
 const ADVANCED_NAV = [
   { to: "/command/projects", label: "Projects", icon: FolderKanban },
-  {
-    to: "/command/capabilities",
-    hash: "agents-office",
-    label: "Agents office",
-    icon: Building2,
-  },
-  { to: "/command/capabilities", label: "Specialists", icon: UsersRound },
+  { to: "/command/capabilities", label: "Specialists & office", icon: UsersRound },
   { to: "/command/programmes", label: "Programmes", icon: FlaskConical },
 ] as const;
 
 type NavItem = (typeof PRIMARY_NAV)[number] | (typeof ADVANCED_NAV)[number];
 
-function navLinkActive(item: NavItem, pathname: string, locationHash: string): boolean {
+function navLinkActive(item: NavItem, pathname: string, _locationHash: string): boolean {
   const { to, label } = item;
-  const hash = "hash" in item ? item.hash : undefined;
-  const onCapabilities = pathname.startsWith("/command/capabilities");
-  const hashIsOffice = locationHash === "#agents-office" || locationHash === "agents-office";
   if (label === "Studio") {
     return (
       pathname === "/command" ||
@@ -53,8 +43,7 @@ function navLinkActive(item: NavItem, pathname: string, locationHash: string): b
     );
   }
   if (label === "Portfolio") return pathname.startsWith("/command/portfolio");
-  if (label === "Agents office") return onCapabilities && hashIsOffice;
-  if (label === "Specialists") return onCapabilities && !hashIsOffice;
+  if (label === "Specialists & office") return pathname.startsWith("/command/capabilities");
   return pathname.startsWith(to);
 }
 
@@ -71,13 +60,11 @@ function NavLinks({
 }) {
   return items.map((item) => {
     const { to, label, icon: Icon } = item;
-    const hash = "hash" in item ? item.hash : undefined;
     const active = navLinkActive(item, pathname, locationHash);
     return (
       <Link
-        key={hash ? `${to}#${hash}` : `${to}-${label}`}
+        key={`${to}-${label}`}
         to={to}
-        {...(hash ? { hash } : {})}
         aria-current={active ? "page" : undefined}
         className={`ps-nav-link ${active ? "is-active" : ""}`}
         onClick={onNavigate}

@@ -77,9 +77,7 @@ export function WorkspaceFoyer() {
         <p className="ps-foyer-side-links">
           <Link to="/command/portfolio">Portfolio</Link>
           <span aria-hidden="true">·</span>
-          <Link to="/command/capabilities" hash="agents-office">
-            Agents office
-          </Link>
+          <Link to="/command/capabilities">Specialists &amp; office</Link>
         </p>
         <details>
           <summary>Inspect · voice &amp; honesty</summary>

@@ -21,7 +21,6 @@ export const Route = createFileRoute("/_authenticated/command/programmes/")({
     ],
   }),
   loader: async ({ context }) => {
-    // Ensures the operator's workspace exists before programme calls.
     await context.queryClient.ensureQueryData(commandCentreBootstrapQuery);
   },
   component: ProgrammesHome,
@@ -46,12 +45,19 @@ const STATUS_TEXT: Record<string, string> = {
   draft: "Draft",
 };
 
+const INTAKE_STEPS = [
+  { id: 1 as const, label: "Brief" },
+  { id: 2 as const, label: "Constraints" },
+  { id: 3 as const, label: "Budget" },
+];
+
 function ProgrammesHome() {
   const features = useQuery(programmeFeaturesQuery);
   const list = useQuery(programmesListQuery);
   const profile = useQuery(myProfileQuery);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [form, setForm] = useState({
     name: "",
     idea: "",
@@ -91,12 +97,14 @@ function ProgrammesHome() {
     }));
 
   const supported = features.data?.supported ?? false;
-  const valid =
+  const briefValid =
     form.name.trim().length >= 2 &&
     form.idea.trim().length >= 20 &&
     form.targetUsers.trim().length >= 2 &&
     form.problem.trim().length >= 5 &&
     form.goals.trim().length >= 5;
+  const constraintsValid = form.constraints.trim().length >= 2;
+  const budgetValid = form.timelineWeeks >= 6 && form.budgetCredits >= 100;
 
   return (
     <CommandShell title="Programmes" hideHeading>
@@ -121,149 +129,191 @@ function ProgrammesHome() {
           <section className="cc-panel cc-panel-active-gate">
             <h2 className="cc-panel-title">Programmes are not enabled yet</h2>
             <p className="cc-muted">
-              An admin needs to apply the database migrations{" "}
-              <code>20261022100000_dxsi_product_mission</code> and{" "}
-              <code>20261022120000_dxsi_programmes</code>. Existing Studio missions keep working
-              meanwhile.
+              This workspace does not have long-horizon programmes turned on. Existing Studio
+              missions and supervised cases keep working — ask your operator if you need programmes
+              for a multi-month build.
             </p>
           </section>
         ) : null}
 
-        <section className="cc-composer-card" aria-label="Start a programme">
-          <div className="cc-composer-head">
-            <div>
-              <p className="cc-kicker">
-                <Rocket className="size-3.5" /> New programme
-              </p>
-              <h2 className="cc-hero-title">Describe the product question</h2>
-              {profile.data?.firstIdea ? (
-                <p className="cc-muted text-sm">
-                  Your saved question is filled in from your account. It is not read from the
-                  address.
+        {supported ? (
+          <section className="cc-composer-card" aria-label="Start a programme">
+            <div className="cc-composer-head">
+              <div>
+                <p className="cc-kicker">
+                  <Rocket className="size-3.5" /> New programme
                 </p>
-              ) : null}
-              <p className="cc-muted text-sm">
-                Compare evidence, record the human decision, and keep the work reviewable. Agents do
-                not pass a gate. A prototype or launch is not part of this form.
-              </p>
+                <h2 className="cc-hero-title">Describe the product question</h2>
+              </div>
+              <button
+                type="button"
+                className="cc-btn cc-btn-secondary"
+                onClick={() => {
+                  setForm((f) => ({ ...f, ...EXAMPLE }));
+                  setStep(1);
+                }}
+              >
+                Fill hypothetical example
+              </button>
             </div>
-            <button
-              type="button"
-              className="cc-btn cc-btn-secondary"
-              onClick={() => setForm((f) => ({ ...f, ...EXAMPLE }))}
-            >
-              Fill hypothetical example
-            </button>
-          </div>
 
-          <div className="pg-form">
-            <label className="cc-label" htmlFor="pg-name">
-              Product name
-              <input
-                id="pg-name"
-                className="cc-input"
-                value={form.name}
-                onChange={set("name")}
-                maxLength={80}
-              />
-            </label>
-            <label className="cc-label" htmlFor="pg-users">
-              Target users (comma-separated segments)
-              <input
-                id="pg-users"
-                className="cc-input"
-                value={form.targetUsers}
-                onChange={set("targetUsers")}
-              />
-            </label>
-            <label className="cc-label pg-span" htmlFor="pg-idea">
-              Idea / business case
-              <textarea
-                id="pg-idea"
-                className="cc-input cc-textarea"
-                rows={3}
-                value={form.idea}
-                onChange={set("idea")}
-              />
-            </label>
-            <label className="cc-label" htmlFor="pg-problem">
-              Problem
-              <textarea
-                id="pg-problem"
-                className="cc-input"
-                rows={2}
-                value={form.problem}
-                onChange={set("problem")}
-              />
-            </label>
-            <label className="cc-label" htmlFor="pg-goals">
-              Goals & success measures
-              <textarea
-                id="pg-goals"
-                className="cc-input"
-                rows={2}
-                value={form.goals}
-                onChange={set("goals")}
-              />
-            </label>
-            <label className="cc-label pg-span" htmlFor="pg-constraints">
-              Constraints (budget, timeline, data, stack, regulation)
-              <input
-                id="pg-constraints"
-                className="cc-input"
-                value={form.constraints}
-                onChange={set("constraints")}
-              />
-            </label>
-            <label className="cc-label" htmlFor="pg-weeks">
-              Timeline (weeks)
-              <input
-                id="pg-weeks"
-                type="number"
-                min={6}
-                max={52}
-                className="cc-input"
-                value={form.timelineWeeks}
-                onChange={set("timelineWeeks")}
-              />
-            </label>
-            <label className="cc-label" htmlFor="pg-budget">
-              Budget (credits)
-              <input
-                id="pg-budget"
-                type="number"
-                min={100}
-                max={2000}
-                step={50}
-                className="cc-input"
-                value={form.budgetCredits}
-                onChange={set("budgetCredits")}
-              />
-            </label>
-          </div>
-          {error ? <p className="cc-error mt-3">{error}</p> : null}
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              className="cc-btn cc-btn-primary"
-              disabled={!supported || !valid || create.isPending}
-              onClick={() => {
-                setError(null);
-                create.mutate();
-              }}
-            >
-              {create.isPending ? "Building roadmap…" : "Create roadmap & assemble workforce →"}
-            </button>
-            <span className="cc-muted text-xs">
-              {features.data?.modelMode.enabled
-                ? `Deliverables generated by ${features.data.modelMode.model}.`
-                : "Simulated mode: deliverables are labelled drafts from deterministic templates; decisions use the real protocol."}{" "}
-              {features.data?.search
-                ? `Web research via ${features.data.search} with [S#] citations.`
-                : "No search provider configured: research will contain no external evidence."}
-            </span>
-          </div>
-        </section>
+            <ol className="pg-intake-steps" aria-label="Intake steps">
+              {INTAKE_STEPS.map((s) => (
+                <li key={s.id} data-current={step === s.id || undefined} data-done={step > s.id}>
+                  {s.label}
+                </li>
+              ))}
+            </ol>
+
+            {step === 1 ? (
+              <div className="pg-form">
+                <label className="cc-label" htmlFor="pg-name">
+                  Product name
+                  <input
+                    id="pg-name"
+                    className="cc-input"
+                    value={form.name}
+                    onChange={set("name")}
+                    maxLength={80}
+                  />
+                </label>
+                <label className="cc-label" htmlFor="pg-users">
+                  Target users (comma-separated segments)
+                  <input
+                    id="pg-users"
+                    className="cc-input"
+                    value={form.targetUsers}
+                    onChange={set("targetUsers")}
+                  />
+                </label>
+                <label className="cc-label pg-span" htmlFor="pg-idea">
+                  Idea / business case
+                  <textarea
+                    id="pg-idea"
+                    className="cc-input cc-textarea"
+                    rows={3}
+                    value={form.idea}
+                    onChange={set("idea")}
+                  />
+                </label>
+                <label className="cc-label" htmlFor="pg-problem">
+                  Problem
+                  <textarea
+                    id="pg-problem"
+                    className="cc-input"
+                    rows={2}
+                    value={form.problem}
+                    onChange={set("problem")}
+                  />
+                </label>
+                <label className="cc-label pg-span" htmlFor="pg-goals">
+                  Goals &amp; success measures
+                  <textarea
+                    id="pg-goals"
+                    className="cc-input"
+                    rows={2}
+                    value={form.goals}
+                    onChange={set("goals")}
+                  />
+                </label>
+              </div>
+            ) : null}
+
+            {step === 2 ? (
+              <div className="pg-form">
+                <label className="cc-label pg-span" htmlFor="pg-constraints">
+                  Constraints (budget, timeline, data, stack, regulation)
+                  <textarea
+                    id="pg-constraints"
+                    className="cc-input cc-textarea"
+                    rows={4}
+                    value={form.constraints}
+                    onChange={set("constraints")}
+                    placeholder="What must stay true for this build?"
+                  />
+                </label>
+              </div>
+            ) : null}
+
+            {step === 3 ? (
+              <div className="pg-form">
+                <label className="cc-label" htmlFor="pg-weeks">
+                  Timeline (weeks)
+                  <input
+                    id="pg-weeks"
+                    type="number"
+                    min={6}
+                    max={52}
+                    className="cc-input"
+                    value={form.timelineWeeks}
+                    onChange={set("timelineWeeks")}
+                  />
+                </label>
+                <label className="cc-label" htmlFor="pg-budget">
+                  Budget (credits)
+                  <input
+                    id="pg-budget"
+                    type="number"
+                    min={100}
+                    max={2000}
+                    step={50}
+                    className="cc-input"
+                    value={form.budgetCredits}
+                    onChange={set("budgetCredits")}
+                  />
+                </label>
+                <details className="pg-intake-meta mt-3 pg-span">
+                  <summary className="cc-muted text-sm cursor-pointer">
+                    How deliverables are produced
+                  </summary>
+                  <p className="cc-muted text-xs mt-2 mb-0">
+                    {features.data?.modelMode.enabled
+                      ? `Deliverables generated by ${features.data.modelMode.model}.`
+                      : "Simulated mode: deliverables are labelled drafts from deterministic templates; decisions use the real protocol."}{" "}
+                    {features.data?.search
+                      ? `Web research via ${features.data.search} with [S#] citations.`
+                      : "No search provider configured: research will contain no external evidence."}
+                  </p>
+                </details>
+              </div>
+            ) : null}
+
+            {error ? <p className="cc-error mt-3">{error}</p> : null}
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              {step > 1 ? (
+                <button
+                  type="button"
+                  className="cc-btn cc-btn-secondary"
+                  onClick={() => setStep((s) => (s === 2 ? 1 : 2))}
+                >
+                  Back
+                </button>
+              ) : null}
+              {step < 3 ? (
+                <button
+                  type="button"
+                  className="cc-btn cc-btn-primary"
+                  disabled={step === 1 ? !briefValid : !constraintsValid}
+                  onClick={() => setStep((s) => (s === 1 ? 2 : 3))}
+                >
+                  Continue
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="cc-btn cc-btn-primary"
+                  disabled={!briefValid || !constraintsValid || !budgetValid || create.isPending}
+                  onClick={() => {
+                    setError(null);
+                    create.mutate();
+                  }}
+                >
+                  {create.isPending ? "Building roadmap…" : "Create roadmap & assemble workforce →"}
+                </button>
+              )}
+            </div>
+          </section>
+        ) : null}
 
         <section className="cc-panel">
           <h2 className="cc-panel-title">Your programmes</h2>

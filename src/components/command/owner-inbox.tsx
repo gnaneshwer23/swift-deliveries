@@ -16,18 +16,24 @@ const since = (iso: string) =>
  * Everything waiting on you, across every open mission. Each row is one
  * decision only you can make, and opens the place where you make it.
  */
-export function OwnerInbox() {
+export function OwnerInbox({ previewLimit }: { previewLimit?: number } = {}) {
   const q = useQuery(ownerInboxQuery);
+  const limit = previewLimit ?? null;
+  const items = q.data?.items ?? [];
+  const visible = limit != null ? items.slice(0, limit) : items;
+  const overflow = limit != null ? Math.max(0, items.length - limit) : 0;
   return (
     <section className="cc-panel" id="owner-inbox" aria-labelledby="owner-inbox-title">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 id="owner-inbox-title" className="cc-panel-title mb-0 flex items-center gap-2">
           <Inbox className="size-4" aria-hidden="true" /> Waiting on you
-          {q.data?.items.length ? <span className="cc-chip">{q.data.items.length}</span> : null}
+          {items.length ? <span className="cc-chip">{items.length}</span> : null}
         </h2>
-        <span className="cc-muted text-xs">
-          Read from your open missions. Agents never decide these.
-        </span>
+        {!limit ? (
+          <span className="cc-muted text-xs">
+            Read from your open missions. Agents never decide these.
+          </span>
+        ) : null}
       </div>
       <OwnerInboxBody
         state={
@@ -35,9 +41,18 @@ export function OwnerInbox() {
             ? { status: "loading" }
             : q.isError
               ? { status: "error" }
-              : { status: "ready", items: q.data.items, truncated: q.data.truncated }
+              : { status: "ready", items: visible, truncated: q.data?.truncated ?? false }
         }
       />
+      {overflow > 0 ? (
+        <p className="cc-muted text-xs mt-2 mb-0">
+          {overflow} more in{" "}
+          <Link to="/command/portfolio" className="underline">
+            Portfolio
+          </Link>
+          .
+        </p>
+      ) : null}
     </section>
   );
 }
