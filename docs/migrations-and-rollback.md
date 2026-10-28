@@ -38,6 +38,7 @@ The production Neon branch is `br-fancy-breeze-zatt9ocp` in project `spring-wind
 | 0030 conversations (`wf_conversations`, `wf_conversation_turns`)   | Applied 27 Oct 2026 with owner approval     | Applied 27 Oct 2026                  |
 | 0031 voice measurements (`wf_voice_metrics`)                       | Not applied — needs owner approval          | Applied 27 Oct 2026                  |
 | 0032 PSI Stripe activations (`payment_taken`, Stripe ids)          | Applied **28 Oct 2026** with owner approval (`Approve apply 0032 to production Neon br-fancy-breeze-zatt9ocp`); file blob `8f5178636508c0e06df99ec32a7ee70e546b301b` (commit `c7d4bb138f5e98834458d8e204d89210c7a0b236`) | Not applied — needs owner approval   |
+| 0033 reconciliation FK `ON DELETE CASCADE`                         | Not applied — needs owner approval          | Not applied                          |
 
 Migrations 0020–0023 were applied to production in a single transaction. The six `psi_*` tables are owned by the server role, have no client grants, and have row-level security enabled. No table rows were read during or after the change.
 
@@ -305,3 +306,9 @@ Allows `payment_taken = true` on `psi_pilot_activations`, makes `request_id` nul
 **Production apply (28 Oct 2026).** Owner approved with the exact sentence for `br-fancy-breeze-zatt9ocp` (project `spring-wind-48457918`). Applied via Production `DATABASE_URL_UNPOOLED` after confirming `neon.branch_id = br-fancy-breeze-zatt9ocp`. Catalog-only preflight showed the `payment_taken = false` check and no Stripe columns; post-apply verify: check dropped, `request_id` nullable, Stripe columns + session unique index + subscription index present, `payment_environment` check allows `sandbox`/`live`. No customer rows were read. Preview branch was **not** in the approval sentence and was not updated.
 
 **Rollback.** Prefer redeploying code that stops writing Stripe columns. To reverse schema only with owner approval, after a Neon snapshot: drop the new indexes/columns and restore a `payment_taken = false` check **only if no row has `payment_taken = true`**. If any paid row exists, do not re-impose the false-only check.
+
+## 0033 reconciliation FK cascade
+
+Replaces the default `NO ACTION` foreign key from `psi_comparison_reconciliations` to `psi_comparison_reservations` with `ON DELETE CASCADE`, so deleting a reservation or mission does not leave undeletable reconciliation orphans.
+
+**Rollback.** With owner approval after a Neon snapshot, drop and re-add the foreign key without `ON DELETE CASCADE` only if no automated cascade deletes have been relied on in production.

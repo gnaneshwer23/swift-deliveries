@@ -8,7 +8,8 @@ const add = (a: P3, b: P3): P3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
 const BRAIN: P3 = [0, 0, 0];
 const SAYS: Record<OfficeSpecialist["state"], string> = {
   idle: "free",
-  waiting: "waiting for you",
+  awaiting_gate: "awaiting your gate decision",
+  waiting: "needs your input on the plan",
   doing: "working",
   next: "up next",
   later: "queued behind earlier work",
@@ -105,7 +106,7 @@ export function AgentOfficeIllustration({
     <svg
       viewBox={`${OFFICE_VIEWBOX.x} ${OFFICE_VIEWBOX.y} ${OFFICE_VIEWBOX.w} ${OFFICE_VIEWBOX.h}`}
       role="group"
-      aria-label={`Your agents office: ${n} departments with specialists you can assign today, around the Product Brain. Desks glow while a specialist is working and turn amber while work waits for you.`}
+      aria-label={`Your agents office: ${n} departments with specialists you can assign today, around the Product Brain. Desks glow while a specialist is working, turn amber at approval gates, and show a teal ring when the plan needs your input.`}
     >
       <IsoDefs id={pid} />
       <g className="ix-office-lanes">
@@ -151,7 +152,7 @@ export function AgentOfficeIllustration({
             key={d.n}
             className="ix-office-floor"
             data-busy={d.counts.doing > 0 || undefined}
-            data-waiting={d.counts.waiting > 0 || undefined}
+            data-waiting={d.counts.waiting + d.counts.awaiting_gate > 0 || undefined}
           >
             <Plate id={pid} at={at} size={POD_W} depth={POD_D} height={14} radius={22} />
             <text

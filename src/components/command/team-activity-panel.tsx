@@ -175,7 +175,11 @@ export function TeamActivityPanel({ mission }: { mission: SupervisedMission }) {
             <p className="text-xs cc-muted mt-2">
               Trace: finding {trace.findingId} via handoffs {trace.handoffIds.join(" → ")}.
             </p>
-          ) : null}
+          ) : (
+            <p className="text-xs cc-muted mt-2">
+              Trace: incomplete — not every specialist step is on the record.
+            </p>
+          )}
         </div>
       ) : null}
     </section>
