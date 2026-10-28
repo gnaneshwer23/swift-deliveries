@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
 import { CommandLegacyPlanner } from "@/components/command/command-legacy-planner";
-import { WorkspaceFoyer } from "@/components/command/workspace-foyer";
+import { ExecutiveStudioDashboard } from "@/components/command/executive-studio-dashboard";
 import { commandCentreBootstrapQuery } from "@/lib/workforce-queries";
 
 export const Route = createFileRoute("/_authenticated/command/")({
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_authenticated/command/")({
       {
         name: "description",
         content:
-          "DeliverX Studio — turn a product question into evidence, a decision you control, and work you can review.",
+          "DeliverX Studio executive dispatch — attention, running cases, and honest handoff inspection from saved records.",
       },
     ],
   }),
@@ -38,7 +38,7 @@ function CommandHome() {
           : undefined
       }
     >
-      <WorkspaceFoyer />
+      <ExecutiveStudioDashboard />
 
       <details
         className="ps-legacy ps-foyer-advanced ps-foyer-below-fold"

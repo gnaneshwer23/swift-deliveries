@@ -1,6 +1,6 @@
 # Stitch Quiet-first adoption (DeliverX Studio)
 
-Founder choice **A (Quiet-first)**: keep `/command` as the Quiet Studio foyer; borrow Stitch **Executive Autonomous Dispatch** visual language only on Portfolio, Advanced routes, and mission dossiers — with **real** studio data only.
+Founder choice **A (Quiet-first)** — **superseded for the foyer by [Executive B](./psi-stitch-executive-b.md)**. Historically: keep `/command` as the Quiet Studio foyer; borrow Stitch only on Portfolio, Advanced routes, and mission dossiers.
 
 **Stitch source (reference):** `stitch_deliverx_project_dashboard/executive_autonomous_dispatch/DESIGN.md` and `deliverx_dashboard/code.html` (not copied wholesale).
 

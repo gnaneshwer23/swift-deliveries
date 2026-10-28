@@ -3948,13 +3948,14 @@
 
 /* Stitch executive dispatch — scoped to `.ps-executive` (Portfolio / Advanced / dossiers) */
 .psi-workspace.ps-executive {
-  --exec-canvas: #f8fafc;
+  --exec-canvas: #f8f9ff;
   --exec-card: #ffffff;
-  --exec-well: #f1f5f9;
-  --exec-ink: #0f172a;
-  --exec-muted: #64748b;
-  --exec-border: #e2e8f0;
-  --exec-border-strong: #cbd5e1;
+  --exec-well: #eff4ff;
+  --exec-well-deep: #e5eeff;
+  --exec-ink: #0b1c30;
+  --exec-muted: #45464d;
+  --exec-border: #c6c6cd;
+  --exec-border-strong: #76777d;
   --exec-success-bg: #ecfdf5;
   --exec-success-border: #a7f3d0;
   --exec-success-ink: #065f46;
@@ -4138,4 +4139,155 @@
   font-family: var(--exec-font-mono);
   font-size: 0.6875rem;
   font-weight: 500;
+}
+
+.psi-workspace.ps-executive .ps-main {
+  background: var(--exec-canvas);
+}
+
+.psi-workspace.ps-executive .ps-exec-omnibox-well {
+  background: var(--exec-card);
+  border: 1px solid var(--exec-border);
+  border-radius: var(--exec-radius-lg);
+  box-shadow: var(--exec-shadow-card);
+  padding: 16px 18px;
+}
+
+.psi-workspace.ps-executive .ps-exec-dashboard-foot {
+  margin-top: 24px;
+}
+
+.psi-workspace.ps-executive .ps-exec-handoff-sheet {
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  border: 1px solid var(--exec-border);
+  background: var(--exec-canvas);
+  padding: 12px 20px 28px;
+  font-family: var(--exec-font-display);
+}
+
+.psi-workspace.ps-executive .ps-exec-handoff-handle {
+  width: 48px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--exec-well-deep);
+  margin: 0 auto 12px;
+}
+
+.psi-workspace.ps-executive .ps-exec-handoff-title {
+  font-family: var(--exec-font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--exec-ink);
+}
+
+.psi-workspace.ps-executive .ps-exec-handoff-trace-id {
+  font-family: var(--exec-font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--exec-radius-sm);
+  background: var(--exec-well-deep);
+  color: var(--exec-ink);
+}
+
+.psi-workspace.ps-executive .ps-exec-handoff-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--exec-radius-lg);
+  border: 0;
+  background: var(--exec-well);
+  color: var(--exec-ink);
+  cursor: pointer;
+}
+
+.psi-workspace.ps-executive .ps-exec-handoff-icon-btn:hover {
+  background: var(--exec-well-deep);
+}
+
+.psi-workspace.ps-executive .ps-exec-handoff-pipeline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  margin: 12px 0 8px;
+  border-radius: var(--exec-radius-lg);
+  background: var(--exec-well);
+  border: 1px solid var(--exec-border);
+}
+
+.psi-workspace.ps-executive .ps-exec-handoff-agent {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.psi-workspace.ps-executive .ps-exec-handoff-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: #131b2e;
+  flex-shrink: 0;
+}
+
+.psi-workspace.ps-executive .ps-exec-handoff-avatar-target {
+  background: var(--exec-well-deep);
+}
+
+.psi-workspace.ps-executive .ps-exec-segment-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  margin: 16px 0 12px;
+  border-radius: var(--exec-radius-lg);
+  background: var(--exec-well);
+}
+
+.psi-workspace.ps-executive .ps-exec-segment-tabs button {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: var(--exec-radius-lg);
+  background: transparent;
+  font-family: var(--exec-font-display);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--exec-muted);
+  cursor: pointer;
+}
+
+.psi-workspace.ps-executive .ps-exec-segment-tabs button.is-active {
+  background: var(--exec-card);
+  color: var(--exec-ink);
+  box-shadow: var(--exec-shadow-card);
+  border: 1px solid var(--exec-border);
+}
+
+.psi-workspace.ps-executive .ps-exec-handoff-pane {
+  display: grid;
+  gap: 10px;
+}
+
+.psi-workspace.ps-executive .ps-exec-handoff-block {
+  padding: 12px 14px;
+  border-radius: var(--exec-radius-lg);
+  background: var(--exec-well);
+  border: 1px solid var(--exec-border);
+}
+
+.psi-workspace.ps-executive .ps-exec-handoff-source-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
 }
