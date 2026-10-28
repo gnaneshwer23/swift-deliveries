@@ -47,6 +47,7 @@ import {
   type OutcomeReview,
   type SupervisedMission,
 } from "./types";
+import { buildContinuationPlan } from "./continuation-plan";
 import {
   deriveAgentRecommendation,
   isInconclusivePath,
@@ -514,6 +515,7 @@ export class SupervisedMissionService {
       researchPassCompletedAt: null,
       researchProvider: null,
       team,
+      continuationPlan: null,
       projectId: input.projectId ?? null,
       activity: [
         activityEvent({
@@ -957,6 +959,7 @@ export class SupervisedMissionService {
     }
     const draft = deriveAgentRecommendation(current);
     const humanNextPath = normalizeDecisionChoice(input.choice);
+    const decidedAt = new Date(input.nowMs).toISOString();
     const approval: ApprovalRecord = {
       action: "compare_options",
       version: input.claim.version,
@@ -965,7 +968,7 @@ export class SupervisedMissionService {
       choice: humanNextPath,
       note: input.note.trim().slice(0, 2000),
       actorId: input.actorId,
-      decidedAt: new Date(input.nowMs).toISOString(),
+      decidedAt,
       agentRecommendation: draft.recommendation,
       humanNextPath,
       disagreesWithRecommendation: !pathAgreesWithRecommendation(
@@ -975,7 +978,7 @@ export class SupervisedMissionService {
       executionLimited: draft.executionLimited,
       recommendationRationale: draft.rationale,
     };
-    const next: SupervisedMission = {
+    const withApproval: SupervisedMission = {
       ...current,
       version: current.version + 1,
       stage: "decision",
@@ -985,7 +988,26 @@ export class SupervisedMissionService {
       prototype: null,
       exportBody: null,
       exportPdfBase64: null,
-      updatedAt: approval.decidedAt,
+      continuationPlan: null,
+      updatedAt: decidedAt,
+    };
+    const continuationPlan = buildContinuationPlan({
+      mission: withApproval,
+      nowMs: input.nowMs,
+    });
+    const next: SupervisedMission = {
+      ...withApproval,
+      continuationPlan,
+      activity: pushActivity(
+        withApproval,
+        activityEvent({
+          at: decidedAt,
+          taskKey: "human_decision",
+          kind: "continuation.plan.drafted",
+          summary: `Act B continuation plan drafted for path “${humanNextPath}” (${continuationPlan.roles.length} continuation roles). Distinct from the Act A research team.`,
+          actor: "system",
+        }),
+      ),
     };
     return this.store.save(next, current.version);
   }

@@ -25,6 +25,10 @@ import { createZip } from "@/lib/programme/zip";
 import { type ResearchMode } from "@/lib/pilot-mission/research-mode";
 import { type DecisionChoice, type SupervisedMission } from "@/lib/pilot-mission/types";
 import {
+  buildContinuationPlanMarkdown,
+  continuationPlanFilename,
+} from "@/lib/pilot-mission/continuation-plan";
+import {
   AGENT_RECOMMENDATION_LABELS,
   HUMAN_NEXT_PATH_LABELS,
   deriveAgentRecommendation,
@@ -394,6 +398,80 @@ function SupervisedMissionPage() {
             <p className="cc-muted text-sm">
               Bound to {mission.approval.action} version {mission.approval.version}.
             </p>
+          </section>
+        ) : null}
+        {mission.continuationPlan ? (
+          <section className="cc-panel" id="continuation-plan" aria-label="Continuation plan">
+            <h2 className="cc-panel-title">{mission.continuationPlan.title}</h2>
+            <p className="cc-muted text-sm">{mission.continuationPlan.summary}</p>
+            <p className="cc-muted mt-2 text-sm">
+              Continuation team for this path — distinct from the Act A research team. Size follows
+              the work.
+            </p>
+            {mission.continuationPlan.executionBlocked ? (
+              <p className="cc-error mt-2 text-sm" role="status">
+                Execution blocked: {mission.continuationPlan.executionBlockedReason}
+              </p>
+            ) : null}
+            <h3 className="mt-4 text-sm font-medium">Roles</h3>
+            <ul className="mt-2 grid gap-3 text-sm">
+              {mission.continuationPlan.roles.map((role) => (
+                <li key={`${role.capabilityId ?? "human"}-${role.label}`}>
+                  <strong>{role.label}</strong>
+                  {role.capabilityId ? (
+                    <span className="cc-muted"> ({role.capabilityId})</span>
+                  ) : null}
+                  <p className="cc-muted">{role.responsibility}</p>
+                  <p className="cc-muted text-xs">Why: {role.why}</p>
+                </li>
+              ))}
+            </ul>
+            <h3 className="mt-4 text-sm font-medium">Roadmap</h3>
+            <ol className="mt-2 grid gap-2 text-sm">
+              {mission.continuationPlan.roadmap.map((step) => (
+                <li key={step.id}>
+                  <strong>{step.title}</strong> · {step.ownerLabel}
+                  {step.blocked ? (
+                    <span className="cc-error"> — blocked: {step.blockedReason}</span>
+                  ) : null}
+                  <p className="cc-muted">{step.detail}</p>
+                </li>
+              ))}
+            </ol>
+            <h3 className="mt-4 text-sm font-medium">Planned artefacts</h3>
+            <ul className="mt-2 grid gap-1 text-sm">
+              {mission.continuationPlan.plannedArtefacts.map((artefact) => (
+                <li key={artefact.type}>
+                  {artefact.type} · {artefact.ownerLabel} — {artefact.note}
+                </li>
+              ))}
+            </ul>
+            {mission.continuationPlan.unresolvedRisks.length ? (
+              <>
+                <h3 className="mt-4 text-sm font-medium">Unresolved risks</h3>
+                <ul className="mt-2 grid gap-1 text-sm cc-muted">
+                  {mission.continuationPlan.unresolvedRisks.map((risk) => (
+                    <li key={risk.slice(0, 48)}>{risk}</li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
+            <button
+              type="button"
+              className="cc-btn cc-btn-secondary mt-4"
+              onClick={() => {
+                const md = buildContinuationPlanMarkdown(mission, mission.continuationPlan!);
+                const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = continuationPlanFilename(mission.id);
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+            >
+              Download continuation plan
+            </button>
           </section>
         ) : null}
         {mission.invalidatedApprovals.length ? (

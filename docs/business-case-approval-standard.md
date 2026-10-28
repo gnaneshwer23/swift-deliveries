@@ -16,7 +16,7 @@
 | --- | --- |
 | Date | 28 October 2026 |
 | Scope | Phase planning |
-| Implementation | **P-A only** until further named phases are authorised |
+| Implementation | **P-A** and **P-B** authorised; further phases need separate approval |
 
 ---
 

@@ -1,8 +1,10 @@
+import type { ContinuationPlan } from "./continuation-plan";
 import type { ResearchMode } from "./research-mode";
 import type { PilotActivityEvent, PilotTeamPlan } from "./specialist-team";
 import type { AgentRecommendation, DecisionChoice, HumanNextPath } from "./verdict";
 
 export type { AgentRecommendation, DecisionChoice, HumanNextPath } from "./verdict";
+export type { ContinuationPlan } from "./continuation-plan";
 
 /** Exact record stored when no model provider is configured. */
 export const NOT_RUN_LABEL = "not run — provider not configured";
@@ -256,6 +258,11 @@ export type SupervisedMission = {
   researchProvider: string | null;
   /** Small Available Wave 1 specialist team for this pilot. */
   team: PilotTeamPlan | null;
+  /**
+   * Act B continuation plan for the authorised next path (P-B).
+   * Distinct from the Act A research `team`. Additive — null on older missions.
+   */
+  continuationPlan: ContinuationPlan | null;
   /** Persisted task events only — no fake chat or timer theatre. */
   activity: PilotActivityEvent[];
   /**
