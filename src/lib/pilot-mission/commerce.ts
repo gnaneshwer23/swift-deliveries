@@ -129,7 +129,8 @@ export const COMMERCE_REMEDIES: CommerceRemedy[] = [
   {
     id: "simulated-draft",
     situation: "Model provider is not configured",
-    treatment: "Options may be simulated drafts; comparison units charged stay 0 until a provider runs.",
+    treatment:
+      "Options may be simulated drafts; comparison units charged stay 0 until a provider runs.",
   },
 ];
 
@@ -185,11 +186,12 @@ export function commerceHardStopMessage(mission: SupervisedMission): string | nu
 export function buildCommerceDisclosureMarkdown(mission: SupervisedMission): string {
   const snap = commerceSnapshot(mission);
   const eventLines = snap.events
-    .map((e) => `- **${e.label}** — ${e.billable ? "billable when applicable" : "not billable"}. ${e.note}`)
+    .map(
+      (e) =>
+        `- **${e.label}** — ${e.billable ? "billable when applicable" : "not billable"}. ${e.note}`,
+    )
     .join("\n");
-  const remedyLines = snap.remedies
-    .map((r) => `- **${r.situation}:** ${r.treatment}`)
-    .join("\n");
+  const remedyLines = snap.remedies.map((r) => `- **${r.situation}:** ${r.treatment}`).join("\n");
 
   return [
     `## Commerce disclosure`,

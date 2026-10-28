@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  buildDecisionRoadmapEntries,
-  buildDecisionRoadmapMarkdown,
-} from "./decision-roadmap";
+import { buildDecisionRoadmapEntries, buildDecisionRoadmapMarkdown } from "./decision-roadmap";
 import type { SupervisedMission } from "./types";
 
 function mission(overrides: Partial<SupervisedMission> = {}): SupervisedMission {
@@ -24,7 +21,15 @@ function mission(overrides: Partial<SupervisedMission> = {}): SupervisedMission 
       version: 1,
       scopeHash: "abc123def456",
       options: [{ id: "o1", title: "Ship", tradeoff: "t", basis: "b" }],
-      generation: { ran: false, label: "Simulated draft", provider: null, model: null, output: "", citations: [], gaps: [] },
+      generation: {
+        ran: false,
+        label: "Simulated draft",
+        provider: null,
+        model: null,
+        output: "",
+        citations: [],
+        gaps: [],
+      },
     },
     approval: {
       action: "compare_options",
@@ -77,7 +82,7 @@ function mission(overrides: Partial<SupervisedMission> = {}): SupervisedMission 
     ],
     projectId: null,
     updatedAt: "2026-10-27T12:00:00Z",
-  } as SupervisedMission;
+  } as unknown as SupervisedMission;
   return { ...base, ...overrides };
 }
 

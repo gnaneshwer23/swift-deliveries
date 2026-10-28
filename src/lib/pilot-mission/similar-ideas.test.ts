@@ -3,9 +3,9 @@ import { findSimilarIdeas } from "./similar-ideas";
 
 describe("PT-5 similar-idea assist", () => {
   it("returns empty when the draft is too thin", () => {
-    expect(findSimilarIdeas("build app", [{ id: "1", question: "build an app for tutors" }])).toEqual(
-      [],
-    );
+    expect(
+      findSimilarIdeas("build app", [{ id: "1", question: "build an app for tutors" }]),
+    ).toEqual([]);
   });
 
   it("suggests overlapping cases with a basis and never invents ids", () => {

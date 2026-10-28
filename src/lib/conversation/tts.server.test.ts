@@ -1,24 +1,15 @@
 import { describe, expect, it } from "vitest";
-import {
-  DEFAULT_TTS_VOICE_ID,
-  synthesizeSpeech,
-  ttsConfig,
-  ttsVoiceId,
-} from "./tts.server";
+import { DEFAULT_TTS_VOICE_ID, synthesizeSpeech, ttsConfig, ttsVoiceId } from "./tts.server";
 
 describe("TTS config", () => {
   it("defaults to the founder voice id", () => {
     expect(ttsVoiceId({})).toBe(DEFAULT_TTS_VOICE_ID);
-    expect(ttsVoiceId({ DXSI_TTS_VOICE_ID: "Aa6nEBJJMKJwJkCx8VU2" })).toBe(
-      "Aa6nEBJJMKJwJkCx8VU2",
-    );
+    expect(ttsVoiceId({ DXSI_TTS_VOICE_ID: "Aa6nEBJJMKJwJkCx8VU2" })).toBe("Aa6nEBJJMKJwJkCx8VU2");
   });
 
   it("stays off until explicitly enabled with a key", () => {
     expect(ttsConfig({}).enabled).toBe(false);
-    expect(
-      ttsConfig({ DXSI_TTS_ENABLED: "true", ELEVENLABS_API_KEY: "" }).enabled,
-    ).toBe(false);
+    expect(ttsConfig({ DXSI_TTS_ENABLED: "true", ELEVENLABS_API_KEY: "" }).enabled).toBe(false);
     const on = ttsConfig({
       DXSI_TTS_ENABLED: "true",
       ELEVENLABS_API_KEY: "sk-test",

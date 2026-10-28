@@ -8,10 +8,7 @@ import {
   isPsiCheckoutSession,
   parseCheckoutSessionForPsi,
 } from "@/lib/pilot/paid-activation";
-import {
-  ActivationConflictError,
-  ActivationStoreUnavailableError,
-} from "@/lib/pilot/activation";
+import { ActivationConflictError, ActivationStoreUnavailableError } from "@/lib/pilot/activation";
 
 function getPriceId(subscription: any): string | undefined {
   const price = subscription.items?.data?.[0]?.price;
@@ -92,7 +89,12 @@ async function fulfillPsiCheckout(session: any, environment: StripeEnv) {
   const repo = paidActivationRepository(neonDb());
   try {
     const result = await fulfillPaidActivation(input, repo);
-    if (!result.ok && result.reason !== "unpaid" && result.reason !== "not_psi" && result.reason !== "career") {
+    if (
+      !result.ok &&
+      result.reason !== "unpaid" &&
+      result.reason !== "not_psi" &&
+      result.reason !== "career"
+    ) {
       throw new Error(result.message);
     }
   } catch (error) {

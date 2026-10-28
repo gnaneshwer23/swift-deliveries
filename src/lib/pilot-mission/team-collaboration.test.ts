@@ -27,9 +27,9 @@ describe("Phase 2 merge gate — finding through handoff to recommendation", () 
     });
 
     expect(mission.teamCollaboration?.assignments.length).toBe(INVESTIGATION_TASK_KEYS.length);
-    expect(
-      mission.teamCollaboration?.edges.some((e) => e.kind === "planned_dependency"),
-    ).toBe(true);
+    expect(mission.teamCollaboration?.edges.some((e) => e.kind === "planned_dependency")).toBe(
+      true,
+    );
 
     mission = await service.approvePlan({
       workspaceId: "alpha",
@@ -38,9 +38,9 @@ describe("Phase 2 merge gate — finding through handoff to recommendation", () 
       nowMs: 2_000,
       env: {},
     });
-    expect(mission.teamCollaboration?.handoffs.some((h) => h.id === "ho-evidence-to-synthesis")).toBe(
-      true,
-    );
+    expect(
+      mission.teamCollaboration?.handoffs.some((h) => h.id === "ho-evidence-to-synthesis"),
+    ).toBe(true);
 
     mission = await service.saveEvidence({
       workspaceId: "alpha",
@@ -80,9 +80,9 @@ describe("Phase 2 merge gate — finding through handoff to recommendation", () 
       },
     });
     mission = compared.mission;
-    expect(mission.teamCollaboration?.handoffs.some((h) => h.id === "ho-synthesis-to-options")).toBe(
-      true,
-    );
+    expect(
+      mission.teamCollaboration?.handoffs.some((h) => h.id === "ho-synthesis-to-options"),
+    ).toBe(true);
 
     const proposal = mission.proposal!;
     mission = await service.decide({

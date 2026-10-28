@@ -4,7 +4,15 @@ import {
   deriveInvestigationRunState,
 } from "./investigation-experience";
 import { MemoryStore, SupervisedMissionService } from "./service";
+import { buildPilotTeamPlan } from "./specialist-team";
+import { emptyStudioMeta } from "./studio-meta";
 import type { SupervisedMission } from "./types";
+
+const approvedTeam = {
+  ...buildPilotTeamPlan({ band: "M" }),
+  approvedAt: "2026-01-01",
+  approvedBy: "u",
+};
 
 const brief = {
   question: "Should we pilot weekday breakfasts?",
@@ -54,7 +62,7 @@ function baseMission(overrides: Partial<SupervisedMission> = {}): SupervisedMiss
     teamCollaboration: null,
     projectId: null,
     updatedAt: "2026-10-27T00:00:00Z",
-  } as SupervisedMission;
+  } as unknown as SupervisedMission;
   return { ...seed, ...overrides };
 }
 
@@ -70,11 +78,7 @@ describe("investigation experience", () => {
   it("marks leased jobs as running from persisted job state", () => {
     const state = deriveInvestigationRunState(
       baseMission({
-        team: {
-          tasks: [{ key: "frame_objective" } as never],
-          approvedAt: "2026-01-01",
-          approvedBy: "u",
-        },
+        team: approvedTeam,
         stage: "evidence",
         job: { ...baseMission().job, status: "leased", leaseUntil: "2026-01-02T00:00:00Z" },
       }),
@@ -85,7 +89,7 @@ describe("investigation experience", () => {
   it("derives keywords and updates only from recorded activity", () => {
     const exp = buildInvestigationExperience(
       baseMission({
-        team: { tasks: [], approvedAt: "2026-01-01", approvedBy: "u" },
+        team: approvedTeam,
         stage: "evidence",
         activity: [
           {
@@ -108,7 +112,7 @@ describe("investigation experience", () => {
   it("adds a research-pass line only when researchPassCompletedAt is set", () => {
     const exp = buildInvestigationExperience(
       baseMission({
-        team: { tasks: [], approvedAt: "2026-01-01", approvedBy: "u" },
+        team: approvedTeam,
         stage: "evidence",
         researchPassCompletedAt: "2026-01-02T00:00:00Z",
         evidence: [{ id: "g1", statement: "No provider", source: "", classification: "gap" }],
@@ -147,9 +151,9 @@ describe("investigation experience", () => {
   it("marks pause as interrupted", () => {
     const state = deriveInvestigationRunState(
       baseMission({
-        team: { tasks: [], approvedAt: "2026-01-01", approvedBy: "u" },
+        team: approvedTeam,
         stage: "evidence",
-        studioMeta: { investigationPaused: true },
+        studioMeta: { ...emptyStudioMeta("2026-01-01T00:00:00Z"), investigationPaused: true },
       }),
     );
     expect(state).toBe("interrupted");

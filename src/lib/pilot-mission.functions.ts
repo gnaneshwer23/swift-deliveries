@@ -494,17 +494,20 @@ export const saveSupervisedStudioMeta = createServerFn({ method: "POST" })
   .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
     const workspace = await workspaceFor(context.supabase, context.userId);
     const { service } = await serviceFor();
-    const mission = await service.saveStudioMeta({
+    const studioMetaInput: Parameters<SupervisedMissionService["saveStudioMeta"]>[0] = {
       workspaceId: workspace.id,
       id: data.id,
       expectedVersion: data.expectedVersion,
-      favourite: data.favourite,
-      archived: data.archived,
-      notifyWhenReady: data.notifyWhenReady,
-      investigationPaused: data.investigationPaused,
       actorId: context.userId,
       nowMs: Date.now(),
-    });
+    };
+    if (data.favourite !== undefined) studioMetaInput.favourite = data.favourite;
+    if (data.archived !== undefined) studioMetaInput.archived = data.archived;
+    if (data.notifyWhenReady !== undefined) studioMetaInput.notifyWhenReady = data.notifyWhenReady;
+    if (data.investigationPaused !== undefined) {
+      studioMetaInput.investigationPaused = data.investigationPaused;
+    }
+    const mission = await service.saveStudioMeta(studioMetaInput);
     return view(mission, null);
   });
 

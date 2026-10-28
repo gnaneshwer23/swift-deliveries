@@ -169,7 +169,7 @@ describe.skipIf(!live)("Neon integration", () => {
     expect(count.error).toBeNull();
     expect(typeof count.count).toBe("number");
 
-    expect((await db.rpc("wf_schema_version")).data).toBe(3);
+    expect((await db.rpc("wf_schema_version")).data).toBe(4);
   });
 
   it("keeps programme records append-only", async () => {

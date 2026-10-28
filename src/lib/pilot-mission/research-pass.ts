@@ -26,11 +26,7 @@ function nextEvidenceId(items: EvidenceItem[]): string {
 
 function buildQueries(question: string): string[] {
   const q = question.trim().slice(0, 280);
-  return [
-    q,
-    `${q} market competitors`,
-    `${q} product alternatives`,
-  ].slice(0, 3);
+  return [q, `${q} market competitors`, `${q} product alternatives`].slice(0, 3);
 }
 
 function mergeUniqueGaps(existing: string[], extra: string[]): string[] {
@@ -61,7 +57,8 @@ export async function runResearchPass(input: {
   const evidenceActor =
     input.mission.team?.tasks.find((t) => t.key === "register_evidence")?.capabilityId ?? "DX-018";
   const synthesisActor =
-    input.mission.team?.tasks.find((t) => t.key === "synthesise_findings")?.capabilityId ?? "DX-020";
+    input.mission.team?.tasks.find((t) => t.key === "synthesise_findings")?.capabilityId ??
+    "DX-020";
 
   let evidence = [...(input.mission.evidence ?? [])];
   let researchGaps = [...(input.mission.researchGaps ?? [])];
@@ -94,9 +91,7 @@ export async function runResearchPass(input: {
     const queries = buildQueries(input.mission.brief.question);
     let anyHit = false;
     const seenUrls = new Set(
-      evidence
-        .map((e) => e.source.trim().toLowerCase())
-        .filter((s) => s.startsWith("http")),
+      evidence.map((e) => e.source.trim().toLowerCase()).filter((s) => s.startsWith("http")),
     );
     for (const query of queries) {
       const result = await search(query, 3);
@@ -203,7 +198,8 @@ export async function runResearchPass(input: {
       at: input.at,
       taskKey: "synthesise_findings",
       kind: "task.started",
-      summary: "Research Synthesis is grouping findings, assumptions and gaps for the options step.",
+      summary:
+        "Research Synthesis is grouping findings, assumptions and gaps for the options step.",
       actor: synthesisActor,
     }),
   );

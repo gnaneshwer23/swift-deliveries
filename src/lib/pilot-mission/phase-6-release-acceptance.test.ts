@@ -28,7 +28,7 @@ const FIXTURE_BRIEF = {
 };
 
 const FIXTURE_GENERATOR_NOT_CONFIGURED = {
-  cost: 0,
+  cost: 0 as const,
   run: async () => ({
     ran: false,
     label: "not run — provider not configured",
@@ -66,7 +66,7 @@ const FIXTURE_GENERATOR_FAIL_THEN_OK = (
   failFirst: { current: boolean },
   evidenceIds: string[],
 ) => ({
-  cost: 1,
+  cost: 1 as const,
   run: async () => {
     if (failFirst.current) throw new Error("provider timeout");
     const output = fixtureOptionsJson(evidenceIds);

@@ -127,7 +127,9 @@ export function SpecialistTeamGraph({
                 <li key={item.id} data-kind="finding">
                   <strong>Finding</strong>
                   <span>{item.statement}</span>
-                  {item.source ? <span className="cc-muted text-xs block">{item.source}</span> : null}
+                  {item.source ? (
+                    <span className="cc-muted text-xs block">{item.source}</span>
+                  ) : null}
                 </li>
               ))}
             </ul>

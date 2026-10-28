@@ -370,7 +370,9 @@ async function listActivations(db: Db, ids: string[]): Promise<Map<string, Pilot
   return found;
 }
 
-export function paidActivationRepository(db: Db): import("./paid-activation").PaidActivationRepository {
+export function paidActivationRepository(
+  db: Db,
+): import("./paid-activation").PaidActivationRepository {
   return {
     async findByCheckoutSession(sessionId) {
       const res = await db

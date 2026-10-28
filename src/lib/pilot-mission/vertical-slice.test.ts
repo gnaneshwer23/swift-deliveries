@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  buildDecisionPackMarkdown,
-  buildDecisionPackPdf,
-  honestyFor,
-} from "./decision-pack";
+import { buildDecisionPackMarkdown, buildDecisionPackPdf, honestyFor } from "./decision-pack";
 import { planResearchMode, researchProviderReadiness } from "./research-mode";
 import { MemoryStore, SupervisedMissionService } from "./service";
 import { buildPilotTeamPlan, syncTeamWithMission } from "./specialist-team";
@@ -81,12 +77,12 @@ describe("founder vertical slice — specialist plan", () => {
     expect(approved.activity.some((e) => e.kind === "plan.approved")).toBe(true);
     expect(approved.activity.some((e) => e.kind === "pm_brief.drafted")).toBe(true);
     expect(approved.activity.some((e) => e.kind === "research.pass.completed")).toBe(true);
-    expect(
-      approved.team?.tasks.find((t) => t.key === "register_evidence")?.status,
-    ).toBe("completed");
-    expect(
-      approved.team?.tasks.find((t) => t.key === "synthesise_findings")?.status,
-    ).toBe("completed");
+    expect(approved.team?.tasks.find((t) => t.key === "register_evidence")?.status).toBe(
+      "completed",
+    );
+    expect(approved.team?.tasks.find((t) => t.key === "synthesise_findings")?.status).toBe(
+      "completed",
+    );
     expect(approved.team?.tasks.find((t) => t.key === "draft_options")?.status).toBe("ready");
   });
 

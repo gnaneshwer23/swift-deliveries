@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  buildMissionPrototype,
-  simulatedPrototypeHtml,
-  verifyPrototypeHtml,
-} from "./prototype";
+import { buildMissionPrototype, simulatedPrototypeHtml, verifyPrototypeHtml } from "./prototype";
 import { buildPilotTeamPlan } from "./specialist-team";
 import type { SupervisedMission } from "./types";
 
@@ -82,6 +78,9 @@ function mission(overrides: Partial<SupervisedMission> = {}): SupervisedMission 
     researchPassCompletedAt: "2026-10-27T12:05:00.000Z",
     researchProvider: null,
     team,
+    continuationPlan: null,
+    caseRoom: null,
+    teamCollaboration: null,
     activity: [],
     updatedAt: new Date().toISOString(),
     projectId: null,

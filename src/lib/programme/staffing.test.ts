@@ -17,8 +17,7 @@ describe("programmeStaffingFor", () => {
 
   it("scales toward the ceiling for programme-scale cases without forcing 150 on every run", () => {
     const s = programmeStaffingFor({
-      idea:
-        "Enterprise multi-geo rollout programme across EMEA and APAC with regulatory compliance, partner integrations, and a long evidence base for buyer committees that need a full programme-scale plan.",
+      idea: "Enterprise multi-geo rollout programme across EMEA and APAC with regulatory compliance, partner integrations, and a long evidence base for buyer committees that need a full programme-scale plan.",
       problem: "Fragmented regional launches and unclear ownership",
       goals: "Coordinated enterprise rollout with measurable adoption",
     });

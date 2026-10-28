@@ -1,9 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
-import {
-  buildStudioInbox,
-  type StudioInboxMissionRow,
-} from "@/lib/pilot-mission/studio-inbox";
+import { buildStudioInbox, type StudioInboxMissionRow } from "@/lib/pilot-mission/studio-inbox";
 
 type MissionRow = StudioInboxMissionRow;
 

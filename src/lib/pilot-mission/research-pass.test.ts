@@ -27,9 +27,9 @@ describe("research pass honesty", () => {
       })),
     });
     expect(result.findingsCount).toBe(0);
-    expect(result.researchGaps.some((g) => /Web portion unavailable|no search provider/i.test(g))).toBe(
-      true,
-    );
+    expect(
+      result.researchGaps.some((g) => /Web portion unavailable|no search provider/i.test(g)),
+    ).toBe(true);
     expect(result.evidence.some((e) => e.classification === "gap")).toBe(true);
     expect(result.activity.some((e) => e.kind === "research.pass.started")).toBe(true);
     expect(result.activity.some((e) => e.kind === "research.pass.completed")).toBe(true);

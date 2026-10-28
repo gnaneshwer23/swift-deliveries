@@ -1,8 +1,5 @@
 /** Customer-facing statements for the manual pilot. No reply-time promise. */
-import {
-  CONTINUATION_SEPARATE_COPY,
-  INVESTIGATION_UNIT_DEFINITION,
-} from "./paid-availability";
+import { CONTINUATION_SEPARATE_COPY, INVESTIGATION_UNIT_DEFINITION } from "./paid-availability";
 
 export const PUBLISHED_OPERATOR_EMAIL = "gnaneshwer.jadav@gmail.com";
 

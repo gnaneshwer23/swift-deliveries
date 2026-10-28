@@ -87,7 +87,9 @@ export function TeamActivityPanel({ mission }: { mission: SupervisedMission }) {
           </ol>
         </>
       ) : (
-        <p className="cc-muted text-sm mt-3">Handoffs appear after plan approval and specialist work.</p>
+        <p className="cc-muted text-sm mt-3">
+          Handoffs appear after plan approval and specialist work.
+        </p>
       )}
 
       {inspection.unresolvedQuestions.length ? (

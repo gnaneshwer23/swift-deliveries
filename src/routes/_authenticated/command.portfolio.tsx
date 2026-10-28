@@ -73,11 +73,7 @@ function PortfolioPage() {
   }, [query, rows]);
 
   const toggleMeta = useMutation({
-    mutationFn: async (input: {
-      id: string;
-      favourite?: boolean;
-      archived?: boolean;
-    }) => {
+    mutationFn: async (input: { id: string; favourite?: boolean; archived?: boolean }) => {
       const view = await getSupervisedMission({ data: { id: input.id } });
       return saveSupervisedStudioMeta({
         data: {
@@ -97,7 +93,10 @@ function PortfolioPage() {
   });
 
   return (
-    <CommandShell title="Portfolio" subtitle="Cases across this workspace — no agent graphs on this page">
+    <CommandShell
+      title="Portfolio"
+      subtitle="Cases across this workspace — no agent graphs on this page"
+    >
       <p className="cc-muted text-sm">
         {summary.total} case{summary.total === 1 ? "" : "s"} · {summary.awaitingDecision} awaiting
         decision · {summary.outcomeDue} outcome review due
@@ -178,9 +177,7 @@ function PortfolioPage() {
         </p>
       ) : null}
       {home.isPending ? <p className="mt-4">Loading…</p> : null}
-      {home.data && !home.data.ready ? (
-        <p className="cc-error mt-4">{home.data.reason}</p>
-      ) : null}
+      {home.data && !home.data.ready ? <p className="cc-error mt-4">{home.data.reason}</p> : null}
 
       <ul className="mt-6 grid gap-3">
         {filtered.map((row) => (
@@ -206,9 +203,7 @@ function PortfolioPage() {
                   type="button"
                   className="cc-btn cc-btn-ghost"
                   disabled={toggleMeta.isPending}
-                  onClick={() =>
-                    toggleMeta.mutate({ id: row.id, favourite: !row.favourite })
-                  }
+                  onClick={() => toggleMeta.mutate({ id: row.id, favourite: !row.favourite })}
                 >
                   {row.favourite ? "Unfavourite" : "Favourite"}
                 </button>
@@ -216,9 +211,7 @@ function PortfolioPage() {
                   type="button"
                   className="cc-btn cc-btn-ghost"
                   disabled={toggleMeta.isPending}
-                  onClick={() =>
-                    toggleMeta.mutate({ id: row.id, archived: !row.archived })
-                  }
+                  onClick={() => toggleMeta.mutate({ id: row.id, archived: !row.archived })}
                 >
                   {row.archived ? "Unarchive" : "Archive"}
                 </button>

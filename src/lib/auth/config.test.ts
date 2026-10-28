@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  authConfigErrorMessage,
-  getAuthConfigIssue,
-  isAuthConfigured,
-} from "./config";
+import { authConfigErrorMessage, getAuthConfigIssue, isAuthConfigured } from "./config";
 
 describe("auth config", () => {
   it("flags a missing browser auth URL", () => {

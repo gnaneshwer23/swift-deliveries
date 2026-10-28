@@ -10,12 +10,7 @@ import {
   normalizeDecisionChoice,
 } from "./verdict";
 
-export type CaseArtefactStatus =
-  | "planned"
-  | "draft"
-  | "ready_for_review"
-  | "accepted"
-  | "blocked";
+export type CaseArtefactStatus = "planned" | "draft" | "ready_for_review" | "accepted" | "blocked";
 
 export type CaseArtefact = {
   id: string;
@@ -93,9 +88,8 @@ function ownerKey(capabilityId: string | null, label: string): string {
 
 function evidenceLines(mission: SupervisedMission): string {
   return (
-    mission.evidence
-      .map((e) => `- [${e.classification}] ${e.id}: ${e.statement}`)
-      .join("\n") || "- None recorded."
+    mission.evidence.map((e) => `- [${e.classification}] ${e.id}: ${e.statement}`).join("\n") ||
+    "- None recorded."
   );
 }
 
@@ -222,9 +216,7 @@ export function buildCaseRoom(input: {
   const handoffs: CaseHandoff[] = [];
   const byType = new Map<string, CaseArtefact>();
 
-  const roleByLabel = new Map(
-    plan.roles.map((r) => [r.label, r] as const),
-  );
+  const roleByLabel = new Map(plan.roles.map((r) => [r.label, r] as const));
 
   for (const planned of plan.plannedArtefacts) {
     const role = roleByLabel.get(planned.ownerLabel);

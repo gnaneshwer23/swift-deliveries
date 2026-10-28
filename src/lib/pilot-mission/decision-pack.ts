@@ -283,7 +283,7 @@ function pdfEscape(text: string): string {
     .replace(/\\/g, "\\\\")
     .replace(/\(/g, "\\(")
     .replace(/\)/g, "\\)")
-    .replace(/[^\x09\x0A\x0D\x20-\x7E]/g, "?");
+    .replace(/[^\t\n\r -~]/g, "?");
 }
 
 function wrapLines(markdown: string, maxWidth = 90): string[] {

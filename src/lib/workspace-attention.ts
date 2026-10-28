@@ -31,12 +31,14 @@ const TERMINAL_NEXT = new Set(["cancelled", "follow_up_approved"]);
  * Prefer the mission the founder is currently working — most recently updated
  * open case — not merely the highest attention-queue priority.
  */
-export function pickCurrentMission<T extends { id: string; next: { id: string }; updatedAt: string }>(
-  records: T[],
-): T | null {
+export function pickCurrentMission<
+  T extends { id: string; next: { id: string }; updatedAt: string },
+>(records: T[]): T | null {
   const open = records.filter((m) => !TERMINAL_NEXT.has(m.next.id));
   if (open.length === 0) return null;
-  return [...open].sort(
-    (a, b) => b.updatedAt.localeCompare(a.updatedAt) || a.id.localeCompare(b.id),
-  )[0] ?? null;
+  return (
+    [...open].sort(
+      (a, b) => b.updatedAt.localeCompare(a.updatedAt) || a.id.localeCompare(b.id),
+    )[0] ?? null
+  );
 }

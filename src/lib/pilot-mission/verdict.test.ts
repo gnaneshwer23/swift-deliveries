@@ -24,9 +24,7 @@ function baseMission(over: Partial<SupervisedMission> = {}): SupervisedMission {
       action: "compare_options",
       version: 1,
       scopeHash: "scope".padEnd(16, "0"),
-      options: [
-        { id: "o1", title: "Test", tradeoff: "t", basis: "b" },
-      ],
+      options: [{ id: "o1", title: "Test", tradeoff: "t", basis: "b" }],
       generation: {
         ran: false,
         label: "simulated",
@@ -152,8 +150,8 @@ describe("P-A verdict model", () => {
 
   it("detects disagreement without erasing alignment helper", () => {
     expect(pathAgreesWithRecommendation("close_case", "do_not_pursue")).toBe(true);
-    expect(
-      pathAgreesWithRecommendation("founder_requested_continuation", "do_not_pursue"),
-    ).toBe(false);
+    expect(pathAgreesWithRecommendation("founder_requested_continuation", "do_not_pursue")).toBe(
+      false,
+    );
   });
 });

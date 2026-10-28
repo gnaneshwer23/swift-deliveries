@@ -2,12 +2,12 @@
 
 export type AuthConfigIssue = "missing_browser_url" | "invalid_browser_url";
 
-export function getAuthConfigIssue(
-  viteNeonAuthUrl: string | undefined = import.meta.env["VITE_NEON_AUTH_URL"] as
-    | string
-    | undefined,
-): AuthConfigIssue | null {
-  const raw = viteNeonAuthUrl?.trim();
+export function getAuthConfigIssue(viteNeonAuthUrl?: string): AuthConfigIssue | null {
+  const source =
+    arguments.length >= 1
+      ? viteNeonAuthUrl
+      : (import.meta.env["VITE_NEON_AUTH_URL"] as string | undefined);
+  const raw = source?.trim();
   if (!raw) return "missing_browser_url";
   try {
     new URL(raw);
@@ -33,8 +33,6 @@ export function authConfigErrorMessage(issue: AuthConfigIssue): string {
   }
 }
 
-export function isAuthConfigured(
-  viteNeonAuthUrl?: string | undefined,
-): boolean {
+export function isAuthConfigured(viteNeonAuthUrl?: string | undefined): boolean {
   return getAuthConfigIssue(viteNeonAuthUrl) === null;
 }

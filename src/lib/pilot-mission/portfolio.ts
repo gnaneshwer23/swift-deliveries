@@ -85,11 +85,9 @@ export function portfolioSummary(rows: PortfolioMissionRow[]): {
 } {
   return {
     total: rows.length,
-    awaitingDecision: rows.filter((r) =>
-      ["decide", "approve_plan", "compare"].includes(r.nextId),
-    ).length,
-    outcomeDue: rows.filter((r) =>
-      ["observation", "review", "expectation"].includes(r.nextId),
-    ).length,
+    awaitingDecision: rows.filter((r) => ["decide", "approve_plan", "compare"].includes(r.nextId))
+      .length,
+    outcomeDue: rows.filter((r) => ["observation", "review", "expectation"].includes(r.nextId))
+      .length,
   };
 }

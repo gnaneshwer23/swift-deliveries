@@ -429,12 +429,7 @@ export function nextRequiredAction(mission: SupervisedMission): {
       detail: "The export is stored on the mission. Opening it again does not add a usage record.",
     };
   }
-  if (
-    mission.exportBody &&
-    !mission.prototype &&
-    !mission.observation &&
-    !mission.reviews.length
-  ) {
+  if (mission.exportBody && !mission.prototype && !mission.observation && !mission.reviews.length) {
     return {
       id: "approve_prototype",
       title: "Approve sandboxed HTML prototype",

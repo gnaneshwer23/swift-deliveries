@@ -59,7 +59,9 @@ export function WorkspaceFoyer() {
           ) : (
             <p className="ps-quiet-bar-status" data-presence="idle" role="status">
               <span className="ps-quiet-bar-status-label">Idle</span>
-              <span className="ps-quiet-bar-status-detail">Start a case below or open Portfolio.</span>
+              <span className="ps-quiet-bar-status-detail">
+                Start a case below or open Portfolio.
+              </span>
             </p>
           )}
         </section>

@@ -5,13 +5,7 @@
 import type { SupervisedMission } from "./types";
 import { nextRequiredAction } from "./types";
 
-export const THEATRE_ACTS = [
-  "briefing",
-  "roadmap",
-  "cast",
-  "approve",
-  "work",
-] as const;
+export const THEATRE_ACTS = ["briefing", "roadmap", "cast", "approve", "work"] as const;
 
 export type TheatreAct = (typeof THEATRE_ACTS)[number];
 
@@ -75,10 +69,7 @@ export function theatreState(mission: SupervisedMission): TheatreState {
   };
 }
 
-export function actState(
-  theatre: TheatreState,
-  act: TheatreAct,
-): "done" | "current" | "upcoming" {
+export function actState(theatre: TheatreState, act: TheatreAct): "done" | "current" | "upcoming" {
   if (theatre.cancelled) return act === "briefing" ? "current" : "upcoming";
   if (theatre.done.includes(act)) return "done";
   if (theatre.current === act) return "current";

@@ -23,7 +23,9 @@ export type ProgrammeStaffing = {
 };
 
 /** Derive programme catalogue roster from the business-case text. */
-export function programmeStaffingFor(bc: Pick<BusinessCase, "idea" | "problem" | "goals">): ProgrammeStaffing {
+export function programmeStaffingFor(
+  bc: Pick<BusinessCase, "idea" | "problem" | "goals">,
+): ProgrammeStaffing {
   const text = [bc.idea, bc.problem, bc.goals].filter(Boolean).join(" ");
   const estimate = estimateStaffingBand(text);
   const roster = selectCatalogueRosterForBand(estimate.band);
@@ -45,10 +47,7 @@ export function bandCatalogueN(band: StaffingBand): number {
 /** Legacy programmes without staffing: treat as XL (historical always-on ceiling). */
 export function staffingOrLegacy(
   staffing: ProgrammeStaffing | undefined,
-): Pick<
-  ProgrammeStaffing,
-  "band" | "catalogueSelected" | "catalogueCeiling" | "rosterIds"
-> {
+): Pick<ProgrammeStaffing, "band" | "catalogueSelected" | "catalogueCeiling" | "rosterIds"> {
   if (staffing) {
     return {
       band: staffing.band,

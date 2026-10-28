@@ -98,9 +98,7 @@ describe("P-commerce", () => {
     const mission = await missionThroughDecide();
     const limited = {
       ...mission,
-      approval: mission.approval
-        ? { ...mission.approval, executionLimited: true }
-        : null,
+      approval: mission.approval ? { ...mission.approval, executionLimited: true } : null,
     };
     const snap = commerceSnapshot(limited);
     expect(snap.disclosureLines.some((l) => /Execution limitation/i.test(l))).toBe(true);

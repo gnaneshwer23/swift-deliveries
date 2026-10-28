@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  buildContinuationPlan,
-  buildContinuationPlanMarkdown,
-} from "./continuation-plan";
+import { buildContinuationPlan, buildContinuationPlanMarkdown } from "./continuation-plan";
 import { MemoryStore, SupervisedMissionService } from "./service";
 
 const brief = {
@@ -90,10 +87,12 @@ describe("P-B continuation plan", () => {
     const mission = await missionThroughDecide("authorise_gather_evidence");
     expect(mission.continuationPlan?.kind).toBe("evidence_collection");
     expect(mission.continuationPlan?.executionBlocked).toBe(true);
-    expect(mission.continuationPlan?.plannedArtefacts.some((a) => a.type === "evidence-collection-plan")).toBe(
-      true,
+    expect(
+      mission.continuationPlan?.plannedArtefacts.some((a) => a.type === "evidence-collection-plan"),
+    ).toBe(true);
+    expect(mission.continuationPlan?.plannedArtefacts.some((a) => a.type === "prd-lite")).toBe(
+      false,
     );
-    expect(mission.continuationPlan?.plannedArtefacts.some((a) => a.type === "prd-lite")).toBe(false);
   });
 
   it("closes without a delivery parade", async () => {
@@ -107,9 +106,9 @@ describe("P-B continuation plan", () => {
     const mission = await missionThroughDecide("founder_requested_continuation");
     expect(mission.continuationPlan?.kind).toBe("founder_requested_with_risks");
     expect(mission.continuationPlan?.derivedFrom.disagreesWithRecommendation).toBe(true);
-    expect(
-      mission.continuationPlan?.unresolvedRisks.some((r) => /do not endorse/i.test(r)),
-    ).toBe(true);
+    expect(mission.continuationPlan?.unresolvedRisks.some((r) => /do not endorse/i.test(r))).toBe(
+      true,
+    );
   });
 
   it("buildContinuationPlan requires approval", () => {

@@ -201,7 +201,10 @@ function ProgrammeDashboard() {
             const st = programmeActState(theatre, act);
             return (
               <li key={act} data-state={st}>
-                <div className="ps-theatre-act-btn" aria-current={st === "current" ? "step" : undefined}>
+                <div
+                  className="ps-theatre-act-btn"
+                  aria-current={st === "current" ? "step" : undefined}
+                >
                   {PROGRAMME_ACT_LABELS[act]}
                   {st === "current" ? <span className="ps-theatre-act-now">Now</span> : null}
                 </div>
@@ -1081,10 +1084,10 @@ function FounderBriefing({ view }: { view: ProgrammeView }) {
         <div>
           <dt>Who contributed, disagreed or changed their mind?</dt>
           <dd>
-            Cast band {metrics.staffing.band} · catalogue{" "}
-            {metrics.staffing.catalogueSelected}/{metrics.staffing.catalogueCeiling} ·{" "}
-            {metrics.engagedRoles} contributed · {dissent} dissenting positions ·{" "}
-            {metrics.decisions.mindChanges} changes of mind · {metrics.decisions.vetoes} vetoes
+            Cast band {metrics.staffing.band} · catalogue {metrics.staffing.catalogueSelected}/
+            {metrics.staffing.catalogueCeiling} · {metrics.engagedRoles} contributed · {dissent}{" "}
+            dissenting positions · {metrics.decisions.mindChanges} changes of mind ·{" "}
+            {metrics.decisions.vetoes} vetoes
           </dd>
         </div>
         <div>

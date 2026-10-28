@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  artefactHonesty,
-  buildSequence,
-  castForMission,
-  projectShelfItems,
-} from "./build-beats";
+import { artefactHonesty, buildSequence, castForMission, projectShelfItems } from "./build-beats";
 import type { SupervisedMission } from "./types";
 import { buildPilotTeamPlan } from "./specialist-team";
 
@@ -51,6 +46,9 @@ function baseMission(overrides: Partial<SupervisedMission> = {}): SupervisedMiss
     researchPassCompletedAt: null,
     researchProvider: null,
     team,
+    continuationPlan: null,
+    caseRoom: null,
+    teamCollaboration: null,
     activity: [],
     updatedAt: new Date().toISOString(),
     projectId: "00000000-0000-4000-8000-000000000099",
@@ -358,7 +356,7 @@ describe("prototype beat (P5)", () => {
         exportBody: "# Pack",
         prototype: {
           title: "Analytics pricing pack — prototype",
-          html: "<!DOCTYPE html><html lang=\"en\"><head><title>t</title></head><body><main><button>Go</button></main></body></html>",
+          html: '<!DOCTYPE html><html lang="en"><head><title>t</title></head><body><main><button>Go</button></main></body></html>',
           honesty: { mode: "simulated", label: "Simulated draft", modelId: null },
           checks: [
             { id: "doctype", label: "Declares <!DOCTYPE html>", passed: true },
@@ -366,7 +364,8 @@ describe("prototype beat (P5)", () => {
           ],
           sandboxSafe: false,
           verified: false,
-          failureDetail: "Prototype loads remote scripts or makes network calls — rejected as not sandbox-safe.",
+          failureDetail:
+            "Prototype loads remote scripts or makes network calls — rejected as not sandbox-safe.",
           approvedAt: "2026-10-27T14:00:00.000Z",
           approvedBy: "u",
           producedAt: "2026-10-27T14:00:00.000Z",

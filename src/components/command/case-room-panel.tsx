@@ -196,7 +196,15 @@ export function CaseRoomPanel({
                 room.folders.find((f) => f.ownerKey === edge.toOwnerKey)?.label ?? edge.toOwnerKey;
               return (
                 <g key={edge.id}>
-                  <rect x="8" y={y - 14} width="160" height="28" rx="4" fill="currentColor" opacity="0.08" />
+                  <rect
+                    x="8"
+                    y={y - 14}
+                    width="160"
+                    height="28"
+                    rx="4"
+                    fill="currentColor"
+                    opacity="0.08"
+                  />
                   <text x="16" y={y + 4} className="fill-current" fontSize="11">
                     {from.slice(0, 22)}
                   </text>
@@ -212,7 +220,15 @@ export function CaseRoomPanel({
                   <text x="200" y={y - 6} className="fill-current" fontSize="10" opacity="0.7">
                     {edge.label.slice(0, 42)}
                   </text>
-                  <rect x="448" y={y - 14} width="180" height="28" rx="4" fill="currentColor" opacity="0.08" />
+                  <rect
+                    x="448"
+                    y={y - 14}
+                    width="180"
+                    height="28"
+                    rx="4"
+                    fill="currentColor"
+                    opacity="0.08"
+                  />
                   <text x="456" y={y + 4} className="fill-current" fontSize="11">
                     {to.slice(0, 24)}
                   </text>
@@ -220,7 +236,14 @@ export function CaseRoomPanel({
               );
             })}
             <defs>
-              <marker id="case-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <marker
+                id="case-arrow"
+                markerWidth="8"
+                markerHeight="8"
+                refX="6"
+                refY="3"
+                orient="auto"
+              >
                 <path d="M0,0 L6,3 L0,6 Z" fill="currentColor" />
               </marker>
             </defs>

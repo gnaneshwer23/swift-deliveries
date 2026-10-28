@@ -198,9 +198,7 @@ export type SynthesizeSpeechResult =
 /** Synthesize the same on-screen text for Listen. Never approves or mutates a mission. */
 export const synthesizeSpeechFn = createServerFn({ method: "POST" })
   .middleware([requireAuth])
-  .validator((data: unknown) =>
-    z.object({ text: z.string().min(1).max(4000) }).parse(data),
-  )
+  .validator((data: unknown) => z.object({ text: z.string().min(1).max(4000) }).parse(data))
   .handler(async ({ data }): Promise<SynthesizeSpeechResult> => {
     const { ttsConfig, synthesizeSpeech } = await import("@/lib/conversation/tts.server");
     const config = ttsConfig();
