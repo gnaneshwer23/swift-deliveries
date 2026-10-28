@@ -249,7 +249,7 @@ describe("castForMission (P2)", () => {
         stage: "evidence",
         team,
         researchPassCompletedAt: null,
-    researchPassQueuedAt: null,
+        researchPassQueuedAt: null,
       }),
     );
     expect(cast.some((c) => c.actor === "specialist")).toBe(true);
