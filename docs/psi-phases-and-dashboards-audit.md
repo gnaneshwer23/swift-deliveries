@@ -1,0 +1,134 @@
+# PSI phases and dashboards — founder audit
+
+**Recorded:** 28 October 2026 (UTC)  
+**Baseline inspected:** `main` at `16b97b0` (after Phase 6 merge `#54` and lifecycle PR `#48`)  
+**Open PRs called out:** [#49 Phase 0 draft](https://github.com/gnaneshwer23/swift-deliveries/pull/49), [#55 CI baseline](https://github.com/gnaneshwer23/swift-deliveries/pull/55)  
+**Method:** Phase specs, capability matrix, Phase 6 acceptance doc, route/component read-through, GitHub PR/CI history. No live browser walkthrough or fresh full `npm test` run in this audit pass.
+
+---
+
+## Executive verdict
+
+| Lens | Assessment |
+| --- | --- |
+| **Product spine (Phases 1–6 code on `main`)** | **Strong in automated/fixture scope** — supervised mission loop, Quiet Studio surfaces, team collaboration persistence, inspection inbox, focused briefing + exports, and Phase 6 regression bundle are merged with cited Vitest evidence in `docs/psi-phase-6-release-acceptance.md`. |
+| **Phase 0 architecture reconciliation** | **Not on `main`** — draft PR #49 only; capability map flags request-coupled research vs durable worker gap. |
+| **Local demo readiness** | **Yes, with env** — Neon Auth (`VITE_NEON_AUTH_URL`, `NEON_AUTH_URL`) + `DATABASE_URL` per `docs/neon-auth-local-setup.md`; provider keys optional (simulated/deterministic paths). |
+| **Production / merge hygiene** | **`main` CI is red** (lint/Prettier) on pushes after Phase 5–6 merges; **#55 repairs baseline**. Vercel still deploys from `main` — last observed production deploy succeeded while GitHub `test` job failed at lint. |
+| **Release certification** | **Not granted** — Phase 6 doc explicitly separates acceptance in tested scope from production promotion, live Stripe, signed-in E2E on Neon, and notifier/Watchtower runner. |
+
+**Bottom line:** The six-phase *product* path (1→6) is largely **implemented and test-backed on `main`**, but **Phase 0 proof gates are open**, **CI on `main` needs #55**, and **founder-facing “production ready” remains blocked** by auth/env on Vercel, live commerce, durable background research authority (Q0), and manual UX verification gaps.
+
+---
+
+## A) Six-phase plan (0–6)
+
+Naming note: **PSI “Phase 1” in older docs** (`psi-phase-1-customer-story-and-scope.md`, design foundation PR #25) is **not** the same as **six-phase plan Phase 1** (reliable background investigation / vertical slice A–G). This table uses the **founder six-phase roadmap** (0–6).
+
+### Summary table
+
+| Phase | Spec intent (one line) | GitHub / `main` | Key merges / PRs | Implementation reality | Merge gate met? | Top gaps & risks |
+| --- | --- | --- | --- | --- | --- | --- |
+| **0** | Reconcile build: capability map, architecture, acceptance checklist — **no app changes** | **Open draft PR** | [#49](https://github.com/gnaneshwer23/swift-deliveries/pull/49) `docs/quiet-investigation-phase-0` | **Docs only** (on PR branch: `q0-background-investigation-contract.md`) | **No** — not merged; checklist not stamped on `main` | Research still **request-coupled** in `approvePlan`; supervised path **not** wired through `wf` worker per Q0; do not merge doc branch without release approval (auto preview/deploy risk called out in Q0) |
+| **1** | Reliable **background** investigation + vertical slice A–G (canvas, briefing, path, portfolio, export) | **On `main`** (pre–PR-50 spine; no single “Phase 1” PR in 50–54 series) | Vertical slice docs; `c80e917` Quiet Studio default; reliability work in `docs/psi-phase-one-reliability.md`; independent verification `904838e` era | **Partial → verified in test scope** — `SupervisedMissionService`, leases, leave/return, canvas, verdicts; **Neon E2E / live providers not proven in Phase 6 pass** | **Partial** — `vertical-slice.test.ts`, `service.test.ts`, capability matrix; **release acceptance still pending** in older reliability doc | Q0: partial findings on interrupt; worker tick unscheduled in `vercel.json`; integration tests need `PSI_TEST_DATABASE_URL` |
+| **2** | Persist real team collaboration; Inspect → team activity | **Merged** | [#50](https://github.com/gnaneshwer23/swift-deliveries/pull/50) `7858949` | **Implemented & verified** (fixtures) — `team-collaboration.ts`, `TeamActivityPanel` | **Yes** (scoped) — `team-collaboration.test.ts` per phase doc | Wave-1 spine only; not full role catalogue; manual Inspect QA not re-run in this audit |
+| **3** | Calm animated investigation (event-backed mandala / reduced motion) | **Merged** | [#51](https://github.com/gnaneshwer23/swift-deliveries/pull/51) `77aa250` | **Implemented & verified** (derivation tests) — `investigation-experience.ts` | **Yes** (scoped) — `investigation-experience.test.ts` | **Visual/mandala** and OS reduced-motion check **manual only** (Phase 3 doc) |
+| **4** | On-demand inspection + deduplicated Studio inbox | **Merged** | [#52](https://github.com/gnaneshwer23/swift-deliveries/pull/52) `b47d564` | **Implemented & verified** (fixtures) — `mission-inspection.ts`, `studio-inbox.ts`, foyer notifications | **Yes** (scoped) — inspection + inbox tests | Inbox is **derived**, not persisted outbox; email/push **preference only** |
+| **5** | Focused briefing on stage; downloadable record parity | **Merged** | [#53](https://github.com/gnaneshwer23/swift-deliveries/pull/53) / merge `18e6813` | **Implemented & verified** (fixtures) — `FocusedPmBriefing`, `export-snapshot.ts` | **Yes** (scoped) — `phase-5-briefing-export.test.ts` | Full PM walls intentionally under Inspect; linked URL bodies not bundled (by design) |
+| **6** | Release acceptance suite + evidence doc (not production cert) | **Merged** | [#54](https://github.com/gnaneshwer23/swift-deliveries/pull/54) `57de694` | **Docs + tests** — `phase-6-release-acceptance.test.ts` | **Yes** (fixture scope) — Phase 6 + 53-test regression bundle green **when run** (per phase doc, 28 Oct) | **Does not** authorize deploy; full repo test had 2 env failures; **main CI lint failing** separately |
+
+### Phase 0 detail (PR #49)
+
+- **Deliverable:** Q0 quiet investigation reconciliation — capability map, extend-don’t-replace worker architecture, Q1–Q6 proposals.
+- **Status:** Draft; **not** merged to `main`.
+- **Critical finding (from Q0 draft):** “Durable execution” is **partial** — `wf` worker exists but **supervised research is not proven** through it; scheduling/worker tick deployment unverified.
+
+### Phase 1 detail (six-phase “reliable background investigation”)
+
+Authoritative closure narrative:
+
+- `docs/psi-phase-1-vertical-slice-implementation-plan.md` — **Complete for local Phase 1 scope** (28 Oct 2026).
+- `docs/psi-phase-1-independent-verification.md` — **Accept with limitations** (service/Vitest; not browser/Neon/live providers).
+- `docs/psi-phase-1-vertical-slice-known-gaps-and-risks.md` — notifier, Watchtower runner, staging deploy called out.
+
+Evidence anchors: `docs/psi-phase-1-vertical-slice-capability-matrix.md`, `docs/psi-phase-6-release-acceptance.md` (Phase 1 row in checklist).
+
+---
+
+## Overlap: Quiet Studio, PT-1…PT-6, R1–R9, P-A…P-paid
+
+| Track | What it is | Relation to phases 0–6 |
+| --- | --- | --- |
+| **Quiet Studio** | Default signed-in UX — progressive transparency (`docs/psi-quiet-studio.md`) | **UX contract** for Phases 3–5 surfaces; foyer + mission quiet mode in code |
+| **PT-1…PT-6** | Progressive-transparency **product tracks** (canvas, project room, archives, portfolio, similar ideas, watchtower prefs) | **Shipped on `main`** per `docs/phases/README.md` (28 Oct); Phase 1 vertical slice **audited A–G without rewriting PT work** |
+| **R1–R9** | Honesty / progressive transparency requirements (`business-case-deliverx-psi-v2.2-progressive-transparency.md`) | **R9** `honesty-posture.test.ts`; **R1** empty-retrieval attribution fix noted in `psi-phase-1-next-steps-shipped.md` |
+| **P-A…P-paid** | Business-case acts (investigate, continuation, case room, commerce) | Parallel spine; Phase 6 includes **P-paid** unit tests in regression bundle |
+| **Older “Phase 0/1” voice/workforce PRs (#36–#48)** | Durable `wf_*` missions, voice, lifecycle UI | **Engineering phases**, not the Oct 28 six-phase Quiet Studio tranche (#50–#54) |
+
+**Progressive transparency:** Front stage = calm status + gates + focused briefing; depth = **Inspect** + **downloads** (decision pack, ZIP, executive/full archive, decision roadmap). Code defaults: `MissionTheatre` `quiet={true}`, `FocusedPmBriefing` on stage, PM walls under Inspect.
+
+---
+
+## B) Dashboards and Studio surfaces
+
+Audit basis: component/route source on `main` plus `docs/roadmap-studio-dashboard-ux.md` (27 Oct — predates full Phase 3–5 merge; still useful for **shell** critique).
+
+### Surface matrix
+
+| Surface | What the user sees | Quiet Studio fit | Inspect / depth | Downloads | Honesty / clutter notes |
+| --- | --- | --- | --- | --- | --- |
+| **`/command`** (foyer) | Brand headline, idle/needs-you status, deduplicated inbox (`QuietStudioNotifications`), hero brief start, footer links; **Advanced** fold for legacy planner | **Much improved** vs Oct 27 audit — no Agents office on index (`command.index.tsx` only mounts `WorkspaceFoyer` + advanced `<details>`) | **Inspect · voice & honesty** fold: `StudioReadiness`, `ConversationPanel` | None at foyer (by design) | Status from real `nextRequiredAction`; **Talk/voice under fold** reduces hero clutter; sidebar shell still multi-app (**Portfolio, Programmes, usage**) |
+| **`/command/supervised/$missionId`** | Inspection strip, quiet bar (+ compact export when ready), mandala/keywords when plan approved, gate CTAs, focused briefing | **Primary Quiet Studio theatre** — `foyerMode` shell, quiet mission page | **Inspect full record** → team activity, project room nav, evidence/judgement/delivery panels, commerce, honesty, watchtower | Decision pack PDF/MD, ZIP, executive pack, full archive; continuation plan | Event-backed animation; **Inspect** holds PM walls and beat rails; many panels still available — risk of **depth overload** if users expand all sections |
+| **`/command/portfolio`** | Search/filter mission list, attention/favourites/archive, similar-idea assist, monitoring honesty fields | **Side room**, not foyer — appropriate for PT-4/R7 | Row links into supervised mission | None | Copy claims **no agent-graph wall**; still a **management grid** vs calm stage |
+| **`/command/projects`** | `wf` projects + supervised shelf, create project, follow-up mission starters | **Delivery-OS shelf** — useful but **ops/product-memory** tone | Links to missions and product memory | None | Dual model (legacy `wf_*` + supervised) — founders should know this is **not** the Quiet Studio front stage |
+| **Other shell nav** | `/command/capabilities` (Specialists + Agents office hash), `/command/programmes`, `/command/pilot-requests`, `/command/product-memory/$projectId` | **Catalogue / workforce** surfaces — intentional side rooms | Varies | Some programme exports elsewhere | **Dashboard metaphor persists in nav** (Programmes, Specialists); aligns with AGENTS.md workforce story but **dilutes** “one product question” story if promoted over Studio |
+| **Homepage vs Studio** | Public marketing routes (see `psi-website-landing-pages-specification.md`) | Homepage sells investigate-before-build; signed-in primary is **`/command`** | N/A | Public walkthrough downloads labelled simulated | **No crash-level mismatch** found in code review; live marketing vs Studio polish may still **feel** different (founder UX doc predates latest quiet merges) |
+
+### Quiet Studio intent scorecard (code on `main`)
+
+| Criterion | Met? | Evidence |
+| --- | --- | --- |
+| No timer-fake progress | **Mostly** | `deriveInvestigationRunState`, quiet status labels |
+| Motion from persisted events | **Yes** (logic) | Phase 3 tests; canvas/investigation derivation |
+| Human-only gates | **Yes** | Approve plan/path/prototype flows unchanged |
+| Depth in downloads | **Yes** | Export functions + decision roadmap copy in supervised route |
+| Foyer free of Agents office primary | **Yes** | `command.index.tsx` structure |
+| Shell still feels “SaaS ops” | **Partial** | `command-shell.tsx` NAV + usage meter + Programmes remain (`roadmap-studio-dashboard-ux.md` §3.2 still largely true for **chrome**) |
+
+---
+
+## C) CI / deploy posture
+
+| Topic | Status | Evidence |
+| --- | --- | --- |
+| **`main` CI expectation** | **`test` job failing** on recent merges (#54, #48, Phase 5 merge) at **`npm run lint`** (~1000+ Prettier errors reported in #55) | `gh run list --branch main`; workflow `.github/workflows/ci.yml` runs lint → tsc → schema prep → test → build |
+| **#55 CI baseline PR** | **Open**; **`test` job green on branch** (lint/tsc/test/build per PR body) | [#55](https://github.com/gnaneshwer23/swift-deliveries/pull/55) |
+| **Production deploy** | **Vercel production deploys from `main`** (Lovable-connected); merges trigger deploy **independent of GitHub lint gate** | Phase 6 doc; observed Vercel pass on #55 preview; **main push CI failure** does not block Vercel in observed runs |
+| **Phase 6 merge gate vs repo gate** | Phase 6 proven **fixture subset**; **full** `npm test` had failures (neon schema version, auth URL test) per `psi-phase-6-release-acceptance.md` | Not re-run in this audit |
+| **Local auth blockers** | **`VITE_NEON_AUTH_URL` required** for login UI; **`DATABASE_URL`** for `/command` after sign-in | `docs/neon-auth-local-setup.md` |
+| **Vercel auth blockers** | Auth URLs may be **missing on Vercel** even when `DATABASE_URL` set | Same doc § preview/production |
+| **Provider / Stripe blockers** | Simulated/deterministic paths work without keys; live compare/research/checkout need secrets + `PSI_PAYMENTS_LIVE_APPROVED` for paid live | Phase 6 “Mocked vs live” table; `psi-phase-six-allowance-gate.md` |
+
+### Recommended merge order (founder)
+
+1. **#55** — restore green `main` CI (no product change).
+2. **Review #49** — accept/revise Phase 0 architecture before treating background investigation as production-grade.
+3. **Production promotion** — separate decision; Phase 6 merge does **not** substitute.
+
+---
+
+## References
+
+| Doc | Role |
+| --- | --- |
+| `docs/business-plan-deliverx-vision.md` | Founder narrative + PT/R map |
+| `docs/psi-quiet-studio.md` | Quiet Studio contract |
+| `docs/psi-phase-6-release-acceptance.md` | Automated acceptance evidence |
+| `docs/psi-phase-1-vertical-slice-capability-matrix.md` | Phase 1 A–G matrix |
+| `docs/roadmap-studio-dashboard-ux.md` | Foyer/shell UX diagnosis (partially addressed) |
+| `docs/neon-auth-local-setup.md` | Local/preview env |
+| PR #49 (draft) | Phase 0 Q0 contract |
+
+---
+
+*This audit is documentation only. It does not certify production readiness or replace Phase 6 fixture-scoped acceptance.*
