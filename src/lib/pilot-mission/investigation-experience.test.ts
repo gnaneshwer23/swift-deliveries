@@ -83,6 +83,32 @@ describe("investigation experience", () => {
         stage: "evidence",
         job: { ...baseMission().job, status: "leased", leaseUntil: "2026-01-02T00:00:00Z" },
       }),
+      Date.parse("2026-01-01T00:00:00Z"),
+    );
+    expect(state).toBe("running");
+  });
+
+  it("does not treat an expired lease as running", () => {
+    const state = deriveInvestigationRunState(
+      baseMission({
+        team: approvedTeam,
+        stage: "evidence",
+        job: { ...baseMission().job, status: "leased", leaseUntil: "2026-01-01T00:00:00Z" },
+      }),
+      Date.parse("2026-01-02T00:00:00Z"),
+    );
+    expect(state).not.toBe("running");
+  });
+
+  it("shows running (not paused) when a leased job is active even if pause is set", () => {
+    const state = deriveInvestigationRunState(
+      baseMission({
+        team: approvedTeam,
+        stage: "evidence",
+        studioMeta: { ...emptyStudioMeta("2026-01-01T00:00:00Z"), investigationPaused: true },
+        job: { ...baseMission().job, status: "leased", leaseUntil: "2026-01-02T00:00:00Z" },
+      }),
+      Date.parse("2026-01-01T12:00:00Z"),
     );
     expect(state).toBe("running");
   });
@@ -120,6 +146,17 @@ describe("investigation experience", () => {
       }),
     );
     expect(exp.updates.some((u) => u.basis === "researchPassCompletedAt")).toBe(true);
+  });
+
+  it("does not emit a research-pass update when only the plan is approved", () => {
+    const exp = buildInvestigationExperience(
+      baseMission({
+        team: approvedTeam,
+        stage: "evidence",
+        researchPassCompletedAt: null,
+      }),
+    );
+    expect(exp.updates.some((u) => u.basis === "researchPassCompletedAt")).toBe(false);
   });
 
   it("does not invent updates beyond persisted team collaboration", async () => {

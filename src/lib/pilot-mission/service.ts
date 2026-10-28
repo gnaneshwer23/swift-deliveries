@@ -13,9 +13,12 @@ import { RESEARCH_PASS_JOB_KEY, runResearchPass } from "./research-pass";
 import { buildMissionPrototype } from "./prototype";
 import { activityEvent, buildPilotTeamPlan, syncTeamWithMission } from "./specialist-team";
 import {
+  applyEvidenceRegisterCollaboration,
   applyOptionsComparedCollaboration,
   applyRecommendationCollaboration,
   applyResearchPassCollaboration,
+  clearStaleRecommendation,
+  collaborationRecordForUpdate,
   initTeamCollaboration,
 } from "./team-collaboration";
 import {
@@ -689,10 +692,11 @@ export class SupervisedMissionService {
       ) {
         throw new MissionConflictError("Research pass lease recovered by another worker.");
       }
+      const collabBase = collaborationRecordForUpdate(fresh, at);
       const collabAfterPass =
-        fresh.team && fresh.teamCollaboration
+        fresh.team && collabBase
           ? applyResearchPassCollaboration({
-              record: fresh.teamCollaboration,
+              record: collabBase,
               team: fresh.team,
               evidence: pass.evidence,
               at,
@@ -807,16 +811,28 @@ export class SupervisedMissionService {
       input.nowMs,
     );
     const at = new Date(input.nowMs).toISOString();
-    const collabAfterEvidence =
-      hashed.team && hashed.teamCollaboration
-        ? applyResearchPassCollaboration({
-            record: hashed.teamCollaboration,
+    const collabBase = collaborationRecordForUpdate(hashed, at);
+    let collabAfterEvidence =
+      hashed.team && collabBase
+        ? applyEvidenceRegisterCollaboration({
+            record: clearStaleRecommendation(collabBase, evidence),
             team: hashed.team,
             evidence,
             at,
-            provider: hashed.researchProvider,
           })
         : hashed.teamCollaboration;
+    if (hashed.team && collabAfterEvidence && hashed.researchPassCompletedAt) {
+      collabAfterEvidence = applyResearchPassCollaboration({
+        record: collabAfterEvidence,
+        team: hashed.team,
+        evidence,
+        at,
+        provider: hashed.researchProvider,
+      });
+    }
+    if (collabAfterEvidence) {
+      collabAfterEvidence = clearStaleRecommendation(collabAfterEvidence, evidence);
+    }
     const next: SupervisedMission = withSyncedTeam({
       ...hashed,
       evidence,
@@ -1001,12 +1017,14 @@ export class SupervisedMissionService {
           ...planResearchMode(fresh.researchMode).externalGaps,
         ]),
       ];
+      const collabBase = collaborationRecordForUpdate(fresh, at);
       const collabAfterCompare =
-        fresh.team && fresh.teamCollaboration
+        fresh.team && collabBase
           ? applyOptionsComparedCollaboration({
-              record: fresh.teamCollaboration,
+              record: collabBase,
               team: fresh.team,
               evidence: fresh.evidence,
+              options: prepared.options,
               generationLabel: prepared.generation.label,
               generationRan: prepared.generation.ran,
               at,
@@ -1161,10 +1179,12 @@ export class SupervisedMissionService {
       plan: continuationPlan,
       nowMs: input.nowMs,
     });
+    const collabBase = collaborationRecordForUpdate(withPlan, decidedAt);
     const collabAfterRec =
-      withPlan.teamCollaboration && withPlan.team
+      withPlan.team && collabBase
         ? applyRecommendationCollaboration({
-            record: withPlan.teamCollaboration,
+            record: collabBase,
+            team: withPlan.team,
             evidence: withPlan.evidence,
             draft,
             at: decidedAt,

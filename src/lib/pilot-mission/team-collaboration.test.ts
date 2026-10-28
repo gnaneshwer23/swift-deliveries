@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { MemoryStore, SupervisedMissionService } from "./service";
 import {
   INVESTIGATION_TASK_KEYS,
+  applyOptionsComparedCollaboration,
   initTeamCollaboration,
   traceFindingToRecommendation,
 } from "./team-collaboration";
@@ -13,6 +14,12 @@ const brief = {
   outcome: "A decision pack and an experiment brief.",
   constraints: "No customer contact and no deployment.",
 };
+
+const EXPECTED_TRACE_HANDOFFS = [
+  "ho-evidence-to-synthesis",
+  "ho-synthesis-to-options",
+  "ho-options-to-recommendation",
+] as const;
 
 describe("Phase 2 merge gate — finding through handoff to recommendation", () => {
   it("traces a supplied finding across specialist handoffs to the agent recommendation", async () => {
@@ -60,6 +67,13 @@ describe("Phase 2 merge gate — finding through handoff to recommendation", () 
       nowMs: 2_500,
     });
     const findingId = mission.evidence.find((e) => e.source.includes("Founder"))!.id;
+    expect(
+      mission.teamCollaboration?.handoffs.some((h) => h.id === "ho-evidence-register-update"),
+    ).toBe(true);
+    expect(
+      mission.teamCollaboration?.handoffs.find((h) => h.id === "ho-evidence-register-update")
+        ?.actualResult,
+    ).toMatch(/not consumed/i);
 
     const compared = await service.runAlternatives({
       workspaceId: "alpha",
@@ -80,9 +94,15 @@ describe("Phase 2 merge gate — finding through handoff to recommendation", () 
       },
     });
     mission = compared.mission;
+    const optionsHandoff = mission.teamCollaboration?.handoffs.find(
+      (h) => h.id === "ho-synthesis-to-options",
+    );
+    expect(optionsHandoff).toBeTruthy();
+    expect(optionsHandoff!.consumedAt).toBeNull();
     expect(
-      mission.teamCollaboration?.handoffs.some((h) => h.id === "ho-synthesis-to-options"),
-    ).toBe(true);
+      mission.teamCollaboration?.handoffs.some((h) => h.id === "ho-options-to-challenge"),
+    ).toBe(false);
+    expect(optionsHandoff!.productionLabel).toBe("simulated draft");
 
     const proposal = mission.proposal!;
     mission = await service.decide({
@@ -101,15 +121,50 @@ describe("Phase 2 merge gate — finding through handoff to recommendation", () 
     });
 
     expect(mission.teamCollaboration?.recommendation?.recommendation).toBeTruthy();
+    expect(mission.teamCollaboration?.recommendation?.productionLabel).toBe("deterministic rules");
     const trace = traceFindingToRecommendation(
       mission.teamCollaboration!,
       findingId,
       mission.evidence,
     );
     expect(trace).not.toBeNull();
-    expect(trace!.handoffIds.length).toBeGreaterThanOrEqual(2);
-    expect(trace!.recommendation.derivedFromHandoffIds.length).toBeGreaterThanOrEqual(2);
+    expect(trace!.handoffIds).toEqual([...EXPECTED_TRACE_HANDOFFS]);
+    expect(trace!.recommendation.derivedFromHandoffIds).toEqual([...EXPECTED_TRACE_HANDOFFS]);
     expect(trace!.findingStatement).toMatch(/Setup asks for a goal/);
+  });
+
+  it("does not mark challenge or structure steps complete when only comparison runs", () => {
+    const plan = buildPilotTeamPlan({ band: "M" });
+    const team = plan;
+    const record = initTeamCollaboration(team, new Date().toISOString());
+    const evidence = [
+      {
+        id: "f1",
+        statement: "Observed signup drop.",
+        source: "Founder",
+        classification: "supplied" as const,
+      },
+    ];
+    const after = applyOptionsComparedCollaboration({
+      record,
+      team,
+      evidence,
+      options: [
+        {
+          id: "investigate-supplied",
+          title: "Investigate",
+          tradeoff: "Uses basis f1.",
+          basis: "f1",
+        },
+      ],
+      generationLabel: "simulated",
+      generationRan: false,
+      at: new Date().toISOString(),
+    });
+    expect(after.handoffs.some((h) => h.toTaskKey === "challenge_options")).toBe(false);
+    expect(after.edges.find((e) => e.id === "edge-artefact-proposal")?.fromTaskKey).toBe(
+      "draft_options",
+    );
   });
 
   it("seeds only the small investigation team from Wave-1 plan", () => {
