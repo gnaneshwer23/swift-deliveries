@@ -21,7 +21,10 @@ const since = (iso: string) =>
     minute: "2-digit",
   });
 
-function jobStatusLabel(status: string): { tone: "success" | "pending" | "urgent" | "neutral"; text: string } {
+function jobStatusLabel(status: string): {
+  tone: "success" | "pending" | "urgent" | "neutral";
+  text: string;
+} {
   if (status === "leased") return { tone: "success", text: "Worker leased" };
   if (status === "failed") return { tone: "urgent", text: "Job failed" };
   if (status === "cancelled") return { tone: "neutral", text: "Cancelled" };
@@ -124,12 +127,13 @@ export function ExecutiveStudioDashboard() {
         <p className="cc-kicker ps-exec-kicker">Executive dispatch</p>
         <h1 className="ps-foyer-headline">What needs you, and what is running</h1>
         <p className="ps-foyer-lede">
-          One line to open a case. Attention rows and job status come from saved mission and workforce
-          records — not simulated agent telemetry.
+          One line to open a case. Attention rows and job status come from saved mission and
+          workforce records — not simulated agent telemetry.
         </p>
         <p className="ps-exec-summary-strip">
-          {summary.total} open case{summary.total === 1 ? "" : "s"} · {summary.awaitingDecision} awaiting
-          decision · {runningLeased.length} worker leased · {researchQueued.length} research pass queued
+          {summary.total} open case{summary.total === 1 ? "" : "s"} · {summary.awaitingDecision}{" "}
+          awaiting decision · {runningLeased.length} worker leased · {researchQueued.length}{" "}
+          research pass queued
         </p>
       </header>
 
@@ -194,7 +198,11 @@ export function ExecutiveStudioDashboard() {
                     </div>
                     <span
                       className="ps-exec-chip"
-                      data-tone={attentionChipTone(row.nextId) === "neutral" ? undefined : attentionChipTone(row.nextId)}
+                      data-tone={
+                        attentionChipTone(row.nextId) === "neutral"
+                          ? undefined
+                          : attentionChipTone(row.nextId)
+                      }
                     >
                       {row.stage}
                     </span>
@@ -230,9 +238,7 @@ export function ExecutiveStudioDashboard() {
                       </span>
                     </div>
                     <p className="cc-muted text-sm mb-0">{item.question}</p>
-                    {item.detail ? (
-                      <p className="cc-muted text-xs mb-0">{item.detail}</p>
-                    ) : null}
+                    {item.detail ? <p className="cc-muted text-xs mb-0">{item.detail}</p> : null}
                     <div className="ps-exec-card-foot">
                       <span className="ps-exec-meta">Inspect</span>
                       <Link
@@ -264,7 +270,10 @@ export function ExecutiveStudioDashboard() {
                   <article className="ps-exec-card">
                     <div className="ps-exec-card-head">
                       <h3>{m.question}</h3>
-                      <span className="ps-exec-chip" data-tone={chip.tone === "neutral" ? undefined : chip.tone}>
+                      <span
+                        className="ps-exec-chip"
+                        data-tone={chip.tone === "neutral" ? undefined : chip.tone}
+                      >
                         {chip.text}
                       </span>
                     </div>
@@ -384,8 +393,8 @@ export function ExecutiveStudioDashboard() {
           <summary>Inspect · readiness &amp; honesty</summary>
           <StudioReadiness />
           <p className="cc-muted text-xs mt-2 mb-0">
-            Handoff inspector shows persisted teamCollaboration only. Downloads remain the full depth
-            layer.
+            Handoff inspector shows persisted teamCollaboration only. Downloads remain the full
+            depth layer.
           </p>
         </details>
       </footer>

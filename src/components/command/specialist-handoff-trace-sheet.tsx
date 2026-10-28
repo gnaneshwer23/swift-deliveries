@@ -8,10 +8,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { buildMissionInspection } from "@/lib/pilot-mission/mission-inspection";
-import {
-  ensureTeamCollaboration,
-  type TeamHandoff,
-} from "@/lib/pilot-mission/team-collaboration";
+import { ensureTeamCollaboration, type TeamHandoff } from "@/lib/pilot-mission/team-collaboration";
 import { AGENT_RECOMMENDATION_LABELS } from "@/lib/pilot-mission/verdict";
 import type { SupervisedMission } from "@/lib/pilot-mission/types";
 
@@ -35,7 +32,9 @@ function productionDisplay(label: TeamHandoff["productionLabel"]): string {
 function assignmentLabel(mission: SupervisedMission, taskKey: string): string {
   const record = ensureTeamCollaboration(mission);
   const a = record?.assignments.find((x) => x.taskKey === taskKey);
-  return a ? `${a.ownerLabel}${a.capabilityId ? ` · ${a.capabilityId}` : ""}` : taskKey.replace(/_/g, " ");
+  return a
+    ? `${a.ownerLabel}${a.capabilityId ? ` · ${a.capabilityId}` : ""}`
+    : taskKey.replace(/_/g, " ");
 }
 
 export function SpecialistHandoffTraceSheet({
@@ -61,9 +60,7 @@ export function SpecialistHandoffTraceSheet({
   }, [handoff, mission.evidence]);
 
   const hasGovernance =
-    Boolean(mission.approval) ||
-    Boolean(record?.recommendation) ||
-    Boolean(mission.observation);
+    Boolean(mission.approval) || Boolean(record?.recommendation) || Boolean(mission.observation);
 
   const tabs: { id: HandoffTab; label: string; show: boolean }[] = [
     { id: "trace", label: "Trace & prompt", show: true },
@@ -108,11 +105,14 @@ export function SpecialistHandoffTraceSheet({
 
   if (!handoff) return null;
 
-  const activeTab = visibleTabs.some((t) => t.id === tab) ? tab : visibleTabs[0]?.id ?? "trace";
+  const activeTab = visibleTabs.some((t) => t.id === tab) ? tab : (visibleTabs[0]?.id ?? "trace");
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="ps-exec-handoff-sheet max-h-[min(92dvh,880px)] overflow-y-auto">
+      <SheetContent
+        side="bottom"
+        className="ps-exec-handoff-sheet max-h-[min(92dvh,880px)] overflow-y-auto"
+      >
         <div className="ps-exec-handoff-handle" aria-hidden="true" />
         <SheetHeader className="ps-exec-handoff-header text-left space-y-2">
           <div className="flex flex-wrap items-start justify-between gap-3">
@@ -123,7 +123,9 @@ export function SpecialistHandoffTraceSheet({
                   {productionDisplay(handoff.productionLabel)}
                 </span>
               </div>
-              <SheetTitle className="ps-exec-handoff-title">Specialist handoff &amp; trace</SheetTitle>
+              <SheetTitle className="ps-exec-handoff-title">
+                Specialist handoff &amp; trace
+              </SheetTitle>
               <SheetDescription className="sr-only">
                 Persisted handoff from {handoff.fromTaskKey} to {handoff.toTaskKey}
               </SheetDescription>
@@ -158,15 +160,22 @@ export function SpecialistHandoffTraceSheet({
           <div className="ps-exec-handoff-agent">
             <div className="ps-exec-handoff-avatar" aria-hidden="true" />
             <div className="min-w-0">
-              <p className="font-semibold text-sm truncate">{assignmentLabel(mission, handoff.fromTaskKey)}</p>
+              <p className="font-semibold text-sm truncate">
+                {assignmentLabel(mission, handoff.fromTaskKey)}
+              </p>
               <p className="ps-exec-meta truncate">{handoff.fromActor}</p>
             </div>
           </div>
           <ArrowRight size={18} className="text-muted-foreground shrink-0" aria-hidden="true" />
           <div className="ps-exec-handoff-agent">
-            <div className="ps-exec-handoff-avatar ps-exec-handoff-avatar-target" aria-hidden="true" />
+            <div
+              className="ps-exec-handoff-avatar ps-exec-handoff-avatar-target"
+              aria-hidden="true"
+            />
             <div className="min-w-0">
-              <p className="font-semibold text-sm truncate">{assignmentLabel(mission, handoff.toTaskKey)}</p>
+              <p className="font-semibold text-sm truncate">
+                {assignmentLabel(mission, handoff.toTaskKey)}
+              </p>
               <p className="ps-exec-meta truncate">{handoff.toActor}</p>
             </div>
           </div>
@@ -206,10 +215,14 @@ export function SpecialistHandoffTraceSheet({
               <p className="ps-exec-section-kicker">Finding summary</p>
               <p className="text-sm leading-relaxed">{handoff.findingSummary}</p>
               {handoff.actualResult ? (
-                <p className="cc-muted text-sm mt-2 mb-0">Downstream result: {handoff.actualResult}</p>
+                <p className="cc-muted text-sm mt-2 mb-0">
+                  Downstream result: {handoff.actualResult}
+                </p>
               ) : null}
               {handoff.uncertainty ? (
-                <p className="cc-muted text-sm mt-2 mb-0">Open uncertainty: {handoff.uncertainty}</p>
+                <p className="cc-muted text-sm mt-2 mb-0">
+                  Open uncertainty: {handoff.uncertainty}
+                </p>
               ) : null}
             </div>
             {record?.recommendation?.modelId && handoff.productionLabel === "model" ? (
@@ -224,7 +237,9 @@ export function SpecialistHandoffTraceSheet({
         {activeTab === "sources" ? (
           <div className="ps-exec-handoff-pane" role="tabpanel">
             {evidenceForHandoff.length === 0 ? (
-              <p className="cc-muted text-sm">No evidence ids are linked to this handoff on the record.</p>
+              <p className="cc-muted text-sm">
+                No evidence ids are linked to this handoff on the record.
+              </p>
             ) : (
               <ul className="ps-exec-handoff-source-list">
                 {evidenceForHandoff.map((e) => (
