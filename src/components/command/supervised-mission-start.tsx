@@ -192,7 +192,7 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
       {isHero ? (
         <>
           <label className="ps-brief-prompt" htmlFor="supervised-question">
-            Your one-liner
+            What would you like DeliverX to investigate?
           </label>
         </>
       ) : (
@@ -232,7 +232,14 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
           </button>
         </p>
       )}
-      {home.data && !home.data.ready ? <p className="cc-error">{home.data.reason}</p> : null}
+      {home.data && !home.data.ready ? (
+        <div className="cc-error" role="alert">
+          <p>{home.data.reason}</p>
+          <button type="button" disabled={home.isFetching} onClick={() => void home.refetch()}>
+            {home.isFetching ? "Retrying…" : "Retry availability"}
+          </button>
+        </div>
+      ) : null}
       {home.data?.ready && home.data.startInvestigationBlockedReason ? (
         <p className="cc-error" role="alert">
           {home.data.startInvestigationBlockedReason}
@@ -275,15 +282,16 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
           className="cc-input cc-textarea ps-brief-textarea"
           maxLength={2000}
           rows={isHero ? 3 : 3}
-          placeholder="e.g. Should we charge for onboarding analytics before launch, or keep it free to learn faster?"
+          placeholder="Describe the idea, decision, or business question you want to investigate."
           value={question}
           onChange={(event) => setQuestion(event.target.value)}
           disabled={voiceBusy}
         />
 
-        <div className="ps-brief-voice-inline" aria-label="Voice one-liner">
-          <p className="cc-muted text-xs mb-2">
-            Or use voice — transcript fills the line above. Brief the PM still requires a click.
+        <details className="ps-brief-voice-inline">
+          <summary>Use voice</summary>
+          <p className="cc-muted text-xs mb-2 mt-2">
+            Your transcript fills the field above. You still need to select Brief the PM to start.
           </p>
           <VoiceControls
             disabled={!draftReady || start.isPending}
@@ -296,7 +304,7 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
               setQuestion((current) => (current.trim() ? `${current.trim()} ${line}` : line));
             }}
           />
-        </div>
+        </details>
 
         <details className="ps-intake-advanced">
           <summary>Optional details (research-first defaults)</summary>

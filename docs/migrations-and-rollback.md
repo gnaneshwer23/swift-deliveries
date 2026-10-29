@@ -42,6 +42,8 @@ The production Neon branch is `br-fancy-breeze-zatt9ocp` in project `spring-wind
 
 Migrations 0020–0023 were applied to production in a single transaction. The six `psi_*` tables are owned by the server role, have no client grants, and have row-level security enabled. No table rows were read during or after the change.
 
+On 29 October 2026, migrations 0019–0023 and then 0024–0031 were applied in order, in two transactions, to the Vercel Development Neon database. Each group passed a rollback-only dry run first. The Development connection host was confirmed distinct from Production before applying. All six `psi_*` tables were present with row-level security enabled afterward. The local server was restarted afterward because `neonDb()` caches the public-column map for its lifetime. Production and Preview were not changed by this operation.
+
 Migrations 0028 and 0029 were applied to production together in a single transaction on 27 October 2026, after a preflight that used only aggregate counts. It found no evidence rows that would break the new 0027 constraints. Production's constraints match the migration files. Preview also carries two redundant single-column foreign keys (`wf_product_memory_first_mission_id_fkey`, `wf_product_memory_last_mission_id_fkey`) left over from an earlier draft of 0028. They clear the same columns on delete as the composite keys, so they change nothing.
 
 Migration 0030 was applied to production on 27 October 2026 in a single transaction, after a catalog-only preflight confirmed neither table existed. A post-apply catalog check on production returned the following.
