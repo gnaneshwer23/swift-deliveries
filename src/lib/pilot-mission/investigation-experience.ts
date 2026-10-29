@@ -27,15 +27,205 @@ export type InvestigationAgentUpdate = {
   basis: string;
 };
 
+export type InvestigationThemeId =
+  "customer_problem" | "alternatives" | "commercial" | "feasibility" | "evidence_gaps";
+
+export type InvestigationThemeKind = "investigating" | "gap" | "supported";
+
+export type InvestigationTheme = {
+  id: InvestigationThemeId;
+  label: string;
+  kind: InvestigationThemeKind;
+  detail: string;
+  basis: string;
+};
+
+export type InvestigationHandoffPulse = {
+  id: string;
+  fromTheme: InvestigationThemeId;
+  toTheme: InvestigationThemeId;
+  at: string;
+  basis: string;
+};
+
+export type InvestigationArtefactPreview = {
+  id: string;
+  title: string;
+  summary: string;
+  honestyLabel: string;
+};
+
 export type InvestigationExperience = {
-  version: "investigation-experience-v1";
+  version: "investigation-experience-v2";
   active: boolean;
   state: InvestigationRunState;
   statusLabel: string;
   leaveNote: string;
+  ideaLabel: string;
+  converging: boolean;
+  themes: InvestigationTheme[];
+  handoffPulses: InvestigationHandoffPulse[];
+  artefactPreviews: InvestigationArtefactPreview[];
   keywords: InvestigationKeyword[];
   updates: InvestigationAgentUpdate[];
 };
+
+const THEME_DEFS: Record<InvestigationThemeId, { label: string; defaultDetail: string }> = {
+  customer_problem: {
+    label: "Customer problem",
+    defaultDetail: "Problem and audience — from your brief until evidence lands.",
+  },
+  alternatives: {
+    label: "Alternatives",
+    defaultDetail: "Competitive and build options — specialists when alternatives stage opens.",
+  },
+  commercial: {
+    label: "Commercial questions",
+    defaultDetail: "Pricing, demand, and go-to-market — tied to evidence rows.",
+  },
+  feasibility: {
+    label: "Feasibility",
+    defaultDetail: "Build and ops constraints — no feasibility claim without basis.",
+  },
+  evidence_gaps: {
+    label: "Honest gaps",
+    defaultDetail: "Unknowns recorded — not presented as founder-supplied proof.",
+  },
+};
+
+function themeFromTaskKey(taskKey: string): InvestigationThemeId {
+  const k = taskKey.toLowerCase();
+  if (/altern|compet|option|compare/.test(k)) return "alternatives";
+  if (/market|pricing|commercial|revenue|demand/.test(k)) return "commercial";
+  if (/feasib|tech|build|proto|engineer/.test(k)) return "feasibility";
+  if (/gap|unknown|risk/.test(k)) return "evidence_gaps";
+  return "customer_problem";
+}
+
+function themesFromMission(mission: SupervisedMission): InvestigationTheme[] {
+  const counts: Record<
+    InvestigationThemeId,
+    { supplied: number; gap: number; assumption: number }
+  > = {
+    customer_problem: { supplied: 0, gap: 0, assumption: 0 },
+    alternatives: { supplied: 0, gap: 0, assumption: 0 },
+    commercial: { supplied: 0, gap: 0, assumption: 0 },
+    feasibility: { supplied: 0, gap: 0, assumption: 0 },
+    evidence_gaps: { supplied: 0, gap: 0, assumption: 0 },
+  };
+
+  for (const row of mission.evidence) {
+    const theme: InvestigationThemeId =
+      row.classification === "gap"
+        ? "evidence_gaps"
+        : /altern|compet/i.test(row.statement)
+          ? "alternatives"
+          : /price|market|customer|demand/i.test(row.statement)
+            ? "commercial"
+            : /build|tech|feasib/i.test(row.statement)
+              ? "feasibility"
+              : "customer_problem";
+    if (row.classification === "supplied") counts[theme].supplied += 1;
+    else if (row.classification === "gap") counts[theme].gap += 1;
+    else counts[theme].assumption += 1;
+  }
+
+  for (const event of mission.activity ?? []) {
+    if (event.taskKey) {
+      const t = themeFromTaskKey(event.taskKey);
+      counts[t].assumption += 1;
+    }
+  }
+
+  const collab = mission.teamCollaboration;
+  if (collab) {
+    for (const h of collab.handoffs) {
+      if (h.id.endsWith("-use")) continue;
+      counts[themeFromTaskKey(h.toTaskKey)].assumption += 1;
+    }
+  }
+
+  return (Object.keys(THEME_DEFS) as InvestigationThemeId[]).map((id) => {
+    const c = counts[id];
+    let kind: InvestigationThemeKind = "investigating";
+    let detail = THEME_DEFS[id].defaultDetail;
+    if (c.supplied > 0) {
+      kind = "supported";
+      detail = `${c.supplied} supplied finding(s) on the register.`;
+    } else if (c.gap > 0) {
+      kind = "gap";
+      detail = `${c.gap} gap(s) labelled — not presented as customer proof.`;
+    } else if (mission.researchGaps?.length && id === "evidence_gaps") {
+      kind = "gap";
+      detail = `${mission.researchGaps.length} research gap(s) from the last pass.`;
+    }
+    return {
+      id,
+      label: THEME_DEFS[id].label,
+      kind,
+      detail,
+      basis: `evidence+activity:${id}`,
+    };
+  });
+}
+
+function handoffPulsesFromMission(mission: SupervisedMission): InvestigationHandoffPulse[] {
+  const collab = mission.teamCollaboration;
+  if (!collab?.handoffs.length) return [];
+  return collab.handoffs
+    .filter((h) => !h.id.endsWith("-use") && h.findingSummary.trim())
+    .slice(-6)
+    .map((h) => ({
+      id: h.id,
+      fromTheme: themeFromTaskKey(h.fromTaskKey),
+      toTheme: themeFromTaskKey(h.toTaskKey),
+      at: h.sharedAt,
+      basis: `handoff:${h.id}`,
+    }));
+}
+
+function artefactPreviewsFromMission(mission: SupervisedMission): InvestigationArtefactPreview[] {
+  const out: InvestigationArtefactPreview[] = [];
+  if (mission.proposal) {
+    const optionLine =
+      mission.proposal.options[0]?.title ??
+      `${mission.proposal.options.length} option(s) on the record`;
+    out.push({
+      id: "proposal",
+      title: "Options draft",
+      summary: optionLine.slice(0, 160),
+      honestyLabel: mission.proposal.generation?.label ?? "Agent-reviewed draft",
+    });
+  }
+  if (mission.artefact) {
+    out.push({
+      id: "artefact",
+      title: mission.artefact.title,
+      summary: mission.artefact.summary.slice(0, 160),
+      honestyLabel: mission.artefact.honesty?.label ?? "Simulated draft",
+    });
+  }
+  if (mission.exportBody && out.every((p) => p.id !== "export")) {
+    out.push({
+      id: "export",
+      title: "Decision pack",
+      summary: "Export markdown on the mission record.",
+      honestyLabel: "Human-reviewed export",
+    });
+  }
+  return out;
+}
+
+function deriveConverging(mission: SupervisedMission): boolean {
+  const next = nextRequiredAction(mission);
+  return (
+    mission.stage === "alternatives" ||
+    next.id === "compare" ||
+    next.id === "prepare" ||
+    next.id === "artefact" ||
+    (Boolean(mission.researchPassCompletedAt) && !mission.proposal && mission.evidence.length > 0)
+  );
+}
 
 const HUMAN_WAIT_IDS = new Set([
   "approve_plan",
@@ -269,12 +459,17 @@ export function buildInvestigationExperience(
   }
 
   return {
-    version: "investigation-experience-v1",
+    version: "investigation-experience-v2",
     active,
     state,
     statusLabel,
     leaveNote:
       "Closing this view or leaving the page does not stop the worker — progress stays on the mission record.",
+    ideaLabel: mission.brief.question,
+    converging: deriveConverging(mission),
+    themes: themesFromMission(mission),
+    handoffPulses: handoffPulsesFromMission(mission),
+    artefactPreviews: artefactPreviewsFromMission(mission),
     keywords: keywordsFromMission(mission),
     updates: updatesFromMission(mission),
   };

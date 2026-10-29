@@ -13,7 +13,7 @@ import { HonestyPosturePanel } from "@/components/command/honesty-posture-panel"
 import { PathArtefactsPanel } from "@/components/command/path-artefacts-panel";
 import { ProjectRoomNav } from "@/components/command/project-room-nav";
 import { MissionInspectionStrip } from "@/components/command/mission-inspection-strip";
-import { IndigoCaseStudioShell } from "@/components/command/indigo-case-studio-shell";
+import { InvestigationStageShell } from "@/components/command/investigation-stage-shell";
 import { TeamActivityPanel } from "@/components/command/team-activity-panel";
 import { SupervisedLearningLoop } from "@/components/command/supervised-learning-loop";
 import { WatchtowerPanel } from "@/components/command/watchtower-panel";
@@ -240,10 +240,12 @@ function SupervisedMissionPage() {
 
         <MissionInspectionStrip mission={mission} missionId={missionId} />
 
-        <IndigoCaseStudioShell
+        <InvestigationStageShell
           mission={mission}
           missionId={missionId}
           recordHash={recordSection ? `#${recordSection}` : ""}
+          onDone={invalidate}
+          onError={onError}
           downloadsSlot={
             mission.artefact || mission.exportBody ? (
               <ExportButton
@@ -274,6 +276,7 @@ function SupervisedMissionPage() {
               />
               <MissionTheatre
                 quiet
+                hideInvestigationCanvas
                 mission={mission}
                 missionId={missionId}
                 onDone={invalidate}

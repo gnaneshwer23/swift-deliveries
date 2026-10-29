@@ -3974,6 +3974,210 @@
   }
 }
 
+/* Investigation stage (primary Studio path) */
+.ps-investigation-foyer .ps-investigation-recent {
+  margin-top: 1.5rem;
+}
+.ps-investigation-recent-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: grid;
+  gap: 8px;
+}
+.ps-investigation-recent-card {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--psi-border, #e2e8f0);
+  background: var(--psi-surface, #fff);
+  text-decoration: none;
+  color: inherit;
+}
+.ps-investigation-recent-card:hover {
+  border-color: var(--exec-primary-container, #4f46e5);
+}
+.ps-investigation-stage-title {
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  margin: 0.25rem 0 0.5rem;
+  line-height: 1.25;
+}
+.ps-investigation-stage-rail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+}
+.ps-investigation-stage-step {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--psi-border, #e2e8f0);
+  text-decoration: none;
+  color: inherit;
+}
+.ps-investigation-stage-rail li[data-state="current"] .ps-investigation-stage-step {
+  background: var(--exec-primary-container, #4f46e5);
+  color: #fff;
+  border-color: transparent;
+}
+.ps-investigation-stage-rail li[data-state="done"] .ps-investigation-stage-step {
+  opacity: 0.75;
+}
+.ps-investigation-canvas {
+  position: relative;
+  min-height: 320px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #faf8ff 0%, #f3f1ff 100%);
+  border: 1px solid #ebe7ff;
+  overflow: hidden;
+}
+.ps-investigation-handoffs {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.ps-investigation-handoff-line {
+  stroke: rgba(79, 70, 229, 0.35);
+  stroke-width: 0.4;
+  stroke-dasharray: 2 1.5;
+}
+.ps-investigation-experience[data-state="running"] .ps-investigation-handoff-line {
+  animation: ps-handoff-pulse 2.4s ease-in-out infinite;
+}
+.ps-investigation-experience[data-converging="true"] .ps-investigation-theme-field {
+  transition: transform 0.6s ease;
+  transform: scale(0.98);
+}
+@keyframes ps-handoff-pulse {
+  0%,
+  100% {
+    stroke-opacity: 0.35;
+  }
+  50% {
+    stroke-opacity: 0.85;
+  }
+}
+.ps-investigation-idea-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  max-width: min(18rem, 70%);
+  z-index: 2;
+  padding: 12px 16px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid #c6c6cd;
+  box-shadow: 0 4px 24px rgba(53, 37, 205, 0.08);
+}
+.ps-investigation-idea-kicker {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+  color: #45464d;
+}
+.ps-investigation-idea-text {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.ps-investigation-theme-field {
+  position: absolute;
+  inset: 0;
+}
+.ps-investigation-theme {
+  position: absolute;
+  left: var(--theme-x);
+  top: var(--theme-y);
+  transform: translate(-50%, -50%);
+  width: min(9.5rem, 28vw);
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #e2e8f0;
+  z-index: 1;
+}
+.ps-investigation-theme[data-kind="supported"] {
+  border-color: #a7f3d0;
+  background: #ecfdf5;
+}
+.ps-investigation-theme[data-kind="gap"] {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+.ps-investigation-theme-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  margin: 0;
+}
+.ps-investigation-theme-detail {
+  font-size: 0.65rem;
+  margin: 4px 0 0;
+  color: #45464d;
+  line-height: 1.35;
+}
+.ps-investigation-artefacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+}
+.ps-investigation-artefact-card {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  max-width: 16rem;
+}
+.ps-investigation-artefact-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+.ps-pm-briefing-stage {
+  padding: 16px 0;
+}
+.ps-pm-briefing-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0;
+}
+.ps-pm-briefing-tab {
+  font-size: 0.75rem;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  cursor: pointer;
+}
+.ps-pm-briefing-tab[aria-selected="true"] {
+  background: #4f46e5;
+  color: #fff;
+  border-color: transparent;
+}
+.ps-investigation-stage-gates {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ps-investigation-experience[data-state="running"] .ps-investigation-handoff-line {
+    animation: none;
+  }
+}
+
 /* Stitch executive dispatch — scoped to `.ps-executive` (Portfolio / Advanced / dossiers) */
 .psi-workspace.ps-executive {
   --exec-canvas: #faf8ff;

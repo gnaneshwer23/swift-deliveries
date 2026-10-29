@@ -63,6 +63,7 @@ export function MissionTheatre({
   onError,
   actions,
   quiet = true,
+  hideInvestigationCanvas = false,
 }: {
   mission: SupervisedMission;
   missionId: string;
@@ -71,6 +72,8 @@ export function MissionTheatre({
   actions: MissionTheatreActions;
   /** Calm default: gate + canvas; beat rails and PM walls live under Inspect. */
   quiet?: boolean;
+  /** When the investigation stage shell renders the canvas, skip duplicate mandala. */
+  hideInvestigationCanvas?: boolean;
 }) {
   const theatre = theatreState(mission);
   const [viewAct, setViewAct] = useState<TheatreAct | null>(null);
@@ -138,6 +141,7 @@ export function MissionTheatre({
             onDone={onDone}
             onError={onError}
             quiet={quiet}
+            hideInvestigationCanvas={hideInvestigationCanvas}
           />
         ) : null}
       </div>
@@ -570,6 +574,7 @@ function ActWork({
   onDone,
   onError,
   quiet,
+  hideInvestigationCanvas,
 }: {
   mission: SupervisedMission;
   missionId: string;
@@ -578,6 +583,7 @@ function ActWork({
   onDone: () => Promise<void>;
   onError: (error: unknown) => void;
   quiet?: boolean;
+  hideInvestigationCanvas?: boolean;
 }) {
   const sequence = buildSequence(mission);
   const [viewBeatId, setViewBeatId] = useState<BuildBeatView["id"] | null>(null);
@@ -653,15 +659,17 @@ function ActWork({
 
   const quietBuild = (
     <>
-      <div className="ps-quiet-canvas-wrap">
-        <InvestigationExperience
-          mission={mission}
-          missionId={missionId}
-          recordVersion={mission.version}
-          onDone={onDone}
-          onError={onError}
-        />
-      </div>
+      {hideInvestigationCanvas ? null : (
+        <div className="ps-quiet-canvas-wrap">
+          <InvestigationExperience
+            mission={mission}
+            missionId={missionId}
+            recordVersion={mission.version}
+            onDone={onDone}
+            onError={onError}
+          />
+        </div>
+      )}
       <FocusedPmBriefing mission={mission} />
       {nowLine}
       {gateBlock}
