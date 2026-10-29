@@ -75,7 +75,12 @@ export function SupervisedMissionStart({
 }) {
   const { user } = useSession();
   return user ? (
-    <MissionStartForm key={user.id} userId={user.id} tone={tone} seedQuestion={seedQuestion} />
+    <MissionStartForm
+      key={user.id}
+      userId={user.id}
+      tone={tone}
+      {...(seedQuestion !== undefined ? { seedQuestion } : {})}
+    />
   ) : null;
 }
 
