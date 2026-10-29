@@ -201,8 +201,8 @@ function artefactPreviewsFromMission(mission: SupervisedMission): InvestigationA
     out.push({
       id: "artefact",
       title: mission.artefact.title,
-      summary: mission.artefact.summary.slice(0, 160),
-      honestyLabel: mission.artefact.honesty?.label ?? "Simulated draft",
+      summary: mission.artefact.decisionBrief.slice(0, 160),
+      honestyLabel: mission.artefact.provenance || "Human-reviewed pack",
     });
   }
   if (mission.exportBody && out.every((p) => p.id !== "export")) {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { deriveInvestigationStagePhase } from "./investigation-stage-phase";
+import { buildPilotTeamPlan } from "./specialist-team";
 import type { SupervisedMission } from "./types";
 
 const brief = {
@@ -38,7 +39,9 @@ describe("deriveInvestigationStagePhase", () => {
   it("returns scope before plan approval", () => {
     expect(
       deriveInvestigationStagePhase(
-        mission({ team: { tasks: [], approvedAt: null, approvedBy: null } }),
+        mission({
+          team: { ...buildPilotTeamPlan({ band: "M" }), approvedAt: null, approvedBy: null },
+        }),
       ),
     ).toBe("scope");
   });
