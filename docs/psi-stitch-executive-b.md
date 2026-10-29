@@ -1,5 +1,7 @@
 # Stitch Executive B (Studio foyer)
 
+> **Visual supersession:** [Indigo Studio pack](./psi-stitch-indigo-studio.md) updates tokens and case/dashboard layout. Handoff trace sheet and executive route gating from B remain.
+
 Founder choice **B** supersedes **A (Quiet-first)** for the signed-in Studio **foyer** (`/command`). Portfolio and Advanced routes keep the same Stitch **Executive Autonomous Dispatch** tokens; the foyer is now an executive dispatch board instead of the calm Quiet-only line.
 
 **Stitch source (reference):** `stitch_deliverx_project_dashboard (1)/DESIGN.md`, `code.html` (Specialist Handoff & Trace sheet — adapted without mock telemetry).

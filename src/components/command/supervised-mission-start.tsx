@@ -66,15 +66,28 @@ function allowanceStatusSuffix(home: {
 
 export function SupervisedMissionStart({
   tone = "hero",
+  seedQuestion,
 }: {
   /** hero = first-viewport brief; secondary = quieter form below a Continue stage */
   tone?: "hero" | "secondary";
+  /** Optional omni intent pill — fills the one-liner; start still requires an explicit click. */
+  seedQuestion?: string | null;
 }) {
   const { user } = useSession();
-  return user ? <MissionStartForm key={user.id} userId={user.id} tone={tone} /> : null;
+  return user ? (
+    <MissionStartForm key={user.id} userId={user.id} tone={tone} seedQuestion={seedQuestion} />
+  ) : null;
 }
 
-function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "secondary" }) {
+function MissionStartForm({
+  userId,
+  tone,
+  seedQuestion,
+}: {
+  userId: string;
+  tone: "hero" | "secondary";
+  seedQuestion?: string | null;
+}) {
   const profile = useQuery(myProfileQuery);
   const home = useQuery({
     queryKey: ["supervised", "home"],
@@ -116,6 +129,11 @@ function MissionStartForm({ userId, tone }: { userId: string; tone: "hero" | "se
     hydratedUser.current = userId;
     setDraftReady(true);
   }, [userId, profile.isLoading, profile.data]);
+  useEffect(() => {
+    const seed = seedQuestion?.trim();
+    if (!seed || !draftReady) return;
+    setQuestion(seed);
+  }, [seedQuestion, draftReady]);
   useEffect(() => {
     if (!draftReady || !draftKey) return;
     try {

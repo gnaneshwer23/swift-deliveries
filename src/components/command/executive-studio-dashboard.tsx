@@ -9,6 +9,7 @@ import {
   portfolioSummary,
 } from "@/lib/pilot-mission/portfolio";
 import { buildStudioInbox } from "@/lib/pilot-mission/studio-inbox";
+import { STUDIO_INTENT_PILLS } from "@/lib/pilot-mission/studio-intent-pills";
 import { INBOX_KIND_LABELS } from "@/lib/workforce/owner-inbox";
 import { SupervisedMissionStart } from "@/components/command/supervised-mission-start";
 import { StudioReadiness } from "@/components/command/studio-readiness";
@@ -31,9 +32,19 @@ function jobStatusLabel(status: string): {
   return { tone: "neutral", text: status };
 }
 
+const PREPARE_CONTINUE_IDS = new Set([
+  "compare",
+  "decide",
+  "artefact",
+  "export",
+  "expectation",
+  "prepare",
+  "approve_plan",
+]);
+
 /**
- * Executive Studio foyer (Stitch B): dispatch board with real inbox, job status, and cases —
- * no fabricated telemetry or intelligence walls.
+ * Executive Studio foyer (Stitch indigo): omni intake, attention, projects, prepare/continue —
+ * bound to saved mission and workforce records only.
  */
 export function ExecutiveStudioDashboard() {
   const home = useQuery({
@@ -42,8 +53,9 @@ export function ExecutiveStudioDashboard() {
   });
   const inbox = useQuery(ownerInboxQuery);
   const [caseQuery, setCaseQuery] = useState("");
+  const [intentSeed, setIntentSeed] = useState<string | null>(null);
 
-  const missions = home.data?.ready ? home.data.missions : [];
+  const missions = useMemo(() => (home.data?.ready ? home.data.missions : []), [home.data]);
   const inboxRows = buildStudioInbox(missions);
 
   const portfolioRows = useMemo(
@@ -60,6 +72,7 @@ export function ExecutiveStudioDashboard() {
         favourite: m.favourite,
         archived: m.archived,
         monitoringStatus: m.monitoringStatus,
+        jobStatus: m.jobStatus,
       })),
     [missions],
   );
@@ -74,7 +87,16 @@ export function ExecutiveStudioDashboard() {
   const runningLeased = missions.filter((m) => !m.archived && m.jobStatus === "leased");
   const researchQueued = missions.filter((m) => !m.archived && m.researchPassQueued);
 
-  const openCases = useMemo(() => {
+  const prepareContinue = useMemo(
+    () =>
+      portfolioRows
+        .filter((r) => !r.archived && PREPARE_CONTINUE_IDS.has(r.nextId))
+        .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
+        .slice(0, 6),
+    [portfolioRows],
+  );
+
+  const openProjects = useMemo(() => {
     const q = caseQuery.trim().toLowerCase();
     return missions
       .filter((m) => !m.archived)
@@ -89,6 +111,22 @@ export function ExecutiveStudioDashboard() {
       .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
       .slice(0, 12);
   }, [missions, caseQuery]);
+
+  const allowanceLine = (() => {
+    if (!home.data?.ready) return null;
+    if (home.data.investigationAllowanceLoad === "failed") {
+      return home.data.investigationAllowanceLoadReason ?? "Allowance could not be loaded.";
+    }
+    if (home.data.investigationAllowance) {
+      const n = home.data.investigationAllowance.remaining;
+      return `${n} Investigation${n === 1 ? "" : "s"} remaining on your plan.`;
+    }
+    if (home.data.usage) {
+      const left = Math.max(0, home.data.usage.ceiling - home.data.usage.consumed);
+      return `Demo workspace ceiling: ${left} of ${home.data.usage.ceiling} units — no paid pilot on record.`;
+    }
+    return "No paid Investigation pilot on this workspace — demo ceilings apply.";
+  })();
 
   if (home.isPending) {
     return (
@@ -122,24 +160,32 @@ export function ExecutiveStudioDashboard() {
 
   return (
     <div className="ps-exec-dashboard ps-room ps-room-wide">
-      <header className="ps-room-stage" aria-label="Executive dispatch">
+      <header className="ps-room-stage" aria-label="Executive dashboard">
         <p className="ps-foyer-brand">DeliverX Studio</p>
-        <p className="cc-kicker ps-exec-kicker">Executive dispatch</p>
-        <h1 className="ps-foyer-headline">What needs you, and what is running</h1>
+        <p className="cc-kicker ps-exec-kicker">Executive dashboard</p>
+        <h1 className="ps-foyer-headline">What would you like help with?</h1>
         <p className="ps-foyer-lede">
-          One line to open a case. Attention rows and job status come from saved mission and
-          workforce records — not simulated agent telemetry.
+          Describe a product question in one line. Intent pills seed the brief — starting a case
+          still needs your click. Attention and projects come from saved records.
         </p>
-        <p className="ps-exec-summary-strip">
-          {summary.total} open case{summary.total === 1 ? "" : "s"} · {summary.awaitingDecision}{" "}
-          awaiting decision · {runningLeased.length} worker leased · {researchQueued.length}{" "}
-          research pass queued
-        </p>
+        {allowanceLine ? <p className="ps-exec-summary-strip">{allowanceLine}</p> : null}
       </header>
 
-      <section className="ps-room-section ps-exec-omnibox-well" aria-label="Start a case">
-        <p className="ps-exec-section-kicker">New case</p>
-        <SupervisedMissionStart tone="hero" />
+      <section className="ps-room-section ps-exec-omnibox-well" aria-label="Omni intake">
+        <div className="ps-indigo-intent-pills" role="list" aria-label="Intent">
+          {STUDIO_INTENT_PILLS.map((pill) => (
+            <button
+              key={pill.id}
+              type="button"
+              role="listitem"
+              className="ps-exec-chip"
+              onClick={() => setIntentSeed(pill.question)}
+            >
+              {pill.label}
+            </button>
+          ))}
+        </div>
+        <SupervisedMissionStart tone="hero" seedQuestion={intentSeed} />
       </section>
 
       <section className="ps-room-section" aria-labelledby="exec-attention-title">
@@ -213,7 +259,7 @@ export function ExecutiveStudioDashboard() {
                     <Link
                       to="/command/supervised/$missionId"
                       params={{ missionId: row.id }}
-                      hash="mission-inspect"
+                      hash="indigo-decisions"
                       className="cc-btn cc-btn-primary"
                     >
                       Open case
@@ -323,9 +369,45 @@ export function ExecutiveStudioDashboard() {
         </section>
       )}
 
-      <section className="ps-room-section" aria-labelledby="exec-cases-title">
-        <h2 id="exec-cases-title" className="ps-exec-section-kicker">
-          Cases
+      {prepareContinue.length > 0 ? (
+        <section className="ps-room-section" aria-labelledby="exec-prepare-title">
+          <h2 id="exec-prepare-title" className="ps-exec-section-kicker">
+            Prepare or continue
+          </h2>
+          <ul className="ps-exec-case-list">
+            {prepareContinue.map((row) => (
+              <li key={`prep-${row.id}`}>
+                <article className="ps-exec-card">
+                  <div className="ps-exec-card-head">
+                    <h3>{row.question}</h3>
+                    <span className="ps-exec-chip" data-tone={attentionChipTone(row.nextId)}>
+                      {row.nextTitle}
+                    </span>
+                  </div>
+                  <p className="ps-exec-meta mb-0">
+                    Stage {row.stage} · updated {since(row.updatedAt)}
+                  </p>
+                  <div className="ps-exec-card-foot">
+                    <span className="ps-exec-meta">{jobStatusLabel(row.jobStatus).text}</span>
+                    <Link
+                      to="/command/supervised/$missionId"
+                      params={{ missionId: row.id }}
+                      hash="indigo-briefing"
+                      className="cc-btn cc-btn-primary"
+                    >
+                      Continue
+                    </Link>
+                  </div>
+                </article>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      <section className="ps-room-section" aria-labelledby="exec-projects-title">
+        <h2 id="exec-projects-title" className="ps-exec-section-kicker">
+          Your projects
         </h2>
         <div className="ps-exec-filter-well mb-3">
           <label className="flex flex-col gap-1 flex-1 min-w-[200px]">
@@ -342,61 +424,77 @@ export function ExecutiveStudioDashboard() {
             Full portfolio
           </Link>
         </div>
-        {openCases.length === 0 ? (
-          <p className="cc-muted text-sm">No open cases match. Start one above or clear search.</p>
+        {openProjects.length === 0 ? (
+          <p className="cc-muted text-sm">
+            No open projects match. Start one above or clear search.
+          </p>
         ) : (
-          <ul className="ps-exec-case-list">
-            {openCases.map((m) => (
-              <li key={m.id}>
-                <article className="ps-exec-card">
-                  <div className="ps-exec-card-head">
-                    <div>
-                      <p className="ps-exec-section-kicker">{m.stage}</p>
-                      <h3>{m.question}</h3>
-                    </div>
-                    {missionNeedsAttention(m.next.id) ? (
-                      <span className="ps-exec-chip" data-tone={attentionChipTone(m.next.id)}>
-                        {m.nextTitle}
-                      </span>
-                    ) : (
-                      <span className="ps-exec-chip">{m.nextTitle}</span>
-                    )}
-                  </div>
-                  <p className="ps-exec-meta mb-0">
-                    Updated {since(m.updatedAt)}
-                    {m.monitoringStatus ? ` · ${m.monitoringStatus}` : ""}
-                  </p>
-                  <div className="ps-exec-card-foot">
-                    <span className="ps-exec-meta">{jobStatusLabel(m.jobStatus).text}</span>
-                    <Link
-                      to="/command/supervised/$missionId"
-                      params={{ missionId: m.id }}
-                      className="cc-btn cc-btn-primary"
-                    >
-                      Open case
-                    </Link>
-                  </div>
-                </article>
-              </li>
-            ))}
-          </ul>
+          <div className="ps-exec-projects-table-wrap">
+            <table className="ps-exec-projects-table">
+              <thead>
+                <tr>
+                  <th scope="col">Project</th>
+                  <th scope="col">Stage</th>
+                  <th scope="col">Next</th>
+                  <th scope="col">Updated</th>
+                  <th scope="col">
+                    <span className="sr-only">Action</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {openProjects.map((m) => (
+                  <tr key={m.id}>
+                    <td>{m.question}</td>
+                    <td>{m.stage}</td>
+                    <td>
+                      {missionNeedsAttention(m.next.id) ? (
+                        <span className="ps-exec-chip" data-tone={attentionChipTone(m.next.id)}>
+                          {m.nextTitle}
+                        </span>
+                      ) : (
+                        m.nextTitle
+                      )}
+                    </td>
+                    <td className="ps-exec-meta">{since(m.updatedAt)}</td>
+                    <td>
+                      <Link
+                        to="/command/supervised/$missionId"
+                        params={{ missionId: m.id }}
+                        className="cc-btn cc-btn-ghost"
+                      >
+                        Open
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
+        <p className="ps-exec-meta mt-2 mb-0">
+          {summary.total} open · {summary.awaitingDecision} awaiting decision
+        </p>
       </section>
 
       <footer className="ps-foyer-footnotes ps-exec-dashboard-foot">
-        <p className="ps-foyer-side-links">
+        <section className="ps-exec-card ps-indigo-sovereign-contract" aria-label="Agency contract">
+          <p className="ps-exec-section-kicker">Agency &amp; sovereign contract</p>
+          <p className="text-sm mb-2">
+            You approve plans, paths, and exports. DeliverX drafts and researches within usage
+            ceilings — it does not pass human gates or claim outcomes you have not recorded.
+          </p>
+          <StudioReadiness />
+        </section>
+        <p className="ps-foyer-side-links mt-4">
           <Link to="/command/capabilities">Specialists &amp; office</Link>
           <span aria-hidden="true">·</span>
           <Link to="/command/projects">Projects shelf</Link>
         </p>
-        <details>
-          <summary>Inspect · readiness &amp; honesty</summary>
-          <StudioReadiness />
-          <p className="cc-muted text-xs mt-2 mb-0">
-            Handoff inspector shows persisted teamCollaboration only. Downloads remain the full
-            depth layer.
-          </p>
-        </details>
+        <p className="cc-muted text-xs mt-2 mb-0">
+          Handoff inspector shows persisted teamCollaboration only. Downloads remain the full depth
+          layer under each project.
+        </p>
       </footer>
     </div>
   );
