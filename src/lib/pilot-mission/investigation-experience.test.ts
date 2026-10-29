@@ -100,6 +100,21 @@ describe("investigation experience", () => {
     expect(state).not.toBe("running");
   });
 
+  it("does not claim an approved plan has an active worker", () => {
+    const mission = baseMission({ team: approvedTeam, stage: "evidence" });
+    expect(deriveInvestigationRunState(mission)).toBe("waiting");
+  });
+
+  it("labels a recorded research queue without claiming it is running", () => {
+    const mission = baseMission({
+      team: approvedTeam,
+      stage: "evidence",
+      researchPassQueuedAt: "2026-01-01T00:00:00Z",
+    });
+    expect(deriveInvestigationRunState(mission)).toBe("queued");
+    expect(buildInvestigationExperience(mission).statusLabel).toContain("queued");
+  });
+
   it("shows running (not paused) when a leased job is active even if pause is set", () => {
     const state = deriveInvestigationRunState(
       baseMission({

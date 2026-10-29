@@ -7,7 +7,8 @@ import type { TeamCollaborationRecord } from "./team-collaboration";
 import type { SupervisedMission } from "./types";
 import { nextRequiredAction } from "./types";
 
-export type InvestigationRunState = "idle" | "running" | "waiting" | "interrupted" | "complete";
+export type InvestigationRunState =
+  "idle" | "queued" | "running" | "waiting" | "interrupted" | "complete";
 
 export type InvestigationEventSource = "activity" | "teamCollaboration" | "research";
 
@@ -54,6 +55,7 @@ const HUMAN_WAIT_IDS = new Set([
 
 const STATE_LABELS: Record<InvestigationRunState, string> = {
   idle: "Idle",
+  queued: "Preparing investigation",
   running: "Investigation running",
   waiting: "Waiting on you",
   interrupted: "Interrupted",
@@ -230,20 +232,14 @@ export function deriveInvestigationRunState(
     return "waiting";
   }
 
+  if (mission.researchPassQueuedAt) return "queued";
+
   if (HUMAN_WAIT_IDS.has(next.id) && next.id !== "recover") {
     return "waiting";
   }
 
   if (mission.researchPassCompletedAt && mission.proposal) return "complete";
-
-  if (!mission.researchPassCompletedAt) {
-    const kinds = (mission.activity ?? []).map((e) => e.kind);
-    const researchMotion = kinds.some((k) => /research|evidence|pass|task/i.test(k));
-    if (researchMotion || !mission.researchPassCompletedAt) return "running";
-  }
-
   if (mission.researchPassCompletedAt) return "complete";
-
   return "waiting";
 }
 
@@ -264,6 +260,8 @@ export function buildInvestigationExperience(
       : `Interrupted — ${next.title}`;
   } else if (state === "running") {
     statusLabel = "Investigation running in the background";
+  } else if (state === "queued") {
+    statusLabel = "Investigation queued for the research worker";
   } else if (state === "complete") {
     statusLabel = "Investigation spine complete on the record";
   }
@@ -273,8 +271,7 @@ export function buildInvestigationExperience(
     active,
     state,
     statusLabel,
-    leaveNote:
-      "Closing this view or leaving the page does not stop the worker — progress stays on the mission record.",
+    leaveNote: "You can leave this page. Recorded progress will be here when you return.",
     keywords: keywordsFromMission(mission),
     updates: updatesFromMission(mission),
   };

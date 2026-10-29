@@ -17,6 +17,27 @@ export function InvestigationExperience({
   onError: (error: unknown) => void;
 }) {
   const experience = buildInvestigationExperience(mission);
+  const themes = experience.keywords;
+
+  function themeList(side: "left" | "right") {
+    const items = themes.filter((_, index) => index % 2 === (side === "left" ? 0 : 1));
+    return (
+      <ul className={`ps-investigation-themes ps-investigation-themes-${side}`}>
+        {items.map((kw) => (
+          <li key={kw.id} data-source={kw.source}>
+            <span>{kw.label}</span>
+            <small>
+              {kw.source === "research"
+                ? "Research record"
+                : kw.source === "teamCollaboration"
+                  ? "Shared work"
+                  : "Activity"}
+            </small>
+          </li>
+        ))}
+      </ul>
+    );
+  }
 
   return (
     <section
@@ -25,68 +46,54 @@ export function InvestigationExperience({
       data-state={experience.state}
     >
       <header className="ps-investigation-experience-head">
+        <div>
+          <p className="ps-investigation-eyebrow">Investigation stage</p>
+          <h3>Understanding the opportunity</h3>
+        </div>
         <p className="ps-investigation-status" role="status">
           {experience.statusLabel}
         </p>
-        <p className="ps-investigation-leave cc-muted text-xs">{experience.leaveNote}</p>
       </header>
 
-      <div className="ps-investigation-visual">
-        <div className="ps-investigation-mandala" aria-hidden="true">
-          <div className="ps-investigation-mandala-core" data-state={experience.state}>
-            <span className="ps-investigation-mandala-core-label">{experience.state}</span>
+      <div className="ps-investigation-visual" aria-label="Investigation topics">
+        <div className="ps-investigation-stage">
+          {themes.length ? themeList("left") : null}
+          <div className="ps-investigation-core">
+            <span className="ps-investigation-core-kicker">Your idea</span>
+            <strong>{mission.brief.question}</strong>
           </div>
-          <ul className="ps-investigation-orbit">
-            {experience.keywords.map((kw, index) => (
-              <li
-                key={kw.id}
-                className="ps-investigation-orbit-item"
-                style={{ ["--orbit-index" as string]: index }}
-                title={`${kw.label} (${kw.basis})`}
-              >
-                {kw.label}
+          {themes.length ? themeList("right") : null}
+          {!themes.length ? (
+            <p className="ps-investigation-no-themes">
+              Research topics will appear as work is recorded.
+            </p>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="ps-investigation-record">
+        <div className="ps-investigation-record-heading">
+          <h4>Recorded activity</h4>
+          <p className="ps-investigation-leave cc-muted text-xs">{experience.leaveNote}</p>
+        </div>
+        {experience.updates.length ? (
+          <ul className="ps-investigation-updates" aria-label="Recent persisted updates">
+            {experience.updates.map((update) => (
+              <li key={update.id}>
+                <span className="ps-investigation-update-actor">{update.actor}</span>
+                <span className="ps-investigation-update-summary">{update.summary}</span>
               </li>
             ))}
           </ul>
-        </div>
-
-        <ul
-          className="ps-investigation-static ps-investigation-static-a11y"
-          aria-label="Investigation keywords"
-        >
-          {experience.keywords.length ? (
-            experience.keywords.map((kw) => (
-              <li key={kw.id}>
-                <span>{kw.label}</span>
-                <span className="cc-muted text-xs">{kw.source}</span>
-              </li>
-            ))
-          ) : (
-            <li className="cc-muted text-sm">
-              Keywords appear as persisted task and research events land.
-            </li>
-          )}
-        </ul>
+        ) : (
+          <p className="ps-investigation-updates-empty cc-muted text-sm">
+            No research activity has been recorded yet.
+          </p>
+        )}
       </div>
 
-      {experience.updates.length ? (
-        <ul className="ps-investigation-updates" aria-label="Recent persisted updates">
-          {experience.updates.map((update) => (
-            <li key={update.id}>
-              <span className="ps-investigation-update-actor">{update.actor}</span>
-              <span className="ps-investigation-update-summary">{update.summary}</span>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="ps-investigation-updates-empty cc-muted text-sm">
-          Agent lines appear here only when activity, handoffs, or research fields are on the
-          record.
-        </p>
-      )}
-
       <details className="ps-investigation-map-inspect">
-        <summary>Map &amp; controls</summary>
+        <summary>Inspect work and controls</summary>
         <IntelligenceCanvasPanel
           mission={mission}
           missionId={missionId}
