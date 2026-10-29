@@ -124,7 +124,7 @@ export function CommandShell({
     link.id = EXECUTIVE_FONT_LINK_ID;
     link.rel = "stylesheet";
     link.href =
-      "https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap";
+      "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap";
     document.head.appendChild(link);
   }, [executiveMode]);
   const breadcrumb = isStudioHome ? (

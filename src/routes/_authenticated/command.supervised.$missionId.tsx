@@ -13,6 +13,7 @@ import { HonestyPosturePanel } from "@/components/command/honesty-posture-panel"
 import { PathArtefactsPanel } from "@/components/command/path-artefacts-panel";
 import { ProjectRoomNav } from "@/components/command/project-room-nav";
 import { MissionInspectionStrip } from "@/components/command/mission-inspection-strip";
+import { IndigoCaseStudioShell } from "@/components/command/indigo-case-studio-shell";
 import { TeamActivityPanel } from "@/components/command/team-activity-panel";
 import { SupervisedLearningLoop } from "@/components/command/supervised-learning-loop";
 import { WatchtowerPanel } from "@/components/command/watchtower-panel";
@@ -239,9 +240,11 @@ function SupervisedMissionPage() {
 
         <MissionInspectionStrip mission={mission} missionId={missionId} />
 
-        <QuietMissionBar
+        <IndigoCaseStudioShell
           mission={mission}
-          downloadSlot={
+          missionId={missionId}
+          recordHash={recordSection ? `#${recordSection}` : ""}
+          downloadsSlot={
             mission.artefact || mission.exportBody ? (
               <ExportButton
                 recordVersion={mission.version}
@@ -249,52 +252,67 @@ function SupervisedMissionPage() {
                 existingMd={mission.exportBody}
                 existingPdf={mission.exportPdfBase64}
                 onError={onError}
-                compact
               />
             ) : null
           }
+          theatre={
+            <div id="pr-briefings">
+              <QuietMissionBar
+                mission={mission}
+                downloadSlot={
+                  mission.artefact || mission.exportBody ? (
+                    <ExportButton
+                      recordVersion={mission.version}
+                      missionId={missionId}
+                      existingMd={mission.exportBody}
+                      existingPdf={mission.exportPdfBase64}
+                      onError={onError}
+                      compact
+                    />
+                  ) : null
+                }
+              />
+              <MissionTheatre
+                quiet
+                mission={mission}
+                missionId={missionId}
+                onDone={invalidate}
+                onError={onError}
+                actions={{
+                  open,
+                  next,
+                  usageWarning,
+                  error,
+                  research: query.data.research,
+                  modelConfigured: query.data.modelConfigured,
+                  comparisonScope: query.data.comparisonScope,
+                  consentedScope,
+                  setConsentedScope,
+                  approvePending: approvePlan.isPending,
+                  onApprove: () => approvePlan.mutate(),
+                  setResearchPending: setResearch.isPending,
+                  onSetResearch: (mode) => setResearch.mutate(mode),
+                  comparePending: compare.isPending,
+                  onCompare: () => compare.mutate(),
+                  preparePending: prepare.isPending,
+                  onPrepare: () => prepare.mutate(),
+                  prototypePending: approvePrototype.isPending,
+                  onApprovePrototype: () => approvePrototype.mutate(),
+                  exportSlot:
+                    next.id === "export" || mission.exportBody ? (
+                      <ExportButton
+                        recordVersion={mission.version}
+                        missionId={missionId}
+                        existingMd={mission.exportBody}
+                        existingPdf={mission.exportPdfBase64}
+                        onError={onError}
+                      />
+                    ) : null,
+                }}
+              />
+            </div>
+          }
         />
-
-        <div id="pr-briefings">
-          <MissionTheatre
-            quiet
-            mission={mission}
-            missionId={missionId}
-            onDone={invalidate}
-            onError={onError}
-            actions={{
-              open,
-              next,
-              usageWarning,
-              error,
-              research: query.data.research,
-              modelConfigured: query.data.modelConfigured,
-              comparisonScope: query.data.comparisonScope,
-              consentedScope,
-              setConsentedScope,
-              approvePending: approvePlan.isPending,
-              onApprove: () => approvePlan.mutate(),
-              setResearchPending: setResearch.isPending,
-              onSetResearch: (mode) => setResearch.mutate(mode),
-              comparePending: compare.isPending,
-              onCompare: () => compare.mutate(),
-              preparePending: prepare.isPending,
-              onPrepare: () => prepare.mutate(),
-              prototypePending: approvePrototype.isPending,
-              onApprovePrototype: () => approvePrototype.mutate(),
-              exportSlot:
-                next.id === "export" || mission.exportBody ? (
-                  <ExportButton
-                    recordVersion={mission.version}
-                    missionId={missionId}
-                    existingMd={mission.exportBody}
-                    existingPdf={mission.exportPdfBase64}
-                    onError={onError}
-                  />
-                ) : null,
-            }}
-          />
-        </div>
 
         <details className="ps-quiet-inspect" id="mission-inspect">
           <summary>Inspect full record</summary>

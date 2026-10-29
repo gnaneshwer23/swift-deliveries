@@ -539,8 +539,8 @@
   border: 1px solid #7289f5;
   background: #202c50;
   box-shadow:
-    0 0 0 9px var(--psi-indigo)0c,
-    0 0 55px var(--psi-indigo)15;
+    0 0 0 9px var(--psi-indigo) 0c,
+    0 0 55px var(--psi-indigo) 15;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1064,7 +1064,7 @@
     display: block;
     position: fixed;
     inset: 0;
-    background: var(--psi-ink)66;
+    background: var(--psi-ink) 66;
     border: 0;
     z-index: 39;
   }
@@ -1484,7 +1484,7 @@
     display: block;
     position: fixed;
     inset: 0;
-    background: var(--psi-ink)66;
+    background: var(--psi-ink) 66;
     border: 0;
     z-index: 39;
   }
@@ -1548,7 +1548,7 @@
 }
 /* Refined contribution system: tangible records and inspectable handoffs. */
 .ps-network {
-  box-shadow: 0 12px 30px var(--psi-ink)08;
+  box-shadow: 0 12px 30px var(--psi-ink) 08;
   background: #111722;
 }
 .ps-network-toolbar {
@@ -2404,12 +2404,24 @@
   animation: ps-scene-breathe 1.8s ease-in-out infinite;
 }
 @keyframes ps-scene-breathe {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.35); opacity: 0.55; }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.35);
+    opacity: 0.55;
+  }
 }
-.ps-scene-now { margin-top: 12px; font-size: 14px; }
+.ps-scene-now {
+  margin-top: 12px;
+  font-size: 14px;
+}
 .ps-scene-tasks > summary,
-.ps-optional-evidence > summary { cursor: pointer; }
+.ps-optional-evidence > summary {
+  cursor: pointer;
+}
 .ps-scene-feed .ps-activity-log li[data-kind="pm_brief.drafted"],
 .ps-scene-feed .ps-activity-log li[data-kind="plan.proposed"],
 .ps-scene-feed .ps-activity-log li[data-kind="plan.approved"],
@@ -3441,11 +3453,23 @@
   padding: 8px 10px;
   background: color-mix(in srgb, var(--psi-surface, #fff) 92%, var(--psi-ink, #0f172a) 3%);
 }
-.ps-intel-nodes li[data-state="active"] { border-left-color: var(--psi-indigo, #4338ca); }
-.ps-intel-nodes li[data-state="settled"] { border-left-color: #0f766e; }
-.ps-intel-nodes li[data-state="blocked"] { border-left-color: #b45309; }
-.ps-intel-nodes li[data-state="review"] { border-left-color: #be123c; }
-.ps-intel-node-label { display: block; font-weight: 600; font-size: 0.9rem; }
+.ps-intel-nodes li[data-state="active"] {
+  border-left-color: var(--psi-indigo, #4338ca);
+}
+.ps-intel-nodes li[data-state="settled"] {
+  border-left-color: #0f766e;
+}
+.ps-intel-nodes li[data-state="blocked"] {
+  border-left-color: #b45309;
+}
+.ps-intel-nodes li[data-state="review"] {
+  border-left-color: #be123c;
+}
+.ps-intel-node-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
 .ps-intel-node-state {
   display: inline-block;
   margin-top: 2px;
@@ -3467,7 +3491,9 @@
   display: grid;
   gap: 2px;
 }
-.ps-intel-controls { margin: 0; }
+.ps-intel-controls {
+  margin: 0;
+}
 .ps-act-investigation-primary {
   display: grid;
   gap: 4px;
@@ -3588,7 +3614,9 @@
   background: color-mix(in srgb, var(--psi-accent, #4f46e5) 6%, transparent);
 }
 @media (max-width: 720px) {
-  .ps-intel-nodes { grid-template-columns: 1fr; }
+  .ps-intel-nodes {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Quiet Studio — calm surface, depth in downloads */
@@ -3948,11 +3976,14 @@
 
 /* Stitch executive dispatch — scoped to `.ps-executive` (Portfolio / Advanced / dossiers) */
 .psi-workspace.ps-executive {
-  --exec-canvas: #f8f9ff;
+  --exec-canvas: #faf8ff;
   --exec-card: #ffffff;
-  --exec-well: #eff4ff;
-  --exec-well-deep: #e5eeff;
-  --exec-ink: #0b1c30;
+  --exec-well: #f3f1ff;
+  --exec-well-deep: #ebe7ff;
+  --exec-primary: #3525cd;
+  --exec-primary-container: #4f46e5;
+  --exec-on-primary: #ffffff;
+  --exec-ink: #1a1c20;
   --exec-muted: #45464d;
   --exec-border: #c6c6cd;
   --exec-border-strong: #76777d;
@@ -3968,7 +3999,8 @@
   --exec-review-bg: #eff4ff;
   --exec-review-border: #dce9ff;
   --exec-review-ink: #334155;
-  --exec-font-display: "Hanken Grotesk", Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+  --exec-font-display: "Plus Jakarta Sans", Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+  --exec-font-body: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
   --exec-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --exec-radius-sm: 4px;
   --exec-radius-lg: 8px;
@@ -4290,4 +4322,232 @@
   padding: 0;
   display: grid;
   gap: 10px;
+}
+
+.psi-workspace.ps-executive .ps-main {
+  background: var(--exec-canvas);
+}
+
+.psi-workspace.ps-executive .cc-btn-primary {
+  background: var(--exec-primary);
+  border-color: var(--exec-primary);
+  color: var(--exec-on-primary);
+}
+
+.psi-workspace.ps-executive .cc-btn-primary:hover {
+  background: var(--exec-primary-container);
+  border-color: var(--exec-primary-container);
+}
+
+.psi-workspace.ps-executive .ps-indigo-intent-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.psi-workspace.ps-executive .ps-indigo-intent-pills .ps-exec-chip {
+  cursor: pointer;
+  border-color: color-mix(in srgb, var(--exec-primary) 25%, var(--exec-border));
+  background: var(--exec-well);
+}
+
+.psi-workspace.ps-executive .ps-indigo-intent-pills .ps-exec-chip:hover {
+  border-color: var(--exec-primary-container);
+  color: var(--exec-primary);
+}
+
+.psi-workspace.ps-executive .ps-exec-projects-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--exec-border);
+  border-radius: var(--exec-radius-lg);
+  background: var(--exec-card);
+}
+
+.psi-workspace.ps-executive .ps-exec-projects-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--exec-font-body);
+  font-size: 0.875rem;
+}
+
+.psi-workspace.ps-executive .ps-exec-projects-table th,
+.psi-workspace.ps-executive .ps-exec-projects-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--exec-border);
+  vertical-align: top;
+}
+
+.psi-workspace.ps-executive .ps-exec-projects-table th {
+  font-family: var(--exec-font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--exec-muted);
+  background: var(--exec-well);
+}
+
+.psi-workspace.ps-executive .ps-indigo-case-studio {
+  display: grid;
+  gap: 16px;
+}
+
+.psi-workspace.ps-executive .ps-indigo-case-title {
+  font-family: var(--exec-font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 4px 0 8px;
+  color: var(--exec-ink);
+}
+
+.psi-workspace.ps-executive .ps-indigo-case-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.psi-workspace.ps-executive .ps-indigo-case-tabs a {
+  font-family: var(--exec-font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 6px 10px;
+  border-radius: var(--exec-radius-sm);
+  border: 1px solid var(--exec-border);
+  color: var(--exec-muted);
+  text-decoration: none;
+  background: var(--exec-card);
+}
+
+.psi-workspace.ps-executive .ps-indigo-case-tabs a.is-active,
+.psi-workspace.ps-executive .ps-indigo-case-tabs a:hover {
+  border-color: var(--exec-primary-container);
+  color: var(--exec-primary);
+  background: var(--exec-well);
+}
+
+.psi-workspace.ps-executive .ps-indigo-case-layout {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 960px) {
+  .psi-workspace.ps-executive .ps-indigo-case-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 300px);
+    align-items: start;
+  }
+}
+
+.psi-workspace.ps-executive .ps-indigo-case-rail {
+  display: grid;
+  gap: 12px;
+}
+
+.psi-workspace.ps-executive .ps-indigo-synthesis-banner {
+  padding: 14px 16px;
+  border-radius: var(--exec-radius-lg);
+  border: 1px solid color-mix(in srgb, var(--exec-primary) 20%, var(--exec-border));
+  background: linear-gradient(
+    135deg,
+    var(--exec-well) 0%,
+    color-mix(in srgb, var(--exec-primary-container) 8%, var(--exec-card)) 100%
+  );
+}
+
+.psi-workspace.ps-executive .ps-indigo-jobs-pipeline {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.psi-workspace.ps-executive .ps-indigo-jobs-pipeline li {
+  padding: 10px 12px;
+  border-radius: var(--exec-radius-lg);
+  border: 1px solid var(--exec-border);
+  background: var(--exec-card);
+  display: grid;
+  gap: 4px;
+}
+
+.psi-workspace.ps-executive .ps-indigo-jobs-pipeline li[data-state="current"] {
+  border-color: var(--exec-primary-container);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--exec-primary) 15%, transparent);
+}
+
+.psi-workspace.ps-executive .ps-indigo-jobs-pipeline li[data-state="done"] {
+  opacity: 0.85;
+}
+
+.psi-workspace.ps-executive .ps-indigo-job-label {
+  font-family: var(--exec-font-display);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--exec-ink);
+}
+
+.psi-workspace.ps-executive .ps-indigo-brief-dl {
+  display: grid;
+  gap: 10px;
+  margin: 8px 0 0;
+  font-size: 0.875rem;
+}
+
+.psi-workspace.ps-executive .ps-indigo-brief-dl dt {
+  font-family: var(--exec-font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--exec-muted);
+}
+
+.psi-workspace.ps-executive .ps-indigo-brief-dl dd {
+  margin: 2px 0 0;
+}
+
+.psi-workspace.ps-executive .ps-indigo-epistemic-grid {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+@media (min-width: 720px) {
+  .psi-workspace.ps-executive .ps-indigo-epistemic-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.psi-workspace.ps-executive .ps-indigo-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.psi-workspace.ps-executive .ps-indigo-evidence-tiers {
+  display: grid;
+  gap: 12px;
+}
+
+@media (min-width: 720px) {
+  .psi-workspace.ps-executive .ps-indigo-evidence-tiers {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.psi-workspace.ps-executive .ps-indigo-copy-block {
+  padding: 12px 14px;
+  border: 1px solid var(--exec-border);
+  border-radius: var(--exec-radius-lg);
+  background: var(--exec-card);
+}
+
+.psi-workspace.ps-executive .ps-indigo-tab-panel[hidden] {
+  display: none !important;
 }
