@@ -1,6 +1,6 @@
 # Studio ↔ workforce adapter (Phase A1)
 
-**Status:** Implemented in code; migration `0034_psi_supervised_wf_links.sql` applied to production Neon `br-fancy-breeze-zatt9ocp` on 30 Oct 2026 (ledger: `docs/migrations-and-rollback.md`).
+**Status:** Implemented in code; migration `0034_psi_supervised_wf_links.sql` applied to production Neon `br-fancy-breeze-zatt9ocp` and preview Neon `br-lively-water-zavqzat5` on 30 Oct 2026 (ledger: `docs/migrations-and-rollback.md`). Automated enqueue → worker proof: `docs/psi-phase-a-preview-acceptance.md`.
 
 ## Authoritative ownership
 

@@ -30,14 +30,15 @@ Approved missions run on the server, not in the browser. Code: `src/lib/workforc
 
 ## Setup still needed
 
-- Set `CRON_SECRET` in the Vercel project (production and preview).
-- Schedule the tick. No schedule is committed yet, because the allowed frequency depends on the Vercel plan. A schedule more frequent than the plan allows fails the deployment. With a plan that allows it, call the tick every minute. Otherwise, use any external scheduler that can send the bearer header.
-- Until a schedule exists, a mission whose nudge was cut off (for example, a function timeout during a long model call) resumes on the next nudge or button press. Its lease expires safely.
+- Set `CRON_SECRET` in the Vercel project (production and preview). The tick returns **503** when it is missing.
+- **Cron:** `vercel.json` schedules `GET /api/worker/tick` daily at 05:00 UTC (`0 5 * * *`) — compatible with **Hobby**. Vercel sends the bearer secret when `CRON_SECRET` is set. For sub-minute recovery on **Pro**, tighten the schedule or use an external scheduler with `Authorization: Bearer $CRON_SECRET`.
+- Until a tick runs, a mission whose nudge was cut off (for example, a function timeout during a long model call) resumes on the next nudge, **mission reload** (supervised research drain), or button press. Leases expire safely.
 
-## Not yet verified
+## Preview verification (30 Oct 2026)
 
-- That `waitUntil` is reachable from the server-function request on the deployed Vercel runtime. The code falls back to a detached run when it isn't.
-- An end-to-end run on the preview deployment.
+- **`/api/worker/tick` on deployed swift-deliveries:** returned **503** before `CRON_SECRET` was added; see `docs/psi-phase-a-preview-acceptance.md`.
+- **`waitUntil` on TanStack Start server functions:** still **not observed** on a live approve in this pass — code falls back to detached work; tick + reload remain the recovery paths.
+- **Studio ↔ wf link:** integration proof in `phase-a-preview-acceptance.integration.test.ts` (fixture DB, migration **0034**).
 
 ## What the owner sees
 

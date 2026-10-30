@@ -45,7 +45,7 @@ The brief explicitly warns: do not call the product production-ready or imply al
 | ---- | ----------- | ------------------------- |
 | Public + auth foundation | Substantial PSI foundation, Neon, missions | **Partial / implemented, live verification pending** — see `docs/psi-production-readiness-plan.md` (historical plan; not a cert). |
 | Signed-in Studio journey | Foyer → scope review → approve → canvas → PM briefing → path/decision → export | **Partial** — route and UI spine on `psi_supervised_missions`; scope review strengthened in PR #66. |
-| Worker / `wf_*` spine | Separate durable missions, leases, usage | **Partial → implemented, live verification pending** — `docs/mission-worker.md`; Phase **A1** adapter (`docs/pilot-mission/studio-workforce-adapter.md`, migration `0034`) links approved Studio research to `studio_research_pass` wf tasks; production DB apply pending owner approval. |
+| Worker / `wf_*` spine | Separate durable missions, leases, usage | **Partial → implemented, live verification pending** — `docs/mission-worker.md`; Phase **A1+A2** adapter + migration **0034** on production and preview Neon (`docs/pilot-mission/studio-workforce-adapter.md`); fixture Neon proof in `docs/psi-phase-a-preview-acceptance.md`. |
 | Phase 6 acceptance | CI green | **Simulated or fixture-only** for journey proof — `docs/psi-phase-6-release-acceptance.md` (`MemoryStore`, no live browser/provider billing run). |
 | Capability catalogue | Many roles/tests exist | **Partial** — catalogue ≠ executable, customer-assigned team at scale. |
 
@@ -64,11 +64,11 @@ Phase **A1** adds an explicit adapter and field ownership (`docs/pilot-mission/s
 | **5 — Visible analysis** | Event-driven canvas/list; reduced motion; no timer theatre; label simulated/unconfigured providers | **Partial** | `InvestigationExperience` clusters from persisted handoffs (`docs/psi-investigation-stage-vision.md`); research may still be request-coupled/fixture-heavy until worker link. |
 | **6 — PM briefing** | Full customer-facing brief: problem, competitors with sources, evidence pro/con, risks, team proposal, indicative timeline/cost as estimates, next decision | **Partial** | `InvestigationPmBriefingStage` tabbed presenter; depth varies by data/provider mode; simulated draft labelling required. |
 | **7 — Team formation** | Smallest team for approved work; role contract; Draft→Available lifecycle; no “150 roles” wall | **Partial** | Team activity / catalogue / agents office exist; **not** the brief’s post-approval “5–14 capability” mission-specific roster on durable tasks. |
-| **8 — Iterative delivery** | Bounded tasks, durable worker, leases, notifications only if real, pause/cancel | **Partial (worker)** / **Missing (Studio link)** | `worker.server.ts` for `wf_missions`; Studio path not end-to-end through this spine; CRON/`waitUntil` **not yet verified** deployed. |
+| **8 — Iterative delivery** | Bounded tasks, durable worker, leases, notifications only if real, pause/cancel | **Partial (worker + Studio link fixture)** | `studio_research_pass` via adapter; daily cron + `CRON_SECRET` added 30 Oct 2026; `waitUntil` on live approve still unverified. |
 | **9 — Final package** | ZIP + manifest: PRD, research, design, code, tests, defects, decision log, provenance | **Partial** | Supervised export/ZIP/PDF in tests (`phase-6-release-acceptance`); not full engineering deliverable set from brief §9. |
 | **10 — Learning + return intelligence** | Optional explanations tied to **this** project; “what changed since last visit” | **Proposed / Partial** | Some inspection/inbox derivation; not full continued-intelligence loop. |
 | **§5 Marketing design** | Hero, interactive labelled journey, sample deliverables, FAQ on live capabilities | **Partial** | Homepage foundation preserved; interactive journey and sample inspectable artefacts incomplete vs brief. |
-| **§6 Architecture** | Connect Studio ↔ worker; app-owned contract | **Partial → implemented, live verification pending** | A1 adapter on `main`; live preview + deployed tick still unverified. |
+| **§6 Architecture** | Connect Studio ↔ worker; app-owned contract | **Partial → fixture-verified, browser pending** | A1+A2 on `main`; preview **0034** applied; tick 503 resolved in repo (env + cron); signed-in preview journey still open. |
 | **§7 Build sequence A–E** | A real journey → memory → artefacts → engineering → commercial | **Proposed roadmap** | Aligns with repo priorities below. |
 | **§8 Acceptance measures** | Outcome-based checklist (sources, approval binding, isolation, export provenance) | **Partial** | Many checks covered in **fixture tests**; live isolation + provider failure browser proof outstanding. |
 
@@ -86,7 +86,7 @@ Phase **A1** adds an explicit adapter and field ownership (`docs/pilot-mission/s
 
 ### Top gaps (brief destination vs `main`)
 
-1. **Studio ↔ durable worker (Phase A)** — Approved supervised investigation does not yet produce a single proven chain: scope approval → `wf` (or unified) task events → source-linked outputs → briefing → export on **live** preview with configured provider and tenant isolation tests.
+1. **Studio ↔ durable worker (Phase A)** — Fixture Neon proves approve → wf link → worker research pass (`docs/psi-phase-a-preview-acceptance.md`); **live** preview chain with provider citations and export still unproven in browser.
 2. **Live verification debt** — Phase 6 and most journey tests are **MemoryStore/fixture**; signed-in browser E2E, deployed worker tick/`waitUntil`, and live billing were **not** established in recorded acceptance.
 3. **Calm operational dashboard (Stage 3)** — Foyer/portfolio improved; missing unified “needs your attention”, usage-before-billable prominence, and in-project section nav that hides empty shells.
 4. **Team formation + iterative loop (Stages 7–8)** — Catalogue and UI depth exist; missing mission-scoped smallest team assignment on **durable** tasks with the brief’s capability contract and customer-visible work items.
@@ -114,13 +114,13 @@ Aligned with brief §7 and repo architecture (`q0-background-investigation-contr
 | ----- | ----- | ------- | ------------- |
 | **A1** | **Authoritative link** supervised scope revision ↔ worker job | One adapter; no duplicate approval/budget ownership | Design note + migration if needed; fields documented |
 | **A2** | **Single approved investigation** through worker | Persisted tasks/events → briefing inputs → export | Signed-in preview run with small provider budget; retry/cancel/stale approval tests |
-| **A3** | **Operational worker** | CRON tick + deployed `waitUntil` verified | Preview runbook entry in `mission-worker.md` |
+| **A3** | **Operational worker** | CRON tick + deployed `waitUntil` verified | `mission-worker.md` + post-redeploy tick 200; `waitUntil` observe on approve |
 | **B** | Project memory + return | Versioned context, “what changed”, grounded Q&A with citations | Workspace-isolated tests + UI on `/command` |
 | **C** | Product artefacts | Requirements, journeys, design outputs from approved decisions | Artefact contracts + human review gates |
 | **D** | Bounded code generation | Isolated workspace, diffs, test logs, no auto-deploy | Package includes build/test evidence and open defects |
 | **E** | Commercial + monitoring | Billing, notifications, team collaboration | Only after A–D reliability and measured cost |
 
-**Next recommended slice:** **Phase A3** — verify CRON/`waitUntil` on preview and one signed-in live investigation with configured provider budget. **A1+A2** adapter + journey spine shipped in code (fixture-verified); see `docs/pilot-mission/studio-workforce-adapter.md`.
+**Next recommended slice:** **Phase A3 completion** — after redeploy, confirm tick **200** with bearer auth; one signed-in live investigation on preview with small provider budget. **A1+A2** adapter + preview **0034** + fixture acceptance recorded 30 Oct 2026 (`docs/psi-phase-a-preview-acceptance.md`).
 
 ---
 
