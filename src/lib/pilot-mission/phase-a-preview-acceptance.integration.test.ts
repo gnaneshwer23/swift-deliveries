@@ -23,16 +23,17 @@ if (url) {
   )
     throw new Error("Phase A acceptance requires a disposable local deliverx_phase1_* database.");
 }
-const sql = url
-  ? postgres(url, { prepare: false, max: 6, types: POSTGRES_TYPES })
-  : null;
+const sql = url ? postgres(url, { prepare: false, max: 6, types: POSTGRES_TYPES }) : null;
 
 let types: ColumnTypes;
 const transact: DbTransaction = async (work) =>
   sql!.begin(async (tx) => {
     const query: Executor = async (text, params) =>
       (await tx.unsafe(text, params)) as unknown as Record<string, unknown>[];
-    return work(createDb(query, async () => types), query);
+    return work(
+      createDb(query, async () => types),
+      query,
+    );
   }) as unknown as ReturnType<typeof work>;
 const query: Executor = async (text, params) =>
   (await sql!.unsafe(text, params)) as unknown as Record<string, unknown>[];
@@ -44,7 +45,10 @@ vi.mock("@/lib/db/neon.server", () => ({
     sql!.begin(async (t) => {
       const q: Executor = async (text, params) =>
         (await t.unsafe(text, params)) as unknown as Record<string, unknown>[];
-      return work(createDb(q, async () => types), q);
+      return work(
+        createDb(q, async () => types),
+        q,
+      );
     }),
 }));
 
@@ -112,13 +116,18 @@ describe.skipIf(!url)("Phase A — Studio ↔ wf link (Neon fixture)", () => {
       ],
     );
 
-    await runWorkerTick({ deadline: Date.now() + 30_000, workspaceId, missionId: link!.wfMissionId });
+    await runWorkerTick({
+      deadline: Date.now() + 30_000,
+      workspaceId,
+      missionId: link!.wfMissionId,
+    });
 
     const reloaded = await service.get(workspaceId, created.id);
     expect(reloaded?.researchPassCompletedAt).toBeTruthy();
     expect(reloaded?.researchPassQueuedAt).toBeNull();
 
-    const linkRow = await sql!`select status from psi_supervised_wf_links where wf_mission_id=${link!.wfMissionId}::uuid`;
+    const linkRow =
+      await sql!`select status from psi_supervised_wf_links where wf_mission_id=${link!.wfMissionId}::uuid`;
     expect(linkRow[0]?.["status"]).toBe("completed");
 
     const wfUsageAfter = Number(
