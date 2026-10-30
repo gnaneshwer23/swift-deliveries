@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildInvestigationExperience,
+  deriveInvestigationLeaveNote,
   deriveInvestigationRunState,
 } from "./investigation-experience";
 import { MemoryStore, SupervisedMissionService } from "./service";
@@ -195,5 +196,22 @@ describe("investigation experience", () => {
       }),
     );
     expect(state).toBe("interrupted");
+  });
+
+  it("leave note is honest before approval and after expired lease", () => {
+    const pre = deriveInvestigationLeaveNote(baseMission(), "idle");
+    expect(pre.toLowerCase()).toContain("approve");
+
+    const expired = deriveInvestigationLeaveNote(
+      baseMission({
+        team: approvedTeam,
+        stage: "evidence",
+        job: { ...baseMission().job, status: "leased", leaseUntil: "2020-01-01T00:00:00Z" },
+      }),
+      "interrupted",
+      Date.parse("2026-01-01T00:00:00Z"),
+    );
+    expect(expired.toLowerCase()).toMatch(/lease|recover|record/);
+    expect(expired.toLowerCase()).not.toContain("does not stop the worker");
   });
 });

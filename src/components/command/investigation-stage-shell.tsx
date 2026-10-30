@@ -9,6 +9,8 @@ import {
   INVESTIGATION_STAGE_LABELS,
   type InvestigationStagePhase,
 } from "@/lib/pilot-mission/investigation-stage-phase";
+import { InvestigationScopeReview } from "@/components/command/investigation-scope-review";
+import type { MissionTheatreActions } from "@/components/command/mission-theatre";
 import type { SupervisedMission } from "@/lib/pilot-mission/types";
 
 const STAGE_ORDER: InvestigationStagePhase[] = [
@@ -33,6 +35,7 @@ export function InvestigationStageShell({
   downloadsSlot,
   onDone,
   onError,
+  scopeContext,
 }: {
   mission: SupervisedMission;
   missionId: string;
@@ -41,6 +44,11 @@ export function InvestigationStageShell({
   downloadsSlot: ReactNode | null;
   onDone: () => Promise<void>;
   onError: (error: unknown) => void;
+  scopeContext?: {
+    missionOpen: boolean;
+    usageWarning: string | null;
+    research: MissionTheatreActions["research"];
+  };
 }) {
   const current = deriveInvestigationStagePhase(mission);
   const planApproved = Boolean(mission.team?.approvedAt);
@@ -86,6 +94,17 @@ export function InvestigationStageShell({
                 Review the interpreted brief and approve the investigation plan. Nothing billable
                 runs until you approve.
               </p>
+              {scopeContext ? (
+                <InvestigationScopeReview
+                  mission={mission}
+                  missionId={missionId}
+                  missionOpen={scopeContext.missionOpen}
+                  usageWarning={scopeContext.usageWarning}
+                  research={scopeContext.research}
+                  onDone={onDone}
+                  onError={onError}
+                />
+              ) : null}
               {theatre}
             </>
           ) : null}
@@ -138,7 +157,7 @@ export function InvestigationStageShell({
               aria-label="Project room"
             >
               <p className="cc-kicker">Project room</p>
-              <p className="text-sm cc-muted mb-3">
+              <p className="cc-muted text-sm mb-3">
                 Shared context → evidence → use → downstream — inspect connections in the full
                 record.
               </p>
@@ -153,7 +172,7 @@ export function InvestigationStageShell({
               aria-label="Downloads"
             >
               <p className="cc-kicker">History &amp; downloads</p>
-              <p className="text-sm cc-muted">
+              <p className="cc-muted text-sm">
                 Decision pack, roadmap, and full archive disclose simulated vs observed content in{" "}
                 <code>project-manifest.json</code>.
               </p>
