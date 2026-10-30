@@ -108,6 +108,13 @@ describe.skipIf(!url)("Phase A — Studio ↔ wf link (Neon fixture)", () => {
     });
     expect(link?.wfMissionId).toBeTruthy();
 
+    const secondBind = await bindSupervisedResearchWorkerAfterApproval({
+      workspaceId,
+      mission: approved,
+      actorId: "owner",
+    });
+    expect(secondBind?.wfMissionId).toBe(link!.wfMissionId);
+
     const wfUsageBefore = Number(
       (await sql!`select usage_consumed from wf_workspaces where id=${workspaceId}`)[0]![
         "usage_consumed"
