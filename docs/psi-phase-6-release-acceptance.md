@@ -11,16 +11,16 @@ Document and automate release acceptance for the six-phase PSI product path: sup
 
 ## Journey under test (fixtures)
 
-| Step | Behaviour verified | Primary evidence |
-| --- | --- | --- |
-| Submit | Mission created from brief; plan gate before evidence | `phase-6-release-acceptance.test.ts`, `vertical-slice.test.ts` |
-| Approve | Plan approval runs research pass; compare unlocked | same |
-| Leave | Canvas states leave allowed; mission persisted in store | `intelligence-canvas.test.ts`, Phase 6 journey test |
-| Recover | Provider failure then retry; no double charge; reload idempotent | `service.test.ts`, Phase 6 recovery test |
-| Return | Reload from same `MemoryStore` preserves version and activity | Phase 6 journey test |
-| Inspect | Inspection surfaces attention + evidence; no invented dialogue | `mission-inspection.test.ts` |
-| Decide | Owner decision binds proposal; briefing pack ready | Phase 6 journey test, `phase-5-briefing-export.test.ts` |
-| Download | Export body/PDF, supervised ZIP, authorised snapshot | Phase 6 journey test, `supervised-zip.test.ts` |
+| Step     | Behaviour verified                                               | Primary evidence                                               |
+| -------- | ---------------------------------------------------------------- | -------------------------------------------------------------- |
+| Submit   | Mission created from brief; plan gate before evidence            | `phase-6-release-acceptance.test.ts`, `vertical-slice.test.ts` |
+| Approve  | Plan approval runs research pass; compare unlocked               | same                                                           |
+| Leave    | Canvas states leave allowed; mission persisted in store          | `intelligence-canvas.test.ts`, Phase 6 journey test            |
+| Recover  | Provider failure then retry; no double charge; reload idempotent | `service.test.ts`, Phase 6 recovery test                       |
+| Return   | Reload from same `MemoryStore` preserves version and activity    | Phase 6 journey test                                           |
+| Inspect  | Inspection surfaces attention + evidence; no invented dialogue   | `mission-inspection.test.ts`                                   |
+| Decide   | Owner decision binds proposal; briefing pack ready               | Phase 6 journey test, `phase-5-briefing-export.test.ts`        |
+| Download | Export body/PDF, supervised ZIP, authorised snapshot             | Phase 6 journey test, `supervised-zip.test.ts`                 |
 
 All automated steps above use **`MemoryStore` and deterministic generator fixtures**. Files and tests are labelled **FIXTURE** in `phase-6-release-acceptance.test.ts`. No live Tavily, Exa, Brave, OpenAI, Stripe, or signed-in browser runs were performed for this report.
 
@@ -57,28 +57,28 @@ npm test
 
 ## Mocked vs live
 
-| Area | Automated (fixtures) | Live / unverified |
-| --- | --- | --- |
-| Mission journey submit → download | **Pass** — MemoryStore + stub generators | Signed-in `/command` browser walkthrough |
-| Billing workspace ceiling | **Pass** — `UsageLimitError` on new scope at ceiling | Stripe checkout, webhook, live allowance on Neon |
-| Pilot activation allowance | **Pass** — unit tests (`paid-availability`, `activation`, `paid-activation`) | Operator UI on production DB |
-| Provider compare | **Pass** — fail/retry/reload fixtures | Budgeted staging smoke with real API key |
-| Neon crash / lease serialization | Skipped locally unless `PSI_TEST_DATABASE_URL` | `reliability.integration.test.ts` on disposable DB |
-| Reduced motion (Phase 3) | **Pass** — `investigation-experience.test.ts` derivation | OS-level visual check (documented in Phase 3 doc) |
-| Email / notify when ready | Preference only | No delivery proof |
-| Watchtower runner | Simulated preferences | No scheduler proof |
-| Vercel production deploy | N/A | **Separate approval** — not part of this PR |
+| Area                              | Automated (fixtures)                                                         | Live / unverified                                  |
+| --------------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------- |
+| Mission journey submit → download | **Pass** — MemoryStore + stub generators                                     | Signed-in `/command` browser walkthrough           |
+| Billing workspace ceiling         | **Pass** — `UsageLimitError` on new scope at ceiling                         | Stripe checkout, webhook, live allowance on Neon   |
+| Pilot activation allowance        | **Pass** — unit tests (`paid-availability`, `activation`, `paid-activation`) | Operator UI on production DB                       |
+| Provider compare                  | **Pass** — fail/retry/reload fixtures                                        | Budgeted staging smoke with real API key           |
+| Neon crash / lease serialization  | Skipped locally unless `PSI_TEST_DATABASE_URL`                               | `reliability.integration.test.ts` on disposable DB |
+| Reduced motion (Phase 3)          | **Pass** — `investigation-experience.test.ts` derivation                     | OS-level visual check (documented in Phase 3 doc)  |
+| Email / notify when ready         | Preference only                                                              | No delivery proof                                  |
+| Watchtower runner                 | Simulated preferences                                                        | No scheduler proof                                 |
+| Vercel production deploy          | N/A                                                                          | **Separate approval** — not part of this PR        |
 
 ## Acceptance checklist — six-phase plan
 
-| Phase | Scope (roadmap) | Automated acceptance in tested scope | Gaps / live unverified |
-| --- | --- | --- | --- |
-| 1 | Customer story, vertical slice, reliability | Vertical slice, service isolation/recovery, canvas, commerce disclosure | Neon E2E, live providers |
-| 2 | Public journey pages | Not re-screenshot; no regressions in supervised tests tied to product loop | Manual marketing QA |
-| 3 | Pilot continuity, Quiet Studio, investigation UI | Investigation experience derivation; pause via studio meta; leave copy | Browser mandala / reduced-motion visual |
-| 4 | Inspection inbox, durable compare | Mission inspection tests; service lease/cancel | Production signed-in inbox |
-| 5 | Briefing + downloadable record | Phase 5 export/briefing tests in regression bundle | — |
-| 6 | Controlled paid release / allowance gate | Phase 6 suite + P-paid unit tests | Self-service checkout; live Stripe; `PSI_PAYMENTS_LIVE_APPROVED` |
+| Phase | Scope (roadmap)                                  | Automated acceptance in tested scope                                       | Gaps / live unverified                                           |
+| ----- | ------------------------------------------------ | -------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| 1     | Customer story, vertical slice, reliability      | Vertical slice, service isolation/recovery, canvas, commerce disclosure    | Neon E2E, live providers                                         |
+| 2     | Public journey pages                             | Not re-screenshot; no regressions in supervised tests tied to product loop | Manual marketing QA                                              |
+| 3     | Pilot continuity, Quiet Studio, investigation UI | Investigation experience derivation; pause via studio meta; leave copy     | Browser mandala / reduced-motion visual                          |
+| 4     | Inspection inbox, durable compare                | Mission inspection tests; service lease/cancel                             | Production signed-in inbox                                       |
+| 5     | Briefing + downloadable record                   | Phase 5 export/briefing tests in regression bundle                         | —                                                                |
+| 6     | Controlled paid release / allowance gate         | Phase 6 suite + P-paid unit tests                                          | Self-service checkout; live Stripe; `PSI_PAYMENTS_LIVE_APPROVED` |
 
 **Overall automated result in tested scope:** **Pass** (Phase 6 suite + regression bundle green).
 
@@ -118,9 +118,9 @@ npm test
 
 ## Code references
 
-| Artifact | Path |
-| --- | --- |
-| Release acceptance tests | `src/lib/pilot-mission/phase-6-release-acceptance.test.ts` |
-| Allowance gate narrative | `docs/psi-phase-six-allowance-gate.md` |
-| Production readiness backlog | `docs/psi-production-readiness-plan.md` |
-| Phase capability matrix (Phase 1) | `docs/psi-phase-1-vertical-slice-capability-matrix.md` |
+| Artifact                          | Path                                                       |
+| --------------------------------- | ---------------------------------------------------------- |
+| Release acceptance tests          | `src/lib/pilot-mission/phase-6-release-acceptance.test.ts` |
+| Allowance gate narrative          | `docs/psi-phase-six-allowance-gate.md`                     |
+| Production readiness backlog      | `docs/psi-production-readiness-plan.md`                    |
+| Phase capability matrix (Phase 1) | `docs/psi-phase-1-vertical-slice-capability-matrix.md`     |

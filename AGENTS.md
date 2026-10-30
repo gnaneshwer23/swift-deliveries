@@ -1,4 +1,5 @@
 <!-- LOVABLE:BEGIN -->
+
 > [!IMPORTANT]
 > This project is connected to [Lovable](https://lovable.dev). Avoid rewriting
 > published git history — force pushing, or rebasing/amending/squashing commits
@@ -7,10 +8,13 @@
 >
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
+
 <!-- LOVABLE:END -->
 
 ## DeliverX Supervised AI Workforce (Stage 1)
+
 Source: docs/prd-deliverx-supervised-ai-workforce.md. Gap analysis: docs/prd-gap-analysis.md.
+
 - Signed-in primary surface is `/command` (DeliverX Studio), not the career agent-directory workspace.
 - AI drafts; humans approve plans. Act externally never runs without an explicit approval.
 - Quality labels are Agent-reviewed / Automatically tested / Human-reviewed / Externally attested — never a generic “Verified”.
@@ -26,6 +30,7 @@ Source: docs/prd-deliverx-supervised-ai-workforce.md. Gap analysis: docs/prd-gap
 - Every artefact discloses how it was produced (model id or simulated draft). Model mode is opt-in and never receives text that looks like personal identifiers.
 
 ## DeliverX PSI product direction
+
 - DeliverX is an AI product company. Keep the current homepage visual foundation.
 - Students learn by building products alongside agents in the same environment.
 - Career readiness, job applications, CV packaging, professional credentials and coaching dashboards are retired. Historical documentation lives in docs/archive/career/ and is not current implementation guidance.

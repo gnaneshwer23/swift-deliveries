@@ -40,27 +40,27 @@ That is the product: **future product-building agents**, supervised — not a Co
 
 ### What exists (spine is real)
 
-| Layer | Today |
-| --- | --- |
-| **Supervised decision loop** | One-liner → PM brief → plan gate → research/work pass → options → owner decision → pack → owner-supplied outcome / follow-up |
-| **Phases B–E (`2040eaa`)** | Living research scene from persisted events; banded Wave 1 cast (S/M/L/XL → 4/6/8/8); research-first findings **or** honest gaps |
-| **Option 2 theatre (`2ba36c6`)** | Acts I–V on mission URL; Overview foyer; Specialists cast-first; Programme Lab; light project auto-attach |
-| **Older build DAG (workforce)** | “Build a product” intent: charter → parallel research → PRD → gates → HTML prototype → static verify → release pack — largely **stubs** unless model mode + keys |
-| **Policy** | Human gates, ceilings, disclosure, no fabricated evidence — encoded in `AGENTS.md` / PRD |
+| Layer                            | Today                                                                                                                                                            |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Supervised decision loop**     | One-liner → PM brief → plan gate → research/work pass → options → owner decision → pack → owner-supplied outcome / follow-up                                     |
+| **Phases B–E (`2040eaa`)**       | Living research scene from persisted events; banded Wave 1 cast (S/M/L/XL → 4/6/8/8); research-first findings **or** honest gaps                                 |
+| **Option 2 theatre (`2ba36c6`)** | Acts I–V on mission URL; Overview foyer; Specialists cast-first; Programme Lab; light project auto-attach                                                        |
+| **Older build DAG (workforce)**  | “Build a product” intent: charter → parallel research → PRD → gates → HTML prototype → static verify → release pack — largely **stubs** unless model mode + keys |
+| **Policy**                       | Human gates, ceilings, disclosure, no fabricated evidence — encoded in `AGENTS.md` / PRD                                                                         |
 
 ### Where it is thin
 
-| Gap | Reality |
-| --- | --- |
-| **Feel of product-building** | Theatre stages an **investigation / decision pack** well. It does **not** yet feel like specialists **shipping a product through sequential build artefacts**. |
-| **Agent depth** | Cast is a sized subset of catalogue roles + event chips. Contribution lines and ETAs are light. Specialists are not yet visibly owning successive deliverables. |
-| **Stub vs keys** | Default path still leans **deterministic / simulated** when providers are off. Correct honesty; weak “agents are building” conviction. |
-| **Two build stories** | Supervised PSI loop (primary) and workforce build lifecycle (older / secondary) are not one sequential product narrative on the stage. |
-| **Project memory** | Auto-attach exists; the Project page is still a thin shelf — not the accumulating product the agents are building. |
-| **Living work** | Event-driven and honest (no fake timers) — still closer to a **status scene** than a **workshop producing the next artefact**. |
-| **G4 / G5** | Project memory and Programme Lab are light; experience track called deeper Project shelf and Programme acts language “remaining.” |
+| Gap                          | Reality                                                                                                                                                         |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Feel of product-building** | Theatre stages an **investigation / decision pack** well. It does **not** yet feel like specialists **shipping a product through sequential build artefacts**.  |
+| **Agent depth**              | Cast is a sized subset of catalogue roles + event chips. Contribution lines and ETAs are light. Specialists are not yet visibly owning successive deliverables. |
+| **Stub vs keys**             | Default path still leans **deterministic / simulated** when providers are off. Correct honesty; weak “agents are building” conviction.                          |
+| **Two build stories**        | Supervised PSI loop (primary) and workforce build lifecycle (older / secondary) are not one sequential product narrative on the stage.                          |
+| **Project memory**           | Auto-attach exists; the Project page is still a thin shelf — not the accumulating product the agents are building.                                              |
+| **Living work**              | Event-driven and honest (no fake timers) — still closer to a **status scene** than a **workshop producing the next artefact**.                                  |
+| **G4 / G5**                  | Project memory and Programme Lab are light; experience track called deeper Project shelf and Programme acts language “remaining.”                               |
 
-**Candid verdict:** The **spine and briefing theatre are shippable foundations**. The north star — *product-building agents* — is only half true today: agents **brief and investigate**; they do not yet **build products in sequence** as the thing you came to watch.
+**Candid verdict:** The **spine and briefing theatre are shippable foundations**. The north star — _product-building agents_ — is only half true today: agents **brief and investigate**; they do not yet **build products in sequence** as the thing you came to watch.
 
 ---
 
@@ -92,15 +92,15 @@ That is the product: **future product-building agents**, supervised — not a Co
 
 **Rule:** No implementation of this track until the founder signs the phase set (or a subset). Each phase has one demo criterion. Priority: **agents feel like they build products in sequence** — not more dashboard.
 
-| Phase | Outcome | Demo criterion (founder can click) | Depends on |
-| --- | --- | --- | --- |
-| **P0 — Contract** | This doc + decisions below closed | Founder “build these phases” (or named subset) in chat | — |
-| **P1 — Sequential build stage** | **Shipped** — Act V = Frame → Research → Options → Decide → Pack beats + focal artefact; advances only when upstream ready | On a supervised mission: approve plan → watch beats advance with named specialist + artefact (or honest gap) → open the artefact — **not** a panel stack of meters | P0 |
-| **P2 — Cast owns the beat** | **Shipped** — cast shows current owner, contribution, handoff; Specialists cast-first matches | Click a beat → see who owns it and what they produced; Specialists matches that cast | P1 |
-| **P3 — Artefact shelf on Project** | **Shipped (deeper)** — read-only shelf + **Propose follow-up** (same `projectId`, plan gate intact); richer mission rows (beats, next action, gaps, decisions) | Start mission → finish a beat → Project shows artefact; Propose follow-up opens a new brief awaiting approval | P1 |
-| **P4 — Stub→model honesty ladder** | **Shipped** — same artefact UI badge slot: Simulated draft ↔ Model · id | Toggle/config: same demo mission discloses Simulated vs Model on the artefact without layout change | P1 |
-| **P5 — One deeper build beat** | **Shipped** — sandboxed HTML prototype after Pack (human gate → UX Prototype Agent → static verify; failures visible). PRD not chosen — workforce already had prototype/verify spine; HTML is the visible “built something” artefact | After pack export: approve → specialist produces sandboxed HTML → open iframe + verify rows (or failure labels) | P1–P2; founder pick = HTML prototype |
-| **P6 — Programme Acts + Studio close-out** | **Shipped** — Programme Lab Acts chrome; Studio rename; agents office primary; band→N catalogue roster; supervised ZIP; Voice F honesty path | Click Lab detail Acts; foyer Studio + Talk; Office on Specialists; XL roster approaches 150 with Planned labelled | Founder override |
+| Phase                                      | Outcome                                                                                                                                                                                                                              | Demo criterion (founder can click)                                                                                                                                 | Depends on                           |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------ |
+| **P0 — Contract**                          | This doc + decisions below closed                                                                                                                                                                                                    | Founder “build these phases” (or named subset) in chat                                                                                                             | —                                    |
+| **P1 — Sequential build stage**            | **Shipped** — Act V = Frame → Research → Options → Decide → Pack beats + focal artefact; advances only when upstream ready                                                                                                           | On a supervised mission: approve plan → watch beats advance with named specialist + artefact (or honest gap) → open the artefact — **not** a panel stack of meters | P0                                   |
+| **P2 — Cast owns the beat**                | **Shipped** — cast shows current owner, contribution, handoff; Specialists cast-first matches                                                                                                                                        | Click a beat → see who owns it and what they produced; Specialists matches that cast                                                                               | P1                                   |
+| **P3 — Artefact shelf on Project**         | **Shipped (deeper)** — read-only shelf + **Propose follow-up** (same `projectId`, plan gate intact); richer mission rows (beats, next action, gaps, decisions)                                                                       | Start mission → finish a beat → Project shows artefact; Propose follow-up opens a new brief awaiting approval                                                      | P1                                   |
+| **P4 — Stub→model honesty ladder**         | **Shipped** — same artefact UI badge slot: Simulated draft ↔ Model · id                                                                                                                                                              | Toggle/config: same demo mission discloses Simulated vs Model on the artefact without layout change                                                                | P1                                   |
+| **P5 — One deeper build beat**             | **Shipped** — sandboxed HTML prototype after Pack (human gate → UX Prototype Agent → static verify; failures visible). PRD not chosen — workforce already had prototype/verify spine; HTML is the visible “built something” artefact | After pack export: approve → specialist produces sandboxed HTML → open iframe + verify rows (or failure labels)                                                    | P1–P2; founder pick = HTML prototype |
+| **P6 — Programme Acts + Studio close-out** | **Shipped** — Programme Lab Acts chrome; Studio rename; agents office primary; band→N catalogue roster; supervised ZIP; Voice F honesty path                                                                                         | Click Lab detail Acts; foyer Studio + Talk; Office on Specialists; XL roster approaches 150 with Planned labelled                                                  | Founder override                     |
 
 **Explicit non-goals retained:** new dashboard widgets as hero, self-service checkout, fabricated research, production-readiness claims without release checks. (Catalogue roster / office / Programme Acts / Voice shipped under founder close-out.)
 

@@ -37,11 +37,11 @@ Founder choice **B** supersedes **A (Quiet-first)** for the signed-in Studio **f
 
 ## Related code
 
-| Area | Files |
-|------|--------|
-| Route gating + fonts | `src/lib/command/executive-studio-routes.ts`, `src/components/command/command-shell.tsx` |
-| Tokens | `src/styles/psi-workspace.css` (`.ps-executive`) |
-| Foyer B | `src/components/command/executive-studio-dashboard.tsx`, `src/routes/_authenticated/command.index.tsx` |
-| Handoff sheet | `src/components/command/specialist-handoff-trace-sheet.tsx`, `src/components/command/team-activity-panel.tsx` |
+| Area                 | Files                                                                                                         |
+| -------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Route gating + fonts | `src/lib/command/executive-studio-routes.ts`, `src/components/command/command-shell.tsx`                      |
+| Tokens               | `src/styles/psi-workspace.css` (`.ps-executive`)                                                              |
+| Foyer B              | `src/components/command/executive-studio-dashboard.tsx`, `src/routes/_authenticated/command.index.tsx`        |
+| Handoff sheet        | `src/components/command/specialist-handoff-trace-sheet.tsx`, `src/components/command/team-activity-panel.tsx` |
 
 See also: `docs/psi-stitch-quiet-first.md` (historical A scope).

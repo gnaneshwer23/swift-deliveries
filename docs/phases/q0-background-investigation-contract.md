@@ -25,23 +25,23 @@ The product promise is: approve a bounded investigation, leave, return to a defe
 
 All implemented statuses below mean code inspected, runtime unverified in this audit. Existing tests were located, not executed; prior test reports are not fresh verification.
 
-| Capability | Status and evidence | Gap against target |
-| --- | --- | --- |
-| Authentication | Implemented: `src/lib/auth/middleware.ts`, `verify.server.ts`; server functions verify JWTs | Real sign-in and token refresh not exercised |
-| Workspace isolation | Implemented: `src/lib/pilot-mission.functions.ts` resolves owner workspace; `pilot-mission/repository.server.ts` scopes reads | Fresh cross-workspace API/DB acceptance required |
-| Case persistence | Implemented: `psi_supervised_missions` document and optimistic versioning in `repository.server.ts` | Research progress is not checkpointed per provider step |
-| Research | Partial: `pilot-mission/service.ts` `approvePlan` awaits `runResearchPass`, then saves; `research-pass.ts` records findings or gaps | Request-coupled execution; interruption can lose partial findings; concurrent approvals can retrieve before save conflict |
-| Durable execution | Partial for Studio: `workforce/worker.server.ts` has leases, attempts, approvals and commits for `wf_missions` | No inspected integration routes supervised research through this worker |
-| Scheduling | Partial: `src/routes/api/worker/tick.ts` checks bearer secret; `vercel.json` has no schedule | External scheduler and deployed wake-up behaviour unverified |
-| Budgets | Implemented for comparisons: `pilot-mission/reservations.server.ts`; start policy in `pilot/paid-availability.ts` | Retrieval spend/in-flight limits need explicit authority; workspace units are not automatically currency budgets |
-| Collaboration | Partial: `specialist-team.ts`, `case-room.ts`, continuation projections and workforce task infrastructure | Prove actual invocation-to-invocation consumption, not inferred cooperation from role names |
-| Recommendations | Implemented with fallback: `verdict.ts`, `generate.ts`, `research-pass.ts` | Fixtures and deterministic drafts are not live diligence; execution failure must remain distinct from evidence-based pause |
-| Quiet UI | Implemented: `workspace-foyer.tsx`, `mission-theatre.tsx`, `quiet-status.ts` | Recovering leases currently appear as Investigating; broaden truthful state distinctions |
-| Inbox | Partial: `quiet-studio-notifications.tsx` derives rows from missions | Not a persisted notification outbox; only cancelled/follow-up-approved entries filtered out |
-| External delivery | Not found in inspected supervised path; `studio-meta.ts` and honesty copy describe preferences | No reliable result-ready email/push delivery demonstrated |
-| Exports | Partial: `decision-pack.ts`, `executive-pack.ts`, `supervised-zip.ts`, `decision-roadmap.ts` | Decision ZIP embeds PDF as base64 text; full snapshot/version/date completeness requires acceptance tests |
-| Voice | Existing channel code under `src/lib/conversation`, browser input/listening surfaces | Equivalent authority, disconnect and cancellation behaviour unverified here |
-| Watchtower | Preferences only: `watchtower.ts` | Scheduled monitoring is not implemented by these preferences |
+| Capability          | Status and evidence                                                                                                                 | Gap against target                                                                                                         |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Authentication      | Implemented: `src/lib/auth/middleware.ts`, `verify.server.ts`; server functions verify JWTs                                         | Real sign-in and token refresh not exercised                                                                               |
+| Workspace isolation | Implemented: `src/lib/pilot-mission.functions.ts` resolves owner workspace; `pilot-mission/repository.server.ts` scopes reads       | Fresh cross-workspace API/DB acceptance required                                                                           |
+| Case persistence    | Implemented: `psi_supervised_missions` document and optimistic versioning in `repository.server.ts`                                 | Research progress is not checkpointed per provider step                                                                    |
+| Research            | Partial: `pilot-mission/service.ts` `approvePlan` awaits `runResearchPass`, then saves; `research-pass.ts` records findings or gaps | Request-coupled execution; interruption can lose partial findings; concurrent approvals can retrieve before save conflict  |
+| Durable execution   | Partial for Studio: `workforce/worker.server.ts` has leases, attempts, approvals and commits for `wf_missions`                      | No inspected integration routes supervised research through this worker                                                    |
+| Scheduling          | Partial: `src/routes/api/worker/tick.ts` checks bearer secret; `vercel.json` has no schedule                                        | External scheduler and deployed wake-up behaviour unverified                                                               |
+| Budgets             | Implemented for comparisons: `pilot-mission/reservations.server.ts`; start policy in `pilot/paid-availability.ts`                   | Retrieval spend/in-flight limits need explicit authority; workspace units are not automatically currency budgets           |
+| Collaboration       | Partial: `specialist-team.ts`, `case-room.ts`, continuation projections and workforce task infrastructure                           | Prove actual invocation-to-invocation consumption, not inferred cooperation from role names                                |
+| Recommendations     | Implemented with fallback: `verdict.ts`, `generate.ts`, `research-pass.ts`                                                          | Fixtures and deterministic drafts are not live diligence; execution failure must remain distinct from evidence-based pause |
+| Quiet UI            | Implemented: `workspace-foyer.tsx`, `mission-theatre.tsx`, `quiet-status.ts`                                                        | Recovering leases currently appear as Investigating; broaden truthful state distinctions                                   |
+| Inbox               | Partial: `quiet-studio-notifications.tsx` derives rows from missions                                                                | Not a persisted notification outbox; only cancelled/follow-up-approved entries filtered out                                |
+| External delivery   | Not found in inspected supervised path; `studio-meta.ts` and honesty copy describe preferences                                      | No reliable result-ready email/push delivery demonstrated                                                                  |
+| Exports             | Partial: `decision-pack.ts`, `executive-pack.ts`, `supervised-zip.ts`, `decision-roadmap.ts`                                        | Decision ZIP embeds PDF as base64 text; full snapshot/version/date completeness requires acceptance tests                  |
+| Voice               | Existing channel code under `src/lib/conversation`, browser input/listening surfaces                                                | Equivalent authority, disconnect and cancellation behaviour unverified here                                                |
+| Watchtower          | Preferences only: `watchtower.ts`                                                                                                   | Scheduled monitoring is not implemented by these preferences                                                               |
 
 ## Architecture decision: extend, do not replace
 
@@ -71,15 +71,15 @@ These are proposed additive contracts, not approved migrations. Choose the next 
 
 ## Screen and motion contract
 
-| Surface | Disposition |
-| --- | --- |
-| Studio command input | Retain; primary idea and instruction entry |
-| Central investigation visual | Refine in Q3; one focal visual with contextual keywords and meaningful updates |
-| Inbox and projects | Retain/refine; only actionable events belong in attention list |
-| Project briefing | Recommendation, strongest support/counterargument, uncertainty, next decision and downloads remain visible |
-| Team, evidence, activity and graphs | Retain; on-demand inspection during and after work |
-| Agent catalogue/office and legacy planner | Demote, never delete without approval |
-| Existing routes and recorded history | Preserve |
+| Surface                                   | Disposition                                                                                                |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Studio command input                      | Retain; primary idea and instruction entry                                                                 |
+| Central investigation visual              | Refine in Q3; one focal visual with contextual keywords and meaningful updates                             |
+| Inbox and projects                        | Retain/refine; only actionable events belong in attention list                                             |
+| Project briefing                          | Recommendation, strongest support/counterargument, uncertainty, next decision and downloads remain visible |
+| Team, evidence, activity and graphs       | Retain; on-demand inspection during and after work                                                         |
+| Agent catalogue/office and legacy planner | Demote, never delete without approval                                                                      |
+| Existing routes and recorded history      | Preserve                                                                                                   |
 
 Keywords derive from persisted approved scope or task/evidence events; distinguish planned topics from completed findings. Decorative motion may indicate liveness only, never completion. Updates reference event IDs. Never announce a handoff as consumed until consumption is recorded. Show queued, working, awaiting approval/evidence, paused, interrupted, failed, cancelled and complete distinctly. Provide reduced-motion and accessible list alternatives; do not announce every animation frame to assistive technology.
 
@@ -91,15 +91,15 @@ Notify for material clarification, required approval, meaningful failure/budget 
 
 ## Proposed phases and proof gates
 
-| Phase | Scope | Required proof before merge |
-| --- | --- | --- |
-| Q0 (this document) | Reconciliation and contracts | File-referenced map, conflicts and bounded next slice reviewed |
-| Q1 | One durable investigation plus in-app completion/failure event | Browser disconnect, worker crash/recovery, duplicate retry, ownership and cancel tests |
-| Q2 | Recorded specialist collaboration | Finding -> actual handoff consumption -> versioned output -> recommendation trace |
-| Q3 | Animated focal experience | Persisted-event mapping, truthful state labels, mobile/desktop and reduced-motion checks |
-| Q4 | Inspectable team and actionable inbox | During/after access, deduplication, reload and attention filtering |
-| Q5 | Briefing and complete authorised exports | Readable files, consistent snapshot, evidence trace and permission tests |
-| Q6 | Release acceptance | Exact candidate passes full journey and authorised live checks; no critical open issues |
+| Phase              | Scope                                                          | Required proof before merge                                                              |
+| ------------------ | -------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Q0 (this document) | Reconciliation and contracts                                   | File-referenced map, conflicts and bounded next slice reviewed                           |
+| Q1                 | One durable investigation plus in-app completion/failure event | Browser disconnect, worker crash/recovery, duplicate retry, ownership and cancel tests   |
+| Q2                 | Recorded specialist collaboration                              | Finding -> actual handoff consumption -> versioned output -> recommendation trace        |
+| Q3                 | Animated focal experience                                      | Persisted-event mapping, truthful state labels, mobile/desktop and reduced-motion checks |
+| Q4                 | Inspectable team and actionable inbox                          | During/after access, deduplication, reload and attention filtering                       |
+| Q5                 | Briefing and complete authorised exports                       | Readable files, consistent snapshot, evidence trace and permission tests                 |
+| Q6                 | Release acceptance                                             | Exact candidate passes full journey and authorised live checks; no critical open issues  |
 
 These Q labels distinguish this plan from older paid-launch Phase 1/2 and Cursor P/PT phases. Each phase requires separate founder approval. Commit and push focused branches; do not rewrite published history. CI success is not release approval.
 

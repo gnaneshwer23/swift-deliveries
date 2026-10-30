@@ -12,11 +12,11 @@ DeliverX sign-in uses **Neon Auth** (managed Better Auth). The browser reads **`
 
 In Neon Auth settings, allow every origin where you sign in:
 
-| Environment | Typical origin |
-| ----------- | -------------- |
-| Local dev   | `http://localhost:43123` (see `vite.config.ts`) |
-| Vercel preview | Each `https://*.vercel.app` preview URL you use |
-| Production  | `https://www.deliverx.dev`, `https://deliverx.dev` |
+| Environment    | Typical origin                                     |
+| -------------- | -------------------------------------------------- |
+| Local dev      | `http://localhost:43123` (see `vite.config.ts`)    |
+| Vercel preview | Each `https://*.vercel.app` preview URL you use    |
+| Production     | `https://www.deliverx.dev`, `https://deliverx.dev` |
 
 Preview URLs change per branch; add them when you test a new deployment.
 
@@ -24,11 +24,11 @@ Preview URLs change per branch; add them when you test a new deployment.
 
 Create or edit **`.env.local`** at the repo root (never commit it). Set at minimum:
 
-| Variable | Role |
-| -------- | ---- |
-| `VITE_NEON_AUTH_URL` | Auth Base URL — **required for sign-in UI** |
-| `NEON_AUTH_URL` | Same Auth Base URL — **required for server JWT verification** |
-| `DATABASE_URL` | Pooled Neon connection string — **required after sign-in** (`/command`, onboarding) |
+| Variable             | Role                                                                                |
+| -------------------- | ----------------------------------------------------------------------------------- |
+| `VITE_NEON_AUTH_URL` | Auth Base URL — **required for sign-in UI**                                         |
+| `NEON_AUTH_URL`      | Same Auth Base URL — **required for server JWT verification**                       |
+| `DATABASE_URL`       | Pooled Neon connection string — **required after sign-in** (`/command`, onboarding) |
 
 Optional (only if your Neon project uses them):
 

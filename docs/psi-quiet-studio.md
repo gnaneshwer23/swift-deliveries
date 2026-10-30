@@ -5,7 +5,7 @@ DeliverX Studio’s default experience is **progressive transparency**: a calm f
 ## Front stage (`/command`, `/command/supervised/$missionId`)
 
 - **Brand + one command line** (text) with **voice** filling the same one-liner (browser speech / existing VoiceControls — no cloud TTS product charge).
-- **Status** is derived from real mission state (`nextRequiredAction`, job lease) — labels: *Idle*, *Investigating…*, *Needs your decision*. Not timer-fake progress.
+- **Status** is derived from real mission state (`nextRequiredAction`, job lease) — labels: _Idle_, _Investigating…_, _Needs your decision_. Not timer-fake progress.
 - **Notifications**: compact list of cases that need you; opening a case shows a **gate card** and event-backed canvas — not walls of evidence or PM essays.
 - **Inspect** (details): full record — project room, evidence editors, commerce, honesty panels, beat rails, PM briefing walls.
 

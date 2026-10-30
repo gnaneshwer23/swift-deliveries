@@ -11,8 +11,8 @@ organisation:
   name: Repairline (Southbridge Borough Council)
   sector: UK local government, housing
   stage: alpha_to_beta
-  entry_level: product_manager  # associate_pm | product_manager | senior_pm | lead_pm
-  simulated: true  # always true; shown on every screen
+  entry_level: product_manager # associate_pm | product_manager | senior_pm | lead_pm
+  simulated: true # always true; shown on every screen
   brief: >
     Southbridge Borough Council must move housing repairs reporting online
     before a statutory deadline. The alpha proved residents will use a digital

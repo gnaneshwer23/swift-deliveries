@@ -7,21 +7,21 @@
 
 ## Founder confirmations (28 Oct 2026)
 
-| Item | Status |
-| --- | --- |
-| Prices + allowances (Builder £29 / 1, Founder £99 / 4, Studio £299 / 12) | **Confirmed** by founder |
-| Neon migration 0032 on production `br-fancy-breeze-zatt9ocp` | **Applied** 28 Oct 2026 (file blob `8f5178636508c0e06df99ec32a7ee70e546b301b`; see `docs/migrations-and-rollback.md`) |
-| Live Products / Prices (IDs below) | **Read from live** `acct_1S6BMU2X2opf83VZ` 28 Oct 2026 |
-| Vercel `PSI_STRIPE_PRICE_*` (Production) | **Set** to live `price_…` IDs below |
-| Live keys, webhook, `PSI_PAYMENTS_LIVE_APPROVED` | **Still required** — not set by agents; see needs list |
+| Item                                                                     | Status                                                                                                                |
+| ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| Prices + allowances (Builder £29 / 1, Founder £99 / 4, Studio £299 / 12) | **Confirmed** by founder                                                                                              |
+| Neon migration 0032 on production `br-fancy-breeze-zatt9ocp`             | **Applied** 28 Oct 2026 (file blob `8f5178636508c0e06df99ec32a7ee70e546b301b`; see `docs/migrations-and-rollback.md`) |
+| Live Products / Prices (IDs below)                                       | **Read from live** `acct_1S6BMU2X2opf83VZ` 28 Oct 2026                                                                |
+| Vercel `PSI_STRIPE_PRICE_*` (Production)                                 | **Set** to live `price_…` IDs below                                                                                   |
+| Live keys, webhook, `PSI_PAYMENTS_LIVE_APPROVED`                         | **Still required** — not set by agents; see needs list                                                                |
 
 ## Mapping table
 
-| Plan | Published price | Lookup key | Mission allowance | Exhaustion |
-| --- | --- | --- | --- | --- |
-| Builder | £29 / month (**confirmed**) | `builder_monthly` | **1** | `block_next_billable_comparison` |
-| Founder | £99 / month (**confirmed**) | `founder_monthly` | **4** | `block_next_billable_comparison` |
-| Studio | £299 / month (**confirmed**) | `studio_monthly` | **12** | `block_next_billable_comparison` |
+| Plan    | Published price              | Lookup key        | Mission allowance | Exhaustion                       |
+| ------- | ---------------------------- | ----------------- | ----------------- | -------------------------------- |
+| Builder | £29 / month (**confirmed**)  | `builder_monthly` | **1**             | `block_next_billable_comparison` |
+| Founder | £99 / month (**confirmed**)  | `founder_monthly` | **4**             | `block_next_billable_comparison` |
+| Studio  | £299 / month (**confirmed**) | `studio_monthly`  | **12**            | `block_next_billable_comparison` |
 
 Allowances match the pricing page “Monthly missions” column. Operator manual activation may still set 1–24; self-serve uses these defaults from Checkout metadata / price metadata.
 
@@ -33,11 +33,11 @@ App resolves prices by **lookup key** when env overrides are absent. Production 
 
 - `PSI_STRIPE_PRICE_BUILDER` / `PSI_STRIPE_PRICE_FOUNDER` / `PSI_STRIPE_PRICE_STUDIO`
 
-| Plan | Product ID | Product name (Stripe) | Price ID | Amount | Lookup key (observed) | Notes |
-| --- | --- | --- | --- | --- | --- | --- |
-| Builder | `prod_VHO45CEWLNQ3qF` | `builder_monthly` | `price_1UGpI02X2opf83VZ9RIaw4Ky` | £29 / month | **`experience_monthly`** (wrong — career key) | No `default_price` on product; metadata still has Lovable career tags |
-| Founder | `prod_VWUi8xEiee1ACW` | `founder_monthly` | `price_1UVRjW2X2opf83VZ0E9zN7bi` | £99 / month | *(null)* | Inferred as Founder from £99 |
-| Studio | `prod_VWUj2JF7yL89go` | `studio_monthly` | `price_1UVRjr2X2opf83VZmm3F4UtY` | £299 / month | *(null)* | Matches founder label `studio_monthly` |
+| Plan    | Product ID            | Product name (Stripe) | Price ID                         | Amount       | Lookup key (observed)                         | Notes                                                                 |
+| ------- | --------------------- | --------------------- | -------------------------------- | ------------ | --------------------------------------------- | --------------------------------------------------------------------- |
+| Builder | `prod_VHO45CEWLNQ3qF` | `builder_monthly`     | `price_1UGpI02X2opf83VZ9RIaw4Ky` | £29 / month  | **`experience_monthly`** (wrong — career key) | No `default_price` on product; metadata still has Lovable career tags |
+| Founder | `prod_VWUi8xEiee1ACW` | `founder_monthly`     | `price_1UVRjW2X2opf83VZ0E9zN7bi` | £99 / month  | _(null)_                                      | Inferred as Founder from £99                                          |
+| Studio  | `prod_VWUj2JF7yL89go` | `studio_monthly`      | `price_1UVRjr2X2opf83VZmm3F4UtY` | £299 / month | _(null)_                                      | Matches founder label `studio_monthly`                                |
 
 **Dashboard fix (optional but recommended):** set Price lookup keys to `builder_monthly` / `founder_monthly` / `studio_monthly`, set Builder product default price to `price_1UGpI02X2opf83VZ9RIaw4Ky`, and clear career `experience_monthly` from the Builder price so career fulfillment never collides.
 
@@ -45,23 +45,23 @@ App resolves prices by **lookup key** when env overrides are absent. Production 
 
 Created 28 Oct 2026 in sandbox `acct_1UVJJgLTPk6m3Dkt` (claim before expiry).
 
-| Plan | Product ID | Price ID | Lookup key |
-| --- | --- | --- | --- |
+| Plan    | Product ID            | Price ID                         | Lookup key        |
+| ------- | --------------------- | -------------------------------- | ----------------- |
 | Builder | `prod_VWN5DVwOXYyCo8` | `price_1UVKLnLTPk6m3DktTFCrxdVv` | `builder_monthly` |
 | Founder | `prod_VWN5wmcUpVj2Q3` | `price_1UVKLnLTPk6m3DktpKa239iv` | `founder_monthly` |
-| Studio | `prod_VWN6qLJhol1GAJ` | `price_1UVKLoLTPk6m3DkttQK95FMc` | `studio_monthly` |
+| Studio  | `prod_VWN6qLJhol1GAJ` | `price_1UVKLoLTPk6m3DkttQK95FMc` | `studio_monthly`  |
 
 Do **not** put these sandbox `price_…` IDs on Production `PSI_STRIPE_PRICE_*`. Preview may keep lookup keys against sandbox; live price env overrides stay Production-only.
 
 ## Environment gates (P1-5)
 
-| Condition | Behaviour |
-| --- | --- |
-| `PSI_PAYMENTS_KILL_SWITCH=true` | Refuse all new Checkout Sessions |
-| `VITE_PAYMENTS_CHECKOUT_ENABLED` ≠ `true` | No Pay UI; server refuses (“Checkout is not live.”) |
-| `PSI_PAYMENTS_LIVE_APPROVED=true` | **Require** `pk_live_` + `STRIPE_LIVE_API_KEY`; webhook `?env=live`; pricing copy says live |
-| Live approved missing | Sandbox path only (`pk_test_` + `STRIPE_SANDBOX_API_KEY`); never charge live |
-| Live approved + only sandbox keys | **Refuse** — no silent sandbox fallback on Production |
+| Condition                                 | Behaviour                                                                                   |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `PSI_PAYMENTS_KILL_SWITCH=true`           | Refuse all new Checkout Sessions                                                            |
+| `VITE_PAYMENTS_CHECKOUT_ENABLED` ≠ `true` | No Pay UI; server refuses (“Checkout is not live.”)                                         |
+| `PSI_PAYMENTS_LIVE_APPROVED=true`         | **Require** `pk_live_` + `STRIPE_LIVE_API_KEY`; webhook `?env=live`; pricing copy says live |
+| Live approved missing                     | Sandbox path only (`pk_test_` + `STRIPE_SANDBOX_API_KEY`); never charge live                |
+| Live approved + only sandbox keys         | **Refuse** — no silent sandbox fallback on Production                                       |
 
 ## Workspace binding
 
@@ -87,7 +87,7 @@ Do **not** put these sandbox `price_…` IDs on Production `PSI_STRIPE_PRICE_*`.
 Code always passes `managed_payments[enabled]=true`. Stripe will reject Session create until the account is enrolled:
 
 1. Accept Managed Payments terms at [Dashboard → Managed Payments](https://dashboard.stripe.com/settings/managed-payments).
-2. Set each PSI Product’s **tax code** to one labeled *Eligible for Managed Payments* ([eligibility](https://docs.stripe.com/payments/managed-payments/eligibility)).
+2. Set each PSI Product’s **tax code** to one labeled _Eligible for Managed Payments_ ([eligibility](https://docs.stripe.com/payments/managed-payments/eligibility)).
 3. Do **not** set `automatic_tax` / `payment_method_types` on our Session create (unsupported with Managed Payments; we omit them).
 
 ## Tax / cancel / refund

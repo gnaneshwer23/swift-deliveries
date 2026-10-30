@@ -15,12 +15,12 @@ Calm Quiet Studio: progressive transparency with a **deduplicated in-app inbox**
 
 ## Code
 
-| Area | Path |
-|------|------|
-| Inspection snapshot | `src/lib/pilot-mission/mission-inspection.ts`, `*.test.ts` |
-| Inbox dedupe | `src/lib/pilot-mission/studio-inbox.ts`, `*.test.ts` |
-| UI | `team-activity-panel.tsx`, `quiet-studio-notifications.tsx`, `mission-inspection-strip.tsx` |
-| Home fields | `studioInboxFields` in `pilot-mission.functions.ts` |
+| Area                | Path                                                                                        |
+| ------------------- | ------------------------------------------------------------------------------------------- |
+| Inspection snapshot | `src/lib/pilot-mission/mission-inspection.ts`, `*.test.ts`                                  |
+| Inbox dedupe        | `src/lib/pilot-mission/studio-inbox.ts`, `*.test.ts`                                        |
+| UI                  | `team-activity-panel.tsx`, `quiet-studio-notifications.tsx`, `mission-inspection-strip.tsx` |
+| Home fields         | `studioInboxFields` in `pilot-mission.functions.ts`                                         |
 
 ## Verification
 

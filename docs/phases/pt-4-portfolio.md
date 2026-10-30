@@ -4,6 +4,7 @@
 **Demo:** `/command/portfolio` — search/filter cases by stage and attention; decisions awaiting; no multi-graph wall. Linked from Studio foyer.
 
 ## Decision log
-| Date | Entry |
-| --- | --- |
+
+| Date        | Entry                                |
+| ----------- | ------------------------------------ |
 | 28 Oct 2026 | Authorised + shipped with PT-2…PT-6. |

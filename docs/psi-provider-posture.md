@@ -10,12 +10,12 @@ Related: `docs/psi-preview-setup.md`, `docs/roadmap-next-build.md` §P0-B, foyer
 
 ## What a pilot receives today
 
-| Capability | Production posture at `f688e80` | UI honesty |
-| --- | --- | --- |
-| Stage / artefact generation | **Simulated** — `DXSI_MODEL_ENABLED` not set on Production | Foyer chip: **Simulated drafts**; artefact badge: **Simulated draft** |
-| Voice brief | **Off** — voice env names absent | Foyer chip: **Voice not configured** |
-| Web research (Combined/Web) | **On** when `TAVILY_API_KEY` present (Production) | Research chip: **Web research ready · tavily** (when key wired); otherwise gaps labelled |
-| Checkout / Stripe | **Off** — no payments env names | Pricing/pilot: **Checkout is not live** / manual activation |
+| Capability                  | Production posture at `f688e80`                            | UI honesty                                                                               |
+| --------------------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Stage / artefact generation | **Simulated** — `DXSI_MODEL_ENABLED` not set on Production | Foyer chip: **Simulated drafts**; artefact badge: **Simulated draft**                    |
+| Voice brief                 | **Off** — voice env names absent                           | Foyer chip: **Voice not configured**                                                     |
+| Web research (Combined/Web) | **On** when `TAVILY_API_KEY` present (Production)          | Research chip: **Web research ready · tavily** (when key wired); otherwise gaps labelled |
+| Checkout / Stripe           | **Off** — no payments env names                            | Pricing/pilot: **Checkout is not live** / manual activation                              |
 
 Model mode is opt-in in code (`DXSI_MODEL_ENABLED === "true"` plus provider credentials and allowlist). Missing or misconfigured mode never invents model output; chips show **Simulated drafts** or **Model misconfigured**.
 

@@ -1,20 +1,981 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>DeliverX — Agent Network</title><style>
-:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;color:#122340;background:#f8fbff;--blue:#1769f6;--border:#e3eaf5;--muted:#65768f}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 48% 35%,#eef7ff 0,#fff 42%,#f7faff 100%)}button,input{font:inherit}button{cursor:pointer}.shell{padding:18px 22px;max-width:1800px;margin:auto}.top{display:flex;align-items:center;gap:20px;padding:13px 22px;background:#fff;border:1px solid var(--border);border-radius:20px;box-shadow:0 10px 30px #20436b0a}.brand{display:flex;align-items:center;gap:12px;min-width:260px}.logo{font-size:54px;font-weight:900;line-height:.7;letter-spacing:-9px;color:#1774ed;padding-right:12px}.brand b{font-size:24px;letter-spacing:-.7px}.brand small{display:block;color:#54708d}.nav{display:flex;gap:6px;flex:1}.nav button,.tabs button{border:1px solid #e9edf5;background:#f8fafc;color:#263752;border-radius:11px;padding:11px 14px;white-space:nowrap}.nav button.active,.tabs button.active{background:#eaf2ff;border-color:#317aff;color:#105bd7;box-shadow:0 0 0 2px #2276ff14}.search{position:relative}.search input{width:270px;border:1px solid #dce5f1;border-radius:12px;padding:12px 13px 12px 35px;outline:none;background:#fbfdff}.search:before{content:'⌕';position:absolute;left:12px;top:5px;font-size:25px;color:#5a7698}.avatar{background:#256df0;color:white;border-radius:50%;width:38px;height:38px;display:grid;place-items:center;font-weight:700}.layout{display:grid;grid-template-columns:280px minmax(460px,1fr) 405px;gap:18px;margin-top:18px;min-height:720px}.panel{border:1px solid var(--border);background:#ffffffeb;border-radius:19px;box-shadow:0 10px 32px #16447b0a}.sidebar{padding:17px 13px}.sidebar h3{font-size:15px;margin:4px 7px 14px}.department{width:100%;border:1px solid #edf1f7;background:#fff;border-radius:11px;display:flex;align-items:center;gap:9px;padding:9px;margin:5px 0;text-align:left;color:#1e3150}.department:hover,.department.active{border-color:#3c85ff;background:#edf5ff}.dept-icon{height:30px;width:30px;display:grid;place-items:center;border-radius:10px;color:white;font-weight:700}.department .number{font-size:12px;color:#51627d}.department .name{font-size:12px;flex:1}.department .count{font-size:12px;color:#557194}.network{position:relative;overflow:hidden;min-height:715px;background:radial-gradient(circle at 50% 47%,#edf7ff 0%,#fff 52%,#fbfdff 90%)}.network-head{position:absolute;left:22px;top:19px;z-index:3}.eyebrow{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:#6883a3;font-weight:800}.network-head h2{margin:6px 0;font-size:19px}.network-head p{font-size:12px;color:var(--muted);margin:0}.graph{width:100%;height:100%;min-height:710px;display:block}.link{fill:none;stroke:#9dcaff;stroke-width:1.3;opacity:.43}.link.active{stroke:#2385ff;stroke-width:2.4;opacity:.9}.orbit{fill:none;stroke:#d4e5f8;stroke-width:1.2;stroke-dasharray:3 6}.node{cursor:pointer;outline:none}.node .disk{fill:#fff;stroke:var(--node);stroke-width:1.8;filter:drop-shadow(0 6px 10px #1b62a01a)}.node.active .disk{stroke-width:3;filter:drop-shadow(0 0 9px #1685ff65)}.node text{pointer-events:none;fill:#233651;font-weight:700;font-size:11px;text-anchor:middle}.node .small{font-size:9px;font-weight:500;fill:#60758f}.core{fill:url(#core);stroke:#65baff;stroke-width:4;filter:drop-shadow(0 8px 18px #2487f06b)}.core-title{fill:white;text-anchor:middle;font-size:27px;font-weight:800}.core-sub{fill:#c9eaff;text-anchor:middle;font-size:13px}.core-symbol{fill:#fff;text-anchor:middle;font-size:46px;font-weight:700}.agent-dot{cursor:pointer;fill:#fff;stroke:#3e95ff;stroke-width:2}.agent-dot.active{fill:#2179f8;stroke:#fff;stroke-width:3;filter:drop-shadow(0 0 8px #1886ff)}.agent-label{font-size:10px;fill:#2a548a;text-anchor:middle;font-weight:700}.legend{position:absolute;left:18px;bottom:18px;right:18px;background:#ffffffdd;border:1px solid #e7effa;border-radius:12px;padding:10px 13px;font-size:12px;color:#637b99;display:flex;justify-content:space-between;gap:8px}.details{padding:17px;align-self:stretch}.detail-top{display:flex;align-items:center;gap:9px}.pill{background:#eaf2ff;color:#1556c3;border-radius:9px;padding:7px 12px;font-weight:800}.status{background:#e4f8ed;color:#118b51;border-radius:30px;padding:7px 12px;font-size:12px;font-weight:700}.details h1{font-size:26px;letter-spacing:-.8px;margin:13px 0 3px}.subtitle{color:#64738c;font-size:13px;margin:0 0 15px}.tabs{display:flex;gap:5px;overflow-x:auto}.tabs button{font-size:11px;padding:9px 10px}.detail-section{border:1px solid #e8edf5;border-radius:12px;padding:12px;margin-top:11px}.detail-section h4{margin:0 0 8px;font-size:13px}.detail-section p{font-size:12px;line-height:1.65;margin:0;color:#485c78}.facts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.fact{padding:10px;background:#f8fbff;border:1px solid #e8eff8;border-radius:10px}.fact small{display:block;color:#75849a;font-size:10px}.fact b{font-size:11px}.checks{list-style:none;padding:0;margin:0}.checks li{font-size:12px;line-height:1.7}.checks li:before{content:'✓';color:#0ab77a;font-weight:900;margin-right:9px}.chips{display:flex;flex-wrap:wrap;gap:6px}.chip{font-size:10px;background:#f2f6fc;color:#3e5878;padding:6px 9px;border:1px solid #e7eef8;border-radius:8px}.primary{width:100%;padding:12px 15px;border:none;border-radius:11px;background:linear-gradient(90deg,#0968ec,#3998ff);color:white;font-weight:700;margin-top:16px;box-shadow:0 8px 18px #2682ed35}.primary:disabled{background:#afbdd0;box-shadow:none;cursor:not-allowed}.mission{margin-top:17px;padding:14px 19px;display:flex;align-items:center;gap:20px;justify-content:space-between}.mission-card{display:flex;align-items:center;gap:12px;min-width:275px}.ring{height:50px;width:50px;border:7px solid #e7f1ff;border-top-color:#1683f5;border-left-color:#1683f5;border-radius:50%;display:grid;place-items:center;font-size:11px;color:#155cc5;font-weight:800}.mission small{font-size:11px;color:#71819a}.mission b{font-size:13px}.progress{flex:1;display:flex;justify-content:space-around;gap:10px}.step{text-align:center;font-size:11px;color:#5c7291}.step .circle{height:28px;width:28px;border:1px solid #d8e6f8;background:#f5f9ff;border-radius:50%;margin:0 auto 5px;display:grid;place-items:center;color:#317cdd}.step.active .circle{background:#237cf4;color:white;box-shadow:0 0 0 5px #e3f0ff}.eta{min-width:140px}.eta strong{font-size:20px}.note{margin:10px 3px;color:#7588a0;font-size:11px}.empty{font-size:12px;color:#6c7f9b}.results{position:absolute;top:46px;left:0;right:0;z-index:10;max-height:300px;overflow:auto;background:#fff;border:1px solid #dce7f7;border-radius:12px;box-shadow:0 14px 32px #1c4d8720}.results button{display:block;width:100%;border:0;border-bottom:1px solid #eff3f8;background:#fff;text-align:left;padding:10px;font-size:12px}.results button:hover{background:#f1f7ff}@media(max-width:1250px){.layout{grid-template-columns:250px minmax(400px,1fr)}.details{grid-column:1/-1}.nav{overflow:auto}.search input{width:210px}}@media(max-width:750px){.shell{padding:9px}.top{flex-wrap:wrap;padding:13px}.brand{min-width:auto}.nav{order:3;width:100%}.search{margin-left:auto}.search input{width:180px}.layout{display:flex;flex-direction:column}.sidebar{display:grid;grid-template-columns:1fr 1fr;gap:5px}.sidebar h3{grid-column:1/-1}.department{margin:0}.network{min-height:520px}.graph{min-height:520px}.mission{flex-wrap:wrap}.progress{order:3;width:100%;flex-basis:100%}.legend{font-size:10px}.network-head{top:10px;left:10px}.network-head h2{font-size:14px}}
-</style></head><body><div class="shell"><header class="top"><div class="brand"><div class="logo">∞</div><div><b>DeliverX</b><small>Product Super Intelligence</small></div></div><nav class="nav" id="nav"></nav><div class="search"><input id="search" aria-label="Search agents" placeholder="Search 150 agents, skills, or tools..."/><div id="results" class="results" hidden></div></div><div class="avatar">JD</div></header><main class="layout"><aside class="panel sidebar"><h3>12 Lifecycle Departments</h3><div id="departments" style="display:contents"></div></aside><section class="panel network"><div class="network-head"><div class="eyebrow">Intelligence architecture</div><h2 id="graph-title">Agent Network</h2><p id="graph-caption">Select a department to explore specialist agents</p></div><svg class="graph" id="graph" viewBox="0 0 820 720" role="img" aria-label="Interactive Product Brain network with 12 lifecycle departments"></svg><div class="legend"><span>● Product Brain · ○ Department · ◉ Specialist agent</span><span id="graph-count">150 proposed roles</span></div></section><aside class="panel details" id="details"></aside></main><footer class="panel mission"><div class="mission-card"><div class="ring">6/12</div><div><small>Example Mission</small><br/><b>Improve Onboarding Experience</b><br/><small>Design → Build → Test</small></div></div><div class="progress"><div class="step"><div class="circle">⌕</div>Research</div><div class="step"><div class="circle">◇</div>Design</div><div class="step active"><div class="circle">⌘</div>Engineering</div><div class="step"><div class="circle">✓</div>Testing</div><div class="step"><div class="circle">▣</div>Review</div><div class="step"><div class="circle">✓</div>Complete</div></div><div class="eta"><small>Illustrative estimate</small><br/><strong>4 days</strong></div></footer><p class="note">Interactive front-end prototype. Agent assignments, capability states and mission progress are illustrative; no live backend or agent execution is connected.</p></div><script>
-const depts=[['Idea & Opportunity',6,'#ff5364','✦'],['Research & Discovery',18,'#158af8','⌕'],['Strategy & Planning',12,'#12cba0','◎'],['Requirements & PRD',10,'#11b9b5','▤'],['Design & Experience',14,'#9458ff','✎'],['Architecture & Security',12,'#efb500','⬡'],['Engineering & Build',20,'#276bfa','⌘'],['Testing & Verification',12,'#804dff','☑'],['Release & Deployment',8,'#f53280','➤'],['Operate & Monitor',10,'#3779ed','▥'],['Feedback & Insights',10,'#ff8a28','▥'],['Evolve & Improve',8,'#944aff','↻']];
-const engineering=['Engineering Delivery Lead','Frontend Engineer','Backend Engineer','Database Engineer','API Engineer','Authentication Specialist','Authorisation Specialist','AI Integration Engineer','Prompt & Tool Engineer','Workflow Automation Engineer','Event System Engineer','Search & Retrieval Engineer','Observability Engineer','Infrastructure Automation Engineer','CI/CD Engineer','Code Refactoring Agent','Code Review Agent','Dependency Maintenance Agent','Technical Documentation Agent','Integration Coordinator'];
-const roleNames=[['Product Analyst','Idea Validator','Problem Framer','Opportunity Scout','Customer Discovery Agent','Outcome Predictor'],['Market Researcher','Competitor Analyst','Customer Researcher','Trend Analyst','Evidence Collector','Research Synthesiser'],['Strategy Planner','Business Model Analyst','Pricing Analyst','Go-to-Market Planner'],['Requirements Analyst','User Story Writer','Acceptance Criteria Specialist','PRD Reviewer'],['UX Researcher','UI Designer','Information Architect','Design System Specialist'],['Solution Architect','Data Architect','Security Analyst','Compliance Analyst'],engineering,['QA Analyst','Test Automation Engineer','Accessibility Tester','Security Tester'],['Release Coordinator','Rollback Planner','Documentation Specialist'],['Monitoring Specialist','Reliability Engineer','Usage Analyst'],['Feedback Analyst','Experiment Analyst','Customer Insight Specialist'],['Knowledge Curator','Lesson Learner','Improvement Planner']];
-const agents=[];let id=1;depts.forEach((d,di)=>{for(let j=0;j<d[1];j++){agents.push({id:id++,name:roleNames[di][j]||`${d[0]} Specialist ${j+1}`,dept:di,description:di===6?'Implements approved product changes and coordinates with relevant specialists.':`Supports ${d[0].toLowerCase()} with structured, reviewable outputs.`})}});
-let currentDept=6,currentAgent=agents.find(a=>a.dept===6&&a.name==='Frontend Engineer'),tab='Overview',assigned=false;const $=id=>document.getElementById(id),esc=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
-function renderNav(){const labels=['Product Brain','Agent Network','Missions','Evidence','Decisions','Roadmap','Learning'];$('nav').innerHTML=labels.map((n,i)=>`<button class="${i===1?'active':''}" data-nav="${n}">${n}</button>`).join('');$('nav').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(b.dataset.nav==='Agent Network')return;alert(`${b.dataset.nav} is a proposed module. This prototype implements the Agent Network view.`)})}
-function selectDept(i){currentDept=i;currentAgent=agents.find(a=>a.dept===i);tab='Overview';render()};function selectAgent(a){currentDept=a.dept;currentAgent=a;tab='Overview';render()}
-function renderSidebar(){$('departments').innerHTML=depts.map((d,i)=>`<button class="department ${i===currentDept?'active':''}" data-i="${i}"><span class="dept-icon" style="background:${d[2]}">${d[3]}</span><span class="number">${i+1}</span><span class="name">${esc(d[0])}</span><span class="count">${d[1]}</span></button>`).join('');$('departments').querySelectorAll('button').forEach(b=>b.onclick=()=>selectDept(+b.dataset.i))}
-function renderGraph(){const svg=$('graph');let html=`<defs><radialGradient id="core" cx="35%" cy="25%" r="85%"><stop stop-color="#2d99ff"/><stop offset=".5" stop-color="#0c4a9e"/><stop offset="1" stop-color="#091c51"/></radialGradient></defs>`;const cx=410,cy=385,R=252;html+=`<circle class="orbit" cx="${cx}" cy="${cy}" r="${R}"/>`;const positions=depts.map((d,i)=>{const a=(-90+i*30)*Math.PI/180;return {x:cx+R*Math.cos(a),y:cy+R*Math.sin(a)}});positions.forEach((p,i)=>{const start=120,end=R-62;const a=(-90+i*30)*Math.PI/180;const x1=cx+Math.cos(a)*start,y1=cy+Math.sin(a)*start,x2=cx+Math.cos(a)*end,y2=cy+Math.sin(a)*end;html+=`<path class="link ${i===currentDept?'active':''}" d="M ${x1} ${y1} Q ${cx+Math.cos(a+.18)*205} ${cy+Math.sin(a+.18)*205} ${x2} ${y2}"/>`});
-html+=`<circle class="core" cx="${cx}" cy="${cy}" r="113"/><circle cx="${cx}" cy="${cy}" r="123" fill="none" stroke="#b3dcff" stroke-width="2" opacity=".65"/><text class="core-symbol" x="${cx}" y="${cy-34}">∞</text><text class="core-title" x="${cx}" y="${cy+7}">DeliverX</text><text class="core-sub" x="${cx}" y="${cy+31}">Product Brain</text>`;
-positions.forEach((p,i)=>{const d=depts[i],selected=i===currentDept;html+=`<g class="node ${selected?'active':''}" data-dept="${i}" tabindex="0" role="button" aria-label="${d[0]}, ${d[1]} agents" style="--node:${d[2]}"><circle class="disk" cx="${p.x}" cy="${p.y}" r="57"/><text x="${p.x}" y="${p.y-19}" style="font-size:18px;fill:${d[2]}">${d[3]}</text><text x="${p.x}" y="${p.y+2}">${esc(d[0].split(' & ')[0])}</text><text x="${p.x}" y="${p.y+17}">${d[0].includes(' & ')?'& '+esc(d[0].split(' & ')[1]):''}</text><text class="small" x="${p.x}" y="${p.y+36}">${d[1]} agents</text></g>`});
-const p=positions[currentDept],list=agents.filter(a=>a.dept===currentDept);let theta=(-90+currentDept*30)*Math.PI/180;const arcStart=theta-.92,arcEnd=theta+.92;list.forEach((a,j)=>{const angle=arcStart+(arcEnd-arcStart)*(j+.5)/list.length;const dist=335+(j%2)*15;const x=cx+dist*Math.cos(angle),y=cy+dist*Math.sin(angle);const x0=p.x+55*Math.cos(angle),y0=p.y+55*Math.sin(angle);html+=`<line x1="${x0}" y1="${y0}" x2="${x}" y2="${y}" stroke="${depts[currentDept][2]}" stroke-width=".9" opacity=".4"/><circle class="agent-dot ${currentAgent?.id===a.id?'active':''}" data-agent="${a.id}" cx="${x}" cy="${y}" r="${currentAgent?.id===a.id?7:4}" tabindex="0" role="button" aria-label="${esc(a.name)}"><title>${esc(a.name)} (#${a.id})</title></circle>`});svg.innerHTML=html;svg.querySelectorAll('[data-dept]').forEach(el=>{const f=()=>selectDept(+el.dataset.dept);el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter')f()})});svg.querySelectorAll('[data-agent]').forEach(el=>{const f=()=>selectAgent(agents[+el.dataset.agent-1]);el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter')f()})});$('graph-count').textContent=`${list.length} roles in selected department`}
-function renderDetails(){const a=currentAgent,d=depts[a.dept],isFront=a.name==='Frontend Engineer';let content='';if(tab==='Overview'){content=`<section class="detail-section"><h4>Role summary</h4><p>${esc(isFront?'Implements frontend features from approved designs and requirements. Works closely with design, backend and QA specialists to deliver accessible, performant and maintainable interfaces.':a.description)}</p><div class="facts"><div class="fact"><small>Department</small><b>${esc(d[0])}</b></div><div class="fact"><small>Agent type</small><b>Specialist role</b></div><div class="fact"><small>Capability</small><b>Proposed / demo</b></div><div class="fact"><small>Approval</small><b>Required for external actions</b></div></div></section><section class="detail-section"><h4>Key responsibilities</h4><ul class="checks">${(isFront?['Implement UI components and features','Ensure responsive and accessible design','Integrate with approved backend APIs','Follow coding standards and best practices','Coordinate with testing and review agents']:['Review mission context and dependencies','Produce structured, traceable deliverables','Identify assumptions and unresolved questions','Coordinate with dependent specialist roles']).map(x=>`<li>${x}</li>`).join('')}</ul></section><section class="detail-section"><h4>Inputs</h4><div class="chips">${['Approved brief','Product context','Acceptance criteria','Constraints'].map(x=>`<span class="chip">${x}</span>`).join('')}</div></section><section class="detail-section"><h4>Outputs</h4><div class="chips">${(isFront?['Frontend code','Component updates','Integration notes','Implementation summary']:['Reviewable artefact','Assumptions','Evidence links']).map(x=>`<span class="chip">${x}</span>`).join('')}</div></section><section class="detail-section"><h4>Potential tools</h4><div class="chips">${['Git','VS Code','Figma','Tests','CI'].map(x=>`<span class="chip">${x}</span>`).join('')}</div></section>`}else{const map={Tasks:'Example tasks: review requirements, prepare structured deliverables, request approvals, and submit results for evaluation.',Tools:'Tool permissions must be configured and enforced server-side. No live tools are connected to this prototype.',Dependencies:'Agent hand-offs and dependencies will be resolved by the mission orchestrator.',Performance:'Execution metrics and quality evaluations will appear after a real agent runtime is connected.'};content=`<section class="detail-section"><h4>${tab}</h4><p>${map[tab]}</p></section>`}
-$('details').innerHTML=`<div class="detail-top"><span class="pill">#${a.id}</span><span class="status">◉ Proposed role</span></div><h1>${esc(a.name)}</h1><p class="subtitle">${esc(d[0])} · Specialist agent</p><div class="tabs">${['Overview','Tasks','Tools','Dependencies','Performance'].map(t=>`<button data-tab="${t}" class="${t===tab?'active':''}">${t}</button>`).join('')}</div>${content}<button class="primary" id="assign">${assigned?'✓ Added to example mission':'Assign to Example Mission →'}</button>`;$('details').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;renderDetails()});$('assign').onclick=()=>{assigned=!assigned;renderDetails()}}
-function render(){renderSidebar();renderGraph();renderDetails();$('graph-title').textContent=depts[currentDept][0];$('graph-caption').textContent=`${depts[currentDept][1]} proposed specialist roles · click nodes to explore`}
-$('search').addEventListener('input',e=>{const q=e.target.value.toLowerCase().trim(),results=$('results');if(!q){results.hidden=true;return}const matches=agents.filter(a=>a.name.toLowerCase().includes(q)||depts[a.dept][0].toLowerCase().includes(q)).slice(0,12);results.innerHTML=matches.length?matches.map(a=>`<button data-id="${a.id}">#${a.id} · ${esc(a.name)} <span style="color:#8392a8">(${esc(depts[a.dept][0])})</span></button>`).join(''):'<p class="empty" style="padding:10px">No matching roles</p>';results.hidden=false;results.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{selectAgent(agents[+b.dataset.id-1]);results.hidden=true;$('search').value=''})});document.addEventListener('click',e=>{if(!e.target.closest('.search'))$('results').hidden=true});renderNav();render();
-</script></body></html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>DeliverX — Agent Network</title>
+    <style>
+      :root {
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          sans-serif;
+        color: #122340;
+        background: #f8fbff;
+        --blue: #1769f6;
+        --border: #e3eaf5;
+        --muted: #65768f;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: radial-gradient(circle at 48% 35%, #eef7ff 0, #fff 42%, #f7faff 100%);
+      }
+      button,
+      input {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      .shell {
+        padding: 18px 22px;
+        max-width: 1800px;
+        margin: auto;
+      }
+      .top {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 13px 22px;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px #20436b0a;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 260px;
+      }
+      .logo {
+        font-size: 54px;
+        font-weight: 900;
+        line-height: 0.7;
+        letter-spacing: -9px;
+        color: #1774ed;
+        padding-right: 12px;
+      }
+      .brand b {
+        font-size: 24px;
+        letter-spacing: -0.7px;
+      }
+      .brand small {
+        display: block;
+        color: #54708d;
+      }
+      .nav {
+        display: flex;
+        gap: 6px;
+        flex: 1;
+      }
+      .nav button,
+      .tabs button {
+        border: 1px solid #e9edf5;
+        background: #f8fafc;
+        color: #263752;
+        border-radius: 11px;
+        padding: 11px 14px;
+        white-space: nowrap;
+      }
+      .nav button.active,
+      .tabs button.active {
+        background: #eaf2ff;
+        border-color: #317aff;
+        color: #105bd7;
+        box-shadow: 0 0 0 2px #2276ff14;
+      }
+      .search {
+        position: relative;
+      }
+      .search input {
+        width: 270px;
+        border: 1px solid #dce5f1;
+        border-radius: 12px;
+        padding: 12px 13px 12px 35px;
+        outline: none;
+        background: #fbfdff;
+      }
+      .search:before {
+        content: "⌕";
+        position: absolute;
+        left: 12px;
+        top: 5px;
+        font-size: 25px;
+        color: #5a7698;
+      }
+      .avatar {
+        background: #256df0;
+        color: white;
+        border-radius: 50%;
+        width: 38px;
+        height: 38px;
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 280px minmax(460px, 1fr) 405px;
+        gap: 18px;
+        margin-top: 18px;
+        min-height: 720px;
+      }
+      .panel {
+        border: 1px solid var(--border);
+        background: #ffffffeb;
+        border-radius: 19px;
+        box-shadow: 0 10px 32px #16447b0a;
+      }
+      .sidebar {
+        padding: 17px 13px;
+      }
+      .sidebar h3 {
+        font-size: 15px;
+        margin: 4px 7px 14px;
+      }
+      .department {
+        width: 100%;
+        border: 1px solid #edf1f7;
+        background: #fff;
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 9px;
+        margin: 5px 0;
+        text-align: left;
+        color: #1e3150;
+      }
+      .department:hover,
+      .department.active {
+        border-color: #3c85ff;
+        background: #edf5ff;
+      }
+      .dept-icon {
+        height: 30px;
+        width: 30px;
+        display: grid;
+        place-items: center;
+        border-radius: 10px;
+        color: white;
+        font-weight: 700;
+      }
+      .department .number {
+        font-size: 12px;
+        color: #51627d;
+      }
+      .department .name {
+        font-size: 12px;
+        flex: 1;
+      }
+      .department .count {
+        font-size: 12px;
+        color: #557194;
+      }
+      .network {
+        position: relative;
+        overflow: hidden;
+        min-height: 715px;
+        background: radial-gradient(circle at 50% 47%, #edf7ff 0%, #fff 52%, #fbfdff 90%);
+      }
+      .network-head {
+        position: absolute;
+        left: 22px;
+        top: 19px;
+        z-index: 3;
+      }
+      .eyebrow {
+        font-size: 11px;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        color: #6883a3;
+        font-weight: 800;
+      }
+      .network-head h2 {
+        margin: 6px 0;
+        font-size: 19px;
+      }
+      .network-head p {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 0;
+      }
+      .graph {
+        width: 100%;
+        height: 100%;
+        min-height: 710px;
+        display: block;
+      }
+      .link {
+        fill: none;
+        stroke: #9dcaff;
+        stroke-width: 1.3;
+        opacity: 0.43;
+      }
+      .link.active {
+        stroke: #2385ff;
+        stroke-width: 2.4;
+        opacity: 0.9;
+      }
+      .orbit {
+        fill: none;
+        stroke: #d4e5f8;
+        stroke-width: 1.2;
+        stroke-dasharray: 3 6;
+      }
+      .node {
+        cursor: pointer;
+        outline: none;
+      }
+      .node .disk {
+        fill: #fff;
+        stroke: var(--node);
+        stroke-width: 1.8;
+        filter: drop-shadow(0 6px 10px #1b62a01a);
+      }
+      .node.active .disk {
+        stroke-width: 3;
+        filter: drop-shadow(0 0 9px #1685ff65);
+      }
+      .node text {
+        pointer-events: none;
+        fill: #233651;
+        font-weight: 700;
+        font-size: 11px;
+        text-anchor: middle;
+      }
+      .node .small {
+        font-size: 9px;
+        font-weight: 500;
+        fill: #60758f;
+      }
+      .core {
+        fill: url(#core);
+        stroke: #65baff;
+        stroke-width: 4;
+        filter: drop-shadow(0 8px 18px #2487f06b);
+      }
+      .core-title {
+        fill: white;
+        text-anchor: middle;
+        font-size: 27px;
+        font-weight: 800;
+      }
+      .core-sub {
+        fill: #c9eaff;
+        text-anchor: middle;
+        font-size: 13px;
+      }
+      .core-symbol {
+        fill: #fff;
+        text-anchor: middle;
+        font-size: 46px;
+        font-weight: 700;
+      }
+      .agent-dot {
+        cursor: pointer;
+        fill: #fff;
+        stroke: #3e95ff;
+        stroke-width: 2;
+      }
+      .agent-dot.active {
+        fill: #2179f8;
+        stroke: #fff;
+        stroke-width: 3;
+        filter: drop-shadow(0 0 8px #1886ff);
+      }
+      .agent-label {
+        font-size: 10px;
+        fill: #2a548a;
+        text-anchor: middle;
+        font-weight: 700;
+      }
+      .legend {
+        position: absolute;
+        left: 18px;
+        bottom: 18px;
+        right: 18px;
+        background: #ffffffdd;
+        border: 1px solid #e7effa;
+        border-radius: 12px;
+        padding: 10px 13px;
+        font-size: 12px;
+        color: #637b99;
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .details {
+        padding: 17px;
+        align-self: stretch;
+      }
+      .detail-top {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+      .pill {
+        background: #eaf2ff;
+        color: #1556c3;
+        border-radius: 9px;
+        padding: 7px 12px;
+        font-weight: 800;
+      }
+      .status {
+        background: #e4f8ed;
+        color: #118b51;
+        border-radius: 30px;
+        padding: 7px 12px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .details h1 {
+        font-size: 26px;
+        letter-spacing: -0.8px;
+        margin: 13px 0 3px;
+      }
+      .subtitle {
+        color: #64738c;
+        font-size: 13px;
+        margin: 0 0 15px;
+      }
+      .tabs {
+        display: flex;
+        gap: 5px;
+        overflow-x: auto;
+      }
+      .tabs button {
+        font-size: 11px;
+        padding: 9px 10px;
+      }
+      .detail-section {
+        border: 1px solid #e8edf5;
+        border-radius: 12px;
+        padding: 12px;
+        margin-top: 11px;
+      }
+      .detail-section h4 {
+        margin: 0 0 8px;
+        font-size: 13px;
+      }
+      .detail-section p {
+        font-size: 12px;
+        line-height: 1.65;
+        margin: 0;
+        color: #485c78;
+      }
+      .facts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .fact {
+        padding: 10px;
+        background: #f8fbff;
+        border: 1px solid #e8eff8;
+        border-radius: 10px;
+      }
+      .fact small {
+        display: block;
+        color: #75849a;
+        font-size: 10px;
+      }
+      .fact b {
+        font-size: 11px;
+      }
+      .checks {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .checks li {
+        font-size: 12px;
+        line-height: 1.7;
+      }
+      .checks li:before {
+        content: "✓";
+        color: #0ab77a;
+        font-weight: 900;
+        margin-right: 9px;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .chip {
+        font-size: 10px;
+        background: #f2f6fc;
+        color: #3e5878;
+        padding: 6px 9px;
+        border: 1px solid #e7eef8;
+        border-radius: 8px;
+      }
+      .primary {
+        width: 100%;
+        padding: 12px 15px;
+        border: none;
+        border-radius: 11px;
+        background: linear-gradient(90deg, #0968ec, #3998ff);
+        color: white;
+        font-weight: 700;
+        margin-top: 16px;
+        box-shadow: 0 8px 18px #2682ed35;
+      }
+      .primary:disabled {
+        background: #afbdd0;
+        box-shadow: none;
+        cursor: not-allowed;
+      }
+      .mission {
+        margin-top: 17px;
+        padding: 14px 19px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        justify-content: space-between;
+      }
+      .mission-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 275px;
+      }
+      .ring {
+        height: 50px;
+        width: 50px;
+        border: 7px solid #e7f1ff;
+        border-top-color: #1683f5;
+        border-left-color: #1683f5;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-size: 11px;
+        color: #155cc5;
+        font-weight: 800;
+      }
+      .mission small {
+        font-size: 11px;
+        color: #71819a;
+      }
+      .mission b {
+        font-size: 13px;
+      }
+      .progress {
+        flex: 1;
+        display: flex;
+        justify-content: space-around;
+        gap: 10px;
+      }
+      .step {
+        text-align: center;
+        font-size: 11px;
+        color: #5c7291;
+      }
+      .step .circle {
+        height: 28px;
+        width: 28px;
+        border: 1px solid #d8e6f8;
+        background: #f5f9ff;
+        border-radius: 50%;
+        margin: 0 auto 5px;
+        display: grid;
+        place-items: center;
+        color: #317cdd;
+      }
+      .step.active .circle {
+        background: #237cf4;
+        color: white;
+        box-shadow: 0 0 0 5px #e3f0ff;
+      }
+      .eta {
+        min-width: 140px;
+      }
+      .eta strong {
+        font-size: 20px;
+      }
+      .note {
+        margin: 10px 3px;
+        color: #7588a0;
+        font-size: 11px;
+      }
+      .empty {
+        font-size: 12px;
+        color: #6c7f9b;
+      }
+      .results {
+        position: absolute;
+        top: 46px;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        max-height: 300px;
+        overflow: auto;
+        background: #fff;
+        border: 1px solid #dce7f7;
+        border-radius: 12px;
+        box-shadow: 0 14px 32px #1c4d8720;
+      }
+      .results button {
+        display: block;
+        width: 100%;
+        border: 0;
+        border-bottom: 1px solid #eff3f8;
+        background: #fff;
+        text-align: left;
+        padding: 10px;
+        font-size: 12px;
+      }
+      .results button:hover {
+        background: #f1f7ff;
+      }
+      @media (max-width: 1250px) {
+        .layout {
+          grid-template-columns: 250px minmax(400px, 1fr);
+        }
+        .details {
+          grid-column: 1/-1;
+        }
+        .nav {
+          overflow: auto;
+        }
+        .search input {
+          width: 210px;
+        }
+      }
+      @media (max-width: 750px) {
+        .shell {
+          padding: 9px;
+        }
+        .top {
+          flex-wrap: wrap;
+          padding: 13px;
+        }
+        .brand {
+          min-width: auto;
+        }
+        .nav {
+          order: 3;
+          width: 100%;
+        }
+        .search {
+          margin-left: auto;
+        }
+        .search input {
+          width: 180px;
+        }
+        .layout {
+          display: flex;
+          flex-direction: column;
+        }
+        .sidebar {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 5px;
+        }
+        .sidebar h3 {
+          grid-column: 1/-1;
+        }
+        .department {
+          margin: 0;
+        }
+        .network {
+          min-height: 520px;
+        }
+        .graph {
+          min-height: 520px;
+        }
+        .mission {
+          flex-wrap: wrap;
+        }
+        .progress {
+          order: 3;
+          width: 100%;
+          flex-basis: 100%;
+        }
+        .legend {
+          font-size: 10px;
+        }
+        .network-head {
+          top: 10px;
+          left: 10px;
+        }
+        .network-head h2 {
+          font-size: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="top">
+        <div class="brand">
+          <div class="logo">∞</div>
+          <div><b>DeliverX</b><small>Product Super Intelligence</small></div>
+        </div>
+        <nav class="nav" id="nav"></nav>
+        <div class="search">
+          <input
+            id="search"
+            aria-label="Search agents"
+            placeholder="Search 150 agents, skills, or tools..."
+          />
+          <div id="results" class="results" hidden></div>
+        </div>
+        <div class="avatar">JD</div>
+      </header>
+      <main class="layout">
+        <aside class="panel sidebar">
+          <h3>12 Lifecycle Departments</h3>
+          <div id="departments" style="display: contents"></div>
+        </aside>
+        <section class="panel network">
+          <div class="network-head">
+            <div class="eyebrow">Intelligence architecture</div>
+            <h2 id="graph-title">Agent Network</h2>
+            <p id="graph-caption">Select a department to explore specialist agents</p>
+          </div>
+          <svg
+            class="graph"
+            id="graph"
+            viewBox="0 0 820 720"
+            role="img"
+            aria-label="Interactive Product Brain network with 12 lifecycle departments"
+          ></svg>
+          <div class="legend">
+            <span>● Product Brain · ○ Department · ◉ Specialist agent</span
+            ><span id="graph-count">150 proposed roles</span>
+          </div>
+        </section>
+        <aside class="panel details" id="details"></aside>
+      </main>
+      <footer class="panel mission">
+        <div class="mission-card">
+          <div class="ring">6/12</div>
+          <div>
+            <small>Example Mission</small><br /><b>Improve Onboarding Experience</b><br /><small
+              >Design → Build → Test</small
+            >
+          </div>
+        </div>
+        <div class="progress">
+          <div class="step">
+            <div class="circle">⌕</div>
+            Research
+          </div>
+          <div class="step">
+            <div class="circle">◇</div>
+            Design
+          </div>
+          <div class="step active">
+            <div class="circle">⌘</div>
+            Engineering
+          </div>
+          <div class="step">
+            <div class="circle">✓</div>
+            Testing
+          </div>
+          <div class="step">
+            <div class="circle">▣</div>
+            Review
+          </div>
+          <div class="step">
+            <div class="circle">✓</div>
+            Complete
+          </div>
+        </div>
+        <div class="eta"><small>Illustrative estimate</small><br /><strong>4 days</strong></div>
+      </footer>
+      <p class="note">
+        Interactive front-end prototype. Agent assignments, capability states and mission progress
+        are illustrative; no live backend or agent execution is connected.
+      </p>
+    </div>
+    <script>
+      const depts = [
+        ["Idea & Opportunity", 6, "#ff5364", "✦"],
+        ["Research & Discovery", 18, "#158af8", "⌕"],
+        ["Strategy & Planning", 12, "#12cba0", "◎"],
+        ["Requirements & PRD", 10, "#11b9b5", "▤"],
+        ["Design & Experience", 14, "#9458ff", "✎"],
+        ["Architecture & Security", 12, "#efb500", "⬡"],
+        ["Engineering & Build", 20, "#276bfa", "⌘"],
+        ["Testing & Verification", 12, "#804dff", "☑"],
+        ["Release & Deployment", 8, "#f53280", "➤"],
+        ["Operate & Monitor", 10, "#3779ed", "▥"],
+        ["Feedback & Insights", 10, "#ff8a28", "▥"],
+        ["Evolve & Improve", 8, "#944aff", "↻"],
+      ];
+      const engineering = [
+        "Engineering Delivery Lead",
+        "Frontend Engineer",
+        "Backend Engineer",
+        "Database Engineer",
+        "API Engineer",
+        "Authentication Specialist",
+        "Authorisation Specialist",
+        "AI Integration Engineer",
+        "Prompt & Tool Engineer",
+        "Workflow Automation Engineer",
+        "Event System Engineer",
+        "Search & Retrieval Engineer",
+        "Observability Engineer",
+        "Infrastructure Automation Engineer",
+        "CI/CD Engineer",
+        "Code Refactoring Agent",
+        "Code Review Agent",
+        "Dependency Maintenance Agent",
+        "Technical Documentation Agent",
+        "Integration Coordinator",
+      ];
+      const roleNames = [
+        [
+          "Product Analyst",
+          "Idea Validator",
+          "Problem Framer",
+          "Opportunity Scout",
+          "Customer Discovery Agent",
+          "Outcome Predictor",
+        ],
+        [
+          "Market Researcher",
+          "Competitor Analyst",
+          "Customer Researcher",
+          "Trend Analyst",
+          "Evidence Collector",
+          "Research Synthesiser",
+        ],
+        ["Strategy Planner", "Business Model Analyst", "Pricing Analyst", "Go-to-Market Planner"],
+        [
+          "Requirements Analyst",
+          "User Story Writer",
+          "Acceptance Criteria Specialist",
+          "PRD Reviewer",
+        ],
+        ["UX Researcher", "UI Designer", "Information Architect", "Design System Specialist"],
+        ["Solution Architect", "Data Architect", "Security Analyst", "Compliance Analyst"],
+        engineering,
+        ["QA Analyst", "Test Automation Engineer", "Accessibility Tester", "Security Tester"],
+        ["Release Coordinator", "Rollback Planner", "Documentation Specialist"],
+        ["Monitoring Specialist", "Reliability Engineer", "Usage Analyst"],
+        ["Feedback Analyst", "Experiment Analyst", "Customer Insight Specialist"],
+        ["Knowledge Curator", "Lesson Learner", "Improvement Planner"],
+      ];
+      const agents = [];
+      let id = 1;
+      depts.forEach((d, di) => {
+        for (let j = 0; j < d[1]; j++) {
+          agents.push({
+            id: id++,
+            name: roleNames[di][j] || `${d[0]} Specialist ${j + 1}`,
+            dept: di,
+            description:
+              di === 6
+                ? "Implements approved product changes and coordinates with relevant specialists."
+                : `Supports ${d[0].toLowerCase()} with structured, reviewable outputs.`,
+          });
+        }
+      });
+      let currentDept = 6,
+        currentAgent = agents.find((a) => a.dept === 6 && a.name === "Frontend Engineer"),
+        tab = "Overview",
+        assigned = false;
+      const $ = (id) => document.getElementById(id),
+        esc = (s) =>
+          String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+      function renderNav() {
+        const labels = [
+          "Product Brain",
+          "Agent Network",
+          "Missions",
+          "Evidence",
+          "Decisions",
+          "Roadmap",
+          "Learning",
+        ];
+        $("nav").innerHTML = labels
+          .map((n, i) => `<button class="${i === 1 ? "active" : ""}" data-nav="${n}">${n}</button>`)
+          .join("");
+        $("nav")
+          .querySelectorAll("button")
+          .forEach(
+            (b) =>
+              (b.onclick = () => {
+                if (b.dataset.nav === "Agent Network") return;
+                alert(
+                  `${b.dataset.nav} is a proposed module. This prototype implements the Agent Network view.`,
+                );
+              }),
+          );
+      }
+      function selectDept(i) {
+        currentDept = i;
+        currentAgent = agents.find((a) => a.dept === i);
+        tab = "Overview";
+        render();
+      }
+      function selectAgent(a) {
+        currentDept = a.dept;
+        currentAgent = a;
+        tab = "Overview";
+        render();
+      }
+      function renderSidebar() {
+        $("departments").innerHTML = depts
+          .map(
+            (d, i) =>
+              `<button class="department ${i === currentDept ? "active" : ""}" data-i="${i}"><span class="dept-icon" style="background:${d[2]}">${d[3]}</span><span class="number">${i + 1}</span><span class="name">${esc(d[0])}</span><span class="count">${d[1]}</span></button>`,
+          )
+          .join("");
+        $("departments")
+          .querySelectorAll("button")
+          .forEach((b) => (b.onclick = () => selectDept(+b.dataset.i)));
+      }
+      function renderGraph() {
+        const svg = $("graph");
+        let html = `<defs><radialGradient id="core" cx="35%" cy="25%" r="85%"><stop stop-color="#2d99ff"/><stop offset=".5" stop-color="#0c4a9e"/><stop offset="1" stop-color="#091c51"/></radialGradient></defs>`;
+        const cx = 410,
+          cy = 385,
+          R = 252;
+        html += `<circle class="orbit" cx="${cx}" cy="${cy}" r="${R}"/>`;
+        const positions = depts.map((d, i) => {
+          const a = ((-90 + i * 30) * Math.PI) / 180;
+          return { x: cx + R * Math.cos(a), y: cy + R * Math.sin(a) };
+        });
+        positions.forEach((p, i) => {
+          const start = 120,
+            end = R - 62;
+          const a = ((-90 + i * 30) * Math.PI) / 180;
+          const x1 = cx + Math.cos(a) * start,
+            y1 = cy + Math.sin(a) * start,
+            x2 = cx + Math.cos(a) * end,
+            y2 = cy + Math.sin(a) * end;
+          html += `<path class="link ${i === currentDept ? "active" : ""}" d="M ${x1} ${y1} Q ${cx + Math.cos(a + 0.18) * 205} ${cy + Math.sin(a + 0.18) * 205} ${x2} ${y2}"/>`;
+        });
+        html += `<circle class="core" cx="${cx}" cy="${cy}" r="113"/><circle cx="${cx}" cy="${cy}" r="123" fill="none" stroke="#b3dcff" stroke-width="2" opacity=".65"/><text class="core-symbol" x="${cx}" y="${cy - 34}">∞</text><text class="core-title" x="${cx}" y="${cy + 7}">DeliverX</text><text class="core-sub" x="${cx}" y="${cy + 31}">Product Brain</text>`;
+        positions.forEach((p, i) => {
+          const d = depts[i],
+            selected = i === currentDept;
+          html += `<g class="node ${selected ? "active" : ""}" data-dept="${i}" tabindex="0" role="button" aria-label="${d[0]}, ${d[1]} agents" style="--node:${d[2]}"><circle class="disk" cx="${p.x}" cy="${p.y}" r="57"/><text x="${p.x}" y="${p.y - 19}" style="font-size:18px;fill:${d[2]}">${d[3]}</text><text x="${p.x}" y="${p.y + 2}">${esc(d[0].split(" & ")[0])}</text><text x="${p.x}" y="${p.y + 17}">${d[0].includes(" & ") ? "& " + esc(d[0].split(" & ")[1]) : ""}</text><text class="small" x="${p.x}" y="${p.y + 36}">${d[1]} agents</text></g>`;
+        });
+        const p = positions[currentDept],
+          list = agents.filter((a) => a.dept === currentDept);
+        let theta = ((-90 + currentDept * 30) * Math.PI) / 180;
+        const arcStart = theta - 0.92,
+          arcEnd = theta + 0.92;
+        list.forEach((a, j) => {
+          const angle = arcStart + ((arcEnd - arcStart) * (j + 0.5)) / list.length;
+          const dist = 335 + (j % 2) * 15;
+          const x = cx + dist * Math.cos(angle),
+            y = cy + dist * Math.sin(angle);
+          const x0 = p.x + 55 * Math.cos(angle),
+            y0 = p.y + 55 * Math.sin(angle);
+          html += `<line x1="${x0}" y1="${y0}" x2="${x}" y2="${y}" stroke="${depts[currentDept][2]}" stroke-width=".9" opacity=".4"/><circle class="agent-dot ${currentAgent?.id === a.id ? "active" : ""}" data-agent="${a.id}" cx="${x}" cy="${y}" r="${currentAgent?.id === a.id ? 7 : 4}" tabindex="0" role="button" aria-label="${esc(a.name)}"><title>${esc(a.name)} (#${a.id})</title></circle>`;
+        });
+        svg.innerHTML = html;
+        svg.querySelectorAll("[data-dept]").forEach((el) => {
+          const f = () => selectDept(+el.dataset.dept);
+          el.addEventListener("click", f);
+          el.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") f();
+          });
+        });
+        svg.querySelectorAll("[data-agent]").forEach((el) => {
+          const f = () => selectAgent(agents[+el.dataset.agent - 1]);
+          el.addEventListener("click", f);
+          el.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") f();
+          });
+        });
+        $("graph-count").textContent = `${list.length} roles in selected department`;
+      }
+      function renderDetails() {
+        const a = currentAgent,
+          d = depts[a.dept],
+          isFront = a.name === "Frontend Engineer";
+        let content = "";
+        if (tab === "Overview") {
+          content = `<section class="detail-section"><h4>Role summary</h4><p>${esc(isFront ? "Implements frontend features from approved designs and requirements. Works closely with design, backend and QA specialists to deliver accessible, performant and maintainable interfaces." : a.description)}</p><div class="facts"><div class="fact"><small>Department</small><b>${esc(d[0])}</b></div><div class="fact"><small>Agent type</small><b>Specialist role</b></div><div class="fact"><small>Capability</small><b>Proposed / demo</b></div><div class="fact"><small>Approval</small><b>Required for external actions</b></div></div></section><section class="detail-section"><h4>Key responsibilities</h4><ul class="checks">${(isFront ? ["Implement UI components and features", "Ensure responsive and accessible design", "Integrate with approved backend APIs", "Follow coding standards and best practices", "Coordinate with testing and review agents"] : ["Review mission context and dependencies", "Produce structured, traceable deliverables", "Identify assumptions and unresolved questions", "Coordinate with dependent specialist roles"]).map((x) => `<li>${x}</li>`).join("")}</ul></section><section class="detail-section"><h4>Inputs</h4><div class="chips">${["Approved brief", "Product context", "Acceptance criteria", "Constraints"].map((x) => `<span class="chip">${x}</span>`).join("")}</div></section><section class="detail-section"><h4>Outputs</h4><div class="chips">${(isFront ? ["Frontend code", "Component updates", "Integration notes", "Implementation summary"] : ["Reviewable artefact", "Assumptions", "Evidence links"]).map((x) => `<span class="chip">${x}</span>`).join("")}</div></section><section class="detail-section"><h4>Potential tools</h4><div class="chips">${["Git", "VS Code", "Figma", "Tests", "CI"].map((x) => `<span class="chip">${x}</span>`).join("")}</div></section>`;
+        } else {
+          const map = {
+            Tasks:
+              "Example tasks: review requirements, prepare structured deliverables, request approvals, and submit results for evaluation.",
+            Tools:
+              "Tool permissions must be configured and enforced server-side. No live tools are connected to this prototype.",
+            Dependencies:
+              "Agent hand-offs and dependencies will be resolved by the mission orchestrator.",
+            Performance:
+              "Execution metrics and quality evaluations will appear after a real agent runtime is connected.",
+          };
+          content = `<section class="detail-section"><h4>${tab}</h4><p>${map[tab]}</p></section>`;
+        }
+        $("details").innerHTML =
+          `<div class="detail-top"><span class="pill">#${a.id}</span><span class="status">◉ Proposed role</span></div><h1>${esc(a.name)}</h1><p class="subtitle">${esc(d[0])} · Specialist agent</p><div class="tabs">${["Overview", "Tasks", "Tools", "Dependencies", "Performance"].map((t) => `<button data-tab="${t}" class="${t === tab ? "active" : ""}">${t}</button>`).join("")}</div>${content}<button class="primary" id="assign">${assigned ? "✓ Added to example mission" : "Assign to Example Mission →"}</button>`;
+        $("details")
+          .querySelectorAll("[data-tab]")
+          .forEach(
+            (b) =>
+              (b.onclick = () => {
+                tab = b.dataset.tab;
+                renderDetails();
+              }),
+          );
+        $("assign").onclick = () => {
+          assigned = !assigned;
+          renderDetails();
+        };
+      }
+      function render() {
+        renderSidebar();
+        renderGraph();
+        renderDetails();
+        $("graph-title").textContent = depts[currentDept][0];
+        $("graph-caption").textContent =
+          `${depts[currentDept][1]} proposed specialist roles · click nodes to explore`;
+      }
+      $("search").addEventListener("input", (e) => {
+        const q = e.target.value.toLowerCase().trim(),
+          results = $("results");
+        if (!q) {
+          results.hidden = true;
+          return;
+        }
+        const matches = agents
+          .filter(
+            (a) => a.name.toLowerCase().includes(q) || depts[a.dept][0].toLowerCase().includes(q),
+          )
+          .slice(0, 12);
+        results.innerHTML = matches.length
+          ? matches
+              .map(
+                (a) =>
+                  `<button data-id="${a.id}">#${a.id} · ${esc(a.name)} <span style="color:#8392a8">(${esc(depts[a.dept][0])})</span></button>`,
+              )
+              .join("")
+          : '<p class="empty" style="padding:10px">No matching roles</p>';
+        results.hidden = false;
+        results.querySelectorAll("[data-id]").forEach(
+          (b) =>
+            (b.onclick = () => {
+              selectAgent(agents[+b.dataset.id - 1]);
+              results.hidden = true;
+              $("search").value = "";
+            }),
+        );
+      });
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".search")) $("results").hidden = true;
+      });
+      renderNav();
+      render();
+    </script>
+  </body>
+</html>
