@@ -52,7 +52,7 @@ vi.mock("@/lib/db/neon.server", () => ({
     }),
 }));
 
-const { runWorkerTick } = await import("@/lib/workforce/worker.server");
+const { advanceMission } = await import("@/lib/workforce/worker.server");
 
 let workspaceId: string;
 let service: SupervisedMissionService;
@@ -116,11 +116,21 @@ describe.skipIf(!url)("Phase A — Studio ↔ wf link (Neon fixture)", () => {
       ],
     );
 
-    await runWorkerTick({
-      deadline: Date.now() + 30_000,
+    const missionStatus =
+      await sql!`select status from wf_missions where id=${link!.wfMissionId}::uuid`;
+    expect(missionStatus[0]?.["status"]).toBe("queued");
+
+    const step = await advanceMission({
       workspaceId,
       missionId: link!.wfMissionId,
+      actor: { kind: "worker", id: "phase-a-test" },
+      workerId: "phase-a-test",
     });
+    expect(step.progressed).toBe(true);
+
+    const taskRow =
+      await sql!`select status from wf_mission_tasks where mission_id=${link!.wfMissionId}::uuid limit 1`;
+    expect(taskRow[0]?.["status"]).toBe("completed");
 
     const reloaded = await service.get(workspaceId, created.id);
     expect(reloaded?.researchPassCompletedAt).toBeTruthy();
