@@ -1,6 +1,6 @@
 # Studio ↔ workforce adapter (Phase A1)
 
-**Status:** Implemented in code; migration `0034_psi_supervised_wf_links.sql` is additive and not applied to production Neon until owner approval per `docs/migrations-and-rollback.md`.
+**Status:** Implemented in code; migration `0034_psi_supervised_wf_links.sql` applied to production Neon `br-fancy-breeze-zatt9ocp` on 30 Oct 2026 (ledger: `docs/migrations-and-rollback.md`).
 
 ## Authoritative ownership
 
