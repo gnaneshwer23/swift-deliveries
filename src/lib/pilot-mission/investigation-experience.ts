@@ -382,7 +382,7 @@ function leaseStillValid(mission: SupervisedMission, nowMs: number): boolean {
   return Number.isFinite(until) && until > nowMs;
 }
 
-/** Honest copy — research during approve is request-coupled; durable worker leases are separate. */
+/** Honest copy — post-approval research runs on persisted leases (supervised + optional wf link). */
 export function deriveInvestigationLeaveNote(
   mission: SupervisedMission,
   state: InvestigationRunState,
@@ -391,11 +391,14 @@ export function deriveInvestigationLeaveNote(
   if (!mission.team?.approvedAt) {
     return "Nothing runs until you approve the plan below.";
   }
+  if (mission.researchPassQueuedAt && !mission.researchPassCompletedAt) {
+    return "Research is queued on your mission record and can finish via the worker or when you reload this project — you do not need to keep this tab open.";
+  }
   if (leaseStillValid(mission, nowMs)) {
-    return "A step is in progress on this mission record. You can leave and return from Studio; if a browser request is still open, wait for it to finish before closing the tab.";
+    return "A step is in progress on this mission record. You can leave and return from Studio; progress is event-backed on the record.";
   }
   if (state === "running") {
-    return "Investigation progress is saved on the mission record. Return anytime from Studio — approve and comparison steps may need the tab open until they finish.";
+    return "Investigation progress is saved on the mission record. Return anytime from Studio; comparison steps may need your decision when they surface.";
   }
   if (state === "interrupted" && mission.job.status === "leased") {
     return "The last worker lease expired or needs recovery. Use the next required action on the record — progress is not lost.";

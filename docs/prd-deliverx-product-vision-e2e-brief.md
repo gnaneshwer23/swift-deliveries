@@ -1,7 +1,7 @@
 # DeliverX product vision and end-to-end build brief (in-repo record)
 
 **Source:** Founder document `DeliverX_Product_Vision_and_End_to_End_Build_Brief.docx` (extracted 30 Oct 2026 via `textutil -convert txt`).  
-**Repository baseline for status mapping:** `main` @ `30fe4c66ee767f3546f2a32046ec07c45818efb2` (matches the brief’s reviewed commit).  
+**Repository baseline for status mapping:** `main` @ Phase A merge (see git log); prior baseline `30fe4c66`.  
 **Related:** `AGENTS.md`, `README.md`, `docs/psi-investigation-stage-vision.md`, `docs/prd-deliverx-supervised-ai-workforce.md`, `docs/phases/q0-background-investigation-contract.md`, `docs/mission-worker.md`, `docs/psi-phase-6-release-acceptance.md`.  
 **Recent product change:** [PR #66](https://github.com/gnaneshwer23/swift-deliveries/pull/66) (merged 30 Oct 2026) — investigation scope review gate and honest Studio journey copy.
 
@@ -45,11 +45,11 @@ The brief explicitly warns: do not call the product production-ready or imply al
 | ---- | ----------- | ------------------------- |
 | Public + auth foundation | Substantial PSI foundation, Neon, missions | **Partial / implemented, live verification pending** — see `docs/psi-production-readiness-plan.md` (historical plan; not a cert). |
 | Signed-in Studio journey | Foyer → scope review → approve → canvas → PM briefing → path/decision → export | **Partial** — route and UI spine on `psi_supervised_missions`; scope review strengthened in PR #66. |
-| Worker / `wf_*` spine | Separate durable missions, leases, usage | **Implemented, live verification pending** — `docs/mission-worker.md`; **not wired** to Studio supervised research per README and Q0 contract. |
+| Worker / `wf_*` spine | Separate durable missions, leases, usage | **Partial → implemented, live verification pending** — `docs/mission-worker.md`; Phase **A1** adapter (`docs/pilot-mission/studio-workforce-adapter.md`, migration `0034`) links approved Studio research to `studio_research_pass` wf tasks; production DB apply pending owner approval. |
 | Phase 6 acceptance | CI green | **Simulated or fixture-only** for journey proof — `docs/psi-phase-6-release-acceptance.md` (`MemoryStore`, no live browser/provider billing run). |
 | Capability catalogue | Many roles/tests exist | **Partial** — catalogue ≠ executable, customer-assigned team at scale. |
 
-Critical boundary (unchanged): **Studio supervised research ≠ `wf_*` worker missions** until an explicit adapter and authoritative field ownership exist (`docs/phases/q0-background-investigation-contract.md`).
+Phase **A1** adds an explicit adapter and field ownership (`docs/pilot-mission/studio-workforce-adapter.md`). Human plan approval and investigation usage remain on the supervised mission; wf mirrors execution and events only.
 
 ---
 
@@ -68,7 +68,7 @@ Critical boundary (unchanged): **Studio supervised research ≠ `wf_*` worker mi
 | **9 — Final package** | ZIP + manifest: PRD, research, design, code, tests, defects, decision log, provenance | **Partial** | Supervised export/ZIP/PDF in tests (`phase-6-release-acceptance`); not full engineering deliverable set from brief §9. |
 | **10 — Learning + return intelligence** | Optional explanations tied to **this** project; “what changed since last visit” | **Proposed / Partial** | Some inspection/inbox derivation; not full continued-intelligence loop. |
 | **§5 Marketing design** | Hero, interactive labelled journey, sample deliverables, FAQ on live capabilities | **Partial** | Homepage foundation preserved; interactive journey and sample inspectable artefacts incomplete vs brief. |
-| **§6 Architecture** | Connect Studio ↔ worker; app-owned contract | **Partial** | Q0 documents gap; no merged adapter on `main`. |
+| **§6 Architecture** | Connect Studio ↔ worker; app-owned contract | **Partial → implemented, live verification pending** | A1 adapter on `main`; live preview + deployed tick still unverified. |
 | **§7 Build sequence A–E** | A real journey → memory → artefacts → engineering → commercial | **Proposed roadmap** | Aligns with repo priorities below. |
 | **§8 Acceptance measures** | Outcome-based checklist (sources, approval binding, isolation, export provenance) | **Partial** | Many checks covered in **fixture tests**; live isolation + provider failure browser proof outstanding. |
 
@@ -120,7 +120,7 @@ Aligned with brief §7 and repo architecture (`q0-background-investigation-contr
 | **D** | Bounded code generation | Isolated workspace, diffs, test logs, no auto-deploy | Package includes build/test evidence and open defects |
 | **E** | Commercial + monitoring | Billing, notifications, team collaboration | Only after A–D reliability and measured cost |
 
-**Next recommended slice:** **Phase A (A1 + A2)** — connect Studio approvals to the durable worker and prove one end-to-end investigation with honest labels. This matches PR #66’s honesty work and README’s stated boundary; it avoids a second app or decorative agent simulation.
+**Next recommended slice:** **Phase A3** — verify CRON/`waitUntil` on preview and one signed-in live investigation with configured provider budget. **A1+A2** adapter + journey spine shipped in code (fixture-verified); see `docs/pilot-mission/studio-workforce-adapter.md`.
 
 ---
 

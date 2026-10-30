@@ -300,6 +300,15 @@ export type SupervisedMission = {
    * Additive document field — null on older missions until attached.
    */
   projectId: string | null;
+  /**
+   * Phase A1 — durable worker mirror for post-approval research (authoritative approval on `team`).
+   * Additive document field — null when link table unavailable or not yet bound.
+   */
+  workerLink?: {
+    wfMissionId: string;
+    status: "queued" | "running" | "completed" | "failed" | "cancelled";
+    teamScopeHash: string;
+  } | null;
   updatedAt: string;
 };
 
@@ -368,6 +377,15 @@ export function nextRequiredAction(mission: SupervisedMission): {
       detail: mission.job.leaseUntil
         ? `A worker owns this step until ${mission.job.leaseUntil}. After that, recover it. A completed comparison is not charged again.`
         : "A worker owns this step.",
+    };
+  }
+  if (mission.researchPassQueuedAt && !mission.researchPassCompletedAt) {
+    return {
+      id: "research_queued",
+      title: "Research pass queued",
+      detail: mission.workerLink?.wfMissionId
+        ? "Specialists are working from your approved brief on the durable worker path. Reload this project or wait for the scheduled worker tick — no invented progress."
+        : "Specialists are working from your approved brief on the mission record. Reload this project or wait for the worker tick if configured.",
     };
   }
   if (mission.stage === "brief" || (mission.team && !mission.team.approvedAt)) {
