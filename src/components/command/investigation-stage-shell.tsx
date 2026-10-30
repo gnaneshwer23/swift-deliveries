@@ -157,7 +157,7 @@ export function InvestigationStageShell({
               aria-label="Project room"
             >
               <p className="cc-kicker">Project room</p>
-              <p className="text-sm cc-muted mb-3">
+              <p className="cc-muted text-sm mb-3">
                 Shared context → evidence → use → downstream — inspect connections in the full
                 record.
               </p>
@@ -172,7 +172,7 @@ export function InvestigationStageShell({
               aria-label="Downloads"
             >
               <p className="cc-kicker">History &amp; downloads</p>
-              <p className="text-sm cc-muted">
+              <p className="cc-muted text-sm">
                 Decision pack, roadmap, and full archive disclose simulated vs observed content in{" "}
                 <code>project-manifest.json</code>.
               </p>
