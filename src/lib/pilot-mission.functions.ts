@@ -34,6 +34,11 @@ import {
 } from "./pilot-mission/research-mode";
 import { studioInboxFields } from "./pilot-mission/studio-inbox";
 import { nextRequiredAction, type SupervisedMission } from "./pilot-mission/types";
+import {
+  bindSupervisedResearchWorkerAfterApproval,
+  invalidateSupervisedWorkerLinksAfterBriefChange,
+  withWorkerLinkDocument,
+} from "./pilot-mission/workforce-adapter.server";
 
 type DbClient = { from: (table: string) => unknown };
 
@@ -426,6 +431,10 @@ export const reviseSupervisedBrief = createServerFn({ method: "POST" })
       expectedVersion: data.expectedVersion,
       brief: data.brief,
       nowMs: Date.now(),
+    });
+    await invalidateSupervisedWorkerLinksAfterBriefChange({
+      workspaceId: workspace.id,
+      supervisedMissionId: mission.id,
     });
     return view(mission, null);
   });
@@ -846,7 +855,7 @@ export const approveSupervisedPlan = createServerFn({ method: "POST" })
   .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
     const workspace = await workspaceFor(context.supabase, context.userId);
     const { service } = await serviceFor();
-    const mission = await service.approvePlan({
+    let mission = await service.approvePlan({
       workspaceId: workspace.id,
       id: data.id,
       expectedVersion: data.expectedVersion,
@@ -854,6 +863,23 @@ export const approveSupervisedPlan = createServerFn({ method: "POST" })
       nowMs: Date.now(),
       deferResearchPass: true,
     });
+    const link = await bindSupervisedResearchWorkerAfterApproval({
+      workspaceId: workspace.id,
+      mission,
+      actorId: context.userId,
+    });
+    if (link) {
+      const { db } = await serviceFor();
+      const store = createMissionStore(db);
+      const patched = withWorkerLinkDocument(mission, link);
+      patched.version = mission.version + 1;
+      patched.updatedAt = new Date().toISOString();
+      try {
+        mission = await store.save(patched, mission.version);
+      } catch {
+        mission = withWorkerLinkDocument(mission, link);
+      }
+    }
     return view(mission, null);
   });
 

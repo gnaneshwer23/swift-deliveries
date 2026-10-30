@@ -150,6 +150,7 @@ ${honesty.note}
         simulated: honesty.productionMode === "simulated" || honesty.productionMode === "mixed",
         inventory,
         researchGaps: gaps.slice(0, 40),
+        workerLink: mission.workerLink ?? null,
         permissionsNote:
           "Export is workspace-scoped. Linked source URLs are not fetched into this archive.",
       },

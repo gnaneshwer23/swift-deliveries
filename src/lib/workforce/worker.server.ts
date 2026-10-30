@@ -496,6 +496,21 @@ export async function advanceMission(input: {
   // 2. Work, outside any transaction.
   const { task, attempt, runKey } = claim;
   const started = Date.now();
+  if (task.key === "studio_research_pass") {
+    const { executeSupervisedResearchWorkerStep } =
+      await import("@/lib/pilot-mission/workforce-adapter.server");
+    return executeSupervisedResearchWorkerStep({
+      reader,
+      workspaceId,
+      missionId,
+      task,
+      attempt,
+      runKey,
+      workerId,
+      actor,
+      started,
+    });
+  }
   let generated: GeneratedContent | undefined;
   let result: ExecuteStepResult | undefined;
   const guidance = roleGuidance(task, []);

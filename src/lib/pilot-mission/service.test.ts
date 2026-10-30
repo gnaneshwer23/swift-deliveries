@@ -139,6 +139,43 @@ describe("supervised mission isolation, approval and recovery", () => {
     ).toBe("alpha");
   });
 
+  it("clears team plan approval when the brief changes materially after approval", async () => {
+    const service = new SupervisedMissionService(new MemoryStore());
+    const created = await service.create({
+      id: crypto.randomUUID(),
+      workspaceId: "alpha",
+      ownerUserId: "owner",
+      brief: {
+        question: "Should we ship a mobile app this quarter?",
+        audience: "Founders",
+        outcome: "Decide build vs wait",
+        constraints: "Research-first",
+      },
+      usageCeiling: 4,
+      nowMs: 1_000,
+    });
+    const approved = await service.approvePlan({
+      workspaceId: "alpha",
+      id: created.id,
+      actorId: "owner",
+      nowMs: 1_500,
+      deferResearchPass: true,
+    });
+    expect(approved.team?.approvedAt).toBeTruthy();
+    const revised = await service.reviseBrief({
+      workspaceId: "alpha",
+      id: created.id,
+      brief: {
+        ...approved.brief,
+        question: "Should we ship a desktop app this quarter instead?",
+      },
+      nowMs: 2_000,
+    });
+    expect(revised.team?.approvedAt).toBeNull();
+    expect(revised.researchPassQueuedAt).toBeNull();
+    expect(revised.activity.some((e) => e.kind === "plan.approval_stale")).toBe(true);
+  });
+
   it("persists approval and queue separately from the research pass worker", async () => {
     const service = new SupervisedMissionService(new MemoryStore());
     const created = await service.create({

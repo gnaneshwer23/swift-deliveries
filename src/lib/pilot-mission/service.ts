@@ -204,6 +204,34 @@ export function assertApprovalBinding(
   }
 }
 
+function clearTeamPlanApprovalAfterBriefChange(
+  mission: SupervisedMission,
+  nowMs: number,
+): SupervisedMission {
+  if (!mission.team?.approvedAt) return mission;
+  const at = new Date(nowMs).toISOString();
+  return {
+    ...mission,
+    team: { ...mission.team, approvedAt: null, approvedBy: null },
+    researchPassQueuedAt: null,
+    researchPassCompletedAt: null,
+    researchProvider: null,
+    workerLink: null,
+    job: idleJob(mission.job.attempts),
+    activity: pushActivity(
+      mission,
+      activityEvent({
+        at,
+        taskKey: "frame_objective",
+        kind: "plan.approval_stale",
+        summary:
+          "The brief changed after plan approval. Review the PM understanding and approve again before research runs.",
+        actor: "system",
+      }),
+    ),
+  };
+}
+
 function invalidateForScope(
   mission: SupervisedMission,
   hash: string,
@@ -871,8 +899,13 @@ export class SupervisedMissionService {
     }
     this.assertMutable(current);
     const brief = normaliseBrief(input.brief);
+    const scopeChanged =
+      scopeHash(brief, current.evidence) !== scopeHash(current.brief, current.evidence);
+    const afterBriefChange = scopeChanged
+      ? clearTeamPlanApprovalAfterBriefChange({ ...current, brief }, input.nowMs)
+      : { ...current, brief };
     const hashed = invalidateForScope(
-      { ...current, brief },
+      afterBriefChange,
       scopeHash(brief, current.evidence),
       input.nowMs,
     );
