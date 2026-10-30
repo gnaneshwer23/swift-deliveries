@@ -19,32 +19,32 @@ Phase 1 here means the **product spine A–G** under progressive transparency, n
 
 ## Repository confirmation (pre-work)
 
-| Item | Finding |
-| --- | --- |
-| Remote | `origin` → `https://github.com/gnaneshwer23/swift-deliveries` |
-| Branch | `main` (tracking `origin/main`) |
-| Uncommitted | Only untracked `.cursor/` (excluded from commits) |
-| Framework | TanStack Start + React 19 + Vite |
-| Package manager | npm |
-| Runtime | Node v25.4.0 (local verification run) |
-| Database | Neon PostgreSQL via `@neondatabase/serverless` / `postgres`; missions in `psi_supervised_missions` when migrated |
-| Auth | Neon Auth (`@neondatabase/auth`) + session hooks |
-| Primary routes | `/command`, `/command/supervised/$missionId`, `/command/portfolio`, `/command/projects`, `/command/missions/$missionId` |
+| Item            | Finding                                                                                                                         |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Remote          | `origin` → `https://github.com/gnaneshwer23/swift-deliveries`                                                                   |
+| Branch          | `main` (tracking `origin/main`)                                                                                                 |
+| Uncommitted     | Only untracked `.cursor/` (excluded from commits)                                                                               |
+| Framework       | TanStack Start + React 19 + Vite                                                                                                |
+| Package manager | npm                                                                                                                             |
+| Runtime         | Node v25.4.0 (local verification run)                                                                                           |
+| Database        | Neon PostgreSQL via `@neondatabase/serverless` / `postgres`; missions in `psi_supervised_missions` when migrated                |
+| Auth            | Neon Auth (`@neondatabase/auth`) + session hooks                                                                                |
+| Primary routes  | `/command`, `/command/supervised/$missionId`, `/command/portfolio`, `/command/projects`, `/command/missions/$missionId`         |
 | Background jobs | `/api/worker/tick` (workforce); supervised research pass runs on plan approval / worker paths — not a separate “fake chat” loop |
-| Providers | Tavily/Exa/Brave optional via env; deterministic stubs when absent |
-| Tests | `npm test` → Vitest under `src/` |
+| Providers       | Tavily/Exa/Brave optional via env; deterministic stubs when absent                                                              |
+| Tests           | `npm test` → Vitest under `src/`                                                                                                |
 
 ---
 
 ## Scope conflicts and blockers
 
-| Topic | Resolution |
-| --- | --- |
-| PT-1…PT-6 already shipped | Phase 1 audit **closes gaps against A–G**, does not rewrite PT work |
-| v2.2 labels attachments/notifier/runner deferred | UI and `honesty-posture` / canvas copy state limits explicitly |
-| Phase 2 “project room depth” | Existing PT-2 nav is **used**, not expanded in this phase |
-| Production readiness | Explicitly **not** claimed; local + unit/integration tests only |
-| Live provider proof | Requires approved credentials/budget — marked unverified in verification report |
+| Topic                                            | Resolution                                                                      |
+| ------------------------------------------------ | ------------------------------------------------------------------------------- |
+| PT-1…PT-6 already shipped                        | Phase 1 audit **closes gaps against A–G**, does not rewrite PT work             |
+| v2.2 labels attachments/notifier/runner deferred | UI and `honesty-posture` / canvas copy state limits explicitly                  |
+| Phase 2 “project room depth”                     | Existing PT-2 nav is **used**, not expanded in this phase                       |
+| Production readiness                             | Explicitly **not** claimed; local + unit/integration tests only                 |
+| Live provider proof                              | Requires approved credentials/budget — marked unverified in verification report |
 
 **Blockers for production (not Phase 1):** isolated Neon acceptance, notifier infra, Watchtower runner, paid allowance reconciliation on live Stripe.
 
@@ -88,15 +88,15 @@ Phase 1 here means the **product spine A–G** under progressive transparency, n
 
 **No new migrations required for Phase 1 closure.** Recent additive fields use mission JSON (`studioMeta`, commitment surfaced in UI only).
 
-| Area | Files (representative) |
-| --- | --- |
-| Intake/commitment | `investigation-commitment.ts`, `supervised-mission-start.tsx` |
-| Canvas/briefing | `intelligence-canvas.ts`, `pm-briefing-pack.ts`, panels under `src/components/command/` |
-| Honesty R9 | `honesty-posture.ts`, `honesty-posture-panel.tsx` |
-| Path artefacts R4 | `path-artefacts.ts`, `path-artefacts-panel.tsx` |
-| Portfolio R7 | `portfolio.ts`, `command.portfolio.tsx` |
-| Server API | `pilot-mission.functions.ts`, `service.ts` |
-| Tests | `*.test.ts` under `src/lib/pilot-mission/` |
+| Area              | Files (representative)                                                                  |
+| ----------------- | --------------------------------------------------------------------------------------- |
+| Intake/commitment | `investigation-commitment.ts`, `supervised-mission-start.tsx`                           |
+| Canvas/briefing   | `intelligence-canvas.ts`, `pm-briefing-pack.ts`, panels under `src/components/command/` |
+| Honesty R9        | `honesty-posture.ts`, `honesty-posture-panel.tsx`                                       |
+| Path artefacts R4 | `path-artefacts.ts`, `path-artefacts-panel.tsx`                                         |
+| Portfolio R7      | `portfolio.ts`, `command.portfolio.tsx`                                                 |
+| Server API        | `pilot-mission.functions.ts`, `service.ts`                                              |
+| Tests             | `*.test.ts` under `src/lib/pilot-mission/`                                              |
 
 ---
 

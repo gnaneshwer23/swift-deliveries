@@ -5,12 +5,15 @@
 **Demo:** Persistent project nav (Overview → Monitoring); Act A briefing/canvas remain reachable.
 
 ## In scope
+
 Project-room section nav on the supervised mission; anchors to existing panels; Overview summary of objective, recommendation, next action, gaps.
 
 ## Out of scope
+
 Rewriting Act A theatre; fake monitoring status.
 
 ## Decision log
-| Date | Entry |
-| --- | --- |
+
+| Date        | Entry                                |
+| ----------- | ------------------------------------ |
 | 28 Oct 2026 | Authorised + shipped with PT-2…PT-6. |

@@ -9,12 +9,12 @@
 
 ## Binding after stamp
 
-| Rule | Meaning |
-| --- | --- |
+| Rule                  | Meaning                                                                                        |
+| --------------------- | ---------------------------------------------------------------------------------------------- |
 | v2.1 + this amendment | Together define intended experience; conflicts on front-stage UX resolve toward this amendment |
-| Authorised build | Named phases only — PT-1 then PT-2…PT-6 (founder “pt2-pt6”) |
-| Watchtower honesty | Preferences persist; scheduled checks do not run until a runner is separately authorised |
-| Shipped spine | P-A → P-paid + PT-1…PT-6 live on Studio |
+| Authorised build      | Named phases only — PT-1 then PT-2…PT-6 (founder “pt2-pt6”)                                    |
+| Watchtower honesty    | Preferences persist; scheduled checks do not run until a runner is separately authorised       |
+| Shipped spine         | P-A → P-paid + PT-1…PT-6 live on Studio                                                        |
 
 ---
 
@@ -44,15 +44,15 @@
 
 ## Refinement vs expansion
 
-| Existing v2.1 direction (clearer) | Expansion (needs separate scope) |
-| --- | --- |
-| Background agent execution; durable work | Portfolio-wide similarity analysis |
-| Visual, event-backed investigation | Recurring competitor monitoring (Watchtower) |
-| PM briefing + four-outcome recommendation | Portfolio intelligence digests |
-| Case room + persisted handoffs | Comprehensive project archive export |
-| Project / case history | Large-portfolio search and management |
-| Read-first, optional listening | Ongoing monitoring commercial model |
-| Investigation vs Continuation commerce | Separate storage / monitoring allowances |
+| Existing v2.1 direction (clearer)         | Expansion (needs separate scope)             |
+| ----------------------------------------- | -------------------------------------------- |
+| Background agent execution; durable work  | Portfolio-wide similarity analysis           |
+| Visual, event-backed investigation        | Recurring competitor monitoring (Watchtower) |
+| PM briefing + four-outcome recommendation | Portfolio intelligence digests               |
+| Case room + persisted handoffs            | Comprehensive project archive export         |
+| Project / case history                    | Large-portfolio search and management        |
+| Read-first, optional listening            | Ongoing monitoring commercial model          |
+| Investigation vs Continuation commerce    | Separate storage / monitoring allowances     |
 
 Shipped today already covers parts of the left column in stub or theatre form (mission theatre, case room, pack, learner lens, commerce). This amendment raises the bar on front-stage calm and portfolio scale.
 
@@ -101,43 +101,43 @@ Honest limits remain labelled: file attachments deferred; notify delivery and Wa
 
 ### R9 — Cross-cutting honesty — **done (surface)**
 
-| Gap | Shipped posture |
-| --- | --- |
-| Buildability vs desirability | Separate PM assessments |
-| Interviews | Label planning / rehearsal / recruitment / completed / analysis when wording matches |
-| Cost | Investigation / Continuation / monitoring ceilings disclosed separately |
-| Stale evidence | Date cues + undated supplied guidance on honesty panel |
-| Notifications | Preference + honesty that digests/mute/dedupe await notifier |
-| Recovery | Job failure surfaced; durable leave/return copy |
-| Accountability | Counterevidence preserved; recommendation kept on disagreement |
-| Accessibility | List views, keyboard links, non-semantic motion note |
-| Deliverables | Human gates for plan / path / prototype / case steps |
-| Data lifecycle | Workspace-scoped exports; admin retention path disclosed |
+| Gap                          | Shipped posture                                                                      |
+| ---------------------------- | ------------------------------------------------------------------------------------ |
+| Buildability vs desirability | Separate PM assessments                                                              |
+| Interviews                   | Label planning / rehearsal / recruitment / completed / analysis when wording matches |
+| Cost                         | Investigation / Continuation / monitoring ceilings disclosed separately              |
+| Stale evidence               | Date cues + undated supplied guidance on honesty panel                               |
+| Notifications                | Preference + honesty that digests/mute/dedupe await notifier                         |
+| Recovery                     | Job failure surfaced; durable leave/return copy                                      |
+| Accountability               | Counterevidence preserved; recommendation kept on disagreement                       |
+| Accessibility                | List views, keyboard links, non-semantic motion note                                 |
+| Deliverables                 | Human gates for plan / path / prototype / case steps                                 |
+| Data lifecycle               | Workspace-scoped exports; admin retention path disclosed                             |
 
 ---
 
 ## Phase derivation (shipped)
 
-| Phase | Demo criterion | Notes |
-| --- | --- | --- |
-| **PT-1** Intelligence Canvas + PM briefing polish | Short idea → real background research → event-backed canvas → briefing with separated assessments + actionable SWOT | Shipped |
-| **PT-2** Project room IA | Persistent nav (overview → monitoring); Act A remains reachable | Shipped |
-| **PT-3** Executive + full archive | Two export levels + honest manifest | Shipped |
-| **PT-4** Portfolio Command Centre | Search/filters/decisions due; no multi-graph wall | Shipped |
-| **PT-5** Similar-idea assist | Suggest reuse/extend/separate with basis; no auto-merge | Shipped |
-| **PT-6** Watchtower | Monitoring preferences + budget; no continuous runner yet | Shipped (preferences only) |
+| Phase                                             | Demo criterion                                                                                                      | Notes                      |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| **PT-1** Intelligence Canvas + PM briefing polish | Short idea → real background research → event-backed canvas → briefing with separated assessments + actionable SWOT | Shipped                    |
+| **PT-2** Project room IA                          | Persistent nav (overview → monitoring); Act A remains reachable                                                     | Shipped                    |
+| **PT-3** Executive + full archive                 | Two export levels + honest manifest                                                                                 | Shipped                    |
+| **PT-4** Portfolio Command Centre                 | Search/filters/decisions due; no multi-graph wall                                                                   | Shipped                    |
+| **PT-5** Similar-idea assist                      | Suggest reuse/extend/separate with basis; no auto-merge                                                             | Shipped                    |
+| **PT-6** Watchtower                               | Monitoring preferences + budget; no continuous runner yet                                                           | Shipped (preferences only) |
 
 ---
 
 ## What does **not** change from v2.1
 
-- Four-outcome model and human next-path transition  
-- Research team vs continuation team  
-- Investigation vs Continuation commercial units (Continuation SKU still later)  
-- Execution failure ≠ evidence-based pause  
-- Human-only lifecycle gates  
-- No fabricated customers/interviews  
-- Books/publishing and regulated healthcare out of scope  
+- Four-outcome model and human next-path transition
+- Research team vs continuation team
+- Investigation vs Continuation commercial units (Continuation SKU still later)
+- Execution failure ≠ evidence-based pause
+- Human-only lifecycle gates
+- No fabricated customers/interviews
+- Books/publishing and regulated healthcare out of scope
 
 ---
 
@@ -145,19 +145,19 @@ Honest limits remain labelled: file attachments deferred; notify delivery and Wa
 
 > Approved progressive transparency as the front-stage experience direction. Implementation requires separately named phases. **PT-1** authorised with this stamp.
 
-| Field | Value |
-| --- | --- |
-| Decision | **Stamped** + **PT-1 authorised** |
-| Date | 28 October 2026 |
+| Field       | Value                                     |
+| ----------- | ----------------------------------------- |
+| Decision    | **Stamped** + **PT-1 authorised**         |
+| Date        | 28 October 2026                           |
 | First phase | `docs/phases/pt-1-intelligence-canvas.md` |
 
 ---
 
 ## Decision log
 
-| Date | Entry |
-| --- | --- |
-| 28 Oct 2026 | Progressive-transparency direction recorded for approval; not stamped. |
-| 28 Oct 2026 | Founder “build” → **stamped**; **PT-1 authorised**. |
-| 28 Oct 2026 | Founder “pt2-pt6” → **PT-2…PT-6 authorised and shipped** (Watchtower = preferences only). |
+| Date        | Entry                                                                                                                 |
+| ----------- | --------------------------------------------------------------------------------------------------------------------- |
+| 28 Oct 2026 | Progressive-transparency direction recorded for approval; not stamped.                                                |
+| 28 Oct 2026 | Founder “build” → **stamped**; **PT-1 authorised**.                                                                   |
+| 28 Oct 2026 | Founder “pt2-pt6” → **PT-2…PT-6 authorised and shipped** (Watchtower = preferences only).                             |
 | 28 Oct 2026 | Founder “complete them” → **R1–R9 closed** with labelled honesty limits (attachments / notifier / Watchtower runner). |

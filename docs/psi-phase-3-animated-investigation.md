@@ -11,12 +11,12 @@ Calm Quiet Studio front stage for supervised missions after plan approval: a man
 
 ## Code
 
-| Area | Path |
-|------|------|
-| Derivation + tests | `src/lib/pilot-mission/investigation-experience.ts`, `*.test.ts` |
-| UI | `src/components/command/investigation-experience.tsx` |
-| Quiet integration | `src/components/command/mission-theatre.tsx` (plan-approved quiet build) |
-| Styles | `src/styles/psi-workspace.css` (`.ps-investigation-*`) |
+| Area               | Path                                                                     |
+| ------------------ | ------------------------------------------------------------------------ |
+| Derivation + tests | `src/lib/pilot-mission/investigation-experience.ts`, `*.test.ts`         |
+| UI                 | `src/components/command/investigation-experience.tsx`                    |
+| Quiet integration  | `src/components/command/mission-theatre.tsx` (plan-approved quiet build) |
+| Styles             | `src/styles/psi-workspace.css` (`.ps-investigation-*`)                   |
 
 Full map and pause/notify controls remain under **Map & controls** (existing Intelligence Canvas).
 
@@ -25,7 +25,7 @@ Full map and pause/notify controls remain under **Map & controls** (existing Int
 ### Desktop
 
 1. Sign in → start or open a supervised mission → approve the specialist plan.
-2. Confirm the mandala appears under the quiet status bar with state label (e.g. *running* / *waiting*).
+2. Confirm the mandala appears under the quiet status bar with state label (e.g. _running_ / _waiting_).
 3. After research events persist, confirm orbit keywords and update lines match Inspect → team activity / evidence (no lines before events).
 4. Open **Map & controls** — Intelligence Canvas still works; pause does not claim fake progress.
 

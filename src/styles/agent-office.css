@@ -334,7 +334,7 @@
   stroke-width: 2;
 }
 .ix-desk[data-state="doing"] .ix-desk-ring {
-  fill: var(--psi-indigo, #3b4cca)1f;
+  fill: var(--psi-indigo, #3b4cca) 1f;
   stroke: var(--psi-indigo, #3b4cca);
 }
 .ix-desk[data-state="doing"] .ix-monitor-top {

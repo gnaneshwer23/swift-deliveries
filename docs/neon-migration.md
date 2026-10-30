@@ -32,6 +32,7 @@ Data: Supabase held 19 auth users, 3 empty workspaces, 0 missions, 0 programmes.
    - optional `NEON_AUTH_JWKS_URL` if keys are not at `/.well-known/jwks.json` or `/jwks`
 
    Step-by-step for local `.env.local` and trusted origins: **`docs/neon-auth-local-setup.md`**.
+
 6. Verify on the preview deployment of `feat/neon-migration`: sign up, onboarding, Command Centre, a programme run, password reset, sign out.
 7. Merge to `main`.
 8. Afterwards: remove Supabase variables once the career-suite decision is made.

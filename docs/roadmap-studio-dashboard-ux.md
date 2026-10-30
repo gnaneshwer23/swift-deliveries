@@ -3,7 +3,7 @@
 **Status:** Direction B **D1–D4 shipping** (founder “d1-d4”, 27 Oct 2026).  
 **Date:** 27 October 2026  
 **Live tip inspected:** https://www.deliverx.dev/command (~`7669a1c` D1+D2; D3/D4 this ship)  
-**Related (shipped spine, not superseded):** `docs/roadmap-briefing-experience.md`, `docs/roadmap-product-building-agents.md`  
+**Related (shipped spine, not superseded):** `docs/roadmap-briefing-experience.md`, `docs/roadmap-product-building-agents.md`
 
 ---
 
@@ -17,11 +17,11 @@ North star gap: **briefing → strategy → cast → approve → living work** l
 
 ## 1. What was inspected
 
-| Surface | URL | Method |
-| --- | --- | --- |
-| Studio foyer | `/command` | Signed-in Cursor browser · desktop 1440×900 + mobile shell · scroll |
-| Mission theatre (context) | `/command/supervised/e1a95c83-…` | Same session · Acts chrome present |
-| Shell / CSS | `command-shell.tsx`, `workspace-foyer.tsx`, `command.index.tsx`, `psi-workspace.css` | Code |
+| Surface                   | URL                                                                                  | Method                                                              |
+| ------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| Studio foyer              | `/command`                                                                           | Signed-in Cursor browser · desktop 1440×900 + mobile shell · scroll |
+| Mission theatre (context) | `/command/supervised/e1a95c83-…`                                                     | Same session · Acts chrome present                                  |
+| Shell / CSS               | `command-shell.tsx`, `workspace-foyer.tsx`, `command.index.tsx`, `psi-workspace.css` | Code                                                                |
 
 No tiny P0 crash. Cold load shows a blank canvas + “Loading your workspace…” for several seconds before shell paint — polish issue, not a redesign blocker.
 
@@ -31,11 +31,11 @@ No tiny P0 crash. Cold load shows a blank canvas + “Loading your workspace…�
 
 DeliverX Studio should feel like **attending a supervised product-building briefing**, then watching the cast work:
 
-1. Brief the case  
-2. Strategy / roadmap  
-3. Cast & ownership  
-4. Human approve  
-5. Living work / artefacts  
+1. Brief the case
+2. Strategy / roadmap
+3. Cast & ownership
+4. Human approve
+5. Living work / artefacts
 
 **Not:** KPI strip, ops ledger, catalogue tourism, chat compliance dumps, or a dashboard of unrelated honesty systems.
 
@@ -63,13 +63,13 @@ Overview’s **one job:** get you into Act I (or resume the current act). Everyt
 
 Below the fold (same `/command` document):
 
-| Block | Problem |
-| --- | --- |
-| One-liner panel | Correct job, but framed as form + “provider not configured · usage 0/100” status line |
-| Mission cast grid | Full cast board + Band/catalogue language on the **foyer** — theatre content without the theatre |
-| Talk to DeliverX `<details>` | Collapsed control, but expands into classification / “Understood: I won't” dumps |
-| **Agents office · Primary living surface** | Explicitly claims primacy on Overview — contradicts foyer contract |
-| Advanced planner + mission ledger | Intent tabs, sample chips, filter pills — second intake product |
+| Block                                      | Problem                                                                                          |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| One-liner panel                            | Correct job, but framed as form + “provider not configured · usage 0/100” status line            |
+| Mission cast grid                          | Full cast board + Band/catalogue language on the **foyer** — theatre content without the theatre |
+| Talk to DeliverX `<details>`               | Collapsed control, but expands into classification / “Understood: I won't” dumps                 |
+| **Agents office · Primary living surface** | Explicitly claims primacy on Overview — contradicts foyer contract                               |
+| Advanced planner + mission ledger          | Intent tabs, sample chips, filter pills — second intake product                                  |
 
 Mechanics of G2 (collapse inbox/stop) landed; **composition did not**. The page still fails “one job.”
 
@@ -101,8 +101,8 @@ Acts labels exist (Briefing → Build). Still chippy beat buttons, sidebar ops c
 
 Keep shell. First viewport = one continue case **or** one-liner stage; demote chips to footer; remove Agents office + cast board from `/command`; leave Talk/advanced under deeper folds.
 
-- **Pros:** Smallest diff; reuses `psi-workspace.css`; fast demo.  
-- **Cons:** Shell still feels SaaS ops; brand presence weak.  
+- **Pros:** Smallest diff; reuses `psi-workspace.css`; fast demo.
+- **Cons:** Shell still feels SaaS ops; brand presence weak.
 - **Risk:** “Still looks like a dashboard, just shorter.”
 
 ### Direction B — Editorial foyer + quiet shell (**recommended · shipping D1+D2**)
@@ -117,16 +117,16 @@ Same IA as Option 2 in `roadmap-briefing-experience.md`, but **finish the look**
 - Cast lives on mission + Specialists — not foyer.
 - Stay inside `psi-workspace.css` tokens; foyer H1 may use Albert Sans (`--motion-display`); **no** purple/glow AI slop.
 
-- **Pros:** Answers “doesn’t look good” and north star; no route fork; aligns prior G\* decisions.  
-- **Cons:** Needs copy + CSS composition work; founder must accept demoting office from Overview.  
+- **Pros:** Answers “doesn’t look good” and north star; no route fork; aligns prior G\* decisions.
+- **Cons:** Needs copy + CSS composition work; founder must accept demoting office from Overview.
 - **Risk:** Scope creep into full mission theatre restyle — contain with phases below.
 
 ### Direction C — Theatre-first shell rewrite
 
 Replace sidebar dashboard chrome with a stage frame (acts rail always visible; side rooms as drawers).
 
-- **Pros:** Strongest anti-dashboard signal.  
-- **Cons:** Large build; touches every `/command/*` page; high Lovable churn risk.  
+- **Pros:** Strongest anti-dashboard signal.
+- **Cons:** Large build; touches every `/command/*` page; high Lovable churn risk.
 - **Risk:** Rebuilds chrome before foyer proof.
 
 **Recommend Direction B.** Direction A under-answers the visual complaint. Direction C is premature until foyer composition is proven.
@@ -135,13 +135,13 @@ Replace sidebar dashboard chrome with a stage frame (acts rail always visible; s
 
 ## 6. Phased polish plan (approval-gated)
 
-| Phase | Scope | Changes | Demo criteria (founder click) | Status |
-| --- | --- | --- | --- | --- |
-| **D0 — Contract** | This doc | Close open decisions below | Founder “build D1…” (or named subset) | Done — “complete b first” |
-| **D1 — Overview composition** | `/command` only | One first-viewport composition; single focal continue; one-liner as the only hero form; remove Agents office block from index; cast panel off foyer; readiness chips demoted; truncate/title resume rows | First screen = continue **or** brief — no office, no cast grid, no advanced ledger visible without expand | **Shipping** |
-| **D2 — Quiet shell** | `CommandShell` | Soften usage/shield/Pilot; fix Studio/Studio breadcrumb; one primary CTA logic | Shell no longer reads as ops console; foyer still calm | **Shipping** |
-| **D3 — Mission theatre presence** | Supervised URL | Beat chips → stage focus; one focal gate CTA; process/band language to footnotes | Approve gate feels like Act IV, not a download dashboard | **Shipping** |
-| **D4 — Side rooms consistency** | Specialists / Projects / Programmes / Agents office | Cast-first and project shelf already shipped — foyer-language stage headers; AO off purple ops chrome | Side rooms don’t reintroduce KPI walls | **Shipping** |
+| Phase                             | Scope                                               | Changes                                                                                                                                                                                                  | Demo criteria (founder click)                                                                             | Status                    |
+| --------------------------------- | --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------- |
+| **D0 — Contract**                 | This doc                                            | Close open decisions below                                                                                                                                                                               | Founder “build D1…” (or named subset)                                                                     | Done — “complete b first” |
+| **D1 — Overview composition**     | `/command` only                                     | One first-viewport composition; single focal continue; one-liner as the only hero form; remove Agents office block from index; cast panel off foyer; readiness chips demoted; truncate/title resume rows | First screen = continue **or** brief — no office, no cast grid, no advanced ledger visible without expand | **Shipping**              |
+| **D2 — Quiet shell**              | `CommandShell`                                      | Soften usage/shield/Pilot; fix Studio/Studio breadcrumb; one primary CTA logic                                                                                                                           | Shell no longer reads as ops console; foyer still calm                                                    | **Shipping**              |
+| **D3 — Mission theatre presence** | Supervised URL                                      | Beat chips → stage focus; one focal gate CTA; process/band language to footnotes                                                                                                                         | Approve gate feels like Act IV, not a download dashboard                                                  | **Shipping**              |
+| **D4 — Side rooms consistency**   | Specialists / Projects / Programmes / Agents office | Cast-first and project shelf already shipped — foyer-language stage headers; AO off purple ops chrome                                                                                                    | Side rooms don’t reintroduce KPI walls                                                                    | **Shipping**              |
 
 Out of scope for this track unless reopened: new `/cases` route, programme rebuild, purple themes, fake cinematic timers, promoting voice or 150-role tourism.
 
@@ -149,18 +149,18 @@ Out of scope for this track unless reopened: new `/cases` route, programme rebui
 
 ## 7. Open decisions — closed for D1/D2
 
-1. **Approve Direction B (D1–D2 first)?** Yes — founder “complete b first”.  
-2. **Agents office on Overview:** remove entirely from `/command` (link-only) — **yes**.  
-3. **Resume UX:** one hero case — **yes** (others in quiet drawer).  
-4. **Shell usage meter:** account menu — **yes**.  
-5. **Type:** Inter workspace stack; foyer headline may use Albert Sans (`--motion-display`) only.  
+1. **Approve Direction B (D1–D2 first)?** Yes — founder “complete b first”.
+2. **Agents office on Overview:** remove entirely from `/command` (link-only) — **yes**.
+3. **Resume UX:** one hero case — **yes** (others in quiet drawer).
+4. **Shell usage meter:** account menu — **yes**.
+5. **Type:** Inter workspace stack; foyer headline may use Albert Sans (`--motion-display`) only.
 6. **Mission theatre (D3):** wait until foyer demo passes — **held**.
 
 ---
 
 ## 8. Ship note (D1–D4)
 
-- Overview: editorial stage · one Continue hero or one-liner brief · cast/office off · honesty in footnotes · Talk + advanced under fold.  
-- Shell: breadcrumb no longer `Studio / Studio` · usage / Pilot / shield under Account · `+ New case` · quieter nav active.  
-- D3 theatre: beat rail as stage markers · one focal gate CTA · process/usage/band in footnotes · stronger Now composition · Acts/gates/honesty kept.  
+- Overview: editorial stage · one Continue hero or one-liner brief · cast/office off · honesty in footnotes · Talk + advanced under fold.
+- Shell: breadcrumb no longer `Studio / Studio` · usage / Pilot / shield under Account · `+ New case` · quieter nav active.
+- D3 theatre: beat rail as stage markers · one focal gate CTA · process/usage/band in footnotes · stronger Now composition · Acts/gates/honesty kept.
 - D4 side rooms: Specialists / Projects / Programmes / Agents office use foyer brand + headline + lede; AO retuned off purple ops chrome.

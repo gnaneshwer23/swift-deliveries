@@ -34,10 +34,10 @@ Founder choice **A (Quiet-first)** — **superseded for the foyer by [Executive 
 
 ## Related code
 
-| Area | Files |
-|------|--------|
-| Route gating + fonts | `src/components/command/command-shell.tsx` |
-| Tokens | `src/styles/psi-workspace.css` (`.ps-executive`) |
-| Portfolio UI | `src/routes/_authenticated/command.portfolio.tsx` |
-| Projects UI | `src/routes/_authenticated/command.projects.tsx` |
-| Attention helpers | `src/lib/pilot-mission/portfolio.ts`, `build-beats.ts` (`nextActionId`) |
+| Area                 | Files                                                                   |
+| -------------------- | ----------------------------------------------------------------------- |
+| Route gating + fonts | `src/components/command/command-shell.tsx`                              |
+| Tokens               | `src/styles/psi-workspace.css` (`.ps-executive`)                        |
+| Portfolio UI         | `src/routes/_authenticated/command.portfolio.tsx`                       |
+| Projects UI          | `src/routes/_authenticated/command.projects.tsx`                        |
+| Attention helpers    | `src/lib/pilot-mission/portfolio.ts`, `build-beats.ts` (`nextActionId`) |

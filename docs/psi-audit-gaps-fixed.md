@@ -5,26 +5,26 @@
 
 ## Closed in this pass
 
-| Gap | What shipped |
-| --- | --- |
-| **Main CI lint** | PR **#55** merged — Prettier/lint baseline green on `main`. |
-| **Audit documentation** | PR **#56** — phases/dashboards founder audit doc (merge when CI green). |
-| **Quiet Studio shell nav** | Primary nav: **Studio + Portfolio** only; **Projects, Agents office, Specialists, Programmes** under **Advanced**; mission usage meter de-emphasised on foyer (`foyerMode`). |
-| **Durable research pass (Q0 partial)** | Plan approval persists **`researchPassQueuedAt`** with activity `research.pass.queued`. Pass runs via **`runQueuedResearchPass`** (lease + `research-pass` job key) on mission reload, **`/api/worker/tick`** drain, or inline when tests omit `deferResearchPass`. Production **`approveSupervisedPlan`** defers pass (not browser-coupled for completion). |
-| **Intake attachments (honest minimal)** | Optional **text paste** at intake → supplied evidence row (`Founder intake paste…`); no file upload/OCR. |
-| **Notify / Watchtower clarity** | Foyer inbox shows **detail lines**; **research queued** signal in studio inbox; existing Watchtower panel honesty unchanged (no fake runner/email). |
-| **Phase 0 docs** | PR **#49** — Q0 contract on branch `docs/quiet-investigation-phase-0` (merge after rebase if still open). |
+| Gap                                     | What shipped                                                                                                                                                                                                                                                                                                                                                 |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Main CI lint**                        | PR **#55** merged — Prettier/lint baseline green on `main`.                                                                                                                                                                                                                                                                                                  |
+| **Audit documentation**                 | PR **#56** — phases/dashboards founder audit doc (merge when CI green).                                                                                                                                                                                                                                                                                      |
+| **Quiet Studio shell nav**              | Primary nav: **Studio + Portfolio** only; **Projects, Agents office, Specialists, Programmes** under **Advanced**; mission usage meter de-emphasised on foyer (`foyerMode`).                                                                                                                                                                                 |
+| **Durable research pass (Q0 partial)**  | Plan approval persists **`researchPassQueuedAt`** with activity `research.pass.queued`. Pass runs via **`runQueuedResearchPass`** (lease + `research-pass` job key) on mission reload, **`/api/worker/tick`** drain, or inline when tests omit `deferResearchPass`. Production **`approveSupervisedPlan`** defers pass (not browser-coupled for completion). |
+| **Intake attachments (honest minimal)** | Optional **text paste** at intake → supplied evidence row (`Founder intake paste…`); no file upload/OCR.                                                                                                                                                                                                                                                     |
+| **Notify / Watchtower clarity**         | Foyer inbox shows **detail lines**; **research queued** signal in studio inbox; existing Watchtower panel honesty unchanged (no fake runner/email).                                                                                                                                                                                                          |
+| **Phase 0 docs**                        | PR **#49** — Q0 contract on branch `docs/quiet-investigation-phase-0` (merge after rebase if still open).                                                                                                                                                                                                                                                    |
 
 ## Residual limits (documented, not faked)
 
-| Topic | Status |
-| --- | --- |
-| **Worker tick schedule** | `drainQueuedResearchPasses` runs when **`CRON_SECRET`** tick fires; **`vercel.json` cron** may still be unset — passes also complete on **mission reload** (`getSupervisedMission`). |
-| **Live search providers** | Tavily/Exa/Brave smoke needs budget/keys — unchanged. |
-| **Stripe live / `PSI_PAYMENTS_LIVE_APPROVED`** | Out of scope — simulated paths only. |
-| **Neon Auth E2E on Vercel** | Env-dependent — see `docs/neon-auth-local-setup.md`. |
-| **Email/push / 24×7 Watchtower runner** | Preferences + in-app inbox only; `lastSuccessfulCheckAt` / `nextScheduledCheckAt` stay empty until a real runner exists. |
-| **Production certification** | Phase 6 fixture acceptance unchanged — not a production promo. |
+| Topic                                          | Status                                                                                                                                                                               |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Worker tick schedule**                       | `drainQueuedResearchPasses` runs when **`CRON_SECRET`** tick fires; **`vercel.json` cron** may still be unset — passes also complete on **mission reload** (`getSupervisedMission`). |
+| **Live search providers**                      | Tavily/Exa/Brave smoke needs budget/keys — unchanged.                                                                                                                                |
+| **Stripe live / `PSI_PAYMENTS_LIVE_APPROVED`** | Out of scope — simulated paths only.                                                                                                                                                 |
+| **Neon Auth E2E on Vercel**                    | Env-dependent — see `docs/neon-auth-local-setup.md`.                                                                                                                                 |
+| **Email/push / 24×7 Watchtower runner**        | Preferences + in-app inbox only; `lastSuccessfulCheckAt` / `nextScheduledCheckAt` stay empty until a real runner exists.                                                             |
+| **Production certification**                   | Phase 6 fixture acceptance unchanged — not a production promo.                                                                                                                       |
 
 ## How to verify locally
 

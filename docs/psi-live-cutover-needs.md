@@ -9,11 +9,11 @@
 
 ## 1. Confirm prices — **DONE 28 Oct 2026**
 
-| Plan | Amount | Interval | Lookup key | Mission allowance |
-| --- | --- | --- | --- | --- |
-| Builder | **£29** | month | `builder_monthly` | 1 |
-| Founder | **£99** | month | `founder_monthly` | 4 |
-| Studio | **£299** | month | `studio_monthly` | 12 |
+| Plan    | Amount   | Interval | Lookup key        | Mission allowance |
+| ------- | -------- | -------- | ----------------- | ----------------- |
+| Builder | **£29**  | month    | `builder_monthly` | 1                 |
+| Founder | **£99**  | month    | `founder_monthly` | 4                 |
+| Studio  | **£299** | month    | `studio_monthly`  | 12                |
 
 Founder replied **prices confirmed** (binding).
 
@@ -36,11 +36,11 @@ Founder replied **prices confirmed** (binding).
 **Account (live):** `acct_1S6BMU2X2opf83VZ` (Gnaneshwerjadav).  
 Founder-supplied Product IDs read in livemode. MCP write still **403** — lookup keys were **not** fixed by agents.
 
-| Plan | Product ID | Price ID | £ / mo | Stripe product name | Lookup key (observed) |
-| --- | --- | --- | --- | --- | --- |
-| Builder | `prod_VHO45CEWLNQ3qF` | `price_1UGpI02X2opf83VZ9RIaw4Ky` | 29 | `builder_monthly` | **`experience_monthly`** (wrong) |
-| Founder | `prod_VWUi8xEiee1ACW` | `price_1UVRjW2X2opf83VZ0E9zN7bi` | 99 | `founder_monthly` | *(null)* |
-| Studio | `prod_VWUj2JF7yL89go` | `price_1UVRjr2X2opf83VZmm3F4UtY` | 299 | `studio_monthly` | *(null)* |
+| Plan    | Product ID            | Price ID                         | £ / mo | Stripe product name | Lookup key (observed)            |
+| ------- | --------------------- | -------------------------------- | ------ | ------------------- | -------------------------------- |
+| Builder | `prod_VHO45CEWLNQ3qF` | `price_1UGpI02X2opf83VZ9RIaw4Ky` | 29     | `builder_monthly`   | **`experience_monthly`** (wrong) |
+| Founder | `prod_VWUi8xEiee1ACW` | `price_1UVRjW2X2opf83VZ0E9zN7bi` | 99     | `founder_monthly`   | _(null)_                         |
+| Studio  | `prod_VWUj2JF7yL89go` | `price_1UVRjr2X2opf83VZmm3F4UtY` | 299    | `studio_monthly`    | _(null)_                         |
 
 **Vercel Production** already has `PSI_STRIPE_PRICE_BUILDER|FOUNDER|STUDIO` set to the three Price IDs above (Preview left alone — sandbox prices differ).
 
@@ -67,17 +67,17 @@ If Session create fails with a Managed Payments / eligibility error, fix Dashboa
 
 Prefer **restricted API keys (RAK)** (`rk_live_…`) over unrestricted `sk_live_…` ([Stripe keys](https://dashboard.stripe.com/apikeys)).
 
-| Vercel env name | Value source | Exact action |
-| --- | --- | --- |
-| `STRIPE_LIVE_API_KEY` | Dashboard → Developers → API keys → Create restricted key (live) | Permissions at least: Checkout Sessions write, Prices/Products read, Customers write, Subscriptions read |
-| `VITE_PAYMENTS_CLIENT_TOKEN` | Publishable key `pk_live_…` for `acct_1S6BMU2X2opf83VZ` | Must be **live** publishable once live-approved |
-| `PAYMENTS_LIVE_WEBHOOK_SECRET` | Webhook signing secret `whsec_…` (step 5) | Live endpoint only |
-| `PSI_PAYMENTS_LIVE_APPROVED` | literal `true` | Flip **last**, after webhook + 0032 + prices |
-| `VITE_PAYMENTS_CHECKOUT_ENABLED` | literal `true` | Shows Pay on `/pricing`; unset to stop UI |
-| `PSI_PAYMENTS_KILL_SWITCH` | leave unset / `false` | Set `true` to refuse all new Checkout |
-| `PSI_STRIPE_PRICE_BUILDER` | `price_1UGpI02X2opf83VZ9RIaw4Ky` | **Set** on Production 28 Oct 2026 |
-| `PSI_STRIPE_PRICE_FOUNDER` | `price_1UVRjW2X2opf83VZ0E9zN7bi` | **Set** on Production 28 Oct 2026 |
-| `PSI_STRIPE_PRICE_STUDIO` | `price_1UVRjr2X2opf83VZmm3F4UtY` | **Set** on Production 28 Oct 2026 |
+| Vercel env name                  | Value source                                                     | Exact action                                                                                             |
+| -------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `STRIPE_LIVE_API_KEY`            | Dashboard → Developers → API keys → Create restricted key (live) | Permissions at least: Checkout Sessions write, Prices/Products read, Customers write, Subscriptions read |
+| `VITE_PAYMENTS_CLIENT_TOKEN`     | Publishable key `pk_live_…` for `acct_1S6BMU2X2opf83VZ`          | Must be **live** publishable once live-approved                                                          |
+| `PAYMENTS_LIVE_WEBHOOK_SECRET`   | Webhook signing secret `whsec_…` (step 5)                        | Live endpoint only                                                                                       |
+| `PSI_PAYMENTS_LIVE_APPROVED`     | literal `true`                                                   | Flip **last**, after webhook + 0032 + prices                                                             |
+| `VITE_PAYMENTS_CHECKOUT_ENABLED` | literal `true`                                                   | Shows Pay on `/pricing`; unset to stop UI                                                                |
+| `PSI_PAYMENTS_KILL_SWITCH`       | leave unset / `false`                                            | Set `true` to refuse all new Checkout                                                                    |
+| `PSI_STRIPE_PRICE_BUILDER`       | `price_1UGpI02X2opf83VZ9RIaw4Ky`                                 | **Set** on Production 28 Oct 2026                                                                        |
+| `PSI_STRIPE_PRICE_FOUNDER`       | `price_1UVRjW2X2opf83VZ0E9zN7bi`                                 | **Set** on Production 28 Oct 2026                                                                        |
+| `PSI_STRIPE_PRICE_STUDIO`        | `price_1UVRjr2X2opf83VZmm3F4UtY`                                 | **Set** on Production 28 Oct 2026                                                                        |
 
 Sandbox vars (`STRIPE_SANDBOX_API_KEY`, `PAYMENTS_SANDBOX_WEBHOOK_SECRET`, `pk_test_…`) are for Preview/dev — **do not** set them as Production’s active path once `PSI_PAYMENTS_LIVE_APPROVED=true`.
 
@@ -187,26 +187,26 @@ Set / verify these on project `swift-deliveries` (`prj_KXbLoh586LlAsKD6c8zk2HGDj
 
 ## 7. One real (or policy-approved) live smoke after flip
 
-1. Sign in on https://www.deliverx.dev  
-2. `/pricing` → Pay Founder (or Builder) with a real card you control  
-3. Confirm webhook delivered; Studio shows plan · missions left · paid  
-4. Confirm return URL alone did **not** grant access before webhook  
-5. Optional: flip kill switch and confirm new Checkout refuses  
+1. Sign in on https://www.deliverx.dev
+2. `/pricing` → Pay Founder (or Builder) with a real card you control
+3. Confirm webhook delivered; Studio shows plan · missions left · paid
+4. Confirm return URL alone did **not** grant access before webhook
+5. Optional: flip kill switch and confirm new Checkout refuses
 
 ---
 
 ## Still blocked until you act
 
-| Blocker | Why |
-| --- | --- |
-| Live Products/Prices IDs | **Cleared** — IDs recorded; Production price env set |
-| Lookup-key cleanup | Optional Dashboard fix (`experience_monthly` → `builder_monthly`; set Founder/Studio keys) |
-| Managed Payments enrollment + eligible tax codes | Dashboard ToS + product tax codes — required once code sends `managed_payments.enabled` |
-| Migration 0032 | **Cleared** on production 28 Oct 2026 |
-| `pk_live_…` + `rk_live_…` / `sk_live_…` | **Cleared on Production** (presence checked; values not printed) |
-| Live webhook + `whsec_…` | **Still missing** — create destination (step 5) then set `PAYMENTS_LIVE_WEBHOOK_SECRET` |
-| `PSI_PAYMENTS_LIVE_APPROVED` | Must be your deliberate flip **last** — agents will not set it |
-| Signed-in P0-A smoke | Remains **red** without your browser session — not certified production-ready overall |
+| Blocker                                          | Why                                                                                        |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| Live Products/Prices IDs                         | **Cleared** — IDs recorded; Production price env set                                       |
+| Lookup-key cleanup                               | Optional Dashboard fix (`experience_monthly` → `builder_monthly`; set Founder/Studio keys) |
+| Managed Payments enrollment + eligible tax codes | Dashboard ToS + product tax codes — required once code sends `managed_payments.enabled`    |
+| Migration 0032                                   | **Cleared** on production 28 Oct 2026                                                      |
+| `pk_live_…` + `rk_live_…` / `sk_live_…`          | **Cleared on Production** (presence checked; values not printed)                           |
+| Live webhook + `whsec_…`                         | **Still missing** — create destination (step 5) then set `PAYMENTS_LIVE_WEBHOOK_SECRET`    |
+| `PSI_PAYMENTS_LIVE_APPROVED`                     | Must be your deliberate flip **last** — agents will not set it                             |
+| Signed-in P0-A smoke                             | Remains **red** without your browser session — not certified production-ready overall      |
 
 ## Stripe MCP re-consent (optional)
 

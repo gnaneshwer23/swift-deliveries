@@ -4,6 +4,7 @@
 **Demo:** Two export levels — executive pack (recommendation/evidence/decisions/next step) and full archive ZIP with honest manifest (exclusions labelled).
 
 ## Decision log
-| Date | Entry |
-| --- | --- |
+
+| Date        | Entry                                |
+| ----------- | ------------------------------------ |
 | 28 Oct 2026 | Authorised + shipped with PT-2…PT-6. |
