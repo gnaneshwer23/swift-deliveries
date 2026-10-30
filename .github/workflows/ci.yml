@@ -46,5 +46,7 @@ jobs:
           -f drizzle/migrations/0030_wf_conversations.sql
           -f drizzle/migrations/0031_wf_voice_metrics.sql
           -f drizzle/migrations/0032_psi_pilot_activations_stripe.sql
+          -f drizzle/migrations/0033_psi_reconciliation_cascade.sql
+          -f drizzle/migrations/0034_psi_supervised_wf_links.sql
       - run: npm test
       - run: npm run build
