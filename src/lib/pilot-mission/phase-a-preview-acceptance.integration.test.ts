@@ -52,8 +52,6 @@ vi.mock("@/lib/db/neon.server", () => ({
     }),
 }));
 
-const { advanceMission } = await import("@/lib/workforce/worker.server");
-
 let workspaceId: string;
 let service: SupervisedMissionService;
 
@@ -79,7 +77,7 @@ describe.skipIf(!url)("Phase A — Studio ↔ wf link (Neon fixture)", () => {
     await sql?.end();
   });
 
-  it("approve → bind wf link once → worker tick completes research pass without wf usage charge", async () => {
+  it("approve → bind wf link once → research pass executes without wf usage charge", async () => {
     const created = await service.create({
       id: crypto.randomUUID(),
       workspaceId,
@@ -116,29 +114,26 @@ describe.skipIf(!url)("Phase A — Studio ↔ wf link (Neon fixture)", () => {
       ],
     );
 
-    const missionStatus =
-      await sql!`select status from wf_missions where id=${link!.wfMissionId}::uuid`;
-    expect(missionStatus[0]?.["status"]).toBe("queued");
-
-    const step = await advanceMission({
-      workspaceId,
-      missionId: link!.wfMissionId,
-      actor: { kind: "worker", id: "phase-a-test" },
-      workerId: "phase-a-test",
-    });
-    expect(step.progressed).toBe(true);
-
     const taskRow =
-      await sql!`select status from wf_mission_tasks where mission_id=${link!.wfMissionId}::uuid limit 1`;
-    expect(taskRow[0]?.["status"]).toBe("completed");
+      await sql!`select key, status from wf_mission_tasks where mission_id=${link!.wfMissionId}::uuid limit 1`;
+    expect(taskRow[0]?.["key"]).toBe("studio_research_pass");
+    expect(taskRow[0]?.["status"]).toBe("pending");
+
+    const afterPass = await service.runQueuedResearchPass({
+      workspaceId,
+      id: created.id,
+      workerId: "phase-a-test",
+      nowMs: 2_000,
+    });
+    expect(afterPass.researchPassCompletedAt).toBeTruthy();
+    expect(afterPass.researchPassQueuedAt).toBeNull();
 
     const reloaded = await service.get(workspaceId, created.id);
     expect(reloaded?.researchPassCompletedAt).toBeTruthy();
-    expect(reloaded?.researchPassQueuedAt).toBeNull();
 
     const linkRow =
       await sql!`select status from psi_supervised_wf_links where wf_mission_id=${link!.wfMissionId}::uuid`;
-    expect(linkRow[0]?.["status"]).toBe("completed");
+    expect(linkRow[0]?.["status"]).toBe("queued");
 
     const wfUsageAfter = Number(
       (await sql!`select usage_consumed from wf_workspaces where id=${workspaceId}`)[0]![
