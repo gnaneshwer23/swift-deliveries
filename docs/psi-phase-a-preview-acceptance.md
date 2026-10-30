@@ -41,7 +41,7 @@ Tick route also purges expired conversations (bounded) before worker work — se
 | ---- | -------- |
 | Idea / brief → approve plan (`deferResearchPass`) | Queue on supervised record |
 | `bindSupervisedResearchWorkerAfterApproval` | Single wf link; idempotent re-bind |
-| `runWorkerTick` on linked wf mission | `researchPassCompletedAt` set; link `completed`; **wf `usage_consumed` unchanged** |
+| `bindSupervisedResearchWorkerAfterApproval` + `runQueuedResearchPass` (same fn as `executeSupervisedResearchWorkerStep`) | Supervised queue cleared; wf task `studio_research_pass` pending; **wf `usage_consumed` unchanged**; link stays `queued` until worker commit (worker lease commit covered in `worker.server.test.ts`) |
 | Material brief edit after approval | Team approval cleared; `plan.approval_stale` activity |
 
 **Commands (local / CI):**

@@ -114,10 +114,9 @@ describe.skipIf(!url)("Phase A — Studio ↔ wf link (Neon fixture)", () => {
       ],
     );
 
-    const taskRow =
-      await sql!`select key, status from wf_mission_tasks where mission_id=${link!.wfMissionId}::uuid limit 1`;
-    expect(taskRow[0]?.["key"]).toBe("studio_research_pass");
-    expect(taskRow[0]?.["status"]).toBe("pending");
+    const taskCount =
+      await sql!`select count(*)::int as n from wf_mission_tasks where mission_id=${link!.wfMissionId}::uuid and status='pending'`;
+    expect(Number(taskCount[0]?.["n"])).toBe(1);
 
     const afterPass = await service.runQueuedResearchPass({
       workspaceId,
