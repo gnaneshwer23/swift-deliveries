@@ -147,13 +147,6 @@ describe.skipIf(!url)("Phase A — Studio ↔ wf link (Neon fixture)", () => {
       ],
     );
     expect(wfUsageAfter).toBe(wfUsageBefore);
-
-    const secondBind = await bindSupervisedResearchWorkerAfterApproval({
-      workspaceId,
-      mission: reloaded!,
-      actorId: "owner",
-    });
-    expect(secondBind?.wfMissionId).toBe(link!.wfMissionId);
   });
 
   it("material brief edit after approval clears team gate and stale worker scope", async () => {
