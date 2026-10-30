@@ -387,14 +387,26 @@ function ActApprove({
         )}
       </div>
 
-      {!quiet ? (
-        <div className="ps-theatre-footnotes">
-          <p>
-            Cost band {brief.roughCost.band}. {brief.roughCost.detail} Web results are never
-            invented when a provider is missing.
-          </p>
-        </div>
-      ) : null}
+      <div className="ps-theatre-footnotes">
+        <p>
+          Cost band {brief.roughCost.band}. {brief.roughCost.detail}
+        </p>
+        {actions.research.tools.length ? (
+          <ul className="text-sm cc-muted">
+            {actions.research.tools.map((tool) => (
+              <li key={tool.id}>
+                {tool.label}: {tool.available ? tool.detail : "Not available — gaps stay labelled"}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        {actions.research.blockReason ? (
+          <p className="cc-error text-sm">{actions.research.blockReason}</p>
+        ) : null}
+        <p className="cc-muted text-xs">
+          Web results are never invented when a provider is missing.
+        </p>
+      </div>
     </section>
   );
 }

@@ -382,6 +382,27 @@ function leaseStillValid(mission: SupervisedMission, nowMs: number): boolean {
   return Number.isFinite(until) && until > nowMs;
 }
 
+/** Honest copy — research during approve is request-coupled; durable worker leases are separate. */
+export function deriveInvestigationLeaveNote(
+  mission: SupervisedMission,
+  state: InvestigationRunState,
+  nowMs: number = Date.now(),
+): string {
+  if (!mission.team?.approvedAt) {
+    return "Nothing runs until you approve the plan below.";
+  }
+  if (leaseStillValid(mission, nowMs)) {
+    return "A step is in progress on this mission record. You can leave and return from Studio; if a browser request is still open, wait for it to finish before closing the tab.";
+  }
+  if (state === "running") {
+    return "Investigation progress is saved on the mission record. Return anytime from Studio — approve and comparison steps may need the tab open until they finish.";
+  }
+  if (state === "interrupted" && mission.job.status === "leased") {
+    return "The last worker lease expired or needs recovery. Use the next required action on the record — progress is not lost.";
+  }
+  return "Progress stays on this mission record. Leave and return from Studio when you are ready.";
+}
+
 export function deriveInvestigationRunState(
   mission: SupervisedMission,
   nowMs: number = Date.now(),
@@ -463,8 +484,7 @@ export function buildInvestigationExperience(
     active,
     state,
     statusLabel,
-    leaveNote:
-      "Closing this view or leaving the page does not stop the worker — progress stays on the mission record.",
+    leaveNote: deriveInvestigationLeaveNote(mission, state, nowMs),
     ideaLabel: mission.brief.question,
     converging: deriveConverging(mission),
     themes: themesFromMission(mission),
