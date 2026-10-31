@@ -181,7 +181,7 @@ export function ProductIntelligenceMap({ mission }: { mission: SupervisedMission
       </footer>
 
       <Sheet open={notesOpen} onOpenChange={setNotesOpen}>
-        <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
+        <SheetContent side="right" className="sx w-full sm:max-w-md overflow-y-auto">
           <SheetHeader>
             <SheetTitle>Working notes</SheetTitle>
             <SheetDescription>
@@ -215,7 +215,7 @@ export function ProductIntelligenceMap({ mission }: { mission: SupervisedMission
       </Sheet>
 
       <Sheet open={chatOpen} onOpenChange={setChatOpen}>
-        <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
+        <SheetContent side="right" className="sx w-full sm:max-w-lg overflow-y-auto">
           <SheetHeader>
             <SheetTitle>Aria — AI Product Manager</SheetTitle>
             <SheetDescription>

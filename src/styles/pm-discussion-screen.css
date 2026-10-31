@@ -1,121 +1,112 @@
-/* Screen 7 — Discussion with PM */
+/* Hallmark · genre: modern-minimal · macrostructure: Workbench · design-system: design.md · designed-as-app
+ * Screen 7 — Discussion with PM: conversation and decision actions, with decision context beside
+ * them. Rendered inside the decision path (.sx).
+ */
 .pmd {
-  --pmd-ink: #f8fafc;
-  --pmd-muted: #cbd5e1;
-  --pmd-border: #334155;
-  --pmd-card: rgba(17, 24, 39, 0.78);
-  --pmd-indigo: #6366f1;
-  --pmd-cyan: #22d3ee;
-  --pmd-accent: #059669;
   display: grid;
-  gap: 1rem;
-  color: var(--pmd-ink);
-  font-family: "DM Sans", Inter, system-ui, sans-serif;
+  gap: var(--sx-space-md);
+  color: var(--sx-ink);
+  font-family: var(--sx-font-body);
 }
 
 .pmd-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(16rem, 0.8fr);
-  gap: 1rem;
+  grid-template-columns: minmax(0, 1.5fr) minmax(16rem, 1fr);
+  gap: var(--sx-space-lg);
   align-items: start;
 }
 
 .pmd-main,
 .pmd-side {
-  border-radius: 12px;
-  border: 1px solid var(--pmd-border);
-  background: var(--pmd-card);
-  backdrop-filter: blur(12px);
-  padding: 1rem 1.1rem;
+  display: grid;
+  gap: var(--sx-space-sm);
+  min-width: 0;
 }
 
+.pmd-side {
+  padding: var(--sx-space-sm) var(--sx-space-md);
+  border: 1px solid var(--sx-rule);
+  border-radius: var(--sx-radius-panel);
+  background: var(--sx-sunken);
+}
+
+/* A plain lead-in, not an uppercase kicker. */
 .pmd-kicker {
-  margin: 0 0 0.35rem;
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--pmd-cyan);
-  font-weight: 700;
+  margin: 0;
+  font-size: var(--sx-text-sm);
+  color: var(--sx-muted);
 }
 
 .pmd-main h2,
 .pmd-side h2 {
-  margin: 0 0 0.75rem;
-  font-family: "Space Grotesk", Inter, sans-serif;
-  font-size: 1.15rem;
-  letter-spacing: -0.02em;
+  margin: 0;
+  font: 600 var(--sx-text-lg) / 1.3 var(--sx-font-display);
+  letter-spacing: -0.015em;
+  color: var(--sx-ink);
 }
 
 .pmd-thread {
   display: grid;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: var(--sx-space-xs);
 }
 
 .pmd-bubble {
-  padding: 0.85rem 0.95rem;
-  border-radius: 12px;
-  border: 1px solid var(--pmd-border);
-  background: rgba(15, 23, 42, 0.65);
+  display: grid;
+  gap: var(--sx-space-3xs);
+  padding: var(--sx-space-xs) var(--sx-space-sm);
+  border: 1px solid var(--sx-rule);
+  border-radius: var(--sx-radius-panel);
+  background: var(--sx-surface);
 }
 
 .pmd-bubble[data-role="user"] {
-  border-color: rgba(99, 102, 241, 0.35);
-}
-
-.pmd-bubble[data-role="aria"] {
-  border-color: rgba(34, 211, 238, 0.35);
+  background: var(--sx-sunken);
 }
 
 .pmd-bubble-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
+  gap: var(--sx-space-2xs);
   align-items: center;
-  margin-bottom: 0.35rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--pmd-muted);
+  font-size: var(--sx-text-xs);
+  font-weight: 600;
+  color: var(--sx-ink-2);
 }
 
 .pmd-bubble p {
   margin: 0;
-  font-size: 0.92rem;
-  line-height: 1.55;
+  max-width: var(--sx-measure);
 }
 
 .pmd-sample {
   display: inline-block;
-  padding: 0.05rem 0.3rem;
-  border-radius: 4px;
-  background: rgba(251, 191, 36, 0.14);
-  color: #fbbf24;
-  font-size: 0.58rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  padding: 0 var(--sx-space-2xs);
+  border-radius: var(--sx-radius-pill);
+  border: 1px solid var(--sx-waiting);
+  color: var(--sx-waiting);
+  font-size: var(--sx-text-xs);
+  font-style: normal;
+  font-weight: 500;
 }
 
 .pmd-evidence-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-top: 0.65rem;
+  gap: var(--sx-space-2xs);
 }
 
 .pmd-chip {
   display: inline-flex;
   align-items: center;
   max-width: 100%;
-  padding: 0.3rem 0.55rem;
-  border-radius: 999px;
-  border: 1px solid var(--pmd-border);
-  background: rgba(15, 23, 42, 0.75);
-  color: var(--pmd-ink);
-  font-size: 0.72rem;
+  padding: var(--sx-space-3xs) var(--sx-space-2xs);
+  border-radius: var(--sx-radius-pill);
+  border: 1px solid var(--sx-rule-strong);
+  background: var(--sx-surface);
+  color: var(--sx-ink-2);
+  font-size: var(--sx-text-xs);
   text-decoration: none;
-  line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 
 .pmd-chip[data-kind="assumption"] {
@@ -123,16 +114,18 @@
 }
 
 .pmd-chip[data-kind="gap"] {
-  border-color: rgba(251, 191, 36, 0.45);
+  border-color: var(--sx-waiting);
+  color: var(--sx-waiting);
 }
 
 a.pmd-chip:hover {
-  border-color: var(--pmd-indigo);
+  border-color: var(--sx-accent);
+  color: var(--sx-accent);
 }
 
 .pmd-side details {
-  border-top: 1px solid rgba(51, 65, 85, 0.85);
-  padding: 0.55rem 0;
+  border-top: 1px solid var(--sx-rule);
+  padding-top: var(--sx-space-xs);
 }
 
 .pmd-side details:first-of-type {
@@ -142,49 +135,53 @@ a.pmd-chip:hover {
 
 .pmd-side summary {
   cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--pmd-ink);
+  font-size: var(--sx-text-sm);
+  font-weight: 600;
+  color: var(--sx-ink);
 }
 
-.pmd-side summary:focus-visible {
-  outline: 2px solid var(--pmd-indigo);
+.pmd-side summary:focus-visible,
+.pmd-btn:focus-visible {
+  outline: 2px solid var(--sx-focus);
   outline-offset: 2px;
 }
 
-.pmd-side ul {
-  margin: 0.45rem 0 0;
-  padding-left: 1rem;
-  color: var(--pmd-muted);
-  font-size: 0.8rem;
-  line-height: 1.45;
+.pmd-side ul,
+.pmd-side p {
+  margin: var(--sx-space-2xs) 0 0;
+  font-size: var(--sx-text-sm);
+  color: var(--sx-ink-2);
 }
 
-.pmd-side p {
-  margin: 0.45rem 0 0;
-  color: var(--pmd-muted);
-  font-size: 0.8rem;
-  line-height: 1.45;
+.pmd-side ul {
+  padding-left: var(--sx-space-sm);
 }
 
 .pmd-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.55rem;
+  gap: var(--sx-space-2xs);
 }
 
 .pmd-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  min-height: 2.55rem;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.88rem;
+  gap: var(--sx-space-2xs);
+  min-height: 2.5rem;
+  padding: var(--sx-space-2xs) var(--sx-space-sm);
+  border-radius: var(--sx-radius-control);
+  border: 1px solid var(--sx-rule-strong);
+  background: var(--sx-surface);
+  color: var(--sx-ink);
+  font: 500 var(--sx-text-sm) / 1.2 var(--sx-font-body);
+  white-space: nowrap;
   cursor: pointer;
-  border: 1px solid transparent;
+  transition: background-color var(--sx-dur) var(--sx-ease-out);
+}
+
+.pmd-btn:hover {
+  background: var(--sx-sunken);
 }
 
 .pmd-btn:disabled {
@@ -192,43 +189,36 @@ a.pmd-chip:hover {
   cursor: not-allowed;
 }
 
-.pmd-btn:focus-visible {
-  outline: 2px solid var(--pmd-indigo);
-  outline-offset: 2px;
-}
-
 .pmd-btn-primary {
-  background: var(--pmd-accent);
-  color: #000;
+  background: var(--sx-accent);
+  border-color: var(--sx-accent);
+  color: var(--sx-accent-ink);
 }
 
-.pmd-btn-ghost {
-  background: transparent;
-  color: var(--pmd-ink);
-  border-color: var(--pmd-indigo);
-}
-
-.pmd-btn-secondary {
-  background: rgba(99, 102, 241, 0.16);
-  color: var(--pmd-ink);
-  border-color: rgba(99, 102, 241, 0.4);
+.pmd-btn-primary:hover {
+  background: var(--sx-accent-hover);
 }
 
 .pmd-note-panel {
   display: grid;
-  gap: 0.55rem;
-  margin-top: 0.75rem;
-  padding: 0.85rem;
-  border-radius: 10px;
-  border: 1px solid var(--pmd-border);
-  background: rgba(15, 23, 42, 0.55);
+  gap: var(--sx-space-2xs);
+  padding: var(--sx-space-sm);
+  border: 1px solid var(--sx-rule-strong);
+  border-radius: var(--sx-radius-panel);
+  background: var(--sx-surface);
+}
+
+.pmd-note-panel select,
+.pmd-note-panel textarea {
+  width: 100%;
+  min-width: 0;
 }
 
 .pmd-status {
   min-height: 1.25rem;
-  margin: 0.35rem 0 0;
-  font-size: 0.8rem;
-  color: var(--pmd-muted);
+  margin: 0;
+  font-size: var(--sx-text-sm);
+  color: var(--sx-ink-2);
 }
 
 .pmd-mobile-context {
@@ -237,13 +227,17 @@ a.pmd-chip:hover {
 
 @media (max-width: 960px) {
   .pmd-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .pmd-side {
     display: none;
   }
   .pmd-mobile-context {
     display: block;
+    padding: var(--sx-space-sm);
+    border: 1px solid var(--sx-rule);
+    border-radius: var(--sx-radius-panel);
+    background: var(--sx-sunken);
   }
   .pmd-actions .pmd-btn {
     flex: 1 1 100%;
@@ -253,6 +247,6 @@ a.pmd-chip:hover {
 @media (prefers-reduced-motion: reduce) {
   .pmd-chip,
   .pmd-btn {
-    transition: none;
+    transition-duration: 120ms;
   }
 }

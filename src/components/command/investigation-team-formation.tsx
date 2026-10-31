@@ -130,7 +130,7 @@ export function InvestigationTeamFormation({
       <section className="tf-head" aria-label="Recorded mission updates">
         <h3 className="text-base font-semibold m-0 mb-2">Latest mission updates</h3>
         {updates.length ? (
-          <ul className="m-0 pl-4 text-sm text-[color:var(--tf-muted)]">
+          <ul className="m-0 pl-4 text-sm text-[color:var(--sx-muted)]">
             {updates.map((event) => (
               <li key={event.id}>
                 <strong>{event.actor}</strong> — {event.summary}
@@ -160,7 +160,7 @@ export function InvestigationTeamFormation({
       </details>
 
       <Sheet open={Boolean(selected)} onOpenChange={(open) => !open && setSelectedId(null)}>
-        <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
+        <SheetContent side="right" className="sx w-full sm:max-w-lg overflow-y-auto">
           <SheetHeader>
             <SheetTitle>Agent workspace</SheetTitle>
             <SheetDescription>
