@@ -32,6 +32,30 @@ export type DeliveryRailStep = {
   state: "done" | "current" | "upcoming";
 };
 
+export const RAIL_STATE_LABELS: Record<DeliveryRailStep["state"], string> = {
+  done: "Done",
+  current: "Next",
+  upcoming: "Not started",
+};
+
+/**
+ * Next steps only the owner can take: approval gates and the owner's own inputs. Work in
+ * progress, optional input and finished states are not listed. A failed comparison is
+ * listed separately as a retry.
+ */
+const OWNER_STEPS = new Set([
+  "approve_plan",
+  "compare",
+  "decide",
+  "expectation",
+  "artefact",
+  "export",
+  "approve_prototype",
+  "observation",
+  "review",
+  "approve_follow_up",
+]);
+
 export type MissionDashAgent = {
   id: string;
   label: string;
@@ -70,7 +94,7 @@ export type MissionDashboardModel = {
   currentStage: { title: string; detail: string };
   activeAgents: MissionDashAgent[];
   completedOutputs: MissionDashOutput[];
-  pendingApprovals: string[];
+  waitingOnYou: string[];
   risks: MissionDashRisk[];
   latestPmUpdate: { summary: string; at: string | null; honesty: string };
   usage: {
@@ -97,18 +121,23 @@ export type MissionDashboardModel = {
 const EMPTY_SECTION =
   "Nothing is recorded for this section on the case yet. DeliverX does not invent progress here.";
 
+/** Build work on the team plan. A decision pack or the HTML prototype is not engineering. */
+function isEngineeringTask(t: { key: string; title: string; produces: string }): boolean {
+  return (
+    !/prototype|pack/i.test(`${t.key} ${t.title} ${t.produces}`) &&
+    /\b(?:implement\w*|services?|apis?|backend|back-end|frontend|front-end|engineer\w*)\b/i.test(
+      `${t.title} ${t.produces}`,
+    )
+  );
+}
+
 function railFromMission(mission: SupervisedMission): DeliveryRailStep[] {
-  // Product delivery rail — mapped from recorded mission state, not a fake clock.
+  // Product delivery rail — each stage is done only when its own record exists.
   const hasResearch = mission.evidence.length > 0 || Boolean(mission.researchPassCompletedAt);
   const hasPlan = Boolean(mission.approval || mission.continuationPlan);
   const hasDesign = Boolean(mission.prototype);
   const hasEngineering = Boolean(
-    mission.artefact ||
-    mission.team?.tasks.some(
-      (t) =>
-        t.status === "completed" &&
-        /build|prototype|implement|service|api/i.test(`${t.title} ${t.produces}`),
-    ),
+    mission.team?.tasks.some((t) => t.status === "completed" && isEngineeringTask(t)),
   );
   const hasQa =
     (mission.prototype?.checks.length ?? 0) > 0 ||
@@ -136,21 +165,14 @@ function railFromMission(mission: SupervisedMission): DeliveryRailStep[] {
   ];
   const ids = ["discovery", "research", "plan", "design", "engineering", "qa", "handover"];
 
-  let currentIdx = 0;
-  for (let i = 0; i < flags.length; i++) {
-    if (flags[i]) currentIdx = i;
-  }
-  // If handover is done, current is handover; else current is the furthest complete,
-  // or the next incomplete after the furthest complete.
-  if (!flags[flags.length - 1]) {
-    const nextOpen = flags.findIndex((f, i) => i > 0 && !f);
-    if (nextOpen >= 0) currentIdx = nextOpen;
-  }
+  // The first stage without a record is next. Handover is not the end of the case: a
+  // prototype and outcome review can still follow an export.
+  const nextIdx = flags.findIndex((f) => !f);
 
   return ids.map((id, index) => ({
     id,
     label: labels[index]!,
-    state: index < currentIdx ? "done" : index === currentIdx ? "current" : "upcoming",
+    state: flags[index] ? "done" : index === nextIdx ? "current" : "upcoming",
   }));
 }
 
@@ -214,20 +236,16 @@ export function buildMissionDashboard(mission: SupervisedMission): MissionDashbo
     }
   }
 
-  const pendingApprovals: string[] = [];
-  if (
-    /approve|decide|expectation|export|gate|record|authorise|authorize/i.test(
-      `${next.id} ${next.title}`,
-    )
-  ) {
-    pendingApprovals.push(`${next.title} — ${next.detail}`);
+  const waitingOnYou: string[] = [];
+  if (OWNER_STEPS.has(next.id)) {
+    waitingOnYou.push(`${next.title} — ${next.detail}`);
   }
   if (mission.job.status === "failed") {
-    pendingApprovals.push(`Retry required: ${mission.job.lastError ?? "comparison failed"}`);
+    waitingOnYou.push(`Retry required: ${mission.job.lastError ?? "comparison failed"}`);
   }
   for (const task of mission.team?.tasks ?? []) {
     if (task.status === "awaiting_approval") {
-      pendingApprovals.push(`${task.title} awaits approval`);
+      waitingOnYou.push(`${task.title} awaits approval`);
     }
   }
 
@@ -346,7 +364,7 @@ export function buildMissionDashboard(mission: SupervisedMission): MissionDashbo
     : ["No design / prototype artefact is saved on this case yet."];
 
   const engineeringLines = (mission.team?.tasks ?? [])
-    .filter((t) => /build|prototype|implement|service|api|pack/i.test(`${t.title} ${t.produces}`))
+    .filter(isEngineeringTask)
     .map((t) => `${t.title} · ${t.status} — ${t.produces}`);
   if (!engineeringLines.length) {
     engineeringLines.push("No engineering tasks are recorded for this path yet.");
@@ -413,7 +431,7 @@ export function buildMissionDashboard(mission: SupervisedMission): MissionDashbo
     currentStage: { title: next.title, detail: next.detail },
     activeAgents,
     completedOutputs,
-    pendingApprovals,
+    waitingOnYou,
     risks,
     latestPmUpdate,
     usage: {

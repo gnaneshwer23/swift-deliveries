@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useId, useState } from "react";
-import { ConversationPanel } from "@/components/command/conversation-panel";
+import { CaseChatPanel } from "@/components/command/case-chat-panel";
 import { decideSupervisedMission } from "@/lib/pilot-mission.functions";
 import {
   buildPmDiscussionContext,
@@ -44,7 +44,8 @@ export function PmDiscussionScreen({
   const context = buildPmDiscussionContext(mission);
   const sample = pmDiscussionSampleThread();
   const proposal = mission.proposal;
-  const [optionId, setOptionId] = useState(proposal?.options[0]?.id ?? "");
+  // No option is preselected: the owner chooses one before a decision is saved.
+  const [optionId, setOptionId] = useState("");
   const [intent, setIntent] = useState<QuickIntent | null>(null);
   const [note, setNote] = useState("");
   const [localError, setLocalError] = useState<string | null>(null);
@@ -86,6 +87,10 @@ export function PmDiscussionScreen({
 
   function confirmIntent() {
     if (!intent) return;
+    if (!optionId) {
+      setLocalError("Choose which option this decision is about.");
+      return;
+    }
     if (intent !== "approve" && !note.trim()) {
       setLocalError(
         intent === "research"
@@ -130,7 +135,6 @@ export function PmDiscussionScreen({
                   />
                   <span>
                     <strong>{option.title}</strong>
-                    {option.recommended ? " · Aria’s recommendation" : ""}
                     <br />
                     <span>{option.tradeoff || "No trade-off recorded."}</span>
                   </span>
@@ -229,11 +233,11 @@ export function PmDiscussionScreen({
             </article>
           </div>
 
-          <ConversationPanel
-            currentMissionId={missionId}
+          <CaseChatPanel
+            mission={mission}
             title="Ask Aria"
             helperText="Ask follow-ups about the recommendation. Chat does not save a decision by itself — use the actions below."
-            placeholder="Ask Aria or request a change."
+            placeholder="Ask Aria about this case…"
             suggestedPrompts={[
               "Why is this your recommendation?",
               "What evidence supports this option?",
@@ -270,6 +274,24 @@ export function PmDiscussionScreen({
 
           {intent ? (
             <div className="pmd-note-panel" role="region" aria-label="Confirm decision">
+              {/* The option list also sits in Decision context, which is collapsed on phones. */}
+              <label className="cc-label" htmlFor="pmd-decision-option">
+                Option this decision is about
+              </label>
+              <select
+                id="pmd-decision-option"
+                className="cc-input"
+                value={optionId}
+                onChange={(event) => setOptionId(event.target.value)}
+                disabled={decide.isPending}
+              >
+                <option value="">Choose an option…</option>
+                {context.optionsConsidered.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.title}
+                  </option>
+                ))}
+              </select>
               <label className="cc-label" htmlFor="pmd-decision-note">
                 {intent === "approve"
                   ? "Confirm approval"

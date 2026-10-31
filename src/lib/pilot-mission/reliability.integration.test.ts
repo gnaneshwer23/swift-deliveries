@@ -7,6 +7,7 @@ import { reservedComparison } from "./reservations.server";
 import { runAccountedComparison } from "./comparison.server";
 import { reconcileComparison } from "./reconciliation.server";
 import { SupervisedMissionService } from "./service";
+import { holdPublicSchemaLock } from "./test-db-lock";
 import { notConfiguredGeneration } from "./generate";
 import type { GenerationResult, SupervisedMission } from "./types";
 
@@ -74,7 +75,11 @@ async function consumed() {
 }
 
 describe.skipIf(!url)("isolated PostgreSQL transaction and recovery checks", () => {
+  // Other files truncate the same public tables: run this file only while holding the lock.
+  let releaseLock: (() => Promise<void>) | null = null;
   beforeAll(async () => {
+    // Waits (up to the hook timeout) for any other file holding the lock to finish.
+    releaseLock = await holdPublicSchemaLock(url!);
     types = new Map();
     const rows =
       await sql!`select table_name,column_name,udt_name from information_schema.columns where table_schema='public'`;
@@ -82,7 +87,7 @@ describe.skipIf(!url)("isolated PostgreSQL transaction and recovery checks", () 
       if (!types.has(row["table_name"])) types.set(row["table_name"], new Map());
       types.get(row["table_name"])!.set(row["column_name"], row["udt_name"]);
     }
-  });
+  }, 120_000);
   beforeEach(async () => {
     await sql!`truncate psi_comparison_reconciliations,psi_comparison_reservations,psi_supervised_spend,psi_supervised_missions,psi_pilot_activations,psi_pilot_requests,wf_workspaces cascade`;
     workspaceId = crypto.randomUUID();
@@ -91,6 +96,7 @@ describe.skipIf(!url)("isolated PostgreSQL transaction and recovery checks", () 
   });
   afterAll(async () => {
     await sql?.end();
+    await releaseLock?.();
   });
 
   async function readyMission() {

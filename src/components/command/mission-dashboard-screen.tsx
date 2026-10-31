@@ -1,8 +1,9 @@
 import { useState, type ReactNode } from "react";
-import { ConversationPanel } from "@/components/command/conversation-panel";
+import { CaseChatPanel } from "@/components/command/case-chat-panel";
 import {
   buildMissionDashboard,
   MISSION_DASH_NAV,
+  RAIL_STATE_LABELS,
   type MissionDashNavId,
 } from "@/lib/pilot-mission/mission-dashboard-screen";
 import type { SupervisedMission } from "@/lib/pilot-mission/types";
@@ -24,8 +25,8 @@ function Lines({ lines, empty }: { lines: string[]; empty: string }) {
   if (!lines.length) return <p className="mdash-empty">{empty}</p>;
   return (
     <ul>
-      {lines.map((line) => (
-        <li key={line.slice(0, 80)}>{line}</li>
+      {lines.map((line, i) => (
+        <li key={i}>{line}</li>
       ))}
     </ul>
   );
@@ -104,13 +105,19 @@ export function MissionDashboardScreen({
         <div className="mdash-main">
           {nav === "overview" ? (
             <>
-              <div className="mdash-rail" aria-label="Delivery stage rail">
+              <ol className="mdash-rail" aria-label="Delivery stage rail">
                 {model.rail.map((step) => (
-                  <div key={step.id} className="mdash-rail-step" data-state={step.state}>
+                  <li
+                    key={step.id}
+                    className="mdash-rail-step"
+                    data-state={step.state}
+                    aria-current={step.state === "current" ? "step" : undefined}
+                  >
                     {step.label}
-                  </div>
+                    <span className="mdash-rail-state">{RAIL_STATE_LABELS[step.state]}</span>
+                  </li>
                 ))}
-              </div>
+              </ol>
 
               <div className="mdash-grid">
                 <article className="mdash-card">
@@ -153,15 +160,15 @@ export function MissionDashboardScreen({
                 </article>
 
                 <article className="mdash-card">
-                  <h3>Pending approvals</h3>
-                  {model.pendingApprovals.length ? (
+                  <h3>Waiting on you</h3>
+                  {model.waitingOnYou.length ? (
                     <ul>
-                      {model.pendingApprovals.slice(0, 3).map((line) => (
-                        <li key={line.slice(0, 60)}>{line}</li>
+                      {model.waitingOnYou.slice(0, 3).map((line, i) => (
+                        <li key={i}>{line}</li>
                       ))}
                     </ul>
                   ) : (
-                    <p className="mdash-empty">No human gates are waiting right now.</p>
+                    <p className="mdash-empty">Nothing is waiting on you right now.</p>
                   )}
                 </article>
 
@@ -234,8 +241,8 @@ export function MissionDashboardScreen({
               <p className="mdash-disclosure" style={{ marginBottom: "0.75rem" }}>
                 Aria drafts; you approve. Chat never authorises external work by itself.
               </p>
-              <ConversationPanel
-                currentMissionId={mission.id}
+              <CaseChatPanel
+                mission={mission}
                 title="Talk with Aria"
                 helperText="Ask about stage, blockers, team, or next approvals."
                 placeholder="Ask Aria about this mission…"

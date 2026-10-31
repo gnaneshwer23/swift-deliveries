@@ -144,11 +144,10 @@ describe("buildPmBriefingScreen", () => {
     );
   });
 
-  it("marks Option A as Aria’s recommendation from drafted options", () => {
+  it("lists drafted options without marking one as recommended by its position", () => {
     const model = buildPmBriefingScreen(baseMission());
-    expect(model.options).toHaveLength(3);
-    expect(model.options[0]?.recommended).toBe(true);
-    expect(model.options[0]?.label).toBe("Option A");
-    expect(model.recommendedOptionId).toBe("opt-a");
+    expect(model.options.map((o) => o.label)).toEqual(["Option A", "Option B", "Option C"]);
+    expect(model.options.map((o) => o.id)).toEqual(["opt-a", "opt-b", "opt-c"]);
+    expect(model.options.every((o) => !("recommended" in o))).toBe(true);
   });
 });

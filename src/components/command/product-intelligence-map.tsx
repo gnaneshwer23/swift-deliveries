@@ -1,6 +1,6 @@
 import { useId, useState } from "react";
 import { MessageSquare, NotebookText } from "lucide-react";
-import { ConversationPanel } from "@/components/command/conversation-panel";
+import { CaseChatPanel } from "@/components/command/case-chat-panel";
 import {
   Sheet,
   SheetContent,
@@ -39,13 +39,7 @@ function formatNoteTime(iso: string): string {
  * Screen 5 — Product Intelligence Map for the supervised investigation workspace.
  * States and notes are event-backed; empty when the plan is not yet approved.
  */
-export function ProductIntelligenceMap({
-  mission,
-  missionId,
-}: {
-  mission: SupervisedMission;
-  missionId: string;
-}) {
+export function ProductIntelligenceMap({ mission }: { mission: SupervisedMission }) {
   const model = buildProductIntelligenceMap(mission);
   const [notesOpen, setNotesOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
@@ -229,8 +223,8 @@ export function ProductIntelligenceMap({
             </SheetDescription>
           </SheetHeader>
           <div className="pim-chat-body">
-            <ConversationPanel
-              currentMissionId={missionId}
+            <CaseChatPanel
+              mission={mission}
               title="Talk with Aria"
               helperText="Ask about the idea, workstreams, or what is waiting on you. Nothing runs until you approve it on the case."
               placeholder="e.g. What are we still missing about day-one users?"

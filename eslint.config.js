@@ -14,6 +14,7 @@ export default tseslint.config(
       ".vinxi",
       ".wrangler",
       ".agents/**",
+      ".claude/skills/**",
       "src/integrations/**",
     ],
   },

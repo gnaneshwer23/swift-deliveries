@@ -99,7 +99,7 @@ describe("sandboxed prototype (P5)", () => {
     expect(html).toContain("Charge");
   });
 
-  it("keeps honesty on the Simulated vs Model ladder", () => {
+  it("labels the template prototype Simulated even when a model drafted the options", () => {
     const simulated = buildMissionPrototype(mission(), {
       actorId: "u",
       nowMs: 1,
@@ -132,7 +132,10 @@ describe("sandboxed prototype (P5)", () => {
       }),
       { actorId: "u", nowMs: 1 },
     );
-    expect(modeled.honesty.label).toBe("Model · gpt-test");
+    // The HTML is still the template, so a model drafting the options does not relabel it.
+    expect(modeled.honesty).toEqual({ mode: "simulated", label: "Simulated draft", modelId: null });
+    expect(modeled.html).toContain("Simulated prototype");
+    expect(modeled.html).not.toContain("gpt-test");
   });
 
   it("surfaces verify failure when HTML is not sandbox-safe", () => {

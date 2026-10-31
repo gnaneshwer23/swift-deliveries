@@ -14,8 +14,7 @@
   font-family: "DM Sans", Inter, system-ui, sans-serif;
   background:
     radial-gradient(ellipse 80% 50% at 10% -10%, rgba(99, 102, 241, 0.18), transparent),
-    radial-gradient(ellipse 60% 40% at 90% 0%, rgba(34, 211, 238, 0.1), transparent),
-    var(--md-bg);
+    radial-gradient(ellipse 60% 40% at 90% 0%, rgba(34, 211, 238, 0.1), transparent), var(--md-bg);
   border-radius: 14px;
   border: 1px solid var(--md-border);
   overflow: hidden;
@@ -153,6 +152,7 @@
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 0.35rem;
+  margin: 0;
   padding: 0.75rem;
   border-radius: 12px;
   border: 1px solid var(--md-border);
@@ -161,6 +161,7 @@
 }
 
 .mdash-rail-step {
+  list-style: none;
   position: relative;
   text-align: center;
   padding: 0.45rem 0.25rem;
@@ -190,6 +191,19 @@
 
 .mdash-rail-step[data-state="current"] {
   color: var(--md-cyan);
+}
+.mdash-rail-step[data-state="skipped"]::before {
+  background: transparent;
+  border-style: dashed;
+}
+
+/* State in words, so the rail does not rely on colour alone. */
+.mdash-rail-state {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.6rem;
+  font-weight: 500;
+  opacity: 0.85;
 }
 .mdash-rail-step[data-state="current"]::before {
   background: var(--md-indigo);
