@@ -36,6 +36,7 @@ export function InvestigationStageShell({
   onDone,
   onError,
   scopeContext,
+  pathSlot,
 }: {
   mission: SupervisedMission;
   missionId: string;
@@ -44,6 +45,7 @@ export function InvestigationStageShell({
   downloadsSlot: ReactNode | null;
   onDone: () => Promise<void>;
   onError: (error: unknown) => void;
+  pathSlot?: ReactNode;
   scopeContext?: {
     missionOpen: boolean;
     usageWarning: string | null;
@@ -142,12 +144,16 @@ export function InvestigationStageShell({
               hidden={current !== "path"}
               aria-label="Choose path"
             >
-              <p className="cc-kicker">Your gate</p>
-              <p className="text-sm cc-muted">
-                Authorise test, investigate further, revise, or pause — continuation plan before
-                build.
-              </p>
-              {theatre}
+              {pathSlot ?? (
+                <>
+                  <p className="cc-kicker">Your gate</p>
+                  <p className="text-sm cc-muted">
+                    Authorise test, investigate further, revise, or pause — continuation plan before
+                    build.
+                  </p>
+                  {theatre}
+                </>
+              )}
             </section>
 
             <section
