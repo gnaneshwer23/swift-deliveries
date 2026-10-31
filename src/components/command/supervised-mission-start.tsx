@@ -152,12 +152,34 @@ function MissionStartForm({
     try {
       sessionStorage.setItem(
         draftKey,
-        JSON.stringify({ question, audience, outcome, constraints, intakeEvidenceNote, budget, timeline, platform, existingAssets }),
+        JSON.stringify({
+          question,
+          audience,
+          outcome,
+          constraints,
+          intakeEvidenceNote,
+          budget,
+          timeline,
+          platform,
+          existingAssets,
+        }),
       );
     } catch {
       setStorageWarning(true);
     }
-  }, [draftReady, draftKey, question, audience, outcome, constraints, intakeEvidenceNote, budget, timeline, platform, existingAssets]);
+  }, [
+    draftReady,
+    draftKey,
+    question,
+    audience,
+    outcome,
+    constraints,
+    intakeEvidenceNote,
+    budget,
+    timeline,
+    platform,
+    existingAssets,
+  ]);
 
   const start = useMutation({
     mutationFn: () =>
@@ -173,8 +195,12 @@ function MissionStartForm({
               timeline.trim() && `Timeline: ${timeline.trim()}`,
               platform.trim() && `Platform: ${platform.trim()}`,
               existingAssets.trim() && `Existing assets: ${existingAssets.trim()}`,
-            ].filter(Boolean).join("\n"),
-          ].filter(Boolean).join("\n\n"),
+            ]
+              .filter(Boolean)
+              .join("\n"),
+          ]
+            .filter(Boolean)
+            .join("\n\n"),
           researchMode,
           intakeEvidenceNote: intakeEvidenceNote.trim() || null,
         },
