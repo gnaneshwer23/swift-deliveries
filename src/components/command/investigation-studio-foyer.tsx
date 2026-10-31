@@ -65,7 +65,9 @@ export function InvestigationStudioFoyer() {
       ) : (
         <section className="ps-foyer-stage ps-foyer-stage-open" aria-label="Studio">
           <p className="ps-foyer-brand">DeliverX Studio</p>
-          <p className="ps-idea-step">Step 1 <span aria-hidden="true">·</span> Idea</p>
+          <p className="ps-idea-step">
+            Step 1 <span aria-hidden="true">·</span> Idea
+          </p>
           <h2 className="ps-foyer-headline">What are you thinking of building?</h2>
           <p className="ps-foyer-lede ps-quiet-foyer-lede">
             A sentence is enough to get started. Add context if you know it; we’ll ask only useful

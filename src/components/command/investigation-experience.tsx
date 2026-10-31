@@ -69,12 +69,13 @@ const ANALYSIS_AREAS = [
 ] as const;
 
 function AnalysisProgress({ mission }: { mission: SupervisedMission }) {
-  const activityText = (mission.activity ?? []).map((event) =>
-    `${event.kind} ${event.taskKey ?? ""} ${event.summary}`,
+  const activityText = (mission.activity ?? []).map(
+    (event) => `${event.kind} ${event.taskKey ?? ""} ${event.summary}`,
   );
   const evidenceText = mission.evidence.map((row) => row.statement);
   const recorded = [...activityText, ...evidenceText];
-  const running = mission.job.status === "leased" ||
+  const running =
+    mission.job.status === "leased" ||
     Boolean(mission.researchPassQueuedAt && !mission.researchPassCompletedAt);
   const completed = Boolean(mission.researchPassCompletedAt);
   const count = (pattern: RegExp) => recorded.filter((text) => pattern.test(text)).length;
@@ -83,12 +84,30 @@ function AnalysisProgress({ mission }: { mission: SupervisedMission }) {
     <div className="ps-analysis-progress" aria-label="Analysis areas">
       {ANALYSIS_AREAS.map((area) => {
         const hasRecord = count(area.match) > 0;
-        const state = hasRecord ? "recorded" : running ? "working" : completed ? "review" : "pending";
-        const label = state === "recorded" ? "Finding recorded" : state === "working" ? "In progress" : state === "review" ? "Review gaps" : "Not started";
+        const state = hasRecord
+          ? "recorded"
+          : running
+            ? "working"
+            : completed
+              ? "review"
+              : "pending";
+        const label =
+          state === "recorded"
+            ? "Finding recorded"
+            : state === "working"
+              ? "In progress"
+              : state === "review"
+                ? "Review gaps"
+                : "Not started";
         return (
           <div className="ps-analysis-progress-item" key={area.id} data-state={state}>
-            <span className="ps-analysis-progress-mark" aria-hidden="true">{state === "recorded" ? "✓" : state === "working" ? "·" : "○"}</span>
-            <span><strong>{area.label}</strong><small>{label}</small></span>
+            <span className="ps-analysis-progress-mark" aria-hidden="true">
+              {state === "recorded" ? "✓" : state === "working" ? "·" : "○"}
+            </span>
+            <span>
+              <strong>{area.label}</strong>
+              <small>{label}</small>
+            </span>
           </div>
         );
       })}
@@ -168,7 +187,11 @@ export function InvestigationExperience({
       <details className="ps-investigation-activity">
         <summary>
           <span>Research activity</span>
-          <span className="cc-muted text-xs">{experience.updates.length ? `${experience.updates.length} recorded updates` : "No updates yet"}</span>
+          <span className="cc-muted text-xs">
+            {experience.updates.length
+              ? `${experience.updates.length} recorded updates`
+              : "No updates yet"}
+          </span>
         </summary>
         {experience.updates.length ? (
           <ul className="ps-investigation-updates" aria-label="Recent persisted updates">

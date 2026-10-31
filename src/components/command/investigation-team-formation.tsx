@@ -44,8 +44,13 @@ function statusFromEvents(
 function handoffEvidence(mission: SupervisedMission, capabilityId: string | null, label: string) {
   const handoffs = mission.teamCollaboration?.handoffs ?? [];
   return handoffs
-    .filter((handoff) => handoff.fromActor === capabilityId || handoff.toActor === capabilityId ||
-      handoff.fromActor === label || handoff.toActor === label)
+    .filter(
+      (handoff) =>
+        handoff.fromActor === capabilityId ||
+        handoff.toActor === capabilityId ||
+        handoff.fromActor === label ||
+        handoff.toActor === label,
+    )
     .flatMap((handoff) => handoff.evidenceIds);
 }
 
@@ -77,7 +82,9 @@ function agentsForMission(mission: SupervisedMission): FormationAgent[] {
           outputs: role.plannedArtefacts,
           evidence: handoffEvidence(mission, role.capabilityId, role.label),
           status,
-          question: blockedStep?.blockedReason ?? (plan.executionBlocked ? plan.executionBlockedReason : null),
+          question:
+            blockedStep?.blockedReason ??
+            (plan.executionBlocked ? plan.executionBlockedReason : null),
         };
       });
   }
@@ -113,8 +120,14 @@ const STATUS_LABELS: Record<AgentStatus, string> = {
 
 function BulletList({ items, empty }: { items: string[]; empty: string }) {
   return items.length ? (
-    <ul>{items.map((item) => <li key={item}>{item}</li>)}</ul>
-  ) : <p className="cc-muted text-sm">{empty}</p>;
+    <ul>
+      {items.map((item) => (
+        <li key={item}>{item}</li>
+      ))}
+    </ul>
+  ) : (
+    <p className="cc-muted text-sm">{empty}</p>
+  );
 }
 
 /** Introduces only roles assigned on this mission record; status and evidence are record-backed. */
@@ -123,10 +136,18 @@ export function InvestigationTeamFormation({ mission }: { mission: SupervisedMis
   const [selectedId, setSelectedId] = useState<string | null>(agents[0]?.id ?? null);
   const selected = agents.find((agent) => agent.id === selectedId) ?? agents[0] ?? null;
   const updates = [...(mission.activity ?? [])].slice(-6).reverse();
-  const taskCount = mission.continuationPlan?.roadmap.length ?? mission.team?.tasks.filter((task) => task.actor === "specialist").length ?? 0;
-  const blockerCount = mission.continuationPlan?.roadmap.filter((step) => step.blocked).length ?? mission.team?.tasks.filter((task) => task.status === "blocked").length ?? 0;
+  const taskCount =
+    mission.continuationPlan?.roadmap.length ??
+    mission.team?.tasks.filter((task) => task.actor === "specialist").length ??
+    0;
+  const blockerCount =
+    mission.continuationPlan?.roadmap.filter((step) => step.blocked).length ??
+    mission.team?.tasks.filter((task) => task.status === "blocked").length ??
+    0;
   const recordedUpdatesCount = updates.length;
-  const suppliedCount = mission.evidence.filter((item) => item.classification === "supplied").length;
+  const suppliedCount = mission.evidence.filter(
+    (item) => item.classification === "supplied",
+  ).length;
   const gapCount = mission.evidence.filter((item) => item.classification === "gap").length;
 
   return (
@@ -141,16 +162,28 @@ export function InvestigationTeamFormation({ mission }: { mission: SupervisedMis
       </header>
 
       <p className="ps-team-formation-disclosure">
-        DeliverX has a larger specialist catalogue. This screen shows only roles selected for this mission’s
-        authorised path. Planned roles have not started work; status changes appear only
+        DeliverX has a larger specialist catalogue. This screen shows only roles selected for this
+        mission’s authorised path. Planned roles have not started work; status changes appear only
         when worker events are saved to the mission record.
       </p>
 
       <div className="ps-team-formation-metrics" aria-label="Team summary">
-        <div><strong>{agents.length}</strong><span>assigned specialist roles</span></div>
-        <div><strong>{taskCount}</strong><span>planned tasks</span></div>
-        <div><strong>{recordedUpdatesCount}</strong><span>saved mission updates</span></div>
-        <div><strong>{blockerCount}</strong><span>recorded blockers</span></div>
+        <div>
+          <strong>{agents.length}</strong>
+          <span>assigned specialist roles</span>
+        </div>
+        <div>
+          <strong>{taskCount}</strong>
+          <span>planned tasks</span>
+        </div>
+        <div>
+          <strong>{recordedUpdatesCount}</strong>
+          <span>saved mission updates</span>
+        </div>
+        <div>
+          <strong>{blockerCount}</strong>
+          <span>recorded blockers</span>
+        </div>
       </div>
 
       {mission.continuationPlan ? (
@@ -160,14 +193,18 @@ export function InvestigationTeamFormation({ mission }: { mission: SupervisedMis
           <ol>
             {mission.continuationPlan.roadmap.map((step) => (
               <li key={step.id} data-blocked={step.blocked ? "true" : undefined}>
-                <strong>{step.title}</strong><span>{step.ownerLabel}</span>
+                <strong>{step.title}</strong>
+                <span>{step.ownerLabel}</span>
                 <p>{step.detail}</p>
-                {step.blockedReason ? <p className="ps-team-blocker">Needs attention: {step.blockedReason}</p> : null}
+                {step.blockedReason ? (
+                  <p className="ps-team-blocker">Needs attention: {step.blockedReason}</p>
+                ) : null}
               </li>
             ))}
           </ol>
           <p className="cc-muted text-xs">
-            This plan is for review. Implementation starts only after the case-room gate. Status updates then require saved worker activity.
+            This plan is for review. Implementation starts only after the case-room gate. Status
+            updates then require saved worker activity.
           </p>
         </section>
       ) : null}
@@ -179,7 +216,9 @@ export function InvestigationTeamFormation({ mission }: { mission: SupervisedMis
             <h3>{mission.continuationPlan.title}</h3>
             <p>{mission.continuationPlan.summary}</p>
           </div>
-          <a className="cc-btn cc-btn-secondary" href="#continuation-plan">Review plan</a>
+          <a className="cc-btn cc-btn-secondary" href="#continuation-plan">
+            Review plan
+          </a>
         </div>
       ) : null}
 
@@ -197,12 +236,16 @@ export function InvestigationTeamFormation({ mission }: { mission: SupervisedMis
                     aria-pressed={selected?.id === agent.id}
                     onClick={() => setSelectedId(agent.id)}
                   >
-                    <span className="ps-team-avatar" aria-hidden="true">{agent.label.slice(0, 1)}</span>
+                    <span className="ps-team-avatar" aria-hidden="true">
+                      {agent.label.slice(0, 1)}
+                    </span>
                     <span className="ps-team-roster-copy">
                       <strong>{agent.label}</strong>
                       <small>{agent.capabilityId ?? "Human role"}</small>
                     </span>
-                    <span className="ps-team-status" data-state={agent.status}>{STATUS_LABELS[agent.status]}</span>
+                    <span className="ps-team-status" data-state={agent.status}>
+                      {STATUS_LABELS[agent.status]}
+                    </span>
                   </button>
                 </li>
               ))}
@@ -212,52 +255,105 @@ export function InvestigationTeamFormation({ mission }: { mission: SupervisedMis
           {selected ? (
             <article className="ps-team-agent-profile" aria-live="polite">
               <header>
-                <span className="ps-team-avatar ps-team-avatar-large" aria-hidden="true">{selected.label.slice(0, 1)}</span>
+                <span className="ps-team-avatar ps-team-avatar-large" aria-hidden="true">
+                  {selected.label.slice(0, 1)}
+                </span>
                 <div>
                   <p className="cc-kicker">Assigned specialist · {selected.capabilityId}</p>
                   <h3>{selected.label}</h3>
                 </div>
-                <span className="ps-team-status" data-state={selected.status}>{STATUS_LABELS[selected.status]}</span>
+                <span className="ps-team-status" data-state={selected.status}>
+                  {STATUS_LABELS[selected.status]}
+                </span>
               </header>
               <p className="ps-team-agent-purpose">{selected.responsibility}</p>
-              <p className="ps-team-agent-why"><strong>Why this role:</strong> {selected.why}</p>
+              <p className="ps-team-agent-why">
+                <strong>Why this role:</strong> {selected.why}
+              </p>
 
               <div className="ps-team-detail-grid">
-                <section><h4>Tasks on this plan</h4><BulletList items={selected.tasks} empty="No task assigned." /></section>
+                <section>
+                  <h4>Tasks on this plan</h4>
+                  <BulletList items={selected.tasks} empty="No task assigned." />
+                </section>
                 <section>
                   <h4>Inputs</h4>
-                  {selected.inputs.length ? <BulletList items={selected.inputs} empty="" /> :
-                    <p className="cc-muted text-sm">The approved brief, decision, and evidence register remain on the mission. Role-specific inputs are not listed in this plan.</p>}
+                  {selected.inputs.length ? (
+                    <BulletList items={selected.inputs} empty="" />
+                  ) : (
+                    <p className="cc-muted text-sm">
+                      The approved brief, decision, and evidence register remain on the mission.
+                      Role-specific inputs are not listed in this plan.
+                    </p>
+                  )}
                 </section>
-                <section><h4>Planned outputs</h4><BulletList items={selected.outputs} empty="No output recorded yet." /></section>
-                <section><h4>Evidence</h4>
-                  {selected.evidence.length ? <BulletList items={[...new Set(selected.evidence)]} empty="" /> :
-                    <p className="cc-muted text-sm">Mission register: {suppliedCount} supplied finding(s), {gapCount} labelled gap(s). No role-specific evidence handoff is recorded yet.</p>}
+                <section>
+                  <h4>Planned outputs</h4>
+                  <BulletList items={selected.outputs} empty="No output recorded yet." />
+                </section>
+                <section>
+                  <h4>Evidence</h4>
+                  {selected.evidence.length ? (
+                    <BulletList items={[...new Set(selected.evidence)]} empty="" />
+                  ) : (
+                    <p className="cc-muted text-sm">
+                      Mission register: {suppliedCount} supplied finding(s), {gapCount} labelled
+                      gap(s). No role-specific evidence handoff is recorded yet.
+                    </p>
+                  )}
                 </section>
               </div>
 
               <div className="ps-team-progress" data-state={selected.status}>
-                <div><strong>Recorded progress</strong><span>{STATUS_LABELS[selected.status]}</span></div>
-                <p>{selected.question ? `Blocker: ${selected.question}` : "No question or blocker is recorded for this role yet."}</p>
+                <div>
+                  <strong>Recorded progress</strong>
+                  <span>{STATUS_LABELS[selected.status]}</span>
+                </div>
+                <p>
+                  {selected.question
+                    ? `Blocker: ${selected.question}`
+                    : "No question or blocker is recorded for this role yet."}
+                </p>
                 <small>Progress reflects saved events; no percentage is estimated.</small>
               </div>
 
               <p className="ps-team-agent-actions">
-                <a className="cc-btn cc-btn-secondary" href="#ps-team-ask-pm">Ask the PM about this role</a>
-                <a className="cc-btn cc-btn-secondary" href="#continuation-plan">Review work plan</a>
+                <a className="cc-btn cc-btn-secondary" href="#ps-team-ask-pm">
+                  Ask the PM about this role
+                </a>
+                <a className="cc-btn cc-btn-secondary" href="#continuation-plan">
+                  Review work plan
+                </a>
               </p>
             </article>
           ) : null}
         </div>
       ) : (
-        <p className="cc-muted text-sm">No specialist roles are assigned to this path. The approved case will be retained without a delivery team.</p>
+        <p className="cc-muted text-sm">
+          No specialist roles are assigned to this path. The approved case will be retained without
+          a delivery team.
+        </p>
       )}
 
       <section className="ps-team-updates" aria-label="Recorded mission updates">
-        <div><h3>Latest mission updates</h3><p className="cc-muted text-xs">Events already saved to this mission; they may include earlier investigation work.</p></div>
+        <div>
+          <h3>Latest mission updates</h3>
+          <p className="cc-muted text-xs">
+            Events already saved to this mission; they may include earlier investigation work.
+          </p>
+        </div>
         {updates.length ? (
-          <ul>{updates.map((event) => <li key={event.id}><strong>{event.actor}</strong><span>{event.summary}</span></li>)}</ul>
-        ) : <p className="cc-muted text-sm">No continuation work events are recorded yet.</p>}
+          <ul>
+            {updates.map((event) => (
+              <li key={event.id}>
+                <strong>{event.actor}</strong>
+                <span>{event.summary}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="cc-muted text-sm">No continuation work events are recorded yet.</p>
+        )}
       </section>
 
       <details className="ps-team-ask-pm" id="ps-team-ask-pm">

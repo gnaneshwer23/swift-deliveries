@@ -1,8 +1,5 @@
 import type { ProductBrief } from "./marketing/product-resources";
-import {
-  DEFAULT_MISSION_OUTCOME,
-  RESEARCH_REFINE_AUDIENCE,
-} from "./pilot-mission/pm-brief";
+import { DEFAULT_MISSION_OUTCOME, RESEARCH_REFINE_AUDIENCE } from "./pilot-mission/pm-brief";
 export type MissionIntakeDraft = {
   question: string;
   audience: string;

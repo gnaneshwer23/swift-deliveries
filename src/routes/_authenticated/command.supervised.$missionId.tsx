@@ -342,7 +342,6 @@ function SupervisedMissionPage() {
 
           <ProjectRoomNav mission={mission} />
 
-
           <div
             id="pr-evidence"
             className="ps-record-anchor"
@@ -807,11 +806,27 @@ type PathChoice = {
 };
 
 const PATH_CHOICES: PathChoice[] = [
-  { id: "authorise_bounded_test", title: "Approve this direction", detail: "Save the recommendation and prepare the next bounded plan." },
-  { id: "authorise_gather_evidence", title: "Request more research", detail: "Investigate named unknowns before committing." },
-  { id: "authorise_revise", title: "Make changes", detail: "Reframe the audience, problem, or first-version scope." },
+  {
+    id: "authorise_bounded_test",
+    title: "Approve this direction",
+    detail: "Save the recommendation and prepare the next bounded plan.",
+  },
+  {
+    id: "authorise_gather_evidence",
+    title: "Request more research",
+    detail: "Investigate named unknowns before committing.",
+  },
+  {
+    id: "authorise_revise",
+    title: "Make changes",
+    detail: "Reframe the audience, problem, or first-version scope.",
+  },
   { id: "close_case", title: "Close this idea", detail: "Keep the findings and stop this case." },
-  { id: "founder_requested_continuation", title: "Continue with open risks", detail: "Proceed on your chosen path while keeping disagreement visible." },
+  {
+    id: "founder_requested_continuation",
+    title: "Continue with open risks",
+    detail: "Proceed on your chosen path while keeping disagreement visible.",
+  },
 ];
 
 function StepFourDiscussion({
@@ -844,16 +859,18 @@ function StepFourDiscussion({
       <div className="ps-step-four-layout">
         <div className="ps-step-four-main">
           <section className="ps-step-four-pm" aria-label="PM recommendation">
-            <div className="ps-step-four-avatar" aria-hidden="true">PM</div>
+            <div className="ps-step-four-avatar" aria-hidden="true">
+              PM
+            </div>
             <div>
               <p className="ps-step-four-byline">DeliverX PM · recommendation draft</p>
-              <p className="ps-step-four-message">
-                {recommendation.rationale}
-              </p>
+              <p className="ps-step-four-message">{recommendation.rationale}</p>
               <div className="ps-step-four-chips">
                 <span>Option comparison · v{proposal.version}</span>
                 <span>{mission.evidence.length} evidence item(s) considered</span>
-                {recommendation.executionLimited ? <span data-kind="warning">Research execution needs attention</span> : null}
+                {recommendation.executionLimited ? (
+                  <span data-kind="warning">Research execution needs attention</span>
+                ) : null}
               </div>
             </div>
           </section>
@@ -879,7 +896,11 @@ function StepFourDiscussion({
             action={proposal.action}
             version={proposal.version}
             scopeHash={proposal.scopeHash}
-            options={proposal.options.map((option) => ({ id: option.id, title: option.title, tradeoff: option.tradeoff }))}
+            options={proposal.options.map((option) => ({
+              id: option.id,
+              title: option.title,
+              tradeoff: option.tradeoff,
+            }))}
             onDone={onDone}
             onError={onError}
           />
@@ -888,10 +909,34 @@ function StepFourDiscussion({
         <aside className="ps-step-four-record" aria-label="Decision record preview">
           <h3>Decision record</h3>
           <dl>
-            <div><dt>Your choice</dt><dd>{mission.approval ? HUMAN_NEXT_PATH_LABELS[normalizeDecisionChoice(mission.approval.choice)] : "Not decided"}</dd></div>
-            <div><dt>Your note</dt><dd>{mission.approval?.note || "No changes recorded yet."}</dd></div>
-            <div><dt>Evidence considered</dt><dd>{evidence.length ? evidence.map((item) => item.id).join(" · ") : "No evidence items recorded yet."}</dd></div>
-            <div><dt>Decision saved</dt><dd>{mission.approval?.decidedAt ? new Date(mission.approval.decidedAt).toLocaleString() : "Not yet"}</dd></div>
+            <div>
+              <dt>Your choice</dt>
+              <dd>
+                {mission.approval
+                  ? HUMAN_NEXT_PATH_LABELS[normalizeDecisionChoice(mission.approval.choice)]
+                  : "Not decided"}
+              </dd>
+            </div>
+            <div>
+              <dt>Your note</dt>
+              <dd>{mission.approval?.note || "No changes recorded yet."}</dd>
+            </div>
+            <div>
+              <dt>Evidence considered</dt>
+              <dd>
+                {evidence.length
+                  ? evidence.map((item) => item.id).join(" · ")
+                  : "No evidence items recorded yet."}
+              </dd>
+            </div>
+            <div>
+              <dt>Decision saved</dt>
+              <dd>
+                {mission.approval?.decidedAt
+                  ? new Date(mission.approval.decidedAt).toLocaleString()
+                  : "Not yet"}
+              </dd>
+            </div>
           </dl>
           <p className="ps-step-four-record-note">
             Your chosen option, path, note, evidence scope, and timestamp are saved to this mission.
@@ -967,9 +1012,22 @@ function DecisionForm({
         <legend>Choose the option you want to discuss</legend>
         <div className="ps-step-four-option-grid">
           {options.map((option) => (
-            <label className="ps-step-four-option" data-selected={optionId === option.id ? "true" : undefined} key={option.id}>
-              <input type="radio" name="decision-option" value={option.id} checked={optionId === option.id} onChange={() => setOptionId(option.id)} />
-              <span><strong>{option.title}</strong><small>{option.tradeoff || "Trade-offs are not recorded for this option."}</small></span>
+            <label
+              className="ps-step-four-option"
+              data-selected={optionId === option.id ? "true" : undefined}
+              key={option.id}
+            >
+              <input
+                type="radio"
+                name="decision-option"
+                value={option.id}
+                checked={optionId === option.id}
+                onChange={() => setOptionId(option.id)}
+              />
+              <span>
+                <strong>{option.title}</strong>
+                <small>{option.tradeoff || "Trade-offs are not recorded for this option."}</small>
+              </span>
             </label>
           ))}
         </div>
@@ -978,9 +1036,22 @@ function DecisionForm({
         <legend>Choose your next step</legend>
         <div className="ps-step-four-path-grid">
           {PATH_CHOICES.map((path) => (
-            <label className="ps-step-four-option" data-selected={choice === path.id ? "true" : undefined} key={path.id}>
-              <input type="radio" name="decision-path" value={path.id} checked={choice === path.id} onChange={() => setChoice(path.id)} />
-              <span><strong>{path.title}</strong><small>{path.detail}</small></span>
+            <label
+              className="ps-step-four-option"
+              data-selected={choice === path.id ? "true" : undefined}
+              key={path.id}
+            >
+              <input
+                type="radio"
+                name="decision-path"
+                value={path.id}
+                checked={choice === path.id}
+                onChange={() => setChoice(path.id)}
+              />
+              <span>
+                <strong>{path.title}</strong>
+                <small>{path.detail}</small>
+              </span>
             </label>
           ))}
         </div>
@@ -997,7 +1068,10 @@ function DecisionForm({
         onChange={(event) => setNote(event.target.value)}
         placeholder="Add a question, requested change, or reason for your choice. This note is saved with your decision."
       />
-      <p className="cc-muted text-xs">Nothing proceeds until you confirm. Your choice and note are saved against option version {version} and its evidence scope.</p>
+      <p className="cc-muted text-xs">
+        Nothing proceeds until you confirm. Your choice and note are saved against option version{" "}
+        {version} and its evidence scope.
+      </p>
       <button
         type="submit"
         className="cc-btn cc-btn-primary"

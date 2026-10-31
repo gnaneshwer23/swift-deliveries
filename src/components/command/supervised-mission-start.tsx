@@ -346,7 +346,9 @@ function MissionStartForm({
           disabled={voiceBusy}
         />
 
-        <p className="ps-idea-later-note">One sentence is enough. You can add or change details later.</p>
+        <p className="ps-idea-later-note">
+          One sentence is enough. You can add or change details later.
+        </p>
 
         <details className="ps-intake-advanced ps-idea-context">
           <summary>
@@ -354,7 +356,8 @@ function MissionStartForm({
             <span className="ps-idea-optional">Optional</span>
           </summary>
           <p className="ps-idea-context-help">
-            Share anything you already know. Skip the rest; we’ll ask only useful follow-up questions.
+            Share anything you already know. Skip the rest; we’ll ask only useful follow-up
+            questions.
           </p>
           <div className="ps-idea-grid">
             <label htmlFor="supervised-audience">
