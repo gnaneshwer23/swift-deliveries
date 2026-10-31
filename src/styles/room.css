@@ -1035,3 +1035,213 @@ li[data-status="waiting_on_you"] .room-build-status {
     opacity: 1;
   }
 }
+
+/* ── Review the plan ── */
+.plan {
+  display: grid;
+  gap: var(--sx-space-md);
+  font-size: var(--sx-text-sm);
+  color: var(--sx-ink);
+}
+
+.plan section {
+  display: grid;
+  gap: var(--sx-space-2xs);
+}
+
+.plan-aria {
+  display: flex;
+  gap: var(--sx-space-sm);
+  align-items: center;
+}
+
+.plan-aria svg {
+  flex: none;
+}
+
+.plan-aria p {
+  margin: 0;
+  font-size: var(--sx-text-md);
+  line-height: 1.5;
+}
+
+.plan-idea {
+  position: relative;
+  padding: var(--sx-space-sm) var(--sx-space-md);
+  border-radius: 1.25rem;
+  background: var(--sx-ink);
+  color: var(--sx-paper);
+}
+
+.plan-idea .room-mono {
+  color: color-mix(in oklab, var(--sx-paper) 65%, transparent);
+}
+
+.plan-idea p {
+  margin: 0;
+  padding-right: 3.5rem;
+  font: 500 var(--sx-text-lg) / 1.35 var(--sx-font-display);
+  letter-spacing: -0.01em;
+}
+
+.plan-idea .plan-link {
+  position: absolute;
+  top: var(--sx-space-sm);
+  right: var(--sx-space-md);
+  color: var(--sx-paper);
+  text-decoration: underline;
+}
+
+.plan-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--sx-accent);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.plan-link:focus-visible {
+  outline: 2px solid var(--sx-focus);
+  outline-offset: 2px;
+}
+
+.plan-steps {
+  display: grid;
+  gap: var(--sx-space-2xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: plan;
+}
+
+.plan-steps li {
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr);
+  gap: var(--sx-space-xs);
+  align-items: baseline;
+  line-height: 1.5;
+  counter-increment: plan;
+}
+
+.plan-steps li::before {
+  content: counter(plan);
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--sx-accent-soft);
+  color: var(--sx-accent);
+  font: 600 var(--sx-text-xs) var(--sx-font-body);
+}
+
+.plan-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sx-space-xs);
+  margin: 0;
+}
+
+.plan-facts > div {
+  display: grid;
+  gap: 0.125rem;
+  align-content: start;
+  padding: var(--sx-space-sm);
+  border: 1px solid var(--sx-rule);
+  border-radius: 1rem;
+  background: var(--sx-surface);
+}
+
+.plan-facts dt {
+  font-size: var(--sx-text-xs);
+  color: var(--sx-muted);
+}
+
+.plan-facts dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.plan .plan-hint {
+  margin: 0;
+  font-size: var(--sx-text-xs);
+  font-weight: 400;
+  color: var(--sx-muted);
+}
+
+.plan-team {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sx-space-xs) var(--sx-space-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plan-team li {
+  display: flex;
+  gap: var(--sx-space-2xs);
+  align-items: center;
+}
+
+.plan-team span {
+  display: grid;
+  line-height: 1.25;
+}
+
+.plan-team em {
+  font-style: normal;
+  font-size: var(--sx-text-xs);
+  color: var(--sx-muted);
+}
+
+.plan-unknowns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sx-space-2xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plan-unknowns li {
+  padding: 0.25rem 0.75rem;
+  border: 1px dashed var(--sx-waiting);
+  border-radius: 999px;
+  background: var(--sx-waiting-soft);
+  font-size: var(--sx-text-xs);
+}
+
+.plan-edit {
+  padding-top: var(--sx-space-sm);
+  border-top: 1px solid var(--sx-rule);
+}
+
+.plan-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sx-space-2xs);
+  align-items: center;
+  padding: var(--sx-space-sm) 0;
+  background: var(--sx-paper);
+  border-top: 1px solid var(--sx-rule);
+}
+
+.plan-actions .plan-hint {
+  flex-basis: 100%;
+}
+
+@media (max-width: 560px) {
+  .plan-facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.plan-error {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--sx-danger);
+  font-size: var(--sx-text-sm);
+}
