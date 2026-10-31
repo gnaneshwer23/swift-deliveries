@@ -1,22 +1,24 @@
-import { HomePlatformStory } from "@/components/marketing/home-platform-story";
-import { ProductBrainExplorer } from "@/components/marketing/product-brain-explorer";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { OnboardingGate } from "@/components/onboarding-gate";
+import { DeliverxLanding } from "@/components/marketing/deliverx-landing";
+import "@/styles/product-intelligence.css";
 
-const TITLE = "DeliverX — From product idea to continuous intelligence";
+const TITLE = "DeliverX — Turn an idea into a complete product project";
 const DESCRIPTION =
-  "DeliverX helps founders and product builders turn a product question into evidence, an accountable decision and inspectable work.";
+  "Describe your idea. DeliverX’s AI product team researches it, plans it, builds it, and keeps the evidence.";
 
 const HOW_IT_WORKS_SCHEMA = [
-  { name: "Frame", desc: "Define one product question, constraints and supplied evidence." },
-  { name: "Investigate", desc: "Organise supplied sources and retain evidence gaps." },
-  { name: "Compare", desc: "Inspect alternatives, trade-offs and a recommendation." },
-  { name: "Decide", desc: "The owner approves a bounded next step or requests more evidence." },
+  { name: "Describe", desc: "Submit a short product idea and optional constraints." },
   {
-    name: "Inspect",
-    desc: "Review the decision record and experiment brief. This is an illustrative workflow.",
+    name: "Investigate",
+    desc: "Specialist capabilities research the opportunity and surface gaps.",
+  },
+  { name: "Brief", desc: "The AI PM explains options, evidence and a recommendation." },
+  { name: "Decide", desc: "You approve, revise or request more research." },
+  {
+    name: "Deliver",
+    desc: "Approved work continues with a visible team and a downloadable record.",
   },
 ];
 
@@ -99,31 +101,7 @@ function HomePage() {
   return (
     <MarketingLayout>
       <OnboardingGate />
-      <section className="dxl-hero dxl-hero-home">
-        <div className="dxl-wrap">
-          <p className="dxl-eyebrow">DeliverX · Product Super Intelligence</p>
-          <h1 className="dxl-h1">
-            From product idea
-            <br />
-            <span className="dxl-grad">to continuous intelligence.</span>
-          </h1>
-          <p className="dxl-lead">
-            Describe a product. Specialist AI agents research it, weigh the options and draft the
-            plan, prototype and checks, while you approve every decision that matters and keep a
-            record of how it was made.
-          </p>
-          <div className="dxl-ctas">
-            <Link to="/onboarding" className="dxl-btn dxl-btn-primary">
-              Start building <ArrowRight size={16} />
-            </Link>
-            <a href="#hp-record" className="dxl-btn dxl-btn-ghost">
-              See how a product is built
-            </a>
-          </div>
-          <ProductBrainExplorer />
-        </div>
-      </section>
-      <HomePlatformStory />
+      <DeliverxLanding />
     </MarketingLayout>
   );
 }

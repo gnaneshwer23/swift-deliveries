@@ -123,7 +123,7 @@ export function MarketingNav() {
         {!loading && user ? (
           <>
             <Link to="/command" className="dxn-cta dxn-desktop-cta">
-              Launch PSI Workspace
+              Start with an idea
             </Link>
             <AccountMenu user={user} />
           </>
@@ -132,8 +132,8 @@ export function MarketingNav() {
             <Link to="/login" className="dxn-signin">
               Sign in
             </Link>
-            <Link to="/pilot" search={{ plan: "founder" }} className="dxn-cta">
-              Request a pilot
+            <Link to="/welcome" className="dxn-cta">
+              Start with an idea
             </Link>
           </>
         )}
@@ -179,12 +179,17 @@ export function MarketingNav() {
           </div>
           {user ? (
             <Link to="/command" onClick={() => setOpen(false)}>
-              Launch PSI Workspace
+              Start with an idea
             </Link>
           ) : (
-            <Link to="/login" className="dxn-signin" onClick={() => setOpen(false)}>
-              Sign in
-            </Link>
+            <>
+              <Link to="/login" className="dxn-signin" onClick={() => setOpen(false)}>
+                Sign in
+              </Link>
+              <Link to="/welcome" onClick={() => setOpen(false)}>
+                Start with an idea
+              </Link>
+            </>
           )}
         </nav>
       </div>

@@ -32,6 +32,7 @@ import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SolutionsRouteImport } from './routes/solutions'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AuthenticatedCareerOnboardingRouteImport } from './routes/_authenticated/career-onboarding'
 import { Route as AuthenticatedCommandRouteImport } from './routes/_authenticated/command'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
@@ -195,6 +196,11 @@ const SolutionsRoute = SolutionsRouteImport.update({
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedCareerOnboardingRoute =
@@ -506,6 +512,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/solutions': typeof SolutionsRoute
   '/terms': typeof TermsRoute
+  '/welcome': typeof WelcomeRoute
   '/career-onboarding': typeof AuthenticatedCareerOnboardingRoute
   '/command': typeof AuthenticatedCommandRouteWithChildren
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -580,6 +587,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/solutions': typeof SolutionsRoute
   '/terms': typeof TermsRoute
+  '/welcome': typeof WelcomeRoute
   '/career-onboarding': typeof AuthenticatedCareerOnboardingRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/attest/$token': typeof AttestTokenRoute
@@ -653,6 +661,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/solutions': typeof SolutionsRoute
   '/terms': typeof TermsRoute
+  '/welcome': typeof WelcomeRoute
   '/_authenticated/career-onboarding': typeof AuthenticatedCareerOnboardingRoute
   '/_authenticated/command': typeof AuthenticatedCommandRouteWithChildren
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
@@ -729,6 +738,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/solutions'
     | '/terms'
+    | '/welcome'
     | '/career-onboarding'
     | '/command'
     | '/onboarding'
@@ -803,6 +813,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/solutions'
     | '/terms'
+    | '/welcome'
     | '/career-onboarding'
     | '/onboarding'
     | '/attest/$token'
@@ -875,6 +886,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/solutions'
     | '/terms'
+    | '/welcome'
     | '/_authenticated/career-onboarding'
     | '/_authenticated/command'
     | '/_authenticated/onboarding'
@@ -951,6 +963,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   SolutionsRoute: typeof SolutionsRoute
   TermsRoute: typeof TermsRoute
+  WelcomeRoute: typeof WelcomeRoute
   AttestTokenRoute: typeof AttestTokenRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
@@ -1130,6 +1143,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/career-onboarding': {
@@ -1640,6 +1660,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   SolutionsRoute: SolutionsRoute,
   TermsRoute: TermsRoute,
+  WelcomeRoute: WelcomeRoute,
   AttestTokenRoute: AttestTokenRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
