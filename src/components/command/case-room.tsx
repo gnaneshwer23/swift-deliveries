@@ -5,9 +5,10 @@
  * control set for that step in a side sheet, so approvals keep their version binding and
  * consent rules. The full record stays one link away, below the Room.
  */
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AgentAvatar } from "@/components/command/agent-avatar";
 import { CaseChatPanel } from "@/components/command/case-chat-panel";
+import { BuildCard, GateReview } from "@/components/command/delivery-build";
 import { RoomStage } from "@/components/command/room-stage";
 import {
   Sheet,
@@ -16,12 +17,21 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import type { DeliveryRoom } from "@/lib/pilot-mission/delivery-room";
 import { buildRoomModel, roomDateLabel, type RoomBeat } from "@/lib/pilot-mission/room-story";
 import type { SupervisedMission } from "@/lib/pilot-mission/types";
 import "@/styles/studio-system.css";
 import "@/styles/room.css";
 
-type Panel = "plan" | "work" | "decide" | "delivery" | "ask";
+type Panel = "plan" | "work" | "decide" | "delivery" | "gate" | "ask";
+
+/** The linked delivery build, read from the delivery engine by the page. */
+export type CaseRoomBuild = {
+  room: DeliveryRoom | null;
+  error: string | null;
+  deciding: boolean;
+  onDecideGate: (taskId: string, decision: "approve" | "reject", note: string) => void;
+};
 
 export type CaseRoomPanels = {
   plan: ReactNode;
@@ -35,6 +45,7 @@ const PANEL_TITLE: Record<Panel, string> = {
   work: "Next step",
   decide: "Your decision",
   delivery: "Begin delivery",
+  gate: "Your review",
   ask: "Ask Aria",
 };
 
@@ -113,7 +124,7 @@ function TeamIntro({ beat }: { beat: Extract<RoomBeat, { kind: "team" }> }) {
   );
 }
 
-function Beat({ beat }: { beat: RoomBeat }) {
+function Beat({ beat, build }: { beat: RoomBeat; build?: CaseRoomBuild | undefined }) {
   switch (beat.kind) {
     case "idea":
       return (
@@ -192,21 +203,57 @@ function Beat({ beat }: { beat: RoomBeat }) {
           {beat.note ? <p className="room-you-meta">{beat.note}</p> : null}
         </You>
       );
-    case "team":
+    case "team": {
+      // Once the build exists, the team is whoever owns its tasks.
+      const team = build?.room?.team ?? [];
+      const shown: typeof beat = team.length
+        ? {
+            kind: "team",
+            message: `Here’s the team building it — ${team.length} specialist${team.length === 1 ? "" : "s"}. Each one’s status comes from their saved work.`,
+            members: team.map((m) => ({
+              name: m.name,
+              role: m.role,
+              responsibility: m.role,
+              status: m.state === "working" ? "Working" : m.state === "done" ? "Done" : "Up next",
+            })),
+          }
+        : beat;
       return (
         <Aria>
-          <TeamIntro beat={beat} />
+          <TeamIntro beat={shown} />
         </Aria>
       );
+    }
     case "delivery":
       return (
-        <Aria>
-          <p>
-            Delivery started on {roomDateLabel(beat.approvedAt)}. The build plan is running in the
-            delivery engine. I’ll bring each stage here as it completes and stop for your approval
-            at every gate.
-          </p>
-        </Aria>
+        <>
+          <Aria>
+            <p>
+              Delivery started on {roomDateLabel(beat.approvedAt)}.{" "}
+              {build?.room
+                ? DELIVERY_LINE[build.room.state]
+                : build?.error
+                  ? `I can’t read the build right now: ${build.error}`
+                  : "Loading the build…"}
+            </p>
+            {build?.room ? <BuildCard room={build.room} /> : null}
+          </Aria>
+          {build?.room?.updates.slice(-3).map((u) => (
+            <li key={u.id} className="room-msg room-update">
+              <AgentAvatar name={u.who === "You" ? "Aria" : u.who} role={u.role} size={32} />
+              <p>{u.text}</p>
+            </li>
+          ))}
+          {build?.room?.gate ? (
+            <Aria>
+              <p>
+                The work before this gate is done. Next:{" "}
+                <b>{build.room.gate.title.toLowerCase()}</b>. The following stage waits for your
+                decision — only you can pass this gate.
+              </p>
+            </Aria>
+          ) : null}
+        </>
       );
     case "package":
       return (
@@ -223,14 +270,27 @@ function Beat({ beat }: { beat: RoomBeat }) {
   }
 }
 
+const DELIVERY_LINE: Record<DeliveryRoom["state"], string> = {
+  running: "The team is building. I’ll bring each stage here as it completes.",
+  waiting_on_you: "The team has stopped at a gate and needs your decision.",
+  paused: "The build is paused.",
+  done: "Every stage is complete. The outputs are below and in the package.",
+  failed: "A stage failed or was sent back, so the stages after it will not run.",
+  cancelled: "The build was cancelled.",
+};
+
 export function CaseRoom({
   mission,
   panels,
+  build,
 }: {
   mission: SupervisedMission;
   panels: CaseRoomPanels;
+  build?: CaseRoomBuild;
 }) {
   const model = buildRoomModel(mission);
+  const gate = build?.room?.gate ?? null;
+  const buildState = build?.room?.state ?? null;
   const [panel, setPanel] = useState<Panel | null>(null);
   const investigation = model.beats.find(
     (b): b is Extract<RoomBeat, { kind: "investigation" }> => b.kind === "investigation",
@@ -248,6 +308,37 @@ export function CaseRoom({
       if (panel !== "delivery" || mission.delivery) setPanel(null);
     }
   }, [model.next.id, mission.version, mission.delivery, openedFor, panel]);
+  // The gate sheet closes once the gate has been decided.
+  useEffect(() => {
+    if (panel === "gate" && !gate) setPanel(null);
+  }, [panel, gate]);
+
+  // "Aria is back": announce each newly completed stage while the Room is open.
+  const updateCount = build?.room?.updates.length ?? 0;
+  const seen = useRef<number | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+  useEffect(() => {
+    if (!build?.room) return;
+    if (seen.current !== null && updateCount > seen.current) {
+      setToast(build.room.updates[updateCount - 1]?.text ?? null);
+      const t = setTimeout(() => setToast(null), 7000);
+      seen.current = updateCount;
+      return () => clearTimeout(t);
+    }
+    seen.current = updateCount;
+    return undefined;
+  }, [updateCount, build?.room]);
+
+  // A waiting gate shows in the tab title, so it is visible from other tabs.
+  useEffect(() => {
+    if (typeof document === "undefined" || !gate) return;
+    const before = document.title;
+    document.title = `(1) Aria needs you · ${before}`;
+    return () => {
+      document.title = before;
+    };
+  }, [gate]);
+
   const open = (p: Panel) => {
     setOpenedFor(`${model.next.id}:${mission.version}`);
     setPanel(p);
@@ -268,8 +359,25 @@ export function CaseRoom({
     <div className="sx room" data-studio-screen="room">
       <header className="room-head">
         <h1>{model.title}</h1>
-        <p className="room-status" data-working={model.status.working ? "true" : "false"}>
-          {model.status.line}
+        <p
+          className="room-status"
+          data-working={
+            buildState
+              ? buildState === "running"
+                ? "true"
+                : "false"
+              : model.status.working
+                ? "true"
+                : "false"
+          }
+        >
+          {gate
+            ? `Aria needs you: ${gate.title.toLowerCase()}.`
+            : buildState === "running"
+              ? "The team is building. Aria will come back after each stage."
+              : buildState === "done"
+                ? "The build is complete."
+                : model.status.line}
         </p>
       </header>
 
@@ -294,21 +402,38 @@ export function CaseRoom({
           </Aria>
         ) : null}
         {afterStage.map((beat, i) => (
-          <Beat key={`${beat.kind}-${i}`} beat={beat} />
+          <Beat key={`${beat.kind}-${i}`} beat={beat} build={build} />
         ))}
       </ol>
 
+      {toast ? (
+        <p className="room-toast" role="status">
+          <b>Aria is back.</b> {toast}
+        </p>
+      ) : null}
+
       <div className="room-dock" role="region" aria-label="What happens next">
         <div className="room-dock-in">
-          {model.next.waitingOnYou ? (
+          {gate || model.next.waitingOnYou ? (
             <span className="room-waiting">Aria needs you</span>
           ) : (
-            <span className="room-working">{model.next.label}</span>
+            <span className="room-working">
+              {buildState === "running" ? "The team is building" : model.next.label}
+            </span>
           )}
           <div className="room-dock-actions">
             <button type="button" className="room-pill" onClick={() => open("ask")}>
               Ask Aria
             </button>
+            {gate ? (
+              <button
+                type="button"
+                className="room-pill room-pill-primary"
+                onClick={() => open("gate")}
+              >
+                Review: {gate.title.charAt(0).toLowerCase() + gate.title.slice(1)}
+              </button>
+            ) : null}
             {model.deliveryAvailable ? (
               <button
                 type="button"
@@ -321,7 +446,7 @@ export function CaseRoom({
             {model.next.panel !== "none" && model.next.waitingOnYou ? (
               <button
                 type="button"
-                className={`room-pill${model.deliveryAvailable ? "" : " room-pill-primary"}`}
+                className={`room-pill${model.deliveryAvailable || gate ? "" : " room-pill-primary"}`}
                 onClick={() => open(model.next.panel as Panel)}
               >
                 {model.next.label}
@@ -343,7 +468,9 @@ export function CaseRoom({
                 ? "Answers come from this case’s record."
                 : panel === "delivery"
                   ? "Starts the build for your chosen direction. Nothing runs without this approval."
-                  : model.next.detail}
+                  : panel === "gate"
+                    ? "A human gate: agents can stop here but never pass it."
+                    : model.next.detail}
             </SheetDescription>
           </SheetHeader>
           <div className="room-sheet-body">
@@ -363,6 +490,13 @@ export function CaseRoom({
             {panel === "work" ? panels.work : null}
             {panel === "decide" ? panels.decide : null}
             {panel === "delivery" ? panels.delivery : null}
+            {panel === "gate" && gate && build ? (
+              <GateReview
+                gate={gate}
+                pending={build.deciding}
+                onDecide={(decision, note) => build.onDecideGate(gate.taskId, decision, note)}
+              />
+            ) : null}
           </div>
         </SheetContent>
       </Sheet>

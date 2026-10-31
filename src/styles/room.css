@@ -573,7 +573,7 @@
   gap: var(--sx-space-xs);
   padding: var(--sx-space-2xs) var(--sx-space-2xs) var(--sx-space-2xs) var(--sx-space-sm);
   border: 1px solid var(--sx-rule);
-  border-radius: 999px;
+  border-radius: 1.5rem;
   background: var(--sx-surface);
   box-shadow: 0 4px 14px rgba(29, 35, 64, 0.1);
 }
@@ -655,6 +655,242 @@
   display: grid;
   gap: var(--sx-space-md);
   padding-top: var(--sx-space-sm);
+}
+
+/* ── The build ── */
+.room-build-head {
+  display: grid;
+  gap: var(--sx-space-2xs);
+  padding: var(--sx-space-sm) var(--sx-space-md);
+  border-bottom: 1px solid var(--sx-rule);
+}
+
+.room-build-bar {
+  display: block;
+  height: 0.25rem;
+  border-radius: 999px;
+  background: var(--sx-sunken);
+  overflow: hidden;
+}
+
+.room-build-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--sx-accent);
+  transition: width 0.8s var(--room-ease);
+}
+
+.room-build-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.room-build-list > li {
+  display: grid;
+  grid-template-columns: 0.75rem 1.875rem minmax(0, 1fr);
+  gap: var(--sx-space-xs);
+  align-items: start;
+  padding: var(--sx-space-xs) var(--sx-space-md);
+  border-bottom: 1px solid var(--sx-rule);
+}
+
+.room-build-list > li:last-child {
+  border-bottom: 0;
+}
+
+.room-build-tick {
+  width: 0.625rem;
+  height: 0.625rem;
+  margin-top: 0.55rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--sx-rule-strong);
+}
+
+.room-build-list > li[data-status="done"] .room-build-tick,
+.room-build-list > li[data-status="skipped"] .room-build-tick {
+  border-color: var(--sx-done);
+  background: var(--sx-done);
+}
+
+.room-build-list > li[data-status="working"] .room-build-tick {
+  border-color: var(--sx-accent);
+  animation: room-pulse 1.2s ease-in-out infinite;
+}
+
+.room-build-list > li[data-status="waiting_on_you"] {
+  background: var(--sx-waiting-soft);
+}
+
+.room-build-list > li[data-status="waiting_on_you"] .room-build-tick {
+  border-color: var(--sx-waiting);
+  background: var(--sx-waiting);
+}
+
+.room-build-list > li[data-status="failed"] .room-build-tick,
+.room-build-list > li[data-status="sent_back"] .room-build-tick {
+  border-color: var(--sx-danger);
+  background: var(--sx-danger);
+}
+
+.room-build-you {
+  display: grid;
+  place-items: center;
+  width: 1.875rem;
+  height: 1.875rem;
+  border-radius: 50%;
+  background: var(--sx-ink);
+  color: var(--sx-paper);
+  font: 600 0.625rem var(--sx-font-body);
+}
+
+.room-build-main {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.room-build-main > p {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--sx-space-2xs);
+  font-size: var(--sx-text-sm);
+}
+
+.room-build-status {
+  font-size: var(--sx-text-xs);
+  font-weight: 500;
+  color: var(--sx-ink-2);
+}
+
+li[data-status="working"] .room-build-status {
+  color: var(--sx-accent);
+}
+
+li[data-status="waiting_on_you"] .room-build-status {
+  color: var(--sx-waiting);
+}
+
+.room-build-main > .room-build-role {
+  font-size: var(--sx-text-xs);
+  color: var(--sx-muted);
+}
+
+.room-output {
+  margin-top: var(--sx-space-3xs);
+}
+
+.room-output summary {
+  cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sx-space-2xs);
+  align-items: baseline;
+  font-size: var(--sx-text-sm);
+  color: var(--sx-accent);
+}
+
+.room-output summary:focus-visible {
+  outline: 2px solid var(--sx-focus);
+  outline-offset: 2px;
+}
+
+.room-output-quality,
+.room-output-note {
+  margin: var(--sx-space-3xs) 0 0;
+  font-size: var(--sx-text-xs);
+  color: var(--sx-muted);
+}
+
+.room-output-body {
+  margin: var(--sx-space-2xs) 0 0;
+  max-height: 16rem;
+  overflow: auto;
+  padding: var(--sx-space-xs);
+  border-radius: 0.75rem;
+  background: var(--sx-sunken);
+  font: 400 var(--sx-text-xs) / 1.55 var(--sx-font-mono);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* A short stage update from the specialist who did the work. */
+.room-update {
+  grid-template-columns: 2rem minmax(0, 1fr);
+  align-items: center;
+  margin-left: 3.25rem;
+}
+
+.room-update p {
+  margin: 0;
+  font-size: var(--sx-text-sm);
+  color: var(--sx-ink-2);
+}
+
+/* ── Gate review ── */
+.room-gate {
+  display: grid;
+  gap: var(--sx-space-sm);
+  font-size: var(--sx-text-sm);
+}
+
+.room-gate > p {
+  margin: 0;
+}
+
+.room-gate-inputs {
+  display: grid;
+  gap: var(--sx-space-2xs);
+  padding: var(--sx-space-sm);
+  border: 1px solid var(--sx-rule);
+  border-radius: 1rem;
+}
+
+.room-gate-note {
+  display: grid;
+  gap: var(--sx-space-3xs);
+  font-weight: 500;
+}
+
+.room-gate-note textarea {
+  width: 100%;
+  padding: var(--sx-space-xs);
+  border: 1px solid var(--sx-rule-strong);
+  border-radius: 0.75rem;
+  font: inherit;
+  font-weight: 400;
+}
+
+.room-gate-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sx-space-2xs);
+}
+
+.room-pill:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* "Aria is back" — announced when a stage completes while the Room is open. */
+.room-toast {
+  position: fixed;
+  z-index: 40;
+  top: var(--sx-space-md);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(30rem, calc(100% - 2rem));
+  margin: 0;
+  padding: var(--sx-space-xs) var(--sx-space-sm);
+  border-radius: 1rem;
+  background: var(--sx-ink);
+  color: var(--sx-paper);
+  font-size: var(--sx-text-sm);
+  box-shadow: 0 4px 14px rgba(29, 35, 64, 0.16);
+  animation: room-rise 0.5s var(--room-ease) both;
 }
 
 /* The full record sits below the Room, one click away. */

@@ -15,6 +15,7 @@ import { ProjectRoomNav } from "@/components/command/project-room-nav";
 import { MissionInspectionStrip } from "@/components/command/mission-inspection-strip";
 import { InvestigationStageShell } from "@/components/command/investigation-stage-shell";
 import { CaseRoom } from "@/components/command/case-room";
+import { useDeliveryBuild } from "@/hooks/use-delivery-build";
 import { InvestigationScopeReview } from "@/components/command/investigation-scope-review";
 import { InvestigationTeamFormation } from "@/components/command/investigation-team-formation";
 import { PmDiscussionScreen } from "@/components/command/pm-discussion-screen";
@@ -178,6 +179,9 @@ function SupervisedMissionPage() {
     onError,
   });
 
+  // The linked delivery build (after Begin delivery), read from the delivery engine.
+  const build = useDeliveryBuild(query.data?.mission.delivery?.wfMissionId ?? null);
+
   if (query.isLoading) {
     return (
       <CommandShell title="Supervised mission" subtitle="Loading the saved mission…">
@@ -308,6 +312,7 @@ function SupervisedMissionPage() {
 
         <CaseRoom
           mission={mission}
+          {...(build ? { build } : {})}
           panels={{
             plan: (
               <>
