@@ -4,10 +4,12 @@
  */
 import { honestyFor } from "./decision-pack";
 import { buildDecisionRoadmapMarkdown } from "./decision-roadmap";
+import { buildDeliveryPackage } from "./delivery-package";
 import { authorisedDecisionPackMarkdown, authorisedDecisionPackPdfBytes } from "./export-snapshot";
 import { buildPmBriefingMarkdown } from "./pm-briefing-pack";
 import { buildTeamCollaborationMarkdown } from "./team-collaboration";
 import type { SupervisedMission } from "./types";
+import type { MissionBundle } from "@/lib/workforce/types";
 
 const slug = (s: string) =>
   s
@@ -23,6 +25,8 @@ export type SupervisedZipInventoryItem = { path: string; bundled: boolean; note:
 export function buildSupervisedZip(
   mission: SupervisedMission,
   exportedAt = new Date().toISOString(),
+  /** The linked delivery build, when delivery has started (read from the caller's workspace). */
+  delivery: MissionBundle | null = null,
 ): {
   files: SupervisedZipFile[];
   title: string;
@@ -30,21 +34,25 @@ export function buildSupervisedZip(
   /** What the archive holds, as recorded in its manifest. */
   inventory: SupervisedZipInventoryItem[];
 } {
-  return assembleSupervisedZip(mission, exportedAt, true);
+  return assembleSupervisedZip(mission, exportedAt, true, delivery);
 }
 
 /**
  * What the archive would hold, without building any file body (no PDF, no base64). Same
  * assembly as buildSupervisedZip, so the list cannot drift from the download.
  */
-export function supervisedZipInventory(mission: SupervisedMission): SupervisedZipInventoryItem[] {
-  return assembleSupervisedZip(mission, new Date().toISOString(), false).inventory;
+export function supervisedZipInventory(
+  mission: SupervisedMission,
+  delivery: MissionBundle | null = null,
+): SupervisedZipInventoryItem[] {
+  return assembleSupervisedZip(mission, new Date().toISOString(), false, delivery).inventory;
 }
 
 function assembleSupervisedZip(
   mission: SupervisedMission,
   exportedAt: string,
   withContent: boolean,
+  delivery: MissionBundle | null,
 ): {
   files: SupervisedZipFile[];
   title: string;
@@ -80,6 +88,7 @@ function assembleSupervisedZip(
 - Recorded team collaboration (assignments / handoffs) when present
 - Evidence register (statements + source *references* only)
 - Sandboxed HTML prototype when the prototype beat completed
+- The build (\`delivery/\`) when delivery has started: every saved stage output with who made it and how, the team record and your gate decisions
 - This manifest of honesty labels
 
 ## What is not bundled
@@ -164,6 +173,24 @@ ${honesty.note}
     );
   }
 
+  // The build: every saved stage output, the team record and the owner's gate decisions.
+  const deliveryPack = delivery ? buildDeliveryPackage(delivery) : null;
+  if (deliveryPack) {
+    for (const f of deliveryPack.files) {
+      const body = f.content;
+      add(f.path, () => body, { bundled: true, note: f.note });
+    }
+  } else if (mission.delivery) {
+    add(
+      "delivery/README.md",
+      () => "# The build\n\nThe build could not be read for this export.\n",
+      {
+        bundled: false,
+        note: "Build outputs are added when the archive is built",
+      },
+    );
+  }
+
   const gaps = [
     ...(mission.researchGaps ?? []),
     ...mission.evidence.filter((e) => e.classification === "gap").map((e) => e.statement),
@@ -182,7 +209,15 @@ ${honesty.note}
           prototypeBundled: Boolean(mission.prototype?.html),
           teamCollaborationBundled: Boolean(collabMd),
           exportSnapshotFrozen: Boolean(mission.exportBody),
-          simulated: honesty.productionMode === "simulated" || honesty.productionMode === "mixed",
+          simulated:
+            honesty.productionMode === "simulated" ||
+            honesty.productionMode === "mixed" ||
+            Boolean(deliveryPack?.manifest.outputs.some((o) => o.simulated !== false)),
+          delivery:
+            deliveryPack?.manifest ??
+            (mission.delivery
+              ? { wfMissionId: mission.delivery.wfMissionId, bundled: false }
+              : null),
           inventory,
           researchGaps: gaps.slice(0, 40),
           workerLink: mission.workerLink ?? null,

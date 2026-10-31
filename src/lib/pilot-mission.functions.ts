@@ -683,7 +683,17 @@ export const exportSupervisedMissionZip = createServerFn({ method: "POST" })
         );
       }
       const { buildSupervisedZip } = await import("@/lib/pilot-mission/supervised-zip");
-      return buildSupervisedZip(mission);
+      // The build is read from the caller's own workspace; a read failure leaves it out, labelled.
+      let delivery = null;
+      if (mission.delivery) {
+        const { loadMissionBundle } = await import("@/lib/workforce/access.server");
+        delivery = await loadMissionBundle(
+          context.supabase,
+          workspace.id,
+          mission.delivery.wfMissionId,
+        ).catch(() => null);
+      }
+      return buildSupervisedZip(mission, new Date().toISOString(), delivery);
     },
   );
 
