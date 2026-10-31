@@ -167,7 +167,7 @@ export function InvestigationTeamFormation({ mission }: { mission: SupervisedMis
             ))}
           </ol>
           <p className="cc-muted text-xs">
-            This plan is for review. Implementation status changes only after the next approval and recorded worker activity.
+            This plan is for review. Implementation starts only after the case-room gate. Status updates then require saved worker activity.
           </p>
         </section>
       ) : null}
@@ -185,7 +185,7 @@ export function InvestigationTeamFormation({ mission }: { mission: SupervisedMis
 
       {agents.length ? (
         <div className="ps-team-formation-grid">
-          <nav className="ps-team-roster" aria-label="Assigned specialist roles">
+          <nav className="ps-team-roster" aria-label="Selected specialist roles">
             <h3>Your team</h3>
             <ul>
               {agents.map((agent) => (
@@ -223,13 +223,13 @@ export function InvestigationTeamFormation({ mission }: { mission: SupervisedMis
               <p className="ps-team-agent-why"><strong>Why this role:</strong> {selected.why}</p>
 
               <div className="ps-team-detail-grid">
-                <section><h4>Current tasks</h4><BulletList items={selected.tasks} empty="No task assigned." /></section>
+                <section><h4>Tasks on this plan</h4><BulletList items={selected.tasks} empty="No task assigned." /></section>
                 <section>
                   <h4>Inputs</h4>
                   {selected.inputs.length ? <BulletList items={selected.inputs} empty="" /> :
                     <p className="cc-muted text-sm">The approved brief, decision, and evidence register remain on the mission. Role-specific inputs are not listed in this plan.</p>}
                 </section>
-                <section><h4>Outputs</h4><BulletList items={selected.outputs} empty="No output recorded yet." /></section>
+                <section><h4>Planned outputs</h4><BulletList items={selected.outputs} empty="No output recorded yet." /></section>
                 <section><h4>Evidence</h4>
                   {selected.evidence.length ? <BulletList items={[...new Set(selected.evidence)]} empty="" /> :
                     <p className="cc-muted text-sm">Mission register: {suppliedCount} supplied finding(s), {gapCount} labelled gap(s). No role-specific evidence handoff is recorded yet.</p>}
@@ -244,7 +244,7 @@ export function InvestigationTeamFormation({ mission }: { mission: SupervisedMis
 
               <p className="ps-team-agent-actions">
                 <a className="cc-btn cc-btn-secondary" href="#ps-team-ask-pm">Ask the PM about this role</a>
-                <a className="cc-btn cc-btn-secondary" href="#pr-artefacts">View project work</a>
+                <a className="cc-btn cc-btn-secondary" href="#continuation-plan">Review work plan</a>
               </p>
             </article>
           ) : null}
