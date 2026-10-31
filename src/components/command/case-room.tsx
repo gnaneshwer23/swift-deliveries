@@ -488,7 +488,9 @@ export function CaseRoom({
           className="sx psi-workspace room-sheet w-full sm:max-w-xl overflow-y-auto"
         >
           <SheetHeader>
-            <SheetTitle>{panel ? PANEL_TITLE[panel] : ""}</SheetTitle>
+            <SheetTitle>
+              {panel === "work" ? model.next.label : panel ? PANEL_TITLE[panel] : ""}
+            </SheetTitle>
             <SheetDescription>
               {panel === "ask"
                 ? "Answers come from this case’s record."
@@ -498,7 +500,9 @@ export function CaseRoom({
                     ? "A human gate: agents can stop here but never pass it."
                     : panel === "plan"
                       ? "Nothing runs until you approve."
-                      : model.next.detail}
+                      : panel === "decide"
+                        ? "Nothing proceeds until you save."
+                        : "One thing Aria needs from you."}
             </SheetDescription>
           </SheetHeader>
           <div className="room-sheet-body">

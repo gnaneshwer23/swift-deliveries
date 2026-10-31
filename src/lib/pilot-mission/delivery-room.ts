@@ -16,7 +16,7 @@ import {
 } from "@/lib/workforce/types";
 
 /** Display persona for each lifecycle task of the product plan (`productMissionTasks`). */
-const TASK_PERSONA: Record<string, string> = {
+export const TASK_PERSONA: Record<string, string> = {
   charter: "Aria",
   market: "Scout",
   research: "Maya",
