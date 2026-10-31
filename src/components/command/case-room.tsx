@@ -285,6 +285,9 @@ function Beat({ beat, build }: { beat: RoomBeat; build?: CaseRoomBuild | undefin
             {beat.ready
               ? "Your decision pack is ready. Everything in it says how it was made."
               : "I’m preparing the decision pack from the record."}
+            {build?.room
+              ? ` The project download also holds the build so far: ${build.room.stages.filter((st) => st.output).length} saved stage outputs, each saying who made it and how, plus the team record.`
+              : ""}
           </p>
         </Aria>
       );
