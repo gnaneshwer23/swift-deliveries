@@ -754,13 +754,41 @@ export const cancelSupervisedMission = createServerFn({ method: "POST" })
   )
   .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
     const workspace = await workspaceFor(context.supabase, context.userId);
-    const { service } = await serviceFor();
-    const mission = await service.cancel({
+    // The case and any delivery it started are cancelled together, or not at all.
+    const { cancelCaseAndDelivery } = await import("./pilot-mission/delivery.server");
+    const mission = await cancelCaseAndDelivery({
       workspaceId: workspace.id,
       id: data.id,
       expectedVersion: data.expectedVersion,
+      actorId: context.userId,
       nowMs: Date.now(),
     });
+    return view(mission, null);
+  });
+
+/**
+ * The owner's "Begin delivery" approval: starts the workforce build mission for a case
+ * whose recorded decision approves a direction. Gates on that mission stay human-only.
+ */
+export const beginSupervisedDelivery = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z.object({ id: z.string().uuid(), expectedVersion: z.number().int().positive() }).parse(data),
+  )
+  .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
+    const workspace = await workspaceFor(context.supabase, context.userId);
+    const { startSupervisedDelivery } = await import("./pilot-mission/delivery.server");
+    const { mission, started } = await startSupervisedDelivery({
+      workspaceId: workspace.id,
+      id: data.id,
+      expectedVersion: data.expectedVersion,
+      actorId: context.userId,
+      nowMs: Date.now(),
+    });
+    if (started && mission.delivery) {
+      const { kickWorker } = await import("@/lib/workforce/worker.server");
+      await kickWorker({ workspaceId: workspace.id, missionId: mission.delivery.wfMissionId });
+    }
     return view(mission, null);
   });
 

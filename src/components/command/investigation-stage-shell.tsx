@@ -348,7 +348,11 @@ export function InvestigationStageShell({
           {selectedStep === 5 ? (
             <section className="ps-journey-panel" aria-label="Team formation">
               {decisionRecorded ? (
-                <InvestigationTeamFormation mission={mission} onBeginDelivery={() => go(6)} />
+                <InvestigationTeamFormation
+                  mission={mission}
+                  onBeginDelivery={() => go(6)}
+                  onDone={onDone}
+                />
               ) : (
                 <div className="ps-journey-gate">
                   <strong>Team formation follows your decision</strong>

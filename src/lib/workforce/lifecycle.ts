@@ -59,6 +59,15 @@ export const STAGE_CONTRACTS = {
 
 const clip = (s: string) => s.replace(/\s+/g, " ").trim().slice(0, 160);
 
+const EXTERNAL_HINT =
+  /\b(email|send|deploy|publish|post to|slack|tweet|call api|webhook|notify customer|production)\b/i;
+
+/** Whether a request asks for actions outside DeliverX (they then need their own approval). */
+export function wantsExternal(request: string, answers: Record<string, string>): boolean {
+  const blob = `${request} ${Object.values(answers).join(" ")}`;
+  return EXTERNAL_HINT.test(blob);
+}
+
 export function productMissionTasks(request: string, external: boolean): PlannedTask[] {
   const req = clip(request);
   const tasks: PlannedTask[] = [

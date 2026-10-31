@@ -89,7 +89,7 @@ function idempotencyKey(missionId: string, teamScopeHash: string): string {
   return `research_pass:${missionId}:${teamScopeHash}`;
 }
 
-async function ensureProjectId(
+export async function ensureProjectId(
   query: Executor,
   workspaceId: string,
   ownerUserId: string,
