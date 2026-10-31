@@ -4859,7 +4859,10 @@
 .ps-investigation-foyer .ps-idea-more .ps-brief-voice-inline {
   margin-top: 0.85rem;
 }
-.ps-investigation-foyer .ps-brief-fields > button,
+.ps-investigation-foyer .ps-brief-fields > div:last-child {
+  display: flex;
+  justify-content: flex-end;
+}
 .ps-investigation-foyer .ps-brief-fields .cc-btn {
   min-height: 2.75rem;
   padding: 0.7rem 1.1rem;
