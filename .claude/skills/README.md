@@ -1,6 +1,6 @@
 # Project agent skills
 
-Vendored third-party skills that Claude Code loads for this repository. Files are kept byte-for-byte with upstream (excluded from eslint and prettier). Update by re-copying from upstream; do not edit in place.
+Vendored third-party skills that Claude Code loads for this repository. Files are kept byte-for-byte with upstream (excluded from eslint and prettier). Update by re-copying from upstream; do not edit in place. `security-audit` ships its own `*.test.cjs` files for its validators: run the app's tests with `npm test` (scoped to `src/`), not a bare `npx vitest run`.
 
 | Skill | Why it is here | Source | Licence |
 | --- | --- | --- | --- |
