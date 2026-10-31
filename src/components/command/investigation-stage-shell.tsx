@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { InvestigationExperience } from "@/components/command/investigation-experience";
 import { InvestigationTeamFormation } from "@/components/command/investigation-team-formation";
@@ -46,8 +46,8 @@ export function InvestigationStageShell({
   const current = deriveInvestigationStagePhase(mission);
   const planApproved = Boolean(mission.team?.approvedAt);
   const decisionRecorded = Boolean(mission.approval || mission.continuationPlan);
-  const activeStep = phaseStep(current);
-  const [selectedStep, setSelectedStep] = useState(activeStep);
+  const activeStep = mission.exportBody || mission.artefact ? 7 : planApproved && decisionRecorded ? 6 : phaseStep(current);
+  const [selectedStep, setSelectedStep] = useState(activeStep);\n  useEffect(() => setSelectedStep(activeStep), [activeStep]);
   const step = JOURNEY.find((item) => item.id === selectedStep) ?? JOURNEY[0];
   const canAdvance = selectedStep < 5 ? selectedStep < activeStep || (selectedStep === 1 && planApproved) : decisionRecorded;
   const go = (next: number) => setSelectedStep(Math.max(1, Math.min(7, next)));
