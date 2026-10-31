@@ -5558,7 +5558,11 @@
 .ps-team-roadmap-review {
   margin-top: 12px;
 }
-.ps-team-roadmap-review > summary,
+.ps-team-roadmap-review > h3 {
+  margin: 0 0 8px;
+  color: var(--psi-ink, #1a2332);
+  font-size: .86rem;
+}
 .ps-team-ask-pm > summary {
   color: var(--psi-indigo, #4f46e5);
   font-size: .76rem;
