@@ -39,13 +39,7 @@ function formatNoteTime(iso: string): string {
  * Screen 5 — Product Intelligence Map for the supervised investigation workspace.
  * States and notes are event-backed; empty when the plan is not yet approved.
  */
-export function ProductIntelligenceMap({
-  mission,
-  missionId,
-}: {
-  mission: SupervisedMission;
-  missionId: string;
-}) {
+export function ProductIntelligenceMap({ mission }: { mission: SupervisedMission }) {
   const model = buildProductIntelligenceMap(mission);
   const [notesOpen, setNotesOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);

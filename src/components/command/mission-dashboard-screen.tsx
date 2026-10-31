@@ -25,8 +25,8 @@ function Lines({ lines, empty }: { lines: string[]; empty: string }) {
   if (!lines.length) return <p className="mdash-empty">{empty}</p>;
   return (
     <ul>
-      {lines.map((line) => (
-        <li key={line.slice(0, 80)}>{line}</li>
+      {lines.map((line, i) => (
+        <li key={i}>{line}</li>
       ))}
     </ul>
   );
@@ -160,15 +160,15 @@ export function MissionDashboardScreen({
                 </article>
 
                 <article className="mdash-card">
-                  <h3>Pending approvals</h3>
-                  {model.pendingApprovals.length ? (
+                  <h3>Waiting on you</h3>
+                  {model.waitingOnYou.length ? (
                     <ul>
-                      {model.pendingApprovals.slice(0, 3).map((line) => (
-                        <li key={line.slice(0, 60)}>{line}</li>
+                      {model.waitingOnYou.slice(0, 3).map((line, i) => (
+                        <li key={i}>{line}</li>
                       ))}
                     </ul>
                   ) : (
-                    <p className="mdash-empty">No human gates are waiting right now.</p>
+                    <p className="mdash-empty">Nothing is waiting on you right now.</p>
                   )}
                 </article>
 

@@ -29,22 +29,30 @@ export type MissionDashNavId = (typeof MISSION_DASH_NAV)[number]["id"];
 export type DeliveryRailStep = {
   id: string;
   label: string;
-  /** `skipped`: the case was handed over without any record for this stage. */
-  state: "done" | "current" | "upcoming" | "skipped";
+  state: "done" | "current" | "upcoming";
 };
 
 export const RAIL_STATE_LABELS: Record<DeliveryRailStep["state"], string> = {
   done: "Done",
-  current: "Current",
+  current: "Next",
   upcoming: "Not started",
-  skipped: "Not done on this path",
 };
 
-/** Next steps that are the owner's approval gates; other steps are work or optional input. */
-const APPROVAL_GATES = new Set([
+/**
+ * Next steps only the owner can take: approval gates and the owner's own inputs. Work in
+ * progress, optional input and finished states are not listed. A failed comparison is
+ * listed separately as a retry.
+ */
+const OWNER_STEPS = new Set([
   "approve_plan",
+  "compare",
   "decide",
+  "expectation",
+  "artefact",
+  "export",
   "approve_prototype",
+  "observation",
+  "review",
   "approve_follow_up",
 ]);
 
@@ -86,7 +94,7 @@ export type MissionDashboardModel = {
   currentStage: { title: string; detail: string };
   activeAgents: MissionDashAgent[];
   completedOutputs: MissionDashOutput[];
-  pendingApprovals: string[];
+  waitingOnYou: string[];
   risks: MissionDashRisk[];
   latestPmUpdate: { summary: string; at: string | null; honesty: string };
   usage: {
@@ -117,7 +125,9 @@ const EMPTY_SECTION =
 function isEngineeringTask(t: { key: string; title: string; produces: string }): boolean {
   return (
     !/prototype|pack/i.test(`${t.key} ${t.title} ${t.produces}`) &&
-    /implement|service|api|backend|frontend|engineer/i.test(`${t.title} ${t.produces}`)
+    /\b(?:implement\w*|services?|apis?|backend|back-end|frontend|front-end|engineer\w*)\b/i.test(
+      `${t.title} ${t.produces}`,
+    )
   );
 }
 
@@ -155,20 +165,14 @@ function railFromMission(mission: SupervisedMission): DeliveryRailStep[] {
   ];
   const ids = ["discovery", "research", "plan", "design", "engineering", "qa", "handover"];
 
-  const handedOver = flags[flags.length - 1];
-  // Before handover, the first stage without a record is current; after it, none is.
-  const currentIdx = handedOver ? -1 : flags.findIndex((f) => !f);
+  // The first stage without a record is next. Handover is not the end of the case: a
+  // prototype and outcome review can still follow an export.
+  const nextIdx = flags.findIndex((f) => !f);
 
   return ids.map((id, index) => ({
     id,
     label: labels[index]!,
-    state: flags[index]
-      ? "done"
-      : index === currentIdx
-        ? "current"
-        : handedOver
-          ? "skipped"
-          : "upcoming",
+    state: flags[index] ? "done" : index === nextIdx ? "current" : "upcoming",
   }));
 }
 
@@ -232,16 +236,16 @@ export function buildMissionDashboard(mission: SupervisedMission): MissionDashbo
     }
   }
 
-  const pendingApprovals: string[] = [];
-  if (APPROVAL_GATES.has(next.id)) {
-    pendingApprovals.push(`${next.title} — ${next.detail}`);
+  const waitingOnYou: string[] = [];
+  if (OWNER_STEPS.has(next.id)) {
+    waitingOnYou.push(`${next.title} — ${next.detail}`);
   }
   if (mission.job.status === "failed") {
-    pendingApprovals.push(`Retry required: ${mission.job.lastError ?? "comparison failed"}`);
+    waitingOnYou.push(`Retry required: ${mission.job.lastError ?? "comparison failed"}`);
   }
   for (const task of mission.team?.tasks ?? []) {
     if (task.status === "awaiting_approval") {
-      pendingApprovals.push(`${task.title} awaits approval`);
+      waitingOnYou.push(`${task.title} awaits approval`);
     }
   }
 
@@ -427,7 +431,7 @@ export function buildMissionDashboard(mission: SupervisedMission): MissionDashbo
     currentStage: { title: next.title, detail: next.detail },
     activeAgents,
     completedOutputs,
-    pendingApprovals,
+    waitingOnYou,
     risks,
     latestPmUpdate,
     usage: {

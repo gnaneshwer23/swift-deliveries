@@ -28,13 +28,14 @@ export function CaseChatPanel({
   const inputId = useId();
   const titleId = useId();
 
-  function ask(question: string) {
+  function ask(question: string, fromInput: boolean) {
     const trimmed = question.trim();
     if (!trimmed) return;
     // Answered on the latest saved record each time, so answers follow the case.
     const answer = answerCaseQuestion(mission, trimmed);
     setTurns((prev) => [...prev, { id: nextId.current++, question: trimmed, answer }].slice(-20));
-    setText("");
+    // A suggested question leaves anything typed but not yet asked in place.
+    if (fromInput) setText("");
   }
 
   return (
@@ -60,7 +61,7 @@ export function CaseChatPanel({
         className="space-y-2"
         onSubmit={(ev) => {
           ev.preventDefault();
-          ask(text);
+          ask(text, true);
         }}
       >
         <label className="block text-sm font-medium" htmlFor={inputId}>
@@ -82,7 +83,7 @@ export function CaseChatPanel({
                 key={prompt}
                 type="button"
                 className="ps-conversation-prompt"
-                onClick={() => ask(prompt)}
+                onClick={() => ask(prompt, false)}
               >
                 {prompt}
               </button>

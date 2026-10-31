@@ -87,6 +87,10 @@ export function PmDiscussionScreen({
 
   function confirmIntent() {
     if (!intent) return;
+    if (!optionId) {
+      setLocalError("Choose which option this decision is about.");
+      return;
+    }
     if (intent !== "approve" && !note.trim()) {
       setLocalError(
         intent === "research"
@@ -270,6 +274,24 @@ export function PmDiscussionScreen({
 
           {intent ? (
             <div className="pmd-note-panel" role="region" aria-label="Confirm decision">
+              {/* The option list also sits in Decision context, which is collapsed on phones. */}
+              <label className="cc-label" htmlFor="pmd-decision-option">
+                Option this decision is about
+              </label>
+              <select
+                id="pmd-decision-option"
+                className="cc-input"
+                value={optionId}
+                onChange={(event) => setOptionId(event.target.value)}
+                disabled={decide.isPending}
+              >
+                <option value="">Choose an option…</option>
+                {context.optionsConsidered.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.title}
+                  </option>
+                ))}
+              </select>
               <label className="cc-label" htmlFor="pmd-decision-note">
                 {intent === "approve"
                   ? "Confirm approval"

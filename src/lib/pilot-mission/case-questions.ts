@@ -38,7 +38,8 @@ export type CaseAnswer = {
 const TOPICS: Array<[CaseTopic, RegExp]> = [
   [
     "change_request",
-    /^(?:please\s+)?(?:approve|authori[sz]e|decide|cancel|pause|resume|start|change|switch|update|add|remove|delete|export|build)\b|\b(?:can|could|will|would) you (?:please )?(?:approve|authori[sz]e|decide|cancel|pause|resume|start|change|update|export|build)\b|\b(?:change|narrow|widen|expand) (?:the )?scope\b/i,
+    // Only clear instructions to act. "Update me on…" or "Start with the risks" are questions.
+    /^(?:please\s+)?(?:approve|authori[sz]e|cancel|pause|resume|delete)\b|\b(?:can|could|will|would) you (?:please )?(?:approve|authori[sz]e|decide|cancel|pause|resume|delete|export|build)\b|\b(?:change|narrow|widen|expand) (?:the )?scope\b/i,
   ],
   ["approvals", /\b(?:approv\w*|waiting on me|need(?:s)? me|my (?:decision|sign[- ]?off))\b/i],
   ["next_step", /\b(?:block\w*|next step|what(?:'s| is) next|stuck|holding|status|stage)\b/i],
@@ -55,7 +56,8 @@ const TOPICS: Array<[CaseTopic, RegExp]> = [
 ];
 
 export function caseQuestionTopic(question: string): CaseTopic {
-  const text = question.trim();
+  // Phones and macOS type curly apostrophes ("what’s"); the patterns use straight ones.
+  const text = question.trim().replace(/[\u2018\u2019]/g, "'");
   if (!text) return "unknown";
   return TOPICS.find(([, pattern]) => pattern.test(text))?.[0] ?? "unknown";
 }
@@ -71,8 +73,9 @@ const more = (items: string[], max = 3) =>
 
 export function answerCaseQuestion(mission: SupervisedMission, question: string): CaseAnswer {
   const topic = caseQuestionTopic(question);
-  const dash = buildMissionDashboard(mission);
-  const pack = buildPmBriefingPack(mission);
+  // Built only for the topics that read them.
+  const dash = () => buildMissionDashboard(mission);
+  const pack = () => buildPmBriefingPack(mission);
 
   switch (topic) {
     case "change_request":
@@ -83,11 +86,12 @@ export function answerCaseQuestion(mission: SupervisedMission, question: string)
       };
 
     case "next_step": {
-      const blockers = dash.risks.filter((r) => r.kind === "blocker").map((r) => r.text);
+      const { risks, currentStage } = dash();
+      const blockers = risks.filter((r) => r.kind === "blocker").map((r) => r.text);
       return {
         topic,
         text:
-          `Next step: ${dash.currentStage.title}. ${dash.currentStage.detail}` +
+          `Next step: ${currentStage.title}. ${currentStage.detail}` +
           (blockers.length
             ? `\n\nRecorded blockers:\n${list(blockers)}${more(blockers)}`
             : "\n\nNo blockers are recorded on the case."),
@@ -95,28 +99,31 @@ export function answerCaseQuestion(mission: SupervisedMission, question: string)
       };
     }
 
-    case "approvals":
+    case "approvals": {
+      const { waitingOnYou, currentStage } = dash();
       return {
         topic,
-        text: dash.pendingApprovals.length
-          ? `Waiting on your approval:\n${list(dash.pendingApprovals)}${more(dash.pendingApprovals)}`
-          : `No approval is waiting on you right now. The next step is: ${dash.currentStage.title}.`,
-        basis: "Approval gates on the case record",
+        text: waitingOnYou.length
+          ? `Waiting on you:\n${list(waitingOnYou)}${more(waitingOnYou)}`
+          : `Nothing is waiting on you right now. The next step is: ${currentStage.title}.`,
+        basis: "Approval gates and your steps on the case record",
       };
+    }
 
-    case "recommendation":
+    case "recommendation": {
+      const { recommendationLabel, recommendationRationale } = pack();
       return {
         topic,
-        text: pack.recommendationLabel
-          ? `My draft recommendation: ${pack.recommendationLabel}. ${pack.recommendationRationale}\n\nIt is a draft until you record a decision.`
+        text: recommendationLabel
+          ? `My draft recommendation: ${recommendationLabel}. ${recommendationRationale}\n\nIt is a draft until you record a decision.`
           : "There is no recommendation yet. It is drafted once options or a research pass are on the case.",
         basis: "Agent recommendation derived from the case's evidence",
       };
+    }
 
     case "risks": {
-      const risks = dash.risks.map((r) => `${r.kind === "gap" ? "Gap" : "Risk"}: ${r.text}`);
-      const unknowns = pack.unknowns;
-      const items = risks.length ? risks : unknowns;
+      const risks = dash().risks.map((r) => `${r.kind === "gap" ? "Gap" : "Risk"}: ${r.text}`);
+      const items = risks.length ? risks : pack().unknowns;
       return {
         topic,
         text: items.length
@@ -172,8 +179,9 @@ export function answerCaseQuestion(mission: SupervisedMission, question: string)
     }
 
     case "team": {
-      const agents = dash.activeAgents.map((a) => `${a.label} · ${a.status}`);
-      const outputs = dash.completedOutputs.map((o) => `${o.title} (${o.honestyLabel})`);
+      const { activeAgents, completedOutputs } = dash();
+      const agents = activeAgents.map((a) => `${a.label} · ${a.status}`);
+      const outputs = completedOutputs.map((o) => `${o.title} (${o.honestyLabel})`);
       return {
         topic,
         text:
@@ -189,14 +197,14 @@ export function answerCaseQuestion(mission: SupervisedMission, question: string)
 
     case "options": {
       const options = (mission.proposal?.options ?? []).map((o) => `${o.title} — ${o.tradeoff}`);
+      const generation = mission.proposal?.generation;
+      const producedBy = generation?.ran
+        ? `\n\nDrafted by model ${generation.model ?? generation.provider ?? "(id not recorded)"}.`
+        : "\n\nThese are simulated drafts: no model ran.";
       return {
         topic,
         text: options.length
-          ? `Options drafted on the case:\n${list(options)}${more(options)}${
-              mission.proposal?.generation.ran
-                ? ""
-                : "\n\nThese are simulated drafts: no model ran."
-            }`
+          ? `Options drafted on the case:\n${list(options)}${more(options)}${producedBy}`
           : "No options are drafted on the case yet.",
         basis: "Option drafts on the case record",
       };
@@ -213,26 +221,30 @@ export function answerCaseQuestion(mission: SupervisedMission, question: string)
         basis: "Decision record on the case",
       };
 
-    case "usage":
+    case "usage": {
+      const { usage } = dash();
       return {
         topic,
-        text: `${dash.usage.label}. Used ${dash.usage.consumed} of ${dash.usage.ceiling} units on this case.`,
+        text: `${usage.label}. Used ${usage.consumed} of ${usage.ceiling} units on this case.`,
         basis: "Usage record on the case",
       };
+    }
 
-    case "summary":
+    case "summary": {
+      const { currentStage, latestPmUpdate } = dash();
       return {
         topic,
         text: [
-          `Stage: ${dash.currentStage.title}.`,
+          `Stage: ${currentStage.title}.`,
           `Evidence: ${mission.evidence.length} item${mission.evidence.length === 1 ? "" : "s"}; options drafted: ${mission.proposal?.options.length ?? 0}.`,
           mission.approval
             ? `Decision: ${HUMAN_NEXT_PATH_LABELS[normalizeDecisionChoice(mission.approval.choice)]}.`
             : "No decision recorded yet.",
-          `Latest update: ${dash.latestPmUpdate.summary}`,
+          `Latest update: ${latestPmUpdate.summary}`,
         ].join("\n"),
         basis: "Case record summary",
       };
+    }
 
     case "unknown":
       return {

@@ -37,8 +37,8 @@ describe("mission dashboard screen", () => {
     expect(model.rail.find((r) => r.id === "research")?.state).not.toBe("upcoming");
     expect(model.activeAgents.some((a) => /Market/i.test(a.label))).toBe(true);
     expect(model.completedOutputs).toHaveLength(0);
-    // "Export the pack" is the next step but it is work, not an approval gate.
-    expect(model.pendingApprovals).toEqual([]);
+    // Exporting the pack is the owner's own step, so it is waiting on them.
+    expect(model.waitingOnYou).toEqual([expect.stringMatching(/^Export the pack — /)]);
     expect(model.risks.some((r) => /Waiting on founder/i.test(r.text))).toBe(true);
     expect(model.latestPmUpdate.summary).toMatch(/Framed the first-phase/i);
     expect(model.usage.consumed).toBe(2);
@@ -74,11 +74,30 @@ describe("mission dashboard screen", () => {
       discovery: "done",
       research: "done",
       plan: "done",
-      design: "skipped",
-      engineering: "skipped",
-      qa: "skipped",
+      // A prototype can still follow the export, so Design is next, not skipped.
+      design: "current",
+      engineering: "upcoming",
+      qa: "upcoming",
       handover: "done",
     });
+    expect(exported.stageLabel).toBe("Approve sandboxed HTML prototype");
+  });
+
+  it("does not count research tasks whose words merely contain 'api' or 'service'", () => {
+    const team = baseMission().team!;
+    const model = buildMissionDashboard(
+      baseMission({
+        team: {
+          ...team,
+          tasks: [
+            ...team.tasks,
+            { ...team.tasks[0]!, key: "x1", title: "Rapid market scan", status: "completed" },
+            { ...team.tasks[0]!, key: "x2", title: "Therapist interviews", status: "completed" },
+          ],
+        },
+      }),
+    );
+    expect(model.rail.find((r) => r.id === "engineering")?.state).not.toBe("done");
   });
 
   it("makes the first stage without a record current and leaves later ones not started", () => {
@@ -93,9 +112,9 @@ describe("mission dashboard screen", () => {
     expect(model.rail.filter((r) => r.state === "current")).toHaveLength(1);
   });
 
-  it("lists only real approval gates as pending approvals", () => {
+  it("lists approval gates and the owner's own steps as waiting on them", () => {
     const deciding = buildMissionDashboard(baseMission({ stage: "alternatives" }));
-    expect(deciding.pendingApprovals).toEqual([expect.stringMatching(/^Record your next path — /)]);
+    expect(deciding.waitingOnYou).toEqual([expect.stringMatching(/^Record your next path — /)]);
     const done = buildMissionDashboard(
       baseMission({
         stage: "exported",
@@ -112,7 +131,9 @@ describe("mission dashboard screen", () => {
         followUp: { status: "approved" },
       } as never),
     );
+    const expecting = buildMissionDashboard(baseMission({ stage: "decision" }));
+    expect(expecting.waitingOnYou).toEqual([expect.stringMatching(/^Record what you expect — /)]);
     expect(done.stageLabel).toBe("Follow-up approved");
-    expect(done.pendingApprovals).toEqual([]);
+    expect(done.waitingOnYou).toEqual([]);
   });
 });

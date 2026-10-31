@@ -26,7 +26,7 @@ export function InvestigationExperience({
       data-state={experience.state}
       data-converging={experience.converging ? "true" : undefined}
     >
-      <ProductIntelligenceMap mission={mission} missionId={missionId} />
+      <ProductIntelligenceMap mission={mission} />
 
       <details className="ps-investigation-map-inspect">
         <summary>Map controls &amp; inspect</summary>

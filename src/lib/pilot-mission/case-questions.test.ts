@@ -41,9 +41,9 @@ describe("questions about a supervised case", () => {
     expect(answer.basis).toMatch(/case record/);
   });
 
-  it("only lists real approval gates as waiting on the owner", () => {
+  it("lists what is waiting on the owner", () => {
     expect(answerCaseQuestion(baseMission(), "What is waiting on me?").text).toMatch(
-      /No approval is waiting on you right now/,
+      /^Waiting on you:\n• Export the pack/,
     );
     expect(
       answerCaseQuestion(baseMission({ stage: "alternatives" }), "What should I approve next?")
@@ -100,6 +100,36 @@ describe("questions about a supervised case", () => {
     );
     expect(answerCaseQuestion(mission, "What did I decide?").text).toMatch(
       /^Your recorded decision: .+ — "Ship a thin slice"/,
+    );
+  });
+
+  it("reads curly apostrophes and treats 'update me' or 'start with' as questions", () => {
+    expect(caseQuestionTopic("What\u2019s next?")).toBe("next_step");
+    expect(caseQuestionTopic("I don\u2019t know who buys this")).toBe("research_next");
+    expect(caseQuestionTopic("Update me on the status")).toBe("next_step");
+    expect(caseQuestionTopic("Start with the risks")).toBe("risks");
+  });
+
+  it("names the model that drafted the options", () => {
+    const mission = baseMission({
+      proposal: {
+        action: "compare_options",
+        version: 1,
+        scopeHash: "s",
+        options: [{ id: "o1", title: "Waste log", tradeoff: "Manual entry", basis: "e1" }],
+        generation: {
+          ran: true,
+          label: "openai/gpt-test",
+          provider: "openai",
+          model: "gpt-test",
+          output: "{}",
+          citations: [],
+          gaps: [],
+        },
+      },
+    });
+    expect(answerCaseQuestion(mission, "What options do we have?").text).toMatch(
+      /Drafted by model gpt-test\.$/,
     );
   });
 

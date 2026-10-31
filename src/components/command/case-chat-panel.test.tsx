@@ -35,8 +35,7 @@ describe("MissionDashboardScreen", () => {
       ),
     );
     expect(html).toMatch(/data-state="done">Handover<span class="mdash-rail-state">Done</);
-    expect(html).toMatch(
-      /data-state="skipped">Design<span class="mdash-rail-state">Not done on this path</,
-    );
+    expect(html).toMatch(/data-state="current"[^>]*>Design<span class="mdash-rail-state">Next</);
+    expect(html).toMatch(/data-state="upcoming">QA<span class="mdash-rail-state">Not started</);
   });
 });

@@ -23,11 +23,9 @@ import "@/styles/pm-briefing-screen.css";
  */
 export function InvestigationPmBriefingStage({
   mission,
-  missionId,
   onContinueToDecision,
 }: {
   mission: SupervisedMission;
-  missionId?: string;
   onContinueToDecision?: (intent: PmBriefingActionIntent, optionId?: string) => void;
 }) {
   const model = buildPmBriefingScreen(mission);

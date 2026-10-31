@@ -301,7 +301,6 @@ export function InvestigationStageShell({
               {planApproved && (mission.proposal || mission.evidence.length) ? (
                 <InvestigationPmBriefingStage
                   mission={mission}
-                  missionId={missionId}
                   onContinueToDecision={(intent) => {
                     // Discuss opens an in-place Aria sheet; other actions move to Step 4.
                     if (intent === "discuss") return;
