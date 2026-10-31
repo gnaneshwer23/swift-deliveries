@@ -107,7 +107,7 @@ function MissionStartForm({
   const [platform, setPlatform] = useState("");
   const [existingAssets, setExistingAssets] = useState("");
   const [outcome, setOutcome] = useState(DEFAULT_MISSION_OUTCOME);
-  const [constraints, setConstraints] = useState(RESEARCH_FIRST_CONSTRAINT);
+  const [constraints, setConstraints] = useState("");
   const [intakeEvidenceNote, setIntakeEvidenceNote] = useState("");
   const [researchMode, setResearchMode] = useState<ResearchMode>("combined");
   const [error, setError] = useState<string | null>(null);
@@ -137,7 +137,7 @@ function MissionStartForm({
     setPlatform(restored.platform ?? "");
     setExistingAssets(restored.existingAssets ?? "");
     setOutcome(restored.outcome || DEFAULT_MISSION_OUTCOME);
-    setConstraints(restored.constraints || RESEARCH_FIRST_CONSTRAINT);
+    setConstraints(restored.constraints || "");
     setIntakeEvidenceNote(restored.intakeEvidenceNote ?? "");
     hydratedUser.current = userId;
     setDraftReady(true);
