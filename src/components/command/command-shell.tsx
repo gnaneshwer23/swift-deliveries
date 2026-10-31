@@ -20,6 +20,7 @@ import { useSession } from "@/hooks/use-session";
 import { BrandLogo } from "@/components/brand-logo";
 import { isExecutiveStudioRoute } from "@/lib/command/executive-studio-routes";
 import "@/styles/psi-workspace.css";
+import "@/styles/studio-system.css";
 
 const PRIMARY_NAV = [
   { to: "/command", label: "Studio", icon: Compass },
@@ -35,7 +36,6 @@ const ADVANCED_NAV = [
 type NavItem = (typeof PRIMARY_NAV)[number] | (typeof ADVANCED_NAV)[number];
 
 const EXECUTIVE_FONT_LINK_ID = "ps-executive-fonts";
-const STUDIO_ENTRY_FONT_LINK_ID = "ps-studio-entry-fonts";
 
 function navLinkActive(item: NavItem, pathname: string, _locationHash: string): boolean {
   const { to, label } = item;
@@ -131,16 +131,6 @@ export function CommandShell({
     document.head.appendChild(link);
   }, [executiveMode]);
 
-  useEffect(() => {
-    if (!studioEntryMode || typeof document === "undefined") return;
-    if (document.getElementById(STUDIO_ENTRY_FONT_LINK_ID)) return;
-    const link = document.createElement("link");
-    link.id = STUDIO_ENTRY_FONT_LINK_ID;
-    link.rel = "stylesheet";
-    link.href =
-      "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap";
-    document.head.appendChild(link);
-  }, [studioEntryMode]);
   const breadcrumb = isStudioHome ? (
     <span>Studio</span>
   ) : (
@@ -154,7 +144,7 @@ export function CommandShell({
       className={`dxa cc-shell psi-workspace${networkMode ? " ps-network-shell" : ""}${
         hideHeading ? " ps-shell-foyer" : ""
       }${foyerMode ? " ps-shell-foyer-calm" : ""}${executiveMode ? " ps-executive" : ""}${
-        studioEntryMode ? " ps-studio-entry" : ""
+        studioEntryMode ? " ps-studio-entry sx" : ""
       }`}
       onKeyDown={(event) => {
         if (event.key === "Escape") setOpen(false);

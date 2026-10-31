@@ -1,130 +1,113 @@
-/* Screen 6 — PM briefing workspace */
+/* Hallmark · genre: modern-minimal · macrostructure: Long Document · design-system: design.md · designed-as-app
+ * Screen 6 — PM briefing. A readable document: Aria's message, the briefing points as ruled
+ * rows (not a card wall), then the options. Rendered inside the decision path (.sx).
+ */
 .pmb {
-  --pmb-ink: #f8fafc;
-  --pmb-muted: #cbd5e1;
-  --pmb-border: #334155;
-  --pmb-card: rgba(17, 24, 39, 0.78);
-  --pmb-indigo: #6366f1;
-  --pmb-cyan: #22d3ee;
-  --pmb-violet: #a78bfa;
-  --pmb-accent: #059669;
   display: grid;
-  gap: 1rem;
-  color: var(--pmb-ink);
-  font-family: "DM Sans", Inter, system-ui, sans-serif;
+  gap: var(--sx-space-lg);
+  max-width: 52rem;
+  color: var(--sx-ink);
+  font-family: var(--sx-font-body);
 }
 
 .pmb-layout {
   display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-  gap: 1rem;
-  align-items: start;
+  gap: var(--sx-space-lg);
 }
 
 .pmb-aria {
-  padding: 1.25rem 1.35rem;
-  border-radius: 12px;
-  border: 1px solid var(--pmb-border);
-  background: var(--pmb-card);
-  backdrop-filter: blur(12px);
+  display: grid;
+  gap: var(--sx-space-xs);
 }
 
 .pmb-aria-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  margin: 0 0 0.85rem;
+  gap: var(--sx-space-xs);
+  margin: 0;
 }
 
 .pmb-avatar {
-  width: 2.35rem;
-  height: 2.35rem;
-  border-radius: 999px;
+  width: 2.25rem;
+  height: 2.25rem;
   display: grid;
   place-items: center;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: #000;
-  background: linear-gradient(135deg, var(--pmb-cyan), var(--pmb-indigo));
+  border-radius: var(--sx-radius-pill);
+  border: 1px solid var(--sx-rule-strong);
+  background: var(--sx-sunken);
+  color: var(--sx-ink-2);
+  font: 600 var(--sx-text-xs) / 1 var(--sx-font-body);
 }
 
 .pmb-aria-chip strong {
   display: block;
-  font-size: 0.85rem;
+  font-size: var(--sx-text-sm);
 }
 
-.pmb-aria-chip span {
+.pmb-aria-chip span:not(.pmb-avatar) {
   display: block;
-  font-size: 0.72rem;
-  color: var(--pmb-muted);
+  font-size: var(--sx-text-xs);
+  color: var(--sx-muted);
 }
 
-.pmb-aria h2 {
-  margin: 0 0 0.65rem;
-  font-family: "Space Grotesk", Inter, sans-serif;
-  font-size: clamp(1.35rem, 2.5vw, 1.75rem);
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+.pmb-aria h2,
+.pmb-pending h2 {
+  margin: 0;
+  font: 600 var(--sx-text-xl) / 1.25 var(--sx-font-display);
+  letter-spacing: -0.015em;
+  color: var(--sx-ink);
 }
 
 .pmb-message {
   margin: 0;
-  font-size: 0.98rem;
-  line-height: 1.65;
-  color: var(--pmb-ink);
+  max-width: var(--sx-measure);
+  font-size: var(--sx-text-lg);
+  line-height: 1.6;
+  color: var(--sx-ink);
 }
 
 .pmb-honesty {
-  margin: 0.85rem 0 0;
-  font-size: 0.75rem;
-  color: var(--pmb-muted);
-  line-height: 1.45;
+  margin: 0;
+  max-width: var(--sx-measure);
+  font-size: var(--sx-text-sm);
+  color: var(--sx-muted);
 }
 
 .pmb-cards {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.65rem;
+  border-top: 1px solid var(--sx-rule);
 }
 
 .pmb-card {
-  padding: 0.85rem 0.95rem;
-  border-radius: 12px;
-  border: 1px solid var(--pmb-border);
-  background: rgba(15, 23, 42, 0.72);
-  min-height: 5.5rem;
+  display: grid;
+  grid-template-columns: minmax(9rem, 14rem) minmax(0, 1fr);
+  gap: var(--sx-space-3xs) var(--sx-space-md);
+  padding-block: var(--sx-space-sm);
+  border-bottom: 1px solid var(--sx-rule);
+  min-width: 0;
 }
 
 .pmb-card h3 {
-  margin: 0 0 0.4rem;
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--pmb-cyan);
-  font-weight: 700;
+  margin: 0;
+  font: 600 var(--sx-text-sm) / 1.4 var(--sx-font-display);
+  color: var(--sx-ink);
 }
 
 .pmb-card p,
 .pmb-card li {
   margin: 0;
-  font-size: 0.82rem;
-  line-height: 1.45;
-  color: var(--pmb-muted);
+  font-size: var(--sx-text-sm);
+  color: var(--sx-ink-2);
 }
 
 .pmb-card ul {
   margin: 0;
-  padding-left: 1rem;
-}
-
-.pmb-card-wide {
-  grid-column: 1 / -1;
+  padding-left: var(--sx-space-sm);
 }
 
 .pmb-options {
   display: grid;
-  gap: 0.65rem;
+  gap: var(--sx-space-sm);
 }
 
 .pmb-options-head {
@@ -132,129 +115,133 @@
   flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: var(--sx-space-2xs);
 }
 
 .pmb-options-head h3 {
   margin: 0;
-  font-family: "Space Grotesk", Inter, sans-serif;
-  font-size: 1.05rem;
+  font: 600 var(--sx-text-lg) / 1.3 var(--sx-font-display);
+  color: var(--sx-ink);
 }
 
 .pmb-options-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.65rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--sx-space-xs);
 }
 
 .pmb-option {
-  text-align: left;
-  padding: 0.9rem 1rem;
-  border-radius: 12px;
-  border: 1px solid var(--pmb-border);
-  background: var(--pmb-card);
+  display: grid;
+  gap: var(--sx-space-3xs);
+  align-content: start;
+  min-width: 0;
+  padding: var(--sx-space-sm);
+  border: 1px solid var(--sx-rule);
+  border-radius: var(--sx-radius-panel);
+  background: var(--sx-surface);
   color: inherit;
+  font: inherit;
+  text-align: left;
   cursor: pointer;
-  transition:
-    border-color 0.2s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: border-color var(--sx-dur) var(--sx-ease-out);
 }
 
 .pmb-option:hover {
-  transform: translateY(-1px);
-  border-color: rgba(99, 102, 241, 0.55);
+  border-color: var(--sx-rule-strong);
 }
 
 .pmb-option:focus-visible {
-  outline: 2px solid var(--pmb-indigo);
+  outline: 2px solid var(--sx-focus);
   outline-offset: 2px;
 }
 
+/* Selected is marked by the accent border and wash, and by aria-checked for assistive tech. */
 .pmb-option.is-selected {
-  border-color: var(--pmb-indigo);
-  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.35);
+  border-color: var(--sx-accent);
+  background: var(--sx-accent-soft);
 }
 
 .pmb-option strong {
-  display: block;
-  font-size: 0.92rem;
-  margin-bottom: 0.35rem;
+  font-weight: 600;
+  color: var(--sx-ink);
 }
 
 .pmb-option p {
   margin: 0;
-  font-size: 0.78rem;
-  color: var(--pmb-muted);
-  line-height: 1.45;
+  font-size: var(--sx-text-sm);
+  color: var(--sx-ink-2);
 }
 
 .pmb-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.55rem;
+  gap: var(--sx-space-2xs);
 }
 
 .pmb-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  min-height: 2.6rem;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.88rem;
+  gap: var(--sx-space-2xs);
+  min-height: 2.5rem;
+  padding: var(--sx-space-2xs) var(--sx-space-sm);
+  border-radius: var(--sx-radius-control);
+  border: 1px solid var(--sx-rule-strong);
+  background: var(--sx-surface);
+  color: var(--sx-ink);
+  font: 500 var(--sx-text-sm) / 1.2 var(--sx-font-body);
+  white-space: nowrap;
   cursor: pointer;
-  border: 1px solid transparent;
+  transition: background-color var(--sx-dur) var(--sx-ease-out);
+}
+
+.pmb-btn:hover {
+  background: var(--sx-sunken);
 }
 
 .pmb-btn:focus-visible {
-  outline: 2px solid var(--pmb-indigo);
+  outline: 2px solid var(--sx-focus);
   outline-offset: 2px;
 }
 
 .pmb-btn-primary {
-  background: var(--pmb-accent);
-  color: #000;
+  background: var(--sx-accent);
+  border-color: var(--sx-accent);
+  color: var(--sx-accent-ink);
 }
 
-.pmb-btn-ghost {
-  background: transparent;
-  color: var(--pmb-ink);
-  border-color: var(--pmb-indigo);
+.pmb-btn-primary:hover {
+  background: var(--sx-accent-hover);
 }
 
+.pmb-btn-ghost,
 .pmb-btn-secondary {
-  background: rgba(99, 102, 241, 0.16);
-  color: var(--pmb-ink);
-  border-color: rgba(99, 102, 241, 0.35);
+  background: var(--sx-surface);
 }
 
 .pmb-pending {
-  padding: 1.25rem;
-  border-radius: 12px;
-  border: 1px solid var(--pmb-border);
-  background: var(--pmb-card);
+  display: grid;
+  gap: var(--sx-space-2xs);
+  padding: var(--sx-space-md);
+  border: 1px dashed var(--sx-rule-strong);
+  border-radius: var(--sx-radius-panel);
 }
 
 .pmb-sample {
   display: inline-block;
-  margin-left: 0.35rem;
-  padding: 0.05rem 0.3rem;
-  border-radius: 4px;
-  background: rgba(251, 191, 36, 0.14);
-  color: #fbbf24;
-  font-size: 0.58rem;
-  letter-spacing: 0.05em;
-  vertical-align: middle;
+  justify-self: start;
+  padding: 0 var(--sx-space-2xs);
+  border-radius: var(--sx-radius-pill);
+  border: 1px solid var(--sx-waiting);
+  color: var(--sx-waiting);
+  font-size: var(--sx-text-xs);
+  font-style: normal;
+  font-weight: 500;
 }
 
-@media (max-width: 960px) {
-  .pmb-layout,
-  .pmb-cards,
-  .pmb-options-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 760px) {
+  .pmb-card {
+    grid-template-columns: minmax(0, 1fr);
   }
   .pmb-actions .pmb-btn {
     flex: 1 1 100%;
@@ -262,7 +249,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pmb-option:hover {
-    transform: none;
+  .pmb-option,
+  .pmb-btn {
+    transition-duration: 120ms;
   }
 }

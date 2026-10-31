@@ -1,30 +1,30 @@
+/* Hallmark · genre: modern-minimal · design-system: design.md · designed-as-app
+ * Studio entry (welcome, idea, questions) on the .sx tokens; the shell adds the .sx class. */
 /* Interactive Studio entry dashboards (welcome + idea) — signed-in /command only */
 .psi-workspace.ps-studio-entry {
-  --color-primary: #6366f1;
-  --color-on-primary: #000000;
-  --color-secondary: #818cf8;
-  --color-accent: #059669;
-  --color-on-accent: #000000;
-  --color-background: #0f172a;
-  --color-foreground: #f8fafc;
-  --color-card: #111827;
-  --color-muted: #1e293b;
-  --color-muted-foreground: #cbd5e1;
-  --color-border: #334155;
-  --color-ring: #6366f1;
-  --sd-cyan: #22d3ee;
-  --sd-violet: #a78bfa;
-  --sd-amber: #fbbf24;
-  --sd-radius: 12px;
-  --sd-font-display: "Space Grotesk", "Plus Jakarta Sans", Inter, sans-serif;
-  --sd-font-body: "DM Sans", Inter, system-ui, sans-serif;
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-  background:
-    radial-gradient(ellipse 70% 45% at 78% 8%, rgba(99, 102, 241, 0.18), transparent 55%),
-    radial-gradient(ellipse 50% 40% at 8% 90%, rgba(5, 150, 105, 0.08), transparent 50%),
-    var(--color-background);
-  color: var(--color-foreground);
+  /* Legacy names kept for the rules below; values come from design.md (.sx tokens). */
+  --color-primary: var(--sx-accent);
+  --color-on-primary: var(--sx-accent-ink);
+  --color-secondary: var(--sx-accent);
+  --color-accent: var(--sx-accent);
+  --color-on-accent: var(--sx-accent-ink);
+  --color-background: var(--sx-paper);
+  --color-foreground: var(--sx-ink);
+  --color-card: var(--sx-surface);
+  --color-muted: var(--sx-sunken);
+  --color-muted-foreground: var(--sx-ink-2);
+  --color-border: var(--sx-rule);
+  --color-ring: var(--sx-focus);
+  --sd-cyan: var(--sx-accent);
+  --sd-violet: var(--sx-ink-2);
+  --sd-amber: var(--sx-waiting);
+  --sd-radius: var(--sx-radius-panel);
+  --sd-font-display: var(--sx-font-display);
+  --sd-font-body: var(--sx-font-body);
+  --shadow-md: none;
+  --shadow-lg: none;
+  background: var(--sx-paper);
+  color: var(--sx-ink);
   font-family: var(--sd-font-body);
   min-height: 100%;
 }
@@ -58,7 +58,6 @@
   font-family: var(--sd-font-display);
   font-weight: 600;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
   font-size: 0.75rem;
   color: var(--sd-cyan);
 }
@@ -70,7 +69,7 @@
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
   border: 1px solid var(--color-border);
-  background: rgba(17, 24, 39, 0.72);
+  background: var(--sx-surface);
   font-size: 0.75rem;
   color: var(--color-muted-foreground);
 }
@@ -93,9 +92,8 @@
 
 .sd-card {
   border-radius: var(--sd-radius);
-  background: rgba(17, 24, 39, 0.78);
+  background: var(--sx-surface);
   border: 1px solid var(--color-border);
-  backdrop-filter: blur(16px);
   box-shadow: var(--shadow-md);
   padding: 1.5rem;
 }
@@ -149,17 +147,17 @@
   margin-top: 0.35rem;
   border-radius: 999px;
   background: var(--sd-cyan);
-  box-shadow: 0 0 10px rgba(34, 211, 238, 0.45);
+  box-shadow: none;
 }
 
 .sd-trust li[data-tone="violet"] .sd-trust-dot {
   background: var(--sd-violet);
-  box-shadow: 0 0 10px rgba(167, 139, 250, 0.4);
+  box-shadow: none;
 }
 
 .sd-trust li[data-tone="indigo"] .sd-trust-dot {
   background: var(--color-primary);
-  box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+  box-shadow: none;
 }
 
 .sd-trust strong {
@@ -238,28 +236,12 @@
   border-radius: var(--sd-radius);
   overflow: hidden;
   border: 1px solid var(--color-border);
-  background:
-    radial-gradient(circle at 50% 48%, rgba(99, 102, 241, 0.22), transparent 45%),
-    linear-gradient(165deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
+  background: var(--sx-surface);
 }
 
+/* Decorative drifting texture retired (design.md § Motion: nothing moves on its own). */
 .sd-map::before {
-  content: "";
-  position: absolute;
-  inset: -15%;
-  background-image:
-    radial-gradient(circle at 25% 30%, rgba(34, 211, 238, 0.4) 0 1px, transparent 2px),
-    radial-gradient(circle at 70% 55%, rgba(167, 139, 250, 0.35) 0 1px, transparent 2px);
-  background-size: 160px 160px, 200px 200px;
-  animation: sd-drift 26s linear infinite;
-  opacity: 0.45;
-  pointer-events: none;
-}
-
-@keyframes sd-drift {
-  to {
-    transform: translate3d(-18px, 14px, 0);
-  }
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -281,23 +263,15 @@
   padding: 1rem 1.1rem;
   border-radius: 12px;
   text-align: center;
-  background: rgba(15, 23, 42, 0.88);
-  border: 1px solid rgba(34, 211, 238, 0.35);
-  box-shadow: 0 0 40px rgba(99, 102, 241, 0.28);
-  animation: sd-glow 5s ease-in-out infinite;
-}
-
-@keyframes sd-glow {
-  50% {
-    box-shadow: 0 0 52px rgba(34, 211, 238, 0.28);
-  }
+  background: var(--sx-surface);
+  border: 1px solid var(--sx-rule-strong);
+  box-shadow: none;
 }
 
 .sd-core span {
   display: block;
   font-size: 0.65rem;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
   color: var(--sd-cyan);
   font-weight: 700;
   margin-bottom: 0.35rem;
@@ -319,10 +293,9 @@
   border-radius: 999px;
   font-size: 0.72rem;
   font-weight: 600;
-  background: rgba(15, 23, 42, 0.9);
+  background: var(--sx-surface);
   border: 1px solid var(--color-border);
   color: var(--color-foreground);
-  animation: sd-float 7s ease-in-out infinite;
 }
 
 .sd-chip button {
@@ -341,7 +314,7 @@
 
 .sd-chip.is-active {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.35);
+  box-shadow: 0 0 0 1px var(--sx-accent);
 }
 
 .sd-chip i {
@@ -369,23 +342,14 @@
 .sd-chip[data-pos="tr"] {
   top: 16%;
   right: 8%;
-  animation-delay: 0.6s;
 }
 .sd-chip[data-pos="bl"] {
   bottom: 26%;
   left: 6%;
-  animation-delay: 1.1s;
 }
 .sd-chip[data-pos="br"] {
   bottom: 20%;
   right: 8%;
-  animation-delay: 1.5s;
-}
-
-@keyframes sd-float {
-  50% {
-    transform: translateY(-5px);
-  }
 }
 
 .sd-float {
@@ -394,28 +358,25 @@
   width: min(46%, 11rem);
   padding: 0.75rem 0.85rem;
   border-radius: 12px;
-  background: rgba(15, 23, 42, 0.92);
+  background: var(--sx-surface);
   border: 1px solid var(--color-border);
-  animation: sd-float 8s ease-in-out infinite;
 }
 
 .sd-float[data-kind="brief"] {
   left: 5%;
   bottom: 7%;
-  border-color: rgba(167, 139, 250, 0.35);
+  border-color: var(--sx-rule-strong);
 }
 .sd-float[data-kind="package"] {
   right: 5%;
   top: 9%;
-  border-color: rgba(99, 102, 241, 0.4);
-  animation-delay: 0.8s;
+  border-color: var(--sx-accent);
 }
 
 .sd-float small {
   display: block;
   font-size: 0.62rem;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
   font-weight: 700;
   color: var(--sd-violet);
   margin-bottom: 0.3rem;
@@ -443,7 +404,7 @@
   margin-left: 0.3rem;
   padding: 0.05rem 0.3rem;
   border-radius: 4px;
-  background: rgba(251, 191, 36, 0.14);
+  background: var(--sx-waiting-soft);
   color: var(--sd-amber);
   font-size: 0.58rem;
   letter-spacing: 0.05em;
@@ -472,7 +433,6 @@
   display: block;
   font-size: 0.68rem;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--color-muted-foreground);
   margin-bottom: 0.25rem;
 }
@@ -491,7 +451,7 @@
 
 .sd-idea-compose .cc-input,
 .sd-idea-compose textarea {
-  background: rgba(15, 23, 42, 0.65) !important;
+  background: var(--sx-surface) !important;
   border-color: var(--color-border) !important;
   color: var(--color-foreground) !important;
 }
@@ -512,7 +472,7 @@
   text-decoration: none;
   color: inherit;
   border: 1px solid transparent;
-  background: rgba(15, 23, 42, 0.45);
+  background: var(--sx-surface);
   transition:
     border-color 0.2s ease,
     background 0.2s ease,
@@ -521,8 +481,8 @@
 
 .sd-recent a:hover,
 .sd-recent a:focus-visible {
-  border-color: rgba(99, 102, 241, 0.45);
-  background: rgba(15, 23, 42, 0.75);
+  border-color: var(--sx-accent);
+  background: var(--sx-surface);
   transform: translateY(-1px);
 }
 
@@ -540,7 +500,6 @@
   margin: 0 0 0.55rem;
   font-size: 0.7rem;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
   color: var(--sd-cyan);
   font-weight: 700;
 }
@@ -601,19 +560,19 @@
   resize: vertical;
   font-size: 1.05rem !important;
   line-height: 1.5 !important;
-  background: rgba(15, 23, 42, 0.72) !important;
+  background: var(--sx-surface) !important;
   border-color: var(--color-border) !important;
   color: var(--color-foreground) !important;
 }
 
 .sd-submission-textarea.is-invalid {
-  border-color: #dc2626 !important;
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+  border-color: var(--sx-danger) !important;
+  box-shadow: 0 0 0 3px var(--sx-danger-soft);
 }
 
 .sd-submission-textarea:focus-visible {
   border-color: var(--color-ring) !important;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+  box-shadow: 0 0 0 3px var(--sx-accent-soft);
 }
 
 .sd-example-row {
@@ -634,7 +593,7 @@
   padding: 0.35rem 0.85rem;
   border-radius: 999px;
   border: 1px solid var(--color-border);
-  background: rgba(15, 23, 42, 0.55);
+  background: var(--sx-surface);
   color: var(--color-foreground);
   font-size: 0.8rem;
   font-weight: 600;
@@ -657,11 +616,11 @@
 
 .sd-context-chip.is-active {
   border-color: var(--color-primary);
-  background: rgba(99, 102, 241, 0.16);
+  background: var(--sx-accent-soft);
 }
 
 .sd-context-chip.is-filled:not(.is-active) {
-  border-color: rgba(5, 150, 105, 0.55);
+  border-color: var(--sx-done);
 }
 
 .sd-context-chip-more {
@@ -705,11 +664,10 @@
   padding: 0.3rem 0.7rem;
   border-radius: 999px;
   border: 1px solid var(--color-border);
-  background: rgba(15, 23, 42, 0.65);
+  background: var(--sx-surface);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
   color: var(--sd-cyan);
 }
 
@@ -718,7 +676,7 @@
   height: 0.45rem;
   border-radius: 999px;
   background: var(--sd-cyan);
-  box-shadow: 0 0 8px rgba(34, 211, 238, 0.45);
+  box-shadow: none;
 }
 
 .sd-aria-message {
@@ -732,13 +690,12 @@
   padding: 0.75rem 0.9rem;
   border-radius: 12px;
   border: 1px solid var(--color-border);
-  background: rgba(15, 23, 42, 0.55);
+  background: var(--sx-surface);
 }
 
 .sd-idea-chip span {
   font-size: 0.68rem;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--color-muted-foreground);
   font-weight: 700;
 }
