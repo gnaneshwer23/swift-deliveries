@@ -388,9 +388,10 @@ function MissionStartForm({
         aria-label="Idea submission"
       >
         <header className="sd-submission-heading">
-          <p className="sd-rail-kicker">Aria · AI Product Manager</p>
-          <h1 id="sd-submission-title">Describe your product idea</h1>
-          <p className="sd-lede">One or two lines is enough. Aria will ask only what matters.</p>
+          <h1 id="sd-submission-title">What do you want to build?</h1>
+          <p className="sd-lede">
+            One or two lines is enough. Aria and the team take it from there.
+          </p>
         </header>
 
         {statusBlock}
@@ -440,7 +441,7 @@ function MissionStartForm({
               placeholder={EXAMPLE_PRODUCT_IDEA}
               value={question}
               aria-invalid={showValidation || undefined}
-              aria-describedby={showValidation ? validationId : "supervised-idea-help"}
+              aria-describedby={showValidation ? validationId : undefined}
               onChange={(event) => {
                 setQuestion(event.target.value);
                 if (attemptedEmpty) setAttemptedEmpty(false);
@@ -448,14 +449,11 @@ function MissionStartForm({
               }}
               disabled={voiceBusy}
             />
-            <p id="supervised-idea-help" className="sd-note">
-              Placeholder text is an example only — it is not submitted unless you choose it.
-            </p>
-
-            <div className="sd-example-row">
+            <p className="sd-example-row">
+              No idea yet?{" "}
               <button
                 type="button"
-                className="sd-btn sd-btn-ghost"
+                className="sd-link-btn"
                 disabled={!draftReady || start.isPending}
                 onClick={() => {
                   setQuestion(EXAMPLE_PRODUCT_IDEA);
@@ -464,179 +462,179 @@ function MissionStartForm({
                   questionRef.current?.focus();
                 }}
               >
-                Use example idea
+                Try an example
               </button>
-            </div>
-
-            <p className="sd-rail-kicker" style={{ marginTop: "1.15rem" }}>
-              Optional context
             </p>
-            <div className="sd-context-chips" role="group" aria-label="Optional context">
-              {CONTEXT_CHIPS.map((chip) => {
-                const active = openContext.has(chip.id);
-                const filled =
-                  (chip.id === "audience" && audience.trim()) ||
-                  (chip.id === "platform" && platform.trim()) ||
-                  (chip.id === "budget" && budget.trim()) ||
-                  (chip.id === "timeline" && timeline.trim()) ||
-                  (chip.id === "constraints" && constraints.trim());
-                return (
-                  <button
-                    key={chip.id}
-                    type="button"
-                    className={`sd-context-chip${active ? " is-active" : ""}${
-                      filled ? " is-filled" : ""
-                    }`}
-                    aria-pressed={active}
-                    onClick={() => toggleContextChip(chip.id)}
-                  >
-                    {chip.label}
-                  </button>
-                );
-              })}
-              <button
-                type="button"
-                className={`sd-context-chip sd-context-chip-more${
-                  moreContextOpen ? " is-active" : ""
-                }`}
-                aria-pressed={moreContextOpen}
-                onClick={() => setMoreContextOpen((open) => !open)}
-              >
-                + Add more context
-              </button>
-            </div>
 
-            {openContext.has("audience") ? (
-              <label className="sd-submission-label" htmlFor="supervised-audience">
-                Target users
-                <input
-                  id="supervised-audience"
-                  className="cc-input"
-                  maxLength={400}
-                  value={audience}
-                  onChange={(event) => setAudience(event.target.value)}
-                  placeholder="e.g. Small restaurant owners"
-                />
-              </label>
-            ) : null}
-            {openContext.has("platform") ? (
-              <label className="sd-submission-label" htmlFor="supervised-platform">
-                Platform
-                <select
-                  id="supervised-platform"
-                  className="cc-input"
-                  value={platform}
-                  onChange={(event) => setPlatform(event.target.value)}
+            <details className="sd-add-details">
+              <summary>Add details (optional)</summary>
+              <div className="sd-context-chips" role="group" aria-label="Optional context">
+                {CONTEXT_CHIPS.map((chip) => {
+                  const active = openContext.has(chip.id);
+                  const filled =
+                    (chip.id === "audience" && audience.trim()) ||
+                    (chip.id === "platform" && platform.trim()) ||
+                    (chip.id === "budget" && budget.trim()) ||
+                    (chip.id === "timeline" && timeline.trim()) ||
+                    (chip.id === "constraints" && constraints.trim());
+                  return (
+                    <button
+                      key={chip.id}
+                      type="button"
+                      className={`sd-context-chip${active ? " is-active" : ""}${
+                        filled ? " is-filled" : ""
+                      }`}
+                      aria-pressed={active}
+                      onClick={() => toggleContextChip(chip.id)}
+                    >
+                      {chip.label}
+                    </button>
+                  );
+                })}
+                <button
+                  type="button"
+                  className={`sd-context-chip sd-context-chip-more${
+                    moreContextOpen ? " is-active" : ""
+                  }`}
+                  aria-pressed={moreContextOpen}
+                  onClick={() => setMoreContextOpen((open) => !open)}
                 >
-                  <option value="">Choose if known</option>
-                  <option value="Web">Web</option>
-                  <option value="Mobile app">Mobile app</option>
-                  <option value="Internal tool">Internal tool</option>
-                  <option value="Web and mobile">Web and mobile</option>
-                  <option value="Not sure yet">Not sure yet</option>
-                </select>
-              </label>
-            ) : null}
-            {openContext.has("budget") ? (
-              <label className="sd-submission-label" htmlFor="supervised-budget">
-                Budget
-                <input
-                  id="supervised-budget"
-                  className="cc-input"
-                  maxLength={120}
-                  value={budget}
-                  onChange={(event) => setBudget(event.target.value)}
-                  placeholder="e.g. £10k–£50k"
-                />
-              </label>
-            ) : null}
-            {openContext.has("timeline") ? (
-              <label className="sd-submission-label" htmlFor="supervised-timeline">
-                Timeline
-                <input
-                  id="supervised-timeline"
-                  className="cc-input"
-                  maxLength={120}
-                  value={timeline}
-                  onChange={(event) => setTimeline(event.target.value)}
-                  placeholder="e.g. 3–6 months"
-                />
-              </label>
-            ) : null}
-            {openContext.has("constraints") ? (
-              <label className="sd-submission-label" htmlFor="supervised-constraints">
-                Constraints
-                <input
-                  id="supervised-constraints"
-                  className="cc-input"
-                  maxLength={2000}
-                  value={constraints}
-                  onChange={(event) => setConstraints(event.target.value)}
-                  placeholder="e.g. Must integrate with our POS"
-                />
-              </label>
-            ) : null}
+                  + Add more context
+                </button>
+              </div>
 
-            {moreContextOpen ? (
-              <div className="sd-more-context">
-                <label className="sd-submission-label" htmlFor="supervised-assets">
-                  Existing assets
+              {openContext.has("audience") ? (
+                <label className="sd-submission-label" htmlFor="supervised-audience">
+                  Target users
                   <input
-                    id="supervised-assets"
+                    id="supervised-audience"
                     className="cc-input"
-                    maxLength={500}
-                    value={existingAssets}
-                    onChange={(event) => setExistingAssets(event.target.value)}
-                    placeholder="e.g. Research, designs, code"
+                    maxLength={400}
+                    value={audience}
+                    onChange={(event) => setAudience(event.target.value)}
+                    placeholder="e.g. Small restaurant owners"
                   />
                 </label>
-                <label className="sd-submission-label" htmlFor="supervised-research-mode">
-                  Research mode
+              ) : null}
+              {openContext.has("platform") ? (
+                <label className="sd-submission-label" htmlFor="supervised-platform">
+                  Platform
                   <select
-                    id="supervised-research-mode"
+                    id="supervised-platform"
                     className="cc-input"
-                    value={researchMode}
-                    onChange={(event) => setResearchMode(event.target.value as ResearchMode)}
+                    value={platform}
+                    onChange={(event) => setPlatform(event.target.value)}
                   >
-                    {(Object.keys(RESEARCH_MODE_LABELS) as ResearchMode[]).map((mode) => (
-                      <option key={mode} value={mode}>
-                        {RESEARCH_MODE_LABELS[mode]}
-                      </option>
-                    ))}
+                    <option value="">Choose if known</option>
+                    <option value="Web">Web</option>
+                    <option value="Mobile app">Mobile app</option>
+                    <option value="Internal tool">Internal tool</option>
+                    <option value="Web and mobile">Web and mobile</option>
+                    <option value="Not sure yet">Not sure yet</option>
                   </select>
                 </label>
-                <label className="sd-submission-label" htmlFor="supervised-intake-evidence">
-                  Evidence notes (text only)
-                  <textarea
-                    id="supervised-intake-evidence"
-                    className="cc-input cc-textarea"
-                    rows={3}
-                    maxLength={2000}
-                    placeholder="Optional quotes, call notes, or survey excerpts."
-                    value={intakeEvidenceNote}
-                    onChange={(event) => setIntakeEvidenceNote(event.target.value)}
+              ) : null}
+              {openContext.has("budget") ? (
+                <label className="sd-submission-label" htmlFor="supervised-budget">
+                  Budget
+                  <input
+                    id="supervised-budget"
+                    className="cc-input"
+                    maxLength={120}
+                    value={budget}
+                    onChange={(event) => setBudget(event.target.value)}
+                    placeholder="e.g. £10k–£50k"
                   />
                 </label>
-                <details className="ps-intake-advanced">
-                  <summary>Or use voice</summary>
-                  <div className="ps-brief-voice-inline" aria-label="Voice idea input">
-                    <VoiceControls
-                      disabled={!draftReady || start.isPending}
-                      speakReplies={speakReplies}
-                      onSpeakRepliesChange={setSpeakReplies}
-                      onBusyChange={setVoiceBusy}
-                      onTranscript={(text) => {
-                        const line = text.trim();
-                        if (!line) return;
-                        setQuestion((current) =>
-                          current.trim() ? `${current.trim()} ${line}` : line,
-                        );
-                      }}
+              ) : null}
+              {openContext.has("timeline") ? (
+                <label className="sd-submission-label" htmlFor="supervised-timeline">
+                  Timeline
+                  <input
+                    id="supervised-timeline"
+                    className="cc-input"
+                    maxLength={120}
+                    value={timeline}
+                    onChange={(event) => setTimeline(event.target.value)}
+                    placeholder="e.g. 3–6 months"
+                  />
+                </label>
+              ) : null}
+              {openContext.has("constraints") ? (
+                <label className="sd-submission-label" htmlFor="supervised-constraints">
+                  Constraints
+                  <input
+                    id="supervised-constraints"
+                    className="cc-input"
+                    maxLength={2000}
+                    value={constraints}
+                    onChange={(event) => setConstraints(event.target.value)}
+                    placeholder="e.g. Must integrate with our POS"
+                  />
+                </label>
+              ) : null}
+
+              {moreContextOpen ? (
+                <div className="sd-more-context">
+                  <label className="sd-submission-label" htmlFor="supervised-assets">
+                    Existing assets
+                    <input
+                      id="supervised-assets"
+                      className="cc-input"
+                      maxLength={500}
+                      value={existingAssets}
+                      onChange={(event) => setExistingAssets(event.target.value)}
+                      placeholder="e.g. Research, designs, code"
                     />
-                  </div>
-                </details>
-              </div>
-            ) : null}
+                  </label>
+                  <label className="sd-submission-label" htmlFor="supervised-research-mode">
+                    Research mode
+                    <select
+                      id="supervised-research-mode"
+                      className="cc-input"
+                      value={researchMode}
+                      onChange={(event) => setResearchMode(event.target.value as ResearchMode)}
+                    >
+                      {(Object.keys(RESEARCH_MODE_LABELS) as ResearchMode[]).map((mode) => (
+                        <option key={mode} value={mode}>
+                          {RESEARCH_MODE_LABELS[mode]}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="sd-submission-label" htmlFor="supervised-intake-evidence">
+                    Evidence notes (text only)
+                    <textarea
+                      id="supervised-intake-evidence"
+                      className="cc-input cc-textarea"
+                      rows={3}
+                      maxLength={2000}
+                      placeholder="Optional quotes, call notes, or survey excerpts."
+                      value={intakeEvidenceNote}
+                      onChange={(event) => setIntakeEvidenceNote(event.target.value)}
+                    />
+                  </label>
+                  <details className="ps-intake-advanced">
+                    <summary>Or use voice</summary>
+                    <div className="ps-brief-voice-inline" aria-label="Voice idea input">
+                      <VoiceControls
+                        disabled={!draftReady || start.isPending}
+                        speakReplies={speakReplies}
+                        onSpeakRepliesChange={setSpeakReplies}
+                        onBusyChange={setVoiceBusy}
+                        onTranscript={(text) => {
+                          const line = text.trim();
+                          if (!line) return;
+                          setQuestion((current) =>
+                            current.trim() ? `${current.trim()} ${line}` : line,
+                          );
+                        }}
+                      />
+                    </div>
+                  </details>
+                </div>
+              ) : null}
+            </details>
 
             {similar.length > 0 ? (
               <div
@@ -678,13 +676,9 @@ function MissionStartForm({
                 className="sd-btn sd-btn-primary sd-btn-block"
                 disabled={!draftReady || (!ideaBlank && home.data?.canStartInvestigation === false)}
               >
-                Continue
+                Start
               </button>
-              <p className="sd-note">You can start with just the idea.</p>
-              <p className="sd-note">
-                Next: a few optional questions from Aria. Research does not run until you approve
-                the investigation plan.
-              </p>
+              <p className="sd-note">Nothing runs until you approve the plan.</p>
             </div>
           </fieldset>
         </form>
