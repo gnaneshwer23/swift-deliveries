@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { InvestigationExperience } from "@/components/command/investigation-experience";
+import { InvestigationTeamFormation } from "@/components/command/investigation-team-formation";
 import { InvestigationPmBriefingStage } from "@/components/command/investigation-pm-briefing-stage";
 import { IndigoCaseStudioShell } from "@/components/command/indigo-case-studio-shell";
 import { ProjectRoomNav } from "@/components/command/project-room-nav";
@@ -160,14 +161,16 @@ export function InvestigationStageShell({
               id="investigation-room"
               className="ps-investigation-stage-panel"
               hidden={current !== "room"}
-              aria-label="Project room"
+              aria-label="Team formation and project room"
             >
-              <p className="cc-kicker">Project room</p>
-              <p className="cc-muted text-sm mb-3">
-                Shared context → evidence → use → downstream — inspect connections in the full
-                record.
-              </p>
-              <ProjectRoomNav mission={mission} />
+              <InvestigationTeamFormation mission={mission} />
+              <div className="ps-team-project-room">
+                <p className="cc-kicker">Project room</p>
+                <p className="cc-muted text-sm mb-3">
+                  Shared context, evidence, decisions, and outputs stay together on this project.
+                </p>
+                <ProjectRoomNav mission={mission} />
+              </div>
               {theatre}
             </section>
 
