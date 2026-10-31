@@ -879,7 +879,7 @@ function StepFourDiscussion({
             action={proposal.action}
             version={proposal.version}
             scopeHash={proposal.scopeHash}
-            options={proposal.options.map((option) => ({ id: option.id, title: option.title }))}
+            options={proposal.options.map((option) => ({ id: option.id, title: option.title, tradeoff: option.tradeoff }))}
             onDone={onDone}
             onError={onError}
           />
@@ -919,7 +919,7 @@ function DecisionForm({
   action: "compare_options";
   version: number;
   scopeHash: string;
-  options: Array<{ id: string; title: string }>;
+  options: Array<{ id: string; title: string; tradeoff: string }>;
   onDone: () => Promise<void>;
   onError: (error: unknown) => void;
 }) {
@@ -969,7 +969,7 @@ function DecisionForm({
           {options.map((option) => (
             <label className="ps-step-four-option" data-selected={optionId === option.id ? "true" : undefined} key={option.id}>
               <input type="radio" name="decision-option" value={option.id} checked={optionId === option.id} onChange={() => setOptionId(option.id)} />
-              <span><strong>{option.title}</strong><small>Option from the saved comparison</small></span>
+              <span><strong>{option.title}</strong><small>{option.tradeoff || "Trade-offs are not recorded for this option."}</small></span>
             </label>
           ))}
         </div>
