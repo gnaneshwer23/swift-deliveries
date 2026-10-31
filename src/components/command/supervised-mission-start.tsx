@@ -323,20 +323,55 @@ function MissionStartForm({
         <p className="ps-idea-later-note">One sentence is enough. You can add or change details later.</p>
 
         <details className="ps-intake-advanced ps-idea-context">
-          <summary><span>Add context</span><span className="ps-idea-optional">Optional</span></summary>
-          <p className="ps-idea-context-help">Share anything you already know. Skip the rest; we’ll ask only useful follow-up questions.</p>
+          <summary>
+            <span>Add context</span>
+            <span className="ps-idea-optional">Optional</span>
+          </summary>
+          <p className="ps-idea-context-help">
+            Share anything you already know. Skip the rest; we’ll ask only useful follow-up questions.
+          </p>
           <div className="ps-idea-grid">
-            <label htmlFor="supervised-audience">Target users
-              <input id="supervised-audience" className="cc-input" maxLength={400} value={audience} onChange={(event) => setAudience(event.target.value)} placeholder="e.g. Small restaurant owners" />
+            <label htmlFor="supervised-audience">
+              Target users
+              <input
+                id="supervised-audience"
+                className="cc-input"
+                maxLength={400}
+                value={audience}
+                onChange={(event) => setAudience(event.target.value)}
+                placeholder="e.g. Small restaurant owners"
+              />
             </label>
-            <label htmlFor="supervised-budget">Budget
-              <input id="supervised-budget" className="cc-input" maxLength={120} value={budget} onChange={(event) => setBudget(event.target.value)} placeholder="e.g. £10k–£50k" />
+            <label htmlFor="supervised-budget">
+              Budget
+              <input
+                id="supervised-budget"
+                className="cc-input"
+                maxLength={120}
+                value={budget}
+                onChange={(event) => setBudget(event.target.value)}
+                placeholder="e.g. £10k–£50k"
+              />
             </label>
-            <label htmlFor="supervised-timeline">Timeline
-              <input id="supervised-timeline" className="cc-input" maxLength={120} value={timeline} onChange={(event) => setTimeline(event.target.value)} placeholder="e.g. 3–6 months" />
+            <label htmlFor="supervised-timeline">
+              Timeline
+              <input
+                id="supervised-timeline"
+                className="cc-input"
+                maxLength={120}
+                value={timeline}
+                onChange={(event) => setTimeline(event.target.value)}
+                placeholder="e.g. 3–6 months"
+              />
             </label>
-            <label htmlFor="supervised-platform">Platform
-              <select id="supervised-platform" className="cc-input" value={platform} onChange={(event) => setPlatform(event.target.value)}>
+            <label htmlFor="supervised-platform">
+              Platform
+              <select
+                id="supervised-platform"
+                className="cc-input"
+                value={platform}
+                onChange={(event) => setPlatform(event.target.value)}
+              >
                 <option value="">Choose if known</option>
                 <option value="Web">Web</option>
                 <option value="Mobile app">Mobile app</option>
@@ -345,11 +380,27 @@ function MissionStartForm({
                 <option value="Not sure yet">Not sure yet</option>
               </select>
             </label>
-            <label htmlFor="supervised-assets">Existing assets
-              <input id="supervised-assets" className="cc-input" maxLength={500} value={existingAssets} onChange={(event) => setExistingAssets(event.target.value)} placeholder="e.g. Research, designs, code" />
+            <label htmlFor="supervised-assets">
+              Existing assets
+              <input
+                id="supervised-assets"
+                className="cc-input"
+                maxLength={500}
+                value={existingAssets}
+                onChange={(event) => setExistingAssets(event.target.value)}
+                placeholder="e.g. Research, designs, code"
+              />
             </label>
-            <label htmlFor="supervised-constraints">Constraints
-              <input id="supervised-constraints" className="cc-input" maxLength={2000} value={constraints} onChange={(event) => setConstraints(event.target.value)} placeholder="e.g. Must integrate with our POS" />
+            <label htmlFor="supervised-constraints">
+              Constraints
+              <input
+                id="supervised-constraints"
+                className="cc-input"
+                maxLength={2000}
+                value={constraints}
+                onChange={(event) => setConstraints(event.target.value)}
+                placeholder="e.g. Must integrate with our POS"
+              />
             </label>
           </div>
         </details>
@@ -357,34 +408,60 @@ function MissionStartForm({
         <details className="ps-intake-advanced ps-idea-more">
           <summary>Research setup and evidence (optional)</summary>
           <div className="mt-3 grid gap-3">
-            <label className="cc-label" htmlFor="supervised-research-mode">Research mode</label>
-            <select id="supervised-research-mode" className="cc-input" value={researchMode} onChange={(event) => setResearchMode(event.target.value as ResearchMode)}>
-              {(Object.keys(RESEARCH_MODE_LABELS) as ResearchMode[]).map((mode) => <option key={mode} value={mode}>{RESEARCH_MODE_LABELS[mode]}</option>)}
+            <label className="cc-label" htmlFor="supervised-research-mode">
+              Research mode
+            </label>
+            <select
+              id="supervised-research-mode"
+              className="cc-input"
+              value={researchMode}
+              onChange={(event) => setResearchMode(event.target.value as ResearchMode)}
+            >
+              {(Object.keys(RESEARCH_MODE_LABELS) as ResearchMode[]).map((mode) => (
+                <option key={mode} value={mode}>
+                  {RESEARCH_MODE_LABELS[mode]}
+                </option>
+              ))}
             </select>
-            <p className="cc-muted text-xs">Default is Combined: specialists research with available tools.{home.data?.researchProvider?.configured ? ` ${home.data.researchProvider.detail}` : " Without a search provider key, web results are not invented — gaps are marked on the record."}</p>
-            <label className="cc-label" htmlFor="supervised-intake-evidence">Evidence notes (text only)</label>
-            <textarea id="supervised-intake-evidence" className="cc-input cc-textarea" rows={3} maxLength={2000} placeholder="Optional quotes, call notes, or survey excerpts." value={intakeEvidenceNote} onChange={(event) => setIntakeEvidenceNote(event.target.value)} />
+            <p className="cc-muted text-xs">
+              Default is Combined: specialists research with available tools.
+              {home.data?.researchProvider?.configured
+                ? ` ${home.data.researchProvider.detail}`
+                : " Without a search provider key, web results are not invented — gaps are marked on the record."}
+            </p>
+            <label className="cc-label" htmlFor="supervised-intake-evidence">
+              Evidence notes (text only)
+            </label>
+            <textarea
+              id="supervised-intake-evidence"
+              className="cc-input cc-textarea"
+              rows={3}
+              maxLength={2000}
+              placeholder="Optional quotes, call notes, or survey excerpts."
+              value={intakeEvidenceNote}
+              onChange={(event) => setIntakeEvidenceNote(event.target.value)}
+            />
           </div>
         </details>
 
         <details className="ps-intake-advanced ps-idea-more">
           <summary>Or use voice</summary>
           <div className="ps-brief-voice-inline" aria-label="Voice idea input">
-          <p className="cc-muted text-xs mb-2">
-            Or use voice — transcript fills the line above. Brief the PM still requires a click.
-          </p>
-          <VoiceControls
-            disabled={!draftReady || start.isPending}
-            speakReplies={speakReplies}
-            onSpeakRepliesChange={setSpeakReplies}
-            onBusyChange={setVoiceBusy}
-            onTranscript={(text) => {
-              const line = text.trim();
-              if (!line) return;
-              setQuestion((current) => (current.trim() ? `${current.trim()} ${line}` : line));
-            }}
-          />
-        </div>
+            <p className="cc-muted text-xs mb-2">
+              Voice transcript fills the idea above. Review it before continuing.
+            </p>
+            <VoiceControls
+              disabled={!draftReady || start.isPending}
+              speakReplies={speakReplies}
+              onSpeakRepliesChange={setSpeakReplies}
+              onBusyChange={setVoiceBusy}
+              onTranscript={(text) => {
+                const line = text.trim();
+                if (!line) return;
+                setQuestion((current) => (current.trim() ? `${current.trim()} ${line}` : line));
+              }}
+            />
+          </div>
         </details>
 
         {commitment ? (
