@@ -15,7 +15,7 @@ export const INVESTIGATION_STAGE_LABELS: Record<InvestigationStagePhase, string>
   converge: "Converge",
   briefing: "PM briefing",
   path: "Choose path",
-  room: "Project room",
+  room: "Team formation",
   history: "Downloads",
 };
 
