@@ -15,6 +15,7 @@ import { ProjectRoomNav } from "@/components/command/project-room-nav";
 import { MissionInspectionStrip } from "@/components/command/mission-inspection-strip";
 import { InvestigationStageShell } from "@/components/command/investigation-stage-shell";
 import { CaseRoom } from "@/components/command/case-room";
+import { PlanReview } from "@/components/command/plan-review";
 import { useDeliveryBuild } from "@/hooks/use-delivery-build";
 import { InvestigationScopeReview } from "@/components/command/investigation-scope-review";
 import { InvestigationTeamFormation } from "@/components/command/investigation-team-formation";
@@ -315,8 +316,13 @@ function SupervisedMissionPage() {
           {...(build ? { build } : {})}
           panels={{
             plan: (
-              <>
-                {!mission.team?.approvedAt ? (
+              <PlanReview
+                mission={mission}
+                onApprove={() => approvePlan.mutate()}
+                approving={approvePlan.isPending}
+                canApprove={open}
+                error={error}
+                editSlot={
                   <InvestigationScopeReview
                     mission={mission}
                     missionId={missionId}
@@ -326,9 +332,8 @@ function SupervisedMissionPage() {
                     onDone={invalidate}
                     onError={onError}
                   />
-                ) : null}
-                {theatre}
-              </>
+                }
+              />
             ),
             work: theatre,
             decide: mission.proposal ? (

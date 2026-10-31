@@ -496,7 +496,9 @@ export function CaseRoom({
                   ? "Starts the build for your chosen direction. Nothing runs without this approval."
                   : panel === "gate"
                     ? "A human gate: agents can stop here but never pass it."
-                    : model.next.detail}
+                    : panel === "plan"
+                      ? "Nothing runs until you approve."
+                      : model.next.detail}
             </SheetDescription>
           </SheetHeader>
           <div className="room-sheet-body">
