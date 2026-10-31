@@ -251,6 +251,16 @@ function SupervisedMissionPage() {
             usageWarning,
             research: query.data.research,
           }}
+          pathSlot={
+            mission.proposal ? (
+              <StepFourDiscussion
+                mission={mission}
+                missionId={missionId}
+                onDone={invalidate}
+                onError={onError}
+              />
+            ) : null
+          }
           downloadsSlot={
             mission.artefact || mission.exportBody ? (
               <ExportButton
@@ -332,10 +342,6 @@ function SupervisedMissionPage() {
 
           <ProjectRoomNav mission={mission} />
 
-          <details className="ps-legacy mt-4">
-            <summary>Talk to DeliverX (optional · revise beside the mission)</summary>
-            <ConversationPanel currentMissionId={missionId} />
-          </details>
 
           <div
             id="pr-evidence"
@@ -442,24 +448,6 @@ function SupervisedMissionPage() {
                   <p className="cc-muted mt-3 text-sm">
                     Gaps: {mission.proposal.generation.gaps.join(" · ")}
                   </p>
-                ) : null}
-                {mission.stage === "alternatives" ||
-                (mission.stage === "decision" && !mission.artefact) ? (
-                  <DecisionForm
-                    recordVersion={mission.version}
-                    key={mission.proposal.scopeHash}
-                    missionId={missionId}
-                    mission={mission}
-                    action={mission.proposal.action}
-                    version={mission.proposal.version}
-                    scopeHash={mission.proposal.scopeHash}
-                    options={mission.proposal.options.map((option) => ({
-                      id: option.id,
-                      title: option.title,
-                    }))}
-                    onDone={invalidate}
-                    onError={onError}
-                  />
                 ) : null}
               </section>
             ) : null}
@@ -812,6 +800,108 @@ function EvidenceEditor({
   );
 }
 
+type PathChoice = {
+  id: HumanNextPath;
+  title: string;
+  detail: string;
+};
+
+const PATH_CHOICES: PathChoice[] = [
+  { id: "authorise_bounded_test", title: "Approve this direction", detail: "Save the recommendation and prepare the next bounded plan." },
+  { id: "authorise_gather_evidence", title: "Request more research", detail: "Investigate named unknowns before committing." },
+  { id: "authorise_revise", title: "Make changes", detail: "Reframe the audience, problem, or first-version scope." },
+  { id: "close_case", title: "Close this idea", detail: "Keep the findings and stop this case." },
+  { id: "founder_requested_continuation", title: "Continue with open risks", detail: "Proceed on your chosen path while keeping disagreement visible." },
+];
+
+function StepFourDiscussion({
+  mission,
+  missionId,
+  onDone,
+  onError,
+}: {
+  mission: SupervisedMission;
+  missionId: string;
+  onDone: () => Promise<void>;
+  onError: (error: unknown) => void;
+}) {
+  const proposal = mission.proposal;
+  if (!proposal) return null;
+  const recommendation = deriveAgentRecommendation(mission);
+  const evidence = mission.evidence.slice(0, 4);
+
+  return (
+    <section className="ps-step-four" aria-label="Discuss and decide">
+      <header className="ps-step-four-heading">
+        <p className="cc-kicker">Step 4 · your decision</p>
+        <h2>Discuss the recommendation</h2>
+        <p className="cc-muted text-sm">
+          Ask questions, challenge assumptions, request more research, or change the plan. Nothing
+          moves forward until you save a decision.
+        </p>
+      </header>
+
+      <div className="ps-step-four-layout">
+        <div className="ps-step-four-main">
+          <section className="ps-step-four-pm" aria-label="PM recommendation">
+            <div className="ps-step-four-avatar" aria-hidden="true">PM</div>
+            <div>
+              <p className="ps-step-four-byline">DeliverX PM · recommendation draft</p>
+              <p className="ps-step-four-message">
+                {recommendation.rationale}
+              </p>
+              <div className="ps-step-four-chips">
+                <span>Option comparison · v{proposal.version}</span>
+                <span>{mission.evidence.length} evidence item(s) considered</span>
+                {recommendation.executionLimited ? <span data-kind="warning">Research execution needs attention</span> : null}
+              </div>
+            </div>
+          </section>
+
+          <ConversationPanel
+            currentMissionId={missionId}
+            title="Discuss with the PM"
+            helperText="Ask why, challenge an assumption, request more research, or describe a change. The PM’s reply does not approve or change the project by itself."
+            placeholder="Ask a question or describe the change you want…"
+            suggestedPrompts={[
+              "What evidence supports this recommendation?",
+              "Challenge the biggest assumption in this plan.",
+              "Research the alternatives before I decide.",
+              "Revise the first version for a smaller budget.",
+            ]}
+          />
+
+          <DecisionForm
+            recordVersion={mission.version}
+            key={proposal.scopeHash}
+            missionId={missionId}
+            mission={mission}
+            action={proposal.action}
+            version={proposal.version}
+            scopeHash={proposal.scopeHash}
+            options={proposal.options.map((option) => ({ id: option.id, title: option.title }))}
+            onDone={onDone}
+            onError={onError}
+          />
+        </div>
+
+        <aside className="ps-step-four-record" aria-label="Decision record preview">
+          <h3>Decision record</h3>
+          <dl>
+            <div><dt>Your choice</dt><dd>{mission.approval ? HUMAN_NEXT_PATH_LABELS[normalizeDecisionChoice(mission.approval.choice)] : "Not decided"}</dd></div>
+            <div><dt>Your note</dt><dd>{mission.approval?.note || "No changes recorded yet."}</dd></div>
+            <div><dt>Evidence considered</dt><dd>{evidence.length ? evidence.map((item) => item.id).join(" · ") : "No evidence items recorded yet."}</dd></div>
+            <div><dt>Decision saved</dt><dd>{mission.approval?.decidedAt ? new Date(mission.approval.decidedAt).toLocaleString() : "Not yet"}</dd></div>
+          </dl>
+          <p className="ps-step-four-record-note">
+            Your chosen option, path, note, evidence scope, and timestamp are saved to this mission.
+          </p>
+        </aside>
+      </div>
+    </section>
+  );
+}
+
 function DecisionForm({
   recordVersion,
   missionId,
@@ -834,8 +924,8 @@ function DecisionForm({
   onError: (error: unknown) => void;
 }) {
   const draft = deriveAgentRecommendation(mission);
-  const [optionId, setOptionId] = useState(options[0]?.id ?? "");
-  const [choice, setChoice] = useState<HumanNextPath>("authorise_bounded_test");
+  const [optionId, setOptionId] = useState("");
+  const [choice, setChoice] = useState<HumanNextPath | null>(null);
   const [note, setNote] = useState("");
   const decide = useMutation({
     mutationFn: () =>
@@ -873,50 +963,47 @@ function DecisionForm({
           </p>
         ) : null}
       </div>
-      <label className="cc-label" htmlFor="decision-option">
-        Option on the record
+      <fieldset className="ps-step-four-choice-group">
+        <legend>Choose the option you want to discuss</legend>
+        <div className="ps-step-four-option-grid">
+          {options.map((option) => (
+            <label className="ps-step-four-option" data-selected={optionId === option.id ? "true" : undefined} key={option.id}>
+              <input type="radio" name="decision-option" value={option.id} checked={optionId === option.id} onChange={() => setOptionId(option.id)} />
+              <span><strong>{option.title}</strong><small>Option from the saved comparison</small></span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      <fieldset className="ps-step-four-choice-group">
+        <legend>Choose your next step</legend>
+        <div className="ps-step-four-path-grid">
+          {PATH_CHOICES.map((path) => (
+            <label className="ps-step-four-option" data-selected={choice === path.id ? "true" : undefined} key={path.id}>
+              <input type="radio" name="decision-path" value={path.id} checked={choice === path.id} onChange={() => setChoice(path.id)} />
+              <span><strong>{path.title}</strong><small>{path.detail}</small></span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      <label className="cc-label" htmlFor="decision-note">
+        What should the PM take into account?
       </label>
-      <select
-        id="decision-option"
-        className="cc-input"
-        value={optionId}
-        onChange={(event) => setOptionId(event.target.value)}
-      >
-        {options.map((option) => (
-          <option key={option.id} value={option.id}>
-            {option.title}
-          </option>
-        ))}
-      </select>
-      <label className="cc-label" htmlFor="decision-choice">
-        Your next authorised path
-      </label>
-      <select
-        id="decision-choice"
-        className="cc-input"
-        value={choice}
-        onChange={(event) => setChoice(event.target.value as HumanNextPath)}
-      >
-        {(Object.keys(HUMAN_NEXT_PATH_LABELS) as HumanNextPath[]).map((path) => (
-          <option key={path} value={path}>
-            {HUMAN_NEXT_PATH_LABELS[path]}
-          </option>
-        ))}
-      </select>
       <textarea
+        id="decision-note"
         className="cc-input cc-textarea"
-        aria-label="Decision note"
-        rows={2}
+        rows={3}
+        maxLength={2000}
         value={note}
         onChange={(event) => setNote(event.target.value)}
-        placeholder="Optional note — disagreement does not erase the recommendation"
+        placeholder="Add a question, requested change, or reason for your choice. This note is saved with your decision."
       />
+      <p className="cc-muted text-xs">Nothing proceeds until you confirm. Your choice and note are saved against option version {version} and its evidence scope.</p>
       <button
         type="submit"
         className="cc-btn cc-btn-primary"
-        disabled={decide.isPending || !optionId}
+        disabled={decide.isPending || !optionId || !choice}
       >
-        {decide.isPending ? "Recording…" : "Record next path"}
+        {decide.isPending ? "Saving decision…" : "Save my decision"}
       </button>
     </form>
   );
