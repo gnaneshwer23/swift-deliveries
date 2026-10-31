@@ -28,11 +28,14 @@ function statusFromEvents(
   taskKeys: string[] = [],
 ): AgentStatus {
   if (blocked) return "blocked";
-  const relevant = (mission.activity ?? []).filter(
-    (event) =>
-      (event.actor === capabilityId || event.actor === label) &&
-      (!taskKeys.length || (event.taskKey !== null && taskKeys.includes(event.taskKey))),
-  );
+  const relevant = taskKeys.length
+    ? (mission.activity ?? []).filter(
+        (event) =>
+          (event.actor === capabilityId || event.actor === label) &&
+          event.taskKey !== null &&
+          taskKeys.includes(event.taskKey),
+      )
+    : [];
   if (relevant.some((event) => /complete|finished|settled/i.test(event.kind))) return "complete";
   if (relevant.some((event) => /start|running|leased/i.test(event.kind))) return "working";
   return "planned";
@@ -146,8 +149,8 @@ export function InvestigationTeamFormation({ mission }: { mission: SupervisedMis
       </div>
 
       {mission.continuationPlan ? (
-        <details className="ps-team-roadmap-review">
-          <summary>Review the proposed work before implementation</summary>
+        <section className="ps-team-roadmap-review" id="continuation-plan">
+          <h3>Review the proposed work before implementation</h3>
           <p className="cc-muted text-sm">{mission.continuationPlan.summary}</p>
           <ol>
             {mission.continuationPlan.roadmap.map((step) => (
@@ -161,7 +164,7 @@ export function InvestigationTeamFormation({ mission }: { mission: SupervisedMis
           <p className="cc-muted text-xs">
             This plan is for review. Implementation status changes only after the next approval and recorded worker activity.
           </p>
-        </details>
+        </section>
       ) : null}
 
       {mission.continuationPlan ? (
