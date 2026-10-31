@@ -10,6 +10,10 @@ export type MissionIntakeDraft = {
   outcome: string;
   constraints: string;
   intakeEvidenceNote?: string;
+  budget?: string;
+  timeline?: string;
+  platform?: string;
+  existingAssets?: string;
 };
 export { DEFAULT_MISSION_OUTCOME };
 export function preparedMissionIntake(brief: ProductBrief): MissionIntakeDraft {
@@ -39,6 +43,9 @@ export function parseMissionIntake(raw: string | null): MissionIntakeDraft | nul
     };
     if (typeof value.intakeEvidenceNote === "string") {
       draft.intakeEvidenceNote = value.intakeEvidenceNote.slice(0, 2000);
+    }
+    for (const key of ["budget", "timeline", "platform", "existingAssets"] as const) {
+      if (typeof value[key] === "string") draft[key] = value[key].slice(0, 2000);
     }
     return draft;
   } catch {
