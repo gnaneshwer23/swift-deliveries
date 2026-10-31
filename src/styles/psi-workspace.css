@@ -5916,6 +5916,18 @@
   padding: 0.56rem 0.78rem;
   font-size: 0.72rem;
 }
+.ps-journey-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  margin-top: 1.25rem;
+  padding: 0.85rem 0.25rem 0.35rem;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--psi-border, #e2e8f0);
+  background: color-mix(in srgb, var(--psi-bg, #fff) 92%, transparent);
+  backdrop-filter: blur(10px);
+}
 .ps-journey-panel {
   padding: 15px 2px;
 }

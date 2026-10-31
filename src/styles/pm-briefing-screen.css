@@ -1,0 +1,285 @@
+/* Screen 6 — PM briefing workspace */
+.pmb {
+  --pmb-ink: #f8fafc;
+  --pmb-muted: #cbd5e1;
+  --pmb-border: #334155;
+  --pmb-card: rgba(17, 24, 39, 0.78);
+  --pmb-indigo: #6366f1;
+  --pmb-cyan: #22d3ee;
+  --pmb-violet: #a78bfa;
+  --pmb-accent: #059669;
+  display: grid;
+  gap: 1rem;
+  color: var(--pmb-ink);
+  font-family: "DM Sans", Inter, system-ui, sans-serif;
+}
+
+.pmb-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.pmb-aria {
+  padding: 1.25rem 1.35rem;
+  border-radius: 12px;
+  border: 1px solid var(--pmb-border);
+  background: var(--pmb-card);
+  backdrop-filter: blur(12px);
+}
+
+.pmb-aria-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 0.85rem;
+}
+
+.pmb-avatar {
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #000;
+  background: linear-gradient(135deg, var(--pmb-cyan), var(--pmb-indigo));
+}
+
+.pmb-aria-chip strong {
+  display: block;
+  font-size: 0.85rem;
+}
+
+.pmb-aria-chip span {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--pmb-muted);
+}
+
+.pmb-aria h2 {
+  margin: 0 0 0.65rem;
+  font-family: "Space Grotesk", Inter, sans-serif;
+  font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.pmb-message {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.65;
+  color: var(--pmb-ink);
+}
+
+.pmb-honesty {
+  margin: 0.85rem 0 0;
+  font-size: 0.75rem;
+  color: var(--pmb-muted);
+  line-height: 1.45;
+}
+
+.pmb-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.pmb-card {
+  padding: 0.85rem 0.95rem;
+  border-radius: 12px;
+  border: 1px solid var(--pmb-border);
+  background: rgba(15, 23, 42, 0.72);
+  min-height: 5.5rem;
+}
+
+.pmb-card h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pmb-cyan);
+  font-weight: 700;
+}
+
+.pmb-card p,
+.pmb-card li {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--pmb-muted);
+}
+
+.pmb-card ul {
+  margin: 0;
+  padding-left: 1rem;
+}
+
+.pmb-card-wide {
+  grid-column: 1 / -1;
+}
+
+.pmb-options {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.pmb-options-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.pmb-options-head h3 {
+  margin: 0;
+  font-family: "Space Grotesk", Inter, sans-serif;
+  font-size: 1.05rem;
+}
+
+.pmb-options-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.pmb-option {
+  text-align: left;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--pmb-border);
+  background: var(--pmb-card);
+  color: inherit;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.pmb-option:hover {
+  transform: translateY(-1px);
+  border-color: rgba(99, 102, 241, 0.55);
+}
+
+.pmb-option:focus-visible {
+  outline: 2px solid var(--pmb-indigo);
+  outline-offset: 2px;
+}
+
+.pmb-option.is-selected {
+  border-color: var(--pmb-indigo);
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.35);
+}
+
+.pmb-option.is-recommended {
+  border-color: rgba(167, 139, 250, 0.55);
+}
+
+.pmb-option-badge {
+  display: inline-block;
+  margin-bottom: 0.4rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: rgba(167, 139, 250, 0.18);
+  color: var(--pmb-violet);
+}
+
+.pmb-option strong {
+  display: block;
+  font-size: 0.92rem;
+  margin-bottom: 0.35rem;
+}
+
+.pmb-option p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--pmb-muted);
+  line-height: 1.45;
+}
+
+.pmb-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.pmb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.6rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.pmb-btn:focus-visible {
+  outline: 2px solid var(--pmb-indigo);
+  outline-offset: 2px;
+}
+
+.pmb-btn-primary {
+  background: var(--pmb-accent);
+  color: #000;
+}
+
+.pmb-btn-ghost {
+  background: transparent;
+  color: var(--pmb-ink);
+  border-color: var(--pmb-indigo);
+}
+
+.pmb-btn-secondary {
+  background: rgba(99, 102, 241, 0.16);
+  color: var(--pmb-ink);
+  border-color: rgba(99, 102, 241, 0.35);
+}
+
+.pmb-pending {
+  padding: 1.25rem;
+  border-radius: 12px;
+  border: 1px solid var(--pmb-border);
+  background: var(--pmb-card);
+}
+
+.pmb-sample {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 0.05rem 0.3rem;
+  border-radius: 4px;
+  background: rgba(251, 191, 36, 0.14);
+  color: #fbbf24;
+  font-size: 0.58rem;
+  letter-spacing: 0.05em;
+  vertical-align: middle;
+}
+
+@media (max-width: 960px) {
+  .pmb-layout,
+  .pmb-cards,
+  .pmb-options-grid {
+    grid-template-columns: 1fr;
+  }
+  .pmb-actions .pmb-btn {
+    flex: 1 1 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pmb-option:hover {
+    transform: none;
+  }
+}

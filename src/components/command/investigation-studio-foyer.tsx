@@ -1,14 +1,26 @@
+import { useCallback, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
 import { getSupervisedMissionHome } from "@/lib/pilot-mission.functions";
 import { buildStudioInbox } from "@/lib/pilot-mission/studio-inbox";
-import { missionNeedsAttention } from "@/lib/pilot-mission/portfolio";
-import { QuietStudioNotifications } from "@/components/command/quiet-studio-notifications";
-import { SupervisedMissionStart } from "@/components/command/supervised-mission-start";
-import { StudioReadiness } from "@/components/command/studio-readiness";
+import { StudioWelcomeDashboard } from "@/components/command/studio-welcome-dashboard";
+import { StudioIdeaDashboard } from "@/components/command/studio-idea-dashboard";
+import { StudioClarifyingDashboard } from "@/components/command/studio-clarifying-dashboard";
+import "@/styles/studio-entry-dashboard.css";
+
+const WELCOME_SEEN_KEY = "dx-studio-entry-welcome-seen";
+const ENTRY_SCREEN_KEY = "dx-studio-entry-screen";
+
+type EntryScreen = "welcome" | "idea" | "clarify";
+
+function readEntryScreen(): EntryScreen {
+  if (typeof window === "undefined") return "welcome";
+  const stored = window.sessionStorage.getItem(ENTRY_SCREEN_KEY);
+  if (stored === "clarify" || stored === "idea" || stored === "welcome") return stored;
+  return window.sessionStorage.getItem(WELCOME_SEEN_KEY) === "1" ? "idea" : "welcome";
+}
 
 /**
- * Screen 1 — spacious Studio foyer: describe the idea, recent cases, no dispatch theatre.
+ * Studio entry: Welcome → Idea submission (3) → Clarifying questions (4).
  */
 export function InvestigationStudioFoyer() {
   const home = useQuery({
@@ -23,6 +35,27 @@ export function InvestigationStudioFoyer() {
     .filter((m) => !m.archived)
     .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
     .slice(0, 8);
+
+  const [screen, setScreenState] = useState<EntryScreen>(() => readEntryScreen());
+
+  const setScreen = useCallback((next: EntryScreen) => {
+    setScreenState(next);
+    if (typeof window === "undefined") return;
+    try {
+      window.sessionStorage.setItem(ENTRY_SCREEN_KEY, next);
+      if (next !== "welcome") {
+        window.sessionStorage.setItem(WELCOME_SEEN_KEY, "1");
+      }
+    } catch {
+      /* Optional. */
+    }
+  }, []);
+
+  useEffect(() => {
+    if (recent.length > 0 && screen === "welcome") {
+      setScreen("idea");
+    }
+  }, [recent.length, screen, setScreen]);
 
   const allowanceLine = (() => {
     if (!home.data?.ready) return null;
@@ -40,98 +73,54 @@ export function InvestigationStudioFoyer() {
     return "Demo mode — no paid Investigation pilot on this workspace.";
   })();
 
-  return (
-    <div className="ps-foyer ps-foyer-first-viewport ps-quiet-foyer ps-investigation-foyer">
-      {home.isPending ? (
-        <p className="ps-foyer-loading" role="status">
-          Opening…
-        </p>
-      ) : home.isError || (home.data && !home.data.ready) ? (
-        <div role="alert" className="ps-foyer-stage">
-          <p className="ps-foyer-brand">DeliverX Studio</p>
-          <h2 className="ps-foyer-headline">Saved work could not load</h2>
-          <p className="ps-foyer-lede">
-            {home.data?.reason || "Check your connection and try again."}
-          </p>
+  const goIdea = useCallback(() => setScreen("idea"), [setScreen]);
+  const goClarify = useCallback(() => setScreen("clarify"), [setScreen]);
+  const goWelcome = useCallback(() => setScreen("welcome"), [setScreen]);
+
+  if (home.isPending) {
+    return (
+      <div className="sd-shell" role="status">
+        <p className="sd-empty">Opening Studio…</p>
+      </div>
+    );
+  }
+
+  if (home.isError || (home.data && !home.data.ready)) {
+    return (
+      <div className="sd-shell" role="alert">
+        <section className="sd-card">
+          <p className="sd-brand">DeliverX Studio</p>
+          <h1>Saved work could not load</h1>
+          <p className="sd-lede">{home.data?.reason || "Check your connection and try again."}</p>
           <button
             type="button"
-            className="cc-btn cc-btn-primary"
+            className="sd-btn sd-btn-primary"
             disabled={home.isFetching}
             onClick={() => void home.refetch()}
           >
             {home.isFetching ? "Retrying…" : "Retry"}
           </button>
-        </div>
-      ) : (
-        <section className="ps-foyer-stage ps-foyer-stage-open" aria-label="Studio">
-          <p className="ps-foyer-brand">DeliverX Studio</p>
-          <p className="ps-idea-step">
-            Step 1 <span aria-hidden="true">·</span> Idea
-          </p>
-          <h2 className="ps-foyer-headline">What are you thinking of building?</h2>
-          <p className="ps-foyer-lede ps-quiet-foyer-lede">
-            A sentence is enough to get started. Add context if you know it; we’ll ask only useful
-            follow-up questions.
-          </p>
-          {allowanceLine ? <p className="ps-exec-summary-strip">{allowanceLine}</p> : null}
-          {current ? (
-            <p className="ps-quiet-bar-status" data-presence="needs_you" role="status">
-              <span className="ps-quiet-bar-status-label">Needs you</span>
-              <span className="ps-quiet-bar-status-detail">{current.headline}</span>
-              <Link
-                to="/command/supervised/$missionId"
-                params={{ missionId: current.missionId }}
-                className="cc-btn cc-btn-secondary"
-              >
-                Open case
-              </Link>
-            </p>
-          ) : null}
         </section>
-      )}
-
-      <div className="ps-foyer-primary-brief">
-        <SupervisedMissionStart tone="hero" />
       </div>
+    );
+  }
 
-      {recent.length > 0 ? (
-        <section className="ps-investigation-recent" aria-labelledby="recent-cases-title">
-          <h2 id="recent-cases-title" className="ps-exec-section-kicker">
-            Recent investigations
-          </h2>
-          <ul className="ps-investigation-recent-list">
-            {recent.map((m) => (
-              <li key={m.id}>
-                <Link
-                  to="/command/supervised/$missionId"
-                  params={{ missionId: m.id }}
-                  className="ps-investigation-recent-card"
-                >
-                  <span className="ps-investigation-recent-question">{m.question}</span>
-                  <span className="cc-muted text-xs">
-                    {m.stage}
-                    {missionNeedsAttention(m.next.id) ? " · needs you" : ""}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
+  if (screen === "welcome") {
+    return <StudioWelcomeDashboard onContinue={goIdea} />;
+  }
 
-      <QuietStudioNotifications missions={missions} />
+  if (screen === "clarify") {
+    return <StudioClarifyingDashboard onBackToIdea={goIdea} />;
+  }
 
-      <footer className="ps-foyer-footnotes">
-        <p className="ps-foyer-side-links">
-          <Link to="/command/portfolio">Portfolio</Link>
-          <span aria-hidden="true"> · </span>
-          <Link to="/command/capabilities">Specialists</Link>
-        </p>
-        <details>
-          <summary>Inspect · readiness</summary>
-          <StudioReadiness />
-        </details>
-      </footer>
-    </div>
+  return (
+    <StudioIdeaDashboard
+      missions={missions}
+      recent={recent}
+      current={current}
+      allowanceLine={allowanceLine}
+      onBackToWelcome={goWelcome}
+      onContinueToClarifying={goClarify}
+    />
   );
 }

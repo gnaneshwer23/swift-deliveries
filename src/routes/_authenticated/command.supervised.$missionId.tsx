@@ -4,7 +4,6 @@ import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { CommandShell } from "@/components/command/command-shell";
-import { ConversationPanel } from "@/components/command/conversation-panel";
 import { CaseRoomPanel } from "@/components/command/case-room-panel";
 import { CommerceDisclosurePanel } from "@/components/command/commerce-disclosure-panel";
 import { LearnerLensPanel } from "@/components/command/learner-lens-panel";
@@ -15,6 +14,7 @@ import { PathArtefactsPanel } from "@/components/command/path-artefacts-panel";
 import { ProjectRoomNav } from "@/components/command/project-room-nav";
 import { MissionInspectionStrip } from "@/components/command/mission-inspection-strip";
 import { InvestigationStageShell } from "@/components/command/investigation-stage-shell";
+import { PmDiscussionScreen } from "@/components/command/pm-discussion-screen";
 import { TeamActivityPanel } from "@/components/command/team-activity-panel";
 import { SupervisedLearningLoop } from "@/components/command/supervised-learning-loop";
 import { WatchtowerPanel } from "@/components/command/watchtower-panel";
@@ -842,108 +842,32 @@ function StepFourDiscussion({
 }) {
   const proposal = mission.proposal;
   if (!proposal) return null;
-  const recommendation = deriveAgentRecommendation(mission);
-  const evidence = mission.evidence.slice(0, 4);
 
   return (
-    <section className="ps-step-four" aria-label="Discuss and decide">
-      <header className="ps-step-four-heading">
-        <p className="cc-kicker">Step 4 · your decision</p>
-        <h2>Discuss the recommendation</h2>
-        <p className="cc-muted text-sm">
-          Ask questions, challenge assumptions, request more research, or change the plan. Nothing
-          moves forward until you save a decision.
-        </p>
-      </header>
-
-      <div className="ps-step-four-layout">
-        <div className="ps-step-four-main">
-          <section className="ps-step-four-pm" aria-label="PM recommendation">
-            <div className="ps-step-four-avatar" aria-hidden="true">
-              PM
-            </div>
-            <div>
-              <p className="ps-step-four-byline">DeliverX PM · recommendation draft</p>
-              <p className="ps-step-four-message">{recommendation.rationale}</p>
-              <div className="ps-step-four-chips">
-                <span>Option comparison · v{proposal.version}</span>
-                <span>{mission.evidence.length} evidence item(s) considered</span>
-                {recommendation.executionLimited ? (
-                  <span data-kind="warning">Research execution needs attention</span>
-                ) : null}
-              </div>
-            </div>
-          </section>
-
-          <ConversationPanel
-            currentMissionId={missionId}
-            title="Discuss with the PM"
-            helperText="Ask why, challenge an assumption, request more research, or describe a change. The PM’s reply does not approve or change the project by itself."
-            placeholder="Ask a question or describe the change you want…"
-            suggestedPrompts={[
-              "What evidence supports this recommendation?",
-              "Challenge the biggest assumption in this plan.",
-              "Research the alternatives before I decide.",
-              "Revise the first version for a smaller budget.",
-            ]}
-          />
-
-          <DecisionForm
-            recordVersion={mission.version}
-            key={proposal.scopeHash}
-            missionId={missionId}
-            mission={mission}
-            action={proposal.action}
-            version={proposal.version}
-            scopeHash={proposal.scopeHash}
-            options={proposal.options.map((option) => ({
-              id: option.id,
-              title: option.title,
-              tradeoff: option.tradeoff,
-            }))}
-            onDone={onDone}
-            onError={onError}
-          />
-        </div>
-
-        <aside className="ps-step-four-record" aria-label="Decision record preview">
-          <h3>Decision record</h3>
-          <dl>
-            <div>
-              <dt>Your choice</dt>
-              <dd>
-                {mission.approval
-                  ? HUMAN_NEXT_PATH_LABELS[normalizeDecisionChoice(mission.approval.choice)]
-                  : "Not decided"}
-              </dd>
-            </div>
-            <div>
-              <dt>Your note</dt>
-              <dd>{mission.approval?.note || "No changes recorded yet."}</dd>
-            </div>
-            <div>
-              <dt>Evidence considered</dt>
-              <dd>
-                {evidence.length
-                  ? evidence.map((item) => item.id).join(" · ")
-                  : "No evidence items recorded yet."}
-              </dd>
-            </div>
-            <div>
-              <dt>Decision saved</dt>
-              <dd>
-                {mission.approval?.decidedAt
-                  ? new Date(mission.approval.decidedAt).toLocaleString()
-                  : "Not yet"}
-              </dd>
-            </div>
-          </dl>
-          <p className="ps-step-four-record-note">
-            Your chosen option, path, note, evidence scope, and timestamp are saved to this mission.
-          </p>
-        </aside>
-      </div>
-    </section>
+    <PmDiscussionScreen
+      mission={mission}
+      missionId={missionId}
+      onDone={onDone}
+      onError={onError}
+      advancedDecisionSlot={
+        <DecisionForm
+          recordVersion={mission.version}
+          key={proposal.scopeHash}
+          missionId={missionId}
+          mission={mission}
+          action={proposal.action}
+          version={proposal.version}
+          scopeHash={proposal.scopeHash}
+          options={proposal.options.map((option) => ({
+            id: option.id,
+            title: option.title,
+            tradeoff: option.tradeoff,
+          }))}
+          onDone={onDone}
+          onError={onError}
+        />
+      }
+    />
   );
 }
 
