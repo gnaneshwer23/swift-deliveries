@@ -1,15 +1,15 @@
 import type { ProductBrief } from "./marketing/product-resources";
-import {
-  DEFAULT_MISSION_OUTCOME,
-  RESEARCH_FIRST_CONSTRAINT,
-  RESEARCH_REFINE_AUDIENCE,
-} from "./pilot-mission/pm-brief";
+import { DEFAULT_MISSION_OUTCOME, RESEARCH_REFINE_AUDIENCE } from "./pilot-mission/pm-brief";
 export type MissionIntakeDraft = {
   question: string;
   audience: string;
   outcome: string;
   constraints: string;
   intakeEvidenceNote?: string;
+  budget?: string;
+  timeline?: string;
+  platform?: string;
+  existingAssets?: string;
 };
 export { DEFAULT_MISSION_OUTCOME };
 export function preparedMissionIntake(brief: ProductBrief): MissionIntakeDraft {
@@ -17,7 +17,7 @@ export function preparedMissionIntake(brief: ProductBrief): MissionIntakeDraft {
     question: brief.problem.slice(0, 2000),
     audience: (brief.audience.trim() || RESEARCH_REFINE_AUDIENCE).slice(0, 2000),
     outcome: (brief.objective.trim() || DEFAULT_MISSION_OUTCOME).slice(0, 2000),
-    constraints: (brief.constraints.trim() || RESEARCH_FIRST_CONSTRAINT).slice(0, 2000),
+    constraints: brief.constraints.trim().slice(0, 2000),
   };
 }
 export function parseMissionIntake(raw: string | null): MissionIntakeDraft | null {
@@ -40,6 +40,9 @@ export function parseMissionIntake(raw: string | null): MissionIntakeDraft | nul
     if (typeof value.intakeEvidenceNote === "string") {
       draft.intakeEvidenceNote = value.intakeEvidenceNote.slice(0, 2000);
     }
+    for (const key of ["budget", "timeline", "platform", "existingAssets"] as const) {
+      if (typeof value[key] === "string") draft[key] = value[key].slice(0, 2000);
+    }
     return draft;
   } catch {
     return null;
@@ -60,9 +63,9 @@ export function restoreMissionIntake(
   if (local) return local;
   return {
     question: question?.slice(0, 2000) ?? "",
-    audience: RESEARCH_REFINE_AUDIENCE,
+    audience: "",
     outcome: DEFAULT_MISSION_OUTCOME,
-    constraints: RESEARCH_FIRST_CONSTRAINT,
+    constraints: "",
     intakeEvidenceNote: "",
   };
 }

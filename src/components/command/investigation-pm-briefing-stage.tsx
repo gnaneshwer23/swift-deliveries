@@ -53,6 +53,128 @@ export function InvestigationPmBriefingStage({ mission }: { mission: SupervisedM
         <ListenBriefButton brief={brief} />
       </header>
 
+      <section className="ps-pm-briefing-overview" aria-label="Plain-language PM summary">
+        <div className="ps-pm-briefing-summary">
+          <p className="cc-kicker">In plain language</p>
+          <h3>What I understood</h3>
+          <p>{pack.understoodIdea}</p>
+          <dl>
+            <div>
+              <dt>Likely users</dt>
+              <dd>
+                {mission.brief.audience && !/specialists will refine/i.test(mission.brief.audience)
+                  ? mission.brief.audience
+                  : "Still to be validated through research."}
+              </dd>
+            </div>
+            <div>
+              <dt>Main problem</dt>
+              <dd>{mission.brief.outcome || "The desired outcome needs clarification."}</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div className="ps-pm-briefing-summary ps-pm-briefing-recommendation">
+          <p className="cc-kicker">PM recommendation</p>
+          <h3>{pack.recommendationLabel ?? "Recommendation pending"}</h3>
+          <p>{pack.recommendationRationale}</p>
+          <p className="ps-pm-briefing-direction">
+            <strong>Smallest next step:</strong> {pack.smallestNextStep}
+          </p>
+        </div>
+
+        <div className="ps-pm-briefing-summary">
+          <p className="cc-kicker">Users, alternatives &amp; risk</p>
+          <h3>What the evidence says</h3>
+          <ul className="ps-pm-briefing-evidence-list">
+            {mission.evidence
+              .filter((item) => /user|customer|audience|need|problem/i.test(item.statement))
+              .slice(0, 2)
+              .map((item) => (
+                <li key={item.id}>
+                  <strong>
+                    {item.classification === "supplied"
+                      ? "Finding"
+                      : item.classification === "gap"
+                        ? "Unknown"
+                        : "Assumption"}
+                    :
+                  </strong>{" "}
+                  {item.statement}
+                </li>
+              ))}
+            {!mission.evidence.some((item) =>
+              /user|customer|audience|need|problem/i.test(item.statement),
+            ) ? (
+              <li>Target-user needs are not yet evidenced on this mission.</li>
+            ) : null}
+            {mission.evidence
+              .filter((item) => /competitor|alternative|existing|substitute/i.test(item.statement))
+              .slice(0, 2)
+              .map((item) => (
+                <li key={item.id}>
+                  <strong>Alternative:</strong> {item.statement}
+                </li>
+              ))}
+            {!mission.evidence.some((item) =>
+              /competitor|alternative|existing|substitute/i.test(item.statement),
+            ) ? (
+              <li>Competitors and alternatives are not yet recorded in the evidence register.</li>
+            ) : null}
+            {pack.unknowns.slice(0, 2).map((item) => (
+              <li key={item}>
+                <strong>Risk / unknown:</strong> {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="ps-pm-briefing-summary">
+          <p className="cc-kicker">First version &amp; delivery shape</p>
+          <h3>Options to consider</h3>
+          {pack.alternatives.length ? (
+            <ul className="ps-pm-briefing-evidence-list">
+              {pack.alternatives.slice(0, 3).map((option) => (
+                <li key={option}>{option}</li>
+              ))}
+            </ul>
+          ) : (
+            <p>No first-version options have been drafted on the record yet.</p>
+          )}
+          <dl>
+            <div>
+              <dt>Time</dt>
+              <dd>
+                {brief.roughTime.label}. {brief.roughTime.detail}
+              </dd>
+            </div>
+            <div>
+              <dt>Cost</dt>
+              <dd>
+                {brief.roughCost.band}; this is a comparison-unit estimate, not a money quote or
+                product-build budget.
+              </dd>
+            </div>
+            <div>
+              <dt>Technology</dt>
+              <dd>
+                No stack has been validated yet. Technology should be selected after scope and
+                feasibility are reviewed.
+              </dd>
+            </div>
+            <div>
+              <dt>Active team</dt>
+              <dd>
+                {brief.team.activeLabels.length
+                  ? brief.team.activeLabels.join(", ")
+                  : `${brief.team.staffing.activeSpecialists} Available specialists sized for this case`}
+                . Planned catalogue roles do not run.
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
       <div className="ps-pm-briefing-tabs" role="tablist" aria-label="Briefing sections">
         {(Object.keys(TAB_LABELS) as BriefingTab[]).map((id) => (
           <button

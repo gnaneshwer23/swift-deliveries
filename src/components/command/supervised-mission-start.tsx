@@ -101,9 +101,13 @@ function MissionStartForm({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [question, setQuestion] = useState("");
-  const [audience, setAudience] = useState(RESEARCH_REFINE_AUDIENCE);
+  const [audience, setAudience] = useState("");
+  const [budget, setBudget] = useState("");
+  const [timeline, setTimeline] = useState("");
+  const [platform, setPlatform] = useState("");
+  const [existingAssets, setExistingAssets] = useState("");
   const [outcome, setOutcome] = useState(DEFAULT_MISSION_OUTCOME);
-  const [constraints, setConstraints] = useState(RESEARCH_FIRST_CONSTRAINT);
+  const [constraints, setConstraints] = useState("");
   const [intakeEvidenceNote, setIntakeEvidenceNote] = useState("");
   const [researchMode, setResearchMode] = useState<ResearchMode>("combined");
   const [error, setError] = useState<string | null>(null);
@@ -127,9 +131,13 @@ function MissionStartForm({
     setPrepared(brief);
     const restored = restoreMissionIntake(local, profile.data?.firstIdea, brief);
     setQuestion(restored.question);
-    setAudience(restored.audience || RESEARCH_REFINE_AUDIENCE);
+    setAudience(restored.audience || "");
+    setBudget(restored.budget ?? "");
+    setTimeline(restored.timeline ?? "");
+    setPlatform(restored.platform ?? "");
+    setExistingAssets(restored.existingAssets ?? "");
     setOutcome(restored.outcome || DEFAULT_MISSION_OUTCOME);
-    setConstraints(restored.constraints || RESEARCH_FIRST_CONSTRAINT);
+    setConstraints(restored.constraints || "");
     setIntakeEvidenceNote(restored.intakeEvidenceNote ?? "");
     hydratedUser.current = userId;
     setDraftReady(true);
@@ -144,21 +152,55 @@ function MissionStartForm({
     try {
       sessionStorage.setItem(
         draftKey,
-        JSON.stringify({ question, audience, outcome, constraints, intakeEvidenceNote }),
+        JSON.stringify({
+          question,
+          audience,
+          outcome,
+          constraints,
+          intakeEvidenceNote,
+          budget,
+          timeline,
+          platform,
+          existingAssets,
+        }),
       );
     } catch {
       setStorageWarning(true);
     }
-  }, [draftReady, draftKey, question, audience, outcome, constraints, intakeEvidenceNote]);
+  }, [
+    draftReady,
+    draftKey,
+    question,
+    audience,
+    outcome,
+    constraints,
+    intakeEvidenceNote,
+    budget,
+    timeline,
+    platform,
+    existingAssets,
+  ]);
 
   const start = useMutation({
     mutationFn: () =>
       startSupervisedMission({
         data: {
           question: question.trim(),
-          audience: audience.trim(),
-          outcome: outcome.trim(),
-          constraints: constraints.trim(),
+          audience: audience.trim() || RESEARCH_REFINE_AUDIENCE,
+          outcome: outcome.trim() || DEFAULT_MISSION_OUTCOME,
+          constraints: [
+            constraints.trim() || RESEARCH_FIRST_CONSTRAINT,
+            [
+              budget.trim() && `Budget: ${budget.trim()}`,
+              timeline.trim() && `Timeline: ${timeline.trim()}`,
+              platform.trim() && `Platform: ${platform.trim()}`,
+              existingAssets.trim() && `Existing assets: ${existingAssets.trim()}`,
+            ]
+              .filter(Boolean)
+              .join("\n"),
+          ]
+            .filter(Boolean)
+            .join("\n\n"),
           researchMode,
           intakeEvidenceNote: intakeEvidenceNote.trim() || null,
         },
@@ -215,7 +257,7 @@ function MissionStartForm({
       {isHero ? (
         <>
           <label className="ps-brief-prompt" htmlFor="supervised-question">
-            Your one-liner
+            Your idea
           </label>
         </>
       ) : (
@@ -298,62 +340,103 @@ function MissionStartForm({
           className="cc-input cc-textarea ps-brief-textarea"
           maxLength={2000}
           rows={isHero ? 3 : 3}
-          placeholder="e.g. Should we charge for onboarding analytics before launch, or keep it free to learn faster?"
+          placeholder="e.g. Build an app that helps small restaurants reduce food waste."
           value={question}
           onChange={(event) => setQuestion(event.target.value)}
           disabled={voiceBusy}
         />
 
-        <div className="ps-brief-voice-inline" aria-label="Voice one-liner">
-          <p className="cc-muted text-xs mb-2">
-            Or use voice — transcript fills the line above. Brief the PM still requires a click.
-          </p>
-          <VoiceControls
-            disabled={!draftReady || start.isPending}
-            speakReplies={speakReplies}
-            onSpeakRepliesChange={setSpeakReplies}
-            onBusyChange={setVoiceBusy}
-            onTranscript={(text) => {
-              const line = text.trim();
-              if (!line) return;
-              setQuestion((current) => (current.trim() ? `${current.trim()} ${line}` : line));
-            }}
-          />
-        </div>
+        <p className="ps-idea-later-note">
+          One sentence is enough. You can add or change details later.
+        </p>
 
-        <details className="ps-intake-advanced">
-          <summary>Optional details (research-first defaults)</summary>
-          <div className="mt-3 grid gap-3">
-            <label className="cc-label" htmlFor="supervised-audience">
-              Audience override
+        <details className="ps-intake-advanced ps-idea-context">
+          <summary>
+            <span>Add context</span>
+            <span className="ps-idea-optional">Optional</span>
+          </summary>
+          <p className="ps-idea-context-help">
+            Share anything you already know. Skip the rest; we’ll ask only useful follow-up
+            questions.
+          </p>
+          <div className="ps-idea-grid">
+            <label htmlFor="supervised-audience">
+              Target users
+              <input
+                id="supervised-audience"
+                className="cc-input"
+                maxLength={400}
+                value={audience}
+                onChange={(event) => setAudience(event.target.value)}
+                placeholder="e.g. Small restaurant owners"
+              />
             </label>
-            <input
-              id="supervised-audience"
-              className="cc-input"
-              maxLength={400}
-              value={audience}
-              onChange={(event) => setAudience(event.target.value)}
-            />
-            <label className="cc-label" htmlFor="supervised-outcome">
-              Intended outcome
+            <label htmlFor="supervised-budget">
+              Budget
+              <input
+                id="supervised-budget"
+                className="cc-input"
+                maxLength={120}
+                value={budget}
+                onChange={(event) => setBudget(event.target.value)}
+                placeholder="e.g. £10k–£50k"
+              />
             </label>
-            <input
-              id="supervised-outcome"
-              className="cc-input"
-              maxLength={2000}
-              value={outcome}
-              onChange={(event) => setOutcome(event.target.value)}
-            />
-            <label className="cc-label" htmlFor="supervised-constraints">
+            <label htmlFor="supervised-timeline">
+              Timeline
+              <input
+                id="supervised-timeline"
+                className="cc-input"
+                maxLength={120}
+                value={timeline}
+                onChange={(event) => setTimeline(event.target.value)}
+                placeholder="e.g. 3–6 months"
+              />
+            </label>
+            <label htmlFor="supervised-platform">
+              Platform
+              <select
+                id="supervised-platform"
+                className="cc-input"
+                value={platform}
+                onChange={(event) => setPlatform(event.target.value)}
+              >
+                <option value="">Choose if known</option>
+                <option value="Web">Web</option>
+                <option value="Mobile app">Mobile app</option>
+                <option value="Internal tool">Internal tool</option>
+                <option value="Web and mobile">Web and mobile</option>
+                <option value="Not sure yet">Not sure yet</option>
+              </select>
+            </label>
+            <label htmlFor="supervised-assets">
+              Existing assets
+              <input
+                id="supervised-assets"
+                className="cc-input"
+                maxLength={500}
+                value={existingAssets}
+                onChange={(event) => setExistingAssets(event.target.value)}
+                placeholder="e.g. Research, designs, code"
+              />
+            </label>
+            <label htmlFor="supervised-constraints">
               Constraints
+              <input
+                id="supervised-constraints"
+                className="cc-input"
+                maxLength={2000}
+                value={constraints}
+                onChange={(event) => setConstraints(event.target.value)}
+                placeholder="e.g. Must integrate with our POS"
+              />
             </label>
-            <input
-              id="supervised-constraints"
-              className="cc-input"
-              maxLength={2000}
-              value={constraints}
-              onChange={(event) => setConstraints(event.target.value)}
-            />
+          </div>
+        </details>
+
+        <details className="ps-intake-advanced ps-idea-more">
+          <summary>Research setup and evidence (optional)</summary>
+          <div className="mt-3 grid gap-3">
             <label className="cc-label" htmlFor="supervised-research-mode">
               Research mode
             </label>
@@ -376,16 +459,36 @@ function MissionStartForm({
                 : " Without a search provider key, web results are not invented — gaps are marked on the record."}
             </p>
             <label className="cc-label" htmlFor="supervised-intake-evidence">
-              Optional evidence paste (text only)
+              Evidence notes (text only)
             </label>
             <textarea
               id="supervised-intake-evidence"
               className="cc-input cc-textarea"
               rows={3}
               maxLength={2000}
-              placeholder="Paste quotes, call notes, or survey excerpts — no file upload or OCR."
+              placeholder="Optional quotes, call notes, or survey excerpts."
               value={intakeEvidenceNote}
               onChange={(event) => setIntakeEvidenceNote(event.target.value)}
+            />
+          </div>
+        </details>
+
+        <details className="ps-intake-advanced ps-idea-more">
+          <summary>Or use voice</summary>
+          <div className="ps-brief-voice-inline" aria-label="Voice idea input">
+            <p className="cc-muted text-xs mb-2">
+              Voice transcript fills the idea above. Review it before continuing.
+            </p>
+            <VoiceControls
+              disabled={!draftReady || start.isPending}
+              speakReplies={speakReplies}
+              onSpeakRepliesChange={setSpeakReplies}
+              onBusyChange={setVoiceBusy}
+              onTranscript={(text) => {
+                const line = text.trim();
+                if (!line) return;
+                setQuestion((current) => (current.trim() ? `${current.trim()} ${line}` : line));
+              }}
             />
           </div>
         </details>
@@ -467,7 +570,7 @@ function MissionStartForm({
             }
             onClick={() => start.mutate()}
           >
-            {start.isPending ? "Briefing the PM…" : "Brief the PM"}
+            {start.isPending ? "Preparing scope review…" : "Continue to scope review"}
           </button>
         </div>
       </fieldset>
