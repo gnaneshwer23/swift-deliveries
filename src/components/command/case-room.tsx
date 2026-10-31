@@ -173,6 +173,29 @@ function Beat({ beat, build }: { beat: RoomBeat; build?: CaseRoomBuild | undefin
               <strong>{beat.verdict}</strong>
             </div>
             <Facts facts={beat.facts} />
+            <div className="room-estimate">
+              <span className="room-mono">If you build it</span>
+              <dl className="room-facts">
+                <div>
+                  <dt>Time to a first version</dt>
+                  <dd>{beat.estimate.firstVersion.range}</dd>
+                </div>
+                <div>
+                  <dt>AI build work</dt>
+                  <dd>{beat.estimate.aiWork.line}</dd>
+                </div>
+              </dl>
+              <ul className="room-tech">
+                {beat.estimate.technology.map((t) => (
+                  <li key={t.part}>
+                    <span className="room-mono">{t.part}</span>
+                    <b>{t.choice}</b>
+                    <span>{t.why}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="room-howmade">Estimate, not a quote. {beat.estimate.method}</p>
+            </div>
             {beat.options.length ? (
               <div className="room-options">
                 <span className="room-mono">Directions on the table</span>
