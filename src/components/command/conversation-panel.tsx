@@ -43,9 +43,17 @@ const day = (iso: string) =>
  */
 export function ConversationPanel({
   currentMissionId,
+  title = "Talk to DeliverX",
+  helperText = "One business case in a sentence is enough. I restated what I heard; you confirm and the PM briefs plan, cost, time and team. Specialists research before asking more. Nothing runs until you click, and approvals stay on the plan or gate. Voice reuses this path later.",
+  placeholder = "e.g. Find out why parents give up before booking a first lesson",
+  suggestedPrompts = [],
 }: {
   /** The mission on screen, so "pause it" means this one. */
   currentMissionId?: string;
+  title?: string;
+  helperText?: string;
+  placeholder?: string;
+  suggestedPrompts?: string[];
 }) {
   const queryClient = useQueryClient();
   const query = useQuery({ queryKey: KEY, queryFn: () => getConversation() });
@@ -130,13 +138,9 @@ export function ConversationPanel({
   return (
     <section className="cc-panel" aria-labelledby="conversation-title">
       <h2 id="conversation-title" className="cc-panel-title flex items-center gap-2">
-        <MessageSquare className="size-4" aria-hidden="true" /> Talk to DeliverX
+        <MessageSquare className="size-4" aria-hidden="true" /> {title}
       </h2>
-      <p className="text-sm text-slate-600 mb-3">
-        One business case in a sentence is enough. I restated what I heard; you confirm and the PM
-        briefs plan, cost, time and team. Specialists research before asking more. Nothing runs
-        until you click, and approvals stay on the plan or gate. Voice reuses this path later.
-      </p>
+      <p className="text-sm text-slate-600 mb-3">{helperText}</p>
 
       {query.isError && !state ? (
         <p className="cc-error" role="alert">
@@ -239,8 +243,27 @@ export function ConversationPanel({
               value={text}
               disabled={say.isPending}
               onChange={(e) => setText(e.target.value)}
-              placeholder="e.g. Find out why parents give up before booking a first lesson"
+              placeholder={placeholder}
             />
+            {suggestedPrompts.length ? (
+              <div className="ps-conversation-prompts" aria-label="Suggested prompts">
+                {suggestedPrompts.map((prompt) => (
+                  <button
+                    key={prompt}
+                    type="button"
+                    className="ps-conversation-prompt"
+                    disabled={say.isPending}
+                    onClick={() => {
+                      setCorrecting(null);
+                      setText(prompt);
+                      document.getElementById("conversation-input")?.focus();
+                    }}
+                  >
+                    {prompt}
+                  </button>
+                ))}
+              </div>
+            ) : null}
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="submit"
