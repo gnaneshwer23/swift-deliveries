@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { MessageSquare } from "lucide-react";
-import { ConversationPanel } from "@/components/command/conversation-panel";
+import { CaseChatPanel } from "@/components/command/case-chat-panel";
 import { ListenBriefButton } from "@/components/command/listen-brief-button";
 import {
   Sheet,
@@ -32,9 +32,8 @@ export function InvestigationPmBriefingStage({
 }) {
   const model = buildPmBriefingScreen(mission);
   const brief = buildPmBrief(mission);
-  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(
-    model.recommendedOptionId,
-  );
+  // No option is preselected: options carry no recorded recommendation.
+  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
 
   if (!model.ready) {
@@ -110,14 +109,9 @@ export function InvestigationPmBriefingStage({
                   type="button"
                   role="radio"
                   aria-checked={selected}
-                  className={`pmb-option${selected ? " is-selected" : ""}${
-                    option.recommended ? " is-recommended" : ""
-                  }`}
+                  className={`pmb-option${selected ? " is-selected" : ""}`}
                   onClick={() => setSelectedOptionId(option.id)}
                 >
-                  {option.recommended ? (
-                    <span className="pmb-option-badge">Aria’s recommendation</span>
-                  ) : null}
                   <strong>
                     {option.label}: {option.title}
                   </strong>
@@ -176,10 +170,10 @@ export function InvestigationPmBriefingStage({
             </SheetDescription>
           </SheetHeader>
           <div className="mt-4">
-            <ConversationPanel
-              currentMissionId={missionId ?? mission.id}
+            <CaseChatPanel
+              mission={mission}
               title="Talk with Aria"
-              helperText="Ask why, challenge an assumption, or describe a change. Decisions are saved on the discuss & decide step."
+              helperText="Ask why, or about risks and gaps. Decisions and changes are saved on the discuss & decide step."
               placeholder="Ask about the recommendation…"
               suggestedPrompts={[
                 "Why is this your recommendation?",

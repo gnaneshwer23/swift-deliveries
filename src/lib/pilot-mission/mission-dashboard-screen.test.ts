@@ -1,130 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildMissionDashboard, MISSION_DASH_NAV } from "./mission-dashboard-screen";
-import { buildPilotTeamPlan } from "./specialist-team";
-import type { SupervisedMission } from "./types";
-
-function baseMission(overrides: Partial<SupervisedMission> = {}): SupervisedMission {
-  const seed = {
-    id: "11111111-1111-4111-8111-111111111111",
-    workspaceId: "w",
-    ownerUserId: "u",
-    version: 3,
-    stage: "artefact" as const,
-    brief: {
-      question: "Food waste app",
-      audience: "Owners",
-      outcome: "Less waste",
-      constraints: "",
-    },
-    evidence: [
-      {
-        id: "e1",
-        statement: "Surplus tracking is the first pain.",
-        source: "https://example.com/e1",
-        classification: "supplied" as const,
-      },
-      {
-        id: "e2",
-        statement: "Buyer interviews not yet done.",
-        source: "",
-        classification: "gap" as const,
-      },
-    ],
-    proposal: null,
-    approval: {
-      action: "compare_options" as const,
-      version: 1,
-      scopeHash: "s",
-      optionId: "o1",
-      choice: "authorise_bounded_test" as const,
-      note: "Ship a thin slice",
-      actorId: "u",
-      decidedAt: "2026-10-31T12:00:00Z",
-    },
-    invalidatedApprovals: [],
-    artefact: null,
-    prototype: null,
-    exportBody: null,
-    exportPdfBase64: null,
-    job: {
-      status: "idle" as const,
-      ownerId: null,
-      leaseUntil: null,
-      attempts: 0,
-      lastError: null,
-      idempotencyKey: null,
-    },
-    usageCeiling: 6,
-    usageConsumed: 2,
-    spendRecords: [],
-    expectation: null,
-    observation: null,
-    reviews: [],
-    followUp: null,
-    origin: null,
-    researchMode: "combined" as const,
-    researchGaps: ["Web research provider not configured"],
-    researchPassCompletedAt: "2026-10-31T11:00:00Z",
-    researchPassQueuedAt: null,
-    researchProvider: null,
-    team: {
-      ...buildPilotTeamPlan({ band: "M" }),
-      approvedAt: "2026-10-31T09:00:00Z",
-      approvedBy: "u",
-    },
-    activity: [
-      {
-        id: "a1",
-        at: "2026-10-31T12:30:00Z",
-        taskKey: null,
-        kind: "brief_update",
-        summary: "Framed the first-phase experiment",
-        actor: "DX-001",
-      },
-    ],
-    teamCollaboration: null,
-    continuationPlan: {
-      version: "continuation-v1" as const,
-      kind: "bounded_test" as const,
-      title: "Bounded test plan",
-      summary: "Staff a first experiment.",
-      derivedFrom: {
-        agentRecommendation: "proceed_bounded_test" as const,
-        humanNextPath: "authorise_bounded_test" as const,
-        disagreesWithRecommendation: false,
-        executionLimited: false,
-      },
-      roles: [
-        {
-          capabilityId: "DX-021",
-          label: "Market Intelligence Agent",
-          responsibility: "Map market context",
-          why: "Need market signal",
-          plannedArtefacts: ["Market note"],
-        },
-      ],
-      roadmap: [
-        {
-          id: "step-1",
-          title: "Scan alternatives",
-          ownerLabel: "Market Intelligence Agent",
-          detail: "Compare existing tools",
-          blocked: true,
-          blockedReason: "Waiting on founder note",
-        },
-      ],
-      plannedArtefacts: [],
-      unresolvedRisks: ["Scope may expand without a written stop"],
-      notIncluded: ["Paid acquisition"],
-      executionBlocked: false,
-      executionBlockedReason: null,
-      createdAt: "2026-10-31T12:05:00Z",
-    },
-    projectId: null,
-    updatedAt: "2026-10-31T12:30:00Z",
-  };
-  return { ...seed, ...overrides } as SupervisedMission;
-}
+import { baseMission } from "./test-fixtures";
 
 describe("mission dashboard screen", () => {
   it("exposes the Screen 10 navigation set", () => {
@@ -161,7 +37,8 @@ describe("mission dashboard screen", () => {
     expect(model.rail.find((r) => r.id === "research")?.state).not.toBe("upcoming");
     expect(model.activeAgents.some((a) => /Market/i.test(a.label))).toBe(true);
     expect(model.completedOutputs).toHaveLength(0);
-    expect(model.pendingApprovals.length).toBeGreaterThan(0);
+    // "Export the pack" is the next step but it is work, not an approval gate.
+    expect(model.pendingApprovals).toEqual([]);
     expect(model.risks.some((r) => /Waiting on founder/i.test(r.text))).toBe(true);
     expect(model.latestPmUpdate.summary).toMatch(/Framed the first-phase/i);
     expect(model.usage.consumed).toBe(2);
@@ -179,6 +56,63 @@ describe("mission dashboard screen", () => {
       }),
     );
     expect(model.downloadAvailable).toBe(true);
-    expect(model.rail.find((r) => r.id === "handover")?.state).toBe("current");
+    expect(model.rail.find((r) => r.id === "handover")?.state).toBe("done");
+  });
+
+  it("never marks a stage done without its own record, even after handover", () => {
+    const exported = buildMissionDashboard(
+      baseMission({
+        stage: "exported",
+        exportBody: "# Pack\n",
+        artefact: { title: "Pack", decisionBrief: "d", experimentBrief: "e", provenance: "p" },
+        prototype: null,
+        reviews: [],
+        observation: null,
+      }),
+    );
+    expect(Object.fromEntries(exported.rail.map((r) => [r.id, r.state]))).toEqual({
+      discovery: "done",
+      research: "done",
+      plan: "done",
+      design: "skipped",
+      engineering: "skipped",
+      qa: "skipped",
+      handover: "done",
+    });
+  });
+
+  it("makes the first stage without a record current and leaves later ones not started", () => {
+    const model = buildMissionDashboard(
+      baseMission({ evidence: [], researchPassCompletedAt: null }),
+    );
+    const states = Object.fromEntries(model.rail.map((r) => [r.id, r.state]));
+    expect(states["research"]).toBe("current");
+    // The plan exists on the record, so it shows as done even though research is still open.
+    expect(states["plan"]).toBe("done");
+    expect(states["design"]).toBe("upcoming");
+    expect(model.rail.filter((r) => r.state === "current")).toHaveLength(1);
+  });
+
+  it("lists only real approval gates as pending approvals", () => {
+    const deciding = buildMissionDashboard(baseMission({ stage: "alternatives" }));
+    expect(deciding.pendingApprovals).toEqual([expect.stringMatching(/^Record your next path — /)]);
+    const done = buildMissionDashboard(
+      baseMission({
+        stage: "exported",
+        exportBody: "# Pack\n",
+        expectation: {
+          hypothesis: "h",
+          expectedMetric: "m",
+          baseline: "b",
+          observationWindow: "w",
+          recordedAt: "2026-10-31T12:00:00Z",
+        },
+        observation: { result: "r", recordedAt: "2026-10-31T12:00:00Z" },
+        reviews: [{ reading: "as_expected", uncertainty: "", observedResult: "r" }],
+        followUp: { status: "approved" },
+      } as never),
+    );
+    expect(done.stageLabel).toBe("Follow-up approved");
+    expect(done.pendingApprovals).toEqual([]);
   });
 });

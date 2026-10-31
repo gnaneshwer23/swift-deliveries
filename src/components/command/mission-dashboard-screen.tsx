@@ -1,8 +1,9 @@
 import { useState, type ReactNode } from "react";
-import { ConversationPanel } from "@/components/command/conversation-panel";
+import { CaseChatPanel } from "@/components/command/case-chat-panel";
 import {
   buildMissionDashboard,
   MISSION_DASH_NAV,
+  RAIL_STATE_LABELS,
   type MissionDashNavId,
 } from "@/lib/pilot-mission/mission-dashboard-screen";
 import type { SupervisedMission } from "@/lib/pilot-mission/types";
@@ -104,13 +105,19 @@ export function MissionDashboardScreen({
         <div className="mdash-main">
           {nav === "overview" ? (
             <>
-              <div className="mdash-rail" aria-label="Delivery stage rail">
+              <ol className="mdash-rail" aria-label="Delivery stage rail">
                 {model.rail.map((step) => (
-                  <div key={step.id} className="mdash-rail-step" data-state={step.state}>
+                  <li
+                    key={step.id}
+                    className="mdash-rail-step"
+                    data-state={step.state}
+                    aria-current={step.state === "current" ? "step" : undefined}
+                  >
                     {step.label}
-                  </div>
+                    <span className="mdash-rail-state">{RAIL_STATE_LABELS[step.state]}</span>
+                  </li>
                 ))}
-              </div>
+              </ol>
 
               <div className="mdash-grid">
                 <article className="mdash-card">
@@ -234,8 +241,8 @@ export function MissionDashboardScreen({
               <p className="mdash-disclosure" style={{ marginBottom: "0.75rem" }}>
                 Aria drafts; you approve. Chat never authorises external work by itself.
               </p>
-              <ConversationPanel
-                currentMissionId={mission.id}
+              <CaseChatPanel
+                mission={mission}
                 title="Talk with Aria"
                 helperText="Ask about stage, blockers, team, or next approvals."
                 placeholder="Ask Aria about this mission…"

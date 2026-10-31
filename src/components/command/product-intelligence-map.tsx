@@ -1,6 +1,6 @@
 import { useId, useState } from "react";
 import { MessageSquare, NotebookText } from "lucide-react";
-import { ConversationPanel } from "@/components/command/conversation-panel";
+import { CaseChatPanel } from "@/components/command/case-chat-panel";
 import {
   Sheet,
   SheetContent,
@@ -229,8 +229,8 @@ export function ProductIntelligenceMap({
             </SheetDescription>
           </SheetHeader>
           <div className="pim-chat-body">
-            <ConversationPanel
-              currentMissionId={missionId}
+            <CaseChatPanel
+              mission={mission}
               title="Talk with Aria"
               helperText="Ask about the idea, workstreams, or what is waiting on you. Nothing runs until you approve it on the case."
               placeholder="e.g. What are we still missing about day-one users?"

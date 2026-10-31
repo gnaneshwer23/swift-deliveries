@@ -29,8 +29,24 @@ export type MissionDashNavId = (typeof MISSION_DASH_NAV)[number]["id"];
 export type DeliveryRailStep = {
   id: string;
   label: string;
-  state: "done" | "current" | "upcoming";
+  /** `skipped`: the case was handed over without any record for this stage. */
+  state: "done" | "current" | "upcoming" | "skipped";
 };
+
+export const RAIL_STATE_LABELS: Record<DeliveryRailStep["state"], string> = {
+  done: "Done",
+  current: "Current",
+  upcoming: "Not started",
+  skipped: "Not done on this path",
+};
+
+/** Next steps that are the owner's approval gates; other steps are work or optional input. */
+const APPROVAL_GATES = new Set([
+  "approve_plan",
+  "decide",
+  "approve_prototype",
+  "approve_follow_up",
+]);
 
 export type MissionDashAgent = {
   id: string;
@@ -97,18 +113,21 @@ export type MissionDashboardModel = {
 const EMPTY_SECTION =
   "Nothing is recorded for this section on the case yet. DeliverX does not invent progress here.";
 
+/** Build work on the team plan. A decision pack or the HTML prototype is not engineering. */
+function isEngineeringTask(t: { key: string; title: string; produces: string }): boolean {
+  return (
+    !/prototype|pack/i.test(`${t.key} ${t.title} ${t.produces}`) &&
+    /implement|service|api|backend|frontend|engineer/i.test(`${t.title} ${t.produces}`)
+  );
+}
+
 function railFromMission(mission: SupervisedMission): DeliveryRailStep[] {
-  // Product delivery rail — mapped from recorded mission state, not a fake clock.
+  // Product delivery rail — each stage is done only when its own record exists.
   const hasResearch = mission.evidence.length > 0 || Boolean(mission.researchPassCompletedAt);
   const hasPlan = Boolean(mission.approval || mission.continuationPlan);
   const hasDesign = Boolean(mission.prototype);
   const hasEngineering = Boolean(
-    mission.artefact ||
-    mission.team?.tasks.some(
-      (t) =>
-        t.status === "completed" &&
-        /build|prototype|implement|service|api/i.test(`${t.title} ${t.produces}`),
-    ),
+    mission.team?.tasks.some((t) => t.status === "completed" && isEngineeringTask(t)),
   );
   const hasQa =
     (mission.prototype?.checks.length ?? 0) > 0 ||
@@ -136,21 +155,20 @@ function railFromMission(mission: SupervisedMission): DeliveryRailStep[] {
   ];
   const ids = ["discovery", "research", "plan", "design", "engineering", "qa", "handover"];
 
-  let currentIdx = 0;
-  for (let i = 0; i < flags.length; i++) {
-    if (flags[i]) currentIdx = i;
-  }
-  // If handover is done, current is handover; else current is the furthest complete,
-  // or the next incomplete after the furthest complete.
-  if (!flags[flags.length - 1]) {
-    const nextOpen = flags.findIndex((f, i) => i > 0 && !f);
-    if (nextOpen >= 0) currentIdx = nextOpen;
-  }
+  const handedOver = flags[flags.length - 1];
+  // Before handover, the first stage without a record is current; after it, none is.
+  const currentIdx = handedOver ? -1 : flags.findIndex((f) => !f);
 
   return ids.map((id, index) => ({
     id,
     label: labels[index]!,
-    state: index < currentIdx ? "done" : index === currentIdx ? "current" : "upcoming",
+    state: flags[index]
+      ? "done"
+      : index === currentIdx
+        ? "current"
+        : handedOver
+          ? "skipped"
+          : "upcoming",
   }));
 }
 
@@ -215,11 +233,7 @@ export function buildMissionDashboard(mission: SupervisedMission): MissionDashbo
   }
 
   const pendingApprovals: string[] = [];
-  if (
-    /approve|decide|expectation|export|gate|record|authorise|authorize/i.test(
-      `${next.id} ${next.title}`,
-    )
-  ) {
+  if (APPROVAL_GATES.has(next.id)) {
     pendingApprovals.push(`${next.title} — ${next.detail}`);
   }
   if (mission.job.status === "failed") {
@@ -346,7 +360,7 @@ export function buildMissionDashboard(mission: SupervisedMission): MissionDashbo
     : ["No design / prototype artefact is saved on this case yet."];
 
   const engineeringLines = (mission.team?.tasks ?? [])
-    .filter((t) => /build|prototype|implement|service|api|pack/i.test(`${t.title} ${t.produces}`))
+    .filter(isEngineeringTask)
     .map((t) => `${t.title} · ${t.status} — ${t.produces}`);
   if (!engineeringLines.length) {
     engineeringLines.push("No engineering tasks are recorded for this path yet.");

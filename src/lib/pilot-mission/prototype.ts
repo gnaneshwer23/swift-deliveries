@@ -7,14 +7,15 @@ import type { MissionPrototype, MissionPrototypeCheck, SupervisedMission } from 
 
 export type { MissionPrototype, MissionPrototypeCheck };
 
-function prototypeHonesty(mission: SupervisedMission): MissionPrototype["honesty"] {
-  const gen = mission.proposal?.generation;
-  if (gen?.ran) {
-    const modelId = gen.model ?? gen.provider ?? "configured";
-    return { mode: "model", label: `Model · ${modelId}`, modelId };
-  }
-  return { mode: "simulated", label: "Simulated draft", modelId: null };
-}
+/**
+ * How the prototype itself was produced. The HTML always comes from the template below, so
+ * it is a simulated draft even when a model drafted the options it describes.
+ */
+const PROTOTYPE_HONESTY: MissionPrototype["honesty"] = {
+  mode: "simulated",
+  label: "Simulated draft",
+  modelId: null,
+};
 
 function esc(v: string): string {
   return v
@@ -34,8 +35,6 @@ export function simulatedPrototypeHtml(mission: SupervisedMission): string {
       ? `${mission.approval?.choice ?? "accept"}: ${option.title}`
       : (mission.artefact?.decisionBrief.slice(0, 160) ?? "Owner decision on record"),
   );
-  const honesty = prototypeHonesty(mission);
-  const badge = honesty.mode === "model" ? esc(honesty.label) : "Simulated prototype";
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -57,7 +56,7 @@ button:focus-visible{outline:3px solid #1d4ed8;outline-offset:2px}
 </head>
 <body>
 <header>
-  <p class="tag">${badge}</p>
+  <p class="tag">Simulated prototype</p>
   <h1>${title}</h1>
   <p style="color:var(--muted)">${goal}</p>
   <p style="color:var(--muted)"><strong>Decision:</strong> ${decision}</p>
@@ -122,7 +121,7 @@ export function buildMissionPrototype(
     ownerLabel?: string;
   },
 ): MissionPrototype {
-  const honesty = prototypeHonesty(mission);
+  const honesty = PROTOTYPE_HONESTY;
   const html = input.html ?? simulatedPrototypeHtml(mission);
   const verify = verifyPrototypeHtml(html);
   const at = new Date(input.nowMs).toISOString();

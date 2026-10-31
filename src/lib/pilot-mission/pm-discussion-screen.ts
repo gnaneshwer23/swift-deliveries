@@ -20,7 +20,7 @@ export type PmDiscussionEvidenceChip = {
 
 export type PmDiscussionContext = {
   decisionRequested: string;
-  optionsConsidered: Array<{ id: string; title: string; tradeoff: string; recommended: boolean }>;
+  optionsConsidered: Array<{ id: string; title: string; tradeoff: string }>;
   evidenceUsed: PmDiscussionEvidenceChip[];
   assumptions: string[];
   openQuestions: string[];
@@ -42,11 +42,11 @@ export function pmDiscussionSampleThread() {
 export function buildPmDiscussionContext(mission: SupervisedMission): PmDiscussionContext {
   const draft = deriveAgentRecommendation(mission);
   const pack = buildPmBriefingPack(mission);
-  const options = (mission.proposal?.options ?? []).map((option, index) => ({
+  // Options carry no recorded recommendation; Aria’s draft is the next path, shown separately.
+  const options = (mission.proposal?.options ?? []).map((option) => ({
     id: option.id,
     title: option.title,
     tradeoff: option.tradeoff,
-    recommended: index === 0,
   }));
 
   const evidenceUsed: PmDiscussionEvidenceChip[] = mission.evidence

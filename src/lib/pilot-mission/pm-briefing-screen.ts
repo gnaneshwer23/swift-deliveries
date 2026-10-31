@@ -21,7 +21,6 @@ export type PmBriefingOptionCard = {
   label: string;
   title: string;
   detail: string;
-  recommended: boolean;
   basis: string;
 };
 
@@ -33,7 +32,6 @@ export type PmBriefingScreenModel = {
   roleDisclosure: string;
   cards: PmBriefingCard[];
   options: PmBriefingOptionCard[];
-  recommendedOptionId: string | null;
 };
 
 function audienceLine(mission: SupervisedMission): string {
@@ -85,30 +83,21 @@ function composeAriaMessage(
   return `I understand your idea as: ${idea}. Likely users today: ${users}. ${opportunity} The main risks and unknowns include: ${risks}. I recommend: ${recommendation}`;
 }
 
-function optionCards(mission: SupervisedMission): {
-  options: PmBriefingOptionCard[];
-  recommendedOptionId: string | null;
-} {
+function optionCards(mission: SupervisedMission): PmBriefingOptionCard[] {
   const draftOptions = mission.proposal?.options ?? [];
-  if (!draftOptions.length) {
-    return { options: [], recommendedOptionId: null };
-  }
 
-  // Prefer the first drafted option as Aria’s marked recommendation when a draft exists.
+  // A proposal records options, not which one is recommended. Aria’s recommendation is the
+  // next path in the briefing pack, so no option is marked by its position in the list.
   // Do not invent Option A/B/C beyond what the proposal recorded.
-  const recommendedId = draftOptions[0]?.id ?? null;
   const labels = ["Option A", "Option B", "Option C"];
 
-  const options = draftOptions.slice(0, 3).map((option: OptionDraft, index) => ({
+  return draftOptions.slice(0, 3).map((option: OptionDraft, index) => ({
     id: option.id,
     label: labels[index] ?? `Option ${index + 1}`,
     title: option.title,
     detail: option.tradeoff,
-    recommended: option.id === recommendedId,
     basis: option.basis,
   }));
-
-  return { options, recommendedOptionId: recommendedId };
 }
 
 export function buildPmBriefingScreen(mission: SupervisedMission): PmBriefingScreenModel {
@@ -123,12 +112,11 @@ export function buildPmBriefingScreen(mission: SupervisedMission): PmBriefingScr
       roleDisclosure: pack.roleDisclosure,
       cards: [],
       options: [],
-      recommendedOptionId: null,
     };
   }
 
   const brief = buildPmBrief(mission);
-  const { options, recommendedOptionId } = optionCards(mission);
+  const options = optionCards(mission);
   const differentiation =
     pack.assessments.find((item) => item.dimension === "proposition")?.summary ??
     "Differentiation is not yet assessed on this case.";
@@ -197,6 +185,5 @@ export function buildPmBriefingScreen(mission: SupervisedMission): PmBriefingScr
     roleDisclosure: pack.roleDisclosure,
     cards,
     options,
-    recommendedOptionId,
   };
 }
