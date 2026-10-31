@@ -21,7 +21,7 @@ export function preparedMissionIntake(brief: ProductBrief): MissionIntakeDraft {
     question: brief.problem.slice(0, 2000),
     audience: (brief.audience.trim() || RESEARCH_REFINE_AUDIENCE).slice(0, 2000),
     outcome: (brief.objective.trim() || DEFAULT_MISSION_OUTCOME).slice(0, 2000),
-    constraints: (brief.constraints.trim() || RESEARCH_FIRST_CONSTRAINT).slice(0, 2000),
+    constraints: brief.constraints.trim().slice(0, 2000),
   };
 }
 export function parseMissionIntake(raw: string | null): MissionIntakeDraft | null {
@@ -69,7 +69,7 @@ export function restoreMissionIntake(
     question: question?.slice(0, 2000) ?? "",
     audience: RESEARCH_REFINE_AUDIENCE,
     outcome: DEFAULT_MISSION_OUTCOME,
-    constraints: RESEARCH_FIRST_CONSTRAINT,
+    constraints: "",
     intakeEvidenceNote: "",
   };
 }
