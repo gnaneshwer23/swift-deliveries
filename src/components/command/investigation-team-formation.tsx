@@ -25,10 +25,13 @@ function statusFromEvents(
   capabilityId: string | null,
   label: string,
   blocked: boolean,
+  taskKeys: string[] = [],
 ): AgentStatus {
   if (blocked) return "blocked";
   const relevant = (mission.activity ?? []).filter(
-    (event) => event.actor === capabilityId || event.actor === label,
+    (event) =>
+      (event.actor === capabilityId || event.actor === label) &&
+      (!taskKeys.length || (event.taskKey !== null && taskKeys.includes(event.taskKey))),
   );
   if (relevant.some((event) => /complete|finished|settled/i.test(event.kind))) return "complete";
   if (relevant.some((event) => /start|running|leased/i.test(event.kind))) return "working";
@@ -51,7 +54,13 @@ function agentsForMission(mission: SupervisedMission): FormationAgent[] {
       .map((role: ContinuationRole) => {
         const steps = plan.roadmap.filter((step) => step.ownerLabel === role.label);
         const blockedStep = steps.find((step) => step.blocked);
-        const status = statusFromEvents(mission, role.capabilityId, role.label, Boolean(blockedStep || plan.executionBlocked));
+        const status = statusFromEvents(
+          mission,
+          role.capabilityId,
+          role.label,
+          Boolean(blockedStep || plan.executionBlocked),
+          steps.map((step) => step.id),
+        );
         return {
           id: role.capabilityId ?? role.label,
           label: role.label,
@@ -61,7 +70,7 @@ function agentsForMission(mission: SupervisedMission): FormationAgent[] {
           tasks: steps.length
             ? steps.map((step) => `${step.title}: ${step.detail}`)
             : ["No roadmap task is assigned to this role yet."],
-          inputs: ["Approved brief", "Recorded decision and evidence register"],
+          inputs: [],
           outputs: role.plannedArtefacts,
           evidence: handoffEvidence(mission, role.capabilityId, role.label),
           status,
@@ -108,6 +117,7 @@ export function InvestigationTeamFormation({ mission }: { mission: SupervisedMis
   const taskCount = mission.continuationPlan?.roadmap.length ?? mission.team?.tasks.filter((task) => task.actor === "specialist").length ?? 0;
   const blockerCount = mission.continuationPlan?.roadmap.filter((step) => step.blocked).length ?? mission.team?.tasks.filter((task) => task.status === "blocked").length ?? 0;
   const workingCount = agents.filter((agent) => agent.status === "working").length;
+  const recordedUpdatesCount = updates.length;
   const suppliedCount = mission.evidence.filter((item) => item.classification === "supplied").length;
   const gapCount = mission.evidence.filter((item) => item.classification === "gap").length;
 
@@ -123,16 +133,36 @@ export function InvestigationTeamFormation({ mission }: { mission: SupervisedMis
       </header>
 
       <p className="ps-team-formation-disclosure">
-        DeliverX has a larger specialist catalogue. This screen shows only roles assigned to this
-        mission; roles marked Planned have not started work.
+        DeliverX has a larger specialist catalogue. This screen shows only roles in this mission’s
+        approved continuation plan. Planned roles have not started work; status changes appear only
+        when worker events are saved to the mission record.
       </p>
 
       <div className="ps-team-formation-metrics" aria-label="Team summary">
         <div><strong>{agents.length}</strong><span>assigned specialist roles</span></div>
         <div><strong>{taskCount}</strong><span>planned tasks</span></div>
-        <div><strong>{workingCount}</strong><span>roles with recorded activity</span></div>
+        <div><strong>{recordedUpdatesCount}</strong><span>saved mission updates</span></div>
         <div><strong>{blockerCount}</strong><span>recorded blockers</span></div>
       </div>
+
+      {mission.continuationPlan ? (
+        <details className="ps-team-roadmap-review">
+          <summary>Review the proposed work before implementation</summary>
+          <p className="cc-muted text-sm">{mission.continuationPlan.summary}</p>
+          <ol>
+            {mission.continuationPlan.roadmap.map((step) => (
+              <li key={step.id} data-blocked={step.blocked ? "true" : undefined}>
+                <strong>{step.title}</strong><span>{step.ownerLabel}</span>
+                <p>{step.detail}</p>
+                {step.blockedReason ? <p className="ps-team-blocker">Needs attention: {step.blockedReason}</p> : null}
+              </li>
+            ))}
+          </ol>
+          <p className="cc-muted text-xs">
+            This plan is for review. Implementation status changes only after the next approval and recorded worker activity.
+          </p>
+        </details>
+      ) : null}
 
       {mission.continuationPlan ? (
         <div className="ps-team-formation-plan">
@@ -186,7 +216,11 @@ export function InvestigationTeamFormation({ mission }: { mission: SupervisedMis
 
               <div className="ps-team-detail-grid">
                 <section><h4>Current tasks</h4><BulletList items={selected.tasks} empty="No task assigned." /></section>
-                <section><h4>Inputs</h4><BulletList items={selected.inputs} empty="No inputs recorded." /></section>
+                <section>
+                  <h4>Inputs</h4>
+                  {selected.inputs.length ? <BulletList items={selected.inputs} empty="" /> :
+                    <p className="cc-muted text-sm">The approved brief, decision, and evidence register remain on the mission. Role-specific inputs are not listed in this plan.</p>}
+                </section>
                 <section><h4>Outputs</h4><BulletList items={selected.outputs} empty="No output recorded yet." /></section>
                 <section><h4>Evidence</h4>
                   {selected.evidence.length ? <BulletList items={[...new Set(selected.evidence)]} empty="" /> :
@@ -194,12 +228,10 @@ export function InvestigationTeamFormation({ mission }: { mission: SupervisedMis
                 </section>
               </div>
 
-              <div className="ps-team-progress">
-                <div><strong>Progress</strong><span>{STATUS_LABELS[selected.status]}</span></div>
-                {selected.status === "working" || selected.status === "complete" ? (
-                  <progress max={1} value={selected.status === "complete" ? 1 : 0.5} aria-label={`${STATUS_LABELS[selected.status]} status`} />
-                ) : null}
+              <div className="ps-team-progress" data-state={selected.status}>
+                <div><strong>Recorded progress</strong><span>{STATUS_LABELS[selected.status]}</span></div>
                 <p>{selected.question ? `Blocker: ${selected.question}` : "No question or blocker is recorded for this role yet."}</p>
+                <small>Progress reflects saved events; no percentage is estimated.</small>
               </div>
 
               <p className="ps-team-agent-actions">
@@ -213,14 +245,14 @@ export function InvestigationTeamFormation({ mission }: { mission: SupervisedMis
         <p className="cc-muted text-sm">No specialist roles are assigned to this path. The approved case will be retained without a delivery team.</p>
       )}
 
-      <section className="ps-team-updates" aria-label="Recorded team updates">
-        <div><h3>Team updates</h3><p className="cc-muted text-xs">Updates appear when the mission record receives worker events.</p></div>
+      <section className="ps-team-updates" aria-label="Recorded mission updates">
+        <div><h3>Latest mission updates</h3><p className="cc-muted text-xs">Events already saved to this mission; they may include earlier investigation work.</p></div>
         {updates.length ? (
           <ul>{updates.map((event) => <li key={event.id}><strong>{event.actor}</strong><span>{event.summary}</span></li>)}</ul>
         ) : <p className="cc-muted text-sm">No continuation work events are recorded yet.</p>}
       </section>
 
-      <details className="ps-team-ask-pm">
+      <details className="ps-team-ask-pm" id="ps-team-ask-pm">
         <summary>Ask the PM about this team</summary>
         <ConversationPanel
           currentMissionId={mission.id}
