@@ -31,7 +31,7 @@ Approved missions run on the server, not in the browser. Code: `src/lib/workforc
 ## Setup still needed
 
 - Set `CRON_SECRET` in the Vercel project (production and preview). The tick returns **503** when it is missing.
-- **Cron:** `vercel.json` schedules `GET /api/worker/tick` daily at 05:00 UTC (`0 5 * * *`) — compatible with **Hobby**. Vercel sends the bearer secret when `CRON_SECRET` is set. For sub-minute recovery on **Pro**, tighten the schedule or use an external scheduler with `Authorization: Bearer $CRON_SECRET`.
+- **Cron:** `vercel.json` schedules `GET /api/worker/tick` every 5 minutes (`*/5 * * * *`), which needs Vercel **Pro** (Hobby allows daily crons only). Vercel sends the bearer secret when `CRON_SECRET` is set; without it the route answers 503 and nothing runs. Each tick spends at most about 50s on mission steps and 50s on queued research passes, so ticks never overlap. An idle tick costs a few database reads; model calls happen only for runnable work and stop at usage ceilings.
 - Until a tick runs, a mission whose nudge was cut off (for example, a function timeout during a long model call) resumes on the next nudge, **mission reload** (supervised research drain), or button press. Leases expire safely.
 
 ## Preview verification (30 Oct 2026)

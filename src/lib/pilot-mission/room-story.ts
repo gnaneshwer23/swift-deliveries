@@ -5,6 +5,7 @@
  * plain words. The model never invents progress, scores, prices or findings: every line is
  * derived from the mission document, and a beat appears only once its record exists.
  */
+import { buildEstimate, type BuildEstimate } from "./build-estimate";
 import { deliveryEligibility } from "./delivery";
 import { buildPmBrief } from "./pm-brief";
 import { buildPmBriefingPack } from "./pm-briefing-pack";
@@ -67,6 +68,8 @@ export type RoomBeat =
       facts: RoomFact[];
       detail: RoomFact[];
       options: Array<{ id: string; title: string; detail: string }>;
+      /** What building the first version would take, with its method. */
+      estimate: BuildEstimate;
       howMade: string;
     }
   | { kind: "decision"; choice: string; option: string | null; note: string; decidedAt: string }
@@ -283,8 +286,8 @@ export function buildRoomModel(mission: SupervisedMission): RoomModel {
     const facts: RoomFact[] = [
       { label: "Who it’s for", value: cardValue(/users/i) },
       { label: "Competitors", value: cardValue(/competitor/i) },
-      { label: "First version", value: cardValue(/recommended|first version/i) },
-      { label: "Time and cost", value: cardValue(/timeline|cost/i) },
+      { label: "Recommended next step", value: cardValue(/recommended|first version/i) },
+      { label: "Investigation time and cost", value: cardValue(/timeline|cost/i) },
     ]
       .filter((f): f is RoomFact => Boolean(f.value))
       .map((f) => ({ label: f.label, value: firstSentence(f.value) }));
@@ -296,6 +299,7 @@ export function buildRoomModel(mission: SupervisedMission): RoomModel {
       facts,
       detail: screen.cards.map((card) => ({ label: card.title, value: card.body })),
       options: screen.options.map((o) => ({ id: o.id, title: o.title, detail: plain(o.detail) })),
+      estimate: buildEstimate(mission.brief),
       howMade: `${screen.roleDisclosure} ${screen.honesty}`.trim(),
     });
   }

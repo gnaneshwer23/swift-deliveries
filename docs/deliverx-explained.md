@@ -376,7 +376,7 @@ Synthetic interviews are rehearsal only and labelled. 5. **Every output says how
 - **Hosting:** Vercel. The repo is also connected to Lovable.
 - **Research:** web search through Tavily, Exa or Brave, when a key is set.
 - **Models:** model calls go through `src/lib/workforce/model-runner.server.ts`, with an allowlist and recording. Model mode is **off in production**, so drafts are labelled simulated.
-- **Background work:** a durable worker with leases and retries (`worker.server.ts`). The cron runs **once a day**.
+- **Background work:** a durable worker with leases and retries (`worker.server.ts`). The cron runs **every 5 minutes** (Vercel Pro), and an open Room advances the build step by step.
 
 ### 9.2 Status by step
 
