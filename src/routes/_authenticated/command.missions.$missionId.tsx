@@ -37,7 +37,7 @@ import {
   type WfArtefact,
   type WfMissionTask,
 } from "@/lib/workforce/types";
-import { GENERATION_SOURCE_PREFIX } from "@/lib/workforce/stage-artefacts";
+import { artefactProduction } from "@/lib/workforce/stage-artefacts";
 import { CheckCircle2, Edit3, History, ShieldCheck, XCircle } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/command/missions/$missionId")({
@@ -935,16 +935,11 @@ function MissionDetail() {
 }
 
 function GenerationBadge({ artefact }: { artefact: WfArtefact }) {
-  const source = artefact.evidenceItems.find((e) =>
-    e.source?.startsWith(GENERATION_SOURCE_PREFIX),
-  )?.source;
-  if (!source) return null;
-  const isModel = source.startsWith(`${GENERATION_SOURCE_PREFIX}model:`);
+  const production = artefactProduction(artefact);
+  if (!production) return null;
   return (
-    <span className="cc-gen-badge" data-mode={isModel ? "model" : "simulated"}>
-      {isModel
-        ? `Model: ${source.slice(`${GENERATION_SOURCE_PREFIX}model:`.length)}`
-        : "Simulated draft"}
+    <span className="cc-gen-badge" data-mode={production.mode}>
+      {production.label}
     </span>
   );
 }

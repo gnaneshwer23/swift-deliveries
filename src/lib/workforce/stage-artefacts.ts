@@ -26,6 +26,20 @@ export type StageOutcome = {
 
 export const GENERATION_SOURCE_PREFIX = "generation:";
 
+/** How an artefact was produced, from its generation evidence: a model id or a simulated draft. */
+export function artefactProduction(
+  artefact: Pick<WfArtefact, "evidenceItems">,
+): { mode: "model" | "simulated"; label: string } | null {
+  const source = artefact.evidenceItems.find((e) =>
+    e.source?.startsWith(GENERATION_SOURCE_PREFIX),
+  )?.source;
+  if (!source) return null;
+  const modelPrefix = `${GENERATION_SOURCE_PREFIX}model:`;
+  return source.startsWith(modelPrefix)
+    ? { mode: "model", label: `Model: ${source.slice(modelPrefix.length)}` }
+    : { mode: "simulated", label: "Simulated draft" };
+}
+
 function generationEvidence(input: ExecuteStepInput): EvidenceItem {
   const g = input.generated;
   if (g?.mode === "model") {
