@@ -309,7 +309,24 @@ export type SupervisedMission = {
     status: "queued" | "running" | "completed" | "failed" | "cancelled";
     teamScopeHash: string;
   } | null;
+  /**
+   * Delivery started by the owner's "Begin delivery" approval: a linked workforce build
+   * mission (charter → PRD → design → prototype → verify → release pack) with its plan
+   * approved at that moment. Additive document field — absent until delivery starts.
+   */
+  delivery?: SupervisedDelivery | null;
   updatedAt: string;
+};
+
+export type SupervisedDelivery = {
+  wfMissionId: string;
+  /** The approved workforce plan this delivery runs, bound by version and hash. */
+  planVersion: number;
+  planHash: string;
+  /** The decision option the delivery builds. */
+  optionId: string;
+  approvedAt: string;
+  approvedBy: string;
 };
 
 export type ApprovalClaim = {

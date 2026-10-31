@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from "react";
+import { Link } from "@tanstack/react-router";
 import { CaseChatPanel } from "@/components/command/case-chat-panel";
 import {
   buildMissionDashboard,
@@ -120,6 +121,24 @@ export function MissionDashboardScreen({
               </ol>
 
               <div className="mdash-grid">
+                {mission.delivery ? (
+                  <article className="mdash-card mdash-card-wide">
+                    <h3>Delivery</h3>
+                    <p>
+                      You approved delivery on {formatTime(mission.delivery.approvedAt)}. The build
+                      mission runs the staged plan you approved and waits on you at each human gate.
+                    </p>
+                    <p style={{ marginTop: "0.6rem" }}>
+                      <Link
+                        to="/command/missions/$missionId"
+                        params={{ missionId: mission.delivery.wfMissionId }}
+                        className="mdash-btn mdash-btn-primary"
+                      >
+                        Open delivery mission
+                      </Link>
+                    </p>
+                  </article>
+                ) : null}
                 <article className="mdash-card">
                   <h3>Current stage</h3>
                   <p className="mdash-metric" style={{ fontSize: "1rem" }}>

@@ -1,10 +1,7 @@
-import { productMissionLimitations, productMissionTasks } from "./lifecycle";
+import { productMissionLimitations, productMissionTasks, wantsExternal } from "./lifecycle";
 import { maxPermission } from "./permissions";
 import { matchCapabilitiesForMission } from "./registry/matching";
 import type { ClarificationQuestion, GeneratedPlan, MissionIntent, PlannedTask } from "./types";
-
-const EXTERNAL_HINT =
-  /\b(email|send|deploy|publish|post to|slack|tweet|call api|webhook|notify customer|production)\b/i;
 
 function titleFromRequest(intent: MissionIntent, request: string): string {
   const cleaned = request.replace(/\s+/g, " ").trim();
@@ -18,11 +15,6 @@ function titleFromRequest(intent: MissionIntent, request: string): string {
           ? "Build"
           : "Improve";
   return clip ? `${prefix}: ${clip}` : `${prefix} mission`;
-}
-
-function wantsExternal(request: string, answers: Record<string, string>): boolean {
-  const blob = `${request} ${Object.values(answers).join(" ")}`;
-  return EXTERNAL_HINT.test(blob);
 }
 
 function clarificationFor(

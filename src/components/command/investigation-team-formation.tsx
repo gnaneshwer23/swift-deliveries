@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
+import { useMutation } from "@tanstack/react-query";
 import { AgentWorkspacePanel } from "@/components/command/agent-workspace-panel";
-import { ConversationPanel } from "@/components/command/conversation-panel";
+import { CaseChatPanel } from "@/components/command/case-chat-panel";
 import {
   Sheet,
   SheetContent,
@@ -12,6 +14,8 @@ import {
   buildTeamFormationCards,
   teamFormationIntro,
 } from "@/lib/pilot-mission/team-formation-screen";
+import { beginSupervisedDelivery } from "@/lib/pilot-mission.functions";
+import { deliveryEligibility, deliveryPlanPreview } from "@/lib/pilot-mission/delivery";
 import type { SupervisedMission } from "@/lib/pilot-mission/types";
 import "@/styles/team-formation-screen.css";
 
@@ -22,9 +26,13 @@ import "@/styles/team-formation-screen.css";
 export function InvestigationTeamFormation({
   mission,
   onBeginDelivery,
+  onDone,
 }: {
   mission: SupervisedMission;
+  /** Moves the journey on once delivery has started. */
   onBeginDelivery?: () => void;
+  /** Reloads the case after delivery starts. */
+  onDone?: () => Promise<void>;
 }) {
   const cards = buildTeamFormationCards(mission);
   const intro = teamFormationIntro(mission);
@@ -112,23 +120,12 @@ export function InvestigationTeamFormation({
         </div>
       </div>
 
-      <div className="tf-actions">
-        <button
-          type="button"
-          className="tf-btn tf-btn-primary"
-          disabled={!assigned.length}
-          onClick={() => onBeginDelivery?.()}
-        >
-          Begin delivery
-        </button>
-        <a className="tf-btn tf-btn-ghost" href="#ps-team-ask-pm">
-          Ask Aria about the team
-        </a>
-      </div>
-      <p className="tf-disclosure">
-        Begin delivery opens the work-in-progress view. It does not claim engineering delivery has
-        started unless saved activity exists on the case.
-      </p>
+      <BeginDelivery
+        mission={mission}
+        teamAssigned={assigned.length > 0}
+        onStarted={onBeginDelivery}
+        onDone={onDone}
+      />
 
       <section className="tf-head" aria-label="Recorded mission updates">
         <h3 className="text-base font-semibold m-0 mb-2">Latest mission updates</h3>
@@ -148,15 +145,15 @@ export function InvestigationTeamFormation({
       <details className="tf-head" id="ps-team-ask-pm">
         <summary>Ask the PM about this team</summary>
         <div className="mt-3">
-          <ConversationPanel
-            currentMissionId={mission.id}
+          <CaseChatPanel
+            mission={mission}
             title="Discuss the team with Aria"
-            helperText="Ask why a role was selected or request a change. Chat does not approve new work."
+            helperText="Ask why a role was selected, what is blocking the next task, or what the team has produced."
             placeholder="Ask about an agent, task, or blocker…"
             suggestedPrompts={[
               "Why is this role needed for my project?",
               "What is blocking the next task?",
-              "Suggest a smaller team for this scope.",
+              "Which outputs has the team completed?",
             ]}
           />
         </div>
@@ -175,5 +172,136 @@ export function InvestigationTeamFormation({
         </SheetContent>
       </Sheet>
     </section>
+  );
+}
+
+/**
+ * "Begin delivery" is the owner's approval to start the build mission for the decided
+ * direction. It is confirmed first, and once delivery exists it links to it instead.
+ */
+function BeginDelivery({
+  mission,
+  teamAssigned,
+  onStarted,
+  onDone,
+}: {
+  mission: SupervisedMission;
+  teamAssigned: boolean;
+  onStarted: (() => void) | undefined;
+  onDone: (() => Promise<void>) | undefined;
+}) {
+  const [confirming, setConfirming] = useState(false);
+  const caseEligibility = deliveryEligibility(mission);
+  const eligibility: typeof caseEligibility =
+    caseEligibility.ok && !teamAssigned
+      ? { ok: false, reason: "No specialists are assigned to this path yet." }
+      : caseEligibility;
+  const plan = confirming && eligibility.ok ? deliveryPlanPreview(mission) : null;
+  const begin = useMutation({
+    mutationFn: () =>
+      beginSupervisedDelivery({ data: { id: mission.id, expectedVersion: mission.version } }),
+    onSuccess: async () => {
+      setConfirming(false);
+      await onDone?.();
+      onStarted?.();
+    },
+  });
+
+  if (mission.delivery) {
+    return (
+      <div className="tf-actions" role="status">
+        <p className="tf-disclosure m-0">
+          Delivery started{" "}
+          {new Date(mission.delivery.approvedAt).toLocaleString("en-GB", {
+            day: "numeric",
+            month: "short",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+          . Scope, design and release wait on your approval in the delivery mission.
+        </p>
+        <Link
+          to="/command/missions/$missionId"
+          params={{ missionId: mission.delivery.wfMissionId }}
+          className="tf-btn tf-btn-primary"
+        >
+          Open delivery mission
+        </Link>
+        <a className="tf-btn tf-btn-ghost" href="#ps-team-ask-pm">
+          Ask Aria about the team
+        </a>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="tf-actions">
+        <button
+          type="button"
+          className="tf-btn tf-btn-primary"
+          disabled={!eligibility.ok || confirming}
+          onClick={() => setConfirming(true)}
+        >
+          Begin delivery
+        </button>
+        <a className="tf-btn tf-btn-ghost" href="#ps-team-ask-pm">
+          Ask Aria about the team
+        </a>
+      </div>
+      {!eligibility.ok ? <p className="tf-disclosure">{eligibility.reason}</p> : null}
+      {confirming && plan ? (
+        <section className="tf-head" role="region" aria-label="Approve delivery">
+          <h3 className="text-base font-semibold m-0 mb-2">Approve delivery</h3>
+          <p className="text-sm m-0 mb-2">
+            This starts a build mission for the direction you approved. Specialists work through:
+          </p>
+          <ol className="m-0 mb-2 pl-5 text-sm">
+            {plan.stages.map((stage) => (
+              <li key={stage.key}>
+                {stage.gate ? (
+                  <strong>{stage.title} (your approval)</strong>
+                ) : stage.outside ? (
+                  `${stage.title} (needs its own approval for outside actions)`
+                ) : (
+                  stage.title
+                )}
+              </li>
+            ))}
+          </ol>
+          <p className="text-sm m-0 mb-3">
+            The plan estimates about {plan.estimatedUsage} usage units; work stops if your workspace
+            ceiling is reached. Each output says how it was produced (model id or Simulated draft).
+            Outside actions are not approved now, and this case’s brief and evidence stay fixed from
+            now on.
+          </p>
+          <div className="tf-actions">
+            <button
+              type="button"
+              className="tf-btn tf-btn-primary"
+              disabled={begin.isPending}
+              onClick={() => begin.mutate()}
+            >
+              {begin.isPending ? "Starting delivery…" : "Approve and begin delivery"}
+            </button>
+            <button
+              type="button"
+              className="tf-btn tf-btn-ghost"
+              disabled={begin.isPending}
+              onClick={() => setConfirming(false)}
+            >
+              Not yet
+            </button>
+          </div>
+          {begin.isError ? (
+            <p className="cc-error mt-2" role="alert">
+              {begin.error instanceof Error
+                ? begin.error.message
+                : "Delivery could not be started. Nothing was changed."}
+            </p>
+          ) : null}
+        </section>
+      ) : null}
+    </>
   );
 }

@@ -1793,6 +1793,11 @@ export class SupervisedMissionService {
         "The outcome record cites this decision, so the brief and evidence stay fixed.",
       );
     }
+    if (mission.delivery) {
+      throw new Error(
+        "Delivery is building this decision, so the brief and evidence stay fixed. Start a follow-up case to change them.",
+      );
+    }
   }
 }
 
