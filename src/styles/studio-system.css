@@ -1,0 +1,504 @@
+/* Hallmark · genre: modern-minimal · macrostructure: Workbench (app) + Long Document (content)
+ * design-system: design.md · designed-as-app · theme: custom (tuned to the homepage foundation)
+ * paper oklch(98.2% 0.004 265) · accent oklch(50% 0.17 275) indigo · Albert Sans + Inter
+ * axes: light / grotesk-sans / cool
+ */
+
+/* Tokens are scoped to .sx so they never leak into marketing or unmigrated screens. */
+.sx {
+  --sx-paper: oklch(98.2% 0.004 265);
+  --sx-surface: oklch(100% 0 0);
+  --sx-sunken: oklch(96% 0.008 265);
+  --sx-ink: oklch(29% 0.05 265);
+  --sx-ink-2: oklch(43% 0.035 265);
+  --sx-muted: oklch(52% 0.025 265);
+  --sx-rule: oklch(90% 0.012 265);
+  --sx-rule-strong: oklch(82% 0.015 265);
+  --sx-accent: oklch(50% 0.17 275);
+  --sx-accent-hover: oklch(44% 0.16 275);
+  --sx-accent-ink: oklch(99% 0 0);
+  --sx-accent-soft: oklch(95.5% 0.025 275);
+  --sx-waiting: oklch(50% 0.12 65);
+  --sx-waiting-soft: oklch(96.5% 0.04 85);
+  --sx-done: oklch(46% 0.1 155);
+  --sx-done-soft: oklch(96.5% 0.03 155);
+  --sx-danger: oklch(50% 0.17 27);
+  --sx-danger-soft: oklch(96.5% 0.03 27);
+  --sx-focus: var(--sx-accent);
+  --sx-shadow-float: 0 12px 32px oklch(29% 0.05 265 / 0.12);
+
+  --sx-font-display: "Albert Sans", Inter, ui-sans-serif, system-ui, sans-serif;
+  --sx-font-body: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --sx-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --sx-text-xs: 0.75rem;
+  --sx-text-sm: 0.875rem;
+  --sx-text-md: 1rem;
+  --sx-text-lg: 1.125rem;
+  --sx-text-xl: 1.375rem;
+  --sx-text-2xl: 1.75rem;
+  --sx-text-display: clamp(1.6rem, 1.2rem + 1.4vw, 2.25rem);
+
+  --sx-space-3xs: 0.25rem;
+  --sx-space-2xs: 0.5rem;
+  --sx-space-xs: 0.75rem;
+  --sx-space-sm: 1rem;
+  --sx-space-md: 1.5rem;
+  --sx-space-lg: 2rem;
+  --sx-space-xl: 3rem;
+  --sx-space-2xl: 4rem;
+
+  --sx-radius-control: 8px;
+  --sx-radius-panel: 12px;
+  --sx-radius-pill: 999px;
+  --sx-measure: 68ch;
+
+  --sx-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --sx-dur: 180ms;
+
+  background: var(--sx-paper);
+  color: var(--sx-ink);
+  font-family: var(--sx-font-body);
+  font-size: var(--sx-text-md);
+  line-height: 1.55;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Element rules apply only inside the system's own containers: legacy screens rendered in the
+ * workspace keep their own colours until they move onto these tokens. */
+:where(.sx-case-head, .sx-surface-head, .sx-step-heading, .sx-doc, .sx-gate)
+  :where(h1, h2, h3, h4) {
+  font-family: var(--sx-font-display);
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  color: var(--sx-ink);
+  margin: 0;
+  min-width: 0;
+}
+
+:where(.sx-case-head, .sx-surface-head, .sx-step-heading, .sx-doc, .sx-gate) :where(p) {
+  margin: 0;
+}
+
+:where(.sx-doc, .sx-gate) :where(a:not(.sx-btn)) {
+  color: var(--sx-accent);
+  text-underline-offset: 3px;
+}
+
+.sx :where(button, a, select, input, textarea, summary):focus-visible {
+  outline: 2px solid var(--sx-focus);
+  outline-offset: 2px;
+}
+
+.sx-mono {
+  font-family: var(--sx-font-mono);
+  font-size: 0.92em;
+}
+
+.sx-muted {
+  color: var(--sx-muted);
+}
+
+/* ── Buttons: one primary per view, verb-first ─────────────────────────── */
+.sx-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sx-space-2xs);
+  min-height: 2.5rem;
+  padding: var(--sx-space-2xs) var(--sx-space-sm);
+  border-radius: var(--sx-radius-control);
+  border: 1px solid var(--sx-rule-strong);
+  background: var(--sx-surface);
+  color: var(--sx-ink);
+  font: 500 var(--sx-text-sm) / 1.2 var(--sx-font-body);
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--sx-dur) var(--sx-ease-out);
+}
+.sx-btn:hover {
+  background: var(--sx-sunken);
+}
+.sx-btn:active {
+  transform: translateY(1px);
+}
+.sx-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.sx-btn-primary {
+  background: var(--sx-accent);
+  border-color: var(--sx-accent);
+  color: var(--sx-accent-ink);
+}
+.sx-btn-primary:hover {
+  background: var(--sx-accent-hover);
+}
+
+/* ── Status vocabulary: a word beside every mark ───────────────────────── */
+.sx-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sx-space-3xs);
+  font-size: var(--sx-text-xs);
+  font-weight: 500;
+  color: var(--sx-ink-2);
+  white-space: nowrap;
+}
+.sx-status::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--sx-radius-pill);
+  border: 1.5px solid currentColor;
+}
+.sx-status[data-state="done"] {
+  color: var(--sx-done);
+}
+.sx-status[data-state="done"]::before {
+  background: currentColor;
+}
+.sx-status[data-state="next"],
+.sx-status[data-state="current"] {
+  color: var(--sx-accent);
+}
+.sx-status[data-state="waiting"] {
+  color: var(--sx-waiting);
+}
+.sx-status[data-state="waiting"]::before {
+  background: currentColor;
+}
+.sx-status[data-state="blocked"],
+.sx-status[data-state="failed"] {
+  color: var(--sx-danger);
+}
+
+/* ── Case header ───────────────────────────────────────────────────────── */
+.sx-case {
+  display: grid;
+  gap: var(--sx-space-md);
+  padding-block: var(--sx-space-md) var(--sx-space-xl);
+}
+.sx-case-head {
+  display: grid;
+  gap: var(--sx-space-2xs);
+  padding-bottom: var(--sx-space-md);
+  border-bottom: 1px solid var(--sx-rule);
+}
+.sx-case-head h1 {
+  font-size: var(--sx-text-display);
+  max-width: 32ch;
+}
+.sx-case-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sx-space-2xs) var(--sx-space-sm);
+  font-size: var(--sx-text-sm);
+  color: var(--sx-ink-2);
+}
+.sx-waiting-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sx-space-3xs);
+  padding: 0.125rem var(--sx-space-2xs);
+  border-radius: var(--sx-radius-pill);
+  background: var(--sx-waiting-soft);
+  color: var(--sx-waiting);
+  font-weight: 500;
+  border: 0;
+  font-size: var(--sx-text-sm);
+  cursor: pointer;
+}
+
+/* ── Decision path stepper ─────────────────────────────────────────────── */
+.sx-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sx-space-2xs);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: sx-step;
+}
+.sx-steps li {
+  counter-increment: sx-step;
+  min-width: 0;
+}
+.sx-steps button {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sx-space-2xs);
+  padding: var(--sx-space-2xs) var(--sx-space-sm) var(--sx-space-2xs) var(--sx-space-2xs);
+  border: 1px solid var(--sx-rule);
+  border-radius: var(--sx-radius-pill);
+  background: var(--sx-surface);
+  color: var(--sx-ink-2);
+  font: 500 var(--sx-text-sm) / 1.2 var(--sx-font-body);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.sx-steps button::before {
+  content: counter(sx-step);
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--sx-radius-pill);
+  border: 1px solid var(--sx-rule-strong);
+  font: 500 var(--sx-text-xs) / 1 var(--sx-font-mono);
+}
+.sx-steps [data-state="done"] button::before {
+  content: "✓";
+  border-color: var(--sx-done);
+  color: var(--sx-done);
+}
+.sx-steps [aria-current="step"] {
+  border-color: var(--sx-accent);
+  background: var(--sx-accent-soft);
+  color: var(--sx-ink);
+}
+.sx-step-heading {
+  display: grid;
+  gap: var(--sx-space-3xs);
+}
+.sx-step-heading h2 {
+  font-size: var(--sx-text-2xl);
+}
+.sx-step-heading p {
+  color: var(--sx-ink-2);
+  max-width: var(--sx-measure);
+}
+.sx-step-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--sx-space-2xs);
+  padding-top: var(--sx-space-md);
+  border-top: 1px solid var(--sx-rule);
+}
+.sx-gate {
+  display: grid;
+  gap: var(--sx-space-2xs);
+  justify-items: start;
+  padding: var(--sx-space-md);
+  border: 1px dashed var(--sx-rule-strong);
+  border-radius: var(--sx-radius-panel);
+  color: var(--sx-ink-2);
+}
+.sx-gate strong {
+  color: var(--sx-ink);
+}
+
+/* ── Case workspace: rail + work surface (Workbench) ───────────────────── */
+.sx-workspace {
+  display: grid;
+  grid-template-columns: 14rem minmax(0, 1fr);
+  gap: var(--sx-space-lg);
+  align-items: start;
+}
+.sx-rail {
+  position: sticky;
+  top: var(--sx-space-sm);
+  display: grid;
+  gap: var(--sx-space-sm);
+  min-width: 0;
+}
+.sx-rail-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+.sx-rail-list button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sx-space-2xs);
+  padding: var(--sx-space-2xs) var(--sx-space-xs);
+  border: 0;
+  border-radius: var(--sx-radius-control);
+  background: transparent;
+  color: var(--sx-ink-2);
+  font: 500 var(--sx-text-sm) / 1.3 var(--sx-font-body);
+  text-align: left;
+  cursor: pointer;
+}
+.sx-rail-list button:hover {
+  background: var(--sx-sunken);
+  color: var(--sx-ink);
+}
+.sx-rail-list button[aria-current="page"] {
+  background: var(--sx-accent-soft);
+  color: var(--sx-ink);
+  box-shadow: inset 2px 0 0 var(--sx-accent);
+}
+.sx-rail-count {
+  font: 500 var(--sx-text-xs) / 1 var(--sx-font-mono);
+  color: var(--sx-muted);
+}
+.sx-rail-count[data-waiting] {
+  color: var(--sx-waiting);
+}
+.sx-rail-sub {
+  font-size: var(--sx-text-xs);
+  color: var(--sx-muted);
+  padding-inline: var(--sx-space-xs);
+}
+.sx-rail-mobile {
+  display: none;
+}
+.sx-surface {
+  display: grid;
+  gap: var(--sx-space-md);
+  min-width: 0;
+}
+.sx-surface-head {
+  display: grid;
+  gap: var(--sx-space-3xs);
+}
+.sx-surface-head h2 {
+  font-size: var(--sx-text-2xl);
+}
+.sx-surface-head p {
+  color: var(--sx-ink-2);
+  max-width: var(--sx-measure);
+}
+
+/* ── Long Document content (timeline, evidence log, package) ───────────── */
+.sx-doc {
+  display: grid;
+  gap: var(--sx-space-lg);
+  max-width: 52rem;
+}
+.sx-doc section {
+  display: grid;
+  gap: var(--sx-space-xs);
+}
+.sx-doc h3 {
+  font-size: var(--sx-text-lg);
+}
+.sx-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--sx-rule);
+}
+.sx-list > li {
+  display: grid;
+  gap: var(--sx-space-3xs);
+  padding-block: var(--sx-space-xs);
+  border-bottom: 1px solid var(--sx-rule);
+  min-width: 0;
+}
+.sx-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sx-space-3xs) var(--sx-space-sm);
+}
+.sx-row strong {
+  font-weight: 600;
+  min-width: 0;
+}
+.sx-detail {
+  color: var(--sx-ink-2);
+  font-size: var(--sx-text-sm);
+  max-width: var(--sx-measure);
+}
+.sx-doc dl {
+  display: grid;
+  grid-template-columns: minmax(8rem, max-content) minmax(0, 1fr);
+  gap: var(--sx-space-3xs) var(--sx-space-sm);
+  margin: 0;
+}
+.sx-doc dd {
+  margin: 0;
+  min-width: 0;
+}
+.sx-label {
+  display: inline-block;
+  padding: 0.0625rem var(--sx-space-2xs);
+  border-radius: var(--sx-radius-pill);
+  border: 1px solid var(--sx-rule-strong);
+  font-size: var(--sx-text-xs);
+  font-weight: 500;
+  color: var(--sx-ink-2);
+  white-space: nowrap;
+}
+.sx-label[data-kind="source-backed"] {
+  border-color: var(--sx-done);
+  color: var(--sx-done);
+}
+.sx-label[data-kind="unverified"] {
+  border-color: var(--sx-waiting);
+  color: var(--sx-waiting);
+}
+.sx-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sx-space-2xs);
+}
+.sx-input {
+  min-height: 2.5rem;
+  width: 100%;
+  max-width: 24rem;
+  padding: var(--sx-space-2xs) var(--sx-space-xs);
+  border: 1px solid var(--sx-rule-strong);
+  border-radius: var(--sx-radius-control);
+  background: var(--sx-surface);
+  color: var(--sx-ink);
+  font: var(--sx-text-sm) / 1.3 var(--sx-font-body);
+}
+.sx-empty {
+  color: var(--sx-muted);
+  font-size: var(--sx-text-sm);
+}
+
+@media (max-width: 760px) {
+  .sx-workspace {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sx-space-md);
+  }
+  .sx-rail {
+    display: none;
+  }
+  .sx-rail-mobile {
+    display: block;
+    border: 1px solid var(--sx-rule);
+    border-radius: var(--sx-radius-panel);
+    background: var(--sx-surface);
+    padding: var(--sx-space-2xs) var(--sx-space-xs);
+  }
+  .sx-rail-mobile summary {
+    cursor: pointer;
+    font-weight: 500;
+    font-size: var(--sx-text-sm);
+  }
+  .sx-steps button {
+    white-space: normal;
+  }
+  .sx-doc dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sx-doc dt {
+    margin-top: var(--sx-space-2xs);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sx *,
+  .sx *::before {
+    transition-duration: 120ms !important;
+    transition-property: opacity !important;
+  }
+  .sx-btn:active {
+    transform: none;
+  }
+}
