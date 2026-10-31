@@ -1,0 +1,294 @@
+/* Screen 8 — Team formation */
+.tf {
+  --tf-ink: #f8fafc;
+  --tf-muted: #cbd5e1;
+  --tf-border: #334155;
+  --tf-card: rgba(17, 24, 39, 0.78);
+  --tf-indigo: #6366f1;
+  --tf-cyan: #22d3ee;
+  --tf-violet: #a78bfa;
+  --tf-accent: #059669;
+  display: grid;
+  gap: 1rem;
+  color: var(--tf-ink);
+  font-family: "DM Sans", Inter, system-ui, sans-serif;
+}
+
+.tf-head {
+  padding: 1.15rem 1.25rem;
+  border-radius: 12px;
+  border: 1px solid var(--tf-border);
+  background: var(--tf-card);
+  backdrop-filter: blur(12px);
+}
+
+.tf-aria {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  margin-bottom: 0.85rem;
+}
+
+.tf-avatar-aria {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #000;
+  background: linear-gradient(135deg, var(--tf-cyan), var(--tf-indigo));
+  flex-shrink: 0;
+}
+
+.tf-aria strong {
+  display: block;
+  font-size: 0.82rem;
+}
+
+.tf-aria span {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--tf-muted);
+}
+
+.tf-head h2 {
+  margin: 0 0 0.55rem;
+  font-family: "Space Grotesk", Inter, sans-serif;
+  font-size: clamp(1.4rem, 2.6vw, 1.85rem);
+  letter-spacing: -0.02em;
+}
+
+.tf-intro {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--tf-muted);
+}
+
+.tf-disclosure {
+  margin: 0.75rem 0 0;
+  font-size: 0.78rem;
+  color: var(--tf-muted);
+  line-height: 1.45;
+}
+
+.tf-stage {
+  position: relative;
+  border-radius: 12px;
+  border: 1px solid var(--tf-border);
+  background:
+    radial-gradient(circle at 50% 40%, rgba(99, 102, 241, 0.14), transparent 45%),
+    rgba(15, 23, 42, 0.45);
+  overflow: hidden;
+  padding: 1rem;
+}
+
+.tf-constellation {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+.tf-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: 0.7rem;
+}
+
+.tf-card {
+  text-align: left;
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.9rem;
+  border-radius: 12px;
+  border: 1px solid var(--tf-border);
+  background: rgba(17, 24, 39, 0.82);
+  color: inherit;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.tf-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(99, 102, 241, 0.5);
+}
+
+.tf-card:focus-visible {
+  outline: 2px solid var(--tf-indigo);
+  outline-offset: 2px;
+}
+
+.tf-card[data-assigned="false"] {
+  opacity: 0.72;
+  border-style: dashed;
+}
+
+.tf-card-top {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.tf-avatar {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: rgba(99, 102, 241, 0.22);
+  color: var(--tf-cyan);
+  border: 1px solid rgba(34, 211, 238, 0.25);
+}
+
+.tf-card h3 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-family: "Space Grotesk", Inter, sans-serif;
+}
+
+.tf-card .tf-role {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--tf-violet);
+  font-weight: 600;
+}
+
+.tf-card p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--tf-muted);
+  line-height: 1.4;
+}
+
+.tf-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--tf-muted);
+}
+
+.tf-status i {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: #64748b;
+  display: block;
+}
+
+.tf-status[data-state="working"] i {
+  background: var(--tf-indigo);
+}
+.tf-status[data-state="complete"] i {
+  background: var(--tf-accent);
+}
+.tf-status[data-state="blocked"] i {
+  background: #fbbf24;
+}
+.tf-status[data-state="not_assigned"] i {
+  background: #475569;
+}
+
+.tf-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.tf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.6rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.tf-btn-primary {
+  background: var(--tf-accent);
+  color: #000;
+}
+
+.tf-btn-ghost {
+  background: transparent;
+  color: var(--tf-ink);
+  border-color: var(--tf-indigo);
+}
+
+.tf-btn:focus-visible {
+  outline: 2px solid var(--tf-indigo);
+  outline-offset: 2px;
+}
+
+.tf-workspace {
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.tf-workspace h3 {
+  margin: 0;
+  font-family: "Space Grotesk", Inter, sans-serif;
+}
+
+.tf-workspace section h4 {
+  margin: 0 0 0.35rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tf-cyan);
+}
+
+.tf-workspace ul {
+  margin: 0;
+  padding-left: 1rem;
+  color: var(--tf-muted);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.tf-sample {
+  display: inline-block;
+  margin-left: 0.3rem;
+  padding: 0.05rem 0.3rem;
+  border-radius: 4px;
+  background: rgba(251, 191, 36, 0.14);
+  color: #fbbf24;
+  font-size: 0.58rem;
+  letter-spacing: 0.05em;
+  vertical-align: middle;
+}
+
+@media (max-width: 720px) {
+  .tf-grid {
+    grid-template-columns: 1fr;
+  }
+  .tf-actions .tf-btn {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tf-card:hover {
+    transform: none;
+  }
+  .tf-constellation {
+    opacity: 0.25;
+  }
+}

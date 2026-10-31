@@ -35,6 +35,7 @@ const ADVANCED_NAV = [
 type NavItem = (typeof PRIMARY_NAV)[number] | (typeof ADVANCED_NAV)[number];
 
 const EXECUTIVE_FONT_LINK_ID = "ps-executive-fonts";
+const STUDIO_ENTRY_FONT_LINK_ID = "ps-studio-entry-fonts";
 
 function navLinkActive(item: NavItem, pathname: string, _locationHash: string): boolean {
   const { to, label } = item;
@@ -117,6 +118,8 @@ export function CommandShell({
   const executiveMode = isExecutiveStudioRoute(pathname);
   const advancedActive = ADVANCED_NAV.some((item) => navLinkActive(item, pathname, locationHash));
 
+  const studioEntryMode = foyerMode && pathname === "/command";
+
   useEffect(() => {
     if (!executiveMode || typeof document === "undefined") return;
     if (document.getElementById(EXECUTIVE_FONT_LINK_ID)) return;
@@ -127,6 +130,17 @@ export function CommandShell({
       "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap";
     document.head.appendChild(link);
   }, [executiveMode]);
+
+  useEffect(() => {
+    if (!studioEntryMode || typeof document === "undefined") return;
+    if (document.getElementById(STUDIO_ENTRY_FONT_LINK_ID)) return;
+    const link = document.createElement("link");
+    link.id = STUDIO_ENTRY_FONT_LINK_ID;
+    link.rel = "stylesheet";
+    link.href =
+      "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap";
+    document.head.appendChild(link);
+  }, [studioEntryMode]);
   const breadcrumb = isStudioHome ? (
     <span>Studio</span>
   ) : (
@@ -139,7 +153,9 @@ export function CommandShell({
     <div
       className={`dxa cc-shell psi-workspace${networkMode ? " ps-network-shell" : ""}${
         hideHeading ? " ps-shell-foyer" : ""
-      }${foyerMode ? " ps-shell-foyer-calm" : ""}${executiveMode ? " ps-executive" : ""}`}
+      }${foyerMode ? " ps-shell-foyer-calm" : ""}${executiveMode ? " ps-executive" : ""}${
+        studioEntryMode ? " ps-studio-entry" : ""
+      }`}
       onKeyDown={(event) => {
         if (event.key === "Escape") setOpen(false);
       }}

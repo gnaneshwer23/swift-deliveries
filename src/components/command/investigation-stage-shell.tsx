@@ -4,6 +4,7 @@ import { InvestigationExperience } from "@/components/command/investigation-expe
 import { InvestigationTeamFormation } from "@/components/command/investigation-team-formation";
 import { InvestigationPmBriefingStage } from "@/components/command/investigation-pm-briefing-stage";
 import { IndigoCaseStudioShell } from "@/components/command/indigo-case-studio-shell";
+import { MissionDashboardScreen } from "@/components/command/mission-dashboard-screen";
 import { ProjectRoomNav } from "@/components/command/project-room-nav";
 import {
   deriveInvestigationStagePhase,
@@ -13,19 +14,64 @@ import { InvestigationScopeReview } from "@/components/command/investigation-sco
 import type { MissionTheatreActions } from "@/components/command/mission-theatre";
 import type { SupervisedMission } from "@/lib/pilot-mission/types";
 
-type JourneyStep = { id: number; title: string; description: string };
+type JourneyStep = {
+  id: number;
+  title: string;
+  description: string;
+  /** Studio screen label for the interactive 10-screen flow. */
+  screenLabel: string;
+  continueLabel: string;
+};
 const JOURNEY: JourneyStep[] = [
-  { id: 1, title: "Your idea", description: "Shape the brief and its constraints" },
-  { id: 2, title: "AI analysis", description: "Research, evidence, risks and options" },
-  { id: 3, title: "PM briefing", description: "Review the recommendation and roadmap" },
+  {
+    id: 1,
+    title: "Your idea",
+    description: "Shape the brief and its constraints",
+    screenLabel: "Screens 3–4 · Idea & clarify",
+    continueLabel: "Continue to investigation",
+  },
+  {
+    id: 2,
+    title: "Investigation",
+    description: "Product intelligence map, evidence and risks",
+    screenLabel: "Screen 5 · Intelligence map",
+    continueLabel: "Continue to PM briefing",
+  },
+  {
+    id: 3,
+    title: "PM briefing",
+    description: "Recommendation, options and next decision",
+    screenLabel: "Screen 6 · PM briefing",
+    continueLabel: "Continue to discuss & decide",
+  },
   {
     id: 4,
     title: "Discuss & decide",
-    description: "Challenge assumptions and approve a direction",
+    description: "Challenge Aria’s recommendation and save your decision",
+    screenLabel: "Screen 7 · Discussion",
+    continueLabel: "Continue to meet the team",
   },
-  { id: 5, title: "Meet the team", description: "See the specialists selected for this mission" },
-  { id: 6, title: "Work in progress", description: "Follow recorded tasks, outputs and blockers" },
-  { id: 7, title: "Iterate & deliver", description: "Review updates, decisions and project files" },
+  {
+    id: 5,
+    title: "Meet the team",
+    description: "Specialists selected for the approved first phase · open a card for Screen 9",
+    screenLabel: "Screens 8–9 · Team & agent workspace",
+    continueLabel: "Continue to mission dashboard",
+  },
+  {
+    id: 6,
+    title: "Mission dashboard",
+    description: "One place for stage, agents, outputs, approvals and risks",
+    screenLabel: "Screen 10 · Mission dashboard",
+    continueLabel: "Continue to iterate & deliver",
+  },
+  {
+    id: 7,
+    title: "Iterate & deliver",
+    description: "Review updates, decisions and project files",
+    screenLabel: "Delivery record",
+    continueLabel: "You’re on the last project step",
+  },
 ];
 
 function phaseStep(phase: InvestigationStagePhase): number {
@@ -75,6 +121,8 @@ export function InvestigationStageShell({
   useEffect(() => setSelectedStep(activeStep), [activeStep]);
   const step = JOURNEY.find((item) => item.id === selectedStep) ?? JOURNEY[0]!;
   const go = (next: number) => setSelectedStep(Math.max(1, Math.min(7, next)));
+  const canAdvance = selectedStep < 7 && (selectedStep < 5 || decisionRecorded);
+  const nextStep = JOURNEY.find((item) => item.id === selectedStep + 1) ?? null;
 
   return (
     <div className="ps-journey-dashboard">
@@ -85,14 +133,14 @@ export function InvestigationStageShell({
           </p>
           <h1>{mission.brief.question}</h1>
           <p className="cc-muted text-sm">
-            One shared project space. Revisit earlier decisions at any time; each new stage builds
-            on the same brief and evidence.
+            One shared project space. Use the left rail or Back / Continue to move between Studio
+            screens. Each stage builds on the same brief and evidence.
           </p>
         </div>
         <div className="ps-journey-current">
-          <span>PROJECT STAGE</span>
+          <span>{step.screenLabel}</span>
           <strong>{step.title}</strong>
-          <small>Step {selectedStep} of 7</small>
+          <small>Step {selectedStep} of 7 · interactive path</small>
         </div>
       </header>
 
@@ -154,7 +202,9 @@ export function InvestigationStageShell({
         <main className="ps-journey-workspace">
           <div className="ps-journey-step-heading">
             <div>
-              <p className="cc-kicker">STEP {selectedStep} · PROJECT JOURNEY</p>
+              <p className="cc-kicker">
+                STEP {selectedStep} · {step.screenLabel}
+              </p>
               <h2>{step.title}</h2>
               <p>{step.description}</p>
             </div>
@@ -169,11 +219,16 @@ export function InvestigationStageShell({
               </button>
               <button
                 type="button"
-                className="cc-btn cc-btn-secondary"
+                className="cc-btn cc-btn-primary"
                 onClick={() => go(selectedStep + 1)}
-                disabled={selectedStep === 7 || (selectedStep >= 5 && !decisionRecorded)}
+                disabled={!canAdvance}
+                title={
+                  !canAdvance && selectedStep >= 5 && !decisionRecorded
+                    ? "Record a decision first to open the team and dashboard"
+                    : undefined
+                }
               >
-                Next →
+                {canAdvance && nextStep ? `${step.continueLabel} →` : "End of path"}
               </button>
             </div>
           </div>
@@ -244,7 +299,23 @@ export function InvestigationStageShell({
           {selectedStep === 3 ? (
             <section className="ps-journey-panel" aria-label="PM briefing">
               {planApproved && (mission.proposal || mission.evidence.length) ? (
-                <InvestigationPmBriefingStage mission={mission} />
+                <InvestigationPmBriefingStage
+                  mission={mission}
+                  missionId={missionId}
+                  onContinueToDecision={(intent) => {
+                    // Discuss opens an in-place Aria sheet; other actions move to Step 4.
+                    if (intent === "discuss") return;
+                    go(4);
+                    if (typeof document !== "undefined") {
+                      window.setTimeout(() => {
+                        document.getElementById("mission-next-action")?.scrollIntoView({
+                          behavior: "smooth",
+                          block: "start",
+                        });
+                      }, 50);
+                    }
+                  }}
+                />
               ) : (
                 <>
                   <p className="cc-kicker">BRIEFING FOLLOWS ANALYSIS</p>
@@ -278,7 +349,7 @@ export function InvestigationStageShell({
           {selectedStep === 5 ? (
             <section className="ps-journey-panel" aria-label="Team formation">
               {decisionRecorded ? (
-                <InvestigationTeamFormation mission={mission} />
+                <InvestigationTeamFormation mission={mission} onBeginDelivery={() => go(6)} />
               ) : (
                 <div className="ps-journey-gate">
                   <strong>Team formation follows your decision</strong>
@@ -295,21 +366,20 @@ export function InvestigationStageShell({
           ) : null}
 
           {selectedStep === 6 ? (
-            <section className="ps-journey-panel" aria-label="Background execution">
+            <section className="ps-journey-panel" aria-label="Mission dashboard">
               {decisionRecorded ? (
-                <>
-                  <p className="cc-kicker">WORKSPACE ACTIVITY</p>
-                  <p className="cc-muted text-sm">
-                    Recorded work, outputs and blockers are shown as they become available. This
-                    view uses the project’s saved activity; it does not invent live agent progress.
-                  </p>
-                  <ProjectRoomNav mission={mission} />
-                  {theatre}
-                </>
+                <MissionDashboardScreen
+                  mission={mission}
+                  downloadsSlot={downloadsSlot}
+                  onOpenTeam={() => go(5)}
+                />
               ) : (
                 <div className="ps-journey-gate">
-                  <strong>Work begins after the team and plan are approved</strong>
-                  <p>Recorded tasks and outputs will appear here when available.</p>
+                  <strong>The mission dashboard opens after your decision</strong>
+                  <p>
+                    Approve a direction and meet the team first. The dashboard then shows recorded
+                    stage, agents, outputs and blockers — never invented live progress.
+                  </p>
                   <button type="button" className="cc-btn cc-btn-secondary" onClick={() => go(5)}>
                     Meet the team →
                   </button>
@@ -351,6 +421,28 @@ export function InvestigationStageShell({
               </p>
             </section>
           ) : null}
+
+          <footer
+            className="ps-journey-controls ps-journey-footer"
+            aria-label="Move between screens"
+          >
+            <button
+              type="button"
+              className="cc-btn cc-btn-secondary"
+              onClick={() => go(selectedStep - 1)}
+              disabled={selectedStep === 1}
+            >
+              ← Previous screen
+            </button>
+            <button
+              type="button"
+              className="cc-btn cc-btn-primary"
+              onClick={() => go(selectedStep + 1)}
+              disabled={!canAdvance}
+            >
+              {canAdvance && nextStep ? `${step.continueLabel} →` : "Last project step"}
+            </button>
+          </footer>
         </main>
       </div>
     </div>
