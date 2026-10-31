@@ -1,7 +1,6 @@
 import type { ProductBrief } from "./marketing/product-resources";
 import {
   DEFAULT_MISSION_OUTCOME,
-  RESEARCH_FIRST_CONSTRAINT,
   RESEARCH_REFINE_AUDIENCE,
 } from "./pilot-mission/pm-brief";
 export type MissionIntakeDraft = {
@@ -67,7 +66,7 @@ export function restoreMissionIntake(
   if (local) return local;
   return {
     question: question?.slice(0, 2000) ?? "",
-    audience: RESEARCH_REFINE_AUDIENCE,
+    audience: "",
     outcome: DEFAULT_MISSION_OUTCOME,
     constraints: "",
     intakeEvidenceNote: "",
