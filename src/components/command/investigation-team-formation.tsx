@@ -93,7 +93,13 @@ function agentsForMission(mission: SupervisedMission): FormationAgent[] {
     inputs: task.uses,
     outputs: [task.produces],
     evidence: handoffEvidence(mission, task.capabilityId, task.ownerLabel),
-    status: task.status === "completed" ? "complete" : task.status === "blocked" ? "blocked" : task.status === "ready" ? "working" : "planned",
+    status: statusFromEvents(
+      mission,
+      task.capabilityId,
+      task.ownerLabel,
+      task.status === "blocked" || task.status === "awaiting_approval",
+      [task.key],
+    ),
     question: task.blockedReason,
   }));
 }
@@ -119,7 +125,6 @@ export function InvestigationTeamFormation({ mission }: { mission: SupervisedMis
   const updates = [...(mission.activity ?? [])].slice(-6).reverse();
   const taskCount = mission.continuationPlan?.roadmap.length ?? mission.team?.tasks.filter((task) => task.actor === "specialist").length ?? 0;
   const blockerCount = mission.continuationPlan?.roadmap.filter((step) => step.blocked).length ?? mission.team?.tasks.filter((task) => task.status === "blocked").length ?? 0;
-  const workingCount = agents.filter((agent) => agent.status === "working").length;
   const recordedUpdatesCount = updates.length;
   const suppliedCount = mission.evidence.filter((item) => item.classification === "supplied").length;
   const gapCount = mission.evidence.filter((item) => item.classification === "gap").length;
@@ -136,8 +141,8 @@ export function InvestigationTeamFormation({ mission }: { mission: SupervisedMis
       </header>
 
       <p className="ps-team-formation-disclosure">
-        DeliverX has a larger specialist catalogue. This screen shows only roles in this mission’s
-        approved continuation plan. Planned roles have not started work; status changes appear only
+        DeliverX has a larger specialist catalogue. This screen shows only roles selected for this mission’s
+        authorised path. Planned roles have not started work; status changes appear only
         when worker events are saved to the mission record.
       </p>
 
@@ -238,7 +243,7 @@ export function InvestigationTeamFormation({ mission }: { mission: SupervisedMis
               </div>
 
               <p className="ps-team-agent-actions">
-                <a className="cc-btn cc-btn-secondary" href="#conversation-title">Ask the PM about this role</a>
+                <a className="cc-btn cc-btn-secondary" href="#ps-team-ask-pm">Ask the PM about this role</a>
                 <a className="cc-btn cc-btn-secondary" href="#pr-artefacts">View project work</a>
               </p>
             </article>
