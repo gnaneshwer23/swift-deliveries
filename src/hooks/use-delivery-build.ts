@@ -7,6 +7,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef } from "react";
 import type { CaseRoomBuild } from "@/components/command/case-room";
 import { buildDeliveryRoom } from "@/lib/pilot-mission/delivery-room";
+import { buildWorkroom } from "@/lib/pilot-mission/workroom";
 import { decideStageGate, runMissionStep } from "@/lib/workforce.functions";
 import { missionBundleQuery } from "@/lib/workforce-queries";
 import type { MissionBundle } from "@/lib/workforce/types";
@@ -31,6 +32,7 @@ export function useDeliveryBuild(wfMissionId: string | null): CaseRoomBuild | un
     },
   });
   const room = useMemo(() => (query.data ? buildDeliveryRoom(query.data) : null), [query.data]);
+  const workroom = useMemo(() => (query.data ? buildWorkroom(query.data) : null), [query.data]);
 
   const merge = (next: MissionBundle) =>
     qc.setQueryData(options.queryKey, (prev) => (prev ? { ...prev, ...next } : prev));
@@ -87,6 +89,7 @@ export function useDeliveryBuild(wfMissionId: string | null): CaseRoomBuild | un
   const error = query.error ?? decide.error;
   return {
     room,
+    workroom,
     error: error instanceof Error ? error.message : error ? "The build could not be loaded." : null,
     deciding: decide.isPending,
     onDecideGate: (taskId, decision, note) =>
