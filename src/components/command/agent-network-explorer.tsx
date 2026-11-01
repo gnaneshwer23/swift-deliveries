@@ -221,8 +221,8 @@ export function AgentNetworkExplorer({ embedded = false }: { embedded?: boolean 
                 {accountOpen && (
                   <div className="an-account-menu">
                     <strong>{name}</strong>
-                    <Link to="/onboarding" onClick={() => setAccountOpen(false)}>
-                      Edit workspace setup
+                    <Link to="/profile" onClick={() => setAccountOpen(false)}>
+                      Profile &amp; preferences
                     </Link>
                     <button onClick={() => void signOut()}>Sign out</button>
                   </div>
