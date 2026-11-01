@@ -34,13 +34,16 @@ export function useExplainMode(): { on: boolean; set: (on: boolean) => void } {
     };
   }, []);
   const set = useCallback((on: boolean) => {
+    let persisted = false;
     try {
       window.localStorage.setItem(KEY, on ? "on" : "off");
+      persisted = true;
     } catch {
-      /* Optional preference. */
+      /* Optional preference: without storage the switch still works for this visit. */
     }
     setChoice(on);
-    window.dispatchEvent(new Event(EVENT));
+    // Other tabs and components re-read storage; only tell them when it was saved.
+    if (persisted) window.dispatchEvent(new Event(EVENT));
   }, []);
   const on = choice ?? explainByDefault(profile.data?.goal, profile.data?.role);
   return { on, set };

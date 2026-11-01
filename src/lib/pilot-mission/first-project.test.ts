@@ -36,6 +36,13 @@ describe("buildFirstProject", () => {
     expect(f.next?.id).toBe("decision");
   });
 
+  it("keeps describing the idea as the next step for an untitled project", () => {
+    const f = buildFirstProject([p({ question: "  " })])!;
+    expect(f.steps[0]!.done).toBe(false);
+    expect(f.next?.id).toBe("idea");
+    expect(f.projectName).toBe("Untitled project");
+  });
+
   it("follows the most recently updated live project", () => {
     const f = buildFirstProject([
       p({ id: "old", updatedAt: "2026-10-01T00:00:00Z" }),

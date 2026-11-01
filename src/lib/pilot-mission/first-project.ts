@@ -38,7 +38,7 @@ const STEPS: Array<Omit<FirstProjectStep, "done"> & { test: (p: FirstProjectSour
       id: "idea",
       label: "Describe your idea",
       why: "One or two lines is enough. A clear question keeps the team’s research focused.",
-      test: () => true,
+      test: (p) => p.question.trim().length > 0,
     },
     {
       id: "plan",
