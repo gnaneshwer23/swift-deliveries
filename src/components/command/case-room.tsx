@@ -553,7 +553,12 @@ export function CaseRoom({
             {panel === "work" ? panels.work : null}
             {panel === "decide" ? panels.decide : null}
             {panel === "delivery" ? panels.delivery : null}
-            {panel === "workroom" && build?.workroom ? <Workroom model={build.workroom} /> : null}
+            {panel === "workroom" && build?.workroom ? (
+              <Workroom
+                model={build.workroom}
+                {...(gate ? { onReviewGate: () => setPanel("gate") } : {})}
+              />
+            ) : null}
             {panel === "gate" && gate && build ? (
               <GateReview
                 gate={gate}

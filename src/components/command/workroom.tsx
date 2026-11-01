@@ -8,7 +8,7 @@ import { AgentAvatar } from "@/components/command/agent-avatar";
 import { BUILD_STATUS_LABEL } from "@/lib/pilot-mission/delivery-room";
 import type { WorkCard, Workroom as WorkroomModel } from "@/lib/pilot-mission/workroom";
 
-type Tab = "board" | "timeline" | "team";
+type Tab = "inbox" | "board" | "timeline" | "team" | "quality";
 
 function Owner({ card, size = 24 }: { card: WorkCard; size?: number }) {
   return card.gate ? (
@@ -130,12 +130,17 @@ function WorkPlan({ card }: { card: WorkCard }) {
 
 export function Workroom({
   model,
-  initialTab = "board",
+  initialTab,
+  onReviewGate,
 }: {
   model: WorkroomModel;
   initialTab?: Tab;
+  /** Opens the gate review (the decision itself stays in the Room's gate sheet). */
+  onReviewGate?: () => void;
 }) {
-  const [tab, setTab] = useState<Tab>(initialTab);
+  const [tab, setTab] = useState<Tab>(
+    initialTab ?? (model.inbox.needsYou.length ? "inbox" : "board"),
+  );
   const first = model.cards.find((c) => c.column === "needs_you" || c.column === "working");
   const [openId, setOpenId] = useState<string | null>(
     first?.taskId ?? model.cards[0]?.taskId ?? null,
@@ -147,9 +152,14 @@ export function Workroom({
       <div className="wr-tabs" role="tablist" aria-label="Workroom views">
         {(
           [
+            [
+              "inbox",
+              `Inbox${model.inbox.needsYou.length ? ` · ${model.inbox.needsYou.length}` : ""}`,
+            ],
             ["board", "Board"],
             ["timeline", "Timeline"],
             ["team", "Team"],
+            ["quality", "Quality"],
           ] as const
         ).map(([id, label]) => (
           <button
@@ -169,6 +179,142 @@ export function Workroom({
           {model.usage.used} / {model.usage.budget} usage units
         </span>
       </div>
+
+      {tab === "inbox" ? (
+        <div
+          className="wr-inbox"
+          role="tabpanel"
+          id="wr-panel-inbox"
+          aria-labelledby="wr-tab-inbox"
+        >
+          <section>
+            <span className="room-mono">Needs you</span>
+            {model.inbox.needsYou.length ? (
+              <ul className="wr-needs">
+                {model.inbox.needsYou.map((item) => (
+                  <li key={item.taskId} data-kind={item.kind}>
+                    <div>
+                      <b>{item.title}</b>
+                      <p>{item.text}</p>
+                    </div>
+                    {item.kind === "gate" && onReviewGate ? (
+                      <button
+                        type="button"
+                        className="room-pill room-pill-primary"
+                        onClick={onReviewGate}
+                      >
+                        Review
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="room-pill"
+                        onClick={() => {
+                          setOpenId(item.taskId);
+                          setTab("board");
+                        }}
+                      >
+                        Open
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="wr-empty">Nothing needs you right now.</p>
+            )}
+          </section>
+          <section>
+            <span className="room-mono">Updates from the team</span>
+            {model.inbox.updates.length ? (
+              <ul className="wr-updates">
+                {model.inbox.updates.map((u) => (
+                  <li key={u.id}>
+                    <AgentAvatar name={u.who === "You" ? "Aria" : u.who} role={u.role} size={32} />
+                    <div>
+                      <p>{u.text}</p>
+                      <time dateTime={u.at}>
+                        {new Date(u.at).toLocaleString("en-GB", {
+                          day: "numeric",
+                          month: "short",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </time>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="wr-empty">No stage has finished yet.</p>
+            )}
+          </section>
+        </div>
+      ) : null}
+
+      {tab === "quality" ? (
+        <div
+          className="wr-quality"
+          role="tabpanel"
+          id="wr-panel-quality"
+          aria-labelledby="wr-tab-quality"
+        >
+          {model.quality.length ? (
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Output</th>
+                  <th scope="col">Made by</th>
+                  <th scope="col">How it was made</th>
+                  <th scope="col">Checks</th>
+                  <th scope="col">Labels</th>
+                </tr>
+              </thead>
+              <tbody>
+                {model.quality.map((q) => (
+                  <tr key={q.taskId}>
+                    <td>
+                      <b>{q.output}</b>
+                      <span>{q.stage}</span>
+                    </td>
+                    <td>
+                      {q.owner}
+                      <span>{q.role}</span>
+                    </td>
+                    <td data-simulated={q.simulated ? "true" : undefined}>{q.production}</td>
+                    <td>
+                      {q.check ? (
+                        <>
+                          <span
+                            className="wr-check"
+                            data-ok={q.check.passed === q.check.total ? "true" : "false"}
+                          >
+                            {q.check.passed}/{q.check.total}{" "}
+                            {q.check.kind === "contract" ? "sections" : "prototype checks"}
+                          </span>
+                          {q.check.problems.length ? (
+                            <span>{q.check.problems.join(" · ")}</span>
+                          ) : null}
+                        </>
+                      ) : (
+                        <span>No contract for this output</span>
+                      )}
+                    </td>
+                    <td>{q.labels.length ? q.labels.join(", ") : <span>None yet</span>}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="wr-empty">No outputs saved yet.</p>
+          )}
+          <p className="plan-hint">
+            Checks are recomputed from each saved output: the handoff contract’s required sections,
+            or the prototype’s own HTML checks. A simulated draft passing its structure check is not
+            a quality claim about its content.
+          </p>
+        </div>
+      ) : null}
 
       {tab === "board" ? (
         <div

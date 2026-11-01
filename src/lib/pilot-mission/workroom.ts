@@ -3,7 +3,13 @@
  * order and the team's capacity. Read only from the delivery engine's task and artefact rows
  * (via `buildDeliveryRoom`); nothing is estimated beyond what the rows record.
  */
-import { buildDeliveryRoom, type BuildOutput, type BuildStageStatus } from "./delivery-room";
+import { checkMarkdownContract, checkPrototypeHtml } from "@/lib/workforce/contracts";
+import {
+  buildDeliveryRoom,
+  type BuildOutput,
+  type BuildStageStatus,
+  type BuildUpdate,
+} from "./delivery-room";
 import {
   LIFECYCLE_STAGE_LABELS,
   type LifecycleStage,
@@ -63,7 +69,36 @@ export type TeamLoad = {
   current: string | null;
 };
 
+/** Something on this build that only the owner can act on. */
+export type InboxItem = {
+  taskId: string;
+  kind: "gate" | "sent_back" | "failed";
+  title: string;
+  text: string;
+};
+
+/** How one saved output fared against its checks — all recorded or recomputed, none guessed. */
+export type QualityRow = {
+  taskId: string;
+  stage: string;
+  owner: string;
+  role: string;
+  output: string;
+  production: string;
+  simulated: boolean | null;
+  labels: string[];
+  /** The handoff contract (markdown) or the prototype's own checks (HTML). */
+  check: {
+    kind: "contract" | "prototype";
+    passed: number;
+    total: number;
+    problems: string[];
+  } | null;
+};
+
 export type Workroom = {
+  inbox: { needsYou: InboxItem[]; updates: BuildUpdate[] };
+  quality: QualityRow[];
   cards: WorkCard[];
   board: Array<{ id: BoardColumnId; label: string; cards: WorkCard[] }>;
   timeline: TimelineLane[];
@@ -148,7 +183,68 @@ export function buildWorkroom(bundle: MissionBundle): Workroom {
     team.set(c.owner, t);
   }
 
+  const needsYou: InboxItem[] = cards
+    .filter((c) => c.column === "needs_you")
+    .map((c) => ({
+      taskId: c.taskId,
+      kind:
+        c.status === "waiting_on_you" ? "gate" : c.status === "sent_back" ? "sent_back" : "failed",
+      title: c.title,
+      text:
+        c.status === "waiting_on_you"
+          ? "Waiting for your decision. The next stage starts only when you approve."
+          : c.status === "sent_back"
+            ? "You sent this back, so the stages after it won’t run."
+            : `${c.owner}’s work on this stage failed. Open its work plan to see what it needed.`,
+    }));
+
+  const quality: QualityRow[] = cards
+    .filter((c) => c.output)
+    .map((c) => {
+      const out = c.output!;
+      let check: QualityRow["check"] = null;
+      if (out.format === "markdown" && c.plan.mustInclude.length) {
+        const r = checkMarkdownContract(out.content, c.plan.mustInclude);
+        const total = c.plan.mustInclude.length;
+        check = {
+          kind: "contract",
+          passed: total - r.missing.length - r.empty.length,
+          total,
+          problems: [
+            ...r.missing.map((m) => `Missing: ${m}`),
+            ...r.empty.map((m) => `Empty: ${m}`),
+          ],
+        };
+      } else if (out.format === "html") {
+        const checks = checkPrototypeHtml(out.content);
+        check = {
+          kind: "prototype",
+          passed: checks.filter((x) => x.passed).length,
+          total: checks.length,
+          problems: checks.filter((x) => !x.passed).map((x) => x.label),
+        };
+      }
+      return {
+        taskId: c.taskId,
+        stage: c.title,
+        owner: c.owner,
+        role: c.role,
+        output: out.title,
+        production: out.production,
+        simulated:
+          out.production === "Simulated draft"
+            ? true
+            : out.production.startsWith("Model:")
+              ? false
+              : null,
+        labels: out.quality,
+        check,
+      };
+    });
+
   return {
+    inbox: { needsYou, updates: [...room.updates].reverse() },
+    quality,
     cards,
     board: BOARD_COLUMNS.map((col) => ({
       ...col,

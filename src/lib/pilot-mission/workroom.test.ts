@@ -85,3 +85,41 @@ describe("buildWorkroom", () => {
     expect(wr.team.find((m) => m.name === "Maya")?.tasks.needsYou).toBe(1);
   });
 });
+
+describe("Workroom inbox and quality", () => {
+  it("lists what needs you and the team's updates, newest first", () => {
+    const wr = buildWorkroom(
+      deliveryBundle({ ...discovered }, { artefactsFor: ["charter", "market"] }),
+    );
+    expect(wr.inbox.needsYou).toEqual([
+      expect.objectContaining({ kind: "gate", taskId: "task-gate_scope" }),
+    ]);
+    const ats = wr.inbox.updates.map((u) => u.at);
+    expect(ats).toEqual([...ats].sort().reverse());
+  });
+
+  it("recomputes each output's contract check from its saved content", () => {
+    const bundle = deliveryBundle({ charter: "completed" }, { artefactsFor: ["charter"] });
+    const charterTask = bundle.tasks.find((t) => t.key === "charter")!;
+    // A complete output: every required section present with a real body.
+    bundle.artefacts = bundle.artefacts.map((a) => ({
+      ...a,
+      content: charterTask.requiredSections
+        .map((h) => `## ${h}\nA substantive paragraph here.`)
+        .join("\n\n"),
+    }));
+    const ok = buildWorkroom(bundle).quality[0]!;
+    expect(ok.check).toMatchObject({
+      kind: "contract",
+      total: charterTask.requiredSections.length,
+    });
+    expect(ok.check!.passed).toBe(ok.check!.total);
+    expect(ok.simulated).toBe(true);
+    // The fixture's stub content misses sections, and the check says which.
+    const stub = buildWorkroom(
+      deliveryBundle({ charter: "completed" }, { artefactsFor: ["charter"] }),
+    ).quality[0]!;
+    expect(stub.check!.passed).toBeLessThan(stub.check!.total);
+    expect(stub.check!.problems.length).toBeGreaterThan(0);
+  });
+});
