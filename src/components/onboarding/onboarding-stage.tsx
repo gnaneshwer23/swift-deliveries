@@ -44,7 +44,7 @@ export function OnboardingStage({ step, fields }: { step: number; fields: SetupF
           title: fields.fullName.trim()
             ? `${fields.fullName.trim().split(" ")[0]}, at the centre`
             : "You, at the centre",
-          body: "Your AI team works around you. Decisions stay yours.",
+          body: "Your AI team works around you. Decisions that matter stay yours.",
           meta:
             [fields.role, fields.teamSize].filter(Boolean).join(" · ") ||
             "Add your role and team size",
@@ -56,7 +56,7 @@ export function OnboardingStage({ step, fields }: { step: number; fields: SetupF
               ? `${team.length} specialists · ${active.size} departments`
               : "Choose a goal to see a team",
             body: fields.goal
-              ? "A typical starting team. You approve the real plan first."
+              ? "A typical starting team. You approve the real plan before anything runs."
               : "Each goal starts with a different mix of specialists.",
             meta: fields.goal ? team.map((c) => c.name.replace(/ Agent$/, "")).join(" · ") : "",
           }

@@ -40,7 +40,7 @@ export const Route = createFileRoute("/_authenticated/onboarding")({
 import { claimStoredPilotRequest } from "@/lib/pilot/continuity";
 import { getMyPilotContinuity } from "@/lib/pilot/enquiry.functions";
 import { PILOT_PLAN_LABELS, type PilotPlan } from "@/lib/pilot/model";
-import { loadPilotBrief, loadPilotClaim, loadPilotPlan } from "@/lib/pilot/storage";
+import { hasPilotBrief, loadPilotBrief, loadPilotClaim, loadPilotPlan } from "@/lib/pilot/storage";
 import {
   contextComplete,
   directionComplete,
@@ -407,7 +407,8 @@ export function OnboardingForm({
                         aria-describedby="setup-question-help"
                       />
                       <p className="setup-help" id="setup-question-help">
-                        Be specific. Leave out personal data about real people.
+                        Be specific. Leave out personal data about real people. The question stays
+                        out of the address.
                       </p>
                       {fields.goal === "Learn by building a product" && (
                         <p className="setup-learning-note">
@@ -440,7 +441,7 @@ export function OnboardingForm({
                           </button>
                         </div>
                       </div>
-                      {prepared && (
+                      {prepared && hasPilotBrief(prepared) && (
                         <div className="setup-prepared">
                           <Check size={17} aria-hidden="true" />
                           <div>
