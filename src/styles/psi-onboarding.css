@@ -589,9 +589,9 @@
   width: 100%;
   padding: 14px 16px;
   border-radius: 12px;
-  border: 1px solid #e3e1f0;
+  border: 1px solid #e7e2dd;
   background: #fff;
-  color: #6b4fd6;
+  color: #9e5902;
   text-align: left;
   cursor: pointer;
   transition:
@@ -599,24 +599,24 @@
     box-shadow 160ms ease;
 }
 .setup-goals button:hover {
-  border-color: #c9bdf5;
+  border-color: #e3bfa0;
 }
 .setup-goals button[aria-checked="true"] {
-  border-color: #7860cf;
+  border-color: #a96314;
   box-shadow: 0 0 0 3px #7860cf1f;
-  background: #faf8ff;
+  background: #fdf9f2;
 }
 .setup-goals span {
   flex: 1;
 }
 .setup-goals strong {
   display: block;
-  color: #1f1b2e;
+  color: #221e18;
   font-size: 15px;
   font-weight: 600;
 }
 .setup-goals small {
-  color: #6f6a85;
+  color: #7c6b5c;
   font-size: 13px;
 }
 .setup-next-facts {
@@ -631,14 +631,14 @@
   padding: 10px 12px;
   border-radius: 10px;
   background: #fff;
-  border: 1px solid #e6e3f2;
+  border: 1px solid #e9e5df;
   font-size: 14px;
   font-weight: 600;
-  color: #1f1b2e;
+  color: #221e18;
 }
 .setup-next-facts small {
   display: block;
-  color: #6f6a85;
+  color: #7c6b5c;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.04em;

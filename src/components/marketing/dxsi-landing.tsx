@@ -233,8 +233,8 @@ export function LiveProgrammeFlow({
       >
         <defs>
           <linearGradient id="dxlEdge" x1="0" x2="1">
-            <stop offset="0" stopColor="#3e63dd" />
-            <stop offset="1" stopColor="#7c3aed" />
+            <stop offset="0" stopColor="#a25c03" />
+            <stop offset="1" stopColor="#a15b02" />
           </linearGradient>
         </defs>
         {EDGES.map(([a, b]) => {
@@ -330,7 +330,7 @@ const DECISION_TABS: Record<string, string> = {
   D5: "Go / no-go",
 };
 
-const OPTION_COLOURS = ["#3e63dd", "#0f8c68", "#c98a12", "#7c3aed"];
+const OPTION_COLOURS = ["#a25c03", "#538085", "#c98a12", "#a15b02"];
 const STAGES = [
   "Options framed",
   "Independent positions",
@@ -409,7 +409,7 @@ export function LiveDecision() {
                 key={p.capabilityId}
                 className={`dxl-agent${p.revisedFrom && stage >= 3 ? " revised" : ""}`}
                 style={{
-                  ["--c" as string]: shown ? colour(p.optionId) : "#d0d5dd",
+                  ["--c" as string]: shown ? colour(p.optionId) : "#d8d4cf",
                   animationDelay: `${i * 60}ms`,
                 }}
                 title={`${member(p.capabilityId).name} — ${label(p.optionId)}${p.persuadedBy && stage >= 3 ? ` (persuaded)` : ""}`}

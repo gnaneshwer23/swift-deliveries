@@ -1,16 +1,16 @@
 /* Lifecycle wheel: light surfaces, navy ink, blue and cyan for work, amber for your decisions. */
 .lw {
-  --lw-navy: #14213d;
-  --lw-blue: #2563eb;
-  --lw-cyan: #0891b2;
-  --lw-idle: #eef2f8;
-  --lw-idle-line: #d5dceb;
-  --lw-active: #dbeafe;
-  --lw-done: #cffafe;
+  --lw-navy: #26211c;
+  --lw-blue: #a25d05;
+  --lw-cyan: #a7774d;
+  --lw-idle: #f6f1eb;
+  --lw-idle-line: #e0dbd5;
+  --lw-active: #ede8e1;
+  --lw-done: #e2f5f7;
   --lw-gate: #fef3c7;
   --lw-failed: #fee2e2;
   margin-top: 0.9rem;
-  border: 1px solid var(--psi-border, #dce2ee);
+  border: 1px solid var(--psi-border, #e5e1dc);
   border-radius: 16px;
   background: #fff;
   padding: 1rem;
@@ -31,7 +31,7 @@
 .lw-note {
   margin: 0.2rem 0 0;
   font-size: 0.75rem;
-  color: var(--psi-muted, #647089);
+  color: var(--psi-muted, #7e6c5e);
 }
 .lw-toggle {
   display: inline-flex;
@@ -50,7 +50,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   background: transparent;
-  color: var(--psi-text, #4e5b73);
+  color: var(--psi-text, #685749);
   cursor: pointer;
 }
 .lw-toggle button[aria-pressed="true"] {
@@ -108,7 +108,7 @@
 }
 .lw-seg[data-state="gate"] path {
   fill: var(--lw-gate);
-  stroke: #b45309;
+  stroke: #776305;
 }
 .lw-seg[data-state="failed"] path {
   fill: var(--lw-failed);
@@ -129,7 +129,7 @@
 }
 .lw-centre-state {
   font-size: 12px;
-  fill: var(--psi-muted, #647089);
+  fill: var(--psi-muted, #7e6c5e);
 }
 
 .lw-legend {
@@ -140,7 +140,7 @@
   padding: 0;
   margin: 0.6rem 0 0;
   font-size: 0.7rem;
-  color: var(--psi-text, #4e5b73);
+  color: var(--psi-text, #685749);
 }
 .lw-legend li,
 .lw-list summary {
@@ -169,7 +169,7 @@
 [data-state="gate"] > .lw-dot,
 [data-state="gate"] .lw-dot {
   background: var(--lw-gate);
-  border-color: #b45309;
+  border-color: #776305;
 }
 [data-state="failed"] > .lw-dot,
 [data-state="failed"] .lw-dot {
@@ -188,7 +188,7 @@
   border-left-color: var(--lw-cyan);
 }
 .lw-detail:has([data-state="gate"]) {
-  border-left-color: #b45309;
+  border-left-color: #776305;
 }
 .lw-detail:has([data-state="failed"]) {
   border-left-color: #b42318;
@@ -198,7 +198,7 @@
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  color: var(--psi-muted, #647089);
+  color: var(--psi-muted, #7e6c5e);
 }
 .lw-seg-title {
   display: flex;
@@ -232,12 +232,12 @@
 .lw-summary {
   margin: 0.35rem 0 0;
   font-size: 0.82rem;
-  color: var(--psi-text, #4e5b73);
+  color: var(--psi-text, #685749);
 }
 .lw-empty {
   margin: 0.6rem 0 0;
   font-size: 0.8rem;
-  color: var(--psi-muted, #647089);
+  color: var(--psi-muted, #7e6c5e);
 }
 .lw-tasks {
   list-style: none;
@@ -260,7 +260,7 @@
   text-underline-offset: 2px;
 }
 .lw-task-status {
-  color: var(--psi-muted, #647089);
+  color: var(--psi-muted, #7e6c5e);
   font-size: 0.75rem;
 }
 .lw-artefact-link {
@@ -269,7 +269,7 @@
   padding: 0;
   font-size: 0.75rem;
   /* Darker than --lw-cyan: 4.5:1 or better on white for small text. */
-  color: #0e7490;
+  color: #86603d;
   text-decoration: underline;
   text-underline-offset: 2px;
   cursor: pointer;
@@ -302,7 +302,7 @@
 .lw-list-state {
   margin-left: auto;
   font-size: 0.75rem;
-  color: var(--psi-muted, #647089);
+  color: var(--psi-muted, #7e6c5e);
 }
 .lw-list .lw-seg-detail {
   padding: 0 0.75rem 0.75rem;

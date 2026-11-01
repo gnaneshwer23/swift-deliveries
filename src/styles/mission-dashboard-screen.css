@@ -1,20 +1,20 @@
 /* Screen 10 — Mission dashboard */
 .mdash {
-  --md-ink: #f8fafc;
-  --md-muted: #cbd5e1;
-  --md-border: #334155;
-  --md-card: rgba(17, 24, 39, 0.72);
-  --md-bg: #0f172a;
-  --md-indigo: #6366f1;
-  --md-cyan: #22d3ee;
-  --md-accent: #059669;
-  --md-warn: #f59e0b;
+  --md-ink: #fdf9f4;
+  --md-muted: #d7d3ce;
+  --md-border: #4c3d30;
+  --md-card: rgba(27, 24, 19, 0.72);
+  --md-bg: #1b1712;
+  --md-indigo: #b1670f;
+  --md-cyan: #98c7cc;
+  --md-accent: #489164;
+  --md-warn: #ccb352;
   --md-danger: #dc2626;
   color: var(--md-ink);
   font-family: "DM Sans", Inter, system-ui, sans-serif;
   background:
-    radial-gradient(ellipse 80% 50% at 10% -10%, rgba(99, 102, 241, 0.18), transparent),
-    radial-gradient(ellipse 60% 40% at 90% 0%, rgba(34, 211, 238, 0.1), transparent), var(--md-bg);
+    radial-gradient(ellipse 80% 50% at 10% -10%, rgba(177, 103, 15, 0.18), transparent),
+    radial-gradient(ellipse 60% 40% at 90% 0%, rgba(152, 199, 204, 0.1), transparent), var(--md-bg);
   border-radius: 14px;
   border: 1px solid var(--md-border);
   overflow: hidden;
@@ -28,7 +28,7 @@
   align-items: center;
   padding: 0.85rem 1.1rem;
   border-bottom: 1px solid var(--md-border);
-  background: rgba(15, 23, 42, 0.85);
+  background: rgba(27, 23, 18, 0.85);
   backdrop-filter: blur(10px);
 }
 
@@ -67,7 +67,7 @@
   padding: 0.45rem 0.85rem;
   border-radius: 8px;
   border: 1px solid var(--md-border);
-  background: rgba(30, 41, 59, 0.7);
+  background: rgba(44, 40, 35, 0.7);
   color: var(--md-ink);
   font-size: 0.78rem;
   font-weight: 600;
@@ -80,7 +80,7 @@
 }
 
 .mdash-btn-primary {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(5, 150, 105, 0.85));
+  background: linear-gradient(135deg, rgba(177, 103, 15, 0.9), rgba(72, 145, 100, 0.85));
   border-color: transparent;
   color: #000;
 }
@@ -101,7 +101,7 @@
 .mdash-nav {
   border-right: 1px solid var(--md-border);
   padding: 0.75rem 0.5rem;
-  background: rgba(15, 23, 42, 0.55);
+  background: rgba(27, 23, 18, 0.55);
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
@@ -113,7 +113,7 @@
   font-size: 0.62rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #64748b;
+  color: #806f61;
   padding: 0.35rem 0.65rem 0.5rem;
   font-weight: 700;
 }
@@ -131,13 +131,13 @@
 }
 
 .mdash-nav button[aria-current="page"] {
-  background: rgba(99, 102, 241, 0.2);
+  background: rgba(177, 103, 15, 0.2);
   color: var(--md-ink);
   box-shadow: inset 2px 0 0 var(--md-cyan);
 }
 
 .mdash-nav button:hover {
-  background: rgba(51, 65, 85, 0.45);
+  background: rgba(76, 61, 48, 0.45);
   color: var(--md-ink);
 }
 
@@ -167,7 +167,7 @@
   padding: 0.45rem 0.25rem;
   font-size: 0.65rem;
   font-weight: 600;
-  color: #64748b;
+  color: #806f61;
 }
 
 .mdash-rail-step::before {
@@ -177,8 +177,8 @@
   height: 0.55rem;
   border-radius: 999px;
   margin: 0 auto 0.35rem;
-  background: #475569;
-  border: 2px solid #334155;
+  background: #605144;
+  border: 2px solid #4c3d30;
 }
 
 .mdash-rail-step[data-state="done"] {
@@ -186,7 +186,7 @@
 }
 .mdash-rail-step[data-state="done"]::before {
   background: var(--md-accent);
-  border-color: rgba(5, 150, 105, 0.5);
+  border-color: rgba(72, 145, 100, 0.5);
 }
 
 .mdash-rail-step[data-state="current"] {
@@ -208,7 +208,7 @@
 .mdash-rail-step[data-state="current"]::before {
   background: var(--md-indigo);
   border-color: var(--md-cyan);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+  box-shadow: 0 0 0 3px rgba(177, 103, 15, 0.25);
 }
 
 .mdash-grid {
@@ -233,7 +233,7 @@
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #a5b4fc;
+  color: #deae85;
 }
 
 .mdash-card p,
@@ -266,7 +266,7 @@
 .mdash-bar {
   height: 0.35rem;
   border-radius: 999px;
-  background: #1e293b;
+  background: #2c2823;
   overflow: hidden;
   margin-top: 0.55rem;
 }
@@ -280,7 +280,7 @@
 
 .mdash-empty {
   font-size: 0.78rem;
-  color: #64748b;
+  color: #806f61;
   margin: 0;
 }
 
@@ -293,8 +293,8 @@
   padding: 0.15rem 0.4rem;
   border-radius: 4px;
   margin-left: 0.35rem;
-  background: rgba(99, 102, 241, 0.2);
-  color: #c7d2fe;
+  background: rgba(177, 103, 15, 0.2);
+  color: #ebceb6;
 }
 
 .mdash-badge[data-kind="blocker"] {
@@ -302,12 +302,12 @@
   color: #fecaca;
 }
 .mdash-badge[data-kind="risk"] {
-  background: rgba(245, 158, 11, 0.2);
-  color: #fde68a;
+  background: rgba(204, 179, 82, 0.2);
+  color: #fee68a;
 }
 .mdash-badge[data-kind="gap"] {
-  background: rgba(34, 211, 238, 0.15);
-  color: #a5f3fc;
+  background: rgba(152, 199, 204, 0.15);
+  color: #caebee;
 }
 
 .mdash-section {
@@ -343,8 +343,8 @@
   gap: 0.15rem;
   padding: 0.55rem 0.65rem;
   border-radius: 8px;
-  border: 1px solid rgba(51, 65, 85, 0.8);
-  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(76, 61, 48, 0.8);
+  background: rgba(27, 23, 18, 0.45);
 }
 
 .mdash-timeline strong {
@@ -353,12 +353,12 @@
 
 .mdash-timeline time {
   font-size: 0.68rem;
-  color: #64748b;
+  color: #806f61;
 }
 
 .mdash-disclosure {
   font-size: 0.72rem;
-  color: #64748b;
+  color: #806f61;
   margin: 0;
 }
 
