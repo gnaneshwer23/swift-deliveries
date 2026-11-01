@@ -2,18 +2,7 @@ import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
-import {
-  ArrowUpRight,
-  ChevronDown,
-  FlaskConical,
-  FolderKanban,
-  Inbox,
-  LayoutGrid,
-  Menu,
-  ShieldCheck,
-  UsersRound,
-  X,
-} from "lucide-react";
+import { ArrowUpRight, Inbox, LayoutGrid, Menu, ShieldCheck, UsersRound, X } from "lucide-react";
 import { getPilotOperatorAccess } from "@/lib/pilot/enquiry.functions";
 import { useSignOut } from "@/hooks/use-sign-out";
 import { useSession } from "@/hooks/use-session";
@@ -27,12 +16,7 @@ const PRIMARY_NAV = [
   { to: "/command/capabilities", label: "AI team", icon: UsersRound },
 ] as const;
 
-const ADVANCED_NAV = [
-  { to: "/command/projects", label: "Product memory", icon: FolderKanban },
-  { to: "/command/programmes", label: "Programmes", icon: FlaskConical },
-] as const;
-
-type NavItem = (typeof PRIMARY_NAV)[number] | (typeof ADVANCED_NAV)[number];
+type NavItem = (typeof PRIMARY_NAV)[number];
 
 const EXECUTIVE_FONT_LINK_ID = "ps-executive-fonts";
 
@@ -114,7 +98,6 @@ export function CommandShell({
   const remaining = usage ? Math.max(0, usage.ceiling - usage.consumed) : null;
   const isStudioHome = title === "Studio" || pathname === "/command";
   const executiveMode = isExecutiveStudioRoute(pathname);
-  const advancedActive = ADVANCED_NAV.some((item) => navLinkActive(item, pathname, locationHash));
 
   const studioEntryMode = foyerMode && pathname === "/command";
 
@@ -178,20 +161,6 @@ export function CommandShell({
             locationHash={locationHash}
             onNavigate={() => setOpen(false)}
           />
-          <details className="ps-nav-advanced" open={advancedActive || undefined}>
-            <summary>
-              Advanced
-              <ChevronDown size={14} aria-hidden="true" className="ps-nav-advanced-chevron" />
-            </summary>
-            <div className="ps-nav-advanced-links">
-              <NavLinks
-                items={ADVANCED_NAV}
-                pathname={pathname}
-                locationHash={locationHash}
-                onNavigate={() => setOpen(false)}
-              />
-            </div>
-          </details>
         </nav>
         <div className="ps-sidebar-bottom">
           <Link to="/" className="ps-site-link">
