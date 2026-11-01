@@ -69,10 +69,10 @@ export function LearnHub() {
                 </span>
               </li>
               <li>
-                <b>Practised means done.</b>
+                <b>Ticks mean you got there.</b>
                 <span>
-                  A lesson is marked practised only when your project record shows that step
-                  happened. Reading alone doesn’t tick it.
+                  A lesson is ticked when your project record shows you reached its step. That says
+                  where you have been, not that you have mastered it. Reading alone doesn’t tick it.
                 </span>
               </li>
             </ul>

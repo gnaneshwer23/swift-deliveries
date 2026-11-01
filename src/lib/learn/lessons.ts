@@ -11,7 +11,7 @@ export type Lesson = {
   title: string;
   /** One line for lists and cards. */
   summary: string;
-  /** The project step where you practise this. */
+  /** The project step where this comes up. */
   step: FirstProjectStepId;
   what: string;
   why: string;
@@ -159,7 +159,10 @@ export function lessonById(id: string): Lesson | undefined {
   return LESSONS.find((l) => l.id === id);
 }
 
-/** Lessons practised in a project: their step is done in the record. Nothing is inferred. */
-export function practisedLessons(doneSteps: Set<FirstProjectStepId>): Set<string> {
+/**
+ * Lessons whose project step you have reached in a live project, read from the record.
+ * Reaching a step is not proof the skill was mastered; the UI says "reached", not "practised".
+ */
+export function reachedLessons(doneSteps: Set<FirstProjectStepId>): Set<string> {
   return new Set(LESSONS.filter((l) => doneSteps.has(l.step)).map((l) => l.id));
 }

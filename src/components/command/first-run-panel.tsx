@@ -10,10 +10,10 @@ import { useSession } from "@/hooks/use-session";
 import { firstNameOf } from "@/lib/dx-profile";
 import {
   buildFirstProject,
-  practisedSteps,
+  reachedSteps,
   type FirstProjectSource,
 } from "@/lib/pilot-mission/first-project";
-import { LESSONS, practisedLessons } from "@/lib/learn/lessons";
+import { LESSONS, reachedLessons } from "@/lib/learn/lessons";
 import { myProfileQuery } from "@/lib/profile-queries";
 
 export function ExplainSwitch() {
@@ -34,7 +34,7 @@ export function FirstRunPanel({ projects }: { projects: FirstProjectSource[] }) 
   const first = buildFirstProject(projects);
   const goal = profile.data?.goal;
   const allDone = first && !first.next;
-  const practised = practisedLessons(practisedSteps(projects));
+  const reached = reachedLessons(reachedSteps(projects));
 
   return (
     <section className="prj-panel prj-first" aria-labelledby="prj-first-title">
@@ -103,21 +103,21 @@ export function FirstRunPanel({ projects }: { projects: FirstProjectSource[] }) 
       {explain.on ? (
         <div className="prj-learn">
           <p className="prj-first-sub">
-            <span className="room-mono">Your learning path</span> {practised.size} of{" "}
-            {LESSONS.length} practised in your projects ·{" "}
+            <span className="room-mono">Your learning path</span> {reached.size} of {LESSONS.length}{" "}
+            steps reached in your recent projects ·{" "}
             <Link to="/learn" className="prj-link">
               All lessons
             </Link>
           </p>
           <ol className="prj-learn-list">
             {LESSONS.map((l) => (
-              <li key={l.id} data-done={practised.has(l.id) ? "true" : undefined}>
+              <li key={l.id} data-done={reached.has(l.id) ? "true" : undefined}>
                 <Link to="/learn/$lessonId" params={{ lessonId: l.id }}>
                   <span className="prj-step-dot" aria-hidden="true">
-                    {practised.has(l.id) ? <Check size={12} /> : null}
+                    {reached.has(l.id) ? <Check size={12} /> : null}
                   </span>
                   {l.title}
-                  <span className="prj-sr">{practised.has(l.id) ? " (practised)" : ""}</span>
+                  <span className="prj-sr">{reached.has(l.id) ? " (step reached)" : ""}</span>
                 </Link>
               </li>
             ))}

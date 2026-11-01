@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { practisedSteps, type FirstProjectSource } from "@/lib/pilot-mission/first-project";
-import { LESSONS, lessonById, practisedLessons } from "./lessons";
+import { reachedSteps, type FirstProjectSource } from "@/lib/pilot-mission/first-project";
+import { LESSONS, lessonById, reachedLessons } from "./lessons";
 
 const p = (over: Partial<FirstProjectSource>): FirstProjectSource => ({
   id: "a",
@@ -26,13 +26,14 @@ describe("lessons", () => {
     }
   });
 
-  it("marks a lesson practised only when its step is done in a live project", () => {
-    expect(practisedLessons(practisedSteps([]))).toEqual(new Set());
-    const steps = practisedSteps([
+  it("marks a lesson reached only when its step is done in a live project", () => {
+    expect(reachedLessons(reachedSteps([]))).toEqual(new Set());
+    const steps = reachedSteps([
       p({ planApproved: true }),
       p({ id: "gone", archived: true, decisionRecorded: true }),
+      p({ id: "stopped", stage: "cancelled", decisionRecorded: true, delivery: true }),
     ]);
-    expect([...practisedLessons(steps)].sort()).toEqual(
+    expect([...reachedLessons(steps)].sort()).toEqual(
       ["approve-a-plan", "evidence-vs-assumptions", "frame-the-question"].sort(),
     );
   });

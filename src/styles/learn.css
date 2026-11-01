@@ -52,6 +52,13 @@
   border-color: #6366f1;
   transform: translateY(-2px);
 }
+@media (prefers-reduced-motion: reduce) {
+  .learn-card,
+  .learn-card:hover {
+    transform: none;
+    transition: none;
+  }
+}
 .learn-card b {
   font-size: 1.02rem;
 }
@@ -63,7 +70,7 @@
 .learn-n {
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 0.75rem;
-  color: #6366f1;
+  color: #4f46e5;
 }
 .learn-points {
   list-style: none;

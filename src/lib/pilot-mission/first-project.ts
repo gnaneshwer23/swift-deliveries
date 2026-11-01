@@ -72,10 +72,15 @@ const STEPS: Array<Omit<FirstProjectStep, "done"> & { test: (p: FirstProjectSour
     },
   ];
 
+/** Live = not deleted from the dashboard and not stopped. */
+export function isLive(p: Pick<FirstProjectSource, "archived" | "stage">): boolean {
+  return !p.archived && p.stage !== "cancelled";
+}
+
 /** The checklist for the owner's most recently updated live project. */
 export function buildFirstProject(projects: FirstProjectSource[]): FirstProject {
   const live = projects
-    .filter((p) => !p.archived && p.stage !== "cancelled")
+    .filter(isLive)
     .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt));
   const p = live[0];
   if (!p) return null;
@@ -94,11 +99,11 @@ export function explainByDefault(goal: string | null | undefined, role?: string 
   return goal === "Learn by building a product" || role === "Student or new builder";
 }
 
-/** Steps done in at least one live project — what the owner has actually practised. */
-export function practisedSteps(projects: FirstProjectSource[]): Set<FirstProjectStepId> {
+/** Steps reached in at least one live project, read from the record. */
+export function reachedSteps(projects: FirstProjectSource[]): Set<FirstProjectStepId> {
   const done = new Set<FirstProjectStepId>();
   for (const p of projects) {
-    if (p.archived || p.stage === "cancelled") continue;
+    if (!isLive(p)) continue;
     for (const { id, test } of STEPS) if (test(p)) done.add(id);
   }
   return done;

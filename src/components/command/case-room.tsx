@@ -592,6 +592,7 @@ export function CaseRoom({
                       to="/learn/$lessonId"
                       params={{ lessonId: PANEL_LESSON[panel]! }}
                       target="_blank"
+                      rel="noopener noreferrer"
                     >
                       Learn more
                     </Link>
