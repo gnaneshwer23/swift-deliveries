@@ -8,6 +8,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AgentAvatar } from "@/components/command/agent-avatar";
 import { CaseChatPanel } from "@/components/command/case-chat-panel";
+import { useExplainMode } from "@/hooks/use-explain-mode";
 import { BuildCard, GateReview } from "@/components/command/delivery-build";
 import { RoomStage } from "@/components/command/room-stage";
 import {
@@ -44,6 +45,21 @@ export type CaseRoomPanels = {
   delivery: ReactNode;
   /** Meeting notes → proposed tasks; the owner accepts or dismisses each. */
   meetings: ReactNode;
+};
+
+/** "Explain as we go": why each step matters, for learners (and anyone who switches it on). */
+const PANEL_WHY: Partial<Record<Panel, string>> = {
+  plan: "A plan sets the question, the team and the usage before any work starts. Approving it is your go-ahead; nothing runs without it.",
+  work: "Each step needs one thing from you. The team prepares it, and you check it before the project moves on.",
+  decide:
+    "Options come with trade-offs and evidence gaps. Agents recommend; the choice is always yours.",
+  delivery:
+    "Delivery builds your chosen direction stage by stage (charter, requirements, design, prototype, checks) and stops at your reviews.",
+  gate: "A review is a human checkpoint. Agents can stop here but can never pass it; only you can.",
+  workroom:
+    "This is how the team plans: who owns each task, what it must include, what it builds on and how it is checked.",
+  meetings:
+    "Only notes from meetings you actually held count as evidence. You decide which items join the project.",
 };
 
 const PANEL_TITLE: Record<Panel, string> = {
@@ -343,6 +359,7 @@ export function CaseRoom({
   const gate = build?.room?.gate ?? null;
   const buildState = build?.room?.state ?? null;
   const [panel, setPanel] = useState<Panel | null>(null);
+  const explain = useExplainMode();
   const meetingsToReview = (mission.meetings ?? []).reduce(
     (n, m) => n + m.proposals.filter((p) => p.status === "proposed").length,
     0,
@@ -554,6 +571,11 @@ export function CaseRoom({
             </SheetDescription>
           </SheetHeader>
           <div className="room-sheet-body">
+            {explain.on && panel && PANEL_WHY[panel] ? (
+              <p className="room-explain">
+                <b>Why this matters</b> {PANEL_WHY[panel]}
+              </p>
+            ) : null}
             {panel === "ask" ? (
               <CaseChatPanel
                 mission={mission}

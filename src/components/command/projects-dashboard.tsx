@@ -35,6 +35,8 @@ import {
   type ProjectRow,
   type ProjectSource,
 } from "@/lib/pilot-mission/projects-dashboard";
+import { FirstRunPanel } from "@/components/command/first-run-panel";
+import type { FirstProjectSource } from "@/lib/pilot-mission/first-project";
 import "@/styles/projects-dashboard.css";
 
 const updated = (iso: string) =>
@@ -74,7 +76,7 @@ export function ProjectsDashboard({
   allowanceLine,
   onNewProject,
 }: {
-  projects: ProjectSource[];
+  projects: Array<ProjectSource & FirstProjectSource>;
   usage: { consumed: number; ceiling: number } | null;
   allowanceLine: string | null;
   onNewProject: () => void;
@@ -135,6 +137,8 @@ export function ProjectsDashboard({
           New project
         </button>
       </header>
+
+      <FirstRunPanel projects={projects} />
 
       <section className="prj-stats" aria-label="Summary">
         <div>

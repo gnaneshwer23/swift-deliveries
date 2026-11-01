@@ -2083,3 +2083,23 @@ li[data-status="waiting_on_you"] .room-build-status {
 .mtg-lines li[data-hl="true"] {
   background: var(--sx-waiting-soft);
 }
+
+/* Explain as we go */
+.room-explain {
+  margin: 0 0 var(--sx-space-sm);
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--sx-radius-control);
+  background: var(--sx-accent-soft);
+  color: var(--sx-ink-2);
+  font-size: var(--sx-text-sm);
+  line-height: 1.45;
+}
+.room-explain b {
+  display: block;
+  font-family: var(--sx-font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sx-accent);
+  margin-bottom: 0.15rem;
+}
