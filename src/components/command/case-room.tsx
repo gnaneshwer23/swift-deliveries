@@ -18,16 +18,20 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import type { DeliveryRoom } from "@/lib/pilot-mission/delivery-room";
+import type { Workroom as WorkroomModel } from "@/lib/pilot-mission/workroom";
+import { Workroom } from "@/components/command/workroom";
 import { buildRoomModel, roomDateLabel, type RoomBeat } from "@/lib/pilot-mission/room-story";
 import type { SupervisedMission } from "@/lib/pilot-mission/types";
 import "@/styles/studio-system.css";
 import "@/styles/room.css";
 
-type Panel = "plan" | "work" | "decide" | "delivery" | "gate" | "ask";
+type Panel = "plan" | "work" | "decide" | "delivery" | "gate" | "ask" | "workroom";
 
 /** The linked delivery build, read from the delivery engine by the page. */
 export type CaseRoomBuild = {
   room: DeliveryRoom | null;
+  /** The same build as a board, work plans, order and team capacity. */
+  workroom: WorkroomModel | null;
   error: string | null;
   deciding: boolean;
   onDecideGate: (taskId: string, decision: "approve" | "reject", note: string) => void;
@@ -46,6 +50,7 @@ const PANEL_TITLE: Record<Panel, string> = {
   decide: "Your decision",
   delivery: "Begin delivery",
   gate: "Your review",
+  workroom: "Workroom",
   ask: "Ask Aria",
 };
 
@@ -124,7 +129,15 @@ function TeamIntro({ beat }: { beat: Extract<RoomBeat, { kind: "team" }> }) {
   );
 }
 
-function Beat({ beat, build }: { beat: RoomBeat; build?: CaseRoomBuild | undefined }) {
+function Beat({
+  beat,
+  build,
+  onOpenWorkroom,
+}: {
+  beat: RoomBeat;
+  build?: CaseRoomBuild | undefined;
+  onOpenWorkroom?: () => void;
+}) {
   switch (beat.kind) {
     case "idea":
       return (
@@ -260,6 +273,15 @@ function Beat({ beat, build }: { beat: RoomBeat; build?: CaseRoomBuild | undefin
                   : "Loading the build…"}
             </p>
             {build?.room ? <BuildCard room={build.room} /> : null}
+            {build?.workroom && onOpenWorkroom ? (
+              <button
+                type="button"
+                className="room-pill room-open-workroom"
+                onClick={onOpenWorkroom}
+              >
+                Open the Workroom — see how each agent plans its work
+              </button>
+            ) : null}
           </Aria>
           {build?.room?.updates.slice(-3).map((u) => (
             <li key={u.id} className="room-msg room-update">
@@ -428,7 +450,12 @@ export function CaseRoom({
           </Aria>
         ) : null}
         {afterStage.map((beat, i) => (
-          <Beat key={`${beat.kind}-${i}`} beat={beat} build={build} />
+          <Beat
+            key={`${beat.kind}-${i}`}
+            beat={beat}
+            build={build}
+            onOpenWorkroom={() => open("workroom")}
+          />
         ))}
       </ol>
 
@@ -485,7 +512,9 @@ export function CaseRoom({
       <Sheet open={panel !== null} onOpenChange={(o) => !o && setPanel(null)}>
         <SheetContent
           side="right"
-          className="sx psi-workspace room-sheet w-full sm:max-w-xl overflow-y-auto"
+          className={`sx psi-workspace room-sheet w-full overflow-y-auto ${
+            panel === "workroom" ? "sm:max-w-6xl" : "sm:max-w-xl"
+          }`}
         >
           <SheetHeader>
             <SheetTitle>
@@ -498,11 +527,13 @@ export function CaseRoom({
                   ? "Starts the build for your chosen direction. Nothing runs without this approval."
                   : panel === "gate"
                     ? "A human gate: agents can stop here but never pass it."
-                    : panel === "plan"
-                      ? "Nothing runs until you approve."
-                      : panel === "decide"
-                        ? "Nothing proceeds until you save."
-                        : "One thing Aria needs from you."}
+                    : panel === "workroom"
+                      ? "How the team plans and does the work — read from the build’s records."
+                      : panel === "plan"
+                        ? "Nothing runs until you approve."
+                        : panel === "decide"
+                          ? "Nothing proceeds until you save."
+                          : "One thing Aria needs from you."}
             </SheetDescription>
           </SheetHeader>
           <div className="room-sheet-body">
@@ -522,6 +553,7 @@ export function CaseRoom({
             {panel === "work" ? panels.work : null}
             {panel === "decide" ? panels.decide : null}
             {panel === "delivery" ? panels.delivery : null}
+            {panel === "workroom" && build?.workroom ? <Workroom model={build.workroom} /> : null}
             {panel === "gate" && gate && build ? (
               <GateReview
                 gate={gate}
