@@ -25,7 +25,7 @@ import type { SupervisedMission } from "@/lib/pilot-mission/types";
 import "@/styles/studio-system.css";
 import "@/styles/room.css";
 
-type Panel = "plan" | "work" | "decide" | "delivery" | "gate" | "ask" | "workroom";
+type Panel = "plan" | "work" | "decide" | "delivery" | "gate" | "ask" | "workroom" | "meetings";
 
 /** The linked delivery build, read from the delivery engine by the page. */
 export type CaseRoomBuild = {
@@ -42,6 +42,8 @@ export type CaseRoomPanels = {
   work: ReactNode;
   decide: ReactNode;
   delivery: ReactNode;
+  /** Meeting notes → proposed tasks; the owner accepts or dismisses each. */
+  meetings: ReactNode;
 };
 
 const PANEL_TITLE: Record<Panel, string> = {
@@ -51,6 +53,7 @@ const PANEL_TITLE: Record<Panel, string> = {
   delivery: "Begin delivery",
   gate: "Your review",
   workroom: "Workroom",
+  meetings: "Meeting notes",
   ask: "Ask Aria",
 };
 
@@ -340,6 +343,10 @@ export function CaseRoom({
   const gate = build?.room?.gate ?? null;
   const buildState = build?.room?.state ?? null;
   const [panel, setPanel] = useState<Panel | null>(null);
+  const meetingsToReview = (mission.meetings ?? []).reduce(
+    (n, m) => n + m.proposals.filter((p) => p.status === "proposed").length,
+    0,
+  );
   const investigation = model.beats.find(
     (b): b is Extract<RoomBeat, { kind: "investigation" }> => b.kind === "investigation",
   );
@@ -350,6 +357,8 @@ export function CaseRoom({
     if (
       panel &&
       panel !== "ask" &&
+      // Reviewing meeting items changes the record on every click; keep that sheet open.
+      panel !== "meetings" &&
       openedFor &&
       openedFor !== `${model.next.id}:${mission.version}`
     ) {
@@ -478,6 +487,12 @@ export function CaseRoom({
             <button type="button" className="room-pill" onClick={() => open("ask")}>
               Ask Aria
             </button>
+            <button type="button" className="room-pill" onClick={() => open("meetings")}>
+              Meeting notes
+              {meetingsToReview ? (
+                <span className="room-pill-count">{meetingsToReview}</span>
+              ) : null}
+            </button>
             {gate ? (
               <button
                 type="button"
@@ -529,11 +544,13 @@ export function CaseRoom({
                     ? "A human gate: agents can stop here but never pass it."
                     : panel === "workroom"
                       ? "How the team plans and does the work — read from the build’s records."
-                      : panel === "plan"
-                        ? "Nothing runs until you approve."
-                        : panel === "decide"
-                          ? "Nothing proceeds until you save."
-                          : "One thing Aria needs from you."}
+                      : panel === "meetings"
+                        ? "Your notes, saved as written. You decide what joins the project."
+                        : panel === "plan"
+                          ? "Nothing runs until you approve."
+                          : panel === "decide"
+                            ? "Nothing proceeds until you save."
+                            : "One thing Aria needs from you."}
             </SheetDescription>
           </SheetHeader>
           <div className="room-sheet-body">
@@ -553,6 +570,7 @@ export function CaseRoom({
             {panel === "work" ? panels.work : null}
             {panel === "decide" ? panels.decide : null}
             {panel === "delivery" ? panels.delivery : null}
+            {panel === "meetings" ? panels.meetings : null}
             {panel === "workroom" && build?.workroom ? (
               <Workroom
                 model={build.workroom}

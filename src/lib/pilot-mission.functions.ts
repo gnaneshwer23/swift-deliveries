@@ -608,6 +608,93 @@ export const deleteSupervisedProject = createServerFn({ method: "POST" })
     return view(mission, null);
   });
 
+/** Save notes from a meeting the owner held; a rule-based reader proposes items to review. */
+export const addSupervisedMeetingNotes = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        expectedVersion: z.number().int().positive(),
+        title: z.string().max(120),
+        heldOn: z
+          .string()
+          .regex(/^\d{4}-\d{2}-\d{2}$/)
+          .refine((value) => {
+            const date = new Date(`${value}T00:00:00Z`);
+            return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
+          }, "Invalid calendar date")
+          .nullable(),
+        notes: z.string().min(1).max(20_000),
+      })
+      .parse(data),
+  )
+  .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
+    const workspace = await workspaceFor(context.supabase, context.userId);
+    const { service } = await serviceFor();
+    const mission = await service.addMeetingNotes({
+      workspaceId: workspace.id,
+      id: data.id,
+      expectedVersion: data.expectedVersion,
+      title: data.title,
+      heldOn: data.heldOn,
+      notes: data.notes,
+      actorId: context.userId,
+      nowMs: Date.now(),
+    });
+    return view(mission, null);
+  });
+
+/** The owner accepts, dismisses or reopens one item proposed from meeting notes. */
+export const decideSupervisedMeetingProposal = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        expectedVersion: z.number().int().positive(),
+        meetingId: z.string().min(1).max(80),
+        proposalId: z.string().min(1).max(100),
+        decision: z.enum(["accepted", "dismissed", "proposed"]),
+      })
+      .parse(data),
+  )
+  .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
+    const workspace = await workspaceFor(context.supabase, context.userId);
+    const { service } = await serviceFor();
+    const mission = await service.decideMeetingProposal({
+      workspaceId: workspace.id,
+      ...data,
+      actorId: context.userId,
+      nowMs: Date.now(),
+    });
+    return view(mission, null);
+  });
+
+/** Remove a meeting's notes and everything read from them. */
+export const removeSupervisedMeetingNotes = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        expectedVersion: z.number().int().positive(),
+        meetingId: z.string().min(1).max(80),
+      })
+      .parse(data),
+  )
+  .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
+    const workspace = await workspaceFor(context.supabase, context.userId);
+    const { service } = await serviceFor();
+    const mission = await service.removeMeetingNotes({
+      workspaceId: workspace.id,
+      ...data,
+      actorId: context.userId,
+      nowMs: Date.now(),
+    });
+    return view(mission, null);
+  });
+
 export const saveSupervisedWatchtower = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .validator((data: unknown) =>

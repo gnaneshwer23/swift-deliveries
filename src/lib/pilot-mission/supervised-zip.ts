@@ -5,6 +5,7 @@
 import { honestyFor } from "./decision-pack";
 import { buildDecisionRoadmapMarkdown } from "./decision-roadmap";
 import { buildDeliveryPackage } from "./delivery-package";
+import { MEETING_READER_LABEL, meetingBacklogMarkdown } from "./meeting-notes";
 import { authorisedDecisionPackMarkdown, authorisedDecisionPackPdfBytes } from "./export-snapshot";
 import { buildPmBriefingMarkdown } from "./pm-briefing-pack";
 import { buildTeamCollaborationMarkdown } from "./team-collaboration";
@@ -89,6 +90,7 @@ function assembleSupervisedZip(
 - Evidence register (statements + source *references* only)
 - Sandboxed HTML prototype when the prototype beat completed
 - The build (\`delivery/\`) when delivery has started: every saved stage output with who made it and how, the team record and your gate decisions
+- Meeting notes you supplied and the backlog you accepted from them (\`meetings.md\`), when present
 - This manifest of honesty labels
 
 ## What is not bundled
@@ -191,6 +193,14 @@ ${honesty.note}
     );
   }
 
+  // Meetings: the owner's own notes and what they accepted. Proposals are rule-based.
+  if ((mission.meetings ?? []).length) {
+    add("meetings.md", () => meetingBacklogMarkdown(mission.meetings) ?? "", {
+      bundled: true,
+      note: "Owner-supplied meeting notes and the accepted backlog",
+    });
+  }
+
   const gaps = [
     ...(mission.researchGaps ?? []),
     ...mission.evidence.filter((e) => e.classification === "gap").map((e) => e.statement),
@@ -218,6 +228,17 @@ ${honesty.note}
             (mission.delivery
               ? { wfMissionId: mission.delivery.wfMissionId, bundled: false }
               : null),
+          meetings: (mission.meetings ?? []).length
+            ? {
+                count: (mission.meetings ?? []).length,
+                notesSuppliedBy: "project owner",
+                proposalsProducedBy: MEETING_READER_LABEL,
+                accepted: (mission.meetings ?? []).reduce(
+                  (n, m) => n + m.proposals.filter((p) => p.status === "accepted").length,
+                  0,
+                ),
+              }
+            : null,
           inventory,
           researchGaps: gaps.slice(0, 40),
           workerLink: mission.workerLink ?? null,
