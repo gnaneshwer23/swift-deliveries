@@ -225,6 +225,7 @@ export const getSupervisedMissionHome = createServerFn({ method: "GET" })
             question: mission.brief.question,
             stage: mission.stage,
             teamIds: mission.team?.capabilityIds ?? [],
+            planApproved: Boolean(mission.team?.approvedAt),
             delivery: Boolean(mission.delivery),
             nextTitle: next.title,
             next,
