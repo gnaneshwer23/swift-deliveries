@@ -1,7 +1,7 @@
 /* Specialists page (routes/ai-agents.tsx, components/marketing/specialist-directory.tsx) */
 .sdp {
-  background: #f7f7fc;
-  color: #141b2d;
+  background: #fbf7f1;
+  color: #1f1b16;
 }
 .sdp-hero {
   padding: 96px 0 48px;
@@ -16,7 +16,7 @@
 .sdp-hero > .dxl-wrap > p:not(.dxl-eyebrow) {
   max-width: 620px;
   margin: 0;
-  color: #525a74;
+  color: #695749;
   font-size: 18px;
   line-height: 1.65;
 }
@@ -31,14 +31,14 @@
   padding: 16px 18px;
   border-radius: 14px;
   background: #fff;
-  border: 1px solid #e3e1f0;
+  border: 1px solid #e7e2dd;
 }
 .sdp-stats div[data-live] {
-  border-color: #c9bdf5;
-  background: #f6f3ff;
+  border-color: #e3bfa0;
+  background: #f8f4ef;
 }
 .sdp-stats dt {
-  color: #6f6a85;
+  color: #7c6b5c;
   font-size: 13px;
 }
 .sdp-stats dd {
@@ -54,7 +54,7 @@
 .sdp-close {
   padding: 88px 0 104px;
   text-align: center;
-  border-top: 1px solid #ebeaf4;
+  border-top: 1px solid #efebe6;
 }
 .sdp-close h2 {
   margin: 0 0 10px;
@@ -65,7 +65,7 @@
 .sdp-close p {
   max-width: 560px;
   margin: 0 auto 24px;
-  color: #525a74;
+  color: #695749;
   font-size: 17px;
   line-height: 1.6;
 }
@@ -98,16 +98,16 @@
   border: 0;
   border-radius: 10px;
   background: transparent;
-  color: #3d3852;
+  color: #403c36;
   text-align: left;
   cursor: pointer;
 }
 .sd-depts button:hover {
-  background: #efedf8;
+  background: #f2eee9;
 }
 .sd-depts button[aria-pressed="true"] {
   background: #fff;
-  box-shadow: inset 0 0 0 1px #e3e1f0;
+  box-shadow: inset 0 0 0 1px #e7e2dd;
 }
 .sd-dept-icon {
   flex: none;
@@ -117,13 +117,13 @@
   height: 32px;
   border-radius: 9px;
   background: #fff;
-  border: 1px solid #e6e3f2;
-  color: #6f6a85;
+  border: 1px solid #e9e5df;
+  color: #7c6b5c;
 }
 .sd-depts button[data-live] .sd-dept-icon,
 .sd-depts button[aria-pressed="true"] .sd-dept-icon {
-  color: #6b4fd6;
-  border-color: #d9cff9;
+  color: #9e5902;
+  border-color: #ecd0b9;
 }
 .sd-depts strong {
   display: block;
@@ -132,7 +132,7 @@
   line-height: 1.3;
 }
 .sd-depts small {
-  color: #6f6a85;
+  color: #7c6b5c;
   font-size: 12px;
 }
 .sd-main {
@@ -152,11 +152,11 @@
   padding: 0 14px;
   border-radius: 12px;
   background: #fff;
-  border: 1px solid #e3e1f0;
-  color: #6f6a85;
+  border: 1px solid #e7e2dd;
+  color: #7c6b5c;
 }
 .sd-search:focus-within {
-  border-color: #7860cf;
+  border-color: #a96314;
   box-shadow: 0 0 0 3px #7860cf22;
 }
 .sd-search input {
@@ -166,7 +166,7 @@
   border: 0;
   outline: none;
   background: transparent;
-  color: #1f1b2e;
+  color: #221e18;
   font-size: 15px;
 }
 .sd-status {
@@ -174,24 +174,24 @@
   padding: 4px;
   border-radius: 12px;
   background: #fff;
-  border: 1px solid #e3e1f0;
+  border: 1px solid #e7e2dd;
 }
 .sd-status button {
   padding: 8px 14px;
   border: 0;
   border-radius: 9px;
   background: transparent;
-  color: #5d5874;
+  color: #6b5949;
   font-size: 13.5px;
   cursor: pointer;
 }
 .sd-status button[aria-pressed="true"] {
-  background: #34294d;
+  background: #34302a;
   color: #fff;
 }
 .sd-count {
   margin: 16px 0 12px;
-  color: #6f6a85;
+  color: #7c6b5c;
   font-size: 14px;
 }
 .sd-grid {
@@ -205,17 +205,17 @@
 .sd-grid li {
   border-radius: 14px;
   background: #fff;
-  border: 1px solid #e3e1f0;
+  border: 1px solid #e7e2dd;
   transition:
     border-color 160ms ease,
     box-shadow 160ms ease;
 }
 .sd-grid li:hover {
-  border-color: #c9bdf5;
+  border-color: #e3bfa0;
   box-shadow: 0 16px 30px -24px #2a225680;
 }
 .sd-grid li:not([data-live]) {
-  background: #fbfbfd;
+  background: #fefbf6;
 }
 .sd-card {
   position: relative;
@@ -241,43 +241,43 @@
   width: 30px;
   height: 30px;
   border-radius: 9px;
-  background: #f3f0fd;
-  color: #6b4fd6;
+  background: #f6f1ec;
+  color: #9e5902;
 }
 .sd-grid li:not([data-live]) .sd-card-icon {
-  background: #f2f1f6;
-  color: #9a96ad;
+  background: #f6f1eb;
+  color: #9e9992;
 }
 .sd-badge {
   padding: 3px 9px;
   border-radius: 999px;
-  background: #f2f1f6;
-  color: #7d7896;
+  background: #f6f1eb;
+  color: #8c7868;
   font-size: 11.5px;
   font-weight: 600;
 }
 .sd-badge[data-live] {
-  background: #e3f5ec;
-  color: #1f7a4f;
+  background: #e7f4eb;
+  color: #3a7651;
 }
 .sd-card strong {
   font-size: 16px;
   font-weight: 650;
-  color: #141b2d;
+  color: #1f1b16;
 }
 .sd-card small {
-  color: #6f6a85;
+  color: #7c6b5c;
   font-size: 12px;
 }
 .sd-desc {
   margin-top: 6px;
-  color: #4d4865;
+  color: #5b4838;
   font-size: 14px;
   line-height: 1.5;
 }
 .sd-missions {
   margin-top: 8px;
-  color: #6b4fd6;
+  color: #9e5902;
   font-size: 12.5px;
   font-weight: 600;
 }
@@ -285,7 +285,7 @@
   position: absolute;
   right: 14px;
   bottom: 14px;
-  color: #b4afc7;
+  color: #b7b2ab;
   transition: transform 160ms ease;
 }
 .sd-card[aria-expanded="true"] .sd-chev {
@@ -294,19 +294,19 @@
 .sd-more {
   margin: 0;
   padding: 12px 16px 16px;
-  border-top: 1px solid #eeecf6;
+  border-top: 1px solid #f1ede8;
   display: grid;
   gap: 8px;
 }
 .sd-more dt {
-  color: #6f6a85;
+  color: #7c6b5c;
   font-size: 11px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 .sd-more dd {
   margin: 2px 0 0;
-  color: #3d3852;
+  color: #403c36;
   font-size: 13.5px;
   line-height: 1.45;
 }
@@ -326,7 +326,7 @@
     flex: none;
     width: auto;
     background: #fff;
-    box-shadow: inset 0 0 0 1px #e3e1f0;
+    box-shadow: inset 0 0 0 1px #e7e2dd;
   }
   .sd-depts small {
     display: none;

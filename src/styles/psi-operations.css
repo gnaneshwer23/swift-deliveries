@@ -55,7 +55,7 @@
   background: var(--psi-indigo-soft);
 }
 .po-queue-item:hover {
-  background: var(--psi-lavender, #f2effb);
+  background: var(--psi-lavender, #f4f0eb);
 }
 .po-queue-item h3 {
   font-size: 17px;
@@ -241,7 +241,7 @@
   padding: 28px;
   border: 1px solid var(--psi-border);
   border-radius: 22px;
-  background: linear-gradient(135deg, rgba(247, 248, 255, 0.96), rgba(255, 255, 255, 0.98));
+  background: linear-gradient(135deg, rgba(253, 248, 241, 0.96), rgba(255, 255, 255, 0.98));
 }
 .po-ops-grid {
   display: grid;
@@ -274,16 +274,16 @@
   line-height: 1.45;
 }
 .po-ops-card[data-state="active"] {
-  border-color: #9db6ff;
-  box-shadow: inset 3px 0 0 #5072e8;
+  border-color: #dfae83;
+  box-shadow: inset 3px 0 0 #b36912;
 }
 .po-ops-card[data-state="attention"] {
-  border-color: #e4c58d;
-  box-shadow: inset 3px 0 0 #bd7a18;
+  border-color: #daca8d;
+  box-shadow: inset 3px 0 0 #a28921;
 }
 .po-ops-card[data-state="complete"] {
-  border-color: #a4d7c7;
-  box-shadow: inset 3px 0 0 #248a71;
+  border-color: #b8cfd2;
+  box-shadow: inset 3px 0 0 #587f84;
 }
 @media (max-width: 900px) {
   .po-ops-grid {

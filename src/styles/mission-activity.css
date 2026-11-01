@@ -18,14 +18,14 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #b9bcc2;
+  background: #c0bbb5;
 }
 .ma-live.is-on {
-  color: #1f6b45;
+  color: #346848;
 }
 .ma-live.is-on::before {
-  background: #2e9b62;
-  box-shadow: 0 0 0 3px rgba(46, 155, 98, 0.18);
+  background: #4e966a;
+  box-shadow: 0 0 0 3px rgba(78, 150, 106, 0.18);
 }
 @media (prefers-reduced-motion: no-preference) {
   .ma-live.is-on::before {
@@ -34,7 +34,7 @@
 }
 @keyframes ma-pulse {
   50% {
-    box-shadow: 0 0 0 6px rgba(46, 155, 98, 0.05);
+    box-shadow: 0 0 0 6px rgba(78, 150, 106, 0.05);
   }
 }
 .ma-list {
@@ -49,7 +49,7 @@
   grid-template-columns: 3.4rem 1fr;
   gap: 10px;
   padding: 7px 10px;
-  border-left: 3px solid #d9d9e3;
+  border-left: 3px solid #ddd9d4;
   border-radius: 0 6px 6px 0;
   font-size: 0.85rem;
   line-height: 1.45;
@@ -61,21 +61,21 @@
   padding-top: 1px;
 }
 .ma-item.is-progress {
-  border-left-color: #6b4fd6;
+  border-left-color: #9e5902;
 }
 .ma-item.is-done {
-  border-left-color: #2e9b62;
+  border-left-color: #4e966a;
 }
 .ma-item.is-waiting {
   border-left-color: #c98a12;
-  background: #fffaf0;
+  background: #fdfbf0;
 }
 .ma-item.is-problem {
   border-left-color: #c2410c;
-  background: #fff6f2;
+  background: #fcf7f1;
 }
 .ma-item.is-control {
-  border-left-color: #8a8f98;
+  border-left-color: #928e89;
 }
 .ma-more {
   margin-top: 8px;
@@ -85,11 +85,11 @@
   font: inherit;
   font-size: 0.8rem;
   font-weight: 600;
-  color: #5b3fc4;
+  color: #894d01;
   cursor: pointer;
 }
 .ma-more:focus-visible {
-  outline: 2px solid #5b3fc4;
+  outline: 2px solid #894d01;
   outline-offset: 2px;
 }
 
@@ -105,9 +105,9 @@
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  border: 1px solid #f0b8a0;
+  border: 1px solid #d5c790;
   border-radius: 12px;
-  background: #fff4ef;
+  background: #f9f7ed;
   color: #7a2a0c;
   font-size: 0.9rem;
 }
@@ -118,9 +118,9 @@
   width: 100%;
   max-width: 34rem;
   padding: 12px 14px;
-  border: 1px solid #f0b8a0;
+  border: 1px solid #d5c790;
   border-radius: 12px;
-  background: #fff9f6;
+  background: #fefaf3;
 }
 .ws-stop-actions {
   display: flex;

@@ -86,7 +86,7 @@ export function PsiPlatformMap() {
           aria-hidden="true"
         >
           {animate && !reduced && (
-            <circle r=".55" fill="#536fd4">
+            <circle r=".55" fill="#a9661f">
               <animateMotion
                 dur="3s"
                 repeatCount="indefinite"

@@ -1,8 +1,8 @@
 /* Plan dependencies: light surfaces, navy ink, blue for running, cyan for done, amber for you. */
 .pd {
-  --pd-navy: #14213d;
+  --pd-navy: #26211c;
   margin-top: 0.9rem;
-  border: 1px solid var(--psi-border, #dce2ee);
+  border: 1px solid var(--psi-border, #e5e1dc);
   border-radius: 16px;
   background: #fff;
   padding: 0.75rem 1rem;
@@ -21,7 +21,7 @@
 .pd-note {
   font-size: 0.75rem;
   font-weight: 400;
-  color: var(--psi-muted, #647089);
+  color: var(--psi-muted, #7e6c5e);
 }
 .pd-note {
   margin: 0.5rem 0 0;
@@ -43,7 +43,7 @@
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--psi-muted, #647089);
+  color: var(--psi-muted, #7e6c5e);
 }
 .pd-nodes {
   list-style: none;
@@ -55,7 +55,7 @@
 .pd-node {
   display: grid;
   gap: 0.15rem;
-  border: 1px solid #d5dceb;
+  border: 1px solid #e0dbd5;
   border-left-width: 4px;
   border-radius: 10px;
   padding: 0.5rem 0.6rem;
@@ -63,15 +63,15 @@
   font-size: 0.8rem;
 }
 .pd-node[data-state="done"] {
-  border-left-color: #0e7490;
+  border-left-color: #86603d;
 }
 .pd-node[data-state="running"],
 .pd-node[data-state="ready"] {
-  border-left-color: #2563eb;
+  border-left-color: #a25d05;
 }
 .pd-node[data-state="waiting_you"] {
-  border-left-color: #b45309;
-  background: #fffbeb;
+  border-left-color: #776305;
+  background: #fffbec;
 }
 .pd-node[data-state="failed"],
 .pd-node[data-state="cannot_run"] {
@@ -80,7 +80,7 @@
 }
 .pd-node-title {
   font-weight: 600;
-  color: #1d4ed8;
+  color: #8c4f01;
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -90,7 +90,7 @@
 }
 .pd-rel {
   font-size: 0.72rem;
-  color: var(--psi-text, #4e5b73);
+  color: var(--psi-text, #685749);
 }
 
 /* Phones: waves stack top to bottom instead of scrolling sideways. */

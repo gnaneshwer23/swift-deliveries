@@ -1,9 +1,9 @@
 .sample-record-reader {
-  border: 1px solid #dce3f0;
+  border: 1px solid #e6e2dc;
   border-radius: 18px;
   overflow: hidden;
   background: #fff;
-  color: #2b3650;
+  color: #3a3630;
   min-width: 0;
 }
 .sample-reader-banner {
@@ -12,13 +12,13 @@
   gap: 15px;
   flex-wrap: wrap;
   padding: 15px 24px;
-  border-bottom: 1px solid #e0e6f1;
-  background: #f5f7fd;
+  border-bottom: 1px solid #e9e5e0;
+  background: #fbf6f0;
   font-size: 12px;
-  color: #62718e;
+  color: #816c5b;
 }
 .sample-reader-banner > span:first-child {
-  color: #435578;
+  color: #68503a;
   font-weight: 500;
 }
 .sample-reader-layout {
@@ -27,12 +27,12 @@
 }
 .sample-reader-directory {
   padding: 26px 16px;
-  background: #fbfcff;
-  border-right: 1px solid #e3e8f3;
+  background: #fffcf8;
+  border-right: 1px solid #ebe7e2;
 }
 .sample-directory-label {
   display: block;
-  color: #8a96ad;
+  color: #a39285;
   font-size: 11px;
   padding: 0 12px 18px;
 }
@@ -48,12 +48,12 @@
   text-align: left;
   margin-bottom: 7px;
   cursor: pointer;
-  color: #64728d;
+  color: #816e5e;
 }
 .sample-reader-directory button[aria-pressed="true"] {
-  color: #3d56aa;
-  background: #edf1fd;
-  border-color: #d8e1f7;
+  color: #864e10;
+  background: #f5f1eb;
+  border-color: #e5e0d9;
 }
 .sample-reader-directory button > span {
   flex: 1;
@@ -68,13 +68,13 @@
   display: block;
   font-size: 11px;
   margin-top: 5px;
-  color: #8b98b2;
+  color: #a69485;
 }
 .sample-reader-directory > p {
-  border-top: 1px solid #e2e7f2;
+  border-top: 1px solid #eae6e1;
   margin: 24px 12px 0;
   padding-top: 18px;
-  color: #7d89a0;
+  color: #968578;
   font-size: 12px;
   line-height: 1.8;
 }
@@ -89,18 +89,18 @@
   flex-wrap: wrap;
 }
 .sample-document-icon {
-  background: #f0f3fc;
-  color: #647cc3;
+  background: #f6f3ee;
+  color: #a47449;
   width: 44px;
   height: 48px;
-  border: 1px solid #dce4f4;
+  border: 1px solid #e8e3dd;
   border-radius: 8px;
   display: grid;
   place-items: center;
 }
 .sample-document-reference {
   font-size: 11px;
-  color: #8290ac;
+  color: #9f8c7b;
 }
 .sample-reader-document h4 {
   font-size: 23px;
@@ -112,15 +112,15 @@
 .sample-document-status {
   margin-left: auto;
   font-size: 11px;
-  border: 1px solid #e0e5ef;
-  background: #fafbfe;
+  border: 1px solid #e8e4df;
+  background: #fefaf5;
   border-radius: 20px;
   padding: 6px 10px;
-  color: #7b6a48;
+  color: #675e3a;
 }
 .sample-document-subtitle {
   font-size: 13px;
-  color: #71809a;
+  color: #8e7b6c;
   line-height: 1.7;
   margin: 22px 0;
 }
@@ -132,30 +132,30 @@
 }
 .sample-document-fields > div {
   padding: 17px 0;
-  border-top: 1px solid #e7ebf3;
+  border-top: 1px solid #efeae4;
   min-width: 0;
 }
 .sample-document-fields dt {
   font-size: 11px;
   font-weight: 500;
-  color: #7b89a4;
+  color: #988575;
   margin-bottom: 8px;
 }
 .sample-document-fields dd {
   font-size: 14px;
-  color: #41516c;
+  color: #604c3c;
   line-height: 1.75;
   margin: 0;
   overflow-wrap: anywhere;
 }
 .sample-document-fields > div[data-tone="gap"] dt {
-  color: #96723c;
+  color: #7a6a2b;
 }
 .sample-document-fields > div[data-tone="gap"] {
-  border-top-color: #e8dcc5;
+  border-top-color: #e4dec5;
 }
 .sample-document-fields > div[data-tone="proposal"] dt {
-  color: #617dc4;
+  color: #a57449;
 }
 .sample-record-provenance {
   display: flex;
@@ -163,12 +163,12 @@
   align-items: center;
   flex-wrap: wrap;
   padding: 16px 0;
-  border-top: 1px solid #e3e9f4;
+  border-top: 1px solid #ece8e3;
   margin-top: 16px;
 }
 .sample-record-provenance > span {
   font-size: 11px;
-  color: #8290a8;
+  color: #9d8c7d;
 }
 .sample-record-provenance > div {
   display: flex;
@@ -180,7 +180,7 @@
   align-items: center;
   gap: 10px;
   font-size: 11px;
-  color: #7385b9;
+  color: #a27f61;
   padding: 5px 7px;
   border: 1px solid transparent;
   border-radius: 5px;
@@ -188,12 +188,12 @@
   background: none;
 }
 .sample-record-provenance button[aria-pressed="true"] {
-  background: #edf2ff;
-  border-color: #d6e0f7;
-  color: #3657af;
+  background: #f6f1ec;
+  border-color: #e4dfd8;
+  color: #894d03;
 }
 .sample-reader-document footer {
-  border-top: 1px solid #e3e9f4;
+  border-top: 1px solid #ece8e3;
   padding-top: 20px;
   display: flex;
   justify-content: space-between;
@@ -205,12 +205,12 @@
 }
 .sample-reader-document footer span {
   font-size: 11px;
-  color: #8290a8;
+  color: #9d8c7d;
 }
 .sample-reader-document footer p {
   font-size: 12px;
   line-height: 1.8;
-  color: #61728e;
+  color: #816d5c;
   margin-top: 6px;
 }
 .sample-reader-document footer .dxl-btn {
@@ -223,13 +223,13 @@
 .sample-reader-footnote {
   font-size: 11px;
   line-height: 1.7;
-  color: #8390a9;
-  border-top: 1px solid #e3e9f4;
+  color: #9e8c7d;
+  border-top: 1px solid #ece8e3;
   padding: 13px 24px;
   margin: 0;
 }
 .sample-record-reader button:focus-visible {
-  outline: 3px solid #4965d6;
+  outline: 3px solid #a45d00;
   outline-offset: 3px;
 }
 .mission-redesign .mission-document-shelf {
@@ -252,7 +252,7 @@
   max-width: 410px;
   font-size: 14px;
   line-height: 1.8;
-  color: #71809a;
+  color: #8e7b6c;
 }
 .mission-redesign .mission-handoff {
   border-radius: 0;
@@ -262,7 +262,7 @@
 }
 .mission-redesign .mission-handoff div > span {
   font-size: 11px;
-  color: #7e8da7;
+  color: #9b8879;
 }
 .mission-redesign .mission-handoff p {
   font-size: 14px;
@@ -271,8 +271,8 @@
   padding: 24px 0;
   gap: 28px;
   border-left: 0;
-  border-top: 1px solid #dce4f3;
-  border-bottom: 1px solid #dce4f3;
+  border-top: 1px solid #e7e3dd;
+  border-bottom: 1px solid #e7e3dd;
 }
 .mission-redesign .mission-observation-strip > div {
   position: relative;
@@ -285,19 +285,19 @@
   position: absolute;
   left: 0;
   top: 5px;
-  border: 1px solid #8197d3;
+  border: 1px solid #b9906d;
   border-radius: 50%;
-  background: #eff3ff;
+  background: #f7f3ed;
 }
 .mission-redesign .mission-observation-strip > div:nth-child(2):before {
-  border-color: #b49765;
-  background: #fcf6eb;
+  border-color: #aa9c65;
+  background: #faf7eb;
 }
 .mission-redesign .mission-case-trail {
-  background: #f8faff;
+  background: #fef9f3;
 }
 .mission-redesign .mission-response {
-  background: #f6f8ff;
+  background: #fcf7f1;
   border-radius: 0 10px 10px 0;
   padding: 16px 18px;
   min-height: 175px;
@@ -306,7 +306,7 @@
   border-radius: 8px;
 }
 .mission-redesign .mission-owner-desk > small {
-  color: #77849c;
+  color: #918072;
 }
 @media (max-width: 760px) {
   .sample-reader-layout {
@@ -318,7 +318,7 @@
     gap: 7px;
     padding: 14px;
     border-right: 0;
-    border-bottom: 1px solid #e3e8f3;
+    border-bottom: 1px solid #ebe7e2;
   }
   .sample-directory-label,
   .sample-reader-directory > p {
@@ -375,7 +375,7 @@
   padding: 0 0 22px;
   margin-bottom: 22px;
   width: 100%;
-  border-bottom: 1px solid #dfe6f4;
+  border-bottom: 1px solid #e9e5df;
 }
 .mission-redesign .mission-case-heading h3 {
   font-size: 20px;
@@ -384,23 +384,23 @@
 .mission-case-record-link {
   margin-top: 24px;
   padding-top: 18px;
-  border-top: 1px solid #dfe6f4;
+  border-top: 1px solid #e9e5df;
   font-size: 12px;
-  color: #4e69b9;
+  color: #96602d;
   width: 100%;
   line-height: 1.6;
 }
 .mission-redesign .mission-owner-title {
   padding-bottom: 18px;
-  border-bottom: 1px solid #e1e7f3;
+  border-bottom: 1px solid #eae6e1;
 }
 .mission-redesign .mission-response-options button[aria-pressed="true"] {
-  box-shadow: inset 3px 0 #4967dc;
+  box-shadow: inset 3px 0 #a75f00;
 }
 .mission-redesign .mission-response > span {
   display: inline-block;
   padding: 4px 8px;
-  border: 1px solid #d9e1f4;
+  border: 1px solid #e5e0da;
   border-radius: 5px;
   font-size: 11px;
 }

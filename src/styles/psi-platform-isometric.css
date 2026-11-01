@@ -1,7 +1,7 @@
 .platform-isometric-scene {
   position: relative;
   aspect-ratio: 3/2;
-  background: #f6f8fd;
+  background: #fcf7f1;
 }
 .platform-isometric-scene > img {
   width: 100%;
@@ -27,13 +27,13 @@
   display: flex;
   gap: 8px;
   align-items: center;
-  border: 1px solid #d5def0;
+  border: 1px solid #e2ddd7;
   border-radius: 8px;
   padding: 10px 13px;
   background: #fffffff2;
   box-shadow: 0 3px 0 #dce3f044;
   cursor: pointer;
-  color: #586d98;
+  color: #85674d;
   pointer-events: auto;
   white-space: nowrap;
   transition:
@@ -42,16 +42,16 @@
 }
 .platform-art-label > span {
   font-size: 10px;
-  color: #91a2c4;
+  color: #b59d89;
 }
 .platform-art-label > strong {
   font-size: 12px;
   font-weight: 500;
 }
 .platform-art-label[aria-pressed="true"] {
-  background: #eef2ff;
-  border-color: #6e86d0;
-  color: #304b9d;
+  background: #f6f2ec;
+  border-color: #b07e52;
+  color: #794300;
   box-shadow: 0 0 0 4px #d6e1fb66;
 }
 .platform-art-evidence {
@@ -78,7 +78,7 @@
   text-align: center;
   padding: 9px 14px;
   background: #f6f8fdee;
-  border: 1px solid #dce4f2;
+  border: 1px solid #e7e3dd;
   border-radius: 8px;
 }
 .platform-art-brain strong {
@@ -86,12 +86,12 @@
   font-size: 17px;
   letter-spacing: -0.02em;
   font-weight: 550;
-  color: #536ca9;
+  color: #8e643f;
 }
 .platform-art-brain span {
   display: block;
   font-size: 10px;
-  color: #8496b8;
+  color: #a9907c;
   margin-top: 5px;
 }
 .platform-art-human {
@@ -103,11 +103,11 @@
   align-items: center;
   gap: 6px;
   background: #f0fcf5e8;
-  border: 1px solid #bde2cf;
+  border: 1px solid #c5e0cd;
   border-radius: 6px;
   padding: 7px 9px;
   font-size: 10px;
-  color: #4d8c72;
+  color: #658487;
   white-space: nowrap;
 }
 .platform-isometric-controls {
@@ -116,30 +116,30 @@
   justify-content: space-between;
   gap: 20px;
   padding: 15px 24px;
-  border-top: 1px solid #e2e8f3;
-  background: #fafbff;
+  border-top: 1px solid #ebe7e2;
+  background: #fffbf5;
 }
 .platform-isometric-controls > span {
   font-size: 10px;
-  color: #8394b2;
+  color: #a48f7d;
   line-height: 1.8;
 }
 .platform-isometric-controls > button {
   background: #fff;
-  border: 1px solid #d7e0f2;
+  border: 1px solid #e4dfd9;
   border-radius: 7px;
   padding: 8px 12px;
   font-size: 11px;
-  color: #657db6;
+  color: #9d7653;
   cursor: pointer;
   white-space: nowrap;
 }
 .platform-isometric-controls > button:disabled {
-  color: #8795ad;
+  color: #a29182;
   cursor: default;
 }
 .platform-map .platform-map-inspector {
-  border-top: 1px solid #e0e7f2;
+  border-top: 1px solid #eae6e0;
 }
 @media (max-width: 760px) {
   .platform-isometric-scene {
@@ -160,8 +160,8 @@
     grid-template-columns: 1fr 1fr;
     gap: 9px;
     padding: 16px;
-    background: #f8faff;
-    border-top: 1px solid #e2e8f3;
+    background: #fef9f3;
+    border-top: 1px solid #ebe7e2;
   }
   .platform-art-label {
     position: static;

@@ -1,11 +1,11 @@
 .mission-redesign {
-  --journey-ink: #20263d;
-  --journey-blue: #4965d6;
+  --journey-ink: #2b2721;
+  --journey-blue: #a45d00;
   color: var(--journey-ink);
 }
 .mission-opening {
   padding: 90px 0 36px;
-  background: linear-gradient(120deg, #fff 50%, #f3f3ff);
+  background: linear-gradient(120deg, #fff 50%, #f8f4ee);
 }
 .mission-opening-grid {
   display: grid;
@@ -23,14 +23,14 @@
 .mission-opening-copy {
   max-width: 550px;
   font-size: 19px;
-  color: #5c6780;
+  color: #756455;
   line-height: 1.7;
   margin: 26px 0;
 }
 .mission-brief-object {
   position: relative;
   background: #fff;
-  border: 1px solid #dce0f1;
+  border: 1px solid #e5e0da;
   border-radius: 20px;
   padding: 30px;
   box-shadow: 0 18px 40px #35426e0c;
@@ -41,13 +41,13 @@
   position: absolute;
   inset: 10px -9px -10px 9px;
   z-index: -1;
-  border: 1px solid #dce0f1;
+  border: 1px solid #e5e0da;
   border-radius: 20px;
-  background: #f6f5ff;
+  background: #faf6f1;
 }
 .mission-brief-label {
   font-size: 12px;
-  color: #5466ac;
+  color: #8e6035;
 }
 .mission-brief-object h2 {
   font-size: 25px;
@@ -57,27 +57,27 @@
 }
 .mission-brief-context {
   padding: 14px 0;
-  border-top: 1px solid #e8eaf3;
+  border-top: 1px solid #eeeae5;
 }
 .mission-brief-context > span {
   font-size: 12px;
-  color: #687591;
+  color: #847161;
 }
 .mission-brief-context p {
   font-size: 14px;
   line-height: 1.6;
   margin-top: 7px;
-  color: #414e67;
+  color: #5c4a3b;
 }
 .mission-brief-footer {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   justify-content: space-between;
-  border-top: 1px solid #e8eaf3;
+  border-top: 1px solid #eeeae5;
   padding-top: 18px;
   font-size: 11px;
-  color: #687591;
+  color: #847161;
 }
 .mission-chapter-nav {
   position: sticky;
@@ -85,7 +85,7 @@
   z-index: 20;
   background: #fffffff5;
   backdrop-filter: blur(12px);
-  border-block: 1px solid #e4e7f1;
+  border-block: 1px solid #ebe7e2;
 }
 .mission-chapter-nav > .dxl-wrap {
   display: flex;
@@ -99,22 +99,22 @@
   gap: 9px;
   align-items: center;
   white-space: nowrap;
-  color: #48566f;
+  color: #645243;
   font-size: 12px;
 }
 .mission-chapter-nav a span {
-  color: #667bd0;
+  color: #ac743f;
   font-size: 11px;
 }
 .mission-chapter-nav a:hover {
-  color: #304fc3;
+  color: #884c00;
 }
 .mission-chapter {
   padding: 76px 0;
   scroll-margin-top: 80px;
 }
 .mission-chapter:nth-of-type(odd) {
-  background: #f8f9fd;
+  background: #fdf9f3;
 }
 .mission-chapter-heading {
   display: grid;
@@ -126,8 +126,8 @@
 .mission-chapter-index {
   font-size: 23px;
   line-height: 1.5;
-  color: #6b7fcb;
-  border-top: 2px solid #aebce9;
+  color: #ab784a;
+  border-top: 2px solid #d6b79e;
   padding-top: 6px;
 }
 .mission-chapter-heading h2 {
@@ -141,7 +141,7 @@
 .mission-chapter-heading > p {
   font-size: 15px;
   line-height: 1.8;
-  color: #5c6780;
+  color: #756455;
   padding-top: 28px;
 }
 .mission-redesign .section-explorer {
@@ -160,22 +160,22 @@
   gap: 24px;
   margin: 26px 0 0;
   padding: 20px 28px;
-  border: 1px solid #e0e5f1;
+  border: 1px solid #e8e4df;
   border-radius: 12px;
   background: #fff;
 }
 .mission-handoff div > span {
-  color: #66728d;
+  color: #816e5e;
   font-size: 12px;
 }
 .mission-handoff p {
   margin: 6px 0 0;
-  color: #354461;
+  color: #543f2e;
   font-size: 14px;
   line-height: 1.6;
 }
 .mission-handoff-arrow {
-  color: #6f84d3;
+  color: #b17d4d;
   font-size: 26px;
   text-align: center;
 }
@@ -185,7 +185,7 @@
   gap: 44px;
   margin-top: 56px;
   padding-top: 36px;
-  border-top: 1px solid #dce2f0;
+  border-top: 1px solid #e6e1dc;
   scroll-margin-top: 90px;
 }
 .mission-document-shelf h3,
@@ -198,7 +198,7 @@
 .mission-document-shelf > div > p:not(.dxl-eyebrow) {
   font-size: 14px;
   line-height: 1.8;
-  color: #65718a;
+  color: #7f6d5f;
 }
 .mission-document-shelf .mission-record {
   margin: 0;
@@ -215,26 +215,26 @@
   align-items: center;
   margin: 55px 0 26px;
   padding-top: 30px;
-  border-top: 1px solid #dce2f0;
+  border-top: 1px solid #e6e1dc;
   scroll-margin-top: 90px;
 }
 .mission-decision-divider > p {
   font-size: 15px;
   line-height: 1.8;
-  color: #5c6780;
+  color: #756455;
 }
 .mission-observation-strip {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   margin-top: 30px;
-  border-left: 2px solid #8298e1;
+  border-left: 2px solid #c29166;
   gap: 30px;
   padding: 10px 0 10px 26px;
 }
 .mission-observation-strip span {
   display: block;
   font-size: 12px;
-  color: #6a7896;
+  color: #897462;
 }
 .mission-observation-strip strong {
   display: block;
@@ -244,13 +244,13 @@
 }
 .mission-observation-strip p {
   font-size: 14px;
-  color: #5c6780;
+  color: #756455;
   line-height: 1.7;
 }
 .mission-conversion {
   padding: 70px 0;
-  border-top: 1px solid #e0e5f1;
-  background: #f0f3fc;
+  border-top: 1px solid #e8e4df;
+  background: #f6f3ee;
 }
 .mission-conversion > .dxl-wrap {
   display: flex;
@@ -267,7 +267,7 @@
 }
 .mission-conversion p:not(.dxl-eyebrow) {
   max-width: 560px;
-  color: #5c6780;
+  color: #756455;
   line-height: 1.8;
   font-size: 15px;
 }
@@ -276,7 +276,7 @@
   justify-content: flex-start;
 }
 .mission-redesign a:focus-visible {
-  outline: 3px solid #4965d6;
+  outline: 3px solid #a45d00;
   outline-offset: 5px;
 }
 @media (max-width: 760px) {

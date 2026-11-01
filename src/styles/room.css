@@ -3,10 +3,10 @@
  * no gradients or glow as decoration. The stage is near-black with grain; the room is paper.
  */
 .room {
-  --room-stage: #0b0c10;
-  --room-stage-ink: #ecedf3;
-  --room-stage-muted: rgba(236, 237, 243, 0.58);
-  --room-stage-rule: rgba(236, 237, 243, 0.12);
+  --room-stage: #0f0c08;
+  --room-stage-ink: #f2ede6;
+  --room-stage-muted: rgba(242, 237, 230, 0.58);
+  --room-stage-rule: rgba(242, 237, 230, 0.12);
   --room-ease: cubic-bezier(0.22, 1, 0.36, 1);
   max-width: 46rem;
   margin: 0 auto;
@@ -430,9 +430,9 @@
   display: grid;
   gap: var(--sx-space-2xs);
   padding: var(--sx-space-md);
-  border: 1px solid rgba(236, 237, 243, 0.28);
+  border: 1px solid rgba(242, 237, 230, 0.28);
   border-radius: 1.25rem;
-  background: rgba(11, 12, 16, 0.72);
+  background: rgba(15, 12, 8, 0.72);
   text-align: center;
 }
 
@@ -486,10 +486,10 @@
   overflow: hidden;
   max-height: calc(2 * 1.35em + 0.6rem);
   padding: 0.3rem 0.75rem;
-  border: 1px solid rgba(236, 237, 243, 0.22);
+  border: 1px solid rgba(242, 237, 230, 0.22);
   border-radius: 0.875rem;
   line-height: 1.35;
-  background: rgba(236, 237, 243, 0.06);
+  background: rgba(242, 237, 230, 0.06);
   font-size: 0.8125rem;
   color: var(--room-stage-ink);
   transition:
@@ -510,12 +510,12 @@
 .room-chip[data-kind="gap"],
 .room-chip[data-kind="assumption"] {
   border-style: dashed;
-  border-color: rgba(250, 204, 120, 0.55);
-  color: #fbe3b5;
+  border-color: rgba(235, 211, 120, 0.55);
+  color: #f3e6b5;
 }
 
 .room-chip[data-kind="activity"] {
-  border-color: rgba(129, 140, 248, 0.55);
+  border-color: rgba(204, 134, 68, 0.55);
 }
 
 /* On wide screens the list stays for assistive technology; the field shows the same events. */
@@ -569,7 +569,7 @@
 }
 
 .room-agents li[data-state="working"] i {
-  background: #6ee7b7;
+  background: #96e0b0;
   animation: room-pulse 1.2s ease-in-out infinite;
 }
 
@@ -620,7 +620,7 @@
   border: 1px solid var(--sx-rule);
   border-radius: 1.5rem;
   background: var(--sx-surface);
-  box-shadow: 0 4px 14px rgba(29, 35, 64, 0.1);
+  box-shadow: 0 4px 14px rgba(41, 37, 31, 0.1);
 }
 
 .room-dock-actions {
@@ -934,7 +934,7 @@ li[data-status="waiting_on_you"] .room-build-status {
   background: var(--sx-ink);
   color: var(--sx-paper);
   font-size: var(--sx-text-sm);
-  box-shadow: 0 4px 14px rgba(29, 35, 64, 0.16);
+  box-shadow: 0 4px 14px rgba(41, 37, 31, 0.16);
   animation: room-rise 0.5s var(--room-ease) both;
 }
 
@@ -1010,14 +1010,14 @@ li[data-status="waiting_on_you"] .room-build-status {
   }
   .room-stage-list li {
     padding: 0.5rem 0.75rem;
-    border: 1px solid rgba(236, 237, 243, 0.18);
+    border: 1px solid rgba(242, 237, 230, 0.18);
     border-radius: 0.875rem;
     animation: room-rise 0.5s var(--room-ease) both;
   }
   .room-stage-list li[data-kind="gap"],
   .room-stage-list li[data-kind="assumption"] {
     border-style: dashed;
-    border-color: rgba(250, 204, 120, 0.5);
+    border-color: rgba(235, 211, 120, 0.5);
   }
   .room-dock-in {
     border-radius: 1.25rem;
