@@ -44,7 +44,7 @@ export function OnboardingStage({ step, fields }: { step: number; fields: SetupF
           title: fields.fullName.trim()
             ? `${fields.fullName.trim().split(" ")[0]}, at the centre`
             : "You, at the centre",
-          body: "Specialist agents research, draft and review around you. Every decision that matters stays yours.",
+          body: "Your AI team works around you. Decisions stay yours.",
           meta:
             [fields.role, fields.teamSize].filter(Boolean).join(" · ") ||
             "Add your role and team size",
@@ -56,8 +56,8 @@ export function OnboardingStage({ step, fields }: { step: number; fields: SetupF
               ? `${team.length} specialists · ${active.size} departments`
               : "Choose a goal to see a team",
             body: fields.goal
-              ? "This is the team a mission like yours usually starts with. You see and approve the real plan before anything runs."
-              : "Each goal starts from a different mix of research, product, design, engineering and quality specialists.",
+              ? "A typical starting team. You approve the real plan first."
+              : "Each goal starts with a different mix of specialists.",
             meta: fields.goal ? team.map((c) => c.name.replace(/ Agent$/, "")).join(" · ") : "",
           }
         : {
@@ -65,8 +65,8 @@ export function OnboardingStage({ step, fields }: { step: number; fields: SetupF
             title: "Step 1 of 7 · Prompt",
             body:
               fields.firstIdea.trim() ||
-              "Your product question opens the record. Evidence, options, decisions and checks are added as the work happens.",
-            meta: "Every step records who contributed, what was used and how it was produced.",
+              "Your question opens the record. Each step is added as it happens.",
+            meta: "Each step records who did it and how.",
           };
 
   return (

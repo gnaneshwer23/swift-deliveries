@@ -4,7 +4,11 @@ import {
   ArrowLeft,
   ArrowRight,
   Check,
+  ClipboardCheck,
   Compass,
+  Hammer,
+  Scale,
+  Search,
   GraduationCap,
   Lightbulb,
   Rocket,
@@ -50,6 +54,13 @@ import type { ProductBrief } from "@/lib/marketing/product-resources";
 import { firstActionFor, safeProductRedirect } from "@/lib/product-journey";
 
 const STEPS = ["Your context", "Product direction", "Review & enter"] as const;
+
+const FIRST_RUN: Array<{ label: string; note: string; icon: LucideIcon; you?: boolean }> = [
+  { label: "Plan", note: "You approve", icon: ClipboardCheck, you: true },
+  { label: "Research", note: "Team gathers evidence", icon: Search },
+  { label: "Decide", note: "You choose", icon: Scale, you: true },
+  { label: "Build", note: "Prototype draft", icon: Hammer },
+];
 
 const GOAL_META: Record<(typeof DX_GOALS)[number], { icon: LucideIcon; line: string }> = {
   "Validate a new idea": { icon: Lightbulb, line: "Check the evidence before you build." },
@@ -279,14 +290,9 @@ export function OnboardingForm({
         <aside className="setup-story">
           <p className="dxl-eyebrow">Your product starts here</p>
           <h2>Three questions. Then your team.</h2>
-          <p>
-            Your answers shape the first mission we propose. Nothing runs until you approve a plan.
-          </p>
+          <p>Nothing runs until you approve a plan.</p>
           <OnboardingStage step={step} fields={fields} />
-          <small>
-            Setup saves your context only. It does not run agents, approve a mission or activate a
-            paid pilot.
-          </small>
+          <small>Setup saves your answers. It runs nothing and starts no payment.</small>
         </aside>
         <main className="setup-main">
           <ol className="setup-progress" aria-label="Setup progress">
@@ -326,10 +332,10 @@ export function OnboardingForm({
                 </h1>
                 <p className="setup-description">
                   {step === 0
-                    ? "Your role and team size decide how much the specialists explain and which decisions come to you first."
+                    ? "This sets how much your team explains."
                     : step === 1
-                      ? "Pick a goal and, if you have one, the product question. You can refine both before any mission is planned."
-                      : "This is what the workspace will start from. Opening it saves your setup, not a running mission."}
+                      ? "Pick a goal. Add a question if you have one."
+                      : "Check your answers. Opening saves them; nothing runs yet."}
                 </p>
                 <fieldset disabled={saving} className="setup-fields">
                   {step === 0 && (
@@ -401,14 +407,11 @@ export function OnboardingForm({
                         aria-describedby="setup-question-help"
                       />
                       <p className="setup-help" id="setup-question-help">
-                        Keep it specific. Leave out personal data about real people. The question
-                        stays out of the address.
+                        Be specific. Leave out personal data about real people.
                       </p>
                       {fields.goal === "Learn by building a product" && (
                         <p className="setup-learning-note">
-                          You’ll learn through the same evidence, decisions and reviewable work as a
-                          product team. Explanations can help you reflect; evidence standards stay
-                          the same.
+                          You learn with the same evidence and decisions as a product team.
                         </p>
                       )}
                     </>
@@ -442,10 +445,7 @@ export function OnboardingForm({
                           <Check size={17} aria-hidden="true" />
                           <div>
                             <strong>Prepared brief available</strong>
-                            <p>
-                              Your audience, objective and constraints can prefill the mission
-                              intake. Supplied evidence is reviewed after the brief is saved.
-                            </p>
+                            <p>It will prefill your first mission.</p>
                           </div>
                         </div>
                       )}
@@ -453,6 +453,17 @@ export function OnboardingForm({
                         <span>Your first mission</span>
                         <h2>{firstAction.label}</h2>
                         <p>{firstAction.reason}</p>
+                        <ol className="setup-flow" aria-label="How your first project runs">
+                          {FIRST_RUN.map((s, i) => (
+                            <li key={s.label} data-you={s.you ? "true" : undefined}>
+                              <s.icon size={18} aria-hidden="true" />
+                              <strong>
+                                {i + 1}. {s.label}
+                              </strong>
+                              <small>{s.note}</small>
+                            </li>
+                          ))}
+                        </ol>
                         <ul className="setup-next-facts">
                           <li>
                             <small>Mission type</small>
