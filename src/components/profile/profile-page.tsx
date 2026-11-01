@@ -60,29 +60,38 @@ export function ProfilePage({ user, profile }: { user: AppUser; profile: DxProfi
     queryKey: ["supervised", "home"],
     queryFn: () => getSupervisedMissionHome(),
   });
-  const projects = home.data?.ready ? home.data.missions : [];
-  const progress = profileProgress(projects);
+  // Only count what the record shows: if projects can't be read, say so instead of showing 0.
+  const progressReady = Boolean(home.data?.ready);
+  const progress = profileProgress(home.data?.ready ? home.data.missions : []);
 
   const [editing, setEditing] = useState(false);
   const [fields, setFields] = useState<Fields>(current);
   const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState<string | null>(null);
 
   const save = useMutation({
     mutationFn: (data: Fields) => saveMyProfile({ data }),
     onSuccess: (next) => {
       qc.setQueryData(myProfileQuery.queryKey, next);
-      void auth.updateName(next.fullName).catch(() => null);
       setEditing(false);
       setError(null);
-      setSaved(true);
+      setSaved("Saved.");
+      // The profile is saved either way; tell the user if the sign-in name didn't follow.
+      void auth.updateName(next.fullName).then((err) => {
+        if (err) setSaved("Saved. Your sign-in name will update next time you sign in.");
+      });
     },
-    onError: () => setError("Your changes couldn’t be saved. Check your connection and try again."),
+    onError: (err) =>
+      setError(
+        err instanceof Error && /unauthori[sz]ed|sign in|session/i.test(err.message)
+          ? "Your session has ended. Sign in again, then save."
+          : "Your changes couldn’t be saved. Try again.",
+      ),
   });
 
   const name = current.fullName || user.email || "You";
   const set = <K extends keyof Fields>(key: K, value: Fields[K]) => {
-    setSaved(false);
+    setSaved(null);
     setFields((f) => ({ ...f, [key]: value }));
   };
   const valid = fields.fullName.trim().length >= 2 && fields.role && fields.teamSize && fields.goal;
@@ -122,10 +131,15 @@ export function ProfilePage({ user, profile }: { user: AppUser; profile: DxProfi
           </div>
         </section>
 
+        {!home.isLoading && !progressReady ? (
+          <p className="pf-muted" role="status">
+            Project progress couldn’t be loaded right now.
+          </p>
+        ) : null}
         <ul className="pf-stats" aria-label="Your progress">
           {stats.map((s) => (
             <li key={s.label}>
-              <b>{home.isLoading ? "…" : s.value}</b>
+              <b>{progressReady ? s.value : "—"}</b>
               <span>{s.label}</span>
             </li>
           ))}
@@ -141,7 +155,7 @@ export function ProfilePage({ user, profile }: { user: AppUser; profile: DxProfi
                   className="pf-link-btn"
                   onClick={() => {
                     setFields(current);
-                    setSaved(false);
+                    setSaved(null);
                     setEditing(true);
                   }}
                 >
@@ -241,7 +255,7 @@ export function ProfilePage({ user, profile }: { user: AppUser; profile: DxProfi
               </dl>
             )}
             <p className="pf-status" role="status">
-              {saved ? "Saved." : ""}
+              {saved ?? ""}
             </p>
           </section>
 

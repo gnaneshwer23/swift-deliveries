@@ -47,8 +47,8 @@
   gap: 22px;
   padding: 28px;
   border-radius: var(--psi-radius-panel);
-  background: #1c1b19;
-  color: #f6f3ee;
+  background: var(--psi-ink);
+  color: var(--psi-canvas);
 }
 .pf-avatar {
   flex-shrink: 0;
