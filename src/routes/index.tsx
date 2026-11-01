@@ -9,6 +9,16 @@ const TITLE = "DeliverX — From product idea to continuous intelligence";
 const DESCRIPTION =
   "DeliverX helps founders and product builders turn a product question into evidence, an accountable decision and inspectable work.";
 
+/** The path every project takes; the steps marked "you" never move without the owner. */
+const RUN_STEPS = [
+  { label: "Idea", who: "You describe it", you: true },
+  { label: "Plan", who: "You approve it", you: true },
+  { label: "Research", who: "Specialists", you: false },
+  { label: "Decide", who: "You choose", you: true },
+  { label: "Build", who: "Specialists", you: false },
+  { label: "Record", who: "You download it", you: false },
+];
+
 const HOW_IT_WORKS_SCHEMA = [
   { name: "Frame", desc: "Define one product question, constraints and supplied evidence." },
   { name: "Investigate", desc: "Organise supplied sources and retain evidence gaps." },
@@ -108,9 +118,8 @@ function HomePage() {
             <span className="dxl-grad">to continuous intelligence.</span>
           </h1>
           <p className="dxl-lead">
-            Describe a product. Specialist AI agents research it, weigh the options and draft the
-            plan, prototype and checks, while you approve every decision that matters and keep a
-            record of how it was made.
+            Describe a product. An AI team researches it and drafts the plan and prototype. You
+            approve every decision that matters.
           </p>
           <div className="dxl-ctas">
             <Link to="/onboarding" className="dxl-btn dxl-btn-primary">
@@ -120,6 +129,15 @@ function HomePage() {
               See how a product is built
             </a>
           </div>
+          <ol className="hp-runs" aria-label="How a project runs">
+            {RUN_STEPS.map((step, i) => (
+              <li key={step.label} data-you={step.you ? "true" : undefined}>
+                <span>{String(i + 1).padStart(2, "0")}</span>
+                <strong>{step.label}</strong>
+                <em>{step.who}</em>
+              </li>
+            ))}
+          </ol>
           <ProductBrainExplorer />
         </div>
       </section>

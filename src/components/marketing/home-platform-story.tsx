@@ -60,6 +60,7 @@ export function HomePlatformStory() {
       <DecisionSection />
       <BuildRecordSection />
       <ControlSection />
+      <FoundationSection />
       <WorkspaceSection />
       <LearningSection />
       <PromptSection />
@@ -138,9 +139,8 @@ function WorkforceSection() {
           title={`${WORKFORCE_TOTAL} specialists. Only the ones your mission needs.`}
         >
           <p>
-            The catalogue spans {WORKFORCE_DEPARTMENTS.length} departments, from research and design
-            to security and growth. For each mission DeliverX assembles a small team and shows you
-            who is on it before anything runs.
+            A small team, picked from {WORKFORCE_DEPARTMENTS.length} departments for each mission.
+            You see who before anything runs.
           </p>
         </Heading>
         <div className="ix hp-stage">
@@ -216,12 +216,7 @@ function DecisionSection() {
     <section className="hp-section" id="hp-decisions">
       <div className="dxl-wrap">
         <Heading n="02" eyebrow="Decisions" title="Agents disagree on purpose. You see why.">
-          <p>
-            Each specialist scores the options through its own lens before seeing anyone else’s
-            view. Security, QA and Finance hold hard vetoes. An option needs{" "}
-            {Math.round(R.supermajority * 100)}% of expertise-weighted support, and high-impact
-            calls still come to you.
-          </p>
+          <p>Each specialist scores alone first. Vetoes are hard rules. Big calls come to you.</p>
         </Heading>
         <div className="ix hp-stage">
           <div className="hp-input">
@@ -403,11 +398,7 @@ function BuildRecordSection() {
           eyebrow="Build record"
           title="Ask how your product was built. Get the whole pathway."
         >
-          <p>
-            Every product carries its own record: the prompt, the evidence used, the options
-            weighed, who decided, what was built, how it was checked and what happened next. Replay
-            it to learn from it, audit it, or start the next product from it.
-          </p>
+          <p>Prompt, evidence, options, decision, build and checks, in one record you download.</p>
         </Heading>
         <div className="ix hp-stage">
           <div className="hp-input">
@@ -496,9 +487,7 @@ function ControlSection() {
           title="Agents draft. You decide what becomes action."
         >
           <p>
-            Every mission runs on a permission ladder and inside a usage ceiling. Plans need your
-            approval, anything external needs your explicit sign-off, and the ceiling stops further
-            billable steps the moment it is reached.
+            Plans need your approval. Anything external needs your sign-off. Ceilings stop spend.
           </p>
         </Heading>
         <div className="hp-split">
@@ -542,28 +531,80 @@ function ControlSection() {
 // 05 Workspace — the product as it is today, in words (no mock screenshots)
 // ---------------------------------------------------------------------------
 
-const WORKSPACE: Array<{ icon: LucideIcon; title: string; body: string }> = [
-  {
-    icon: Target,
-    title: "Projects",
-    body: "Every product you are building on one page: what each one needs from you, which roles are on it, and a path from idea to recorded outcome. Add, delete and restore projects.",
-  },
-  {
-    icon: MessageSquareText,
-    title: "The project room",
-    body: "Aria tells the project as one story, with one next step at a time. Plans, decisions and reviews open in a side panel; nothing moves until you act.",
-  },
-  {
-    icon: CheckCheck,
-    title: "The Workroom",
-    body: "Once delivery starts, see how the team plans its work: a board, each task’s brief and checks, the order of work and what each role has used.",
-  },
-  {
-    icon: ScanSearch,
-    title: "Meeting notes",
-    body: "Paste notes from meetings you held. A rule-based reader proposes tasks, decisions and questions; you accept what joins the project.",
-  },
+const WORKSPACE_TAGS: Array<{ icon: LucideIcon; label: string }> = [
+  { icon: Target, label: "Projects" },
+  { icon: MessageSquareText, label: "Project room" },
+  { icon: CheckCheck, label: "Workroom" },
+  { icon: ScanSearch, label: "Meeting notes" },
 ];
+
+/** An illustration of the signed-in workspace, drawn with sample data and labelled as such. */
+function WorkspaceSample() {
+  const projects = [
+    {
+      i: "FW",
+      name: "Food waste log",
+      next: "Make your decision",
+      pill: "Needs you",
+      tone: "w",
+      pct: 40,
+    },
+    {
+      i: "DW",
+      name: "Dog walker booking",
+      next: "Research is running",
+      pill: "Researching",
+      tone: "a",
+      pct: 22,
+    },
+    {
+      i: "TS",
+      name: "Campus textbook swap",
+      next: "Prototype in progress",
+      pill: "In delivery",
+      tone: "o",
+      pct: 68,
+    },
+  ];
+  return (
+    <figure
+      className="hp-frame"
+      aria-label="Illustration of the projects workspace with sample data"
+    >
+      <div className="hp-frame-bar" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+        <em>deliverx.dev/command</em>
+      </div>
+      <div className="hp-frame-body">
+        <div className="hp-frame-hero">
+          <small>Needs you now</small>
+          <strong>Food waste log</strong>
+          <ul>
+            <li>12 evidence items, 3 gaps listed</li>
+            <li>3 options with trade-offs</li>
+          </ul>
+          <span className="hp-frame-btn">Make your decision</span>
+        </div>
+        <div className="hp-frame-cards">
+          {projects.map((p) => (
+            <div key={p.i} className="hp-frame-card">
+              <div>
+                <b className="hp-frame-ico">{p.i}</b>
+                <span className={`hp-frame-pill is-${p.tone}`}>{p.pill}</span>
+              </div>
+              <strong>{p.name}</strong>
+              <span>{p.next}</span>
+              <i style={{ width: `${p.pct}%` }} />
+            </div>
+          ))}
+        </div>
+      </div>
+      <figcaption>Sample project · illustration</figcaption>
+    </figure>
+  );
+}
 
 function WorkspaceSection() {
   return (
@@ -571,20 +612,58 @@ function WorkspaceSection() {
       <div className="dxl-wrap">
         <Heading n="05" eyebrow="Your workspace" title="One place to build, decide and review.">
           <p>
-            What you use after you sign in. {WORKFORCE_AVAILABLE_IDS.length} of the{" "}
-            {WORKFORCE_TOTAL} catalogue roles run today, and each project gets only the ones it
-            needs.
+            {WORKFORCE_AVAILABLE_IDS.length} of {WORKFORCE_TOTAL} roles run today. Each project gets
+            only the ones it needs.
           </p>
         </Heading>
-        <ul className="hp-workspace">
-          {WORKSPACE.map((w) => (
-            <li key={w.title}>
-              <w.icon size={20} aria-hidden="true" />
-              <strong>{w.title}</strong>
-              <span>{w.body}</span>
+        <WorkspaceSample />
+        <ul className="hp-workspace-tags">
+          {WORKSPACE_TAGS.map((w) => (
+            <li key={w.label}>
+              <w.icon size={16} aria-hidden="true" />
+              {w.label}
             </li>
           ))}
         </ul>
+      </div>
+    </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Every project stands on
+// ---------------------------------------------------------------------------
+const FOUNDATION: Array<{ title: string; line: string; join?: string }> = [
+  {
+    title: "You decide",
+    line: "Plans, gates and high-impact decisions wait for you",
+    join: "Approved plans only",
+  },
+  { title: "Specialist roles", line: "Each drafts its part of the work", join: "Checked handoffs" },
+  { title: "Gates", line: "Only a person can pass one", join: "Every step saved" },
+  { title: "The saved record", line: "Who did what, when, and how it was made" },
+];
+
+function FoundationSection() {
+  return (
+    <section className="hp-foundation" aria-labelledby="hp-foundation-title">
+      <div className="dxl-wrap">
+        <p className="dxl-eyebrow">How every project runs</p>
+        <h2 id="hp-foundation-title">
+          Four layers. <em>One rule: you decide.</em>
+        </h2>
+        <ol className="hp-layers">
+          {FOUNDATION.map((f, i) => (
+            <li key={f.title}>
+              <div className="hp-layer">
+                <span>{String(FOUNDATION.length - i).padStart(2, "0")}</span>
+                <strong>{f.title}</strong>
+                <em>{f.line}</em>
+              </div>
+              {f.join ? <div className="hp-join">{f.join}</div> : null}
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );
@@ -602,11 +681,7 @@ function LearningSection() {
           eyebrow="Learn by building"
           title="Learn product craft beside the specialists."
         >
-          <p>
-            Students and new builders work in the same environment as the agents: frame the
-            question, weigh the options, decide and review the build. Your decisions stay in the
-            project record, so the record becomes the lesson.
-          </p>
+          <p>Build your own product beside the agents. The record becomes the lesson.</p>
         </Heading>
         <div className="hp-split hp-split-reverse">
           <ul className="hp-points">

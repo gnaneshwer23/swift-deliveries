@@ -18,9 +18,8 @@ export function LearnHub() {
               <span className="dxl-grad">one real step at a time.</span>
             </h1>
             <p className="learn-lede">
-              Eight short lessons that follow the steps of a real DeliverX project. Read one, then
-              practise it on your own idea beside the AI team. The standards are the same for
-              learners and founders: evidence, a human decision and work you can inspect.
+              Eight short lessons that follow the steps of a real project. Read one, then try it on
+              your own idea.
             </p>
             <div className="dxl-ctas">
               <Link to="/onboarding" className="dxl-btn dxl-btn-primary">
