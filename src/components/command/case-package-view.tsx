@@ -19,7 +19,15 @@ export function CasePackageView({
   downloadsSlot: ReactNode | null;
 }) {
   // Same assembly as the download, without building file bodies, so the list cannot drift.
-  const inventory = useMemo(() => supervisedZipInventory(mission), [mission]);
+  // The linked build adds its outputs and the company record's work orders.
+  const build = useQuery({
+    ...missionBundleQuery(mission.delivery?.wfMissionId ?? "none"),
+    enabled: Boolean(mission.delivery),
+  });
+  const inventory = useMemo(
+    () => supervisedZipInventory(mission, build.data ?? null),
+    [mission, build.data],
+  );
   return (
     <div className="sx-doc">
       <section aria-labelledby="sx-package-case">

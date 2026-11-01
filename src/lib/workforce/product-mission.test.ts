@@ -449,3 +449,14 @@ describe("model mode safeguards", () => {
     expect(containsLikelyPersonalIdentifiers(REQUEST)).toBe(false);
   });
 });
+
+describe("isSatisfied", () => {
+  it("lets work and gates proceed after a completed or skipped dependency only", async () => {
+    const { isSatisfied } = await import("./graph");
+    expect(isSatisfied("completed")).toBe(true);
+    expect(isSatisfied("skipped")).toBe(true);
+    for (const s of ["pending", "running", "blocked", "failed", undefined]) {
+      expect(isSatisfied(s)).toBe(false);
+    }
+  });
+});

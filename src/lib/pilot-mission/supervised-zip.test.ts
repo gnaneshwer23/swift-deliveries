@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { buildSupervisedZip } from "./supervised-zip";
+import { deliveryBundle } from "./delivery-test-fixtures";
+import { buildFullArchiveZip } from "./executive-pack";
+import { buildSupervisedZip, supervisedZipInventory } from "./supervised-zip";
 import type { SupervisedMission } from "./types";
 
 function mission(overrides: Partial<SupervisedMission> = {}): SupervisedMission {
@@ -162,5 +164,80 @@ describe("meetings in the package", () => {
   it("leaves meetings out when there are none", () => {
     const { files } = buildSupervisedZip(mission());
     expect(files.some((f) => f.path.endsWith("/meetings.md"))).toBe(false);
+  });
+});
+
+describe("company record in the package", () => {
+  it("adds the company folder, lists it in the manifest and keeps the inventory in step", () => {
+    const delivery = deliveryBundle({ charter: "completed" }, { artefactsFor: ["charter"] });
+    const m = mission({
+      delivery: {
+        wfMissionId: "m",
+        planVersion: 1,
+        planHash: "0123456789abcdef",
+        optionId: "o1",
+        approvedAt: "2026-10-31T09:00:00Z",
+        approvedBy: "owner",
+      },
+    });
+    const { files, inventory } = buildSupervisedZip(m, "2026-11-01T00:00:00Z", delivery, {
+      events: [],
+      runs: [],
+    });
+    const paths = files.map((f) => f.path.replace(/^[^/]+\//, ""));
+    expect(paths).toContain("company/record.html");
+    expect(paths).toContain("company/work-orders/01-charter.md");
+    expect(supervisedZipInventory(m, delivery).map((i) => i.path)).toEqual(
+      inventory.map((i) => i.path),
+    );
+    const manifest = JSON.parse(
+      files.find((f) => f.path.endsWith("project-manifest.json"))!.content,
+    );
+    expect(manifest.company).toMatchObject({
+      folder: "company/",
+      workOrders: delivery.tasks.length,
+      runsRecorded: 0,
+      gaps: [expect.stringContaining("no saved start time")],
+    });
+  });
+
+  it("puts the full company record in the full archive too", () => {
+    const delivery = deliveryBundle({ charter: "completed" }, { artefactsFor: ["charter"] });
+    const m = mission({
+      delivery: {
+        wfMissionId: "m",
+        planVersion: 1,
+        planHash: "0123456789abcdef",
+        optionId: "o1",
+        approvedAt: "2026-10-31T09:00:00Z",
+        approvedBy: "owner",
+      },
+    });
+    const { files } = buildFullArchiveZip(m, "2026-11-01T00:00:00Z", delivery, {
+      events: [],
+      runs: [],
+    });
+    expect(files.some((f) => f.path.endsWith("/company/work-orders/01-charter.md"))).toBe(true);
+    expect(files.some((f) => f.path.endsWith("/delivery/01-charter.md"))).toBe(true);
+  });
+
+  it("lists unreadable build records as gaps", () => {
+    const delivery = deliveryBundle({});
+    const m = mission({
+      delivery: {
+        wfMissionId: "m",
+        planVersion: 1,
+        planHash: "0123456789abcdef",
+        optionId: "o1",
+        approvedAt: "2026-10-31T09:00:00Z",
+        approvedBy: "owner",
+      },
+    });
+    const { files } = buildSupervisedZip(m, "2026-11-01T00:00:00Z", delivery, null);
+    const manifest = JSON.parse(
+      files.find((f) => f.path.endsWith("project-manifest.json"))!.content,
+    );
+    expect(manifest.company.runsRecorded).toBeNull();
+    expect(manifest.company.gaps.join(" ")).toContain("event log could not be read");
   });
 });

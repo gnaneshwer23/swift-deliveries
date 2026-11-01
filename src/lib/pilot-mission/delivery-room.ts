@@ -6,6 +6,7 @@
  * each task; the real role is always shown beside them. A stage is done only when its task
  * row is completed, and progress is completed tasks over all tasks — nothing is estimated.
  */
+import { isSatisfied } from "@/lib/workforce/graph";
 import { getCapability } from "@/lib/workforce/registry";
 import { artefactProduction } from "@/lib/workforce/stage-artefacts";
 import {
@@ -114,7 +115,8 @@ function stageStatus(task: WfMissionTask, bundle: MissionBundle): BuildStageStat
   if (task.status === "running") return "working";
   if (task.status === "failed") return task.gate ? "sent_back" : "failed";
   const byKey = new Map(bundle.tasks.map((t) => [t.key, t.status]));
-  const ready = task.dependsOn.every((d) => byKey.get(d) === "completed");
+  // Same rule as the scheduler and the gate decision: a skipped prerequisite is satisfied.
+  const ready = task.dependsOn.every((d) => isSatisfied(byKey.get(d)));
   if (task.gate && ready) return "waiting_on_you";
   return "next";
 }

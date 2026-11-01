@@ -4,13 +4,14 @@
  */
 import { honestyFor } from "./decision-pack";
 import { buildDecisionRoadmapMarkdown } from "./decision-roadmap";
+import { buildCompanyRecord, COMPANY_RECORD_NOTE, type TaskRunRecord } from "./company-record";
 import { buildDeliveryPackage } from "./delivery-package";
 import { MEETING_READER_LABEL, meetingBacklogMarkdown } from "./meeting-notes";
 import { authorisedDecisionPackMarkdown, authorisedDecisionPackPdfBytes } from "./export-snapshot";
 import { buildPmBriefingMarkdown } from "./pm-briefing-pack";
 import { buildTeamCollaborationMarkdown } from "./team-collaboration";
 import type { SupervisedMission } from "./types";
-import type { MissionBundle } from "@/lib/workforce/types";
+import type { MissionBundle, WfMissionEvent } from "@/lib/workforce/types";
 
 const slug = (s: string) =>
   s
@@ -22,12 +23,21 @@ const slug = (s: string) =>
 export type SupervisedZipFile = { path: string; content: string };
 export type SupervisedZipInventoryItem = { path: string; bundled: boolean; note: string };
 
+/** The build's event log and run ledger for the company record; null fields were unreadable. */
+export type CompanyRecordSources = {
+  events: WfMissionEvent[] | null;
+  eventsCapped?: boolean;
+  runs: TaskRunRecord[] | null;
+};
+
 /** Package decision pack, evidence register, prototype HTML (when present), and manifest. */
 export function buildSupervisedZip(
   mission: SupervisedMission,
   exportedAt = new Date().toISOString(),
   /** The linked delivery build, when delivery has started (read from the caller's workspace). */
   delivery: MissionBundle | null = null,
+  /** The build's event log and run ledger, read from the caller's workspace. */
+  records: CompanyRecordSources | null = null,
 ): {
   files: SupervisedZipFile[];
   title: string;
@@ -35,7 +45,7 @@ export function buildSupervisedZip(
   /** What the archive holds, as recorded in its manifest. */
   inventory: SupervisedZipInventoryItem[];
 } {
-  return assembleSupervisedZip(mission, exportedAt, true, delivery);
+  return assembleSupervisedZip(mission, exportedAt, true, delivery, records);
 }
 
 /**
@@ -46,7 +56,7 @@ export function supervisedZipInventory(
   mission: SupervisedMission,
   delivery: MissionBundle | null = null,
 ): SupervisedZipInventoryItem[] {
-  return assembleSupervisedZip(mission, new Date().toISOString(), false, delivery).inventory;
+  return assembleSupervisedZip(mission, new Date().toISOString(), false, delivery, null).inventory;
 }
 
 function assembleSupervisedZip(
@@ -54,6 +64,7 @@ function assembleSupervisedZip(
   exportedAt: string,
   withContent: boolean,
   delivery: MissionBundle | null,
+  records: CompanyRecordSources | null,
 ): {
   files: SupervisedZipFile[];
   title: string;
@@ -91,6 +102,7 @@ function assembleSupervisedZip(
 - Sandboxed HTML prototype when the prototype beat completed
 - The build (\`delivery/\`) when delivery has started: every saved stage output with who made it and how, the team record and your gate decisions
 - Meeting notes you supplied and the backlog you accepted from them (\`meetings.md\`), when present
+- The company record (\`company/\`): org chart, timeline of every recorded event, a work order per task, your decisions, stage handoffs and the usage ledger, plus \`company/record.html\` to browse it offline
 - This manifest of honesty labels
 
 ## What is not bundled
@@ -201,6 +213,20 @@ ${honesty.note}
     });
   }
 
+  // The company record: how the project was run, from saved records only.
+  const company = buildCompanyRecord({
+    mission,
+    delivery,
+    events: delivery ? (records?.events ?? null) : [],
+    eventsCapped: records?.eventsCapped ?? false,
+    runs: delivery ? (records?.runs ?? null) : [],
+    exportedAt,
+  });
+  for (const f of company.files) {
+    const body = f.content;
+    add(f.path, () => body, { bundled: true, note: f.note });
+  }
+
   const gaps = [
     ...(mission.researchGaps ?? []),
     ...mission.evidence.filter((e) => e.classification === "gap").map((e) => e.statement),
@@ -239,6 +265,16 @@ ${honesty.note}
                 ),
               }
             : null,
+          company: {
+            folder: "company/",
+            note: COMPANY_RECORD_NOTE,
+            timelineEntries: company.summary.timelineEntries,
+            workOrders: company.summary.workOrders,
+            decisions: company.summary.decisions,
+            handoffs: company.summary.handoffs,
+            runsRecorded: company.summary.runs,
+            gaps: company.summary.gaps,
+          },
           inventory,
           researchGaps: gaps.slice(0, 40),
           workerLink: mission.workerLink ?? null,
