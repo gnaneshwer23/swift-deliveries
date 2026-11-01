@@ -1,6 +1,7 @@
 import type { CaseRoom, CaseStepGate } from "./case-room";
 import type { ContinuationPlan } from "./continuation-plan";
 import type { ResearchMode } from "./research-mode";
+import type { MeetingNote } from "./meeting-notes";
 import type { PilotActivityEvent, PilotTeamPlan } from "./specialist-team";
 import type { TeamCollaborationRecord } from "./team-collaboration";
 import type { AgentRecommendation, DecisionChoice, HumanNextPath } from "./verdict";
@@ -288,6 +289,11 @@ export type SupervisedMission = {
    * R2/R7 studio preferences (favourite, archive, notify, soft pause). Additive.
    */
   studioMeta?: StudioMeta | null;
+  /**
+   * Meetings the owner held and pasted notes from, with the proposals read from them and
+   * the owner's accept/dismiss decisions. Additive document field — absent on older cases.
+   */
+  meetings?: MeetingNote[] | null;
   /** Persisted task events only — no fake chat or timer theatre. */
   activity: PilotActivityEvent[];
   /**

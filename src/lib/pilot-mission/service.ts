@@ -53,6 +53,13 @@ import {
   pathAgreesWithRecommendation,
 } from "./verdict";
 import { saveStudioMeta, type StudioMeta } from "./studio-meta";
+import {
+  MEETING_NOTES_MAX_CHARS,
+  MEETING_READER_LABEL,
+  MEETINGS_MAX,
+  readMeetingNotes,
+  type MeetingNote,
+} from "./meeting-notes";
 import { saveWatchtowerConfig, type WatchtowerFrequency } from "./watchtower";
 
 export class MissionNotFoundError extends Error {
@@ -1721,6 +1728,164 @@ export class SupervisedMissionService {
     const row = await this.store.get(workspaceId, id);
     if (!row) throw new MissionNotFoundError();
     return row;
+  }
+
+  /** Save notes from a meeting the owner held and read proposals from them. Nothing is accepted. */
+  async addMeetingNotes(input: {
+    workspaceId: string;
+    id: string;
+    expectedVersion: number;
+    title: string;
+    heldOn: string | null;
+    notes: string;
+    actorId: string;
+    nowMs: number;
+  }): Promise<SupervisedMission> {
+    const current = await this.must(input.workspaceId, input.id);
+    if (current.version !== input.expectedVersion) {
+      throw new MissionConflictError(
+        "This project changed in another session. Your notes were not saved. Refresh and try again.",
+      );
+    }
+    if (current.stage === "cancelled") throw new Error("This project is stopped.");
+    const notes = input.notes.trim();
+    const title = input.title.trim() || "Meeting";
+    if (notes.length < 10) throw new Error("Paste the notes from your meeting first.");
+    if (notes.length > MEETING_NOTES_MAX_CHARS) {
+      throw new Error(
+        `Notes are limited to ${MEETING_NOTES_MAX_CHARS.toLocaleString("en-GB")} characters.`,
+      );
+    }
+    const existing = current.meetings ?? [];
+    if (existing.length >= MEETINGS_MAX) {
+      throw new Error(`A project keeps up to ${MEETINGS_MAX} meetings. Remove one first.`);
+    }
+    const at = new Date(input.nowMs).toISOString();
+    const meetingId = `m-${current.version + 1}-${input.nowMs}`;
+    const meeting: MeetingNote = {
+      id: meetingId,
+      title: title.slice(0, 120),
+      heldOn: input.heldOn,
+      notes,
+      addedAt: at,
+      addedBy: input.actorId,
+      reader: MEETING_READER_LABEL,
+      proposals: readMeetingNotes(notes, (i) => `${meetingId}-p${i + 1}`),
+    };
+    const next: SupervisedMission = {
+      ...current,
+      version: current.version + 1,
+      meetings: [...existing, meeting],
+      activity: pushActivity(
+        current,
+        activityEvent({
+          at,
+          taskKey: null,
+          kind: "meeting.notes_added",
+          summary: `Meeting notes added (“${meeting.title}”). ${meeting.proposals.length} proposed item${meeting.proposals.length === 1 ? "" : "s"} waiting for your review.`,
+          actor: input.actorId,
+        }),
+      ),
+      updatedAt: at,
+    };
+    return this.store.save(next, current.version);
+  }
+
+  /** The owner accepts, dismisses or reopens one proposal. Only the owner decides. */
+  async decideMeetingProposal(input: {
+    workspaceId: string;
+    id: string;
+    expectedVersion: number;
+    meetingId: string;
+    proposalId: string;
+    decision: "accepted" | "dismissed" | "proposed";
+    actorId: string;
+    nowMs: number;
+  }): Promise<SupervisedMission> {
+    const current = await this.must(input.workspaceId, input.id);
+    if (current.version !== input.expectedVersion) {
+      throw new MissionConflictError(
+        "This project changed in another session. Refresh and try again.",
+      );
+    }
+    const meeting = (current.meetings ?? []).find((m) => m.id === input.meetingId);
+    const proposal = meeting?.proposals.find((p) => p.id === input.proposalId);
+    if (!meeting || !proposal) throw new Error("That proposal is no longer on this project.");
+    if (proposal.status === input.decision) return current;
+    const at = new Date(input.nowMs).toISOString();
+    const reopened = input.decision === "proposed";
+    const next: SupervisedMission = {
+      ...current,
+      version: current.version + 1,
+      meetings: (current.meetings ?? []).map((m) =>
+        m.id !== meeting.id
+          ? m
+          : {
+              ...m,
+              proposals: m.proposals.map((p) =>
+                p.id !== proposal.id
+                  ? p
+                  : {
+                      ...p,
+                      status: input.decision,
+                      decidedAt: reopened ? null : at,
+                      decidedBy: reopened ? null : input.actorId,
+                    },
+              ),
+            },
+      ),
+      activity: pushActivity(
+        current,
+        activityEvent({
+          at,
+          taskKey: null,
+          kind: `meeting.proposal_${input.decision}`,
+          summary: reopened
+            ? `Meeting item put back for review (“${meeting.title}”).`
+            : `You ${input.decision} a meeting item from “${meeting.title}”.`,
+          actor: input.actorId,
+        }),
+      ),
+      updatedAt: at,
+    };
+    return this.store.save(next, current.version);
+  }
+
+  /** Remove a meeting's notes and everything read from them. */
+  async removeMeetingNotes(input: {
+    workspaceId: string;
+    id: string;
+    expectedVersion: number;
+    meetingId: string;
+    actorId: string;
+    nowMs: number;
+  }): Promise<SupervisedMission> {
+    const current = await this.must(input.workspaceId, input.id);
+    if (current.version !== input.expectedVersion) {
+      throw new MissionConflictError(
+        "This project changed in another session. Refresh and try again.",
+      );
+    }
+    const meeting = (current.meetings ?? []).find((m) => m.id === input.meetingId);
+    if (!meeting) return current;
+    const at = new Date(input.nowMs).toISOString();
+    const next: SupervisedMission = {
+      ...current,
+      version: current.version + 1,
+      meetings: (current.meetings ?? []).filter((m) => m.id !== meeting.id),
+      activity: pushActivity(
+        current,
+        activityEvent({
+          at,
+          taskKey: null,
+          kind: "meeting.notes_removed",
+          summary: `Meeting notes removed (“${meeting.title}”), with the items read from them.`,
+          actor: input.actorId,
+        }),
+      ),
+      updatedAt: at,
+    };
+    return this.store.save(next, current.version);
   }
 
   async saveStudioMeta(input: {

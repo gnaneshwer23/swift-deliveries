@@ -103,3 +103,50 @@ describe("supervised ZIP export", () => {
     expect(files.some((f) => f.path.endsWith("prototype/prototype.html"))).toBe(false);
   });
 });
+
+describe("meetings in the package", () => {
+  it("bundles the owner's notes and accepted backlog, and records who produced what", () => {
+    const { files } = buildSupervisedZip(
+      mission({
+        meetings: [
+          {
+            id: "m1",
+            title: "Kick-off",
+            heldOn: null,
+            notes: "- Action: draft interview questions",
+            addedAt: "2026-10-31T10:00:00Z",
+            addedBy: "owner",
+            reader: "Notes reader (rule-based, no AI model)",
+            proposals: [
+              {
+                id: "m1-p1",
+                kind: "action",
+                text: "draft interview questions",
+                line: 1,
+                owner: { kind: "you" },
+                status: "accepted",
+                decidedAt: "2026-10-31T10:01:00Z",
+                decidedBy: "owner",
+              },
+            ],
+          },
+        ],
+      }),
+    );
+    const md = files.find((f) => f.path.endsWith("/meetings.md"))!.content;
+    expect(md).toContain("draft interview questions");
+    const manifest = JSON.parse(
+      files.find((f) => f.path.endsWith("project-manifest.json"))!.content,
+    );
+    expect(manifest.meetings).toMatchObject({
+      count: 1,
+      notesSuppliedBy: "project owner",
+      accepted: 1,
+    });
+  });
+
+  it("leaves meetings out when there are none", () => {
+    const { files } = buildSupervisedZip(mission());
+    expect(files.some((f) => f.path.endsWith("/meetings.md"))).toBe(false);
+  });
+});

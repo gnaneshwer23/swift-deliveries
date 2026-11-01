@@ -18,6 +18,7 @@ import { CaseRoom } from "@/components/command/case-room";
 import { PlanReview } from "@/components/command/plan-review";
 import { DecisionPanel } from "@/components/command/decision-panel";
 import { NextStepPanel } from "@/components/command/next-step-panel";
+import { MeetingNotesPanel } from "@/components/command/meeting-notes-panel";
 import { BeginDeliveryPanel } from "@/components/command/begin-delivery-panel";
 import { useDeliveryBuild } from "@/hooks/use-delivery-build";
 import { InvestigationScopeReview } from "@/components/command/investigation-scope-review";
@@ -375,6 +376,7 @@ function SupervisedMissionPage() {
               />
             ),
             delivery: <BeginDeliveryPanel mission={mission} onDone={invalidate} />,
+            meetings: <MeetingNotesPanel mission={mission} onDone={invalidate} />,
           }}
         />
 

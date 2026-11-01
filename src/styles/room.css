@@ -1856,3 +1856,199 @@ li[data-status="waiting_on_you"] .room-build-status {
     align-items: stretch;
   }
 }
+
+/* Meeting notes → proposed tasks */
+.room-pill-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  margin-left: 0.35rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: var(--sx-waiting-soft);
+  color: var(--sx-waiting);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.mtg {
+  display: grid;
+  gap: var(--sx-space-md);
+}
+.mtg-add {
+  display: grid;
+  gap: var(--sx-space-xs);
+  margin-top: var(--sx-space-2xs);
+}
+.mtg-add label {
+  display: grid;
+  gap: 0.3rem;
+  font-size: var(--sx-text-sm);
+  font-weight: 600;
+  color: var(--sx-ink);
+}
+.mtg-add input,
+.mtg-add textarea {
+  font: inherit;
+  font-weight: 400;
+  border: 1px solid var(--sx-rule-strong);
+  border-radius: var(--sx-radius-control);
+  padding: 0.55rem 0.7rem;
+  background: var(--sx-surface);
+  color: var(--sx-ink);
+}
+.mtg-add textarea {
+  font-family: var(--sx-font-mono);
+  font-size: 0.82rem;
+  resize: vertical;
+}
+.mtg-add-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 11rem;
+  gap: var(--sx-space-xs);
+}
+.mtg-add .room-pill {
+  justify-self: start;
+}
+.mtg-meeting {
+  border: 1px solid var(--sx-rule);
+  border-radius: var(--sx-radius-panel);
+  padding: var(--sx-space-sm);
+  background: var(--sx-surface);
+  display: grid;
+  gap: var(--sx-space-xs);
+}
+.mtg-meeting > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--sx-space-xs);
+}
+.mtg-meeting > header > div {
+  display: grid;
+  gap: 0.15rem;
+}
+.mtg-meeting > header span {
+  color: var(--sx-muted);
+  font-size: var(--sx-text-xs);
+}
+.mtg-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+.mtg-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--sx-space-xs);
+  padding: 0.6rem 0.7rem;
+  border-radius: var(--sx-radius-control);
+  background: var(--sx-paper);
+  border: 1px solid var(--sx-rule);
+}
+.mtg-list li[data-status="dismissed"] {
+  opacity: 0.6;
+}
+.mtg-list li[data-status="accepted"] {
+  background: var(--sx-done-soft);
+  border-color: color-mix(in oklch, var(--sx-done) 25%, transparent);
+}
+.mtg-item {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+.mtg-item p {
+  margin: 0;
+  font-size: var(--sx-text-sm);
+  color: var(--sx-ink);
+}
+.mtg-kind {
+  justify-self: start;
+  font-family: var(--sx-font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sx-accent);
+}
+.mtg-kind[data-kind="decision"] {
+  color: var(--sx-done);
+}
+.mtg-kind[data-kind="question"] {
+  color: var(--sx-waiting);
+}
+.mtg-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: var(--sx-text-xs);
+  color: var(--sx-muted);
+}
+.mtg-owner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--sx-ink-2);
+}
+.mtg-owner .room-build-you {
+  font-size: 0.5rem;
+}
+.mtg-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: none;
+}
+.mtg-status {
+  font-size: var(--sx-text-xs);
+  font-weight: 600;
+  color: var(--sx-ink-2);
+}
+.mtg-undo {
+  border: 0;
+  background: none;
+  color: var(--sx-accent);
+  font-size: var(--sx-text-xs);
+  cursor: pointer;
+  text-decoration: underline;
+}
+.mtg-notes summary {
+  cursor: pointer;
+  font-size: var(--sx-text-xs);
+  color: var(--sx-muted);
+}
+.mtg-notes pre {
+  white-space: pre-wrap;
+  font-family: var(--sx-font-mono);
+  font-size: 0.78rem;
+  background: var(--sx-sunken);
+  border-radius: var(--sx-radius-control);
+  padding: 0.6rem;
+  margin: 0.4rem 0 0;
+}
+.mtg-backlog ul {
+  list-style: none;
+  margin: 0.4rem 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+.mtg-backlog li {
+  display: grid;
+  gap: 0.15rem;
+  font-size: var(--sx-text-sm);
+  padding: 0.5rem 0.7rem;
+  border-left: 3px solid var(--sx-done);
+  background: var(--sx-surface);
+}
+@media (max-width: 560px) {
+  .mtg-add-row {
+    grid-template-columns: 1fr;
+  }
+  .mtg-list li {
+    flex-direction: column;
+  }
+}

@@ -1085,3 +1085,97 @@ describe("phase-one scope and cancellation regression", () => {
     ).rejects.toThrow("cancelled");
   });
 });
+
+describe("meeting notes", () => {
+  const notes =
+    "- Action: draft interview questions\n- Decision: start with bakeries\n- Owners said bread is wasted";
+
+  it("saves the owner's notes as written and proposes items without accepting any", async () => {
+    const service = new SupervisedMissionService(new MemoryStore());
+    const mission = await readyMission(service);
+    const saved = await service.addMeetingNotes({
+      workspaceId: "alpha",
+      id: mission.id,
+      expectedVersion: mission.version,
+      title: "Kick-off",
+      heldOn: "2026-10-30",
+      notes,
+      actorId: "owner",
+      nowMs: 9_000,
+    });
+    const m = saved.meetings![0]!;
+    expect(m.notes).toBe(notes);
+    expect(m.reader).toMatch(/rule-based/);
+    expect(m.proposals.map((p) => p.kind)).toEqual(["action", "decision"]);
+    expect(m.proposals.every((p) => p.status === "proposed")).toBe(true);
+    expect(saved.activity.at(-1)?.summary).not.toContain("bakeries");
+  });
+
+  it("records only the owner's decision on each item, and can put it back or remove the notes", async () => {
+    const service = new SupervisedMissionService(new MemoryStore());
+    const mission = await readyMission(service);
+    const saved = await service.addMeetingNotes({
+      workspaceId: "alpha",
+      id: mission.id,
+      expectedVersion: mission.version,
+      title: "Kick-off",
+      heldOn: null,
+      notes,
+      actorId: "owner",
+      nowMs: 9_000,
+    });
+    const meeting = saved.meetings![0]!;
+    const decide = (version: number, decision: "accepted" | "dismissed" | "proposed") =>
+      service.decideMeetingProposal({
+        workspaceId: "alpha",
+        id: mission.id,
+        expectedVersion: version,
+        meetingId: meeting.id,
+        proposalId: meeting.proposals[0]!.id,
+        decision,
+        actorId: "owner",
+        nowMs: 9_500,
+      });
+    await expect(decide(saved.version - 1, "accepted")).rejects.toThrow(/another session/);
+    const accepted = await decide(saved.version, "accepted");
+    expect(accepted.meetings![0]!.proposals[0]).toMatchObject({
+      status: "accepted",
+      decidedBy: "owner",
+    });
+    expect(accepted.meetings![0]!.proposals[1]!.status).toBe("proposed");
+    const reopened = await decide(accepted.version, "proposed");
+    expect(reopened.meetings![0]!.proposals[0]).toMatchObject({
+      status: "proposed",
+      decidedAt: null,
+    });
+
+    const removed = await service.removeMeetingNotes({
+      workspaceId: "alpha",
+      id: mission.id,
+      expectedVersion: reopened.version,
+      meetingId: meeting.id,
+      actorId: "owner",
+      nowMs: 9_900,
+    });
+    expect(removed.meetings).toEqual([]);
+  });
+
+  it("refuses empty notes and stopped projects", async () => {
+    const service = new SupervisedMissionService(new MemoryStore());
+    const mission = await readyMission(service);
+    const add = (version: number, text: string) =>
+      service.addMeetingNotes({
+        workspaceId: "alpha",
+        id: mission.id,
+        expectedVersion: version,
+        title: "",
+        heldOn: null,
+        notes: text,
+        actorId: "owner",
+        nowMs: 9_000,
+      });
+    await expect(add(mission.version, "  ")).rejects.toThrow(/Paste the notes/);
+    const stopped = await service.cancel({ workspaceId: "alpha", id: mission.id, nowMs: 9_100 });
+    await expect(add(stopped.version, notes)).rejects.toThrow(/stopped/);
+  });
+});
