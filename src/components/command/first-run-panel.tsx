@@ -104,7 +104,7 @@ export function FirstRunPanel({ projects }: { projects: FirstProjectSource[] }) 
         <div className="prj-learn">
           <p className="prj-first-sub">
             <span className="room-mono">Your learning path</span> {reached.size} of {LESSONS.length}{" "}
-            steps reached in your recent projects ·{" "}
+            lessons on steps you’ve reached in your recent projects ·{" "}
             <Link to="/learn" className="prj-link">
               All lessons
             </Link>

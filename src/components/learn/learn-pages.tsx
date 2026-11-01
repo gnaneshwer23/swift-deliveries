@@ -71,8 +71,9 @@ export function LearnHub() {
               <li>
                 <b>Ticks mean you got there.</b>
                 <span>
-                  A lesson is ticked when your project record shows you reached its step. That says
-                  where you have been, not that you have mastered it. Reading alone doesn’t tick it.
+                  A lesson is ticked when one of your recent live projects shows you reached its
+                  step. That says where you have been, not that you have mastered it. Reading alone
+                  doesn’t tick it.
                 </span>
               </li>
             </ul>
