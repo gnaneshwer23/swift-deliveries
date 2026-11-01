@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { SHARE_IMAGE } from "@/components/marketing/page-head";
 import {
   Outlet,
   Link,
@@ -102,7 +103,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Turn a product question into evidence, compared options and reviewable work with specialist AI contributions and human decisions in one workspace.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: SHARE_IMAGE.url },
+      { property: "og:image:alt", content: SHARE_IMAGE.alt },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: SHARE_IMAGE.url },
       { name: "twitter:site", content: "@DeliverX" },
       { name: "google-site-verification", content: "01SF2wyvksp5LbUShkwEY6eNxSJcywYglbtYa51luR4" },
     ],

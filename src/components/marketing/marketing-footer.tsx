@@ -6,7 +6,12 @@ import { BrandLogo } from "@/components/brand-logo";
 const FOOTER_GROUPS = [
   {
     label: "Product",
-    links: [{ to: "/how-it-works", label: "How it works" }, PRODUCT_LINKS[0], PRODUCT_LINKS[1]],
+    links: [
+      { to: "/how-it-works", label: "How it works" },
+      PRODUCT_LINKS[0],
+      PRODUCT_LINKS[1],
+      { to: "/learn", label: "Learn" },
+    ],
   },
   {
     label: "Explore",

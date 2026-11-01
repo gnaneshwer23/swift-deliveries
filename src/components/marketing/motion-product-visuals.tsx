@@ -290,7 +290,7 @@ interface HeroToolSpec {
   };
 }
 
-export const HERO_TOOLS: HeroToolSpec[] = [
+const HERO_TOOLS: HeroToolSpec[] = [
   {
     id: "discovery",
     label: "AI Product Discovery",

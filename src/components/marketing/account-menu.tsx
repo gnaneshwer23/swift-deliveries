@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSignOut } from "@/hooks/use-sign-out";
 
-export function displayNameFor(user: User) {
+function displayNameFor(user: User) {
   const meta = user.user_metadata as { full_name?: string; name?: string } | undefined;
   return meta?.full_name || meta?.name || user.email || "Account";
 }
