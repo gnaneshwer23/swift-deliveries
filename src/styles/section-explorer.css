@@ -1,11 +1,11 @@
 .section-explorer {
   width: 100%;
   margin-top: 25px;
-  border: 1px solid #e0ddec;
+  border: 1px solid #e3dfd9;
   border-radius: 20px;
   overflow: hidden;
-  background: #f5f5ff;
-  color: #29283c;
+  background: #f9f5f0;
+  color: #2e2a24;
 }
 .section-explorer-toolbar {
   display: flex;
@@ -13,7 +13,7 @@
   justify-content: space-between;
   gap: 16px;
   padding: 18px 22px;
-  border-bottom: 1px solid #e7e3f1;
+  border-bottom: 1px solid #e9e5df;
   font-size: 13px;
 }
 .section-explorer-toolbar > span {
@@ -28,7 +28,7 @@
   align-items: center;
   gap: 7px;
   background: white;
-  border: 1px solid #ddd6eb;
+  border: 1px solid #ded9d3;
   border-radius: 8px;
   padding: 8px 10px;
   font-size: 11px;
@@ -64,7 +64,7 @@
 }
 .section-active-path {
   fill: none;
-  stroke: #8463bd;
+  stroke: #a36931;
   stroke-width: 0.25;
   stroke-dasharray: 0.6 0.7;
   opacity: 0.5;
@@ -90,20 +90,20 @@
   height: 10px;
   border: 2px solid white;
   border-radius: 50%;
-  background: #8b72cb;
+  background: #af7641;
   box-shadow: 0 0 0 4px #8b72cb30;
 }
 .section-explorer-hotspots button.is-selected .section-explorer-dot {
-  background: #3c285d;
+  background: #39342e;
   box-shadow: 0 0 0 7px #8b72cb40;
 }
 .section-explorer-label {
   position: absolute;
   bottom: calc(100% + 2px);
   white-space: nowrap;
-  background: #fcfbff;
-  border: 1px solid #d8cfea;
-  color: #3b3054;
+  background: #fefbf7;
+  border: 1px solid #e3d1c2;
+  color: #3b3731;
   box-shadow: 0 3px 10px #3c285d09;
   border-radius: 6px;
   padding: 6px 9px;
@@ -112,8 +112,8 @@
 }
 .section-explorer-hotspots button.is-selected .section-explorer-label {
   color: white;
-  background: #3c285d;
-  border-color: #3c285d;
+  background: #39342e;
+  border-color: #39342e;
 }
 .section-explorer-detail {
   padding: 22px 25px 22px 0;
@@ -121,7 +121,7 @@
 }
 .section-explorer-role {
   font-size: 11px !important;
-  color: #847198 !important;
+  color: #8f755e !important;
   line-height: 1.6 !important;
 }
 .section-explorer-role > span {
@@ -137,7 +137,7 @@
 .section-explorer-detail > p {
   font-size: 12px;
   line-height: 1.8;
-  color: #716b7d;
+  color: #726e68;
 }
 .section-explorer-detail dl {
   display: grid;
@@ -146,13 +146,13 @@
 }
 .section-explorer-detail dt {
   font-size: 10px;
-  color: #9585a6;
+  color: #9f8875;
 }
 .section-explorer-detail dd {
   font-size: 12px;
   margin-top: 5px;
   line-height: 1.65;
-  color: #494054;
+  color: #4f4236;
 }
 .section-explorer-action,
 .section-explorer-destination {
@@ -163,17 +163,17 @@
   border: 0;
   background: none;
   padding: 8px 0;
-  color: #76559e;
+  color: #8b5c2e;
   cursor: pointer;
 }
 .section-explorer-destination {
   margin-top: 8px;
-  color: #6b677a;
+  color: #6e6964;
 }
 .section-example-approved {
   display: block;
   font-size: 10px;
-  color: #34784c;
+  color: #407554;
 }
 .section-explorer-stages {
   display: flex;
@@ -182,40 +182,40 @@
   gap: 7px;
   padding: 14px 18px;
   background: #ffffff90;
-  border-top: 1px solid #e8e3f1;
+  border-top: 1px solid #e9e5df;
 }
 .section-explorer-stages button {
   display: flex;
   align-items: center;
   gap: 7px;
   padding: 8px 10px;
-  border: 1px solid #e1d9ee;
+  border: 1px solid #e1dcd6;
   border-radius: 18px;
   background: white;
   cursor: pointer;
   font-size: 10px;
-  color: #726780;
+  color: #7a695b;
 }
 .section-explorer-stages button span {
   font-size: 9px;
-  color: #9f8eba;
+  color: #ae9178;
 }
 .section-explorer-stages button[aria-pressed="true"] {
-  background: #3e2b5b;
+  background: #3b3630;
   color: white;
-  border-color: #3e2b5b;
+  border-color: #3b3630;
 }
 .section-explorer-note {
   font-size: 10px !important;
   line-height: 1.7 !important;
-  color: #998ba7 !important;
+  color: #a18e7e !important;
   padding: 12px 22px;
   background: #fff;
   margin: 0 !important;
 }
 .section-explorer button:focus-visible,
 .section-explorer a:focus-visible {
-  outline: 3px solid #9f7dd5;
+  outline: 3px solid #bd834f;
   outline-offset: 3px;
 }
 .psi-split:has(> .section-explorer) {

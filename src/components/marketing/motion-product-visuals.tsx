@@ -3,16 +3,16 @@ import { Link } from "@tanstack/react-router";
 import { CtaLink } from "./cta-link";
 
 /* ============================================================================
-   1. Motion-Style Duotone Gradient Vector Icons (#849BE5 -> #3D61DD)
+   1. Motion-Style Duotone Gradient Vector Icons (#c59368 -> #a05b00)
    ============================================================================ */
 
 export function ProductDiscoveryIcon({ className = "size-6" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
-      <rect x="2.5" y="3" width="19" height="18" rx="4" fill="#F6F9FF" />
+      <rect x="2.5" y="3" width="19" height="18" rx="4" fill="#fdf8f2" />
       <path
         d="M6.5 8.5h11M6.5 12h7M6.5 15.5h5"
-        stroke="#849BE5"
+        stroke="#c59368"
         strokeWidth="1.6"
         strokeLinecap="round"
       />
@@ -20,7 +20,7 @@ export function ProductDiscoveryIcon({ className = "size-6" }: { className?: str
         cx="16.5"
         cy="15.5"
         r="3.5"
-        fill="#CAD4F4"
+        fill="#e6d1bf"
         stroke="url(#dx-grad-1)"
         strokeWidth="1.5"
       />
@@ -43,8 +43,8 @@ export function ProductDiscoveryIcon({ className = "size-6" }: { className?: str
           y2="21"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#849BE5" />
-          <stop offset="1" stopColor="#3D61DD" />
+          <stop stopColor="#c59368" />
+          <stop offset="1" stopColor="#a05b00" />
         </linearGradient>
       </defs>
     </svg>
@@ -56,11 +56,11 @@ export function ProductPrdIcon({ className = "size-6" }: { className?: string })
     <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
       <path
         d="M5 5.5A2.5 2.5 0 0 1 7.5 3h6.8L19 7.7v10.8a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 5 18.5v-13Z"
-        fill="#F6F9FF"
+        fill="#fdf8f2"
         stroke="url(#dx-grad-2)"
         strokeWidth="1.5"
       />
-      <path d="M14 3v5h5" fill="#CAD4F4" />
+      <path d="M14 3v5h5" fill="#e6d1bf" />
       <path d="M14 3v5h5" stroke="url(#dx-grad-2)" strokeWidth="1.5" strokeLinejoin="round" />
       <path
         d="M8.5 11.5h7M8.5 14.5h7M8.5 17.5h4.5"
@@ -77,8 +77,8 @@ export function ProductPrdIcon({ className = "size-6" }: { className?: string })
           y2="21"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#849BE5" />
-          <stop offset="1" stopColor="#3D61DD" />
+          <stop stopColor="#c59368" />
+          <stop offset="1" stopColor="#a05b00" />
         </linearGradient>
       </defs>
     </svg>
@@ -94,14 +94,14 @@ export function ProductPrototypeIcon({ className = "size-6" }: { className?: str
         width="19"
         height="16"
         rx="3.5"
-        fill="#F6F9FF"
+        fill="#fdf8f2"
         stroke="url(#dx-grad-3)"
         strokeWidth="1.5"
       />
       <path d="M2.5 8.5h19" stroke="url(#dx-grad-3)" strokeWidth="1.4" />
-      <rect x="5.5" y="11" width="5.5" height="6.5" rx="1.5" fill="#CAD4F4" />
-      <rect x="13" y="11" width="5.5" height="3" rx="1" fill="#9AADEC" />
-      <rect x="13" y="15" width="5.5" height="2.5" rx="1" fill="#DEE5FB" />
+      <rect x="5.5" y="11" width="5.5" height="6.5" rx="1.5" fill="#e6d1bf" />
+      <rect x="13" y="11" width="5.5" height="3" rx="1" fill="#d1a782" />
+      <rect x="13" y="15" width="5.5" height="2.5" rx="1" fill="#eae5de" />
       <defs>
         <linearGradient
           id="dx-grad-3"
@@ -111,8 +111,8 @@ export function ProductPrototypeIcon({ className = "size-6" }: { className?: str
           y2="20"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#849BE5" />
-          <stop offset="1" stopColor="#3D61DD" />
+          <stop stopColor="#c59368" />
+          <stop offset="1" stopColor="#a05b00" />
         </linearGradient>
       </defs>
     </svg>
@@ -128,7 +128,7 @@ export function ProductImproveIcon({ className = "size-6" }: { className?: strin
         width="19"
         height="17"
         rx="3.5"
-        fill="#F6F9FF"
+        fill="#fdf8f2"
         stroke="url(#dx-grad-4)"
         strokeWidth="1.5"
       />
@@ -140,7 +140,7 @@ export function ProductImproveIcon({ className = "size-6" }: { className?: strin
       />
       <path
         d="m6.5 10 4-2.5 3.5 2 4-3"
-        stroke="#3D61DD"
+        stroke="#a05b00"
         strokeWidth="1.6"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -154,8 +154,8 @@ export function ProductImproveIcon({ className = "size-6" }: { className?: strin
           y2="20.5"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#849BE5" />
-          <stop offset="1" stopColor="#3D61DD" />
+          <stop stopColor="#c59368" />
+          <stop offset="1" stopColor="#a05b00" />
         </linearGradient>
       </defs>
     </svg>
@@ -167,7 +167,7 @@ export function MissionPlannerIcon({ className = "size-6" }: { className?: strin
     <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
       <path
         d="M12 3 4 7v10l8 4 8-4V7l-8-4Z"
-        fill="#F6F9FF"
+        fill="#fdf8f2"
         stroke="url(#dx-grad-5)"
         strokeWidth="1.5"
         strokeLinejoin="round"
@@ -182,8 +182,8 @@ export function MissionPlannerIcon({ className = "size-6" }: { className?: strin
           y2="21"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#849BE5" />
-          <stop offset="1" stopColor="#3D61DD" />
+          <stop stopColor="#c59368" />
+          <stop offset="1" stopColor="#a05b00" />
         </linearGradient>
       </defs>
     </svg>
@@ -195,7 +195,7 @@ export function ApprovalGateIcon({ className = "size-6" }: { className?: string 
     <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
       <path
         d="M12 2.8 4.5 6v5.8c0 5.1 3.2 8.7 7.5 9.9 4.3-1.2 7.5-4.8 7.5-9.9V6L12 2.8Z"
-        fill="#F6F9FF"
+        fill="#fdf8f2"
         stroke="url(#dx-grad-6)"
         strokeWidth="1.5"
       />
@@ -215,8 +215,8 @@ export function ApprovalGateIcon({ className = "size-6" }: { className?: string 
           y2="21.7"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#849BE5" />
-          <stop offset="1" stopColor="#3D61DD" />
+          <stop stopColor="#c59368" />
+          <stop offset="1" stopColor="#a05b00" />
         </linearGradient>
       </defs>
     </svg>
@@ -232,13 +232,13 @@ export function BudgetShieldIcon({ className = "size-6" }: { className?: string 
         width="18"
         height="15"
         rx="3.5"
-        fill="#F6F9FF"
+        fill="#fdf8f2"
         stroke="url(#dx-grad-7)"
         strokeWidth="1.5"
       />
       <path d="M3 9.5h18" stroke="url(#dx-grad-7)" strokeWidth="1.5" />
-      <rect x="6.5" y="13" width="6" height="3" rx="1" fill="#CAD4F4" />
-      <circle cx="16.5" cy="14.5" r="1.8" fill="#3D61DD" />
+      <rect x="6.5" y="13" width="6" height="3" rx="1" fill="#e6d1bf" />
+      <circle cx="16.5" cy="14.5" r="1.8" fill="#a05b00" />
       <defs>
         <linearGradient
           id="dx-grad-7"
@@ -248,8 +248,8 @@ export function BudgetShieldIcon({ className = "size-6" }: { className?: string 
           y2="19.5"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#849BE5" />
-          <stop offset="1" stopColor="#3D61DD" />
+          <stop stopColor="#c59368" />
+          <stop offset="1" stopColor="#a05b00" />
         </linearGradient>
       </defs>
     </svg>
@@ -1131,7 +1131,7 @@ export function InteractiveProductDashboardShowcase() {
                           <Link
                             to="/command"
                             search={{ intent: m.intent, prompt: m.prompt } as never}
-                            className="text-xs font-semibold text-[#2C77E7] hover:underline"
+                            className="text-xs font-semibold text-[#b1670f] hover:underline"
                           >
                             Load in Command Centre →
                           </Link>
@@ -1212,7 +1212,7 @@ export function InteractiveProductDashboardShowcase() {
                           </span>
                         </div>
                         <div className="mt-2 h-2.5 w-full rounded-full bg-slate-200 overflow-hidden">
-                          <div className="h-full w-[82%] bg-gradient-to-r from-[#3e63dd] to-[#f59e0b]" />
+                          <div className="h-full w-[82%] bg-gradient-to-r from-[#a25c03] to-[#ccb352]" />
                         </div>
                         <p className="text-xs text-slate-600 mt-2.5">
                           Next queued task (Wireframing Agent · 6 cr) fits within your 18 remaining
@@ -1550,24 +1550,24 @@ export function ProductAccordionVisual({
               </div>
               <span className="motion-pill-slate">0 Credits Spent</span>
             </div>
-            <p className="text-xs text-[#475467] mb-3">
+            <p className="text-xs text-[#5e5044] mb-3">
               DeliverX pauses on underspecified briefs instead of hallucinating product scope:
             </p>
             <div className="space-y-3">
-              <div className="rounded-xl border border-[#DCE4FE] bg-[#F8FAFF] p-3.5">
-                <p className="text-xs font-semibold text-[#101828]">
+              <div className="rounded-xl border border-[#f3e1d3] bg-[#fef9f3] p-3.5">
+                <p className="text-xs font-semibold text-[#1b1813]">
                   Q1. Who is the primary decision-maker for this brief (e.g., COO sponsor, Product
                   Lead, or Engineering Manager)?
                 </p>
-                <div className="mt-2 rounded-lg bg-white px-3 py-2 text-xs text-[#2C77E7] font-medium border border-[#CAD4F4]">
+                <div className="mt-2 rounded-lg bg-white px-3 py-2 text-xs text-[#b1670f] font-medium border border-[#e6d1bf]">
                   ✓ Answered: COO / Head of Delivery running 5–30 change projects/year
                 </div>
               </div>
-              <div className="rounded-xl border border-[#DCE4FE] bg-[#F8FAFF] p-3.5">
-                <p className="text-xs font-semibold text-[#101828]">
+              <div className="rounded-xl border border-[#f3e1d3] bg-[#fef9f3] p-3.5">
+                <p className="text-xs font-semibold text-[#1b1813]">
                   Q2. What constraints or non-goals must the recommendation respect?
                 </p>
-                <div className="mt-2 rounded-lg bg-white px-3 py-2 text-xs text-[#2C77E7] font-medium border border-[#CAD4F4]">
+                <div className="mt-2 rounded-lg bg-white px-3 py-2 text-xs text-[#b1670f] font-medium border border-[#e6d1bf]">
                   ✓ Answered: Do not build Gantt charts or timesheets; keep tasks minimal
                 </div>
               </div>
@@ -1589,22 +1589,22 @@ export function ProductAccordionVisual({
               <span className="motion-pill-emerald">Automatically tested</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-              <div className="rounded-xl border border-slate-200 bg-[#F8FAFC] p-3.5">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[#3D61DD]">
+              <div className="rounded-xl border border-slate-200 bg-[#fdf9f4] p-3.5">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#a05b00]">
                   Artefact 01 · Structured PRD
                 </span>
-                <h5 className="text-sm font-bold text-[#101828] mt-1">
+                <h5 className="text-sm font-bold text-[#1b1813] mt-1">
                   Baseline Freeze &amp; Change Request Flow
                 </h5>
-                <ul className="mt-2 space-y-1.5 text-xs text-[#475467]">
+                <ul className="mt-2 space-y-1.5 text-xs text-[#5e5044]">
                   <li>• SHA-256 baseline checksum on sponsor sign-off</li>
                   <li>• Every work item links to a named case objective</li>
                   <li>• Scope/cost deltas require an explicit Change Request</li>
                 </ul>
               </div>
-              <div className="rounded-xl border border-[#CAD4F4] bg-white p-3.5 shadow-sm">
+              <div className="rounded-xl border border-[#e6d1bf] bg-white p-3.5 shadow-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#1CAC5E]">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#5ba376]">
                     Artefact 02 · HTML Sandbox
                   </span>
                   <span className="text-[10px] font-mono bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">
@@ -1617,7 +1617,7 @@ export function ProductAccordionVisual({
                     <span className="text-emerald-600">On Track</span>
                   </div>
                   <div className="mt-2 h-2 w-full rounded-full bg-slate-200 overflow-hidden">
-                    <div className="h-full w-4/5 bg-[#2C77E7] rounded-full" />
+                    <div className="h-full w-4/5 bg-[#b1670f] rounded-full" />
                   </div>
                   <div className="mt-2 flex gap-2">
                     <span className="text-[11px] bg-blue-600 text-white px-2.5 py-1 rounded font-medium">
@@ -1804,8 +1804,8 @@ export function ProductAccordionVisual({
               <span className="motion-pill-blue">Zero Context Loss</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-              <div className="rounded-xl bg-[#F8FAFF] border border-[#DCE4FE] p-3.5">
-                <span className="text-[11px] font-bold uppercase text-[#3D61DD]">
+              <div className="rounded-xl bg-[#fef9f3] border border-[#f3e1d3] p-3.5">
+                <span className="text-[11px] font-bold uppercase text-[#a05b00]">
                   Your Constraints
                 </span>
                 <p className="text-xs text-slate-700 mt-1.5 leading-relaxed">
@@ -1848,7 +1848,7 @@ export function ProductAccordionVisual({
                   key={s.step}
                   className={`rounded-xl p-3 border text-center ${
                     s.state === "gate"
-                      ? "bg-[#EEF5FF] border-[#2C77E7] ring-2 ring-[#2C77E7]/20"
+                      ? "bg-[#f8f4ee] border-[#b1670f] ring-2 ring-[#b1670f]/20"
                       : s.state === "done"
                         ? "bg-emerald-50/70 border-emerald-200"
                         : "bg-slate-50 border-slate-200"
@@ -1953,7 +1953,7 @@ export function ProductAccordionVisual({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center w-full motion-card-enter">
             <div className="motion-clean-ui-card text-center">
               <h4 className="text-sm font-bold text-slate-900">Workspace Credit Ceiling</h4>
-              <div className="my-4 mx-auto size-36 rounded-full border-[14px] border-[#2C77E7] border-r-[#4ECDC4] border-b-[#CAD4F4] flex flex-col items-center justify-center">
+              <div className="my-4 mx-auto size-36 rounded-full border-[14px] border-[#b1670f] border-r-[#91c0c5] border-b-[#e6d1bf] flex flex-col items-center justify-center">
                 <strong className="text-2xl font-extrabold text-slate-900">100</strong>
                 <span className="text-[11px] text-slate-500">Credit Hard-Stop</span>
               </div>
@@ -1981,7 +1981,7 @@ export function ProductAccordionVisual({
                     <span className="text-slate-600">138 Roles Planned</span>
                   </div>
                   <div className="h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                    <div className="h-full w-3/5 bg-[#849BE5] rounded-full" />
+                    <div className="h-full w-3/5 bg-[#c59368] rounded-full" />
                   </div>
                 </div>
                 <p className="text-[11px] text-slate-500 pt-1">
@@ -2006,10 +2006,10 @@ export function DesktopMobileCommandShowcase() {
         {/* Top Floating Notification Banner */}
         <div className="motion-floating-gate-banner">
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#2C77E7]">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#b1670f]">
               Human Approval Gate · Ready for Review
             </span>
-            <p className="text-sm font-bold text-[#101828]">
+            <p className="text-sm font-bold text-[#1b1813]">
               Q4 Product Launch &amp; Onboarding Redesign Plan (4 Tasks · 18 Credits)
             </p>
           </div>
@@ -2022,11 +2022,11 @@ export function DesktopMobileCommandShowcase() {
         <div className="motion-app-window">
           <div className="motion-app-sidebar">
             <div className="font-bold text-sm text-slate-900 mb-4 flex items-center gap-2">
-              <span className="size-2.5 rounded-full bg-[#2C77E7]" />
+              <span className="size-2.5 rounded-full bg-[#b1670f]" />
               DeliverX Command
             </div>
             <div className="space-y-1 text-xs text-slate-600">
-              <div className="bg-[#EEF5FF] text-[#2C77E7] font-semibold px-2.5 py-1.5 rounded-lg">
+              <div className="bg-[#f8f4ee] text-[#b1670f] font-semibold px-2.5 py-1.5 rounded-lg">
                 Command Centre
               </div>
               <div className="px-2.5 py-1.5">Active Missions (3)</div>
@@ -2039,7 +2039,7 @@ export function DesktopMobileCommandShowcase() {
               <strong className="text-slate-800 block">Workspace Budget</strong>
               <span>82 / 100 credits remaining</span>
               <div className="mt-1.5 h-1.5 w-full rounded-full bg-slate-200 overflow-hidden">
-                <div className="h-full w-[82%] bg-[#2C77E7]" />
+                <div className="h-full w-[82%] bg-[#b1670f]" />
               </div>
             </div>
           </div>
@@ -2112,7 +2112,7 @@ export function DesktopMobileCommandShowcase() {
       {/* Mobile Supervision Companion Card */}
       <div className="motion-mobile-companion">
         <div className="motion-mobile-notch" />
-        <div className="text-[10px] font-mono uppercase tracking-wider text-[#93c5fd] font-bold">
+        <div className="text-[10px] font-mono uppercase tracking-wider text-[#e3b791] font-bold">
           Mobile Supervision View
         </div>
         <h4 className="text-base font-bold text-white mt-1">Q4 Onboarding Delivery Report</h4>

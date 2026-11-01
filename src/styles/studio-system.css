@@ -1,31 +1,31 @@
 /* Hallmark · genre: modern-minimal · macrostructure: Workbench (app) + Long Document (content)
  * design-system: design.md · designed-as-app · theme: custom (tuned to the homepage foundation)
- * paper oklch(98.2% 0.004 265) · accent oklch(50% 0.17 275) indigo · Albert Sans + Inter
+ * paper oklch(98.2% 0.008 75) · accent oklch(50.0% 0.113 62) indigo · Albert Sans + Inter
  * axes: light / grotesk-sans / cool
  */
 
 /* Tokens are scoped to .sx so they never leak into marketing or unmigrated screens. */
 .sx {
-  --sx-paper: oklch(98.2% 0.004 265);
-  --sx-surface: oklch(100% 0 0);
-  --sx-sunken: oklch(96% 0.008 265);
-  --sx-ink: oklch(29% 0.05 265);
-  --sx-ink-2: oklch(43% 0.035 265);
-  --sx-muted: oklch(52% 0.025 265);
-  --sx-rule: oklch(90% 0.012 265);
-  --sx-rule-strong: oklch(82% 0.015 265);
-  --sx-accent: oklch(50% 0.17 275);
-  --sx-accent-hover: oklch(44% 0.16 275);
-  --sx-accent-ink: oklch(99% 0 0);
-  --sx-accent-soft: oklch(95.5% 0.025 275);
-  --sx-waiting: oklch(50% 0.12 65);
-  --sx-waiting-soft: oklch(96.5% 0.04 85);
-  --sx-done: oklch(46% 0.1 155);
-  --sx-done-soft: oklch(96.5% 0.03 155);
-  --sx-danger: oklch(50% 0.17 27);
-  --sx-danger-soft: oklch(96.5% 0.03 27);
+  --sx-paper: oklch(98.2% 0.008 75);
+  --sx-surface: oklch(100.0% 0.000 75);
+  --sx-sunken: oklch(96.0% 0.010 75);
+  --sx-ink: oklch(29.0% 0.012 75);
+  --sx-ink-2: oklch(43.0% 0.026 62);
+  --sx-muted: oklch(52.0% 0.010 75);
+  --sx-rule: oklch(90.0% 0.008 75);
+  --sx-rule-strong: oklch(82.0% 0.008 75);
+  --sx-accent: oklch(50.0% 0.113 62);
+  --sx-accent-hover: oklch(44.0% 0.100 62);
+  --sx-accent-ink: oklch(99.0% 0.006 75);
+  --sx-accent-soft: oklch(95.5% 0.010 75);
+  --sx-waiting: oklch(45.0% 0.092 95);
+  --sx-waiting-soft: oklch(96.5% 0.040 95);
+  --sx-done: oklch(46.0% 0.080 155);
+  --sx-done-soft: oklch(96.5% 0.024 155);
+  --sx-danger: oklch(50.0% 0.170 27);
+  --sx-danger-soft: oklch(96.5% 0.030 27);
   --sx-focus: var(--sx-accent);
-  --sx-shadow-float: 0 12px 32px oklch(29% 0.05 265 / 0.12);
+  --sx-shadow-float: 0 12px 32px oklch(29.0% 0.012 75 / 0.12);
 
   --sx-font-display: "Albert Sans", Inter, ui-sans-serif, system-ui, sans-serif;
   --sx-font-body: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;

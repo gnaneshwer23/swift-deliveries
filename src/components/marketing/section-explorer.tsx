@@ -518,12 +518,12 @@ export function SectionExplorer({ kind }: { kind: SceneKind }) {
                 markerHeight="5"
                 orient="auto-start-reverse"
               >
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#795bc9" />
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#a5600e" />
               </marker>
             </defs>
             <path d={point.path} className="section-active-path" markerEnd={`url(#${id}-arrow)`} />
             {playing && visible && !reduced && !(index === points.length - 1) && (
-              <circle r=".8" fill="#795bc9">
+              <circle r=".8" fill="#a5600e">
                 <animateMotion dur="2.3s" repeatCount="indefinite" path={point.path} />
               </circle>
             )}

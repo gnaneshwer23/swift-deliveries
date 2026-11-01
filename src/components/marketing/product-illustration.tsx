@@ -179,7 +179,7 @@ export function ProductIllustration({
             markerHeight="5"
             orient="auto-start-reverse"
           >
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#8881d4" />
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#b68051" />
           </marker>
         </defs>
         {diagram.edges.map(([a, b], i) => {
@@ -194,7 +194,7 @@ export function ProductIllustration({
             <g key={i}>
               <path d={d} className="psi-process-edge" markerEnd={`url(#${id}-arrow)`} />
               {moving && (
-                <circle r="3" fill="#6d5ce7">
+                <circle r="3" fill="#ac6203">
                   <animateMotion
                     dur={`${2 + i * 0.15}s`}
                     begin="0s"

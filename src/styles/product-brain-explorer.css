@@ -2,11 +2,11 @@
   max-width: 1240px;
   margin: 48px auto 0;
   text-align: left;
-  background: #f6f6ff;
-  border: 1px solid #e6e5f0;
+  background: #fbf6f0;
+  border: 1px solid #eae6e1;
   border-radius: 24px;
   overflow: hidden;
-  color: #192239;
+  color: #26221d;
 }
 .brain-intro {
   padding: 32px 38px 0;
@@ -17,7 +17,7 @@
 }
 .brain-intro p {
   font-size: 12px;
-  color: #70698f;
+  color: #826a55;
   margin: 0 0 12px;
 }
 .brain-intro h2 {
@@ -28,7 +28,7 @@
 }
 .brain-example-badge {
   font-size: 11px;
-  border: 1px solid #d9d5ed;
+  border: 1px solid #ddd8d1;
   border-radius: 20px;
   padding: 7px 12px;
   white-space: nowrap;
@@ -55,7 +55,7 @@
   background: none;
   border: 0;
   border-radius: 10px;
-  color: #9291a3;
+  color: #97928d;
   text-align: left;
   padding: 16px 8px;
   cursor: pointer;
@@ -69,11 +69,11 @@
   flex: 1;
 }
 .brain-layer-list button[aria-pressed="true"] {
-  color: #252035;
-  background: #eceafa;
+  color: #27231e;
+  background: #f0ebe6;
 }
 .brain-layer-list button[aria-pressed="true"] > span {
-  color: #7a5ce0;
+  color: #ae6407;
 }
 .brain-layer-copy {
   margin: 24px 8px;
@@ -87,7 +87,7 @@
 .brain-layer-copy p {
   font-size: 13px;
   line-height: 1.8;
-  color: #6a6a7d;
+  color: #706b66;
   margin: 12px 0;
 }
 .brain-layer-copy a {
@@ -95,7 +95,7 @@
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: #6251ae;
+  color: #8d5312;
 }
 .brain-playback {
   display: flex;
@@ -108,7 +108,7 @@
   gap: 8px;
   font-size: 11px;
   padding: 10px 12px;
-  border: 1px solid #d8d4e7;
+  border: 1px solid #dbd6d0;
   border-radius: 8px;
   background: white;
   cursor: pointer;
@@ -120,7 +120,7 @@
 .brain-boundary {
   font-size: 10px;
   line-height: 1.7;
-  color: #858297;
+  color: #89847e;
   margin: 14px 8px 0;
   max-width: 270px;
 }
@@ -154,18 +154,18 @@
 }
 .brain-return-path {
   fill: none;
-  stroke: #b9b4c8;
+  stroke: #bbb7b0;
   stroke-width: 2;
   stroke-dasharray: 5 6;
 }
 .brain-return-path.is-highlighted {
-  stroke: #7860cf;
+  stroke: #a96314;
   stroke-width: 3;
 }
 .brain-return-label {
   font-family: inherit;
   font-size: 17px;
-  fill: #716885;
+  fill: #7d6959;
 }
 .brain-hotspots {
   position: absolute;
@@ -188,18 +188,18 @@
   width: 12px;
   height: 12px;
   border: 2px solid white;
-  background: #7660c9;
+  background: #a5631c;
   border-radius: 50%;
   box-shadow: 0 0 0 4px #7660c92b;
 }
 .brain-hotspot.is-selected .brain-hotspot-dot {
-  background: #332451;
+  background: #322e28;
   box-shadow: 0 0 0 7px #7660c93b;
 }
 .brain-hotspot-name {
   position: absolute;
   bottom: calc(100% + 4px);
-  background: #282137;
+  background: #29251f;
   color: white;
   border-radius: 6px;
   padding: 7px 10px;
@@ -222,15 +222,15 @@
 .brain-object-strip button {
   padding: 7px 10px;
   background: transparent;
-  border: 1px solid #ded9ee;
+  border: 1px solid #e1dcd5;
   border-radius: 20px;
   font-size: 11px;
   cursor: pointer;
 }
 .brain-object-strip button[aria-pressed="true"] {
-  background: #34294d;
+  background: #34302a;
   color: white;
-  border-color: #34294d;
+  border-color: #34302a;
 }
 .brain-inspector {
   display: grid;
@@ -238,12 +238,12 @@
   gap: 40px;
   padding: 26px 38px;
   background: #fff;
-  border-top: 1px solid #e7e3f0;
+  border-top: 1px solid #e9e5df;
 }
 .brain-inspector span,
 .brain-inspector-output small {
   font-size: 11px;
-  color: #8b7aab;
+  color: #9d7d61;
 }
 .brain-inspector h3 {
   font-size: 21px;
@@ -253,7 +253,7 @@
 .brain-inspector p {
   font-size: 13px;
   line-height: 1.75;
-  color: #717080;
+  color: #75716c;
   max-width: 600px;
 }
 .brain-inspector-output {
@@ -274,32 +274,32 @@
   padding: 9px 0;
   border: 0;
   background: none;
-  color: #69519d;
+  color: #865526;
   font-size: 12px;
   cursor: pointer;
 }
 .brain-example-status {
   padding: 12px 38px;
-  background: #eef9f1;
+  background: #eff8f2;
   font-size: 12px;
-  color: #317349;
+  color: #3d7050;
 }
 .brain-engine-panel {
   padding: 28px;
   background: white;
-  border-top: 1px solid #e7e3f0;
+  border-top: 1px solid #e9e5df;
 }
 .brain-engine-panel > h3 {
   font-size: 24px;
 }
 .brain-engine-panel > p {
   font-size: 13px;
-  color: #6f6b7b;
+  color: #716d68;
   margin: 10px 0 20px;
 }
 .brain-explorer button:focus-visible,
 .brain-explorer a:focus-visible {
-  outline: 3px solid #967ae8;
+  outline: 3px solid #c47e3a;
   outline-offset: 4px;
 }
 @media (max-width: 900px) {
@@ -340,7 +340,7 @@
   }
   .brain-layer-list button {
     padding: 10px 8px;
-    border: 1px solid #e0dcec;
+    border: 1px solid #e2ded8;
   }
   .brain-layer-list strong {
     font-size: 13px;
@@ -414,10 +414,10 @@
   gap: 8px;
   margin: 12px 8px;
   padding: 10px 12px;
-  border: 1px solid #b7cfbd;
-  background: #edf8f0;
+  border: 1px solid #bacec0;
+  background: #eef7f1;
   border-radius: 8px;
-  color: #356345;
+  color: #3d6149;
   font-size: 11px;
   cursor: pointer;
 }
@@ -469,14 +469,14 @@
 /* live flow over the artwork */
 .brain-live-track {
   fill: none;
-  stroke: #7860cf;
+  stroke: #a96314;
   stroke-opacity: 0.18;
   stroke-width: 3;
   stroke-linecap: round;
 }
 .brain-live-dash {
   fill: none;
-  stroke: #7860cf;
+  stroke: #a96314;
   stroke-width: 2.4;
   stroke-linecap: round;
   stroke-dasharray: 2 6;
@@ -492,32 +492,32 @@
   stroke-width: 3;
 }
 .brain-live-dot {
-  fill: #7860cf;
-  filter: drop-shadow(0 0 6px #7860cf);
+  fill: #a96314;
+  filter: drop-shadow(0 0 6px #a96314);
 }
 .brain-live-seg:not([data-focus]) .brain-live-dot {
-  fill: #a796e6;
+  fill: #cc986b;
   filter: none;
 }
 .brain-live[data-boost] .brain-live-dash {
   animation-duration: 1.2s;
 }
 .brain-live-seg[data-held] .brain-live-track {
-  stroke: #c7a24a;
+  stroke: #bea64b;
   stroke-dasharray: 4 6;
 }
 .brain-gate-ring {
   fill: none;
-  stroke: #c7a24a;
+  stroke: #bea64b;
   stroke-width: 2.5;
   stroke-opacity: 0.8;
 }
 .brain-gate[data-open] .brain-gate-ring {
-  stroke: #3fae7a;
+  stroke: #60a97b;
 }
 .brain-gate-pulse {
   fill: none;
-  stroke: #c7a24a;
+  stroke: #bea64b;
   stroke-width: 2;
 }
 @keyframes brain-march {
@@ -544,7 +544,7 @@
 .brain-world.ix .brain-hotspot:focus-visible .brain-hotspot-dot {
   background: transparent;
   box-shadow: none;
-  outline: 2px solid #7860cf;
+  outline: 2px solid #a96314;
   outline-offset: 2px;
   border-radius: 10px;
 }

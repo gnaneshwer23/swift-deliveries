@@ -57,21 +57,21 @@ const ICONS = [
   Workflow,
 ];
 const COLORS = [
-  "#6974d8",
-  "#3287cc",
-  "#438f85",
-  "#a16cbd",
-  "#4879d4",
-  "#6589a0",
-  "#748c63",
-  "#a78a48",
-  "#4d98ab",
-  "#8c79b6",
-  "#628dbb",
+  "#af6f2f",
+  "#ac733f",
+  "#68868a",
+  "#b07744",
+  "#ab6b2c",
+  "#967f6b",
+  "#6a8d75",
+  "#a08d48",
+  "#a78467",
+  "#a47c5a",
+  "#a68162",
   "#a47b76",
-  "#5b9a8c",
-  "#9a8c65",
-  "#6e80ac",
+  "#779295",
+  "#988d65",
+  "#997a60",
 ];
 const SHORT = [
   "Executive",
@@ -509,9 +509,9 @@ export function AgentNetworkExplorer({ embedded = false }: { embedded?: boolean 
                   <svg viewBox="0 0 120 120" aria-hidden="true">
                     <defs>
                       <radialGradient id={gradient} cx="30%" cy="20%" r="85%">
-                        <stop stopColor="#529ff1" />
-                        <stop offset=".48" stopColor="#2259b3" />
-                        <stop offset="1" stopColor="#122e66" />
+                        <stop stopColor="#cb8c51" />
+                        <stop offset=".48" stopColor="#894d01" />
+                        <stop offset="1" stopColor="#36312b" />
                       </radialGradient>
                     </defs>
                     <circle cx="60" cy="60" r="55" fill={`url(#${gradient})`} />
@@ -521,7 +521,7 @@ export function AgentNetworkExplorer({ embedded = false }: { embedded?: boolean 
                       rx="28"
                       ry="55"
                       fill="none"
-                      stroke="#a9ccff"
+                      stroke="#e7c2a2"
                       opacity=".18"
                     />
                     <ellipse
@@ -530,10 +530,10 @@ export function AgentNetworkExplorer({ embedded = false }: { embedded?: boolean 
                       rx="55"
                       ry="24"
                       fill="none"
-                      stroke="#a9ccff"
+                      stroke="#e7c2a2"
                       opacity=".18"
                     />
-                    <path d="M7 48H113M7 72H113M60 5V115" stroke="#a9ccff" opacity=".13" />
+                    <path d="M7 48H113M7 72H113M60 5V115" stroke="#e7c2a2" opacity=".13" />
                   </svg>
                   <BrainCircuit size={25} />
                   <strong>DeliverX</strong>

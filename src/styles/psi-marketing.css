@@ -1,7 +1,7 @@
 /* Original illustration system, layered into DeliverX's existing light canvas. */
 .psi-page-hero {
   padding: 86px 0 60px;
-  background: radial-gradient(ellipse at 84% 30%, #e9f2ff, transparent 48%), #fff;
+  background: radial-gradient(ellipse at 84% 30%, #f5f0eb, transparent 48%), #fff;
 }
 .psi-split {
   display: grid;
@@ -15,7 +15,7 @@
 }
 .psi-lead {
   max-width: 520px;
-  color: #526071;
+  color: #625e58;
   font-size: 18px;
   line-height: 1.75;
   margin: 24px 0 28px;
@@ -32,11 +32,11 @@
   scroll-margin-top: 90px;
 }
 .psi-tinted {
-  background: #f7f9fc;
-  border-block: 1px solid #edf0f5;
+  background: #fcf8f3;
+  border-block: 1px solid #f4efe9;
 }
 .psi-section-copy > p:not(.dxl-eyebrow):not(.psi-fine-print) {
-  color: #526071;
+  color: #625e58;
   font-size: 16px;
   line-height: 1.8;
   margin: 20px 0;
@@ -51,7 +51,7 @@
   text-align: center;
 }
 .psi-section-heading > p:last-child {
-  color: #526071;
+  color: #625e58;
   font-size: 17px;
   line-height: 1.7;
   margin: 18px 0 0;
@@ -63,7 +63,7 @@
 .psi-art-canvas {
   position: relative;
   isolation: isolate;
-  background: radial-gradient(ellipse at 50% 57%, #dce9fc, #f0f5fc 40%, transparent 70%);
+  background: radial-gradient(ellipse at 50% 57%, #ece7e0, #f9f4ed 40%, transparent 70%);
   border-radius: 28px;
 }
 .psi-art img {
@@ -75,7 +75,7 @@
 }
 .psi-art figcaption {
   font-size: 12px;
-  color: #667085;
+  color: #7c6d61;
   line-height: 1.65;
   text-align: center;
   max-width: 90%;
@@ -96,13 +96,13 @@
   margin-top: 0;
 }
 .psi-home-hero-art .psi-art-canvas {
-  background: radial-gradient(ellipse at 50% 58%, #dce9fc, transparent 68%);
+  background: radial-gradient(ellipse at 50% 58%, #ece7e0, transparent 68%);
 }
 .psi-demo-disclosure {
   margin: 28px 0 0;
 }
 .psi-demo-disclosure summary {
-  color: #354a73;
+  color: #61442a;
   cursor: pointer;
   padding: 14px 0;
   font-size: 14px;
@@ -121,14 +121,14 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #3e63dd;
+  color: #a25c03;
 }
 .psi-text-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  color: #314e87;
+  color: #6d4620;
   font-size: 14px;
   font-weight: 600;
   line-height: 1.5;
@@ -139,14 +139,14 @@
   text-decoration: none;
 }
 .psi-text-button:disabled {
-  color: #98a2b3;
+  color: #a5a19b;
   cursor: default;
 }
 .psi-text-button:focus-visible,
 .psi-step-selector button:focus-visible,
 .psi-review-checks summary:focus-visible,
 .psi-demo-disclosure summary:focus-visible {
-  outline: 3px solid #3e63dd;
+  outline: 3px solid #a25c03;
   outline-offset: 5px;
   border-radius: 4px;
 }
@@ -160,10 +160,10 @@
   margin-top: 24px;
 }
 .psi-role-tags span {
-  border: 1px solid #dce3ee;
+  border: 1px solid #e6e2dc;
   border-radius: 99px;
   padding: 7px 12px;
-  color: #475467;
+  color: #5e5044;
   font-size: 12px;
 }
 .psi-icon-list {
@@ -177,17 +177,17 @@
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  color: #3e63dd;
+  color: #a25c03;
 }
 .psi-icon-list strong {
   display: block;
   font-size: 15px;
-  color: #182230;
+  color: #24211c;
 }
 .psi-icon-list span {
   display: block;
   font-size: 14px;
-  color: #667085;
+  color: #7c6d61;
   margin-top: 4px;
   line-height: 1.6;
 }
@@ -201,7 +201,7 @@
 }
 .psi-fine-print {
   font-size: 12px;
-  color: #667085;
+  color: #7c6d61;
   line-height: 1.75;
   margin: 16px 0;
 }
@@ -209,7 +209,7 @@
   text-decoration: underline;
 }
 .psi-walkthrough {
-  border: 1px solid #dfe6ef;
+  border: 1px solid #e9e5df;
   border-radius: 24px;
   background: #fff;
   overflow: hidden;
@@ -218,8 +218,8 @@
 .psi-step-selector {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  background: #f0f4fa;
-  border-bottom: 1px solid #dfe6ef;
+  background: #f8f3ec;
+  border-bottom: 1px solid #e9e5df;
 }
 .psi-step-selector button {
   display: flex;
@@ -228,9 +228,9 @@
   gap: 8px;
   padding: 18px 8px;
   border: 0;
-  border-right: 1px solid #dfe6ef;
+  border-right: 1px solid #e9e5df;
   background: transparent;
-  color: #526071;
+  color: #625e58;
   font: inherit;
   font-size: 13px;
   font-weight: 600;
@@ -248,7 +248,7 @@
 }
 .psi-step-selector button[aria-pressed="true"],
 .psi-step-selector button[aria-selected="true"] {
-  background: #101c32;
+  background: #201c16;
   color: #fff;
 }
 .psi-walk-panel {
@@ -260,11 +260,11 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: linear-gradient(140deg, #f4f8ff, #fff);
+  background: linear-gradient(140deg, #fcf7f1, #fff);
 }
 .psi-example-tag {
   font-size: 10px;
-  color: #667085;
+  color: #7c6d61;
   text-align: center;
   letter-spacing: 0.02em;
   margin: 14px 0;
@@ -278,15 +278,15 @@
   letter-spacing: -0.035em;
   line-height: 1.15;
   margin: 12px 0 18px;
-  color: #101828;
+  color: #1b1813;
 }
 .psi-walk-copy > p:not(.psi-label) {
-  color: #526071;
+  color: #625e58;
   font-size: 14px;
   line-height: 1.75;
 }
 .psi-example-input {
-  border-left: 2px solid #7b9ee3;
+  border-left: 2px solid #c49369;
   padding: 3px 0 3px 14px;
   margin: 22px 0;
 }
@@ -296,12 +296,12 @@
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: #667085;
+  color: #7c6d61;
   font-size: 10px;
 }
 .psi-example-input p {
   margin: 5px 0 0;
-  color: #344054;
+  color: #4b3c30;
   font-size: 13px;
   line-height: 1.7;
 }
@@ -316,12 +316,12 @@
   display: flex;
   gap: 10px;
   align-items: flex-start;
-  color: #475467;
+  color: #5e5044;
   font-size: 14px;
   line-height: 1.65;
 }
 .psi-check-list svg {
-  color: #3e63dd;
+  color: #a25c03;
   flex: none;
   margin-top: 4px;
 }
@@ -329,14 +329,14 @@
   display: flex;
   gap: 12px;
   padding: 14px;
-  background: #f0f5ff;
-  border: 1px solid #e0e9fa;
+  background: #f8f4ef;
+  border: 1px solid #ece8e2;
   border-radius: 10px;
-  color: #3e63dd;
+  color: #a25c03;
 }
 .psi-example-output strong {
   display: block;
-  color: #344054;
+  color: #4b3c30;
   font-size: 13px;
   line-height: 1.6;
   margin-top: 4px;
@@ -350,11 +350,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid #e7ecf3;
+  border-top: 1px solid #f0ebe4;
 }
 .psi-walk-nav > span {
   font-size: 12px;
-  color: #667085;
+  color: #7c6d61;
 }
 .psi-builder-layout {
   display: grid;
@@ -365,7 +365,7 @@
 .psi-brief-builder {
   background: #fff;
   padding: 28px;
-  border: 1px solid #dfe6ef;
+  border: 1px solid #e9e5df;
   border-radius: 20px;
   scroll-margin-top: 100px;
   box-shadow: 0 20px 50px -35px #253e6c40;
@@ -389,16 +389,16 @@
   margin-bottom: 7px;
   font-size: 12px;
   font-weight: 650;
-  color: #344054;
+  color: #4b3c30;
 }
 .psi-field textarea {
   resize: vertical;
   width: 100%;
-  border: 1px solid #d5dce7;
+  border: 1px solid #dfdbd5;
   border-radius: 9px;
   padding: 11px 12px;
-  background: #fbfcfe;
-  color: #101828;
+  background: #fefcf8;
+  color: #1b1813;
   font: inherit;
   font-size: 13px;
   line-height: 1.6;
@@ -406,15 +406,15 @@
 .psi-field textarea:focus,
 .psi-text-input:focus {
   outline: 3px solid #3e63dd24;
-  border-color: #6388d3;
+  border-color: #b17d4e;
 }
 .psi-text-input {
   width: 100%;
-  border: 1px solid #d5dce7;
+  border: 1px solid #dfdbd5;
   border-radius: 9px;
   padding: 11px 12px;
-  background: #fbfcfe;
-  color: #101828;
+  background: #fefcf8;
+  color: #1b1813;
   font: inherit;
   font-size: 13px;
 }
@@ -445,7 +445,7 @@
 }
 .psi-enquiry-result {
   background: #fff;
-  border: 1px solid #e4e7ec;
+  border: 1px solid #ebe6e0;
   border-radius: 16px;
   padding: 28px;
 }
@@ -457,7 +457,7 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  color: #526071;
+  color: #625e58;
   font-size: 11px;
   min-height: 22px;
   margin: 14px 0 0;
@@ -470,13 +470,13 @@
 .psi-template {
   min-width: 0;
   background: #fff;
-  border: 1px solid #e3e8f0;
+  border: 1px solid #ebe7e2;
   border-radius: 18px;
   overflow: hidden;
 }
 .psi-template .psi-art-canvas {
   border-radius: 0;
-  background: radial-gradient(ellipse at 50% 70%, #e3edfc, #f8faff 75%);
+  background: radial-gradient(ellipse at 50% 70%, #f0ebe5, #fef9f3 75%);
 }
 .psi-template > div {
   padding: 22px 24px 26px;
@@ -486,38 +486,38 @@
   letter-spacing: -0.03em;
   font-weight: 650;
   margin: 0 0 10px;
-  color: #182230;
+  color: #24211c;
 }
 .psi-template p {
   font-size: 14px;
-  color: #667085;
+  color: #7c6d61;
   line-height: 1.75;
   margin: 0 0 16px;
 }
 .psi-review-checks {
   margin-top: 28px;
-  border-top: 1px solid #e0e6ef;
+  border-top: 1px solid #e9e5e0;
 }
 .psi-review-checks details {
   padding: 18px 0;
-  border-bottom: 1px solid #e0e6ef;
+  border-bottom: 1px solid #e9e5e0;
 }
 .psi-review-checks summary {
   cursor: pointer;
-  color: #344054;
+  color: #4b3c30;
   font-size: 14px;
   font-weight: 600;
 }
 .psi-review-checks p {
-  color: #667085;
+  color: #7c6d61;
   font-size: 14px;
   line-height: 1.8;
   margin: 14px 0 0;
 }
 .psi-founder {
   padding: 64px 0;
-  border-top: 1px solid #e7ecf3;
-  background: #f7f9fc;
+  border-top: 1px solid #f0ebe4;
+  background: #fcf8f3;
 }
 .psi-founder .dxl-wrap {
   max-width: 780px;
@@ -526,17 +526,17 @@
 .psi-founder h2 {
   font-size: 28px;
   line-height: 1.25;
-  color: #182230;
+  color: #24211c;
   letter-spacing: -0.025em;
   margin: 16px 0;
 }
 .psi-founder p {
-  color: #526071;
+  color: #625e58;
   font-size: 14px;
   line-height: 1.8;
 }
 .psi-founder a {
-  color: #314e87;
+  color: #6d4620;
   text-decoration: underline;
 }
 .psi-price-line {
@@ -548,22 +548,22 @@
 .psi-price-line strong {
   font-size: 76px;
   line-height: 1;
-  color: #101828;
+  color: #1b1813;
   letter-spacing: -0.05em;
   font-weight: 700;
 }
 .psi-price-line span {
-  color: #667085;
+  color: #7c6d61;
   font-size: 14px;
 }
 @media (hover: hover) and (pointer: fine) {
   .psi-text-button:not(:disabled):hover {
-    color: #1d3d7c;
+    color: #603401;
     text-decoration: underline;
     text-underline-offset: 4px;
   }
   .psi-step-selector button:not([aria-pressed="true"]):not([aria-selected="true"]):hover {
-    background: #e2eaf7;
+    background: #ede9e3;
   }
 }
 @media (max-width: 1000px) {
@@ -616,7 +616,7 @@
   }
   .psi-step-selector button {
     padding: 14px 8px;
-    border-bottom: 1px solid #dfe6ef;
+    border-bottom: 1px solid #e9e5df;
   }
   .psi-walk-panel {
     gap: 0;
@@ -653,7 +653,7 @@
 }
 .psi-workforce .psi-walk-art {
   margin: 0;
-  background: #f4f2ff;
+  background: #f7f3ee;
 }
 .psi-workforce .psi-walk-copy h2 {
   font-size: 28px;
@@ -661,7 +661,7 @@
   letter-spacing: -0.035em;
   line-height: 1.15;
   margin: 12px 0 0;
-  color: #101828;
+  color: #1b1813;
 }
 .psi-workforce-facts {
   display: grid;
@@ -675,11 +675,11 @@
 .psi-workforce-facts dt {
   font-size: 13px;
   font-weight: 650;
-  color: #182230;
+  color: #24211c;
 }
 .psi-workforce-facts dd {
   margin: 0;
-  color: #526071;
+  color: #625e58;
   font-size: 14px;
   line-height: 1.65;
 }
@@ -693,8 +693,8 @@
   display: grid;
   gap: 12px;
   padding: 18px 28px 20px;
-  border-top: 1px solid #e7ecf3;
-  background: #f8fafc;
+  border-top: 1px solid #f0ebe4;
+  background: #fdf9f4;
 }
 .psi-workforce-actions {
   display: flex;
@@ -703,7 +703,7 @@
 }
 .psi-workforce-gate p {
   margin: 0;
-  color: #526071;
+  color: #625e58;
   font-size: 13px;
   line-height: 1.6;
 }
@@ -757,7 +757,7 @@
 .psi-art-title {
   font-size: 14px;
   font-weight: 700;
-  color: #18283e;
+  color: #2b2721;
   text-align: left;
   margin: 0 0 8px;
   padding: 0 14px;
@@ -769,18 +769,18 @@
   gap: 12px;
   padding: 14px 8px;
   margin: 0;
-  border-top: 1px solid #dce4ef;
+  border-top: 1px solid #e7e3dd;
 }
 .psi-art-handoffs li {
   position: relative;
   font-size: 11px;
-  color: #33465f;
+  color: #534130;
   line-height: 1.5;
   text-align: left;
 }
 .psi-art-handoffs li > span {
   display: block;
-  color: #5b55cf;
+  color: #9a5702;
   font-weight: 800;
   margin-bottom: 3px;
 }
@@ -788,7 +788,7 @@
   position: absolute;
   right: -9px;
   top: 20px;
-  color: #5b55cf;
+  color: #9a5702;
 }
 .psi-judgement {
   padding: 32px 0;
@@ -808,7 +808,7 @@
 }
 .psi-flow-controls button {
   background: #fff;
-  border: 1px solid #d8e0ec;
+  border: 1px solid #e3dfd9;
   border-radius: 12px;
   padding: 18px 12px;
   text-align: left;
@@ -818,27 +818,27 @@
 }
 .psi-flow-controls button span {
   display: block;
-  color: #6254d9;
+  color: #9e5a04;
   font-size: 11px;
   margin-bottom: 8px;
 }
 .psi-flow-controls button[aria-pressed="true"] {
-  border-color: #6455df;
-  background: #f1efff;
-  box-shadow: 0 0 0 1px #6455df;
+  border-color: #a25c03;
+  background: #f5f0eb;
+  box-shadow: 0 0 0 1px #a25c03;
 }
 .psi-flow-arrow {
-  color: #6455df;
+  color: #a25c03;
 }
 .psi-flow-detail {
-  background: #121d31;
+  background: #211d17;
   border-radius: 16px;
   padding: 30px;
-  color: #e5eaf5;
+  color: #ede9e4;
   min-height: 200px;
 }
 .psi-agent-chain {
-  color: #8fdaff;
+  color: #f0c5a2;
   font-size: 14px;
   font-weight: 650;
 }
@@ -848,7 +848,7 @@
 }
 .psi-flow-detail small {
   display: block;
-  color: #b8c7df;
+  color: #d4c2b4;
   margin-top: 22px;
 }
 .psi-price-grid,
@@ -860,13 +860,13 @@
 }
 .psi-plan,
 .psi-feature {
-  border: 1px solid #dce2ed;
+  border: 1px solid #e5e1dc;
   border-radius: 20px;
   padding: 28px;
   background: #fff;
 }
 .psi-plan:nth-child(2) {
-  border: 2px solid #6553d8;
+  border: 2px solid #9e5a04;
 }
 .psi-plan h2 {
   font-size: 26px;
@@ -882,7 +882,7 @@
   font-size: 14px;
   font-weight: 400;
   letter-spacing: 0;
-  color: #64748b;
+  color: #806f61;
 }
 .psi-plan ul {
   padding-left: 20px;
@@ -899,7 +899,7 @@
 .psi-directory-tools input,
 .psi-directory-tools select {
   padding: 14px;
-  border: 1px solid #b9c4d6;
+  border: 1px solid #c7c2bc;
   border-radius: 8px;
   background: white;
   max-width: 100%;
@@ -911,7 +911,7 @@
 }
 .psi-role {
   padding: 20px;
-  border: 1px solid #dde4ee;
+  border: 1px solid #e7e3dd;
   border-radius: 12px;
 }
 .psi-role h3 {
@@ -922,11 +922,11 @@
 .psi-role small {
   font-size: 13px;
   line-height: 1.6;
-  color: #53627b;
+  color: #705d4e;
 }
 .psi-role-status {
   display: inline-block;
-  background: #edf0f8;
+  background: #f4efe9;
   padding: 4px 8px;
   border-radius: 6px;
   font-size: 11px;
@@ -938,7 +938,7 @@
   margin: 24px 0;
 }
 .psi-dept-wheel button {
-  border: 1px solid #c8d3e3;
+  border: 1px solid #d6d1cb;
   border-radius: 24px;
   padding: 10px 14px;
   background: white;
@@ -946,7 +946,7 @@
   font-size: 12px;
 }
 .psi-dept-wheel button[aria-pressed="true"] {
-  background: #26204c;
+  background: #2c2722;
   color: white;
 }
 @media (max-width: 720px) {
@@ -987,10 +987,10 @@
   background: radial-gradient(
     circle,
     transparent 28%,
-    #e4e3f8 28.3%,
+    #eae5de 28.3%,
     transparent 29%,
     transparent 51%,
-    #dbe7f4 51.3%,
+    #e9e5df 51.3%,
     transparent 52%
   );
 }
@@ -1003,17 +1003,17 @@
   transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-265px)
     rotate(calc(-1 * var(--angle)));
   background: #fff;
-  border: 1px solid #c5d3e8;
+  border: 1px solid #d6d1ca;
   border-radius: 12px;
   padding: 10px;
   font-size: 12px;
-  color: #263a54;
+  color: #3d3832;
   cursor: pointer;
 }
 .psi-wheel button[aria-pressed="true"] {
-  background: #31255b;
+  background: #342f2a;
   color: white;
-  border-color: #6553d8;
+  border-color: #9e5a04;
 }
 .psi-wheel-centre {
   position: absolute;
@@ -1023,7 +1023,7 @@
   display: grid;
   gap: 10px;
   text-align: center;
-  color: #33305c;
+  color: #3a3630;
 }
 .psi-wheel-centre span {
   font-size: 12px;
@@ -1049,7 +1049,7 @@
     grid-column: 1/-1;
     grid-row: 1;
     padding: 20px;
-    background: #eeedf9;
+    background: #f2eee8;
     border-radius: 12px;
   }
   .psi-directory-tools label {
@@ -1067,7 +1067,7 @@
   max-width: 1080px;
   text-align: left;
   margin: 48px auto 16px;
-  border: 1px solid #d8e0ef;
+  border: 1px solid #e3dfd9;
   border-radius: 18px;
   overflow: hidden;
   box-shadow: 0 28px 80px #34346a15;
@@ -1075,8 +1075,8 @@
 }
 .psi-preview-sidebar {
   width: 210px;
-  background: #151d30;
-  color: #b8c9e0;
+  background: #211d18;
+  color: #d5c4b5;
   padding: 28px;
   display: flex;
   flex-direction: column;
@@ -1102,18 +1102,18 @@
 }
 .psi-preview-metrics span {
   font-size: 12px;
-  color: #718096;
+  color: #8c7b6e;
 }
 .psi-preview-metrics strong {
   display: block;
   font-size: 14px;
-  color: #2e3c56;
+  color: #403b35;
   margin-top: 8px;
 }
 .psi-preview-chain {
   padding: 20px;
-  background: #f0eefb;
-  color: #514394;
+  background: #f3efea;
+  color: #77440a;
   border-radius: 10px;
   margin: 28px 0;
   font-size: 14px;
@@ -1162,7 +1162,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  color: #34437a;
+  color: #623e1b;
   font-size: 13px;
   line-height: 1.5;
 }
@@ -1171,18 +1171,18 @@
 }
 .psi-process-top button,
 .psi-flow-toggle {
-  border: 1px solid #dce0ef;
+  border: 1px solid #e4e0da;
   border-radius: 20px;
   background: #fff;
   padding: 7px 12px;
   font-size: 11px;
-  color: #5c6381;
+  color: #746050;
   white-space: nowrap;
   cursor: pointer;
 }
 .psi-process-top button:disabled {
   cursor: default;
-  color: #7e8497;
+  color: #88847e;
 }
 .psi-process-svg {
   width: 100%;
@@ -1193,35 +1193,35 @@
 }
 .psi-process-edge {
   fill: none;
-  stroke: #b3b0dd;
+  stroke: #cdb097;
   stroke-width: 1.5;
 }
 .psi-process-node rect {
-  fill: #f7f8ff;
-  stroke: #bcc5fa;
+  fill: #fdf8f1;
+  stroke: #e4c1a4;
   stroke-width: 1.4;
 }
 .psi-process-gate rect {
-  fill: #effbf4;
-  stroke: #66d99b;
+  fill: #f1faf4;
+  stroke: #89d2a2;
   stroke-width: 1.4;
 }
 .psi-process-label {
-  fill: #303d78;
+  fill: #5f3811;
   font-weight: 650;
   font-size: 13px;
 }
 .psi-process-role {
-  fill: #7a849d;
+  fill: #928172;
   font-size: 9px;
 }
 .psi-process-gate .psi-process-label {
-  fill: #187746;
+  fill: #32744d;
 }
 .psi-process figcaption {
   font-size: 11px;
   line-height: 1.7;
-  color: #78839a;
+  color: #908072;
   margin: 10px 0 0;
   text-align: left;
 }
@@ -1248,10 +1248,10 @@
   }
   .psi-process-mobile li {
     position: relative;
-    border: 1px solid #c9d1f5;
+    border: 1px solid #e6ceba;
     border-radius: 10px;
     padding: 12px 16px;
-    background: #f8f9ff;
+    background: #fef9f2;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1263,15 +1263,15 @@
     position: absolute;
     top: -21px;
     left: 50%;
-    color: #8b80d0;
+    color: #b48153;
   }
   .psi-process-mobile li.is-gate {
-    border-color: #82d6a7;
-    background: #f0fcf5;
+    border-color: #94d2a9;
+    background: #f2fbf5;
   }
   .psi-process-mobile span {
     font-size: 11px;
-    color: #738099;
+    color: #8e7c6d;
   }
 }
 /* Give explanatory branches the full section width rather than shrinking labels. */
@@ -1304,12 +1304,12 @@
   flex-direction: column;
   gap: 4px;
   font-size: 13px;
-  border-left: 2px solid #c6c9f6;
+  border-left: 2px solid #e4c7af;
   padding: 5px 12px;
 }
 .psi-process-compact .psi-process-mobile span {
   font-size: 11px;
-  color: #78839a;
+  color: #908072;
 }
 @media (prefers-reduced-motion: reduce) {
   .psi-process * {
@@ -1320,7 +1320,7 @@
   display: block;
   font-size: 10px;
   margin-top: 4px;
-  color: #64749a;
+  color: #896f59;
 }
 @media (max-width: 720px) {
   .psi-process-mobile li + li:before {
@@ -1340,32 +1340,32 @@
 
 /* Wider catalogue: clay workbench family (lavender ground, charcoal base, purple mark, sage stub). */
 .psi-catalogue {
-  background: radial-gradient(ellipse at 12% 0%, #efeaff 0%, transparent 46%), #f4f2ff;
+  background: radial-gradient(ellipse at 12% 0%, #f2ede6 0%, transparent 46%), #f7f3ee;
 }
 .psi-catalogue-lead {
   max-width: 62ch;
   margin: 14px 0 0;
-  color: #3d3a4a;
+  color: #403c37;
   font-size: 17px;
   line-height: 1.6;
 }
 .psi-research-bench {
   margin: 28px 0 8px;
-  background: #2a2a2e;
+  background: #2d2a25;
   border-radius: 32px;
   padding-bottom: 4px;
-  box-shadow: 0 22px 40px rgba(42, 36, 68, 0.1);
+  box-shadow: 0 22px 40px rgba(45, 41, 35, 0.1);
 }
 .psi-research-bench-top {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
   padding: 18px;
-  background: #fbfaf7;
+  background: #fdf9f4;
   border-radius: 28px;
 }
 .psi-research-box {
-  background: #2a2a2e;
+  background: #2d2a25;
   border-radius: 20px;
   padding-bottom: 7px;
   min-width: 0;
@@ -1377,8 +1377,8 @@
   padding: 16px 16px 18px;
 }
 .psi-research-box.is-gap .psi-research-box-face {
-  background: #fbfaf7;
-  border: 1.5px dashed #c9b8f2;
+  background: #fdf9f4;
+  border: 1.5px dashed #e1bb9a;
 }
 .psi-research-box h3 {
   margin: 0 0 8px;
@@ -1386,13 +1386,13 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #5c5672;
+  color: #695747;
 }
 .psi-research-box p {
   margin: 0;
   font-size: 15px;
   line-height: 1.55;
-  color: #1c1b22;
+  color: #1e1c18;
 }
 .psi-clay-lines {
   display: grid;
@@ -1404,13 +1404,13 @@
   display: block;
   height: 4px;
   border-radius: 99px;
-  background: #ddd4f6;
+  background: #ecd5c3;
 }
 .psi-clay-lines span:first-child {
   width: 18px;
   height: 12px;
   border-radius: 4px;
-  background: #c9b8f2;
+  background: #e1bb9a;
 }
 .psi-clay-lines span:nth-child(2) {
   width: 100%;
@@ -1420,7 +1420,7 @@
 }
 .psi-research-box.is-gap .psi-clay-lines span {
   background: transparent;
-  border: 1.5px dashed #c9b8f2;
+  border: 1.5px dashed #e1bb9a;
   height: 6px;
 }
 .psi-research-box.is-gap .psi-clay-lines span:first-child {
@@ -1438,76 +1438,76 @@
   height: 8px;
   margin-right: 6px;
   vertical-align: 1px;
-  background: #9fbfa8;
+  background: #a3bdab;
   border-radius: 99px;
 }
 .psi-planned-mark::before {
   background: transparent;
-  border: 1.5px dashed #b9a6ef;
+  border: 1.5px dashed #d8a980;
   border-radius: 2px;
 }
 .psi-research-bench-note {
   margin: 0;
   padding: 10px 22px 12px;
-  color: #e7e2f6;
+  color: #e9e5de;
   font-size: 12px;
   line-height: 1.5;
 }
 .psi-catalogue-note {
   margin: 22px 0 4px;
-  background: #fbfaf7;
+  background: #fdf9f4;
   border-radius: 18px;
-  box-shadow: 0 6px 0 #2a2a2e;
+  box-shadow: 0 6px 0 #2d2a25;
   padding: 4px 18px 2px;
 }
 .psi-catalogue-note summary {
   cursor: pointer;
   font-weight: 650;
   padding: 12px 0;
-  color: #1c1b22;
+  color: #1e1c18;
 }
 .psi-catalogue-note p {
   margin: 0 0 14px;
-  color: #4c485c;
+  color: #4f4b45;
   font-size: 14px;
   line-height: 1.6;
 }
 .psi-catalogue .psi-wheel {
   background: radial-gradient(
     circle,
-    #fbfaf7 0 26%,
+    #fdf9f4 0 26%,
     transparent 26.4%,
-    #e4dff6 27% 29%,
+    #e7e2db 27% 29%,
     transparent 29.4%,
-    #d9d0f0 50% 52%,
+    #e7d1c0 50% 52%,
     transparent 52.4%
   );
 }
 .psi-catalogue .psi-wheel button {
-  background: #fbfaf7;
-  border: 1px solid #2a2a2e;
+  background: #fdf9f4;
+  border: 1px solid #2d2a25;
   border-radius: 14px;
   box-shadow: none;
-  color: #1c1b22;
+  color: #1e1c18;
   font: inherit;
   font-size: 12px;
   font-weight: 650;
 }
 .psi-catalogue .psi-wheel button[aria-pressed="true"] {
-  background: #2a2a2e;
-  color: #fbfaf7;
-  border-color: #2a2a2e;
-  box-shadow: inset 0 -3px 0 #c9b8f2;
+  background: #2d2a25;
+  color: #fdf9f4;
+  border-color: #2d2a25;
+  box-shadow: inset 0 -3px 0 #e1bb9a;
 }
 .psi-catalogue .psi-wheel-centre {
   width: 148px;
   height: 148px;
   place-content: center;
   align-content: center;
-  background: #fbfaf7;
+  background: #fdf9f4;
   border-radius: 28px;
-  box-shadow: 0 8px 0 #2a2a2e;
-  color: #1c1b22;
+  box-shadow: 0 8px 0 #2d2a25;
+  color: #1e1c18;
 }
 .psi-catalogue .psi-wheel-centre strong {
   font-size: 14px;
@@ -1524,7 +1524,7 @@
   gap: 6px;
   font-size: 12px;
   font-weight: 650;
-  color: #3d3a4a;
+  color: #403c37;
 }
 .psi-catalogue-tools input,
 .psi-catalogue-tools select {
@@ -1533,23 +1533,23 @@
   padding: 0 14px;
   border: 0;
   border-radius: 14px;
-  background: #fbfaf7;
-  color: #1c1b22;
-  box-shadow: 0 4px 0 #2a2a2e;
+  background: #fdf9f4;
+  color: #1e1c18;
+  box-shadow: 0 4px 0 #2d2a25;
   font: inherit;
   font-size: 14px;
 }
 .psi-catalogue .dxl-btn-ghost {
-  background: #fbfaf7;
+  background: #fdf9f4;
   border: 0;
-  box-shadow: 0 4px 0 #2a2a2e;
+  box-shadow: 0 4px 0 #2d2a25;
   border-radius: 14px;
-  color: #1c1b22;
+  color: #1e1c18;
 }
 .psi-catalogue-count,
 .psi-catalogue-empty {
   margin: 0 0 16px;
-  color: #4c485c;
+  color: #4f4b45;
   font-size: 14px;
   line-height: 1.55;
 }
@@ -1568,30 +1568,30 @@
   contain-intrinsic-size: auto 240px;
 }
 .psi-clay-plinth {
-  background: #2a2a2e;
+  background: #2d2a25;
   border-radius: 24px;
   padding-bottom: 8px;
-  box-shadow: 0 16px 28px rgba(42, 36, 68, 0.08);
+  box-shadow: 0 16px 28px rgba(45, 41, 35, 0.08);
 }
 .psi-clay-plinth.is-selected {
   box-shadow:
-    0 0 0 3px #c9b8f2,
-    0 16px 28px rgba(42, 36, 68, 0.08);
+    0 0 0 3px #e1bb9a,
+    0 16px 28px rgba(45, 41, 35, 0.08);
 }
 .psi-clay-card {
   display: block;
   width: 100%;
   border: 0;
   border-radius: 20px;
-  background: #fbfaf7;
-  color: #1c1b22;
+  background: #fdf9f4;
+  color: #1e1c18;
   text-align: left;
   padding: 16px 16px 18px;
   cursor: pointer;
   font: inherit;
 }
 .psi-clay-plinth.is-planned .psi-clay-card {
-  border: 1.5px dashed #c9b8f2;
+  border: 1.5px dashed #e1bb9a;
 }
 .psi-clay-mark {
   display: block;
@@ -1599,11 +1599,11 @@
   height: 14px;
   margin-bottom: 12px;
   border-radius: 4px;
-  background: #c9b8f2;
+  background: #e1bb9a;
 }
 .psi-clay-plinth.is-planned .psi-clay-mark {
   background: transparent;
-  border: 1.5px dashed #c9b8f2;
+  border: 1.5px dashed #e1bb9a;
   box-sizing: border-box;
 }
 .psi-clay-status {
@@ -1613,7 +1613,7 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.01em;
-  color: #3d3a4a;
+  color: #403c37;
 }
 .psi-clay-status.is-stub::before,
 .psi-clay-status.is-planned::before {
@@ -1621,12 +1621,12 @@
   width: 8px;
   height: 8px;
   border-radius: 99px;
-  background: #9fbfa8;
+  background: #a3bdab;
   flex: none;
 }
 .psi-clay-status.is-planned::before {
   background: transparent;
-  border: 1.5px dashed #b9a6ef;
+  border: 1.5px dashed #d8a980;
   border-radius: 2px;
 }
 .psi-clay-name {
@@ -1641,7 +1641,7 @@
   display: block;
   margin-bottom: 12px;
   font-size: 12px;
-  color: #6a6478;
+  color: #6b6761;
 }
 .psi-evidence-lines {
   display: grid;
@@ -1657,16 +1657,16 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #6d657f;
+  color: #776658;
 }
 .psi-evidence-lines dd {
   margin: 0;
   font-size: 13px;
   line-height: 1.5;
-  color: #2c2a36;
+  color: #2f2b27;
 }
 .psi-evidence-lines .is-gap dd {
-  color: #4d4860;
+  color: #58493b;
 }
 .psi-evidence-lines ul {
   margin: 2px 0 0;
@@ -1677,7 +1677,7 @@
   padding: 12px 14px 14px;
   background: #fff;
   border-radius: 16px;
-  color: #2c2a36;
+  color: #2f2b27;
   font-size: 13px;
   line-height: 1.55;
 }
@@ -1689,30 +1689,30 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #6d657f;
+  color: #776658;
 }
 .psi-clay-verify {
   padding: 10px 12px;
   border-radius: 12px;
 }
 .psi-clay-verify.is-stub {
-  background: #e7f0e6;
+  background: #e7f0e9;
 }
 .psi-clay-verify.is-planned,
 .psi-clay-verify.is-other {
   background: transparent;
-  border: 1.5px dashed #c9b8f2;
+  border: 1.5px dashed #e1bb9a;
 }
 .psi-catalogue button:focus-visible,
 .psi-catalogue input:focus-visible,
 .psi-catalogue select:focus-visible,
 .psi-catalogue summary:focus-visible {
-  outline: 3px solid #7c6bb5;
+  outline: 3px solid #9d6d42;
   outline-offset: 3px;
 }
 @media (hover: hover) and (pointer: fine) {
   .psi-catalogue .dxl-btn-ghost:hover {
-    color: #1c1b22;
+    color: #1e1c18;
     border-color: transparent;
     background: #fff;
   }
@@ -1771,8 +1771,8 @@
 
 /* Product page reading: same clay workbench as the wider catalogue. */
 .psi-reading {
-  background: radial-gradient(ellipse at 12% 0%, #efeaff 0%, transparent 46%), #f4f2ff;
-  border-block: 1px solid #e4dff4;
+  background: radial-gradient(ellipse at 12% 0%, #f2ede6 0%, transparent 46%), #f7f3ee;
+  border-block: 1px solid #e7e2db;
 }
 .psi-reading-head {
   max-width: 40rem;
@@ -1794,96 +1794,96 @@
 }
 .psi-hero-reading {
   margin-top: 28px;
-  background: radial-gradient(ellipse at 12% 0%, #efeaff 0%, transparent 46%), #f4f2ff;
+  background: radial-gradient(ellipse at 12% 0%, #f2ede6 0%, transparent 46%), #f7f3ee;
   border-radius: 32px;
   padding: 18px 18px 22px;
 }
 .psi-hero-reading .journey-status,
 .psi-mission .journey-status {
   max-width: none;
-  background: #fbfaf7;
+  background: #fdf9f4;
   border: 0;
   border-radius: 18px;
-  box-shadow: 0 6px 0 #2a2a2e;
-  color: #3d3a4a;
+  box-shadow: 0 6px 0 #2d2a25;
+  color: #403c37;
 }
 .psi-mission .section-explorer {
   border: 0;
   border-radius: 28px;
-  background: #2a2a2e;
-  box-shadow: 0 22px 40px rgba(42, 36, 68, 0.1);
+  background: #2d2a25;
+  box-shadow: 0 22px 40px rgba(45, 41, 35, 0.1);
 }
 .psi-mission .section-explorer-toolbar,
 .psi-mission .section-explorer-note,
 .psi-mission .section-explorer-stages {
   background: transparent;
   border-color: transparent;
-  color: #e7e2f6;
+  color: #e9e5de;
 }
 .psi-mission .section-explorer-toolbar > span,
 .psi-mission .section-explorer-note {
-  color: #e7e2f6 !important;
+  color: #e9e5de !important;
 }
 .psi-mission .section-explorer-toolbar button,
 .psi-mission .section-explorer-stages button {
-  background: #fbfaf7;
+  background: #fdf9f4;
   border: 0;
   border-radius: 14px;
-  box-shadow: 0 4px 0 #1a1a1e;
-  color: #1c1b22;
+  box-shadow: 0 4px 0 #1d1a15;
+  color: #1e1c18;
 }
 .psi-mission .section-explorer-stages button[aria-pressed="true"] {
-  background: #fbfaf7;
-  color: #1c1b22;
+  background: #fdf9f4;
+  color: #1e1c18;
   box-shadow:
-    inset 0 -3px 0 #c9b8f2,
-    0 4px 0 #1a1a1e;
+    inset 0 -3px 0 #e1bb9a,
+    0 4px 0 #1d1a15;
 }
 .psi-mission .section-explorer-layout {
   align-items: center;
   gap: 16px;
   margin: 0 12px;
   padding: 12px;
-  background: #f4f2ff;
+  background: #f7f3ee;
   border-radius: 24px;
 }
 .psi-mission .section-explorer-visual {
   min-width: 0;
   border-radius: 18px;
   overflow: hidden;
-  background: #fbfaf7;
+  background: #fdf9f4;
 }
 .psi-mission .section-explorer-detail {
   margin: 0;
   padding: 18px 18px 14px;
   background: #fff;
   border-radius: 18px;
-  box-shadow: 0 6px 0 #2a2a2e;
+  box-shadow: 0 6px 0 #2d2a25;
 }
 .psi-mission .mission-record-selector button {
   border: 0;
   border-radius: 14px;
-  background: #fbfaf7;
-  box-shadow: 0 4px 0 #2a2a2e;
-  color: #1c1b22;
+  background: #fdf9f4;
+  box-shadow: 0 4px 0 #2d2a25;
+  color: #1e1c18;
 }
 .psi-mission .mission-record-selector button[aria-pressed="true"] {
-  background: #2a2a2e;
-  color: #fbfaf7;
-  box-shadow: inset 0 -3px 0 #c9b8f2;
+  background: #2d2a25;
+  color: #fdf9f4;
+  box-shadow: inset 0 -3px 0 #e1bb9a;
 }
 .psi-mission .mission-record-body {
-  background: #fbfaf7;
+  background: #fdf9f4;
   border: 0;
   border-radius: 20px;
-  box-shadow: 0 8px 0 #2a2a2e;
+  box-shadow: 0 8px 0 #2d2a25;
 }
 .psi-mission .dxl-btn-ghost {
-  background: #fbfaf7;
+  background: #fdf9f4;
   border: 0;
   border-radius: 14px;
-  box-shadow: 0 4px 0 #2a2a2e;
-  color: #1c1b22;
+  box-shadow: 0 4px 0 #2d2a25;
+  color: #1e1c18;
 }
 .psi-hero-reading .psi-research-bench {
   margin-top: 0;
@@ -1915,14 +1915,14 @@
 }
 .psi-reading .journey-detail {
   margin-top: 22px;
-  background: #fbfaf7;
+  background: #fdf9f4;
   border: 0;
   border-radius: 18px;
-  box-shadow: 0 6px 0 #2a2a2e;
+  box-shadow: 0 6px 0 #2d2a25;
   padding: 4px 18px 8px;
 }
 .psi-reading .journey-detail summary {
-  color: #1c1b22;
+  color: #1e1c18;
   font-weight: 650;
 }
 @media (max-width: 1000px) {

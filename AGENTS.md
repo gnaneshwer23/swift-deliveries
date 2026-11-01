@@ -31,7 +31,7 @@ Source: docs/prd-deliverx-supervised-ai-workforce.md. Gap analysis: docs/prd-gap
 
 ## DeliverX PSI product direction
 
-- DeliverX is an AI product company. Keep the current homepage visual foundation.
+- DeliverX is an AI product company. Keep the homepage's layout and illustrations; colours follow palette B, "Ink & Oatmeal" (warm paper, near-black ink, bronze accent, mustard for attention), defined in `src/styles/psi-foundation.css` and recorded in `docs/design-palette-b.md`. Owner chose it on 1 November 2026.
 - Students learn by building products alongside agents in the same environment.
 - Career readiness, job applications, CV packaging, professional credentials and coaching dashboards are retired. Historical documentation lives in docs/archive/career/ and is not current implementation guidance.
 - New product work uses Neon and Neon Auth. Preserve legacy database records and migrations; do not expose legacy Supabase handlers as active product features.

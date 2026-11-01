@@ -5,13 +5,13 @@
   max-width: 650px;
   font-size: 20px;
   line-height: 1.65;
-  color: #526078;
+  color: #6d5c4d;
   margin: 24px 0;
 }
 .mission-example-label {
   font-size: 13px;
   line-height: 1.65;
-  color: #63718a;
+  color: #7f6d5e;
   max-width: 740px;
   margin-top: 24px;
 }
@@ -19,13 +19,13 @@
   display: flex;
   flex-wrap: wrap;
   gap: 12px 32px;
-  border-block: 1px solid #e2e7f0;
+  border-block: 1px solid #eae6e1;
   padding: 22px 0;
   margin-top: 48px;
 }
 .mission-page-nav a {
   font-size: 14px;
-  color: #35496b;
+  color: #5c432e;
   text-decoration: underline;
   text-underline-offset: 5px;
 }
@@ -39,22 +39,22 @@
 .mission-section-heading > p {
   max-width: 370px;
   line-height: 1.75;
-  color: #59677c;
+  color: #726356;
 }
 .mission-decision-section {
-  background: #f5f7fc;
+  background: #fbf6f0;
 }
 .mission-decision-example {
   display: grid;
   grid-template-columns: 1fr 1.12fr;
-  border: 1px solid #dbe2ee;
+  border: 1px solid #e5e1db;
   border-radius: 24px;
   background: white;
   overflow: hidden;
 }
 .mission-case-trail {
   padding: 32px 40px;
-  background: #f9faff;
+  background: #fefaf4;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -67,13 +67,13 @@
   position: absolute;
   left: 0;
   top: 3px;
-  color: #4967dc;
+  color: #a75f00;
   width: 24px;
 }
 .mission-case-trail span,
 .mission-owner-title {
   font-size: 13px;
-  color: #576782;
+  color: #766252;
 }
 .mission-case-trail h3 {
   font-size: 18px;
@@ -82,21 +82,21 @@
 .mission-case-trail p {
   font-size: 14px;
   line-height: 1.7;
-  color: #56647b;
+  color: #706052;
   margin: 0;
 }
 .mission-trail-arrow {
-  color: #869ad9;
+  color: #be936f;
   margin: 12px 0 12px 2px;
   width: 20px;
   height: 25px;
 }
 .mission-case-trail .mission-objection > svg {
-  color: #9e6a24;
+  color: #7b6705;
 }
 .mission-owner-desk {
   padding: 32px 40px;
-  border-left: 1px solid #e2e7f0;
+  border-left: 1px solid #eae6e1;
 }
 .mission-owner-title {
   display: flex;
@@ -105,11 +105,11 @@
 }
 .mission-owner-title > svg {
   width: 20px;
-  color: #4967dc;
+  color: #a75f00;
 }
 .mission-example-chip {
   margin-left: auto;
-  border: 1px solid #dde3f0;
+  border: 1px solid #e6e2dd;
   padding: 4px 9px;
   border-radius: 20px;
   white-space: nowrap;
@@ -121,7 +121,7 @@
 }
 .mission-owner-desk > p {
   font-size: 14px;
-  color: #63718a;
+  color: #7f6d5e;
 }
 .mission-response-options {
   display: grid;
@@ -133,9 +133,9 @@
   justify-content: space-between;
   text-align: left;
   padding: 14px 16px;
-  border: 1px solid #d9e1ef;
+  border: 1px solid #e4e0da;
   border-radius: 10px;
-  color: #314260;
+  color: #523d2a;
   background: white;
   font-size: 14px;
   cursor: pointer;
@@ -144,21 +144,21 @@
     border-color 150ms;
 }
 .mission-response-options button[aria-pressed="true"] {
-  background: #edf1ff;
-  border-color: #4967dc;
-  color: #2444c0;
+  background: #f5f1eb;
+  border-color: #a75f00;
+  color: #7c4603;
 }
 .mission-response-options button:hover {
-  background: #f3f6ff;
+  background: #f9f6f1;
 }
 .mission-response {
-  border-left: 3px solid #4967dc;
+  border-left: 3px solid #a75f00;
   padding: 4px 0 4px 18px;
   min-height: 175px;
 }
 .mission-response > span {
   font-size: 12px;
-  color: #4261ce;
+  color: #9c5902;
 }
 .mission-response h4 {
   font-size: 18px;
@@ -167,19 +167,19 @@
 .mission-response p {
   font-size: 14px;
   line-height: 1.7;
-  color: #56647b;
+  color: #706052;
   margin: 8px 0;
 }
 .mission-owner-desk > small {
   display: block;
   font-size: 12px;
   line-height: 1.6;
-  color: #63718a;
+  color: #7f6d5e;
   margin-top: 20px;
 }
 .mission-reset {
   font-size: 13px;
-  color: #3e5ac6;
+  color: #945402;
   text-decoration: underline;
   margin-top: 16px;
   cursor: pointer;
@@ -187,7 +187,7 @@
   border: 0;
 }
 .mission-learning-section {
-  background: #f5f7fc;
+  background: #fbf6f0;
 }
 .mission-learning-flow {
   display: grid;
@@ -195,7 +195,7 @@
   list-style: none;
   padding: 0;
   margin: 40px 0 0;
-  border-top: 2px solid #b8c6ed;
+  border-top: 2px solid #dcc1ab;
   gap: 40px;
 }
 .mission-learning-flow li {
@@ -207,8 +207,8 @@
   position: absolute;
   top: -7px;
   left: 0;
-  background: #4967dc;
-  border: 3px solid #f5f7fc;
+  background: #a75f00;
+  border: 3px solid #fbf6f0;
   width: 12px;
   height: 12px;
   border-radius: 50%;
@@ -218,20 +218,20 @@
   position: absolute;
   top: -16px;
   right: -26px;
-  color: #4967dc;
-  background: #f5f7fc;
+  color: #a75f00;
+  background: #fbf6f0;
   padding: 0 6px;
 }
 .mission-learning-flow span {
   font-size: 13px;
-  color: #4261ce;
+  color: #9c5902;
 }
 .mission-learning-flow h3 {
   font-size: 21px;
   margin: 14px 0;
 }
 .mission-learning-flow p {
-  color: #56647b;
+  color: #706052;
   font-size: 15px;
   line-height: 1.75;
 }
@@ -239,16 +239,16 @@
   display: block;
   font-weight: 500;
   font-size: 13px;
-  color: #6a542b;
+  color: #554a1d;
   margin-top: 20px;
 }
 .mission-learning-return {
-  border: 1px dashed #a7b8e6;
+  border: 1px dashed #d2b298;
   border-top: 0;
   border-radius: 0 0 20px 20px;
   padding: 20px;
   margin: 30px 0;
-  color: #526aa7;
+  color: #8c623d;
   font-size: 14px;
   text-align: center;
 }
@@ -259,14 +259,14 @@
   gap: 40px;
 }
 .mission-final p {
-  color: #59677c;
+  color: #726356;
   max-width: 500px;
   line-height: 1.75;
   margin-top: 24px;
 }
 .mission-decision-example button:focus-visible,
 .mission-page-nav a:focus-visible {
-  outline: 3px solid #4967dc;
+  outline: 3px solid #a75f00;
   outline-offset: 4px;
 }
 @media (max-width: 760px) {
@@ -283,7 +283,7 @@
   }
   .mission-owner-desk {
     border-left: 0;
-    border-top: 1px solid #e2e7f0;
+    border-top: 1px solid #eae6e1;
   }
   .mission-case-trail,
   .mission-owner-desk {
@@ -292,7 +292,7 @@
   .mission-learning-flow {
     grid-template-columns: 1fr;
     border-top: 0;
-    border-left: 2px solid #b8c6ed;
+    border-left: 2px solid #dcc1ab;
     gap: 30px;
     padding-left: 24px;
   }
@@ -330,23 +330,23 @@
 
 .mission-supporting-visual {
   margin-top: 32px;
-  border-top: 1px solid #dbe2ee;
+  border-top: 1px solid #e5e1db;
   padding-top: 24px;
 }
 .mission-supporting-visual > summary {
   cursor: pointer;
   font-size: 18px;
   font-weight: 500;
-  color: #35496b;
+  color: #5c432e;
   padding: 10px 0;
 }
 .mission-supporting-visual > summary:focus-visible {
-  outline: 3px solid #4967dc;
+  outline: 3px solid #a75f00;
   outline-offset: 4px;
 }
 .mission-supporting-visual > p {
   max-width: 740px;
-  color: #59677c;
+  color: #726356;
   line-height: 1.75;
   margin: 16px 0 24px;
 }

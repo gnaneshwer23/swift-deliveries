@@ -78,11 +78,11 @@ export function InvestigationTeamFormation({
       <div className="tf-stage">
         <div className="tf-constellation" aria-hidden="true">
           <svg viewBox="0 0 900 420" preserveAspectRatio="xMidYMid slice">
-            <g fill="none" stroke="rgba(99,102,241,0.2)" strokeWidth="1">
+            <g fill="none" stroke="rgba(177, 103, 15,0.2)" strokeWidth="1">
               <path d="M80 80 L220 140 L360 90 L520 160 L680 100 L820 150" />
               <path d="M100 300 L260 250 L420 320 L600 240 L780 300" />
             </g>
-            <g fill="rgba(34,211,238,0.35)">
+            <g fill="rgba(152, 199, 204,0.35)">
               <circle cx="220" cy="140" r="3" />
               <circle cx="520" cy="160" r="3" />
               <circle cx="420" cy="320" r="2.5" />

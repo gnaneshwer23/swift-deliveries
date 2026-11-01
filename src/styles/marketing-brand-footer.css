@@ -23,7 +23,7 @@
   height: 32px;
 }
 .marketing-footer {
-  border-top: 1px solid #e1e7f1;
+  border-top: 1px solid #eae6e1;
   background: #fff;
   color: var(--psi-text);
   padding: 56px 0 0;
@@ -50,7 +50,7 @@
   font-weight: 500;
   letter-spacing: -0.025em;
   margin: 25px 0 15px;
-  color: #354663;
+  color: #56412f;
 }
 .marketing-footer-description {
   font-size: 13px;
@@ -63,7 +63,7 @@
   gap: 9px;
   align-items: center;
   font-size: 12px;
-  color: #647cb9;
+  color: #9e7450;
   margin-top: 20px;
 }
 .marketing-footer-navigation {
@@ -76,7 +76,7 @@
   font-size: 12px;
   line-height: 1.5;
   font-weight: 550;
-  color: #3a4c6a;
+  color: #5c4734;
   margin: 0 0 20px;
 }
 .marketing-footer-navigation a {
@@ -89,14 +89,14 @@
 }
 .marketing-footer-navigation a:hover,
 .marketing-footer-bottom a:hover {
-  color: #4565b8;
+  color: #945b23;
 }
 .marketing-footer-bottom {
   display: flex;
   align-items: center;
   gap: 35px;
   justify-content: space-between;
-  border-top: 1px solid #e7ebf3;
+  border-top: 1px solid #efeae4;
   padding: 23px 0;
   color: var(--psi-muted);
   font-size: 11px;
@@ -111,13 +111,13 @@
   margin-left: 25px;
 }
 .marketing-footer :is(a, button):focus-visible {
-  outline: 3px solid #4965d6;
+  outline: 3px solid #a45d00;
   outline-offset: 4px;
 }
 .platform-next-step {
   padding: 55px 0;
-  background: #f5f7fc;
-  border-top: 1px solid #e1e7f2;
+  background: #fbf6f0;
+  border-top: 1px solid #eae6e1;
 }
 .platform-next-step > .dxl-wrap {
   display: grid;
@@ -130,7 +130,7 @@
   line-height: 1.18;
   letter-spacing: -0.035em;
   font-weight: 550;
-  color: #283953;
+  color: #3c3832;
   margin: 18px 0 22px;
 }
 .platform-next-intro > p:not(.dxl-eyebrow) {
@@ -147,7 +147,7 @@
 .platform-next-paths > a {
   display: block;
   padding-top: 16px;
-  border-top: 2px solid #cdd8ef;
+  border-top: 2px solid #dcd7d0;
 }
 .platform-next-paths > a > span {
   font-size: 11px;
@@ -160,16 +160,16 @@
   gap: 15px;
   font-size: 17px;
   font-weight: 500;
-  color: #455c80;
+  color: #70553f;
   margin: 13px 0;
   line-height: 1.4;
 }
 .platform-next-paths h3 > svg {
   flex-shrink: 0;
-  color: #8097cd;
+  color: #b59070;
 }
 .platform-next-paths a:hover h3 {
-  color: #3c5bb1;
+  color: #8b5211;
 }
 .platform-next-paths p {
   font-size: 12px;
@@ -181,12 +181,12 @@
   color: var(--psi-muted);
   font-size: 10px;
   line-height: 1.7;
-  border-top: 1px solid #e0e7f3;
+  border-top: 1px solid #eae6e0;
   padding-top: 15px;
   margin-top: 4px;
 }
 .platform-next-step a:focus-visible {
-  outline: 3px solid #4965d6;
+  outline: 3px solid #a45d00;
   outline-offset: 5px;
 }
 @media (max-width: 960px) {

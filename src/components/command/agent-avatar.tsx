@@ -5,20 +5,20 @@
 type Persona = { hue: number; skin: string; hair: string; tool: keyof typeof TOOLS };
 
 const PERSONAS: Record<string, Persona> = {
-  Aria: { hue: 248, skin: "#f2c9a5", hair: "#2b2140", tool: "spark" },
-  Iris: { hue: 275, skin: "#efc3a0", hair: "#3b2416", tool: "spark" },
-  Scout: { hue: 190, skin: "#d8a27c", hair: "#3a2a1c", tool: "search" },
-  Rex: { hue: 14, skin: "#8d5a3b", hair: "#1b1410", tool: "chart" },
-  Maya: { hue: 330, skin: "#f0c3a0", hair: "#7a3b1d", tool: "people" },
-  Atlas: { hue: 38, skin: "#c98d63", hair: "#2e2a26", tool: "compass" },
-  Lumen: { hue: 285, skin: "#f5d2b3", hair: "#c58b3f", tool: "flow" },
-  Pixel: { hue: 312, skin: "#e2b08c", hair: "#141414", tool: "pen" },
-  Keystone: { hue: 215, skin: "#a86b48", hair: "#232323", tool: "blocks" },
-  Forge: { hue: 22, skin: "#efc19a", hair: "#4a2c19", tool: "code" },
-  Relay: { hue: 165, skin: "#7b4a30", hair: "#0f0f0f", tool: "server" },
-  Nova: { hue: 140, skin: "#f6cfae", hair: "#5b3a8a", tool: "check" },
-  Harbor: { hue: 200, skin: "#d49a72", hair: "#2a1d14", tool: "flag" },
-  Quill: { hue: 52, skin: "#e8b896", hair: "#6b6b6b", tool: "doc" },
+  Aria: { hue: 248, skin: "#dfd2a0", hair: "#2b2721", tool: "spark" },
+  Iris: { hue: 275, skin: "#dbcd9a", hair: "#251e04", tool: "spark" },
+  Scout: { hue: 190, skin: "#bfaf72", hair: "#27210e", tool: "search" },
+  Rex: { hue: 14, skin: "#68591c", hair: "#0d0b05", tool: "chart" },
+  Maya: { hue: 330, skin: "#dbcd9a", hair: "#4f4100", tool: "people" },
+  Atlas: { hue: 38, skin: "#ae9c56", hair: "#2e2a25", tool: "compass" },
+  Lumen: { hue: 285, skin: "#e5daaf", hair: "#af9739", tool: "flow" },
+  Pixel: { hue: 312, skin: "#cbbc83", hair: "#161411", tool: "pen" },
+  Keystone: { hue: 215, skin: "#7e6c25", hair: "#252320", tool: "blocks" },
+  Forge: { hue: 22, skin: "#dacb94", hair: "#302702", tool: "code" },
+  Relay: { hue: 165, skin: "#58490d", hair: "#110f0c", tool: "server" },
+  Nova: { hue: 140, skin: "#e4d8a9", hair: "#744103", tool: "check" },
+  Harbor: { hue: 200, skin: "#baa866", hair: "#181507", tool: "flag" },
+  Quill: { hue: 52, skin: "#d2c38e", hair: "#6d6b67", tool: "doc" },
 };
 
 const TOOLS = {
@@ -103,7 +103,7 @@ const TOOLS = {
   doc: <path d="M-3.5-5h5l2.5 2.5V5h-7.5Z" fill="#fff" />,
 };
 
-const FALLBACK: Persona = { hue: 225, skin: "#e3b48f", hair: "#2a2a2a", tool: "spark" };
+const FALLBACK: Persona = { hue: 225, skin: "#cdbf88", hair: "#2c2a27", tool: "spark" };
 
 export function AgentAvatar({
   name,
@@ -139,11 +139,11 @@ export function AgentAvatar({
           d="M21 28c0-9 5-14 11-14s11.5 5 11.5 13c-3-4-7-6-12-6-4 0-7 3-10.5 7Z"
           fill={p.hair}
         />
-        <circle cx="28" cy="30" r="1.2" fill="#1d2340" />
-        <circle cx="36" cy="30" r="1.2" fill="#1d2340" />
+        <circle cx="28" cy="30" r="1.2" fill="#29251f" />
+        <circle cx="36" cy="30" r="1.2" fill="#29251f" />
         <path
           d="M29.5 35c1.5 1.2 3.5 1.2 5 0"
-          stroke="#1d2340"
+          stroke="#29251f"
           strokeWidth="1.2"
           fill="none"
           strokeLinecap="round"

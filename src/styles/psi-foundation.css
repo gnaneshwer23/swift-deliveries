@@ -1,21 +1,23 @@
-/* Shared PSI identity. Status colours describe state, never decoration. */
+/* Shared PSI identity: palette B, "Ink & Oatmeal" (warm paper, near-black ink, bronze accent).
+   --psi-indigo* keep their names for compatibility; they now hold the bronze accent.
+   Status colours describe state, never decoration; attention is mustard, never the accent. */
 :root {
-  --psi-canvas: #f7f8fc;
-  --psi-surface: #ffffff;
-  --psi-ink: #202b43;
-  --psi-action: #171923;
-  --psi-action-hover: #2c3040;
-  --psi-text: #4e5b73;
-  --psi-muted: #647089;
-  --psi-border: #dce2ee;
-  --psi-indigo: #4c56c9;
-  --psi-indigo-hover: #3c45af;
-  --psi-indigo-soft: #eef0ff;
-  --psi-lavender: #f2effb;
-  --psi-success: #16724e;
-  --psi-success-soft: #eaf6ef;
-  --psi-warning: #8b570b;
-  --psi-warning-soft: #fff5df;
+  --psi-canvas: #f6f3ee;
+  --psi-surface: #fffdf9;
+  --psi-ink: #1c1b19;
+  --psi-action: #1c1b19;
+  --psi-action-hover: #34312c;
+  --psi-text: #55514a;
+  --psi-muted: #6f6961;
+  --psi-border: #e6dfd4;
+  --psi-indigo: #985808;
+  --psi-indigo-hover: #7e4806;
+  --psi-indigo-soft: #f6ebdc;
+  --psi-lavender: #f3ece2;
+  --psi-success: #376e4c;
+  --psi-success-soft: #ecf5ef;
+  --psi-warning: #665503;
+  --psi-warning-soft: #fcf6df;
   --psi-danger: #b42318;
   --psi-danger-soft: #fff0ee;
   --psi-font:
