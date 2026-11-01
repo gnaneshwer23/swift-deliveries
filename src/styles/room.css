@@ -1245,3 +1245,124 @@ li[data-status="waiting_on_you"] .room-build-status {
   color: var(--sx-danger);
   font-size: var(--sx-text-sm);
 }
+
+/* ── Decision, next step and Begin delivery panels ── */
+.dec-group {
+  display: grid;
+  gap: var(--sx-space-2xs);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.dec-group > legend {
+  margin-bottom: var(--sx-space-2xs);
+  padding: 0;
+}
+
+.dec-paths {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sx-space-2xs);
+}
+
+.dec-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--sx-space-xs);
+  align-items: start;
+  padding: var(--sx-space-sm);
+  border: 1px solid var(--sx-rule);
+  border-radius: 1rem;
+  background: var(--sx-surface);
+  cursor: pointer;
+  transition: border-color var(--sx-dur) var(--sx-ease-out);
+}
+
+.dec-card:hover {
+  border-color: var(--sx-rule-strong);
+}
+
+.dec-card[data-selected="true"] {
+  border-color: var(--sx-accent);
+  background: var(--sx-accent-soft);
+}
+
+.dec-card input {
+  margin-top: 0.2rem;
+  accent-color: var(--sx-accent);
+}
+
+.dec-card span {
+  display: grid;
+  gap: 0.125rem;
+}
+
+.dec-card small {
+  font-size: var(--sx-text-xs);
+  color: var(--sx-muted);
+}
+
+.dec-suggest {
+  white-space: nowrap;
+  margin-left: var(--sx-space-2xs);
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background: var(--sx-waiting-soft);
+  color: var(--sx-waiting);
+  font: 500 var(--sx-text-xs) var(--sx-font-body);
+  font-style: normal;
+}
+
+.dec-sources summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--sx-accent);
+}
+
+.dec-sources ul {
+  margin: var(--sx-space-2xs) 0 0;
+  padding-left: var(--sx-space-md);
+  display: grid;
+  gap: var(--sx-space-3xs);
+}
+
+.dec-sources a {
+  color: var(--sx-ink-2);
+  text-underline-offset: 3px;
+}
+
+.next-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sx-space-xs);
+}
+
+.room-gate-note input {
+  width: 100%;
+  padding: var(--sx-space-xs);
+  border: 1px solid var(--sx-rule-strong);
+  border-radius: 0.75rem;
+  font: inherit;
+  font-weight: 400;
+}
+
+.next-consent {
+  display: flex;
+  gap: var(--sx-space-xs);
+  align-items: flex-start;
+  font-size: var(--sx-text-sm);
+}
+
+.next-export {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sx-space-2xs);
+}
+
+@media (max-width: 560px) {
+  .dec-paths,
+  .next-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

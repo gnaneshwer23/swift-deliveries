@@ -16,6 +16,9 @@ import { MissionInspectionStrip } from "@/components/command/mission-inspection-
 import { InvestigationStageShell } from "@/components/command/investigation-stage-shell";
 import { CaseRoom } from "@/components/command/case-room";
 import { PlanReview } from "@/components/command/plan-review";
+import { DecisionPanel } from "@/components/command/decision-panel";
+import { NextStepPanel } from "@/components/command/next-step-panel";
+import { BeginDeliveryPanel } from "@/components/command/begin-delivery-panel";
 import { useDeliveryBuild } from "@/hooks/use-delivery-build";
 import { InvestigationScopeReview } from "@/components/command/investigation-scope-review";
 import { InvestigationTeamFormation } from "@/components/command/investigation-team-formation";
@@ -335,18 +338,43 @@ function SupervisedMissionPage() {
                 }
               />
             ),
-            work: theatre,
-            decide: mission.proposal ? (
-              <StepFourDiscussion
+            work: (
+              <NextStepPanel
+                mission={mission}
+                actions={{
+                  nextId: next.id,
+                  compare: {
+                    run: () => compare.mutate(),
+                    pending: compare.isPending,
+                    modelConfigured: query.data.modelConfigured,
+                    consented: consentedScope === query.data.comparisonScope,
+                    setConsented: (on) => setConsentedScope(on ? query.data.comparisonScope : null),
+                  },
+                  prepare: { run: () => prepare.mutate(), pending: prepare.isPending },
+                  exportSlot: (
+                    <ExportButton
+                      recordVersion={mission.version}
+                      missionId={missionId}
+                      existingMd={mission.exportBody}
+                      existingPdf={mission.exportPdfBase64}
+                      onError={onError}
+                    />
+                  ),
+                  error,
+                  onDone: invalidate,
+                  onError,
+                }}
+              />
+            ),
+            decide: (
+              <DecisionPanel
                 mission={mission}
                 missionId={missionId}
                 onDone={invalidate}
                 onError={onError}
               />
-            ) : (
-              theatre
             ),
-            delivery: <InvestigationTeamFormation mission={mission} onDone={invalidate} />,
+            delivery: <BeginDeliveryPanel mission={mission} onDone={invalidate} />,
           }}
         />
 
