@@ -35,6 +35,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedCareerOnboardingRouteImport } from './routes/_authenticated/career-onboarding'
 import { Route as AuthenticatedCommandRouteImport } from './routes/_authenticated/command'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated/workspace'
 import { Route as AttestTokenRouteImport } from './routes/attest.$token'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
@@ -213,6 +214,11 @@ const AuthenticatedCommandRoute = AuthenticatedCommandRouteImport.update({
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedWorkspaceRoute = AuthenticatedWorkspaceRouteImport.update({
@@ -521,6 +527,7 @@ export interface FileRoutesByFullPath {
   '/career-onboarding': typeof AuthenticatedCareerOnboardingRoute
   '/command': typeof AuthenticatedCommandRouteWithChildren
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/attest/$token': typeof AttestTokenRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -596,6 +603,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/career-onboarding': typeof AuthenticatedCareerOnboardingRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/attest/$token': typeof AttestTokenRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/checkout/return': typeof CheckoutReturnRoute
@@ -672,6 +680,7 @@ export interface FileRoutesById {
   '/_authenticated/career-onboarding': typeof AuthenticatedCareerOnboardingRoute
   '/_authenticated/command': typeof AuthenticatedCommandRouteWithChildren
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/attest/$token': typeof AttestTokenRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -750,6 +759,7 @@ export interface FileRouteTypes {
     | '/career-onboarding'
     | '/command'
     | '/onboarding'
+    | '/profile'
     | '/workspace'
     | '/attest/$token'
     | '/auth/callback'
@@ -825,6 +835,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/career-onboarding'
     | '/onboarding'
+    | '/profile'
     | '/attest/$token'
     | '/auth/callback'
     | '/checkout/return'
@@ -900,6 +911,7 @@ export interface FileRouteTypes {
     | '/_authenticated/career-onboarding'
     | '/_authenticated/command'
     | '/_authenticated/onboarding'
+    | '/_authenticated/profile'
     | '/_authenticated/workspace'
     | '/attest/$token'
     | '/auth/callback'
@@ -1177,6 +1189,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/workspace': {
@@ -1633,6 +1652,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCareerOnboardingRoute: typeof AuthenticatedCareerOnboardingRoute
   AuthenticatedCommandRoute: typeof AuthenticatedCommandRouteWithChildren
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedWorkspaceRoute: typeof AuthenticatedWorkspaceRouteWithChildren
 }
 
@@ -1640,6 +1660,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCareerOnboardingRoute: AuthenticatedCareerOnboardingRoute,
   AuthenticatedCommandRoute: AuthenticatedCommandRouteWithChildren,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedWorkspaceRoute: AuthenticatedWorkspaceRouteWithChildren,
 }
 
