@@ -21,6 +21,8 @@ import {
 } from "@/lib/pilot-mission/meeting-notes";
 import type { SupervisedMission } from "@/lib/pilot-mission/types";
 
+const lineId = (meetingId: string, line: number) => `${meetingId}-line-${line}`;
+
 type Props = {
   mission: SupervisedMission;
   onDone: () => Promise<void>;
@@ -159,6 +161,15 @@ function Meeting({ mission, meeting, onDone }: Props & { meeting: MeetingNote })
     },
   });
   const busy = decide.isPending || remove.isPending;
+  const [notesOpen, setNotesOpen] = useState(false);
+  const [highlight, setHighlight] = useState<number | null>(null);
+  const showLine = (line: number) => {
+    setNotesOpen(true);
+    setHighlight(line);
+    requestAnimationFrame(() =>
+      document.getElementById(lineId(meeting.id, line))?.scrollIntoView({ block: "center" }),
+    );
+  };
   const waiting = meeting.proposals.filter((p) => p.status === "proposed").length;
 
   return (
@@ -193,7 +204,14 @@ function Meeting({ mission, meeting, onDone }: Props & { meeting: MeetingNote })
                 <p>{p.text}</p>
                 <span className="mtg-meta">
                   <Owner p={p} />
-                  <span>line {p.line}</span>
+                  <button
+                    type="button"
+                    className="mtg-line-link"
+                    aria-label={`Show line ${p.line} of your notes`}
+                    onClick={() => showLine(p.line)}
+                  >
+                    line {p.line}
+                  </button>
                 </span>
               </div>
               <div className="mtg-actions">
@@ -246,9 +264,23 @@ function Meeting({ mission, meeting, onDone }: Props & { meeting: MeetingNote })
           {error}
         </p>
       ) : null}
-      <details className="mtg-notes">
+      <details
+        className="mtg-notes"
+        open={notesOpen}
+        onToggle={(e) => setNotesOpen((e.currentTarget as HTMLDetailsElement).open)}
+      >
         <summary>Your notes as saved</summary>
-        <pre>{meeting.notes}</pre>
+        <ol className="mtg-lines">
+          {meeting.notes.split(/\r?\n/).map((text, i) => (
+            <li
+              key={i}
+              id={lineId(meeting.id, i + 1)}
+              data-hl={highlight === i + 1 ? "true" : undefined}
+            >
+              {text}
+            </li>
+          ))}
+        </ol>
       </details>
     </section>
   );

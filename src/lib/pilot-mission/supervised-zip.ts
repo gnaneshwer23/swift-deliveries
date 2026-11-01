@@ -194,9 +194,8 @@ ${honesty.note}
   }
 
   // Meetings: the owner's own notes and what they accepted. Proposals are rule-based.
-  const meetingsMd = meetingBacklogMarkdown(mission.meetings);
-  if (meetingsMd) {
-    add("meetings.md", () => meetingsMd, {
+  if ((mission.meetings ?? []).length) {
+    add("meetings.md", () => meetingBacklogMarkdown(mission.meetings) ?? "", {
       bundled: true,
       note: "Owner-supplied meeting notes and the accepted backlog",
     });

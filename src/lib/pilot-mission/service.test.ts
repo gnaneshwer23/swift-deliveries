@@ -1137,7 +1137,12 @@ describe("meeting notes", () => {
         nowMs: 9_500,
       });
     await expect(decide(saved.version - 1, "accepted")).rejects.toThrow(/another session/);
-    const accepted = await decide(saved.version, "accepted");
+    const dismissed = await decide(saved.version, "dismissed");
+    expect(dismissed.meetings![0]!.proposals[0]).toMatchObject({
+      status: "dismissed",
+      decidedBy: "owner",
+    });
+    const accepted = await decide(dismissed.version, "accepted");
     expect(accepted.meetings![0]!.proposals[0]).toMatchObject({
       status: "accepted",
       decidedBy: "owner",
@@ -1156,6 +1161,63 @@ describe("meeting notes", () => {
       meetingId: meeting.id,
       actorId: "owner",
       nowMs: 9_900,
+    });
+    expect(removed.meetings).toEqual([]);
+  });
+
+  it("keeps the notes exactly as pasted so line numbers match", async () => {
+    const service = new SupervisedMissionService(new MemoryStore());
+    const mission = await readyMission(service);
+    const pasted = "\n\n  Intro chat\n- Action: book the next call\n";
+    const saved = await service.addMeetingNotes({
+      workspaceId: "alpha",
+      id: mission.id,
+      expectedVersion: mission.version,
+      title: "Call",
+      heldOn: null,
+      notes: pasted,
+      actorId: "owner",
+      nowMs: 9_000,
+    });
+    const m = saved.meetings![0]!;
+    expect(m.notes).toBe(pasted);
+    expect(pasted.split("\n")[m.proposals[0]!.line - 1]).toContain("book the next call");
+  });
+
+  it("stops item decisions on a stopped project but still lets the owner remove their notes", async () => {
+    const service = new SupervisedMissionService(new MemoryStore());
+    const mission = await readyMission(service);
+    const saved = await service.addMeetingNotes({
+      workspaceId: "alpha",
+      id: mission.id,
+      expectedVersion: mission.version,
+      title: "Call",
+      heldOn: null,
+      notes,
+      actorId: "owner",
+      nowMs: 9_000,
+    });
+    const stopped = await service.cancel({ workspaceId: "alpha", id: mission.id, nowMs: 9_100 });
+    const meeting = saved.meetings![0]!;
+    await expect(
+      service.decideMeetingProposal({
+        workspaceId: "alpha",
+        id: mission.id,
+        expectedVersion: stopped.version,
+        meetingId: meeting.id,
+        proposalId: meeting.proposals[0]!.id,
+        decision: "accepted",
+        actorId: "owner",
+        nowMs: 9_200,
+      }),
+    ).rejects.toThrow(/stopped/);
+    const removed = await service.removeMeetingNotes({
+      workspaceId: "alpha",
+      id: mission.id,
+      expectedVersion: stopped.version,
+      meetingId: meeting.id,
+      actorId: "owner",
+      nowMs: 9_300,
     });
     expect(removed.meetings).toEqual([]);
   });

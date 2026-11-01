@@ -85,18 +85,17 @@ function ownerFor(kind: MeetingProposalKind, text: string): MeetingOwner {
   return { kind: "you" };
 }
 
+/** List markers the reader understands: -, *, •, – and "1." / "1)". */
+const LIST_MARKER = /^\s*(?:[-*•–]|\d+[.)])\s*/;
+
 function clean(line: string): string {
-  return line
-    .replace(/^\s*(?:[-*•–]|\d+[.)])\s*/, "")
-    .replace(CHECKBOX, "")
-    .replace(/\s+/g, " ")
-    .trim();
+  return line.replace(LIST_MARKER, "").replace(CHECKBOX, "").replace(/\s+/g, " ").trim();
 }
 
 function classify(text: string, raw: string): MeetingProposalKind | null {
   if (DECISION.test(text)) return "decision";
   if (text.endsWith("?") || QUESTION_PREFIX.test(text) || UNSURE.test(text)) return "question";
-  if (ACTION_PREFIX.test(text) || CHECKBOX.test(raw.trim().replace(/^[-*•]\s*/, ""))) {
+  if (ACTION_PREFIX.test(text) || CHECKBOX.test(raw.replace(LIST_MARKER, ""))) {
     return "action";
   }
   if (IDEA.test(text)) return "idea";

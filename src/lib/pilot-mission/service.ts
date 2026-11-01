@@ -1748,9 +1748,10 @@ export class SupervisedMissionService {
       );
     }
     if (current.stage === "cancelled") throw new Error("This project is stopped.");
-    const notes = input.notes.trim();
+    // Saved exactly as supplied, so every proposal's line number points at the right line.
+    const notes = input.notes;
     const title = input.title.trim() || "Meeting";
-    if (notes.length < 10) throw new Error("Paste the notes from your meeting first.");
+    if (notes.trim().length < 10) throw new Error("Paste the notes from your meeting first.");
     if (notes.length > MEETING_NOTES_MAX_CHARS) {
       throw new Error(
         `Notes are limited to ${MEETING_NOTES_MAX_CHARS.toLocaleString("en-GB")} characters.`,
@@ -1808,6 +1809,7 @@ export class SupervisedMissionService {
         "This project changed in another session. Refresh and try again.",
       );
     }
+    if (current.stage === "cancelled") throw new Error("This project is stopped.");
     const meeting = (current.meetings ?? []).find((m) => m.id === input.meetingId);
     const proposal = meeting?.proposals.find((p) => p.id === input.proposalId);
     if (!meeting || !proposal) throw new Error("That proposal is no longer on this project.");

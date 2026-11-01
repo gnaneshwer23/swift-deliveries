@@ -1950,7 +1950,11 @@ li[data-status="waiting_on_you"] .room-build-status {
   border: 1px solid var(--sx-rule);
 }
 .mtg-list li[data-status="dismissed"] {
-  opacity: 0.6;
+  background: var(--sx-sunken);
+}
+.mtg-list li[data-status="dismissed"] .mtg-item p {
+  color: var(--sx-ink-2);
+  text-decoration: line-through;
 }
 .mtg-list li[data-status="accepted"] {
   background: var(--sx-done-soft);
@@ -2051,4 +2055,31 @@ li[data-status="waiting_on_you"] .room-build-status {
   .mtg-list li {
     flex-direction: column;
   }
+}
+.mtg-line-link {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--sx-accent);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.mtg-lines {
+  margin: 0.4rem 0 0;
+  padding: 0.6rem 0.6rem 0.6rem 2.6rem;
+  background: var(--sx-sunken);
+  border-radius: var(--sx-radius-control);
+  font-family: var(--sx-font-mono);
+  font-size: 0.78rem;
+}
+.mtg-lines li {
+  white-space: pre-wrap;
+  padding: 0 0.3rem;
+  border-radius: 4px;
+  min-height: 1.2em;
+}
+.mtg-lines li:target,
+.mtg-lines li[data-hl="true"] {
+  background: var(--sx-waiting-soft);
 }

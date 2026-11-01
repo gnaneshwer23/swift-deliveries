@@ -54,6 +54,15 @@ describe("readMeetingNotes", () => {
     expect(by["I'll send the summary to Sam"]).toEqual({ kind: "you" });
   });
 
+  it("reads checkbox items under every list marker it understands", () => {
+    const boxes = "– [ ] Book the venue\n1. [ ] Order the samples\n2) [ ] Ring the supplier";
+    expect(readMeetingNotes(boxes, ids).map((p) => [p.kind, p.text])).toEqual([
+      ["action", "Book the venue"],
+      ["action", "Order the samples"],
+      ["action", "Ring the supplier"],
+    ]);
+  });
+
   it("is deterministic and capped", () => {
     expect(readMeetingNotes(NOTES, ids)).toEqual(out);
     const many = Array.from({ length: 60 }, (_, i) => `- Action: task number ${i}`).join("\n");

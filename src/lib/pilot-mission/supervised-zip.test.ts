@@ -113,7 +113,7 @@ describe("meetings in the package", () => {
             id: "m1",
             title: "Kick-off",
             heldOn: null,
-            notes: "- Action: draft interview questions",
+            notes: "- Action: draft interview questions\n- Decision: start with bakeries",
             addedAt: "2026-10-31T10:00:00Z",
             addedBy: "owner",
             reader: "Notes reader (rule-based, no AI model)",
@@ -128,19 +128,33 @@ describe("meetings in the package", () => {
                 decidedAt: "2026-10-31T10:01:00Z",
                 decidedBy: "owner",
               },
+              {
+                id: "m1-p2",
+                kind: "decision",
+                text: "start with bakeries",
+                line: 2,
+                owner: { kind: "you" },
+                status: "dismissed",
+                decidedAt: "2026-10-31T10:02:00Z",
+                decidedBy: "owner",
+              },
             ],
           },
         ],
       }),
     );
     const md = files.find((f) => f.path.endsWith("/meetings.md"))!.content;
-    expect(md).toContain("draft interview questions");
+    expect(md).toContain("**Task** — draft interview questions");
+    // Dismissed items are not backlog, though the owner's own notes keep their text.
+    expect(md).not.toContain("**Decision** — start with bakeries");
+    expect(md).toContain("- Decision: start with bakeries");
     const manifest = JSON.parse(
       files.find((f) => f.path.endsWith("project-manifest.json"))!.content,
     );
     expect(manifest.meetings).toMatchObject({
       count: 1,
       notesSuppliedBy: "project owner",
+      proposalsProducedBy: "Notes reader (rule-based, no AI model)",
       accepted: 1,
     });
   });
