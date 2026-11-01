@@ -19,6 +19,8 @@ export type FirstProjectStepId = "idea" | "plan" | "decision" | "delivery" | "pa
 export type FirstProjectStep = {
   id: FirstProjectStepId;
   label: string;
+  /** One word for compact views (the dashboard step chips). */
+  short: string;
   /** Why the step matters, shown to learners. */
   why: string;
   done: boolean;
@@ -36,41 +38,50 @@ const STEPS: Array<Omit<FirstProjectStep, "done"> & { test: (p: FirstProjectSour
   [
     {
       id: "idea",
+      short: "Idea",
       label: "Describe your idea",
       why: "One or two lines is enough. A clear question keeps the team’s research focused.",
       test: (p) => p.question.trim().length > 0,
     },
     {
       id: "plan",
+      short: "Plan",
       label: "Approve the plan",
       why: "You agree the scope, team and usage before anyone starts. Nothing runs before this.",
       test: (p) => p.planApproved,
     },
     {
       id: "decision",
+      short: "Decide",
       label: "Make your decision",
       why: "The team brings options with trade-offs; you choose. Agents never decide for you.",
       test: (p) => p.decisionRecorded,
     },
     {
       id: "delivery",
+      short: "Build",
       label: "Begin delivery",
       why: "The team builds your chosen direction stage by stage, stopping at your reviews.",
       test: (p) => p.delivery,
     },
     {
       id: "package",
+      short: "Package",
       label: "Get your package",
       why: "Download everything made, with how each part was produced and what was simulated.",
       test: (p) => p.stage === "exported",
     },
     {
       id: "outcome",
+      short: "Outcome",
       label: "Record what happened",
       why: "Write down what you actually saw after shipping. Only observed outcomes count.",
       test: (p) => p.observationRecorded,
     },
   ];
+
+/** The six steps in order, as one-word labels. */
+export const FIRST_PROJECT_SHORT_LABELS: string[] = STEPS.map((s) => s.short);
 
 /** Live = not deleted from the dashboard and not stopped. */
 export function isLive(p: Pick<FirstProjectSource, "archived" | "stage">): boolean {

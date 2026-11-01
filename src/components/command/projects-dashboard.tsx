@@ -4,7 +4,16 @@
  */
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { MoreHorizontal, Plus, Search, Star } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  LayoutGrid,
+  List,
+  MoreHorizontal,
+  Plus,
+  Search,
+  Star,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import {
   AlertDialog,
@@ -35,8 +44,20 @@ import {
   type ProjectRow,
   type ProjectSource,
 } from "@/lib/pilot-mission/projects-dashboard";
-import { FirstRunPanel } from "@/components/command/first-run-panel";
-import type { FirstProjectSource } from "@/lib/pilot-mission/first-project";
+import { DashboardHello, FirstProjectCard } from "@/components/command/first-run-panel";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  buildFirstProject,
+  FIRST_PROJECT_SHORT_LABELS,
+  type FirstProjectSource,
+} from "@/lib/pilot-mission/first-project";
 import "@/styles/projects-dashboard.css";
 
 const updated = (iso: string) =>
@@ -70,6 +91,32 @@ function RoleStack({ roles }: { roles: ProjectRole[] }) {
   );
 }
 
+function Meter({
+  label,
+  value,
+  total,
+  pct,
+  tone,
+}: {
+  label: string;
+  value: number;
+  total: number;
+  pct: (n: number, d: number) => number;
+  tone?: "waiting" | "ink";
+}) {
+  return (
+    <li data-tone={tone}>
+      <span>{label}</span>
+      <b>
+        {value} / {total}
+      </b>
+      <span className="prj-bar" role="img" aria-label={`${label}: ${value} of ${total}`}>
+        <span style={{ width: `${pct(value, total)}%` }} />
+      </span>
+    </li>
+  );
+}
+
 export function ProjectsDashboard({
   projects,
   usage,
@@ -89,7 +136,7 @@ export function ProjectsDashboard({
   const [error, setError] = useState<string | null>(null);
   const rows = filterProjects(model.rows, filter, query);
   const needsYou = model.rows.filter((r) => !r.deleted && r.phase === "needs_you");
-  const idleDepartments = model.team.byDepartment.filter((d) => !d.onProjects.length);
+  const [view, setView] = useState<"cards" | "table">("cards");
 
   const refresh = () => qc.invalidateQueries({ queryKey: ["supervised"] });
   const onError = (e: unknown) => {
@@ -125,70 +172,180 @@ export function ProjectsDashboard({
   const busy = remove.isPending || meta.isPending;
   const left = usage ? Math.max(0, usage.ceiling - usage.consumed) : null;
 
+  const first = needsYou[0] ?? null;
+  const firstPath = first ? buildFirstProject(projects.filter((p) => p.id === first.id)) : null;
+  const status = needsYou.length
+    ? `${needsYou.length} ${needsYou.length === 1 ? "thing needs" : "things need"} you. Everything else is moving.`
+    : model.counts.active
+      ? "Nothing needs you right now."
+      : "Start with one or two lines about your product.";
+  const pct = (n: number, d: number) => (d > 0 ? Math.min(100, Math.round((n / d) * 100)) : 0);
+  const showStart = filter === "active" && !query.trim();
+
+  const menu = (r: ProjectRow) => (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        className="prj-icon-btn"
+        aria-label={`Actions for ${r.name}`}
+        disabled={busy}
+      >
+        <MoreHorizontal size={18} />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {r.deleted ? (
+          <DropdownMenuItem onSelect={() => meta.mutate({ row: r, archived: false })}>
+            Restore
+          </DropdownMenuItem>
+        ) : (
+          <>
+            <DropdownMenuItem asChild>
+              <Link to="/command/supervised/$missionId" params={{ missionId: r.id }}>
+                Open
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => meta.mutate({ row: r, favourite: !r.favourite })}>
+              {r.favourite ? "Remove favourite" : "Favourite"}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="prj-danger-item" onSelect={() => setConfirm(r)}>
+              Delete project
+            </DropdownMenuItem>
+          </>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
+  const deletedNote = (r: ProjectRow) =>
+    r.phase === "stopped"
+      ? "Deleted · work stopped"
+      : r.phase === "done"
+        ? "Deleted · finished"
+        : "Archived · work not stopped";
+
   return (
     <div className="prj">
-      <header className="prj-head">
-        <div>
-          <h1>Projects</h1>
-          <p>Every product you are building, what it needs from you, and who is working on it.</p>
-        </div>
-        <button type="button" className="prj-btn prj-btn-primary" onClick={onNewProject}>
-          <Plus size={16} aria-hidden="true" />
-          New project
-        </button>
-      </header>
+      <DashboardHello
+        status={status}
+        actions={
+          <button type="button" className="prj-btn prj-btn-primary" onClick={onNewProject}>
+            <Plus size={16} aria-hidden="true" />
+            New project
+          </button>
+        }
+      />
 
-      <FirstRunPanel projects={projects} />
-
-      <section className="prj-stats" aria-label="Summary">
-        <div>
-          <span>Live projects</span>
-          <b>{model.counts.active}</b>
-        </div>
-        <div data-tone={model.counts.needs_you ? "waiting" : undefined}>
-          <span>Need you</span>
-          <b>{model.counts.needs_you}</b>
-        </div>
-        <div>
-          <span>In delivery</span>
-          <b>{model.counts.building}</b>
-        </div>
-        <div>
-          <span>Usage left</span>
-          <b>{left !== null && usage ? `${left} / ${usage.ceiling}` : "—"}</b>
-          {allowanceLine ? <small>{allowanceLine}</small> : null}
-        </div>
-      </section>
-
-      {needsYou.length ? (
-        <section className="prj-panel prj-needs" aria-labelledby="prj-needs-title">
-          <h2 id="prj-needs-title">Waiting on you</h2>
-          <ul>
-            {needsYou.slice(0, 4).map((r) => (
-              <li key={r.id}>
-                <div>
-                  <b>{r.name}</b>
-                  <span>{r.next}</span>
-                </div>
+      <section className="prj-bento" aria-label="At a glance">
+        <section className="prj-card prj-now" aria-labelledby="prj-now-title">
+          <p className="prj-eyebrow">{first ? "Needs you now" : "All clear"}</p>
+          {first ? (
+            <>
+              <h2 id="prj-now-title" title={first.name}>
+                {first.name}
+              </h2>
+              <p>{first.next}</p>
+              {firstPath ? (
+                <ol className="prj-now-path" aria-label="Project path">
+                  {firstPath.steps.map((st) => (
+                    <li
+                      key={st.id}
+                      data-state={st.done ? "done" : firstPath.next?.id === st.id ? "next" : "todo"}
+                    >
+                      {st.done ? <Check size={12} aria-hidden="true" /> : null}
+                      {st.short}
+                      <span className="prj-sr">{st.done ? " (done)" : ""}</span>
+                    </li>
+                  ))}
+                </ol>
+              ) : null}
+              <div className="prj-now-actions">
                 <Link
                   to="/command/supervised/$missionId"
-                  params={{ missionId: r.id }}
-                  className="prj-btn prj-btn-small"
+                  params={{ missionId: first.id }}
+                  className="prj-btn prj-btn-light"
                 >
-                  Open
+                  Open project
                 </Link>
-              </li>
-            ))}
+                {needsYou.length > 1 ? (
+                  <button
+                    type="button"
+                    className="prj-now-more"
+                    onClick={() => {
+                      setFilter("needs_you");
+                      setView("cards");
+                    }}
+                  >
+                    {needsYou.length - 1} more waiting <ArrowRight size={14} aria-hidden="true" />
+                  </button>
+                ) : null}
+              </div>
+            </>
+          ) : (
+            <>
+              <h2 id="prj-now-title">Nothing waits on you</h2>
+              <p>
+                {model.counts.active
+                  ? "The team stops and asks when a plan, decision or gate needs you."
+                  : "Describe a product and the team proposes a plan for you to approve."}
+              </p>
+              {model.counts.active ? null : (
+                <>
+                  <ol className="prj-now-path" aria-label="How a project runs">
+                    {FIRST_PROJECT_SHORT_LABELS.map((label, i) => (
+                      <li key={label} data-state={i === 0 ? "next" : "todo"}>
+                        {label}
+                      </li>
+                    ))}
+                  </ol>
+                  <div className="prj-now-actions">
+                    <button type="button" className="prj-btn prj-btn-light" onClick={onNewProject}>
+                      Start a project
+                    </button>
+                  </div>
+                </>
+              )}
+            </>
+          )}
+        </section>
+
+        <section className="prj-card" aria-labelledby="prj-usage-title">
+          <p className="prj-eyebrow">Usage</p>
+          <h2 id="prj-usage-title">{left !== null && usage ? `${left} units left` : "Usage"}</h2>
+          {allowanceLine ? <p className="prj-card-sub">{allowanceLine}</p> : null}
+          <ul className="prj-meters">
+            {usage ? (
+              <Meter label="Usage used" value={usage.consumed} total={usage.ceiling} pct={pct} />
+            ) : null}
+            <Meter
+              label="Projects needing you"
+              value={model.counts.needs_you}
+              total={model.counts.active}
+              pct={pct}
+              tone="waiting"
+            />
+            <Meter
+              label="Projects in delivery"
+              value={model.counts.building}
+              total={model.counts.active}
+              pct={pct}
+              tone="ink"
+            />
           </ul>
         </section>
+
+        <FirstProjectCard projects={projects} />
+      </section>
+
+      {error ? (
+        <p className="prj-error" role="alert">
+          {error}
+        </p>
       ) : null}
 
       <div className="prj-grid">
-        <section className="prj-panel" aria-labelledby="prj-list-title">
+        <section aria-labelledby="prj-list-title">
           <div className="prj-toolbar">
-            <h2 id="prj-list-title" className="prj-sr">
-              Project list
-            </h2>
+            <h2 id="prj-list-title">Projects</h2>
             <div className="prj-tabs" role="group" aria-label="Filter projects">
               {PROJECT_FILTERS.map((f) => (
                 <button
@@ -203,23 +360,39 @@ export function ProjectsDashboard({
                 </button>
               ))}
             </div>
-            <label className="prj-search">
-              <Search size={15} aria-hidden="true" />
-              <span className="prj-sr">Search projects</span>
-              <input
-                type="search"
-                placeholder="Search projects"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </label>
+            <div className="prj-toolbar-end">
+              <label className="prj-search">
+                <Search size={15} aria-hidden="true" />
+                <span className="prj-sr">Search projects</span>
+                <input
+                  type="search"
+                  placeholder="Search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                />
+              </label>
+              <div className="prj-view" role="group" aria-label="Layout">
+                <button
+                  type="button"
+                  aria-pressed={view === "cards"}
+                  aria-label="Cards"
+                  title="Cards"
+                  onClick={() => setView("cards")}
+                >
+                  <LayoutGrid size={15} />
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={view === "table"}
+                  aria-label="Table"
+                  title="Table"
+                  onClick={() => setView("table")}
+                >
+                  <List size={15} />
+                </button>
+              </div>
+            </div>
           </div>
-
-          {error ? (
-            <p className="prj-error" role="alert">
-              {error}
-            </p>
-          ) : null}
 
           {projects.length >= PROJECT_LIST_LIMIT ? (
             <p className="prj-muted prj-cap">
@@ -227,122 +400,127 @@ export function ProjectsDashboard({
             </p>
           ) : null}
 
-          {rows.length ? (
-            <table className="prj-table" role="table">
-              <thead role="rowgroup">
-                <tr role="row">
-                  <th scope="col" role="columnheader">
-                    Project
-                  </th>
-                  <th scope="col" role="columnheader">
-                    Status
-                  </th>
-                  <th scope="col" role="columnheader">
-                    Team
-                  </th>
-                  <th scope="col" role="columnheader">
-                    Updated
-                  </th>
-                  <th scope="col" role="columnheader">
-                    <span className="prj-sr">Actions</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody role="rowgroup">
+          {view === "cards" ? (
+            rows.length || showStart ? (
+              <ul className="prj-cards">
                 {rows.map((r) => (
-                  <tr role="row" key={r.id} data-deleted={r.deleted ? "true" : undefined}>
-                    <td role="cell">
-                      {r.deleted ? (
-                        <b className="prj-name">{r.name}</b>
-                      ) : (
-                        <Link
-                          to="/command/supervised/$missionId"
-                          params={{ missionId: r.id }}
-                          className="prj-name"
-                        >
-                          {r.favourite ? (
-                            <Star size={13} className="prj-star" aria-label="Favourite" />
-                          ) : null}
-                          {r.name}
-                        </Link>
-                      )}
-                      <span className="prj-next">
-                        {r.deleted
-                          ? r.phase === "stopped"
-                            ? "Deleted · work stopped"
-                            : r.phase === "done"
-                              ? "Deleted · finished"
-                              : "Archived · work not stopped"
-                          : r.next}
+                  <li
+                    key={r.id}
+                    className="prj-pcard"
+                    data-deleted={r.deleted ? "true" : undefined}
+                  >
+                    <div className="prj-pcard-top">
+                      <span className="prj-avatar" aria-hidden="true">
+                        {initials(r.name) || "P"}
                       </span>
-                    </td>
-                    <td role="cell" data-label="Status">
                       <span className="prj-phase" data-phase={r.phase}>
                         {PROJECT_PHASE_LABEL[r.phase]}
                       </span>
-                    </td>
-                    <td role="cell" data-label="Team">
+                      {menu(r)}
+                    </div>
+                    {r.deleted ? (
+                      <b className="prj-pcard-name">{r.name}</b>
+                    ) : (
+                      <Link
+                        to="/command/supervised/$missionId"
+                        params={{ missionId: r.id }}
+                        className="prj-pcard-name"
+                      >
+                        {r.favourite ? (
+                          <Star size={13} className="prj-star" aria-label="Favourite" />
+                        ) : null}
+                        {r.name}
+                      </Link>
+                    )}
+                    <p className="prj-pcard-next">{r.deleted ? deletedNote(r) : r.next}</p>
+                    <div className="prj-pcard-foot">
                       <RoleStack roles={r.roles} />
-                    </td>
-                    <td role="cell" data-label="Updated" className="prj-muted">
-                      {updated(r.updatedAt)}
-                    </td>
-                    <td role="cell" className="prj-actions">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger
-                          className="prj-icon-btn"
-                          aria-label={`Actions for ${r.name}`}
-                          disabled={busy}
-                        >
-                          <MoreHorizontal size={18} />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          {r.deleted ? (
-                            <DropdownMenuItem
-                              onSelect={() => meta.mutate({ row: r, archived: false })}
-                            >
-                              Restore
-                            </DropdownMenuItem>
-                          ) : (
-                            <>
-                              <DropdownMenuItem asChild>
-                                <Link
-                                  to="/command/supervised/$missionId"
-                                  params={{ missionId: r.id }}
-                                >
-                                  Open
-                                </Link>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onSelect={() => meta.mutate({ row: r, favourite: !r.favourite })}
-                              >
-                                {r.favourite ? "Remove favourite" : "Favourite"}
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                className="prj-danger-item"
-                                onSelect={() => setConfirm(r)}
-                              >
-                                Delete project
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </td>
-                  </tr>
+                      <span className="prj-muted">Updated {updated(r.updatedAt)}</span>
+                    </div>
+                  </li>
                 ))}
-              </tbody>
-            </table>
+                {showStart ? (
+                  <li className="prj-pcard prj-pcard-new">
+                    <button type="button" onClick={onNewProject}>
+                      <span className="prj-avatar" aria-hidden="true">
+                        <Plus size={16} />
+                      </span>
+                      <b>Start a project</b>
+                      <span className="prj-muted">One or two lines is enough</span>
+                    </button>
+                  </li>
+                ) : null}
+              </ul>
+            ) : (
+              <p className="prj-empty">Nothing here.</p>
+            )
+          ) : rows.length ? (
+            <div className="prj-panel">
+              <table className="prj-table" role="table">
+                <thead role="rowgroup">
+                  <tr role="row">
+                    <th scope="col" role="columnheader">
+                      Project
+                    </th>
+                    <th scope="col" role="columnheader">
+                      Status
+                    </th>
+                    <th scope="col" role="columnheader">
+                      Team
+                    </th>
+                    <th scope="col" role="columnheader">
+                      Updated
+                    </th>
+                    <th scope="col" role="columnheader">
+                      <span className="prj-sr">Actions</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody role="rowgroup">
+                  {rows.map((r) => (
+                    <tr role="row" key={r.id} data-deleted={r.deleted ? "true" : undefined}>
+                      <td role="cell">
+                        {r.deleted ? (
+                          <b className="prj-name">{r.name}</b>
+                        ) : (
+                          <Link
+                            to="/command/supervised/$missionId"
+                            params={{ missionId: r.id }}
+                            className="prj-name"
+                          >
+                            {r.favourite ? (
+                              <Star size={13} className="prj-star" aria-label="Favourite" />
+                            ) : null}
+                            {r.name}
+                          </Link>
+                        )}
+                        <span className="prj-next">{r.deleted ? deletedNote(r) : r.next}</span>
+                      </td>
+                      <td role="cell" data-label="Status">
+                        <span className="prj-phase" data-phase={r.phase}>
+                          {PROJECT_PHASE_LABEL[r.phase]}
+                        </span>
+                      </td>
+                      <td role="cell" data-label="Team">
+                        <RoleStack roles={r.roles} />
+                      </td>
+                      <td role="cell" data-label="Updated" className="prj-muted">
+                        {updated(r.updatedAt)}
+                      </td>
+                      <td role="cell" className="prj-actions">
+                        {menu(r)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           ) : (
             <div className="prj-empty">
-              {filter === "active" && !query ? (
-                <>
-                  <p>No projects yet.</p>
-                  <button type="button" className="prj-btn prj-btn-primary" onClick={onNewProject}>
-                    Start your first project
-                  </button>
-                </>
+              {showStart ? (
+                <button type="button" className="prj-btn prj-btn-primary" onClick={onNewProject}>
+                  Start your first project
+                </button>
               ) : (
                 <p>Nothing here.</p>
               )}
@@ -350,59 +528,70 @@ export function ProjectsDashboard({
           )}
         </section>
 
-        <aside className="prj-panel prj-team" aria-labelledby="prj-team-title">
-          <h2 id="prj-team-title">Your AI team</h2>
-          <p className="prj-team-sum">
-            <b>{model.team.total}</b> roles across <b>{model.team.departments}</b> departments.{" "}
-            <b>{model.team.runnable}</b> can run today; the rest are planned.
+        <aside className="prj-card prj-team" aria-labelledby="prj-team-title">
+          <p className="prj-eyebrow">Your AI team</p>
+          <h2 id="prj-team-title">
+            {model.team.onProjects} role{model.team.onProjects === 1 ? "" : "s"} on your projects
+          </h2>
+          <p className="prj-card-sub">
+            {model.team.runnable} of {model.team.total} roles can run today.
           </p>
-          <p className="prj-muted">
-            Each project gets only the roles it needs. {model.team.onProjects} role
-            {model.team.onProjects === 1 ? " is" : "s are"} on your live projects.
-          </p>
-          <ul className="prj-depts">
+          <ul className="prj-meters">
             {model.team.byDepartment
               .filter((d) => d.onProjects.length)
+              .slice(0, 5)
               .map((d) => (
                 <li key={d.name}>
-                  <div className="prj-dept-row">
-                    <span>{d.name}</span>
-                    <span className="prj-muted">
-                      {d.onProjects.length} of {d.total}
-                    </span>
-                  </div>
+                  <span>{d.name}</span>
+                  <b>
+                    {d.onProjects.length} / {d.total}
+                  </b>
                   <span
                     className="prj-bar"
                     role="img"
                     aria-label={`${d.onProjects.length} of ${d.total} roles on your projects`}
                   >
-                    <span style={{ width: `${(d.onProjects.length / d.total) * 100}%` }} />
+                    <span style={{ width: `${pct(d.onProjects.length, d.total)}%` }} />
                   </span>
-                  <p className="prj-dept-roles">{d.onProjects.map((r) => r.name).join(" · ")}</p>
                 </li>
               ))}
           </ul>
-          {idleDepartments.length ? (
-            <details className="prj-idle">
-              <summary>
-                {idleDepartments.length} more department{idleDepartments.length === 1 ? "" : "s"}{" "}
-                not on your projects yet
-              </summary>
-              <ul>
-                {idleDepartments.map((d) => (
-                  <li key={d.name}>
-                    <span>{d.name}</span>
-                    <span className="prj-muted">
-                      {d.total} roles{d.runnable ? ` · ${d.runnable} can run` : ""}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </details>
-          ) : null}
-          <Link to="/command/capabilities" className="prj-link">
-            Browse every role
-          </Link>
+          <div className="prj-team-links">
+            <Dialog>
+              <DialogTrigger className="prj-card-link">
+                See all {model.team.departments} departments{" "}
+                <ArrowRight size={14} aria-hidden="true" />
+              </DialogTrigger>
+              <DialogContent className="prj-dialog">
+                <DialogHeader>
+                  <DialogTitle>Your AI team</DialogTitle>
+                  <DialogDescription>
+                    Each project gets only the roles it needs. Planned roles never count as working.
+                  </DialogDescription>
+                </DialogHeader>
+                <ul className="prj-depts">
+                  {model.team.byDepartment.map((d) => (
+                    <li key={d.name}>
+                      <div className="prj-dept-row">
+                        <span>{d.name}</span>
+                        <span className="prj-muted">
+                          {d.onProjects.length} on projects · {d.runnable} can run · {d.total} roles
+                        </span>
+                      </div>
+                      {d.onProjects.length ? (
+                        <p className="prj-dept-roles">
+                          {d.onProjects.map((r) => r.name).join(" · ")}
+                        </p>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+                <Link to="/command/capabilities" className="prj-link">
+                  Browse every role
+                </Link>
+              </DialogContent>
+            </Dialog>
+          </div>
         </aside>
       </div>
 
