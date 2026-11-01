@@ -747,3 +747,37 @@ a.prj-name:hover {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+.prj-learn {
+  border-top: 1px solid var(--sx-rule);
+  padding-top: var(--sx-space-xs);
+  display: grid;
+  gap: 0.5rem;
+}
+.prj-learn-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.4rem 0.8rem;
+}
+.prj-learn-list a {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: var(--sx-text-xs);
+  color: var(--sx-ink-2);
+  text-decoration: none;
+}
+.prj-learn-list a:hover {
+  color: var(--sx-accent);
+}
+.prj-learn-list li[data-done] .prj-step-dot {
+  background: var(--sx-done);
+  border-color: var(--sx-done);
+}
+@media (max-width: 960px) {
+  .prj-learn-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

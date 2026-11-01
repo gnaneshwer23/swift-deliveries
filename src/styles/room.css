@@ -2103,3 +2103,7 @@ li[data-status="waiting_on_you"] .room-build-status {
   color: var(--sx-accent);
   margin-bottom: 0.15rem;
 }
+.room-explain a {
+  color: var(--sx-accent);
+  font-weight: 600;
+}

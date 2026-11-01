@@ -93,3 +93,13 @@ export function buildFirstProject(projects: FirstProjectSource[]): FirstProject 
 export function explainByDefault(goal: string | null | undefined, role?: string | null): boolean {
   return goal === "Learn by building a product" || role === "Student or new builder";
 }
+
+/** Steps done in at least one live project — what the owner has actually practised. */
+export function practisedSteps(projects: FirstProjectSource[]): Set<FirstProjectStepId> {
+  const done = new Set<FirstProjectStepId>();
+  for (const p of projects) {
+    if (p.archived || p.stage === "cancelled") continue;
+    for (const { id, test } of STEPS) if (test(p)) done.add(id);
+  }
+  return done;
+}
