@@ -12,5 +12,11 @@ Allow: /
 
 User-agent: *
 Allow: /
+# Signed-in workspace, server endpoints and one-time pages are not for search results.
+Disallow: /command
+Disallow: /api/
+Disallow: /onboarding
+Disallow: /auth/
+Disallow: /checkout/
 
 Sitemap: https://www.deliverx.dev/sitemap.xml

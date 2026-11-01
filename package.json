@@ -15,7 +15,10 @@
     "registry:export": "node --experimental-strip-types --no-warnings scripts/export-registry.mts"
   },
   "overrides": {
-    "rolldown": "1.2.1"
+    "rolldown": "1.2.1",
+    "better-auth": "~1.7.7",
+    "seroval": "~1.6.12",
+    "seroval-plugins": "~1.6.12"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

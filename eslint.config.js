@@ -43,7 +43,24 @@ export default tseslint.config(
           ],
         },
       ],
-      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      "react-refresh/only-export-components": [
+        "warn",
+        {
+          allowConstantExport: true,
+          // Helpers deliberately exported beside their component (UI kit variants and hooks,
+          // shared marketing data). They only affect development hot reload.
+          allowExportNames: [
+            "badgeVariants",
+            "buttonVariants",
+            "toggleVariants",
+            "navigationMenuTriggerStyle",
+            "useFormField",
+            "useSidebar",
+            "displayNameFor",
+            "HERO_TOOLS",
+          ],
+        },
+      ],
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/no-explicit-any": "off",
     },
