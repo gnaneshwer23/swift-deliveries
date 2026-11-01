@@ -5,7 +5,7 @@
 import { Link } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
-import type { ProjectSource } from "@/lib/pilot-mission/projects-dashboard";
+import { PROJECT_LIST_LIMIT, type ProjectSource } from "@/lib/pilot-mission/projects-dashboard";
 import {
   buildTeamDirectory,
   filterTeam,
@@ -20,13 +20,24 @@ const SHOW: Array<{ id: TeamFilter["show"]; label: string }> = [
   { id: "can_run", label: "Can run today" },
 ];
 
-export function TeamDirectory({ projects }: { projects: ProjectSource[] }) {
+export function TeamDirectory({
+  projects,
+  capped = false,
+}: {
+  projects: ProjectSource[];
+  /** True when the project list is cut at the most recent PROJECT_LIST_LIMIT. */
+  capped?: boolean;
+}) {
   const dir = useMemo(() => buildTeamDirectory(projects), [projects]);
-  const [filter, setFilter] = useState<TeamFilter>({
-    query: "",
-    department: "",
-    show: dir.summary.onProjects ? "on_projects" : "all",
-  });
+  const [query, setQuery] = useState("");
+  const [department, setDepartment] = useState("");
+  // null = the default view, which follows the data until the owner picks a view.
+  const [show, setShow] = useState<TeamFilter["show"] | null>(null);
+  const filter: TeamFilter = {
+    query,
+    department,
+    show: show ?? (dir.summary.onProjects ? "on_projects" : "all"),
+  };
   const groups = filterTeam(dir, filter);
   const shown = groups.reduce((n, g) => n + g.roles.length, 0);
 
@@ -59,7 +70,9 @@ export function TeamDirectory({ projects }: { projects: ProjectSource[] }) {
           <div>
             <span>On your projects</span>
             <b>{dir.summary.onProjects}</b>
-            <small>Live projects only</small>
+            <small>
+              {capped ? `Your ${PROJECT_LIST_LIMIT} most recent projects` : "Live projects only"}
+            </small>
           </div>
           <div>
             <span>Who decides</span>
@@ -80,7 +93,7 @@ export function TeamDirectory({ projects }: { projects: ProjectSource[] }) {
                   type="button"
                   aria-pressed={filter.show === s.id}
                   className="prj-tab"
-                  onClick={() => setFilter((f) => ({ ...f, show: s.id }))}
+                  onClick={() => setShow(s.id)}
                 >
                   {s.label}
                 </button>
@@ -89,10 +102,7 @@ export function TeamDirectory({ projects }: { projects: ProjectSource[] }) {
             <div className="team-filters">
               <label className="prj-search">
                 <span className="prj-sr">Department</span>
-                <select
-                  value={filter.department}
-                  onChange={(e) => setFilter((f) => ({ ...f, department: e.target.value }))}
-                >
+                <select value={filter.department} onChange={(e) => setDepartment(e.target.value)}>
                   <option value="">All departments</option>
                   {dir.departments.map((d) => (
                     <option key={d.name} value={d.name}>
@@ -108,7 +118,7 @@ export function TeamDirectory({ projects }: { projects: ProjectSource[] }) {
                   type="search"
                   placeholder="Search roles"
                   value={filter.query}
-                  onChange={(e) => setFilter((f) => ({ ...f, query: e.target.value }))}
+                  onChange={(e) => setQuery(e.target.value)}
                 />
               </label>
             </div>
