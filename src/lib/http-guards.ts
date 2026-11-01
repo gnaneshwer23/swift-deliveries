@@ -82,10 +82,39 @@ export async function limitRequestBody(request: Request): Promise<Request | Resp
   const headers = new Headers(request.headers);
   headers.set("content-length", String(total));
   headers.delete("transfer-encoding");
-  return new Request(request.url, {
+  const rebuilt = new Request(request.url, {
     method: request.method,
     headers,
     body,
     signal: request.signal,
   });
+  return keepAdapterExtensions(request, rebuilt);
+}
+
+/**
+ * The server adapter adds its own members to the request (e.g. `waitUntil`, which keeps
+ * background mission work alive after the response; the client address; the platform
+ * context). Carry every member a plain Request lacks onto the rebuilt one, reading through
+ * to the original so methods keep their binding.
+ */
+function keepAdapterExtensions(original: Request, rebuilt: Request): Request {
+  const source = original as unknown as Record<string, unknown>;
+  // Own members, including non-enumerable ones the adapter defines with defineProperty
+  // (such as `ip`), plus any enumerable ones it adds further up.
+  const keys = new Set<string>(Object.getOwnPropertyNames(original));
+  for (const key in source) keys.add(key);
+  for (const key of keys) {
+    if (key in rebuilt) continue;
+    Object.defineProperty(rebuilt, key, {
+      configurable: true,
+      enumerable: true,
+      get() {
+        const value = source[key];
+        return typeof value === "function"
+          ? (value as (...args: unknown[]) => unknown).bind(original)
+          : value;
+      },
+    });
+  }
+  return rebuilt;
 }

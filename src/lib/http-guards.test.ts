@@ -54,9 +54,21 @@ describe("limitRequestBody", () => {
     new Request(url, { method: "POST", body, headers, duplex: "half" } as RequestInit);
 
   it("refuses a declared body over the limit without reading it", async () => {
-    const res = await limitRequestBody(
-      post("x", { "content-length": String(MAX_REQUEST_BODY_BYTES + 1) }),
+    let pulled = false;
+    // highWaterMark 0: nothing is pulled until someone actually reads.
+    const untouched = new ReadableStream<Uint8Array>(
+      {
+        pull() {
+          pulled = true;
+          throw new Error("the body must not be read");
+        },
+      },
+      { highWaterMark: 0 },
     );
+    const res = await limitRequestBody(
+      post(untouched, { "content-length": String(MAX_REQUEST_BODY_BYTES + 1) }),
+    );
+    expect(pulled).toBe(false);
     expect(res).toBeInstanceOf(Response);
     expect((res as Response).status).toBe(413);
   });
@@ -87,6 +99,29 @@ describe("limitRequestBody", () => {
     expect(req.headers.get("content-length")).toBe(
       String(new TextEncoder().encode(payload).length),
     );
+  });
+
+  it("keeps adapter members such as waitUntil on the rebuilt request", async () => {
+    const original = post("{}") as Request & {
+      waitUntil?: (p: Promise<unknown>) => void;
+      ip?: string;
+    };
+    const kept: Array<Promise<unknown>> = [];
+    const receivers: unknown[] = [];
+    original.waitUntil = function (this: unknown, p: Promise<unknown>) {
+      receivers.push(this);
+      kept.push(p);
+    };
+    // As the Vercel adapter does: waitUntil assigned, ip defined as a non-enumerable getter.
+    Object.defineProperty(original, "ip", { get: () => "203.0.113.7" });
+    const out = (await limitRequestBody(original)) as typeof original;
+    expect(out).not.toBe(original);
+    const work = Promise.resolve("done");
+    out.waitUntil?.(work);
+    expect(kept).toEqual([work]);
+    expect(receivers).toEqual([original]);
+    expect(out.ip).toBe("203.0.113.7");
+    expect(await out.text()).toBe("{}");
   });
 
   it("leaves GET requests untouched", async () => {
