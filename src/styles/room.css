@@ -1538,7 +1538,8 @@ li[data-status="waiting_on_you"] .room-build-status {
 
 .wr-plan {
   position: sticky;
-  top: 0;
+  /* Below the sheet's close control while the board scrolls. */
+  top: var(--sx-space-xl);
   display: grid;
   gap: var(--sx-space-sm);
   padding: var(--sx-space-md);

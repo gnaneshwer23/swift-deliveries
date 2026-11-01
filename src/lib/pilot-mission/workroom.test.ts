@@ -40,24 +40,48 @@ describe("buildWorkroom", () => {
   });
 
   it("totals capacity from the units each task budgeted and spent — nothing invented", () => {
-    const wr = buildWorkroom(deliveryBundle(discovered));
+    const bundle = deliveryBundle(discovered);
+    bundle.tasks = bundle.tasks.map((t) =>
+      t.status === "completed" ? { ...t, actualUsage: t.estimatedUsage - 1 } : t,
+    );
+    const spent = bundle.tasks.reduce((n, t) => n + t.actualUsage, 0);
+    expect(spent).toBeGreaterThan(0);
+    const wr = buildWorkroom(bundle);
     const budget = productMissionTasks("Build a waste log", false).reduce(
       (n, t) => n + t.estimatedUsage,
       0,
     );
     expect(wr.usage.budget).toBe(budget);
     expect(wr.team.reduce((n, m) => n + m.usage.budget, 0)).toBe(budget);
+    expect(wr.usage.used).toBe(spent);
+    expect(wr.team.reduce((n, m) => n + m.usage.used, 0)).toBe(spent);
     expect(wr.team.every((m) => m.name !== "You")).toBe(true);
     const keystone = wr.team.find((m) => m.name === "Keystone")!;
     expect(keystone.tasks).toMatchObject({ total: 2, done: 1 });
+    // Keystone covers two catalogue roles; both are shown.
+    expect(keystone.role.split(" · ")).toHaveLength(2);
   });
 
   it("groups the timeline by lifecycle stage in plan order", () => {
     const wr = buildWorkroom(deliveryBundle({}));
-    expect(wr.timeline.map((l) => l.stage).slice(0, 3)).toEqual([
+    expect(wr.timeline.map((l) => l.stage)).toEqual([
       "Capture the mission",
       "Discover & research",
       "Define the opportunity",
+      "Design the solution",
+      "Coordinate the build",
+      "Verify the product",
+      "Approve & release",
+      "Learn & evolve",
     ]);
+  });
+
+  it("counts skipped prerequisites as ready and flags failed work as needing attention", () => {
+    const wr = buildWorkroom(
+      deliveryBundle({ charter: "completed", market: "skipped", research: "failed" }),
+    );
+    const prd = wr.cards.find((c) => c.key === "prd")!;
+    expect(prd.plan.buildsOn.find((d) => d.owner === "Scout")?.done).toBe(true);
+    expect(wr.team.find((m) => m.name === "Maya")?.tasks.needsYou).toBe(1);
   });
 });

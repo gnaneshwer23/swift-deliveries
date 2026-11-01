@@ -58,7 +58,7 @@ export type TimelineLane = { stage: string; cards: WorkCard[] };
 export type TeamLoad = {
   name: string;
   role: string;
-  tasks: { total: number; done: number; working: number; next: number };
+  tasks: { total: number; done: number; working: number; next: number; needsYou: number };
   usage: { budget: number; used: number };
   current: string | null;
 };
@@ -106,7 +106,8 @@ export function buildWorkroom(bundle: MissionBundle): Workroom {
             return {
               title: up?.title ?? t.title,
               owner: up?.owner ?? "",
-              done: t.status === "completed",
+              // The scheduler treats a skipped task as satisfied.
+              done: t.status === "completed" || t.status === "skipped",
             };
           }),
         unblocks: bundle.tasks
@@ -129,7 +130,7 @@ export function buildWorkroom(bundle: MissionBundle): Workroom {
     const t = team.get(c.owner) ?? {
       name: c.owner,
       role: c.role,
-      tasks: { total: 0, done: 0, working: 0, next: 0 },
+      tasks: { total: 0, done: 0, working: 0, next: 0, needsYou: 0 },
       usage: { budget: 0, used: 0 },
       current: null,
     };
@@ -138,7 +139,10 @@ export function buildWorkroom(bundle: MissionBundle): Workroom {
     else if (c.column === "working") {
       t.tasks.working += 1;
       t.current = c.title;
-    } else t.tasks.next += 1;
+    } else if (c.column === "needs_you") t.tasks.needsYou += 1;
+    else t.tasks.next += 1;
+    // One display name can cover several catalogue roles (Keystone: research and architecture).
+    if (!t.role.split(" · ").includes(c.role)) t.role = `${t.role} · ${c.role}`;
     t.usage.budget += c.usage.budget;
     t.usage.used += c.usage.used;
     team.set(c.owner, t);

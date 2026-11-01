@@ -156,6 +156,8 @@ export function Workroom({
             key={id}
             type="button"
             role="tab"
+            id={`wr-tab-${id}`}
+            aria-controls={`wr-panel-${id}`}
             aria-selected={tab === id}
             className="wr-tab"
             onClick={() => setTab(id)}
@@ -169,7 +171,12 @@ export function Workroom({
       </div>
 
       {tab === "board" ? (
-        <div className="wr-split">
+        <div
+          className="wr-split"
+          role="tabpanel"
+          id="wr-panel-board"
+          aria-labelledby="wr-tab-board"
+        >
           <div className="wr-board">
             {model.board.map((col) => (
               <section key={col.id} className="wr-col" data-col={col.id}>
@@ -194,7 +201,12 @@ export function Workroom({
       ) : null}
 
       {tab === "timeline" ? (
-        <ol className="wr-timeline">
+        <ol
+          className="wr-timeline"
+          role="tabpanel"
+          id="wr-panel-timeline"
+          aria-labelledby="wr-tab-timeline"
+        >
           {model.timeline.map((lane) => (
             <li key={lane.stage}>
               <span className="room-mono">{lane.stage}</span>
@@ -217,7 +229,7 @@ export function Workroom({
       ) : null}
 
       {tab === "team" ? (
-        <ul className="wr-team">
+        <ul className="wr-team" role="tabpanel" id="wr-panel-team" aria-labelledby="wr-tab-team">
           {model.team.map((m) => {
             const pct = m.usage.budget
               ? Math.min(100, Math.round((m.usage.used / m.usage.budget) * 100))
@@ -230,11 +242,13 @@ export function Workroom({
                     <b>{m.name}</b> <span>{m.role}</span>
                   </p>
                   <p className="wr-team-now">
-                    {m.current
-                      ? `Working on: ${m.current}`
-                      : m.tasks.done === m.tasks.total
-                        ? "All tasks done"
-                        : "Waiting for earlier work"}
+                    {m.tasks.needsYou
+                      ? `Needs attention: ${m.tasks.needsYou} task${m.tasks.needsYou === 1 ? "" : "s"} failed or sent back`
+                      : m.current
+                        ? `Working on: ${m.current}`
+                        : m.tasks.done === m.tasks.total
+                          ? "All tasks done"
+                          : "Waiting for earlier work"}
                   </p>
                   <span
                     className="wr-bar"
