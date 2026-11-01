@@ -39,6 +39,7 @@ const CHAPTERS = [
   { id: "hp-decisions", label: "Decisions" },
   { id: "hp-record", label: "Build record" },
   { id: "hp-control", label: "Your control" },
+  { id: "hp-workspace", label: "Your workspace" },
   { id: "hp-learning", label: "Learn by building" },
 ];
 
@@ -59,6 +60,7 @@ export function HomePlatformStory() {
       <DecisionSection />
       <BuildRecordSection />
       <ControlSection />
+      <WorkspaceSection />
       <LearningSection />
       <PromptSection />
     </div>
@@ -537,21 +539,73 @@ function ControlSection() {
 }
 
 // ---------------------------------------------------------------------------
-// 05 Learning
+// 05 Workspace — the product as it is today, in words (no mock screenshots)
+// ---------------------------------------------------------------------------
+
+const WORKSPACE: Array<{ icon: LucideIcon; title: string; body: string }> = [
+  {
+    icon: Target,
+    title: "Projects",
+    body: "Every product you are building on one page: what each one needs from you, which roles are on it, and a path from idea to recorded outcome. Add, delete and restore projects.",
+  },
+  {
+    icon: MessageSquareText,
+    title: "The project room",
+    body: "Aria tells the project as one story, with one next step at a time. Plans, decisions and reviews open in a side panel; nothing moves until you act.",
+  },
+  {
+    icon: CheckCheck,
+    title: "The Workroom",
+    body: "Once delivery starts, see how the team plans its work: a board, each task’s brief and checks, the order of work and what each role has used.",
+  },
+  {
+    icon: ScanSearch,
+    title: "Meeting notes",
+    body: "Paste notes from meetings you held. A rule-based reader proposes tasks, decisions and questions; you accept what joins the project.",
+  },
+];
+
+function WorkspaceSection() {
+  return (
+    <section className="hp-section" id="hp-workspace">
+      <div className="dxl-wrap">
+        <Heading n="05" eyebrow="Your workspace" title="One place to build, decide and review.">
+          <p>
+            What you use after you sign in. {WORKFORCE_AVAILABLE_IDS.length} of the{" "}
+            {WORKFORCE_TOTAL} catalogue roles run today, and each project gets only the ones it
+            needs.
+          </p>
+        </Heading>
+        <ul className="hp-workspace">
+          {WORKSPACE.map((w) => (
+            <li key={w.title}>
+              <w.icon size={20} aria-hidden="true" />
+              <strong>{w.title}</strong>
+              <span>{w.body}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 06 Learning
 // ---------------------------------------------------------------------------
 function LearningSection() {
   return (
     <section className="hp-section" id="hp-learning">
       <div className="dxl-wrap">
         <Heading
-          n="05"
+          n="06"
           eyebrow="Learn by building"
           title="Learn product craft beside the specialists."
         >
           <p>
             Students and new builders work in the same environment as the agents: frame the
-            question, challenge a recommendation, approve a gate. Each contribution is recorded with
-            what it changed, so the record becomes the lesson.
+            question, weigh the options, decide and review the build. Your decisions stay in the
+            project record, so the record becomes the lesson.
           </p>
         </Heading>
         <div className="hp-split hp-split-reverse">
@@ -561,14 +615,21 @@ function LearningSection() {
               <span>Practise on your own product idea, not a canned exercise.</span>
             </li>
             <li>
-              <strong>See the reasoning</strong>
-              <span>Read why each specialist voted the way it did, including the dissent.</span>
+              <strong>Explain as we go</strong>
+              <span>
+                Switch it on and every step says why it matters, with a short lesson behind it.
+              </span>
             </li>
             <li>
               <strong>Keep your work</strong>
               <span>
                 Your contributions stay in the build record of the product you helped make.
               </span>
+            </li>
+            <li>
+              <Link to="/learn" className="hp-link">
+                Read the eight lessons <ArrowRight size={14} aria-hidden="true" />
+              </Link>
             </li>
           </ul>
           <div className="ix hp-stage hp-stage-compact">

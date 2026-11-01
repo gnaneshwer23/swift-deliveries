@@ -600,3 +600,33 @@
     min-width: 760px;
   }
 }
+
+/* 05 Your workspace */
+.hp-workspace {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1rem;
+}
+.hp-workspace li {
+  display: grid;
+  gap: 0.45rem;
+  align-content: start;
+  padding: 1.25rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fff;
+}
+.hp-workspace svg {
+  color: #4f46e5;
+}
+.hp-workspace strong {
+  font-size: 1.05rem;
+}
+.hp-workspace span {
+  color: #475569;
+  line-height: 1.55;
+  font-size: 0.95rem;
+}

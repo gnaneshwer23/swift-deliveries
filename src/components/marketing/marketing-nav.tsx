@@ -9,6 +9,7 @@ import { PRODUCT_LINKS, EXPLORE_LINKS } from "./marketing-navigation";
 
 const LINKS = [
   { to: "/how-it-works", label: "How it works" },
+  { to: "/learn", label: "Learn" },
   { to: "/pricing", label: "Pricing & Pilot" },
 ] as const;
 
@@ -161,6 +162,9 @@ export function MarketingNav() {
             ))}
             <Link to="/how-it-works" onClick={() => setOpen(false)}>
               How it works
+            </Link>
+            <Link to="/learn" onClick={() => setOpen(false)}>
+              Learn
             </Link>
           </div>
           <div className="public-mobile-group">
