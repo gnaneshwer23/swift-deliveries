@@ -71,6 +71,8 @@ export function StudioClarifyingDashboard({ onBackToIdea }: { onBackToIdea: () =
       if (userId) {
         try {
           sessionStorage.removeItem(missionIntakeStorageKey(userId));
+          // The new project exists: the Studio home opens on the dashboard next time.
+          sessionStorage.removeItem("dx-studio-entry-screen");
         } catch {
           /* Optional. */
         }
@@ -108,37 +110,11 @@ export function StudioClarifyingDashboard({ onBackToIdea }: { onBackToIdea: () =
 
   return (
     <div className="sd-shell sd-shell-submission" data-studio-screen="clarifying">
-      <div className="sd-constellation" aria-hidden="true">
-        <svg viewBox="0 0 800 480" preserveAspectRatio="xMidYMid slice">
-          <g fill="none" stroke="rgba(99,102,241,0.22)" strokeWidth="1">
-            <path d="M80 90 L180 140 L260 80 L360 160 L480 100 L580 180 L700 120" />
-            <path d="M120 320 L220 280 L340 340 L460 260 L600 320 L720 280" />
-          </g>
-          <g fill="rgba(34,211,238,0.35)">
-            <circle cx="80" cy="90" r="3" />
-            <circle cx="260" cy="80" r="3" />
-            <circle cx="480" cy="100" r="3" />
-            <circle cx="340" cy="340" r="3" />
-            <circle cx="600" cy="320" r="2.5" />
-          </g>
-        </svg>
-      </div>
-
       <div className="sd-topbar">
-        <p className="sd-brand">DeliverX</p>
-        <p className="sd-step-pill">
-          Screen <strong>4</strong> · Clarifying questions
-          <span aria-hidden="true"> · </span>
-          <button
-            type="button"
-            className="sd-btn sd-btn-ghost"
-            style={{ minHeight: "1.75rem", padding: "0.2rem 0.7rem", fontSize: "0.72rem" }}
-            disabled={busy}
-            onClick={onBackToIdea}
-          >
-            Edit idea
-          </button>
-        </p>
+        <button type="button" className="sd-back" disabled={busy} onClick={onBackToIdea}>
+          ← Edit idea
+        </button>
+        <p className="sd-brand">New project · step 2 of 2</p>
       </div>
 
       <section className="sd-card sd-submission-card" aria-labelledby="sd-clarify-title">

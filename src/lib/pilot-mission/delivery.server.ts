@@ -16,7 +16,7 @@ import { deliveryEligibility, deliveryRequest, withDelivery } from "./delivery";
 import { createMissionStore } from "./repository.server";
 import { MissionConflictError, MissionNotFoundError, SupervisedMissionService } from "./service";
 import type { SupervisedMission } from "./types";
-import { ensureProjectId } from "./workforce-adapter.server";
+import { cancelStaleSupervisedWorkerLinks, ensureProjectId } from "./workforce-adapter.server";
 
 export class DeliveryNotAllowedError extends Error {
   constructor(message: string) {
@@ -146,6 +146,68 @@ export async function cancelCaseAndDelivery(
       });
     }
     return mission;
+  });
+}
+
+/**
+ * Delete a project from the dashboard, in one transaction: stop all of its work (the case
+ * unless it is already finished, its delivery build and any research pass), then hide it.
+ * Records are kept so the owner can restore it; a finished (exported) case stays finished.
+ */
+export async function deleteCaseFromDashboard(
+  input: {
+    workspaceId: string;
+    id: string;
+    expectedVersion: number;
+    actorId: string;
+    nowMs: number;
+  },
+  transact: DbTransaction = neonTransaction,
+): Promise<SupervisedMission> {
+  return transact(async (tx, query) => {
+    const service = new SupervisedMissionService(createMissionStore(tx, transact));
+    const current = await service.get(input.workspaceId, input.id);
+    if (!current) throw new MissionNotFoundError();
+    if (current.version !== input.expectedVersion) {
+      throw new MissionConflictError(
+        "This project changed in another session. Refresh and try again.",
+      );
+    }
+    const stopped =
+      current.stage === "exported"
+        ? current
+        : await service.cancel({
+            workspaceId: input.workspaceId,
+            id: input.id,
+            expectedVersion: input.expectedVersion,
+            nowMs: input.nowMs,
+          });
+    if (stopped.delivery) {
+      await cancelDeliveryMission(query, {
+        workspaceId: input.workspaceId,
+        wfMissionId: stopped.delivery.wfMissionId,
+        actorId: input.actorId,
+      });
+    }
+    const links = await query(
+      `select to_regclass('public.psi_supervised_wf_links') is not null as present`,
+      [] as never,
+    );
+    if (links[0]?.["present"]) {
+      await cancelStaleSupervisedWorkerLinks(query, {
+        workspaceId: input.workspaceId,
+        supervisedMissionId: input.id,
+        reason: "project_deleted",
+      });
+    }
+    return service.saveStudioMeta({
+      workspaceId: input.workspaceId,
+      id: input.id,
+      expectedVersion: stopped.version,
+      archived: true,
+      actorId: input.actorId,
+      nowMs: input.nowMs,
+    });
   });
 }
 

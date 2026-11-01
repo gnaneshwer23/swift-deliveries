@@ -104,7 +104,7 @@ function CommandProjects() {
   }
 
   return (
-    <CommandShell title="Projects" hideHeading usage={usage}>
+    <CommandShell title="Product memory" hideHeading usage={usage}>
       <div className="ps-room">
         <header className="ps-room-stage" aria-label="Projects">
           <p className="ps-foyer-brand">DeliverX Studio</p>

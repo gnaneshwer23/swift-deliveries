@@ -221,8 +221,11 @@ export const getSupervisedMissionHome = createServerFn({ method: "GET" })
             studioInboxFields(mission);
           return {
             id: mission.id,
+            version: mission.version,
             question: mission.brief.question,
             stage: mission.stage,
+            teamIds: mission.team?.capabilityIds ?? [],
+            delivery: Boolean(mission.delivery),
             nextTitle: next.title,
             next,
             investigationPaused,
@@ -579,6 +582,29 @@ export const saveSupervisedStudioMeta = createServerFn({ method: "POST" })
       studioMetaInput.investigationPaused = data.investigationPaused;
     }
     const mission = await service.saveStudioMeta(studioMetaInput);
+    return view(mission, null);
+  });
+
+/**
+ * Delete a project from the dashboard: stops all work on it and hides it, in one transaction
+ * (see `deleteCaseFromDashboard`). Records are kept, so it can be restored with
+ * `saveSupervisedStudioMeta({ archived: false })` — stopped work stays stopped.
+ */
+export const deleteSupervisedProject = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z.object({ id: z.string().uuid(), expectedVersion: z.number().int().positive() }).parse(data),
+  )
+  .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
+    const workspace = await workspaceFor(context.supabase, context.userId);
+    const { deleteCaseFromDashboard } = await import("./pilot-mission/delivery.server");
+    const mission = await deleteCaseFromDashboard({
+      workspaceId: workspace.id,
+      id: data.id,
+      expectedVersion: data.expectedVersion,
+      actorId: context.userId,
+      nowMs: Date.now(),
+    });
     return view(mission, null);
   });
 

@@ -114,6 +114,17 @@
 .ps-nav-advanced summary::-webkit-details-marker {
   display: none;
 }
+.ps-nav-advanced summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ps-nav-advanced-chevron {
+  transition: transform 160ms ease;
+}
+.ps-nav-advanced[open] .ps-nav-advanced-chevron {
+  transform: rotate(180deg);
+}
 .ps-nav-advanced-links {
   display: grid;
   gap: 2px;

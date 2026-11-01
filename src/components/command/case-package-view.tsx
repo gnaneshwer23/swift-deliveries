@@ -49,7 +49,7 @@ export function CasePackageView({
       </section>
       <DeliveryArtefacts mission={mission} />
       <p className="sx-detail">
-        Earlier cases and their packages are in <Link to="/command/portfolio">your portfolio</Link>.
+        Earlier cases and their packages are in <Link to="/command">your projects</Link>.
       </p>
     </div>
   );
