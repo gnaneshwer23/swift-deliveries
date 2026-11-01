@@ -139,7 +139,7 @@ function WorkforceSection() {
           title={`${WORKFORCE_TOTAL} specialists. Only the ones your mission needs.`}
         >
           <p>
-            A small team from {WORKFORCE_DEPARTMENTS.length} departments, picked for each mission.
+            A small team, picked from {WORKFORCE_DEPARTMENTS.length} departments for each mission.
             You see who before anything runs.
           </p>
         </Heading>
@@ -636,7 +636,7 @@ function WorkspaceSection() {
 const FOUNDATION: Array<{ title: string; line: string; join?: string }> = [
   {
     title: "You decide",
-    line: "Plans, decisions and gates wait for you",
+    line: "Plans, gates and high-impact decisions wait for you",
     join: "Approved plans only",
   },
   { title: "Specialist roles", line: "Each drafts its part of the work", join: "Checked handoffs" },
