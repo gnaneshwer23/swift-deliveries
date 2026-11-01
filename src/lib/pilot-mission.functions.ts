@@ -586,9 +586,9 @@ export const saveSupervisedStudioMeta = createServerFn({ method: "POST" })
   });
 
 /**
- * Delete a project from the dashboard: stops any work on it (the case and its delivery are
- * cancelled together), then hides it. Records are kept for the audit trail, so it can be
- * restored with `saveSupervisedStudioMeta({ archived: false })` — stopped work stays stopped.
+ * Delete a project from the dashboard: stops all work on it and hides it, in one transaction
+ * (see `deleteCaseFromDashboard`). Records are kept, so it can be restored with
+ * `saveSupervisedStudioMeta({ archived: false })` — stopped work stays stopped.
  */
 export const deleteSupervisedProject = createServerFn({ method: "POST" })
   .middleware([requireAuth])
@@ -597,20 +597,11 @@ export const deleteSupervisedProject = createServerFn({ method: "POST" })
   )
   .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
     const workspace = await workspaceFor(context.supabase, context.userId);
-    const { service } = await serviceFor();
-    const { cancelCaseAndDelivery } = await import("./pilot-mission/delivery.server");
-    const stopped = await cancelCaseAndDelivery({
+    const { deleteCaseFromDashboard } = await import("./pilot-mission/delivery.server");
+    const mission = await deleteCaseFromDashboard({
       workspaceId: workspace.id,
       id: data.id,
       expectedVersion: data.expectedVersion,
-      actorId: context.userId,
-      nowMs: Date.now(),
-    });
-    const mission = await service.saveStudioMeta({
-      workspaceId: workspace.id,
-      id: data.id,
-      expectedVersion: stopped.version,
-      archived: true,
       actorId: context.userId,
       nowMs: Date.now(),
     });

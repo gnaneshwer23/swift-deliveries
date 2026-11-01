@@ -35,6 +35,9 @@ export type ProjectSource = {
 
 export type ProjectRole = { id: string; name: string; department: string };
 
+/** The saved-case list returns the most recently updated cases, up to this many. */
+export const PROJECT_LIST_LIMIT = 20;
+
 export type ProjectRow = {
   id: string;
   version: number;
@@ -90,9 +93,11 @@ function phaseFor(p: ProjectSource): ProjectPhase {
   return "researching";
 }
 
+/** Only roles that can run today count as working on a project; planned roles never do. */
 function role(id: string): ProjectRole | null {
   const c = getCapability(id);
-  return c ? { id, name: c.name.replace(/\s+agent$/i, ""), department: c.department } : null;
+  if (!c || c.lifecycle_status !== "available") return null;
+  return { id, name: c.name.replace(/\s+agent$/i, ""), department: c.department };
 }
 
 export function projectRoles(p: Pick<ProjectSource, "teamIds" | "delivery">): ProjectRole[] {

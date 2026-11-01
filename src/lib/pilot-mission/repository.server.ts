@@ -1,3 +1,4 @@
+import { PROJECT_LIST_LIMIT } from "./projects-dashboard";
 import { neonTransaction, type DbTransaction } from "@/lib/db/neon.server";
 import type { Db } from "@/lib/db/builder";
 import { isMissingRelationError } from "@/lib/workforce/db";
@@ -69,7 +70,7 @@ export function createMissionStore(
         .select("*")
         .eq("workspace_id", workspaceId)
         .order("updated_at", { ascending: false })
-        .limit(20);
+        .limit(PROJECT_LIST_LIMIT);
       if (res.error) {
         if (unavailable(res.error)) throw new MissionStoreUnavailableError();
         throw new Error(res.error.message);

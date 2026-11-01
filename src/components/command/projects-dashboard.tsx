@@ -28,6 +28,7 @@ import {
   buildProjectsDashboard,
   filterProjects,
   PROJECT_FILTERS,
+  PROJECT_LIST_LIMIT,
   PROJECT_PHASE_LABEL,
   type ProjectFilter,
   type ProjectRole,
@@ -49,13 +50,13 @@ function initials(name: string): string {
 }
 
 function RoleStack({ roles }: { roles: ProjectRole[] }) {
-  if (!roles.length) return <span className="pd-muted">Assigned at plan approval</span>;
+  if (!roles.length) return <span className="prj-muted">Assigned at plan approval</span>;
   const shown = roles.slice(0, 4);
   return (
-    <span className="pd-roles" title={roles.map((r) => r.name).join("\n")}>
-      <span className="pd-role-stack" aria-hidden="true">
+    <span className="prj-roles" title={roles.map((r) => r.name).join("\n")}>
+      <span className="prj-role-stack" aria-hidden="true">
         {shown.map((r) => (
-          <span key={r.id} className="pd-role-chip">
+          <span key={r.id} className="prj-role-chip">
             {initials(r.name)}
           </span>
         ))}
@@ -89,8 +90,11 @@ export function ProjectsDashboard({
   const idleDepartments = model.team.byDepartment.filter((d) => !d.onProjects.length);
 
   const refresh = () => qc.invalidateQueries({ queryKey: ["supervised"] });
-  const onError = (e: unknown) =>
+  const onError = (e: unknown) => {
     setError(e instanceof Error ? e.message : "That change could not be saved.");
+    // Reload so a retry uses each project's current version.
+    void refresh();
+  };
   const remove = useMutation({
     mutationFn: (r: ProjectRow) =>
       deleteSupervisedProject({ data: { id: r.id, expectedVersion: r.version } }),
@@ -120,19 +124,19 @@ export function ProjectsDashboard({
   const left = usage ? Math.max(0, usage.ceiling - usage.consumed) : null;
 
   return (
-    <div className="pd">
-      <header className="pd-head">
+    <div className="prj">
+      <header className="prj-head">
         <div>
           <h1>Projects</h1>
           <p>Every product you are building, what it needs from you, and who is working on it.</p>
         </div>
-        <button type="button" className="pd-btn pd-btn-primary" onClick={onNewProject}>
+        <button type="button" className="prj-btn prj-btn-primary" onClick={onNewProject}>
           <Plus size={16} aria-hidden="true" />
           New project
         </button>
       </header>
 
-      <section className="pd-stats" aria-label="Summary">
+      <section className="prj-stats" aria-label="Summary">
         <div>
           <span>Live projects</span>
           <b>{model.counts.active}</b>
@@ -153,8 +157,8 @@ export function ProjectsDashboard({
       </section>
 
       {needsYou.length ? (
-        <section className="pd-panel pd-needs" aria-labelledby="pd-needs-title">
-          <h2 id="pd-needs-title">Waiting on you</h2>
+        <section className="prj-panel prj-needs" aria-labelledby="prj-needs-title">
+          <h2 id="prj-needs-title">Waiting on you</h2>
           <ul>
             {needsYou.slice(0, 4).map((r) => (
               <li key={r.id}>
@@ -165,7 +169,7 @@ export function ProjectsDashboard({
                 <Link
                   to="/command/supervised/$missionId"
                   params={{ missionId: r.id }}
-                  className="pd-btn pd-btn-small"
+                  className="prj-btn prj-btn-small"
                 >
                   Open
                 </Link>
@@ -175,19 +179,19 @@ export function ProjectsDashboard({
         </section>
       ) : null}
 
-      <div className="pd-grid">
-        <section className="pd-panel" aria-labelledby="pd-list-title">
-          <div className="pd-toolbar">
-            <h2 id="pd-list-title" className="pd-sr">
+      <div className="prj-grid">
+        <section className="prj-panel" aria-labelledby="prj-list-title">
+          <div className="prj-toolbar">
+            <h2 id="prj-list-title" className="prj-sr">
               Project list
             </h2>
-            <div className="pd-tabs" role="group" aria-label="Filter projects">
+            <div className="prj-tabs" role="group" aria-label="Filter projects">
               {PROJECT_FILTERS.map((f) => (
                 <button
                   key={f.id}
                   type="button"
                   aria-pressed={filter === f.id}
-                  className="pd-tab"
+                  className="prj-tab"
                   onClick={() => setFilter(f.id)}
                 >
                   {f.label}
@@ -195,9 +199,9 @@ export function ProjectsDashboard({
                 </button>
               ))}
             </div>
-            <label className="pd-search">
+            <label className="prj-search">
               <Search size={15} aria-hidden="true" />
-              <span className="pd-sr">Search projects</span>
+              <span className="prj-sr">Search projects</span>
               <input
                 type="search"
                 placeholder="Search projects"
@@ -208,59 +212,81 @@ export function ProjectsDashboard({
           </div>
 
           {error ? (
-            <p className="pd-error" role="alert">
+            <p className="prj-error" role="alert">
               {error}
             </p>
           ) : null}
 
+          {projects.length >= PROJECT_LIST_LIMIT ? (
+            <p className="prj-muted prj-cap">
+              Showing your {PROJECT_LIST_LIMIT} most recently updated projects.
+            </p>
+          ) : null}
+
           {rows.length ? (
-            <table className="pd-table">
-              <thead>
-                <tr>
-                  <th scope="col">Project</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Team</th>
-                  <th scope="col">Updated</th>
-                  <th scope="col">
-                    <span className="pd-sr">Actions</span>
+            <table className="prj-table" role="table">
+              <thead role="rowgroup">
+                <tr role="row">
+                  <th scope="col" role="columnheader">
+                    Project
+                  </th>
+                  <th scope="col" role="columnheader">
+                    Status
+                  </th>
+                  <th scope="col" role="columnheader">
+                    Team
+                  </th>
+                  <th scope="col" role="columnheader">
+                    Updated
+                  </th>
+                  <th scope="col" role="columnheader">
+                    <span className="prj-sr">Actions</span>
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody role="rowgroup">
                 {rows.map((r) => (
-                  <tr key={r.id} data-deleted={r.deleted ? "true" : undefined}>
-                    <td>
+                  <tr role="row" key={r.id} data-deleted={r.deleted ? "true" : undefined}>
+                    <td role="cell">
                       {r.deleted ? (
-                        <b className="pd-name">{r.name}</b>
+                        <b className="prj-name">{r.name}</b>
                       ) : (
                         <Link
                           to="/command/supervised/$missionId"
                           params={{ missionId: r.id }}
-                          className="pd-name"
+                          className="prj-name"
                         >
                           {r.favourite ? (
-                            <Star size={13} className="pd-star" aria-label="Favourite" />
+                            <Star size={13} className="prj-star" aria-label="Favourite" />
                           ) : null}
                           {r.name}
                         </Link>
                       )}
-                      <span className="pd-next">
-                        {r.deleted ? "Deleted · work stopped" : r.next}
+                      <span className="prj-next">
+                        {r.deleted
+                          ? r.phase === "stopped"
+                            ? "Deleted · work stopped"
+                            : r.phase === "done"
+                              ? "Deleted · finished"
+                              : "Archived · work not stopped"
+                          : r.next}
                       </span>
                     </td>
-                    <td>
-                      <span className="pd-phase" data-phase={r.phase}>
+                    <td role="cell" data-label="Status">
+                      <span className="prj-phase" data-phase={r.phase}>
                         {PROJECT_PHASE_LABEL[r.phase]}
                       </span>
                     </td>
-                    <td>
+                    <td role="cell" data-label="Team">
                       <RoleStack roles={r.roles} />
                     </td>
-                    <td className="pd-muted">{updated(r.updatedAt)}</td>
-                    <td className="pd-actions">
+                    <td role="cell" data-label="Updated" className="prj-muted">
+                      {updated(r.updatedAt)}
+                    </td>
+                    <td role="cell" className="prj-actions">
                       <DropdownMenu>
                         <DropdownMenuTrigger
-                          className="pd-icon-btn"
+                          className="prj-icon-btn"
                           aria-label={`Actions for ${r.name}`}
                           disabled={busy}
                         >
@@ -290,7 +316,7 @@ export function ProjectsDashboard({
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
-                                className="pd-danger-item"
+                                className="prj-danger-item"
                                 onSelect={() => setConfirm(r)}
                               >
                                 Delete project
@@ -305,11 +331,11 @@ export function ProjectsDashboard({
               </tbody>
             </table>
           ) : (
-            <div className="pd-empty">
+            <div className="prj-empty">
               {filter === "active" && !query ? (
                 <>
                   <p>No projects yet.</p>
-                  <button type="button" className="pd-btn pd-btn-primary" onClick={onNewProject}>
+                  <button type="button" className="prj-btn prj-btn-primary" onClick={onNewProject}>
                     Start your first project
                   </button>
                 </>
@@ -320,40 +346,40 @@ export function ProjectsDashboard({
           )}
         </section>
 
-        <aside className="pd-panel pd-team" aria-labelledby="pd-team-title">
-          <h2 id="pd-team-title">Your AI team</h2>
-          <p className="pd-team-sum">
+        <aside className="prj-panel prj-team" aria-labelledby="prj-team-title">
+          <h2 id="prj-team-title">Your AI team</h2>
+          <p className="prj-team-sum">
             <b>{model.team.total}</b> roles across <b>{model.team.departments}</b> departments.{" "}
             <b>{model.team.runnable}</b> can run today; the rest are planned.
           </p>
-          <p className="pd-muted">
+          <p className="prj-muted">
             Each project gets only the roles it needs. {model.team.onProjects} role
             {model.team.onProjects === 1 ? " is" : "s are"} on your live projects.
           </p>
-          <ul className="pd-depts">
+          <ul className="prj-depts">
             {model.team.byDepartment
               .filter((d) => d.onProjects.length)
               .map((d) => (
                 <li key={d.name}>
-                  <div className="pd-dept-row">
+                  <div className="prj-dept-row">
                     <span>{d.name}</span>
-                    <span className="pd-muted">
+                    <span className="prj-muted">
                       {d.onProjects.length} of {d.total}
                     </span>
                   </div>
                   <span
-                    className="pd-bar"
+                    className="prj-bar"
                     role="img"
                     aria-label={`${d.onProjects.length} of ${d.total} roles on your projects`}
                   >
                     <span style={{ width: `${(d.onProjects.length / d.total) * 100}%` }} />
                   </span>
-                  <p className="pd-dept-roles">{d.onProjects.map((r) => r.name).join(" · ")}</p>
+                  <p className="prj-dept-roles">{d.onProjects.map((r) => r.name).join(" · ")}</p>
                 </li>
               ))}
           </ul>
           {idleDepartments.length ? (
-            <details className="pd-idle">
+            <details className="prj-idle">
               <summary>
                 {idleDepartments.length} more department{idleDepartments.length === 1 ? "" : "s"}{" "}
                 not on your projects yet
@@ -362,7 +388,7 @@ export function ProjectsDashboard({
                 {idleDepartments.map((d) => (
                   <li key={d.name}>
                     <span>{d.name}</span>
-                    <span className="pd-muted">
+                    <span className="prj-muted">
                       {d.total} roles{d.runnable ? ` · ${d.runnable} can run` : ""}
                     </span>
                   </li>
@@ -370,7 +396,7 @@ export function ProjectsDashboard({
               </ul>
             </details>
           ) : null}
-          <Link to="/command/capabilities" className="pd-link">
+          <Link to="/command/capabilities" className="prj-link">
             Browse every role
           </Link>
         </aside>
@@ -389,7 +415,7 @@ export function ProjectsDashboard({
           <AlertDialogFooter>
             <AlertDialogCancel>Keep project</AlertDialogCancel>
             <AlertDialogAction
-              className="pd-btn-danger"
+              className="prj-btn-danger"
               onClick={() => {
                 if (confirm) remove.mutate(confirm);
                 setConfirm(null);

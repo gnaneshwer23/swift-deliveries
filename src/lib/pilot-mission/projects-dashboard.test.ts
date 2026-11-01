@@ -77,8 +77,16 @@ describe("buildProjectsDashboard", () => {
       "DX-001",
     ]);
     const building = projectRoles({ teamIds: ["DX-001"], delivery: true }).map((r) => r.id);
-    expect(building).toContain("DX-041");
+    expect(building).toContain("DX-035");
     expect(new Set(building).size).toBe(building.length);
+    // Planned catalogue roles in the delivery plan (e.g. DX-041) never count as working.
+    expect(building).not.toContain("DX-041");
+    const available = new Set(
+      listCapabilities()
+        .filter((c) => c.lifecycle_status === "available")
+        .map((c) => c.capability_id),
+    );
+    expect(building.every((id) => available.has(id))).toBe(true);
     expect(projectRoles({ teamIds: ["NOT-A-ROLE"], delivery: false })).toEqual([]);
   });
 

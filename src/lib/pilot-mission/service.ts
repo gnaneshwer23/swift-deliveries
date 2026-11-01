@@ -1768,7 +1768,9 @@ export class SupervisedMissionService {
           kind: "studio.meta_saved",
           summary:
             input.archived === true
-              ? "Project deleted from the dashboard. Its records are kept and it can be restored."
+              ? current.stage === "cancelled"
+                ? "Project deleted from the dashboard. Its records are kept and it can be restored."
+                : "Project archived. Its work was not stopped."
               : input.archived === false
                 ? "Project restored to the dashboard."
                 : studioMeta.investigationPaused

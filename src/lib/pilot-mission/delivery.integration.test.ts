@@ -8,7 +8,11 @@ import postgres from "postgres";
 import { POSTGRES_TYPES } from "@/lib/db/postgres-types";
 import { createDb, type ColumnTypes, type Executor } from "@/lib/db/builder";
 import type { DbTransaction } from "@/lib/db/neon.server";
-import { cancelCaseAndDelivery, startSupervisedDelivery } from "./delivery.server";
+import {
+  cancelCaseAndDelivery,
+  deleteCaseFromDashboard,
+  startSupervisedDelivery,
+} from "./delivery.server";
 import { createMissionStore } from "./repository.server";
 import { MissionConflictError, SupervisedMissionService } from "./service";
 import { holdPublicSchemaLock } from "./test-db-lock";
@@ -214,5 +218,26 @@ describe.skipIf(!url).sequential("Begin delivery against a real database", () =>
     const events =
       await sql!`select type from wf_mission_events where mission_id = ${wfId}::uuid order by created_at`;
     expect(events.map((e) => e["type"])).toContain("mission.cancelled");
+  });
+
+  it("deletes a project in one step: work stops, it is hidden, and a stale click changes nothing", async () => {
+    const mission = await seed(decidedCase());
+    const { mission: after } = await begin(mission);
+    const wfId = after.delivery!.wfMissionId;
+    const del = (expectedVersion: number) =>
+      deleteCaseFromDashboard(
+        { workspaceId, id: mission.id, expectedVersion, actorId: "owner", nowMs: 5_000 },
+        transact,
+      );
+
+    await expect(del(after.version - 1)).rejects.toThrow(/changed in another session/);
+    const [still] = await sql!`select status from wf_missions where id = ${wfId}::uuid`;
+    expect(still!["status"]).not.toBe("cancelled");
+
+    const deleted = await del(after.version);
+    expect(deleted.stage).toBe("cancelled");
+    expect(deleted.studioMeta?.archived).toBe(true);
+    const [wf] = await sql!`select status from wf_missions where id = ${wfId}::uuid`;
+    expect(wf!["status"]).toBe("cancelled");
   });
 });
