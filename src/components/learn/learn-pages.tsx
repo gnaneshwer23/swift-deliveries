@@ -18,8 +18,8 @@ export function LearnHub() {
               <span className="dxl-grad">one real step at a time.</span>
             </h1>
             <p className="learn-lede">
-              Eight short lessons, one per step of a real project. Read one, then try it on your own
-              idea.
+              Eight short lessons that follow the steps of a real project. Read one, then try it on
+              your own idea.
             </p>
             <div className="dxl-ctas">
               <Link to="/onboarding" className="dxl-btn dxl-btn-primary">

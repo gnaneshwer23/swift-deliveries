@@ -33,8 +33,8 @@ function Agents() {
               <span className="dxl-grad">forms around your product.</span>
             </h1>
             <p>
-              One clear job and a limit on what it may do. Without a configured model, specialists
-              produce clearly labelled simulated drafts.
+              One clear job and a limit on what it may do. Without a configured model, assigned
+              specialists produce clearly labelled simulated drafts.
             </p>
             <dl className="sdp-stats">
               <div>
