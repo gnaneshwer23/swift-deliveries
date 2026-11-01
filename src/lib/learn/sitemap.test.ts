@@ -15,6 +15,8 @@ describe("public sitemap", () => {
   it("keeps the signed-in workspace out of search", () => {
     const robots = readFileSync("public/robots.txt", "utf8");
     expect(robots).toContain("Disallow: /command");
+    // A named crawler group would take precedence over "*" and drop these rules for it.
+    expect(robots.match(/^User-agent:/gm)).toEqual(["User-agent:"]);
     expect(sitemap).not.toContain("/command");
   });
 });

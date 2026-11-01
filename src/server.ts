@@ -2,7 +2,7 @@ import "./lib/error-capture";
 
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
-import { refuseOversizedBody, withSecurityHeaders } from "./lib/http-guards";
+import { limitRequestBody, withSecurityHeaders } from "./lib/http-guards";
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
@@ -47,11 +47,11 @@ function isH3SwallowedErrorBody(body: string): boolean {
 
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
-    const tooLarge = refuseOversizedBody(request);
-    if (tooLarge) return withSecurityHeaders(tooLarge);
     try {
+      const limited = await limitRequestBody(request);
+      if (limited instanceof Response) return withSecurityHeaders(limited);
       const handler = await getServerEntry();
-      const response = await handler.fetch(request, env, ctx);
+      const response = await handler.fetch(limited, env, ctx);
       return withSecurityHeaders(await normalizeCatastrophicSsrResponse(response));
     } catch (error) {
       console.error(error);

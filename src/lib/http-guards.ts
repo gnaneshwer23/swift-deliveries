@@ -44,13 +44,48 @@ export function withSecurityHeaders(response: Response): Response {
  */
 export const MAX_REQUEST_BODY_BYTES = 2 * 1024 * 1024;
 
-/** A 413 response when the declared body is too large, otherwise null. */
-export function refuseOversizedBody(request: Request): Response | null {
-  if (request.method === "GET" || request.method === "HEAD") return null;
-  const declared = Number(request.headers.get("content-length") ?? "0");
-  if (!Number.isFinite(declared) || declared <= MAX_REQUEST_BODY_BYTES) return null;
-  return new Response("Request body too large.", {
+const tooLarge = () =>
+  new Response("Request body too large.", {
     status: 413,
     headers: { "content-type": "text/plain; charset=utf-8" },
+  });
+
+/**
+ * The request with its body read and capped, or a 413 response. Bytes are counted as they
+ * arrive, so a chunked body, an undeclared length or an understated Content-Length cannot
+ * get past the limit. The bytes are passed on unchanged (webhook signatures still verify).
+ */
+export async function limitRequestBody(request: Request): Promise<Request | Response> {
+  if (request.method === "GET" || request.method === "HEAD" || !request.body) return request;
+  const declared = Number(request.headers.get("content-length") ?? "");
+  if (Number.isFinite(declared) && declared > MAX_REQUEST_BODY_BYTES) return tooLarge();
+
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > MAX_REQUEST_BODY_BYTES) {
+      await reader.cancel().catch(() => undefined);
+      return tooLarge();
+    }
+    chunks.push(value);
+  }
+  const body = new Uint8Array(total);
+  let offset = 0;
+  for (const c of chunks) {
+    body.set(c, offset);
+    offset += c.byteLength;
+  }
+  const headers = new Headers(request.headers);
+  headers.set("content-length", String(total));
+  headers.delete("transfer-encoding");
+  return new Request(request.url, {
+    method: request.method,
+    headers,
+    body,
+    signal: request.signal,
   });
 }

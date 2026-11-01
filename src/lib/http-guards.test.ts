@@ -1,15 +1,24 @@
 import { describe, expect, it } from "vitest";
 import {
   MAX_REQUEST_BODY_BYTES,
-  refuseOversizedBody,
+  limitRequestBody,
   SECURITY_HEADERS,
   withSecurityHeaders,
 } from "./http-guards";
 
 describe("withSecurityHeaders", () => {
   it("adds every header to a page response", () => {
+    // Written out here so that dropping or weakening a header in the module fails this test.
+    const required = {
+      "content-security-policy": "frame-ancestors 'none'; base-uri 'self'; object-src 'none'",
+      "x-frame-options": "DENY",
+      "x-content-type-options": "nosniff",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "permissions-policy": "microphone=(self), camera=(), geolocation=(), payment=(), usb=()",
+    };
+    expect(SECURITY_HEADERS).toEqual(required);
     const res = withSecurityHeaders(new Response("<html></html>", { status: 200 }));
-    for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
+    for (const [name, value] of Object.entries(required)) {
       expect(res.headers.get(name)).toBe(value);
     }
     expect(res.headers.get("content-security-policy")).toContain("frame-ancestors 'none'");
@@ -32,20 +41,56 @@ describe("withSecurityHeaders", () => {
   });
 });
 
-describe("refuseOversizedBody", () => {
-  const req = (method: string, length: number | null) =>
-    new Request("https://www.deliverx.dev/_serverFn/x", {
-      method,
-      headers: length === null ? {} : { "content-length": String(length) },
+describe("limitRequestBody", () => {
+  const url = "https://www.deliverx.dev/_serverFn/x";
+  const streamOf = (sizes: number[]) =>
+    new ReadableStream<Uint8Array>({
+      start(c) {
+        for (const n of sizes) c.enqueue(new Uint8Array(n).fill(97));
+        c.close();
+      },
     });
+  const post = (body: BodyInit, headers: Record<string, string> = {}) =>
+    new Request(url, { method: "POST", body, headers, duplex: "half" } as RequestInit);
 
-  it("refuses a declared body over the limit", () => {
-    expect(refuseOversizedBody(req("POST", MAX_REQUEST_BODY_BYTES + 1))?.status).toBe(413);
+  it("refuses a declared body over the limit without reading it", async () => {
+    const res = await limitRequestBody(
+      post("x", { "content-length": String(MAX_REQUEST_BODY_BYTES + 1) }),
+    );
+    expect(res).toBeInstanceOf(Response);
+    expect((res as Response).status).toBe(413);
   });
 
-  it("lets normal requests through, including a 256 KB evidence upload", () => {
-    expect(refuseOversizedBody(req("POST", 256 * 1024 * 2))).toBeNull();
-    expect(refuseOversizedBody(req("POST", null))).toBeNull();
-    expect(refuseOversizedBody(req("GET", null))).toBeNull();
+  it("refuses a chunked body with no declared length once it passes the limit", async () => {
+    const half = MAX_REQUEST_BODY_BYTES / 2;
+    const res = await limitRequestBody(post(streamOf([half, half, 10])));
+    expect((res as Response).status).toBe(413);
+  });
+
+  it("refuses a body whose declared length understates it", async () => {
+    const res = await limitRequestBody(
+      post(streamOf([MAX_REQUEST_BODY_BYTES, 1]), { "content-length": "10" }),
+    );
+    expect((res as Response).status).toBe(413);
+  });
+
+  it("passes a normal body through byte for byte", async () => {
+    const payload = JSON.stringify({ note: "é".repeat(1000), file: "x".repeat(256 * 1024) });
+    const out = await limitRequestBody(
+      post(payload, { "content-type": "application/json", "stripe-signature": "t=1,v1=abc" }),
+    );
+    expect(out).toBeInstanceOf(Request);
+    const req = out as Request;
+    expect(await req.text()).toBe(payload);
+    expect(req.method).toBe("POST");
+    expect(req.headers.get("stripe-signature")).toBe("t=1,v1=abc");
+    expect(req.headers.get("content-length")).toBe(
+      String(new TextEncoder().encode(payload).length),
+    );
+  });
+
+  it("leaves GET requests untouched", async () => {
+    const get = new Request(url);
+    expect(await limitRequestBody(get)).toBe(get);
   });
 });
