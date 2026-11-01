@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth/middleware";
+import { isSatisfied } from "@/lib/workforce/graph";
 import { wfDb } from "@/lib/workforce/db";
 import {
   adminDb,
@@ -771,7 +772,7 @@ export const decideStageGate = createServerFn({ method: "POST" })
       throw new Error("This gate has already been decided.");
     }
     const status = new Map(bundle.tasks.map((t) => [t.key, t.status]));
-    if (!gate.dependsOn.every((d) => status.get(d) === "completed")) {
+    if (!gate.dependsOn.every((d) => isSatisfied(status.get(d)))) {
       throw new Error("Upstream stages must complete before this gate can be decided.");
     }
 
@@ -800,7 +801,7 @@ export const decideStageGate = createServerFn({ method: "POST" })
       );
       if (!["blocked", "pending"].includes(taskStatus.get(gate.key) ?? ""))
         throw new Error("This gate has already been decided.");
-      if (!gate.dependsOn.every((d) => taskStatus.get(d) === "completed"))
+      if (!gate.dependsOn.every((d) => isSatisfied(taskStatus.get(d))))
         throw new Error("Upstream stages must complete before this gate can be decided.");
       const updated = must(
         await tx

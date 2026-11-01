@@ -64,6 +64,11 @@ export function validateTaskGraph(nodes: GraphNode[]): GraphValidation {
 }
 
 const SATISFIED: ReadonlySet<TaskStatus> = new Set(["completed", "skipped"]);
+
+/** True when a dependency in this status lets downstream work (or a gate) proceed. */
+export function isSatisfied(status: string | undefined): boolean {
+  return SATISFIED.has(status as TaskStatus);
+}
 const DEAD: ReadonlySet<TaskStatus> = new Set(["failed"]);
 
 /** Pending tasks whose dependencies are all satisfied, in sortOrder. */
