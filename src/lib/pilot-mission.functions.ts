@@ -772,6 +772,26 @@ export const exportSupervisedMission = createServerFn({ method: "POST" })
   });
 
 /** Full ZIP: decision pack + evidence + prototype (when present) + honesty manifest. */
+/**
+ * The linked build and its event log and run ledger for a download, read from the caller's
+ * workspace. A part that cannot be read comes back null and is listed as a gap in the record.
+ */
+async function buildSourcesFor(
+  supabase: Parameters<typeof import("@/lib/workforce/access.server").loadMissionBundle>[0],
+  workspaceId: string,
+  mission: { delivery?: { wfMissionId: string } | null },
+) {
+  if (!mission.delivery) return { delivery: null, records: null };
+  const { loadMissionBundle, loadCompanyRecordSources } =
+    await import("@/lib/workforce/access.server");
+  const wfId = mission.delivery.wfMissionId;
+  const [delivery, records] = await Promise.all([
+    loadMissionBundle(supabase, workspaceId, wfId).catch(() => null),
+    loadCompanyRecordSources(supabase, workspaceId, wfId).catch(() => null),
+  ]);
+  return { delivery, records };
+}
+
 export const exportSupervisedMissionZip = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .validator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
@@ -798,18 +818,7 @@ export const exportSupervisedMissionZip = createServerFn({ method: "POST" })
       }
       const { buildSupervisedZip } = await import("@/lib/pilot-mission/supervised-zip");
       // The build is read from the caller's own workspace; a read failure leaves it out, labelled.
-      let delivery = null;
-      let records = null;
-      if (mission.delivery) {
-        const { loadMissionBundle, loadCompanyRecordSources } =
-          await import("@/lib/workforce/access.server");
-        const wfId = mission.delivery.wfMissionId;
-        [delivery, records] = await Promise.all([
-          loadMissionBundle(context.supabase, workspace.id, wfId).catch(() => null),
-          // Unreadable parts come back null and are listed as gaps in company/README.md.
-          loadCompanyRecordSources(context.supabase, workspace.id, wfId).catch(() => null),
-        ]);
-      }
+      const { delivery, records } = await buildSourcesFor(context.supabase, workspace.id, mission);
       return buildSupervisedZip(mission, new Date().toISOString(), delivery, records);
     },
   );
@@ -851,7 +860,8 @@ export const exportSupervisedFullArchive = createServerFn({ method: "POST" })
         throw new Error("Prepare the decision pack before downloading the full archive.");
       }
       const { buildFullArchiveZip } = await import("@/lib/pilot-mission/executive-pack");
-      return buildFullArchiveZip(mission);
+      const { delivery, records } = await buildSourcesFor(context.supabase, workspace.id, mission);
+      return buildFullArchiveZip(mission, new Date().toISOString(), delivery, records);
     },
   );
 

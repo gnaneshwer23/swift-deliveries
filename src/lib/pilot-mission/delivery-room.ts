@@ -114,7 +114,11 @@ function stageStatus(task: WfMissionTask, bundle: MissionBundle): BuildStageStat
   if (task.status === "running") return "working";
   if (task.status === "failed") return task.gate ? "sent_back" : "failed";
   const byKey = new Map(bundle.tasks.map((t) => [t.key, t.status]));
-  const ready = task.dependsOn.every((d) => byKey.get(d) === "completed");
+  // The scheduler treats a skipped prerequisite as satisfied.
+  const ready = task.dependsOn.every((d) => {
+    const st = byKey.get(d);
+    return st === "completed" || st === "skipped";
+  });
   if (task.gate && ready) return "waiting_on_you";
   return "next";
 }

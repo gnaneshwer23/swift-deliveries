@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { deliveryBundle } from "./delivery-test-fixtures";
+import { buildFullArchiveZip } from "./executive-pack";
 import { buildSupervisedZip, supervisedZipInventory } from "./supervised-zip";
 import type { SupervisedMission } from "./types";
 
@@ -198,6 +199,26 @@ describe("company record in the package", () => {
       runsRecorded: 0,
       gaps: [expect.stringContaining("no saved start time")],
     });
+  });
+
+  it("puts the full company record in the full archive too", () => {
+    const delivery = deliveryBundle({ charter: "completed" }, { artefactsFor: ["charter"] });
+    const m = mission({
+      delivery: {
+        wfMissionId: "m",
+        planVersion: 1,
+        planHash: "0123456789abcdef",
+        optionId: "o1",
+        approvedAt: "2026-10-31T09:00:00Z",
+        approvedBy: "owner",
+      },
+    });
+    const { files } = buildFullArchiveZip(m, "2026-11-01T00:00:00Z", delivery, {
+      events: [],
+      runs: [],
+    });
+    expect(files.some((f) => f.path.endsWith("/company/work-orders/01-charter.md"))).toBe(true);
+    expect(files.some((f) => f.path.endsWith("/delivery/01-charter.md"))).toBe(true);
   });
 
   it("lists unreadable build records as gaps", () => {

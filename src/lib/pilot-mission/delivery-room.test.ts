@@ -47,6 +47,11 @@ describe("buildDeliveryRoom", () => {
     expect(room.canAdvance).toBe(false);
   });
 
+  it("treats a skipped prerequisite as satisfied, as the scheduler does", () => {
+    const room = buildDeliveryRoom(bundle({ ...discovered, prd: "skipped" }));
+    expect(room.stages.find((s) => s.key === "gate_scope")?.status).toBe("waiting_on_you");
+  });
+
   it("asks for the next step only when work is runnable and nothing is running", () => {
     expect(buildDeliveryRoom(bundle({ charter: "completed" })).canAdvance).toBe(true);
     expect(

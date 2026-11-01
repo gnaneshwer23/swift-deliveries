@@ -5,7 +5,12 @@ import { buildContinuationPlanMarkdown } from "./continuation-plan";
 import { buildDecisionRoadmapMarkdown } from "./decision-roadmap";
 import { buildDecisionPackMarkdown, honestyFor } from "./decision-pack";
 import { buildPmBriefingPack } from "./pm-briefing-pack";
-import { buildSupervisedZip, type SupervisedZipFile } from "./supervised-zip";
+import {
+  buildSupervisedZip,
+  type CompanyRecordSources,
+  type SupervisedZipFile,
+} from "./supervised-zip";
+import type { MissionBundle } from "@/lib/workforce/types";
 import type { SupervisedMission } from "./types";
 import {
   AGENT_RECOMMENDATION_LABELS,
@@ -68,8 +73,11 @@ export function buildExecutivePackMarkdown(mission: SupervisedMission): string {
 export function buildFullArchiveZip(
   mission: SupervisedMission,
   exportedAt = new Date().toISOString(),
+  /** The linked build and its records, read from the caller's workspace. */
+  delivery: MissionBundle | null = null,
+  records: CompanyRecordSources | null = null,
 ): { files: SupervisedZipFile[]; title: string; filename: string } {
-  const base = buildSupervisedZip(mission, exportedAt);
+  const base = buildSupervisedZip(mission, exportedAt, delivery, records);
   const root = base.filename.replace(/\.zip$/, "");
   const files = [...base.files];
 

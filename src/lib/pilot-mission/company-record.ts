@@ -85,8 +85,10 @@ const cell = (s: string | number | null | undefined) =>
     .replace(/\r?\n/g, " ")
     .trim() || "—";
 
+/** CSV cell. Text that a spreadsheet would run as a formula is prefixed with an apostrophe. */
 const csv = (s: string | number | null | undefined) => {
-  const v = s === null || s === undefined ? "" : String(s);
+  const raw = s === null || s === undefined ? "" : String(s);
+  const v = typeof s === "string" && /^[\t\r ]*[=+\-@]/.test(raw) ? `'${raw}` : raw;
   return /[",\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
 };
 
@@ -678,7 +680,7 @@ Every row, including each run, is in \`usage-ledger.csv\`.
   const invTasks = (invTeam?.tasks ?? []).filter((t) => t.capabilityId);
   const orgMd = `# Org chart
 
-How this project was staffed. Only roles that actually had work are listed as team members.
+How this project was staffed. Team members are the available roles assigned to it; roles that are only planned are listed apart because they did no work.
 
 ## Owner
 

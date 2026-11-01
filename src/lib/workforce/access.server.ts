@@ -403,7 +403,8 @@ export async function loadCompanyRecordSources(
         .eq("workspace_id", workspaceId)
         .eq("mission_id", missionId)
         .order("id", { ascending: true })
-        .limit(COMPANY_RECORD_EVENT_LIMIT),
+        // One extra row tells a log of exactly the limit apart from a longer one.
+        .limit(COMPANY_RECORD_EVENT_LIMIT + 1),
       db
         .from("wf_task_runs")
         .select("*")
@@ -412,7 +413,10 @@ export async function loadCompanyRecordSources(
         .order("started_at", { ascending: true }),
     ].map(settle),
   )) as [Rows, Rows];
-  const events = eventsRes.error ? null : (eventsRes.data ?? []).map(mapMissionEvent);
+  const eventRows = eventsRes.error ? null : (eventsRes.data ?? []);
+  const events = eventRows
+    ? eventRows.slice(0, COMPANY_RECORD_EVENT_LIMIT).map(mapMissionEvent)
+    : null;
   const num = (v: unknown) => (v === null || v === undefined ? null : Number(v));
   const runs = runsRes.error
     ? null
@@ -435,7 +439,7 @@ export async function loadCompanyRecordSources(
       }));
   return {
     events,
-    eventsCapped: Boolean(events && events.length >= COMPANY_RECORD_EVENT_LIMIT),
+    eventsCapped: Boolean(eventRows && eventRows.length > COMPANY_RECORD_EVENT_LIMIT),
     runs,
   };
 }

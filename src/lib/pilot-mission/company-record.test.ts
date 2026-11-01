@@ -298,23 +298,38 @@ describe("buildCompanyRecord", () => {
     expect(html).toContain("<table>");
   });
 
-  it("names only roles that had work, and lists planned roster roles as having done none", () => {
+  it("lists assigned roles as the team and planned roster roles apart, as having done no work", () => {
     const m = mission();
+    const assigned = m.team!.capabilityIds;
+    const planned = "DX-023";
+    expect(assigned).not.toContain(planned);
     const r = buildCompanyRecord({
-      mission: {
-        ...m,
-        team: m.team
-          ? { ...m.team, catalogueRosterIds: [...m.team.capabilityIds, "DX-999-PLANNED"] }
-          : m.team,
-      },
+      mission: { ...m, team: { ...m.team!, catalogueRosterIds: [...assigned, planned] } },
       delivery: null,
       events: [],
       runs: [],
       exportedAt: EXPORTED,
     });
     const org = file(r, "company/org-chart.md");
-    expect(org).toContain("## Owner");
-    if (m.team) expect(org).toContain("they did no work");
+    const [team, rest] = org.split("In the catalogue roster");
+    for (const id of assigned) expect(team).toContain(`(${id})`);
+    expect(team).not.toContain(`(${planned})`);
+    expect(rest).toContain(`(${planned})`);
     expect(org).toContain("Notes reader (rule-based, no AI model)");
+  });
+
+  it("keeps spreadsheet formulas out of the CSVs", () => {
+    const r = buildCompanyRecord({
+      mission: mission({
+        spendRecords: [{ key: '=HYPERLINK("x")', units: 1, reason: "@SUM(A1)" }],
+      }),
+      delivery: null,
+      events: [],
+      runs: [],
+      exportedAt: EXPORTED,
+    });
+    const line = file(r, "company/usage-ledger.csv").split("\n")[1]!;
+    expect(line).toContain(`"'=HYPERLINK(""x"")"`);
+    expect(line).toContain("'@SUM(A1)");
   });
 });
