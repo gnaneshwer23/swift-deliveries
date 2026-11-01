@@ -40,6 +40,8 @@ import { Route as AttestTokenRouteImport } from './routes/attest.$token'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
+import { Route as LearnIndexRouteImport } from './routes/learn.index'
+import { Route as LearnLessonIdRouteImport } from './routes/learn.$lessonId'
 import { Route as LoginForgotRouteImport } from './routes/login.forgot'
 import { Route as PortfolioTokenRouteImport } from './routes/portfolio.$token'
 import { Route as ResourcesIndexRouteImport } from './routes/resources.index'
@@ -236,6 +238,16 @@ const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
 const InviteTokenRoute = InviteTokenRouteImport.update({
   id: '/invite/$token',
   path: '/invite/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LearnIndexRoute = LearnIndexRouteImport.update({
+  id: '/learn/',
+  path: '/learn/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LearnLessonIdRoute = LearnLessonIdRouteImport.update({
+  id: '/learn/$lessonId',
+  path: '/learn/$lessonId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginForgotRoute = LoginForgotRouteImport.update({
@@ -514,11 +526,13 @@ export interface FileRoutesByFullPath {
   '/auth/callback': typeof AuthCallbackRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/learn/$lessonId': typeof LearnLessonIdRoute
   '/login/forgot': typeof LoginForgotRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
   '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
   '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
   '/verify/$credentialId': typeof VerifyCredentialIdRoute
+  '/learn/': typeof LearnIndexRoute
   '/resources/': typeof ResourcesIndexRoute
   '/command/capabilities': typeof AuthenticatedCommandCapabilitiesRoute
   '/command/pilot-requests': typeof AuthenticatedCommandPilotRequestsRoute
@@ -586,11 +600,13 @@ export interface FileRoutesByTo {
   '/auth/callback': typeof AuthCallbackRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/learn/$lessonId': typeof LearnLessonIdRoute
   '/login/forgot': typeof LoginForgotRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
   '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
   '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
   '/verify/$credentialId': typeof VerifyCredentialIdRoute
+  '/learn': typeof LearnIndexRoute
   '/resources': typeof ResourcesIndexRoute
   '/command/capabilities': typeof AuthenticatedCommandCapabilitiesRoute
   '/command/pilot-requests': typeof AuthenticatedCommandPilotRequestsRoute
@@ -661,11 +677,13 @@ export interface FileRoutesById {
   '/auth/callback': typeof AuthCallbackRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/learn/$lessonId': typeof LearnLessonIdRoute
   '/login/forgot': typeof LoginForgotRoute
   '/portfolio/$token': typeof PortfolioTokenRoute
   '/resources/pm-portfolio': typeof ResourcesPmPortfolioRoute
   '/resources/star-interview-stories': typeof ResourcesStarInterviewStoriesRoute
   '/verify/$credentialId': typeof VerifyCredentialIdRoute
+  '/learn/': typeof LearnIndexRoute
   '/resources/': typeof ResourcesIndexRoute
   '/_authenticated/command/capabilities': typeof AuthenticatedCommandCapabilitiesRoute
   '/_authenticated/command/pilot-requests': typeof AuthenticatedCommandPilotRequestsRoute
@@ -737,11 +755,13 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/checkout/return'
     | '/invite/$token'
+    | '/learn/$lessonId'
     | '/login/forgot'
     | '/portfolio/$token'
     | '/resources/pm-portfolio'
     | '/resources/star-interview-stories'
     | '/verify/$credentialId'
+    | '/learn/'
     | '/resources/'
     | '/command/capabilities'
     | '/command/pilot-requests'
@@ -809,11 +829,13 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/checkout/return'
     | '/invite/$token'
+    | '/learn/$lessonId'
     | '/login/forgot'
     | '/portfolio/$token'
     | '/resources/pm-portfolio'
     | '/resources/star-interview-stories'
     | '/verify/$credentialId'
+    | '/learn'
     | '/resources'
     | '/command/capabilities'
     | '/command/pilot-requests'
@@ -883,11 +905,13 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/checkout/return'
     | '/invite/$token'
+    | '/learn/$lessonId'
     | '/login/forgot'
     | '/portfolio/$token'
     | '/resources/pm-portfolio'
     | '/resources/star-interview-stories'
     | '/verify/$credentialId'
+    | '/learn/'
     | '/resources/'
     | '/_authenticated/command/capabilities'
     | '/_authenticated/command/pilot-requests'
@@ -955,10 +979,12 @@ export interface RootRouteChildren {
   AuthCallbackRoute: typeof AuthCallbackRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   InviteTokenRoute: typeof InviteTokenRoute
+  LearnLessonIdRoute: typeof LearnLessonIdRoute
   PortfolioTokenRoute: typeof PortfolioTokenRoute
   ResourcesPmPortfolioRoute: typeof ResourcesPmPortfolioRoute
   ResourcesStarInterviewStoriesRoute: typeof ResourcesStarInterviewStoriesRoute
   VerifyCredentialIdRoute: typeof VerifyCredentialIdRoute
+  LearnIndexRoute: typeof LearnIndexRoute
   ResourcesIndexRoute: typeof ResourcesIndexRoute
   ApiWorkerTickRoute: typeof ApiWorkerTickRoute
   ApiPublicMonitoringClientErrorRoute: typeof ApiPublicMonitoringClientErrorRoute
@@ -1186,6 +1212,20 @@ declare module '@tanstack/react-router' {
       path: '/invite/$token'
       fullPath: '/invite/$token'
       preLoaderRoute: typeof InviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/learn/': {
+      id: '/learn/'
+      path: '/learn'
+      fullPath: '/learn/'
+      preLoaderRoute: typeof LearnIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/learn/$lessonId': {
+      id: '/learn/$lessonId'
+      path: '/learn/$lessonId'
+      fullPath: '/learn/$lessonId'
+      preLoaderRoute: typeof LearnLessonIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login/forgot': {
@@ -1644,10 +1684,12 @@ const rootRouteChildren: RootRouteChildren = {
   AuthCallbackRoute: AuthCallbackRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
   InviteTokenRoute: InviteTokenRoute,
+  LearnLessonIdRoute: LearnLessonIdRoute,
   PortfolioTokenRoute: PortfolioTokenRoute,
   ResourcesPmPortfolioRoute: ResourcesPmPortfolioRoute,
   ResourcesStarInterviewStoriesRoute: ResourcesStarInterviewStoriesRoute,
   VerifyCredentialIdRoute: VerifyCredentialIdRoute,
+  LearnIndexRoute: LearnIndexRoute,
   ResourcesIndexRoute: ResourcesIndexRoute,
   ApiWorkerTickRoute: ApiWorkerTickRoute,
   ApiPublicMonitoringClientErrorRoute: ApiPublicMonitoringClientErrorRoute,

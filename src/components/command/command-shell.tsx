@@ -2,7 +2,16 @@ import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ArrowUpRight, Inbox, LayoutGrid, Menu, ShieldCheck, UsersRound, X } from "lucide-react";
+import {
+  ArrowUpRight,
+  GraduationCap,
+  Inbox,
+  LayoutGrid,
+  Menu,
+  ShieldCheck,
+  UsersRound,
+  X,
+} from "lucide-react";
 import { getPilotOperatorAccess } from "@/lib/pilot/enquiry.functions";
 import { useSignOut } from "@/hooks/use-sign-out";
 import { useSession } from "@/hooks/use-session";
@@ -14,6 +23,7 @@ import "@/styles/studio-system.css";
 const PRIMARY_NAV = [
   { to: "/command", label: "Projects", icon: LayoutGrid },
   { to: "/command/capabilities", label: "AI team", icon: UsersRound },
+  { to: "/learn", label: "Learn", icon: GraduationCap },
 ] as const;
 
 type NavItem = (typeof PRIMARY_NAV)[number];

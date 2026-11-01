@@ -5,6 +5,7 @@
  * control set for that step in a side sheet, so approvals keep their version binding and
  * consent rules. The full record stays one link away, below the Room.
  */
+import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AgentAvatar } from "@/components/command/agent-avatar";
 import { CaseChatPanel } from "@/components/command/case-chat-panel";
@@ -60,6 +61,16 @@ const PANEL_WHY: Partial<Record<Panel, string>> = {
     "This is how the team plans: who owns each task, what it must include, what it builds on and how it is checked.",
   meetings:
     "Only notes from meetings you actually held count as evidence. You decide which items join the project.",
+};
+
+/** The lesson behind each panel's "why this matters" note. */
+const PANEL_LESSON: Partial<Record<Panel, string>> = {
+  plan: "approve-a-plan",
+  decide: "compare-options",
+  delivery: "reviews-and-gates",
+  gate: "reviews-and-gates",
+  workroom: "reviews-and-gates",
+  meetings: "evidence-vs-assumptions",
 };
 
 const PANEL_TITLE: Record<Panel, string> = {
@@ -574,6 +585,19 @@ export function CaseRoom({
             {explain.on && panel && PANEL_WHY[panel] ? (
               <p className="room-explain">
                 <b>Why this matters</b> {PANEL_WHY[panel]}
+                {PANEL_LESSON[panel] ? (
+                  <>
+                    {" "}
+                    <Link
+                      to="/learn/$lessonId"
+                      params={{ lessonId: PANEL_LESSON[panel]! }}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Learn more
+                    </Link>
+                  </>
+                ) : null}
               </p>
             ) : null}
             {panel === "ask" ? (
