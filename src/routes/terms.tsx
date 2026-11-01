@@ -65,11 +65,11 @@ function TermsPage() {
 
       <LegalSection title="Fees">
         <p>
-          Creating a DeliverX account is free and does not by itself turn on a paid plan. Paid plans
-          are taken only through Stripe Checkout, which shows the price before you pay. Where
-          checkout is not offered, any paid pilot’s scope, access and price are agreed with you
-          separately before anything is charged. Your statutory rights under UK consumer law are not
-          affected.
+          Creating a DeliverX account is free and does not by itself turn on a paid plan. There are
+          two ways a paid plan starts: you subscribe yourself through Stripe Checkout, which shows
+          the price before you pay; or we agree a paid pilot with you directly, with its scope,
+          access and price confirmed before anything is charged and access turned on by us. Your
+          statutory rights under UK consumer law are not affected.
         </p>
       </LegalSection>
 

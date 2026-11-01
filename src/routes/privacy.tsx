@@ -90,10 +90,11 @@ function PrivacyPage() {
       <LegalSection title="Voice input">
         <p>
           Voice is optional. The microphone is used only between pressing Talk and Send. Your audio
-          goes directly from your browser to our transcription provider over an encrypted
-          connection; DeliverX’s servers do not receive or keep the audio. The text transcript is
-          saved as a line in your conversation, where you can correct it. If spoken replies are
-          switched on, the text of Aria’s reply is sent to our speech provider to produce the audio.
+          goes directly from your browser to our transcription provider (OpenAI) over an encrypted
+          connection. DeliverX’s servers do not receive or keep the audio; the provider may keep
+          what it receives for a limited period under its own API data policy. The text transcript
+          is saved as a line in your conversation, where you can correct it. Spoken replies are read
+          aloud by your browser’s built-in speech; the reply text is not sent anywhere to do this.
         </p>
       </LegalSection>
 
@@ -108,20 +109,18 @@ function PrivacyPage() {
       <LegalSection title="Who processes data for us">
         <p>Records are private to your workspace. We use these providers only to run DeliverX:</p>
         <ul className="list-disc space-y-1 pl-5">
-          <li>Neon: database and sign-in.</li>
+          <li>Neon: database, sign-in and sign-in emails (such as password resets).</li>
           <li>Vercel: hosting and running the application.</li>
           <li>
             OpenAI, the Vercel AI Gateway or OpenRouter (whichever is configured): AI model drafts.
           </li>
           <li>OpenAI: voice transcription.</li>
-          <li>ElevenLabs: spoken replies, when switched on.</li>
           <li>Tavily, Exa or Brave Search: web research, when you choose it.</li>
           <li>Stripe: payments.</li>
           <li>
             Google: sign-in with Google, if you use it; and web fonts (your browser requests them
             from Google, which receives your IP address).
           </li>
-          <li>Our email delivery provider: sign-in and account emails.</li>
         </ul>
         <p>
           Some of these providers process data outside the UK. We do not share your records with
@@ -131,16 +130,18 @@ function PrivacyPage() {
 
       <LegalSection title="Retention and deletion">
         <ul className="list-disc space-y-1 pl-5">
-          <li>Account and project data: while your account is active.</li>
+          <li>
+            Account and project data: while your account is active, unless you ask us to erase it.
+          </li>
           <li>
             Conversations: 1, 7, 30 or 90 days after the last line, as you choose (30 by default),
             then deleted automatically.
           </li>
           <li>Voice measurements: 180 days, then deleted automatically.</li>
           <li>
-            Deleting a project from your dashboard stops its work and removes it from view; you can
-            restore it. To have a project or your whole account erased permanently, email{" "}
-            <ContactLink />.
+            Deleting a project from your dashboard stops its work and hides it, but keeps its
+            records so you can restore it. To have a project or your whole account erased
+            permanently, email <ContactLink />.
           </li>
           <li>Payment records: as long as tax and accounting law requires.</li>
         </ul>
