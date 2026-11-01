@@ -33,10 +33,8 @@ function Agents() {
               <span className="dxl-grad">forms around your product.</span>
             </h1>
             <p>
-              Every specialist has one clear job and a limit on what it may do. Browse them by
-              department, see which missions they join, and check which can be assigned today.
-              Without a configured model, assigned specialists produce clearly labelled simulated
-              drafts.
+              One clear job and a limit on what it may do. Without a configured model, specialists
+              produce clearly labelled simulated drafts.
             </p>
             <dl className="sdp-stats">
               <div>
