@@ -799,15 +799,18 @@ export const exportSupervisedMissionZip = createServerFn({ method: "POST" })
       const { buildSupervisedZip } = await import("@/lib/pilot-mission/supervised-zip");
       // The build is read from the caller's own workspace; a read failure leaves it out, labelled.
       let delivery = null;
+      let records = null;
       if (mission.delivery) {
-        const { loadMissionBundle } = await import("@/lib/workforce/access.server");
-        delivery = await loadMissionBundle(
-          context.supabase,
-          workspace.id,
-          mission.delivery.wfMissionId,
-        ).catch(() => null);
+        const { loadMissionBundle, loadCompanyRecordSources } =
+          await import("@/lib/workforce/access.server");
+        const wfId = mission.delivery.wfMissionId;
+        [delivery, records] = await Promise.all([
+          loadMissionBundle(context.supabase, workspace.id, wfId).catch(() => null),
+          // Unreadable parts come back null and are listed as gaps in company/README.md.
+          loadCompanyRecordSources(context.supabase, workspace.id, wfId).catch(() => null),
+        ]);
       }
-      return buildSupervisedZip(mission, new Date().toISOString(), delivery);
+      return buildSupervisedZip(mission, new Date().toISOString(), delivery, records);
     },
   );
 

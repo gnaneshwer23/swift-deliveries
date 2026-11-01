@@ -32,7 +32,8 @@ export type DeliveryPackage = {
 
 const EXT = { markdown: "md", html: "html", json: "json" } as const;
 
-function outputPath(stage: BuildStage, index: number): string | null {
+/** Where a stage's saved output sits in the download (`delivery/NN-key.ext`), if it has one. */
+export function outputPath(stage: BuildStage, index: number): string | null {
   if (!stage.output) return null;
   const n = String(index + 1).padStart(2, "0");
   return `delivery/${n}-${stage.key.replace(/[^a-z0-9_-]/gi, "-")}.${EXT[stage.output.format]}`;

@@ -366,3 +366,76 @@ export async function ensureWorkspace(
 
   return { workspace: mapWorkspace(row), storage: "supabase" };
 }
+
+type Rows = { data: unknown[] | null; error: unknown };
+/** A read that throws becomes a failed read, so one bad table cannot fail the download. */
+async function settle(q: PromiseLike<Rows>): Promise<Rows> {
+  try {
+    return await q;
+  } catch (error) {
+    return { data: null, error };
+  }
+}
+
+/** Events read into one project download; a longer log is cut and the cut is disclosed. */
+export const COMPANY_RECORD_EVENT_LIMIT = 5000;
+
+/**
+ * The build's event log and run ledger for the company record in a project download,
+ * filtered by the caller's workspace. Each part that cannot be read is returned as null so
+ * the record lists it as a gap instead of failing the download.
+ */
+export async function loadCompanyRecordSources(
+  supabase: DbClient,
+  workspaceId: string,
+  missionId: string,
+): Promise<{
+  events: WfMissionEvent[] | null;
+  eventsCapped: boolean;
+  runs: import("@/lib/pilot-mission/company-record").TaskRunRecord[] | null;
+}> {
+  const db = wfDb(supabase);
+  const [eventsRes, runsRes] = (await Promise.all(
+    [
+      db
+        .from("wf_mission_events")
+        .select("*")
+        .eq("workspace_id", workspaceId)
+        .eq("mission_id", missionId)
+        .order("id", { ascending: true })
+        .limit(COMPANY_RECORD_EVENT_LIMIT),
+      db
+        .from("wf_task_runs")
+        .select("*")
+        .eq("workspace_id", workspaceId)
+        .eq("mission_id", missionId)
+        .order("started_at", { ascending: true }),
+    ].map(settle),
+  )) as [Rows, Rows];
+  const events = eventsRes.error ? null : (eventsRes.data ?? []).map(mapMissionEvent);
+  const num = (v: unknown) => (v === null || v === undefined ? null : Number(v));
+  const runs = runsRes.error
+    ? null
+    : ((runsRes.data ?? []) as any[]).map((row) => ({
+        taskId: row.task_id,
+        attempt: Number(row.attempt),
+        status: row.status,
+        workerId: row.worker_id ?? null,
+        provider: row.provider ?? null,
+        model: row.model ?? null,
+        modelCalls: num(row.model_calls),
+        inputTokens: num(row.input_tokens),
+        outputTokens: num(row.output_tokens),
+        latencyMs: num(row.latency_ms),
+        roleId: row.role_id ?? null,
+        instructionVersion: row.instruction_version ?? null,
+        failureClass: row.failure_class ?? null,
+        startedAt: String(row.started_at),
+        finishedAt: row.finished_at ? String(row.finished_at) : null,
+      }));
+  return {
+    events,
+    eventsCapped: Boolean(events && events.length >= COMPANY_RECORD_EVENT_LIMIT),
+    runs,
+  };
+}
