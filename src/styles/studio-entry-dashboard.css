@@ -810,3 +810,19 @@
     flex: none;
   }
 }
+
+.sd-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 0;
+  background: transparent;
+  color: var(--sx-ink-2, #475569);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding: 0.25rem 0;
+}
+.sd-back:hover {
+  color: var(--sx-accent, #4f46e5);
+}

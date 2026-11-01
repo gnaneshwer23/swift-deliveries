@@ -931,6 +931,30 @@ describe("pause vs cancel", () => {
       }),
     ).rejects.toThrow(/cancelled/i);
   });
+
+  it("lets a stopped project be deleted from the dashboard and restored, still stopped", async () => {
+    const service = new SupervisedMissionService(new MemoryStore());
+    const mission = await readyMission(service);
+    await service.cancel({ workspaceId: "alpha", id: mission.id, nowMs: 3_000 });
+    const deleted = await service.saveStudioMeta({
+      workspaceId: "alpha",
+      id: mission.id,
+      archived: true,
+      actorId: "owner",
+      nowMs: 3_500,
+    });
+    expect(deleted.studioMeta?.archived).toBe(true);
+    expect(deleted.activity.at(-1)?.summary).toMatch(/deleted from the dashboard/i);
+    const restored = await service.saveStudioMeta({
+      workspaceId: "alpha",
+      id: mission.id,
+      archived: false,
+      actorId: "owner",
+      nowMs: 4_000,
+    });
+    expect(restored.studioMeta?.archived).toBe(false);
+    expect(restored.stage).toBe("cancelled");
+  });
 });
 
 describe("phase-one scope and cancellation regression", () => {

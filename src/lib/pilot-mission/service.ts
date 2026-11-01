@@ -1740,7 +1740,13 @@ export class SupervisedMissionService {
         "This mission changed in another session. Your edits were not saved. Review the latest record before trying again.",
       );
     }
-    if (current.stage === "cancelled") throw new Error("Mission is cancelled.");
+    // A stopped case can still be favourited, deleted from the dashboard or restored.
+    if (
+      current.stage === "cancelled" &&
+      (input.notifyWhenReady !== undefined || input.investigationPaused !== undefined)
+    ) {
+      throw new Error("Mission is cancelled.");
+    }
     const metaPatch: Partial<Omit<StudioMeta, "version" | "honesty" | "updatedAt">> = {};
     if (input.favourite !== undefined) metaPatch.favourite = input.favourite;
     if (input.archived !== undefined) metaPatch.archived = input.archived;
@@ -1760,11 +1766,16 @@ export class SupervisedMissionService {
           at,
           taskKey: null,
           kind: "studio.meta_saved",
-          summary: studioMeta.investigationPaused
-            ? "Investigation paused by preference. Resume to continue research steps."
-            : studioMeta.notifyWhenReady
-              ? "Studio preferences saved (notify-when-ready on). Push/email is not active until a notifier exists."
-              : "Studio preferences saved (favourite/archive/notify/pause).",
+          summary:
+            input.archived === true
+              ? "Project deleted from the dashboard. Its records are kept and it can be restored."
+              : input.archived === false
+                ? "Project restored to the dashboard."
+                : studioMeta.investigationPaused
+                  ? "Investigation paused by preference. Resume to continue research steps."
+                  : studioMeta.notifyWhenReady
+                    ? "Studio preferences saved (notify-when-ready on). Push/email is not active until a notifier exists."
+                    : "Studio preferences saved (favourite/archive/notify/pause).",
           actor: input.actorId,
         }),
       ),

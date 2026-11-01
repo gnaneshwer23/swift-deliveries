@@ -28,9 +28,6 @@ export function StudioWelcomeDashboard({ onContinue }: { onContinue: () => void 
     <div className="sd-shell" data-studio-screen="welcome">
       <div className="sd-topbar">
         <p className="sd-brand">DeliverX Studio</p>
-        <p className="sd-step-pill">
-          Screen <strong>1</strong> · Welcome
-        </p>
       </div>
 
       <div className="sd-grid sd-grid-welcome">

@@ -221,8 +221,11 @@ export const getSupervisedMissionHome = createServerFn({ method: "GET" })
             studioInboxFields(mission);
           return {
             id: mission.id,
+            version: mission.version,
             question: mission.brief.question,
             stage: mission.stage,
+            teamIds: mission.team?.capabilityIds ?? [],
+            delivery: Boolean(mission.delivery),
             nextTitle: next.title,
             next,
             investigationPaused,
@@ -579,6 +582,38 @@ export const saveSupervisedStudioMeta = createServerFn({ method: "POST" })
       studioMetaInput.investigationPaused = data.investigationPaused;
     }
     const mission = await service.saveStudioMeta(studioMetaInput);
+    return view(mission, null);
+  });
+
+/**
+ * Delete a project from the dashboard: stops any work on it (the case and its delivery are
+ * cancelled together), then hides it. Records are kept for the audit trail, so it can be
+ * restored with `saveSupervisedStudioMeta({ archived: false })` — stopped work stays stopped.
+ */
+export const deleteSupervisedProject = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) =>
+    z.object({ id: z.string().uuid(), expectedVersion: z.number().int().positive() }).parse(data),
+  )
+  .handler(async ({ context, data }): Promise<SupervisedMissionView> => {
+    const workspace = await workspaceFor(context.supabase, context.userId);
+    const { service } = await serviceFor();
+    const { cancelCaseAndDelivery } = await import("./pilot-mission/delivery.server");
+    const stopped = await cancelCaseAndDelivery({
+      workspaceId: workspace.id,
+      id: data.id,
+      expectedVersion: data.expectedVersion,
+      actorId: context.userId,
+      nowMs: Date.now(),
+    });
+    const mission = await service.saveStudioMeta({
+      workspaceId: workspace.id,
+      id: data.id,
+      expectedVersion: stopped.version,
+      archived: true,
+      actorId: context.userId,
+      nowMs: Date.now(),
+    });
     return view(mission, null);
   });
 

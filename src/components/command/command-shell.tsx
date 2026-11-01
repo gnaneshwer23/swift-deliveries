@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   ArrowUpRight,
-  Compass,
+  ChevronDown,
   FlaskConical,
   FolderKanban,
   Inbox,
@@ -23,13 +23,12 @@ import "@/styles/psi-workspace.css";
 import "@/styles/studio-system.css";
 
 const PRIMARY_NAV = [
-  { to: "/command", label: "Studio", icon: Compass },
-  { to: "/command/portfolio", label: "Portfolio", icon: LayoutGrid },
+  { to: "/command", label: "Projects", icon: LayoutGrid },
+  { to: "/command/capabilities", label: "AI team", icon: UsersRound },
 ] as const;
 
 const ADVANCED_NAV = [
-  { to: "/command/projects", label: "Projects", icon: FolderKanban },
-  { to: "/command/capabilities", label: "Specialists & office", icon: UsersRound },
+  { to: "/command/projects", label: "Product memory", icon: FolderKanban },
   { to: "/command/programmes", label: "Programmes", icon: FlaskConical },
 ] as const;
 
@@ -39,15 +38,14 @@ const EXECUTIVE_FONT_LINK_ID = "ps-executive-fonts";
 
 function navLinkActive(item: NavItem, pathname: string, _locationHash: string): boolean {
   const { to, label } = item;
-  if (label === "Studio") {
+  if (label === "Projects") {
     return (
       pathname === "/command" ||
       pathname.startsWith("/command/supervised") ||
-      pathname.startsWith("/command/missions")
+      pathname.startsWith("/command/missions") ||
+      pathname.startsWith("/command/portfolio")
     );
   }
-  if (label === "Portfolio") return pathname.startsWith("/command/portfolio");
-  if (label === "Specialists & office") return pathname.startsWith("/command/capabilities");
   return pathname.startsWith(to);
 }
 
@@ -132,10 +130,10 @@ export function CommandShell({
   }, [executiveMode]);
 
   const breadcrumb = isStudioHome ? (
-    <span>Studio</span>
+    <span>Projects</span>
   ) : (
     <span>
-      Studio <span>/</span> {title}
+      <Link to="/command">Projects</Link> <span>/</span> {title}
     </span>
   );
 
@@ -181,7 +179,10 @@ export function CommandShell({
             onNavigate={() => setOpen(false)}
           />
           <details className="ps-nav-advanced" open={advancedActive || undefined}>
-            <summary>Advanced</summary>
+            <summary>
+              Advanced
+              <ChevronDown size={14} aria-hidden="true" className="ps-nav-advanced-chevron" />
+            </summary>
             <div className="ps-nav-advanced-links">
               <NavLinks
                 items={ADVANCED_NAV}
@@ -260,8 +261,8 @@ export function CommandShell({
         <div className="ps-topbar">
           {breadcrumb}
           {foyerMode && pathname === "/command" ? null : (
-            <Link to="/command" hash="supervised-brief" className="ps-new-mission">
-              + New case
+            <Link to="/command" hash="new-project" className="ps-new-mission">
+              + New project
             </Link>
           )}
         </div>
