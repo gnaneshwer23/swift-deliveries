@@ -175,7 +175,7 @@ export function ProjectsDashboard({
   const first = needsYou[0] ?? null;
   const firstPath = first ? buildFirstProject(projects.filter((p) => p.id === first.id)) : null;
   const status = needsYou.length
-    ? `${needsYou.length} ${needsYou.length === 1 ? "thing needs" : "things need"} you. Everything else is moving.`
+    ? `${needsYou.length} ${needsYou.length === 1 ? "thing needs" : "things need"} you.`
     : model.counts.active
       ? "Nothing needs you right now."
       : "Start with one or two lines about your product.";
@@ -271,6 +271,7 @@ export function ProjectsDashboard({
                     type="button"
                     className="prj-now-more"
                     onClick={() => {
+                      setQuery("");
                       setFilter("needs_you");
                       setView("cards");
                     }}
@@ -562,7 +563,7 @@ export function ProjectsDashboard({
                 See all {model.team.departments} departments{" "}
                 <ArrowRight size={14} aria-hidden="true" />
               </DialogTrigger>
-              <DialogContent className="prj-dialog">
+              <DialogContent className="sx prj-dialog">
                 <DialogHeader>
                   <DialogTitle>Your AI team</DialogTitle>
                   <DialogDescription>

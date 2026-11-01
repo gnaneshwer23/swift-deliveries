@@ -118,7 +118,7 @@ export function FirstProjectCard({ projects }: { projects: FirstProjectSource[] 
       )}
       <p className="prj-lesson">
         <span>
-          Lessons {reached.size} / {LESSONS.length}
+          Lessons for steps reached: {reached.size} / {LESSONS.length}
         </span>
         {nextLesson ? (
           <Link to="/learn/$lessonId" params={{ lessonId: nextLesson.id }} className="prj-link">
