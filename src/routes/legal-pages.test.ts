@@ -31,8 +31,9 @@ describe("owner-confirmed legal details (2 November 2026)", () => {
 
   it("names DeliverX as a trading name, not a registered company", () => {
     for (const s of [privacy, terms]) {
-      expect(s).toContain("DeliverX is the trading name of Gnaneshwer Jadav");
-      expect(s).toContain("DeliverX is not");
+      // Prettier may wrap these sentences, so match across any whitespace.
+      expect(s).toMatch(/DeliverX is the trading name of\s+Gnaneshwer Jadav/);
+      expect(s).toMatch(/DeliverX is\s+not\s+a registered company/);
       expect(s).not.toMatch(/being established/);
     }
   });
