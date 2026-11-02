@@ -108,7 +108,20 @@ Or click path:
 
 If that page looks empty or only shows sandbox endpoints, go back to **A** — you are still in a Sandbox.
 
-### C. Create the live destination (exact choices)
+### C. Check for the existing live destination first
+
+An endpoint already exists on the live account: `we_1UVSsY2X2opf83VZ4GHxkknp` ("DeliverX live payments webhook"), pointing at `https://www.deliverx.dev/api/public/payments/webhook?env=live`. It was read back from Stripe on 2 Nov 2026.
+
+1. In the Webhooks list, open that destination. **Do not create a second one**: two live endpoints would deliver every event twice.
+2. Check it against the settings a new destination needs (step **D**): the exact URL, **Snapshot** payloads (not Thin), the API version, and the six events. Edit the destination if anything differs.
+
+   Read back from Stripe on 2 Nov 2026: status `enabled`, URL exact, all six events and no others. It is a classic webhook endpoint, which sends full (Snapshot) payloads. Its `api_version` is unset, so events use the **account's default API version**. Confirm that default is `2026-03-25.dahlia` (Workbench → Overview), or set the endpoint's version to it.
+
+3. Then go straight to **E** (the signing secret).
+
+Only if no such destination is listed, create one as follows.
+
+### D. Create the live destination (only if none exists)
 
 1. Click **Create an event destination** (or **Create new destination**).
 2. **Listen to** → **Events on your account** / **Your account** (not Connected accounts).
@@ -131,7 +144,7 @@ If that page looks empty or only shows sandbox endpoints, go back to **A** — y
 8. Optional description: `DeliverX PSI live entitlements`.
 9. **Create destination** / **Add endpoint**.
 
-### D. Where the Signing secret is (this is `PAYMENTS_LIVE_WEBHOOK_SECRET`)
+### E. Where the Signing secret is (this is `PAYMENTS_LIVE_WEBHOOK_SECRET`)
 
 1. After create, Stripe opens the destination’s **settings** page (or click the new row in the Webhooks list).
 2. Find **Signing secret** — value starts with `whsec_…`.
@@ -144,7 +157,7 @@ If that page looks empty or only shows sandbox endpoints, go back to **A** — y
 
 5. **Redeploy Production** after saving the env var (env changes do not apply to already-running deploys).
 
-### E. Prove it
+### F. Prove it
 
 1. On the same destination page → **Send test event** (pick `checkout.session.completed`) **or** complete one low-risk live purchase after you flip live-approved.
 2. Delivery log should show **2xx**. A failed signature means wrong/missing `PAYMENTS_LIVE_WEBHOOK_SECRET` or Sandbox secret pasted into Production.
@@ -197,16 +210,16 @@ Set / verify these on project `swift-deliveries` (`prj_KXbLoh586LlAsKD6c8zk2HGDj
 
 ## Still blocked until you act
 
-| Blocker                                          | Why                                                                                        |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------ |
-| Live Products/Prices IDs                         | **Cleared** — IDs recorded; Production price env set                                       |
-| Lookup-key cleanup                               | Optional Dashboard fix (`experience_monthly` → `builder_monthly`; set Founder/Studio keys) |
-| Managed Payments enrollment + eligible tax codes | Dashboard ToS + product tax codes — required once code sends `managed_payments.enabled`    |
-| Migration 0032                                   | **Cleared** on production 28 Oct 2026                                                      |
-| `pk_live_…` + `rk_live_…` / `sk_live_…`          | **Cleared on Production** (presence checked; values not printed)                           |
-| Live webhook + `whsec_…`                         | **Still missing** — create destination (step 5) then set `PAYMENTS_LIVE_WEBHOOK_SECRET`    |
-| `PSI_PAYMENTS_LIVE_APPROVED`                     | Must be your deliberate flip **last** — agents will not set it                             |
-| Signed-in P0-A smoke                             | Remains **red** without your browser session — not certified production-ready overall      |
+| Blocker                                          | Why                                                                                                                                                           |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Live Products/Prices IDs                         | **Cleared** — IDs recorded; Production price env set                                                                                                          |
+| Lookup-key cleanup                               | Optional Dashboard fix (`experience_monthly` → `builder_monthly`; set Founder/Studio keys)                                                                    |
+| Managed Payments enrollment + eligible tax codes | Dashboard ToS + product tax codes — required once code sends `managed_payments.enabled`                                                                       |
+| Migration 0032                                   | **Cleared** on production 28 Oct 2026                                                                                                                         |
+| `pk_live_…` + `rk_live_…` / `sk_live_…`          | **Cleared on Production** (presence checked; values not printed)                                                                                              |
+| Live webhook + `whsec_…`                         | Endpoint exists (`we_1UVSsY2X2opf83VZ4GHxkknp`, read back from Stripe on 2 Nov 2026); set its signing secret as `PAYMENTS_LIVE_WEBHOOK_SECRET` (not verified) |
+| `PSI_PAYMENTS_LIVE_APPROVED`                     | Must be your deliberate flip **last** — agents will not set it                                                                                                |
+| Signed-in P0-A smoke                             | Remains **red** without your browser session — not certified production-ready overall                                                                         |
 
 ## Stripe MCP re-consent (optional)
 
