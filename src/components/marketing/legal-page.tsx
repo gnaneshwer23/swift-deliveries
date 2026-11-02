@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 
 /** The date the current legal texts were last changed. */
-export const LEGAL_LAST_UPDATED = "1 November 2026";
+export const LEGAL_LAST_UPDATED = "2 November 2026";
 
 export const LEGAL_CONTACT_EMAIL = "gnaneshwer.jadav@gmail.com";
 
