@@ -20,9 +20,9 @@ function PrivacyPage() {
     >
       <LegalSection title="Who we are">
         <p>
-          DeliverX is the trading name of the data controller for this service. You can reach us
-          about anything in this policy at <ContactLink />. A registered company entity is being
-          established; this page will be updated with its details when that completes.
+          DeliverX is the trading name of the individual who runs this service and is the data
+          controller for it. DeliverX is not a registered company. You can reach us about anything
+          in this policy at <ContactLink />.
         </p>
       </LegalSection>
 
@@ -122,9 +122,27 @@ function PrivacyPage() {
             from Google, which receives your IP address).
           </li>
         </ul>
+        <p>We do not share your records with anyone else unless the law requires it.</p>
+      </LegalSection>
+
+      <LegalSection title="Transfers outside the UK">
         <p>
-          Some of these providers process data outside the UK. We do not share your records with
-          anyone else unless the law requires it.
+          Some of these providers process data outside the UK, mainly in the United States. When
+          they do, the transfer is protected in one of these ways, as set out in each provider’s
+          data processing terms:
+        </p>
+        <ul className="list-disc space-y-1 pl-5">
+          <li>
+            UK adequacy regulations, where they cover the destination, including the UK Extension to
+            the EU–US Data Privacy Framework for providers certified under it; or
+          </li>
+          <li>
+            the ICO’s International Data Transfer Addendum to the EU Standard Contractual Clauses,
+            or the UK International Data Transfer Agreement.
+          </li>
+        </ul>
+        <p>
+          Ask us at <ContactLink /> for a copy of the safeguard that applies.
         </p>
       </LegalSection>
 

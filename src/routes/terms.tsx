@@ -20,9 +20,8 @@ function TermsPage() {
     >
       <LegalSection title="Who we are">
         <p>
-          DeliverX is the trading name of the service operator, reachable at <ContactLink />. A
-          registered company entity is being established and these terms will be updated with its
-          details.
+          DeliverX is the trading name of the individual who operates this service. DeliverX is not
+          a registered company. You can reach us at <ContactLink />.
         </p>
       </LegalSection>
 
@@ -70,6 +69,30 @@ function TermsPage() {
           the price before you pay; or we agree a paid pilot with you directly, with its scope,
           access and price confirmed before anything is charged and access turned on by us. Your
           statutory rights under UK consumer law are not affected.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="Cancelling and refunds">
+        <ul className="list-disc space-y-1 pl-5">
+          <li>
+            You can cancel a subscription at any time. Cancelling stops the next renewal, and you
+            keep access until the end of the period you have paid for.
+          </li>
+          <li>
+            If you cancel within 3 days of a payment, we refund that payment in full. After 3 days,
+            the current period is not refunded.
+          </li>
+          <li>Refunds go back to the card or account you paid with.</li>
+          <li>
+            If you are a consumer, you also have a legal right to cancel within 14 days of buying.
+            If you cancel in that time after you have started using the service, we may keep a
+            proportionate amount for what you used, as the law allows. This does not reduce the
+            3-day full refund above.
+          </li>
+          <li>A paid pilot agreed with us directly follows the refund terms in that agreement.</li>
+        </ul>
+        <p>
+          To cancel or ask for a refund, contact us at <ContactLink />.
         </p>
       </LegalSection>
 
