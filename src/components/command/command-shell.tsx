@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
@@ -8,6 +8,8 @@ import {
   Inbox,
   LayoutGrid,
   Menu,
+  PanelLeftClose,
+  PanelLeftOpen,
   ShieldCheck,
   UserRound,
   UsersRound,
@@ -30,6 +32,16 @@ const PRIMARY_NAV = [
 type NavItem = (typeof PRIMARY_NAV)[number];
 
 const EXECUTIVE_FONT_LINK_ID = "ps-executive-fonts";
+/** Desktop navigation width: a slim icon rail by default, or the full sidebar. */
+const NAV_PREF_KEY = "dx-studio-nav";
+
+function readRailPref(): boolean {
+  try {
+    return window.localStorage.getItem(NAV_PREF_KEY) !== "full";
+  } catch {
+    return true;
+  }
+}
 
 function navLinkActive(item: NavItem, pathname: string, _locationHash: string): boolean {
   const { to, label } = item;
@@ -64,6 +76,7 @@ function NavLinks({
         to={to}
         aria-current={active ? "page" : undefined}
         className={`ps-nav-link ${active ? "is-active" : ""}`}
+        title={label}
         onClick={onNavigate}
       >
         <Icon size={18} />
@@ -100,6 +113,20 @@ export function CommandShell({
   const signOut = useSignOut();
   const { user } = useSession();
   const [open, setOpen] = useState(false);
+  const [rail, setRail] = useState(true);
+  // Before paint, so a saved "full" choice never flashes the rail first (these routes are client-only).
+  useLayoutEffect(() => setRail(readRailPref()), []);
+  const toggleRail = () => {
+    setRail((current) => {
+      const next = !current;
+      try {
+        window.localStorage.setItem(NAV_PREF_KEY, next ? "rail" : "full");
+      } catch {
+        /* Optional preference. */
+      }
+      return next;
+    });
+  };
   const operatorAccess = useQuery({
     queryKey: ["pilot", "operator-access"],
     queryFn: () => getPilotOperatorAccess(),
@@ -137,7 +164,7 @@ export function CommandShell({
         hideHeading ? " ps-shell-foyer" : ""
       }${foyerMode ? " ps-shell-foyer-calm" : ""}${executiveMode ? " ps-executive" : ""}${
         studioEntryMode ? " ps-studio-entry sx" : ""
-      }`}
+      }${rail && !networkMode ? " ps-rail" : ""}`}
       onKeyDown={(event) => {
         if (event.key === "Escape") setOpen(false);
       }}
@@ -172,14 +199,26 @@ export function CommandShell({
             locationHash={locationHash}
             onNavigate={() => setOpen(false)}
           />
+          {networkMode ? null : (
+            <button
+              type="button"
+              className="ps-rail-toggle"
+              onClick={toggleRail}
+              aria-pressed={!rail}
+              title={rail ? "Expand menu" : "Collapse menu"}
+            >
+              {rail ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
+              <span>{rail ? "Expand menu" : "Collapse menu"}</span>
+            </button>
+          )}
         </nav>
         <div className="ps-sidebar-bottom">
-          <Link to="/" className="ps-site-link">
-            Explore DeliverX
+          <Link to="/" className="ps-site-link" title="Explore DeliverX">
+            <span>Explore DeliverX</span>
             <ArrowUpRight size={14} />
           </Link>
           <details className="ps-account">
-            <summary className="ps-user">
+            <summary className="ps-user" title={name}>
               <span>{name.slice(0, 1).toUpperCase()}</span>
               <div>
                 <strong>{name}</strong>

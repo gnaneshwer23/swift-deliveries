@@ -58,6 +58,7 @@ import {
   FIRST_PROJECT_SHORT_LABELS,
   type FirstProjectSource,
 } from "@/lib/pilot-mission/first-project";
+import { buildActivityFeed, feedTime, type FeedSource } from "@/lib/pilot-mission/activity-feed";
 import "@/styles/projects-dashboard.css";
 
 const updated = (iso: string) =>
@@ -123,7 +124,7 @@ export function ProjectsDashboard({
   allowanceLine,
   onNewProject,
 }: {
-  projects: Array<ProjectSource & FirstProjectSource>;
+  projects: Array<ProjectSource & FirstProjectSource & { recentActivity?: FeedSource["activity"] }>;
   usage: { consumed: number; ceiling: number } | null;
   allowanceLine: string | null;
   onNewProject: () => void;
@@ -137,6 +138,19 @@ export function ProjectsDashboard({
   const rows = filterProjects(model.rows, filter, query);
   const needsYou = model.rows.filter((r) => !r.deleted && r.phase === "needs_you");
   const [view, setView] = useState<"cards" | "table">("cards");
+  const feed = useMemo(
+    () =>
+      buildActivityFeed(
+        model.rows
+          .filter((r) => !r.deleted)
+          .map((r) => ({
+            id: r.id,
+            name: r.name,
+            activity: projects.find((p) => p.id === r.id)?.recentActivity ?? [],
+          })),
+      ),
+    [model.rows, projects],
+  );
 
   const refresh = () => qc.invalidateQueries({ queryKey: ["supervised"] });
   const onError = (e: unknown) => {
@@ -529,71 +543,108 @@ export function ProjectsDashboard({
           )}
         </section>
 
-        <aside className="prj-card prj-team" aria-labelledby="prj-team-title">
-          <p className="prj-eyebrow">Your AI team</p>
-          <h2 id="prj-team-title">
-            {model.team.onProjects} role{model.team.onProjects === 1 ? "" : "s"} on your projects
-          </h2>
-          <p className="prj-card-sub">
-            {model.team.runnable} of {model.team.total} roles can run today.
-          </p>
-          <ul className="prj-meters">
-            {model.team.byDepartment
-              .filter((d) => d.onProjects.length)
-              .slice(0, 5)
-              .map((d) => (
-                <li key={d.name}>
-                  <span>{d.name}</span>
-                  <b>
-                    {d.onProjects.length} / {d.total}
-                  </b>
-                  <span
-                    className="prj-bar"
-                    role="img"
-                    aria-label={`${d.onProjects.length} of ${d.total} roles on your projects`}
-                  >
-                    <span style={{ width: `${pct(d.onProjects.length, d.total)}%` }} />
-                  </span>
-                </li>
-              ))}
-          </ul>
-          <div className="prj-team-links">
-            <Dialog>
-              <DialogTrigger className="prj-card-link">
-                See all {model.team.departments} departments{" "}
-                <ArrowRight size={14} aria-hidden="true" />
-              </DialogTrigger>
-              <DialogContent className="sx prj-dialog">
-                <DialogHeader>
-                  <DialogTitle>Your AI team</DialogTitle>
-                  <DialogDescription>
-                    Each project gets only the roles it needs. Planned roles never count as working.
-                  </DialogDescription>
-                </DialogHeader>
-                <ul className="prj-depts">
-                  {model.team.byDepartment.map((d) => (
-                    <li key={d.name}>
-                      <div className="prj-dept-row">
-                        <span>{d.name}</span>
-                        <span className="prj-muted">
-                          {d.onProjects.length} on projects · {d.runnable} can run · {d.total} roles
-                        </span>
-                      </div>
-                      {d.onProjects.length ? (
-                        <p className="prj-dept-roles">
-                          {d.onProjects.map((r) => r.name).join(" · ")}
-                        </p>
-                      ) : null}
-                    </li>
-                  ))}
-                </ul>
-                <Link to="/command/capabilities" className="prj-link">
-                  Browse every role
-                </Link>
-              </DialogContent>
-            </Dialog>
-          </div>
-        </aside>
+        <div className="prj-side">
+          <section className="prj-card prj-feed" aria-labelledby="prj-feed-title">
+            <p className="prj-eyebrow">Recent activity</p>
+            <h2 id="prj-feed-title">What the team did</h2>
+            {feed.length ? (
+              <ol className="prj-feed-list">
+                {feed.map((f) => (
+                  <li key={f.key} data-by={f.by}>
+                    <span className="prj-feed-dot" aria-hidden="true">
+                      {f.by === "you" ? <Check size={12} /> : <span />}
+                    </span>
+                    <div>
+                      <p>
+                        <b>{f.who}</b> {f.what}
+                      </p>
+                      <small>
+                        <Link
+                          to="/command/supervised/$missionId"
+                          params={{ missionId: f.projectId }}
+                        >
+                          {f.projectName}
+                        </Link>{" "}
+                        · <time dateTime={f.at}>{feedTime(f.at)}</time>
+                      </small>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p className="prj-card-sub prj-feed-empty">
+                Nothing yet. Work shows here as the team does it.
+              </p>
+            )}
+          </section>
+          <aside className="prj-card prj-team" aria-labelledby="prj-team-title">
+            <p className="prj-eyebrow">Your AI team</p>
+            <h2 id="prj-team-title">
+              {model.team.onProjects} role{model.team.onProjects === 1 ? "" : "s"} on your projects
+            </h2>
+            <p className="prj-card-sub">
+              {model.team.runnable} of {model.team.total} roles can run today.
+            </p>
+            <ul className="prj-meters">
+              {model.team.byDepartment
+                .filter((d) => d.onProjects.length)
+                .slice(0, 5)
+                .map((d) => (
+                  <li key={d.name}>
+                    <span>{d.name}</span>
+                    <b>
+                      {d.onProjects.length} / {d.total}
+                    </b>
+                    <span
+                      className="prj-bar"
+                      role="img"
+                      aria-label={`${d.onProjects.length} of ${d.total} roles on your projects`}
+                    >
+                      <span style={{ width: `${pct(d.onProjects.length, d.total)}%` }} />
+                    </span>
+                  </li>
+                ))}
+            </ul>
+            <div className="prj-team-links">
+              <Dialog>
+                <DialogTrigger className="prj-card-link">
+                  See all {model.team.departments} departments{" "}
+                  <ArrowRight size={14} aria-hidden="true" />
+                </DialogTrigger>
+                <DialogContent className="sx prj-dialog">
+                  <DialogHeader>
+                    <DialogTitle>Your AI team</DialogTitle>
+                    <DialogDescription>
+                      Each project gets only the roles it needs. Planned roles never count as
+                      working.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <ul className="prj-depts">
+                    {model.team.byDepartment.map((d) => (
+                      <li key={d.name}>
+                        <div className="prj-dept-row">
+                          <span>{d.name}</span>
+                          <span className="prj-muted">
+                            {d.onProjects.length} on projects · {d.runnable} can run · {d.total}{" "}
+                            roles
+                          </span>
+                        </div>
+                        {d.onProjects.length ? (
+                          <p className="prj-dept-roles">
+                            {d.onProjects.map((r) => r.name).join(" · ")}
+                          </p>
+                        ) : null}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link to="/command/capabilities" className="prj-link">
+                    Browse every role
+                  </Link>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </aside>
+        </div>
       </div>
 
       <AlertDialog open={confirm !== null} onOpenChange={(open) => !open && setConfirm(null)}>
