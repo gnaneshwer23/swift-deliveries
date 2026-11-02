@@ -108,7 +108,17 @@ Or click path:
 
 If that page looks empty or only shows sandbox endpoints, go back to **A** — you are still in a Sandbox.
 
-### C. Create the live destination (exact choices)
+### C. Check for the existing live destination first
+
+An endpoint already exists on the live account: `we_1UVSsY2X2opf83VZ4GHxkknp` ("DeliverX live payments webhook"), pointing at `https://www.deliverx.dev/api/public/payments/webhook?env=live`. It was read back from Stripe on 2 Nov 2026.
+
+1. In the Webhooks list, open that destination. **Do not create a second one**: two live endpoints would deliver every event twice.
+2. Check that its URL matches exactly and that it listens to the six events in step **D** below. Edit the event list if any are missing.
+3. Then go straight to **E** (the signing secret).
+
+Only if no such destination is listed, create one as follows.
+
+### D. Create the live destination (only if none exists)
 
 1. Click **Create an event destination** (or **Create new destination**).
 2. **Listen to** → **Events on your account** / **Your account** (not Connected accounts).
@@ -131,7 +141,7 @@ If that page looks empty or only shows sandbox endpoints, go back to **A** — y
 8. Optional description: `DeliverX PSI live entitlements`.
 9. **Create destination** / **Add endpoint**.
 
-### D. Where the Signing secret is (this is `PAYMENTS_LIVE_WEBHOOK_SECRET`)
+### E. Where the Signing secret is (this is `PAYMENTS_LIVE_WEBHOOK_SECRET`)
 
 1. After create, Stripe opens the destination’s **settings** page (or click the new row in the Webhooks list).
 2. Find **Signing secret** — value starts with `whsec_…`.
@@ -144,7 +154,7 @@ If that page looks empty or only shows sandbox endpoints, go back to **A** — y
 
 5. **Redeploy Production** after saving the env var (env changes do not apply to already-running deploys).
 
-### E. Prove it
+### F. Prove it
 
 1. On the same destination page → **Send test event** (pick `checkout.session.completed`) **or** complete one low-risk live purchase after you flip live-approved.
 2. Delivery log should show **2xx**. A failed signature means wrong/missing `PAYMENTS_LIVE_WEBHOOK_SECRET` or Sandbox secret pasted into Production.
