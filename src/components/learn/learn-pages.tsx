@@ -1,5 +1,6 @@
 /** Learn by building — the lesson hub and a single lesson (public pages). */
 import { Link } from "@tanstack/react-router";
+import { RunStrip } from "@/components/marketing/run-strip";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { LESSONS, type Lesson } from "@/lib/learn/lessons";
@@ -33,6 +34,7 @@ export function LearnHub() {
                 Read lesson 1
               </Link>
             </div>
+            <RunStrip className="hp-runs-left" />
           </div>
         </section>
 

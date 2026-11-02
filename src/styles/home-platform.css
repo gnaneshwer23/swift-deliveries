@@ -936,3 +936,8 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* The workflow strip on landing pages with left-aligned openings. */
+.hp-runs.hp-runs-left {
+  margin: 2rem 0 0;
+}

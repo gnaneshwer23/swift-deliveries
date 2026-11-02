@@ -132,8 +132,7 @@ function Pricing() {
               </div>
               <div className="pricing-heading-note">
                 <p>
-                  Start with a bounded product question. Choose the proposed pilot scope that fits
-                  your work, then agree the details with us.
+                  Start with one product question. Pick a scope, then agree the details with us.
                 </p>
                 <span>GBP · Monthly · No annual commitment</span>
               </div>
