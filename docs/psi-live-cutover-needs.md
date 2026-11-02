@@ -197,16 +197,16 @@ Set / verify these on project `swift-deliveries` (`prj_KXbLoh586LlAsKD6c8zk2HGDj
 
 ## Still blocked until you act
 
-| Blocker                                          | Why                                                                                        |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------ |
-| Live Products/Prices IDs                         | **Cleared** — IDs recorded; Production price env set                                       |
-| Lookup-key cleanup                               | Optional Dashboard fix (`experience_monthly` → `builder_monthly`; set Founder/Studio keys) |
-| Managed Payments enrollment + eligible tax codes | Dashboard ToS + product tax codes — required once code sends `managed_payments.enabled`    |
-| Migration 0032                                   | **Cleared** on production 28 Oct 2026                                                      |
-| `pk_live_…` + `rk_live_…` / `sk_live_…`          | **Cleared on Production** (presence checked; values not printed)                           |
-| Live webhook + `whsec_…`                         | **Still missing** — create destination (step 5) then set `PAYMENTS_LIVE_WEBHOOK_SECRET`    |
-| `PSI_PAYMENTS_LIVE_APPROVED`                     | Must be your deliberate flip **last** — agents will not set it                             |
-| Signed-in P0-A smoke                             | Remains **red** without your browser session — not certified production-ready overall      |
+| Blocker                                          | Why                                                                                                                                                           |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Live Products/Prices IDs                         | **Cleared** — IDs recorded; Production price env set                                                                                                          |
+| Lookup-key cleanup                               | Optional Dashboard fix (`experience_monthly` → `builder_monthly`; set Founder/Studio keys)                                                                    |
+| Managed Payments enrollment + eligible tax codes | Dashboard ToS + product tax codes — required once code sends `managed_payments.enabled`                                                                       |
+| Migration 0032                                   | **Cleared** on production 28 Oct 2026                                                                                                                         |
+| `pk_live_…` + `rk_live_…` / `sk_live_…`          | **Cleared on Production** (presence checked; values not printed)                                                                                              |
+| Live webhook + `whsec_…`                         | Endpoint exists (`we_1UVSsY2X2opf83VZ4GHxkknp`, read back from Stripe on 2 Nov 2026); set its signing secret as `PAYMENTS_LIVE_WEBHOOK_SECRET` (not verified) |
+| `PSI_PAYMENTS_LIVE_APPROVED`                     | Must be your deliberate flip **last** — agents will not set it                                                                                                |
+| Signed-in P0-A smoke                             | Remains **red** without your browser session — not certified production-ready overall                                                                         |
 
 ## Stripe MCP re-consent (optional)
 

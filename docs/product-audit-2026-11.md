@@ -14,14 +14,14 @@ It follows the project rules in `AGENTS.md`. Nothing here fabricates customers, 
 - **A clear product story.** The six-step strip (Idea → Plan → Research → Decide → Build → Record) now appears on four pages, with the steps that wait for you outlined.
 - **Dashboard follows the approved mock.** It has an icon rail, a greeting with one status line, at-a-glance cards, project cards and a "What the team did" feed. The feed reads each project's own saved records.
 - **Honest copy.** Pages say what is live, what is planned and what is a sample. Reviews have already removed several overclaims.
-- **Security basics.** It has security headers, a request body limit, workspace isolation tests, row-level security on every `wf_*` table, migrations recorded in a ledger, and SEO with robots, sitemap, Open Graph and canonical tags.
+- **Security basics.** It has security headers, a request body limit, workspace isolation enforced on the server for every `wf_*` read and write (with tests), migrations recorded in a ledger, and SEO with robots, sitemap, Open Graph and canonical tags.
 - **Legal pages.** Privacy, Terms and Cookies now carry the trading name, the safeguards for data sent outside the UK, and refund terms.
 
 **What makes it feel unfinished (from the video's point of view)**
 
 1. **No Settings area.** The reference product's strongest signal of "real product" is a settings workspace: billing, security, team, integrations and audit log. DeliverX has only `/profile`. Paying users can't see their plan, invoices or usage history. They also can't manage sessions or export their record of decisions in one place.
 2. **Billing is invisible after checkout.** Stripe prices and the live webhook exist, but no screen shows the plan, the renewal date, invoices, or how to cancel and get a refund. The 3-day refund promise needs a self-serve path.
-3. **No audit view.** Every project keeps a full event log, and the downloadable record includes it. But there is no in-app "Audit log" with filters and export like the video's. This is DeliverX's main trust feature, so it should be the most visible part of the product.
+3. **No audit view.** Every project keeps its recorded events, and the downloadable record includes them, saying so when a section is capped or could not be read. But there is no in-app "Audit log" with filters and export like the video's. This is DeliverX's main trust feature, so it should be the most visible part of the product.
 4. **No product analytics, no error alerting.** Client errors are written to `monitoring_events`, but nobody is alerted. There is no funnel data (visit → sign-up → first plan approved), so conversion can't be measured.
 5. **Homepage hierarchy is long.** The parts are there, but the order is not hero → features → how it works → proof → pricing → FAQ → CTA. Pricing and FAQ only live on `/pricing`.
 6. **Heavy images.** Four 3D renders in `public/assets/3d` are about 0.5 MB each (JPEG). They should be WebP or AVIF with fixed sizes and lazy loading.
@@ -148,27 +148,29 @@ These were done in #100. Next: replace text-only capability lists on Platform wi
 
 ## 5. Production-readiness checklist
 
-| Item                                                                        | Status                                     |
-| --------------------------------------------------------------------------- | ------------------------------------------ |
-| HTTPS, security headers, request size limit                                 | ✅ (#91)                                   |
-| Workspace isolation, RLS on `wf_*` tables                                   | ✅                                         |
-| Migrations ledger and rollback docs; 0031 applied to production             | ✅ (2 Nov 2026)                            |
-| SEO: titles, descriptions, canonical, robots, sitemap, OG image             | ✅                                         |
-| 404 and error pages                                                         | ✅ (`__root.tsx`)                          |
-| Legal: privacy, terms, cookies, refunds, transfers                          | ✅ (#101)                                  |
-| Stripe live prices (Builder £29, Founder £99, Studio £299) and live webhook | ✅ in Stripe, lookup keys set 2 Nov 2026   |
-| Live payments switched on in Vercel                                         | ⬜ Owner: set the variables below          |
-| Billing page, invoices, refund path                                         | ⬜ Plan step 2                             |
-| Product analytics (cookieless)                                              | ⬜ Plan step 3, needs approval             |
-| Error alerting                                                              | ⬜ Plan step 3                             |
-| Image optimisation                                                          | ⬜ Plan step 4                             |
-| Accessibility pass (WCAG 2.2 AA)                                            | ⬜ Plan step 6                             |
-| Uptime monitor on `/` and the webhook                                       | ⬜ Owner choice (free tier of any monitor) |
-| Backups: Neon point-in-time restore window confirmed                        | ⬜ Owner: check Neon plan                  |
-| Cron secret for the worker verified in production                           | ⬜ Owner (`CRON_SECRET`)                   |
+| Item                                                                        | Status                                                                                                                                         |
+| --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| HTTPS, security headers, request size limit                                 | ✅ (#91)                                                                                                                                       |
+| Workspace isolation enforced on the server, with tests                      | ✅                                                                                                                                             |
+| Row-level security on `wf_*` tables as a second layer                       | ⬜ On 8 of 20 in production (catalog check, 2 Nov 2026); the 12 core tables need a migration and owner approval                                |
+| Migrations ledger and rollback docs; 0031 applied to production             | ✅ (2 Nov 2026)                                                                                                                                |
+| SEO: titles, descriptions, canonical, robots, sitemap, OG image             | ✅                                                                                                                                             |
+| 404 and error pages                                                         | ✅ (`__root.tsx`)                                                                                                                              |
+| Legal: privacy, terms, cookies, refunds, transfers                          | ✅ (#101)                                                                                                                                      |
+| Stripe live prices (Builder £29, Founder £99, Studio £299) and live webhook | ✅ in Stripe: lookup keys set and endpoint `we_1UVSsY2X2opf83VZ4GHxkknp` read back on 2 Nov 2026. Its signing secret in Vercel is not verified |
+| Live payments switched on in Vercel                                         | ⬜ Owner: set the variables below                                                                                                              |
+| Billing page, invoices, refund path                                         | ⬜ Plan step 2                                                                                                                                 |
+| Product analytics (cookieless)                                              | ⬜ Plan step 3, needs approval                                                                                                                 |
+| Error alerting                                                              | ⬜ Plan step 3                                                                                                                                 |
+| Image optimisation                                                          | ⬜ Plan step 4                                                                                                                                 |
+| Accessibility pass (WCAG 2.2 AA)                                            | ⬜ Plan step 6                                                                                                                                 |
+| Uptime monitor on `/` and the webhook                                       | ⬜ Owner choice (free tier of any monitor)                                                                                                     |
+| Backups: Neon point-in-time restore window confirmed                        | ⬜ Owner: check Neon plan                                                                                                                      |
+| Cron secret for the worker verified in production                           | ⬜ Owner (`CRON_SECRET`)                                                                                                                       |
 
 **Variables to set in Vercel (production) for live payments.** Names only. The values come from the Stripe dashboard and never pass through this chat.
 
+- `VITE_PAYMENTS_CLIENT_TOKEN`: the live publishable key (`pk_live_…`). Checkout refuses live mode without it.
 - `STRIPE_LIVE_API_KEY`: the secret live key.
 - `PAYMENTS_LIVE_WEBHOOK_SECRET`: the signing secret of the existing endpoint "DeliverX live payments webhook" (`we_1UVSsY2X2opf83VZ4GHxkknp`).
 - Prices need no variables. On 2 Nov 2026, with the owner's approval, the three live prices were given the lookup keys checkout reads: `builder_monthly` (£29/month, `price_1UGpI02X2opf83VZ9RIaw4Ky`), `founder_monthly` (£99/month, `price_1UVRjW2X2opf83VZ0E9zN7bi`) and `studio_monthly` (£299/month, `price_1UVRjr2X2opf83VZmm3F4UtY`). The products were renamed DeliverX Builder, Founder and Studio. To pin a price instead, set `PSI_STRIPE_PRICE_BUILDER`, `PSI_STRIPE_PRICE_FOUNDER` or `PSI_STRIPE_PRICE_STUDIO` to a `price_` id.
