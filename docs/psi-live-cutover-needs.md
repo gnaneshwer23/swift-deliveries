@@ -113,7 +113,10 @@ If that page looks empty or only shows sandbox endpoints, go back to **A** — y
 An endpoint already exists on the live account: `we_1UVSsY2X2opf83VZ4GHxkknp` ("DeliverX live payments webhook"), pointing at `https://www.deliverx.dev/api/public/payments/webhook?env=live`. It was read back from Stripe on 2 Nov 2026.
 
 1. In the Webhooks list, open that destination. **Do not create a second one**: two live endpoints would deliver every event twice.
-2. Check that its URL matches exactly and that it listens to the six events in step **D** below. Edit the event list if any are missing.
+2. Check it against the settings a new destination needs (step **D**): the exact URL, **Snapshot** payloads (not Thin), the API version, and the six events. Edit the destination if anything differs.
+
+   Read back from Stripe on 2 Nov 2026: status `enabled`, URL exact, all six events and no others. It is a classic webhook endpoint, which sends full (Snapshot) payloads. Its `api_version` is unset, so events use the **account's default API version**. Confirm that default is `2026-03-25.dahlia` (Workbench → Overview), or set the endpoint's version to it.
+
 3. Then go straight to **E** (the signing secret).
 
 Only if no such destination is listed, create one as follows.
