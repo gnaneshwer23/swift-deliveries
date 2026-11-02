@@ -1,3 +1,5 @@
+import { jsonLdScript } from "@/lib/seo/structured-data";
+
 /** The share card shown when a page link is posted (1200×630, in `public/`). */
 export const SHARE_IMAGE = {
   url: "https://www.deliverx.dev/og-image.png",
@@ -6,10 +8,16 @@ export const SHARE_IMAGE = {
   alt: "DeliverX — Build products with an AI team. You make every decision.",
 };
 
-/** Consistent SEO head for marketing pages. */
-export function pageHead(path: string, title: string, description: string) {
+/** Consistent SEO head for marketing pages, with optional schema.org nodes for the page. */
+export function pageHead(
+  path: string,
+  title: string,
+  description: string,
+  structuredData: Record<string, unknown>[] = [],
+) {
   const url = `https://www.deliverx.dev${path}`;
   return {
+    ...(structuredData.length ? { scripts: [jsonLdScript(structuredData)] } : {}),
     meta: [
       { title },
       { name: "description", content: description },

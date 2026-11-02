@@ -71,7 +71,8 @@ export const Route = createFileRoute("/")({
             },
             {
               "@type": "SoftwareApplication",
-              name: "DeliverX Command Centre",
+              "@id": "https://www.deliverx.dev/#software",
+              name: "DeliverX",
               applicationCategory: "BusinessApplication",
               operatingSystem: "Web",
               description: DESCRIPTION,

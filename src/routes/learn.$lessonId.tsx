@@ -2,6 +2,7 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { LessonView } from "@/components/learn/learn-pages";
 import { pageHead } from "@/components/marketing/page-head";
 import { lessonById } from "@/lib/learn/lessons";
+import { breadcrumbs, learnLesson } from "@/lib/seo/structured-data";
 
 export const Route = createFileRoute("/learn/$lessonId")({
   loader: ({ params }) => {
@@ -15,6 +16,13 @@ export const Route = createFileRoute("/learn/$lessonId")({
           `/learn/${loaderData.lesson.id}`,
           `${loaderData.lesson.title} — Learn by building | DeliverX`,
           loaderData.lesson.summary,
+          [
+            breadcrumbs([
+              ["Learn", "/learn"],
+              [loaderData.lesson.title, `/learn/${loaderData.lesson.id}`],
+            ]),
+            learnLesson(loaderData.lesson),
+          ],
         )
       : {},
   component: LessonPage,

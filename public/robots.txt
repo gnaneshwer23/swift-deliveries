@@ -6,6 +6,8 @@ Allow: /
 Disallow: /command
 Disallow: /api/
 Disallow: /onboarding
+Disallow: /settings
+Disallow: /profile
 Disallow: /auth/
 Disallow: /checkout/
 

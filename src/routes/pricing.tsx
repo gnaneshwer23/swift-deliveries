@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check, ShieldCheck } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { pageHead } from "@/components/marketing/page-head";
+import { breadcrumbs, faqPage, productOffers } from "@/lib/seo/structured-data";
 import { PsiCheckoutButton } from "@/components/marketing/psi-checkout-button";
 import {
   ACCOUNT_DOES_NOT_ACTIVATE,
@@ -28,6 +29,7 @@ export const Route = createFileRoute("/pricing")({
       "/pricing",
       "Pricing & Pilot — Choose your product scope | DeliverX",
       "Compare Investigation pilots: Builder £29, Founder £99 and Studio £299 per month. Clear Investigation scope, Continuation honesty, usage limits and human approval.",
+      [breadcrumbs([["Pricing", "/pricing"]]), productOffers(PLANS), faqPage(QUESTIONS)],
     ),
   component: Pricing,
 });
