@@ -156,7 +156,7 @@ These were done in #100. Next: replace text-only capability lists on Platform wi
 | SEO: titles, descriptions, canonical, robots, sitemap, OG image             | ✅                                         |
 | 404 and error pages                                                         | ✅ (`__root.tsx`)                          |
 | Legal: privacy, terms, cookies, refunds, transfers                          | ✅ (#101)                                  |
-| Stripe live prices (Builder £29, Founder £99, Studio £299) and live webhook | ✅ in Stripe                               |
+| Stripe live prices (Builder £29, Founder £99, Studio £299) and live webhook | ✅ in Stripe, lookup keys set 2 Nov 2026   |
 | Live payments switched on in Vercel                                         | ⬜ Owner: set the variables below          |
 | Billing page, invoices, refund path                                         | ⬜ Plan step 2                             |
 | Product analytics (cookieless)                                              | ⬜ Plan step 3, needs approval             |
@@ -171,9 +171,7 @@ These were done in #100. Next: replace text-only capability lists on Platform wi
 
 - `STRIPE_LIVE_API_KEY`: the secret live key.
 - `PAYMENTS_LIVE_WEBHOOK_SECRET`: the signing secret of the existing endpoint "DeliverX live payments webhook" (`we_1UVSsY2X2opf83VZ4GHxkknp`).
-- `STRIPE_PRICE_BUILDER` = `price_1UGpI02X2opf83VZ9RIaw4Ky` (£29/month).
-- `STRIPE_PRICE_FOUNDER` = `price_1UVRjW2X2opf83VZ0E9zN7bi` (£99/month).
-- `STRIPE_PRICE_STUDIO` = `price_1UVRjr2X2opf83VZmm3F4UtY` (£299/month).
+- Prices need no variables. On 2 Nov 2026, with the owner's approval, the three live prices were given the lookup keys checkout reads: `builder_monthly` (£29/month, `price_1UGpI02X2opf83VZ9RIaw4Ky`), `founder_monthly` (£99/month, `price_1UVRjW2X2opf83VZ0E9zN7bi`) and `studio_monthly` (£299/month, `price_1UVRjr2X2opf83VZmm3F4UtY`). The products were renamed DeliverX Builder, Founder and Studio. To pin a price instead, set `PSI_STRIPE_PRICE_BUILDER`, `PSI_STRIPE_PRICE_FOUNDER` or `PSI_STRIPE_PRICE_STUDIO` to a `price_` id.
 - `PSI_PAYMENTS_LIVE_APPROVED` and `VITE_PAYMENTS_CHECKOUT_ENABLED`: switch on only when you are ready to take real cards. `PSI_PAYMENTS_KILL_SWITCH` turns checkout off again at once.
 
 ---
