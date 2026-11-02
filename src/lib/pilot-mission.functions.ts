@@ -240,6 +240,14 @@ export const getSupervisedMissionHome = createServerFn({ method: "GET" })
             jobStatus: mission.job.status,
             hasFollowUp: mission.followUp?.status === "approved",
             updatedAt: mission.updatedAt,
+            // The latest saved activity, for the dashboard feed (newest last, as stored).
+            recentActivity: mission.activity.slice(-8).map((e) => ({
+              id: e.id,
+              at: e.at,
+              kind: e.kind,
+              actor: e.actor,
+              summary: e.summary.slice(0, 240),
+            })),
             usageConsumed: mission.usageConsumed,
             usageCeiling: mission.usageCeiling,
             favourite: Boolean(mission.studioMeta?.favourite),

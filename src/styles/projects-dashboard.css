@@ -1033,3 +1033,73 @@ a.prj-name:hover {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* ---------- Activity feed ---------- */
+.prj-side {
+  display: grid;
+  gap: var(--sx-space-sm);
+  align-content: start;
+  min-width: 0;
+}
+.prj-feed-list {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+.prj-feed-list li {
+  display: grid;
+  grid-template-columns: 1.6rem minmax(0, 1fr);
+  gap: 0.6rem;
+  align-items: start;
+}
+.prj-feed-dot {
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 8px;
+  background: var(--sx-sunken);
+  color: var(--sx-ink-2);
+}
+.prj-feed-dot > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 2px;
+  background: var(--sx-accent);
+}
+.prj-feed-list li[data-by="you"] .prj-feed-dot {
+  background: var(--sx-done-soft);
+  color: var(--sx-done);
+}
+.prj-feed-list p {
+  margin: 0;
+  font-size: var(--sx-text-sm);
+  line-height: 1.35;
+  color: var(--sx-ink-2);
+}
+.prj-feed-list b {
+  color: var(--sx-ink);
+  font-weight: 600;
+}
+.prj-feed-list small {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: var(--sx-text-xs);
+  color: var(--sx-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.prj-feed-list small a {
+  color: inherit;
+  text-decoration: none;
+}
+.prj-feed-list small a:hover {
+  color: var(--sx-ink);
+  text-decoration: underline;
+}
+.prj-feed-empty {
+  white-space: normal;
+}
