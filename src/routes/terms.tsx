@@ -20,8 +20,8 @@ function TermsPage() {
     >
       <LegalSection title="Who we are">
         <p>
-          DeliverX is the trading name of the individual who operates this service. DeliverX is not
-          a registered company. You can reach us at <ContactLink />.
+          DeliverX is the trading name of Gnaneshwer Jadav, who operates this service. DeliverX is
+          not a registered company. You can reach us at <ContactLink />.
         </p>
       </LegalSection>
 

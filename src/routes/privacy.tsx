@@ -20,7 +20,7 @@ function PrivacyPage() {
     >
       <LegalSection title="Who we are">
         <p>
-          DeliverX is the trading name of the individual who runs this service and is the data
+          DeliverX is the trading name of Gnaneshwer Jadav, who runs this service and is the data
           controller for it. DeliverX is not a registered company. You can reach us about anything
           in this policy at <ContactLink />.
         </p>

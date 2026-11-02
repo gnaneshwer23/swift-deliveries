@@ -31,7 +31,7 @@ describe("owner-confirmed legal details (2 November 2026)", () => {
 
   it("names DeliverX as a trading name, not a registered company", () => {
     for (const s of [privacy, terms]) {
-      expect(s).toContain("DeliverX is the trading name of the individual");
+      expect(s).toContain("DeliverX is the trading name of Gnaneshwer Jadav");
       expect(s).toContain("DeliverX is not");
       expect(s).not.toMatch(/being established/);
     }
