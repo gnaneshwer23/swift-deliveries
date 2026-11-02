@@ -53,6 +53,14 @@ vi.mock("@/lib/db/neon.server", () => ({
     }),
 }));
 
+// The test drives the research pass itself. A real kick would start a detached worker tick
+// that can claim the pending task before the test counts it (a race seen on CI).
+const kickWorker = vi.hoisted(() => vi.fn(async () => "detached" as const));
+vi.mock("@/lib/workforce/worker.server", async (orig) => ({
+  ...(await orig<object>()),
+  kickWorker,
+}));
+
 let workspaceId: string;
 let service: SupervisedMissionService;
 
@@ -129,6 +137,7 @@ describe.skipIf(!url).sequential("Phase A — Studio ↔ wf link (Neon fixture)"
       actorId: "owner",
     });
     expect(secondBind?.wfMissionId).toBe(link!.wfMissionId);
+    expect(kickWorker).toHaveBeenCalledWith({ workspaceId, missionId: link!.wfMissionId });
 
     const wfUsageBefore = Number(
       (await sql!`select usage_consumed from wf_workspaces where id=${workspaceId}`)[0]![

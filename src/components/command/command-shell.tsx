@@ -9,6 +9,7 @@ import {
   LayoutGrid,
   Menu,
   ShieldCheck,
+  UserRound,
   UsersRound,
   X,
 } from "lucide-react";
@@ -229,6 +230,10 @@ export function CommandShell({
                 <strong>You stay in control.</strong>
                 <p>Specialists contribute. You decide what moves forward.</p>
               </div>
+              <Link to="/profile" className="ps-account-link" onClick={() => setOpen(false)}>
+                <UserRound size={14} />
+                Profile &amp; preferences
+              </Link>
               <button type="button" className="ps-account-signout" onClick={() => void signOut()}>
                 Sign out
               </button>

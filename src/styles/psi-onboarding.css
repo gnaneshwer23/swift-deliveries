@@ -660,3 +660,56 @@
 .setup-story .ob-stage {
   max-width: 100%;
 }
+
+/* First project preview on the review step */
+.setup-flow {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.setup-flow li {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 12px 6px;
+  border: 1px solid var(--psi-border);
+  border-radius: 12px;
+  background: var(--psi-surface);
+  text-align: center;
+}
+.setup-flow li + li::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  width: 8px;
+  border-top: 1px dashed var(--psi-border);
+}
+.setup-flow li[data-you="true"] {
+  border-color: var(--psi-indigo);
+  box-shadow: 0 0 0 3px var(--psi-indigo-soft);
+}
+.setup-flow svg {
+  color: var(--psi-indigo);
+}
+.setup-flow strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--psi-ink);
+}
+.setup-flow small {
+  font-size: 11px;
+  color: var(--psi-muted);
+}
+@media (max-width: 640px) {
+  .setup-flow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .setup-flow li + li::before {
+    display: none;
+  }
+}
