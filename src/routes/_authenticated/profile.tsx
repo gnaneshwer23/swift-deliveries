@@ -1,17 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ProfilePage } from "@/components/profile/profile-page";
-import type { AppUser } from "@/lib/auth/client";
-import type { DxProfile } from "@/lib/dx-profile";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
+/** Profile now lives in Settings; old links still land in the right place. */
 export const Route = createFileRoute("/_authenticated/profile")({
-  head: () => ({
-    meta: [{ title: "Your profile — DeliverX" }, { name: "robots", content: "noindex" }],
-  }),
-  component: Profile,
+  beforeLoad: () => {
+    throw redirect({ to: "/settings/profile", replace: true });
+  },
 });
-
-function Profile() {
-  // The parent route sends anyone without a profile to onboarding first.
-  const { user, profile } = Route.useRouteContext() as { user: AppUser; profile: DxProfile };
-  return <ProfilePage key={user.id} user={user} profile={profile} />;
-}
