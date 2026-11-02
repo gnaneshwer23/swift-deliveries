@@ -219,7 +219,7 @@ function PlanDetails({
         </p>
       ) : null}
 
-      {view.state === "paid" && !view.stripeError ? (
+      {view.state === "paid" && view.invoicesLoaded ? (
         <section className="pf-card" aria-labelledby="st-invoices">
           <h2 id="st-invoices">Invoices</h2>
           {view.invoices.length === 0 ? (

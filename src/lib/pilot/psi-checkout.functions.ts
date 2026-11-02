@@ -10,7 +10,7 @@ import { isPilotPlan, type PilotPlan } from "./model";
 import { CAREER_LOOKUP_KEYS, offerForPlan, priceEnvOverride } from "./psi-catalog";
 import { buildPsiCheckoutSessionCreateParams } from "./psi-checkout-session";
 import { resolvePsiPaymentsMode } from "./psi-payments-mode";
-import { isAllowedReturnUrl } from "./return-url";
+import { currentRequestHostname, isAllowedReturnUrl } from "./return-url";
 
 type CheckoutOk = { ok: true; url: string; sessionId: string; environment: StripeEnv };
 type CheckoutErr = { ok: false; message: string };
@@ -57,8 +57,11 @@ export const createPsiCheckoutSession = createServerFn({ method: "POST" })
     if (!mode.ok) return { ok: false, message: mode.message };
     const environment = mode.environment;
 
+    const requestHost = await currentRequestHostname();
     for (const raw of [data.successUrl, data.cancelUrl]) {
-      if (!isAllowedReturnUrl(raw)) return { ok: false, message: "Invalid return URL." };
+      if (!isAllowedReturnUrl(raw, requestHost)) {
+        return { ok: false, message: "Invalid return URL." };
+      }
     }
 
     try {
