@@ -116,7 +116,8 @@ export const getMyBilling = createServerFn({ method: "GET" })
       consumed: own.consumed,
       remaining: Math.max(0, own.allowance - own.consumed),
       environment: own.environment,
-      hasCustomer: Boolean(own.customerId),
+      // Same test openBillingPortal applies, so the button never offers what the portal refuses.
+      hasCustomer: own.paymentTaken && Boolean(own.customerId && own.environment),
     };
     const empty = {
       subscription: null,
