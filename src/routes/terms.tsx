@@ -79,8 +79,9 @@ function TermsPage() {
             keep access until the end of the period you have paid for.
           </li>
           <li>
-            If you cancel within 3 days of a payment, we refund that payment in full. After 3 days,
-            the current period is not refunded.
+            If you cancel within 3 days of a payment, we refund that payment in full, and the paid
+            access it bought ends when the refund is made. After 3 days we do not refund the current
+            period, except where the consumer right below applies.
           </li>
           <li>Refunds go back to the card or account you paid with.</li>
           <li>
