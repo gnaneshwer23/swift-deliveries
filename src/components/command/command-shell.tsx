@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
@@ -114,7 +114,8 @@ export function CommandShell({
   const { user } = useSession();
   const [open, setOpen] = useState(false);
   const [rail, setRail] = useState(true);
-  useEffect(() => setRail(readRailPref()), []);
+  // Before paint, so a saved "full" choice never flashes the rail first (these routes are client-only).
+  useLayoutEffect(() => setRail(readRailPref()), []);
   const toggleRail = () => {
     setRail((current) => {
       const next = !current;

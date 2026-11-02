@@ -57,7 +57,7 @@ describe("buildActivityFeed", () => {
     const [first] = buildActivityFeed(projects);
     expect(first!.what).toBe("Saved three supplier quotes.");
     expect(first!.by).toBe("team");
-    expect(first!.who).not.toBe("You");
+    expect(first!.who).toBe("Chief of Staff");
   });
 
   it("respects the limit and skips bad timestamps", () => {

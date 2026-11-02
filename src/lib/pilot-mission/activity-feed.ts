@@ -48,6 +48,12 @@ const LABELS: Record<string, string> = {
   "watchtower.config_saved": "updated monitoring",
   "task.started": "started a task",
   "task.completed": "finished a task",
+  "research.cited": "cited a source",
+  "prototype.built": "built the prototype",
+  "prototype.verify_failed": "flagged a prototype check that failed",
+  "meeting.proposal_accepted": "accepted a task from meeting notes",
+  "meeting.proposal_dismissed": "dismissed a task from meeting notes",
+  "meeting.proposal_proposed": "reopened a task from meeting notes",
 };
 
 /** Owner-only actions: recorded with the owner's id rather than "human". */
@@ -61,10 +67,13 @@ const OWNER_KINDS = new Set([
   "watchtower.config_saved",
   "research_mode.set",
   "case_room.step_gate",
+  "meeting.proposal_accepted",
+  "meeting.proposal_dismissed",
+  "meeting.proposal_proposed",
 ]);
 
 /** Housekeeping that is not work: kept in the record, left out of the feed. */
-const HIDDEN_KINDS = new Set(["studio.meta_saved"]);
+export const HIDDEN_KINDS = new Set(["studio.meta_saved"]);
 
 function firstSentence(text: string): string {
   const s = text.trim().split(/(?<=[.!?])\s/)[0] ?? "";
@@ -78,7 +87,8 @@ function actorOf(e: FeedSource["activity"][number]): { who: string; by: "you" | 
   if (e.actor === "system") return { who: "DeliverX", by: "team" };
   const role = getCapability(e.actor);
   if (role) return { who: role.name.replace(/\s+agent$/i, ""), by: "team" };
-  return { who: "The team", by: "team" };
+  // Not a role and not the owner: a model run (e.g. an options comparison) or other system step.
+  return { who: "DeliverX", by: "team" };
 }
 
 export function buildActivityFeed(projects: FeedSource[], limit = 6): FeedItem[] {

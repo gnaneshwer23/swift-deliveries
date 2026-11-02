@@ -6038,12 +6038,13 @@
   background: #f8f4f0;
   color: var(--psi-ink);
 }
-@media (max-width: 760px) {
+/* The rail is desktop-only: up to 960px the shell already uses the off-canvas mobile menu. */
+@media (max-width: 960px) {
   .ps-rail-toggle {
     display: none;
   }
 }
-@media (min-width: 761px) {
+@media (min-width: 961px) {
   .ps-rail .ps-sidebar {
     width: 72px;
     padding: 20px 10px;
