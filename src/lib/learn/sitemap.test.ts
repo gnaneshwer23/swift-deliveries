@@ -14,8 +14,12 @@ describe("public sitemap", () => {
 
   it("keeps the signed-in workspace out of search", () => {
     const robots = readFileSync("public/robots.txt", "utf8");
-    for (const path of ["/command", "/settings", "/profile", "/onboarding"]) {
-      expect(robots).toContain(`Disallow: ${path}`);
+    expect(robots).toContain("Disallow: /command");
+    // Signed-in pages that carry noindex stay crawlable so crawlers can read it; a
+    // Disallow would hide the noindex and leave the bare URL listable.
+    for (const path of ["/settings", "/profile"]) {
+      expect(robots).not.toContain(`Disallow: ${path}`);
+      expect(sitemap).not.toContain(path);
     }
     // A named crawler group would take precedence over "*" and drop these rules for it.
     expect(robots.match(/^User-agent:/gm)).toEqual(["User-agent:"]);
