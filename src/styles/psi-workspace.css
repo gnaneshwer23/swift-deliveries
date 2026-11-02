@@ -6018,3 +6018,96 @@
     flex: 1;
   }
 }
+
+/* ---------- Icon rail (desktop): slim navigation, expandable and remembered ---------- */
+.ps-rail-toggle {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--psi-muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+.ps-rail-toggle:hover {
+  background: #f8f4f0;
+  color: var(--psi-ink);
+}
+/* The rail is desktop-only: up to 960px the shell already uses the off-canvas mobile menu. */
+@media (max-width: 960px) {
+  .ps-rail-toggle {
+    display: none;
+  }
+}
+@media (min-width: 961px) {
+  .ps-rail .ps-sidebar {
+    width: 72px;
+    padding: 20px 10px;
+    align-items: center;
+  }
+  .ps-rail .ps-main {
+    margin-left: 72px;
+  }
+  .ps-rail .ps-brand {
+    margin: 0 0 22px;
+  }
+  .ps-rail .ps-brand > span,
+  .ps-rail .ps-workspace-switch {
+    display: none;
+  }
+  .ps-rail nav {
+    display: grid;
+    justify-items: center;
+    width: 100%;
+  }
+  .ps-rail .ps-nav-link,
+  .ps-rail .ps-rail-toggle {
+    justify-content: center;
+    width: 48px;
+    height: 44px;
+    padding: 0;
+  }
+  .ps-rail .ps-nav-link > span,
+  .ps-rail .ps-rail-toggle > span,
+  .ps-rail .ps-site-link > span,
+  .ps-rail .ps-user > div {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .ps-rail .ps-sidebar-bottom {
+    width: 100%;
+    display: grid;
+    justify-items: center;
+  }
+  .ps-rail .ps-site-link {
+    justify-content: center;
+    padding: 12px;
+  }
+  .ps-rail .ps-account {
+    position: relative;
+    width: 100%;
+    display: grid;
+    justify-items: center;
+  }
+  .ps-rail .ps-account-panel {
+    position: absolute;
+    left: calc(100% + 14px);
+    bottom: 0;
+    width: 250px;
+    padding: 12px;
+    background: #fff;
+    border: 1px solid var(--ps-line);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(28, 27, 25, 0.12);
+    z-index: 50;
+  }
+}
