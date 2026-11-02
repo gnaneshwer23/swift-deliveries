@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { RunStrip } from "@/components/marketing/run-strip";
 import {
   ArrowRight,
   BrainCircuit,
@@ -164,10 +165,8 @@ function Platform() {
               <br />
               <span className="dxl-grad">and what it can’t yet.</span>
             </h1>
-            <p>
-              A plain reference to the platform behind every mission: how it is layered, what each
-              capability does, what you control, and whether it is live today.
-            </p>
+            <p>How it is layered, what each part does, and what is live today.</p>
+            <RunStrip className="hp-runs-left" />
           </div>
         </section>
 
@@ -176,8 +175,8 @@ function Platform() {
             <div className="plt-heading">
               <h2>Five layers, one rule.</h2>
               <p>
-                Work moves down through four layers. Governance wraps all of them, so permissions,
-                limits and approvals apply everywhere, not as a final check.
+                Four working layers, wrapped by governance, so limits and approvals apply
+                everywhere.
               </p>
             </div>
             <div className="plt-layers">
