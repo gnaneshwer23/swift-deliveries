@@ -24,3 +24,24 @@ describe("legal pages", () => {
     expect(cookies).not.toMatch(/analytics cookies help/i);
   });
 });
+
+describe("owner-confirmed legal details (2 November 2026)", () => {
+  const privacy = readFileSync("src/routes/privacy.tsx", "utf8");
+  const terms = readFileSync("src/routes/terms.tsx", "utf8");
+
+  it("names DeliverX as a trading name, not a registered company", () => {
+    for (const s of [privacy, terms]) {
+      // Prettier may wrap these sentences, so match across any whitespace.
+      expect(s).toMatch(/DeliverX is the trading name of\s+Gnaneshwer Jadav/);
+      expect(s).toMatch(/DeliverX is\s+not\s+a registered company/);
+      expect(s).not.toMatch(/being established/);
+    }
+  });
+
+  it("states the transfer safeguards and the refund terms", () => {
+    expect(privacy).toContain("International Data Transfer Addendum");
+    expect(terms).toContain("within 3 days of a payment");
+    expect(terms).toContain("legal right to cancel within 14 days");
+    expect(terms).toContain("except where the consumer right below applies");
+  });
+});
