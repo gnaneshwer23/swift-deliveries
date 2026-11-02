@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { RunStrip } from "@/components/marketing/run-strip";
 import { ArrowRight, CircleDashed, CircleCheck } from "lucide-react";
 import { MarketingLayout } from "@/components/marketing/marketing-layout";
 import { MissionSampleRecord } from "@/components/marketing/mission-sample-record";
@@ -45,9 +46,9 @@ function HowItWorks() {
               <span className="dxl-grad">to a result you can inspect.</span>
             </h1>
             <p className="hiw-lede">
-              This is what a mission looks like inside DeliverX. The plan, the team and the checks
-              below are exactly what the planner produces for this request.
+              A real mission, step by step: the plan, team and checks the planner produces.
             </p>
+            <RunStrip />
           </div>
         </section>
 
@@ -65,8 +66,7 @@ function HowItWorks() {
                 <h2>Documents you can check, not just read.</h2>
               </div>
               <p>
-                Open the sample pack from a similar mission. Sources, assumptions, objections and
-                missing inputs stay visible together. These are hypothetical sample documents.
+                Sources, assumptions and missing inputs side by side. Hypothetical sample documents.
               </p>
             </div>
             <MissionSampleRecord />
