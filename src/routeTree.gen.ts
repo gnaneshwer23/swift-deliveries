@@ -36,6 +36,7 @@ import { Route as AuthenticatedCareerOnboardingRouteImport } from './routes/_aut
 import { Route as AuthenticatedCommandRouteImport } from './routes/_authenticated/command'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated/workspace'
 import { Route as AttestTokenRouteImport } from './routes/attest.$token'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
@@ -54,6 +55,9 @@ import { Route as AuthenticatedCommandCapabilitiesRouteImport } from './routes/_
 import { Route as AuthenticatedCommandPilotRequestsRouteImport } from './routes/_authenticated/command.pilot-requests'
 import { Route as AuthenticatedCommandPortfolioRouteImport } from './routes/_authenticated/command.portfolio'
 import { Route as AuthenticatedCommandProjectsRouteImport } from './routes/_authenticated/command.projects'
+import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings.index'
+import { Route as AuthenticatedSettingsBillingRouteImport } from './routes/_authenticated/settings.billing'
+import { Route as AuthenticatedSettingsProfileRouteImport } from './routes/_authenticated/settings.profile'
 import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated/workspace.index'
 import { Route as AuthenticatedWorkspaceApplicationsRouteImport } from './routes/_authenticated/workspace.applications'
 import { Route as AuthenticatedWorkspaceCapabilityRouteImport } from './routes/_authenticated/workspace.capability'
@@ -221,6 +225,11 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedWorkspaceRoute = AuthenticatedWorkspaceRouteImport.update({
   id: '/workspace',
   path: '/workspace',
@@ -316,6 +325,24 @@ const AuthenticatedCommandProjectsRoute =
     id: '/projects',
     path: '/projects',
     getParentRoute: () => AuthenticatedCommandRoute,
+  } as any)
+const AuthenticatedSettingsIndexRoute =
+  AuthenticatedSettingsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
+const AuthenticatedSettingsBillingRoute =
+  AuthenticatedSettingsBillingRouteImport.update({
+    id: '/billing',
+    path: '/billing',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
+const AuthenticatedSettingsProfileRoute =
+  AuthenticatedSettingsProfileRouteImport.update({
+    id: '/profile',
+    path: '/profile',
+    getParentRoute: () => AuthenticatedSettingsRoute,
   } as any)
 const AuthenticatedWorkspaceIndexRoute =
   AuthenticatedWorkspaceIndexRouteImport.update({
@@ -528,6 +555,7 @@ export interface FileRoutesByFullPath {
   '/command': typeof AuthenticatedCommandRouteWithChildren
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/settings': typeof AuthenticatedSettingsRouteWithChildren
   '/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/attest/$token': typeof AttestTokenRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -545,6 +573,8 @@ export interface FileRoutesByFullPath {
   '/command/pilot-requests': typeof AuthenticatedCommandPilotRequestsRoute
   '/command/portfolio': typeof AuthenticatedCommandPortfolioRoute
   '/command/projects': typeof AuthenticatedCommandProjectsRoute
+  '/settings/billing': typeof AuthenticatedSettingsBillingRoute
+  '/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
   '/workspace/coaching': typeof AuthenticatedWorkspaceCoachingRoute
@@ -563,6 +593,7 @@ export interface FileRoutesByFullPath {
   '/workspace/timeline': typeof AuthenticatedWorkspaceTimelineRoute
   '/api/worker/tick': typeof ApiWorkerTickRoute
   '/command/': typeof AuthenticatedCommandIndexRoute
+  '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/command/missions/$missionId': typeof AuthenticatedCommandMissionsMissionIdRoute
   '/command/product-memory/$projectId': typeof AuthenticatedCommandProductMemoryProjectIdRoute
@@ -620,6 +651,8 @@ export interface FileRoutesByTo {
   '/command/pilot-requests': typeof AuthenticatedCommandPilotRequestsRoute
   '/command/portfolio': typeof AuthenticatedCommandPortfolioRoute
   '/command/projects': typeof AuthenticatedCommandProjectsRoute
+  '/settings/billing': typeof AuthenticatedSettingsBillingRoute
+  '/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
   '/workspace/coaching': typeof AuthenticatedWorkspaceCoachingRoute
@@ -637,6 +670,7 @@ export interface FileRoutesByTo {
   '/workspace/timeline': typeof AuthenticatedWorkspaceTimelineRoute
   '/api/worker/tick': typeof ApiWorkerTickRoute
   '/command': typeof AuthenticatedCommandIndexRoute
+  '/settings': typeof AuthenticatedSettingsIndexRoute
   '/workspace': typeof AuthenticatedWorkspaceIndexRoute
   '/command/missions/$missionId': typeof AuthenticatedCommandMissionsMissionIdRoute
   '/command/product-memory/$projectId': typeof AuthenticatedCommandProductMemoryProjectIdRoute
@@ -681,6 +715,7 @@ export interface FileRoutesById {
   '/_authenticated/command': typeof AuthenticatedCommandRouteWithChildren
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRouteWithChildren
   '/_authenticated/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/attest/$token': typeof AttestTokenRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -698,6 +733,8 @@ export interface FileRoutesById {
   '/_authenticated/command/pilot-requests': typeof AuthenticatedCommandPilotRequestsRoute
   '/_authenticated/command/portfolio': typeof AuthenticatedCommandPortfolioRoute
   '/_authenticated/command/projects': typeof AuthenticatedCommandProjectsRoute
+  '/_authenticated/settings/billing': typeof AuthenticatedSettingsBillingRoute
+  '/_authenticated/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/_authenticated/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
   '/_authenticated/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
   '/_authenticated/workspace/coaching': typeof AuthenticatedWorkspaceCoachingRoute
@@ -716,6 +753,7 @@ export interface FileRoutesById {
   '/_authenticated/workspace/timeline': typeof AuthenticatedWorkspaceTimelineRoute
   '/api/worker/tick': typeof ApiWorkerTickRoute
   '/_authenticated/command/': typeof AuthenticatedCommandIndexRoute
+  '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/workspace/': typeof AuthenticatedWorkspaceIndexRoute
   '/_authenticated/command/missions/$missionId': typeof AuthenticatedCommandMissionsMissionIdRoute
   '/_authenticated/command/product-memory/$projectId': typeof AuthenticatedCommandProductMemoryProjectIdRoute
@@ -760,6 +798,7 @@ export interface FileRouteTypes {
     | '/command'
     | '/onboarding'
     | '/profile'
+    | '/settings'
     | '/workspace'
     | '/attest/$token'
     | '/auth/callback'
@@ -777,6 +816,8 @@ export interface FileRouteTypes {
     | '/command/pilot-requests'
     | '/command/portfolio'
     | '/command/projects'
+    | '/settings/billing'
+    | '/settings/profile'
     | '/workspace/applications'
     | '/workspace/capability'
     | '/workspace/coaching'
@@ -795,6 +836,7 @@ export interface FileRouteTypes {
     | '/workspace/timeline'
     | '/api/worker/tick'
     | '/command/'
+    | '/settings/'
     | '/workspace/'
     | '/command/missions/$missionId'
     | '/command/product-memory/$projectId'
@@ -852,6 +894,8 @@ export interface FileRouteTypes {
     | '/command/pilot-requests'
     | '/command/portfolio'
     | '/command/projects'
+    | '/settings/billing'
+    | '/settings/profile'
     | '/workspace/applications'
     | '/workspace/capability'
     | '/workspace/coaching'
@@ -869,6 +913,7 @@ export interface FileRouteTypes {
     | '/workspace/timeline'
     | '/api/worker/tick'
     | '/command'
+    | '/settings'
     | '/workspace'
     | '/command/missions/$missionId'
     | '/command/product-memory/$projectId'
@@ -912,6 +957,7 @@ export interface FileRouteTypes {
     | '/_authenticated/command'
     | '/_authenticated/onboarding'
     | '/_authenticated/profile'
+    | '/_authenticated/settings'
     | '/_authenticated/workspace'
     | '/attest/$token'
     | '/auth/callback'
@@ -929,6 +975,8 @@ export interface FileRouteTypes {
     | '/_authenticated/command/pilot-requests'
     | '/_authenticated/command/portfolio'
     | '/_authenticated/command/projects'
+    | '/_authenticated/settings/billing'
+    | '/_authenticated/settings/profile'
     | '/_authenticated/workspace/applications'
     | '/_authenticated/workspace/capability'
     | '/_authenticated/workspace/coaching'
@@ -947,6 +995,7 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace/timeline'
     | '/api/worker/tick'
     | '/_authenticated/command/'
+    | '/_authenticated/settings/'
     | '/_authenticated/workspace/'
     | '/_authenticated/command/missions/$missionId'
     | '/_authenticated/command/product-memory/$projectId'
@@ -1198,6 +1247,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/workspace': {
       id: '/_authenticated/workspace'
       path: '/workspace'
@@ -1323,6 +1379,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/command/projects'
       preLoaderRoute: typeof AuthenticatedCommandProjectsRouteImport
       parentRoute: typeof AuthenticatedCommandRoute
+    }
+    '/_authenticated/settings/': {
+      id: '/_authenticated/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
+    }
+    '/_authenticated/settings/billing': {
+      id: '/_authenticated/settings/billing'
+      path: '/billing'
+      fullPath: '/settings/billing'
+      preLoaderRoute: typeof AuthenticatedSettingsBillingRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
+    }
+    '/_authenticated/settings/profile': {
+      id: '/_authenticated/settings/profile'
+      path: '/profile'
+      fullPath: '/settings/profile'
+      preLoaderRoute: typeof AuthenticatedSettingsProfileRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
     }
     '/_authenticated/workspace/': {
       id: '/_authenticated/workspace/'
@@ -1579,6 +1656,23 @@ const AuthenticatedCommandRouteChildren: AuthenticatedCommandRouteChildren = {
 const AuthenticatedCommandRouteWithChildren =
   AuthenticatedCommandRoute._addFileChildren(AuthenticatedCommandRouteChildren)
 
+interface AuthenticatedSettingsRouteChildren {
+  AuthenticatedSettingsBillingRoute: typeof AuthenticatedSettingsBillingRoute
+  AuthenticatedSettingsProfileRoute: typeof AuthenticatedSettingsProfileRoute
+  AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
+}
+
+const AuthenticatedSettingsRouteChildren: AuthenticatedSettingsRouteChildren = {
+  AuthenticatedSettingsBillingRoute: AuthenticatedSettingsBillingRoute,
+  AuthenticatedSettingsProfileRoute: AuthenticatedSettingsProfileRoute,
+  AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
+}
+
+const AuthenticatedSettingsRouteWithChildren =
+  AuthenticatedSettingsRoute._addFileChildren(
+    AuthenticatedSettingsRouteChildren,
+  )
+
 interface AuthenticatedWorkspaceExperienceRouteChildren {
   AuthenticatedWorkspaceExperienceTaskKeyRoute: typeof AuthenticatedWorkspaceExperienceTaskKeyRoute
   AuthenticatedWorkspaceExperienceIndexRoute: typeof AuthenticatedWorkspaceExperienceIndexRoute
@@ -1653,6 +1747,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCommandRoute: typeof AuthenticatedCommandRouteWithChildren
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRouteWithChildren
   AuthenticatedWorkspaceRoute: typeof AuthenticatedWorkspaceRouteWithChildren
 }
 
@@ -1661,6 +1756,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCommandRoute: AuthenticatedCommandRouteWithChildren,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRouteWithChildren,
   AuthenticatedWorkspaceRoute: AuthenticatedWorkspaceRouteWithChildren,
 }
 

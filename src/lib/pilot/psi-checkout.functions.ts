@@ -10,20 +10,10 @@ import { isPilotPlan, type PilotPlan } from "./model";
 import { CAREER_LOOKUP_KEYS, offerForPlan, priceEnvOverride } from "./psi-catalog";
 import { buildPsiCheckoutSessionCreateParams } from "./psi-checkout-session";
 import { resolvePsiPaymentsMode } from "./psi-payments-mode";
+import { isAllowedReturnUrl } from "./return-url";
 
 type CheckoutOk = { ok: true; url: string; sessionId: string; environment: StripeEnv };
 type CheckoutErr = { ok: false; message: string };
-
-function allowedReturnHost(hostname: string): boolean {
-  return (
-    hostname === "localhost" ||
-    hostname === "deliverx.dev" ||
-    hostname === "www.deliverx.dev" ||
-    hostname.endsWith(".deliverx.dev") ||
-    hostname.endsWith(".lovable.app") ||
-    hostname.endsWith(".vercel.app")
-  );
-}
 
 async function resolvePsiPriceId(
   stripe: ReturnType<typeof createDirectStripeClient>,
@@ -68,13 +58,7 @@ export const createPsiCheckoutSession = createServerFn({ method: "POST" })
     const environment = mode.environment;
 
     for (const raw of [data.successUrl, data.cancelUrl]) {
-      const url = new URL(raw);
-      if (
-        (url.protocol !== "https:" && url.hostname !== "localhost") ||
-        !allowedReturnHost(url.hostname)
-      ) {
-        return { ok: false, message: "Invalid return URL." };
-      }
+      if (!isAllowedReturnUrl(raw)) return { ok: false, message: "Invalid return URL." };
     }
 
     try {

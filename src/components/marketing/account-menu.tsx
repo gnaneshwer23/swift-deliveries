@@ -65,7 +65,7 @@ export function AccountMenu({ user }: { user: User }) {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to="/profile" className="flex items-center gap-2.5">
+          <Link to="/settings/profile" className="flex items-center gap-2.5">
             <UserIcon className="size-4" /> Profile &amp; preferences
           </Link>
         </DropdownMenuItem>
