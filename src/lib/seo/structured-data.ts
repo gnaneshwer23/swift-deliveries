@@ -34,12 +34,16 @@ export function faqPage(items: readonly { q: string; a: string }[]): Json {
   };
 }
 
-/** The product with its published monthly prices. No availability or rating is claimed. */
+/**
+ * The product with its published monthly prices. It is typed as software and as a Product,
+ * whose offers alone qualify it for price snippets; no availability, rating or review is
+ * claimed, because none is shown.
+ */
 export function productOffers(
   plans: readonly { id: string; name: string; price: number; focus: string }[],
 ): Json {
   return {
-    "@type": "SoftwareApplication",
+    "@type": ["SoftwareApplication", "Product"],
     "@id": `${SITE}/#software`,
     name: "DeliverX",
     applicationCategory: "BusinessApplication",

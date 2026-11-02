@@ -23,21 +23,29 @@ describe("structured data", () => {
     const text = JSON.stringify(p);
     expect(text).toContain('"price":"29.00"');
     expect(text).toContain('"priceCurrency":"GBP"');
+    const spec = (p as { offers: { priceSpecification: Record<string, unknown> }[] }).offers[0]!
+      .priceSpecification;
+    expect(spec).toMatchObject({ price: "29.00", priceCurrency: "GBP", unitCode: "MON" });
+    expect((p as { "@type": string[] })["@type"]).toEqual(["SoftwareApplication", "Product"]);
     expect(text).not.toMatch(/availability|aggregateRating|review/i);
   });
 
   it("maps FAQ items to questions with accepted answers", () => {
-    const f = faqPage([{ q: "Q?", a: "A." }]) as { mainEntity: { name: string }[] };
-    expect(f.mainEntity[0]!.name).toBe("Q?");
+    const f = faqPage([{ q: "Q?", a: "A." }]) as {
+      mainEntity: { name: string; acceptedAnswer: { text: string } }[];
+    };
+    expect(f.mainEntity[0]).toMatchObject({ name: "Q?", acceptedAnswer: { text: "A." } });
   });
 
   it("links every lesson to the course and back", () => {
     const course = learnCourse(LESSONS, "d") as { hasPart: { "@id": string }[] };
-    const ids = LESSONS.map((l) => (learnLesson(l) as { "@id": string })["@id"]);
+    const ids = LESSONS.map((l) => `https://www.deliverx.dev/learn/${l.id}#lesson`);
     expect(course.hasPart.map((p) => p["@id"])).toEqual(ids);
-    expect((learnLesson(LESSONS[0]!) as { isPartOf: { "@id": string } }).isPartOf["@id"]).toBe(
-      "https://www.deliverx.dev/learn#course",
-    );
+    for (const lesson of LESSONS) {
+      const node = learnLesson(lesson) as { "@id": string; isPartOf: { "@id": string } };
+      expect(node["@id"]).toBe(`https://www.deliverx.dev/learn/${lesson.id}#lesson`);
+      expect(node.isPartOf["@id"]).toBe("https://www.deliverx.dev/learn#course");
+    }
   });
 
   it("escapes < so page text cannot close the script tag", () => {

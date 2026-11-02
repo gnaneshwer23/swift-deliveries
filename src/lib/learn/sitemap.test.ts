@@ -28,17 +28,18 @@ describe("public sitemap", () => {
 
   it("lists every public page that sets its own search head, and only those", () => {
     const fromRoutes = new Set<string>(["/"]);
-    for (const file of readdirSync("src/routes")) {
+    for (const file of readdirSync("src/routes", { recursive: true, encoding: "utf8" })) {
       if (!file.endsWith(".tsx")) continue;
       const src = readFileSync(`src/routes/${file}`, "utf8");
       const m = src.match(/pageHead\(\s*"(\/[^"]*)"/);
       if (m) fromRoutes.add(m[1]!);
     }
-    const inSitemap = new Set(
-      [...sitemap.matchAll(/<loc>https:\/\/www\.deliverx\.dev([^<]*)<\/loc>/g)]
-        .map((m) => m[1] || "/")
-        .filter((p) => !p.startsWith("/learn/")),
+    // Lessons share one /learn/$lessonId route, so they come from LESSONS, not route files.
+    for (const l of LESSONS) fromRoutes.add(`/learn/${l.id}`);
+    const inSitemap = [...sitemap.matchAll(/<loc>https:\/\/www\.deliverx\.dev([^<]*)<\/loc>/g)].map(
+      (m) => m[1] || "/",
     );
+    expect(new Set(inSitemap).size).toBe(inSitemap.length);
     expect([...fromRoutes].sort()).toEqual([...inSitemap].sort());
   });
 });
