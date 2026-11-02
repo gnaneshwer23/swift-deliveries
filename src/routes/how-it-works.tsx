@@ -46,7 +46,7 @@ function HowItWorks() {
               <span className="dxl-grad">to a result you can inspect.</span>
             </h1>
             <p className="hiw-lede">
-              A real mission, step by step: the plan, team and checks the planner produces.
+              A sample mission, step by step: the plan, team and checks the planner produces.
             </p>
             <RunStrip />
           </div>
