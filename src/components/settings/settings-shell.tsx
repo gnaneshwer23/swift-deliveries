@@ -3,7 +3,7 @@
  * and the chosen section on the right.
  */
 import { Link, Outlet } from "@tanstack/react-router";
-import { ArrowRight, CreditCard, UserRound } from "lucide-react";
+import { ArrowRight, CreditCard, ScrollText, UserRound } from "lucide-react";
 import { BrandLogo } from "@/components/brand-logo";
 import "@/styles/projects-dashboard.css";
 import "@/styles/profile.css";
@@ -12,6 +12,7 @@ import "@/styles/settings.css";
 const SECTIONS = [
   { to: "/settings/profile", label: "Profile", icon: UserRound },
   { to: "/settings/billing", label: "Billing", icon: CreditCard },
+  { to: "/settings/audit", label: "Audit log", icon: ScrollText },
 ] as const;
 
 export function SettingsShell() {

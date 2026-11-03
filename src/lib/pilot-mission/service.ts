@@ -1,3 +1,4 @@
+import { ACTIVITY_KEPT } from "./activity-feed";
 import { scopeHash } from "./scope.server";
 import { draftOptions, parseModelOptions } from "./generate";
 import {
@@ -279,7 +280,7 @@ function pushActivity(
   mission: SupervisedMission,
   ...events: Array<ReturnType<typeof activityEvent>>
 ): PilotActivitySlice {
-  return [...(mission.activity ?? []), ...events].slice(-200);
+  return [...(mission.activity ?? []), ...events].slice(-ACTIVITY_KEPT);
 }
 
 type PilotActivitySlice = SupervisedMission["activity"];
