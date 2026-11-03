@@ -64,6 +64,19 @@ import "@/styles/projects-dashboard.css";
 const updated = (iso: string) =>
   new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 
+/** "Today", "Yesterday" or "9 days ago", from the project's last saved activity. */
+const quietLabel = (days: number) =>
+  days === 0 ? "today" : days === 1 ? "yesterday" : `${days} days ago`;
+
+function StalledBadge({ row }: { row: ProjectRow }) {
+  if (!row.stalled) return null;
+  return (
+    <span className="prj-stalled" title={`No saved activity since ${updated(row.lastActivityAt)}`}>
+      Quiet for {row.quietDays} days
+    </span>
+  );
+}
+
 function initials(name: string): string {
   return name
     .split(/[\s&/-]+/)
@@ -188,11 +201,15 @@ export function ProjectsDashboard({
 
   const first = needsYou[0] ?? null;
   const firstPath = first ? buildFirstProject(projects.filter((p) => p.id === first.id)) : null;
-  const status = needsYou.length
-    ? `${needsYou.length} ${needsYou.length === 1 ? "thing needs" : "things need"} you.`
-    : model.counts.active
-      ? "Nothing needs you right now."
-      : "Start with one or two lines about your product.";
+  const stalledNote = model.counts.stalled
+    ? ` ${model.counts.stalled} ${model.counts.stalled === 1 ? "project has" : "projects have"} been quiet for a week or more.`
+    : "";
+  const status =
+    (needsYou.length
+      ? `${needsYou.length} ${needsYou.length === 1 ? "thing needs" : "things need"} you.`
+      : model.counts.active
+        ? "Nothing needs you right now."
+        : "Start with one or two lines about your product.") + stalledNote;
   const pct = (n: number, d: number) => (d > 0 ? Math.min(100, Math.round((n / d) * 100)) : 0);
   const showStart = filter === "active" && !query.trim();
 
@@ -448,9 +465,10 @@ export function ProjectsDashboard({
                       </Link>
                     )}
                     <p className="prj-pcard-next">{r.deleted ? deletedNote(r) : r.next}</p>
+                    {r.deleted ? null : <StalledBadge row={r} />}
                     <div className="prj-pcard-foot">
                       <RoleStack roles={r.roles} />
-                      <span className="prj-muted">Updated {updated(r.updatedAt)}</span>
+                      <span className="prj-muted">Last activity {quietLabel(r.quietDays)}</span>
                     </div>
                   </li>
                 ))}
@@ -484,7 +502,7 @@ export function ProjectsDashboard({
                       Team
                     </th>
                     <th scope="col" role="columnheader">
-                      Updated
+                      Last activity
                     </th>
                     <th scope="col" role="columnheader">
                       <span className="prj-sr">Actions</span>
@@ -515,12 +533,13 @@ export function ProjectsDashboard({
                         <span className="prj-phase" data-phase={r.phase}>
                           {PROJECT_PHASE_LABEL[r.phase]}
                         </span>
+                        {r.deleted ? null : <StalledBadge row={r} />}
                       </td>
                       <td role="cell" data-label="Team">
                         <RoleStack roles={r.roles} />
                       </td>
-                      <td role="cell" data-label="Updated" className="prj-muted">
-                        {updated(r.updatedAt)}
+                      <td role="cell" data-label="Last activity" className="prj-muted">
+                        {quietLabel(r.quietDays)}
                       </td>
                       <td role="cell" className="prj-actions">
                         {menu(r)}
