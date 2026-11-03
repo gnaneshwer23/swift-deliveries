@@ -59,6 +59,7 @@ import {
   type FirstProjectSource,
 } from "@/lib/pilot-mission/first-project";
 import { buildActivityFeed, feedTime, type FeedSource } from "@/lib/pilot-mission/activity-feed";
+import { useNow } from "@/hooks/use-now";
 import "@/styles/projects-dashboard.css";
 
 const updated = (iso: string) =>
@@ -143,7 +144,8 @@ export function ProjectsDashboard({
   onNewProject: () => void;
 }) {
   const qc = useQueryClient();
-  const model = useMemo(() => buildProjectsDashboard(projects), [projects]);
+  const now = useNow();
+  const model = useMemo(() => buildProjectsDashboard(projects, now), [projects, now]);
   const [filter, setFilter] = useState<ProjectFilter>("active");
   const [query, setQuery] = useState("");
   const [confirm, setConfirm] = useState<ProjectRow | null>(null);

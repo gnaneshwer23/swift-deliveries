@@ -88,6 +88,11 @@ export function isLive(p: Pick<FirstProjectSource, "archived" | "stage">): boole
   return !p.archived && p.stage !== "cancelled";
 }
 
+/** The six steps for one project as its record stands, whatever its state. */
+export function projectSteps(p: FirstProjectSource): FirstProjectStep[] {
+  return STEPS.map(({ test, ...s }) => ({ ...s, done: test(p) }));
+}
+
 /** The checklist for the owner's most recently updated live project. */
 export function buildFirstProject(projects: FirstProjectSource[]): FirstProject {
   const live = projects
@@ -95,7 +100,7 @@ export function buildFirstProject(projects: FirstProjectSource[]): FirstProject 
     .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt));
   const p = live[0];
   if (!p) return null;
-  const steps = STEPS.map(({ test, ...s }) => ({ ...s, done: test(p) }));
+  const steps = projectSteps(p);
   return {
     projectId: p.id,
     projectName: p.question.trim() || "Untitled project",

@@ -231,7 +231,6 @@ function SupervisedMissionPage() {
           ) : null
         }
       />
-      <CheckpointCard mission={mission} next={next} />
       <MissionTheatre
         quiet
         hideInvestigationCanvas
@@ -316,6 +315,8 @@ function SupervisedMissionPage() {
             ) : null}
           </div>
         </div>
+
+        <CheckpointCard mission={mission} next={next} />
 
         <CaseRoom
           mission={mission}

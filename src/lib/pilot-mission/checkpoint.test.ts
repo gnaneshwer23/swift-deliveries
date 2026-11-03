@@ -137,6 +137,36 @@ describe("project checkpoint", () => {
     );
   });
 
+  it("shows paused work as waiting on you, even with research queued", () => {
+    const paused = mission({
+      studioMeta: { investigationPaused: true } as NonNullable<SupervisedMission["studioMeta"]>,
+      researchPassQueuedAt: "2026-11-03T10:00:00Z",
+    });
+    const queued = { id: "research_queued", title: "Research pass queued", detail: "" };
+    expect(buildCheckpoint(paused, queued, NOW).status).toBe("waiting_on_you");
+    expect(buildCheckpoint(paused, queued, NOW).checks).toContain("The investigation is paused.");
+  });
+
+  it("keeps the finished steps of a stopped project", () => {
+    const c = buildCheckpoint(
+      mission({
+        stage: "cancelled",
+        team: {
+          version: "pilot-team-v1",
+          capabilityIds: [],
+          staffingBand: "small",
+          tasks: [],
+          approvedAt: "2026-11-01T00:00:00Z",
+          approvedBy: "u",
+        } as unknown as SupervisedMission["team"],
+      }),
+      { id: "cancelled", title: "Cancelled", detail: "" },
+      NOW,
+    );
+    expect(c.status).toBe("stopped");
+    expect(c.done).toEqual(["Describe your idea", "Approve the plan"]);
+  });
+
   it("is done once the package is out, and stopped when cancelled", () => {
     const obs = { id: "observation", title: "Supply the observed result", detail: "" };
     expect(buildCheckpoint(mission({ stage: "exported" }), obs, NOW).status).toBe("done");

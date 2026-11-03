@@ -8,6 +8,7 @@ import { CheckCircle2, Circle, CircleAlert } from "lucide-react";
 import { useMemo } from "react";
 import { buildCheckpoint, CHECKPOINT_STATUS_LABEL } from "@/lib/pilot-mission/checkpoint";
 import type { SupervisedMission } from "@/lib/pilot-mission/types";
+import { useNow } from "@/hooks/use-now";
 import "@/styles/checkpoint.css";
 
 export function CheckpointCard({
@@ -17,7 +18,8 @@ export function CheckpointCard({
   mission: SupervisedMission;
   next: { id: string; title: string; detail: string };
 }) {
-  const c = useMemo(() => buildCheckpoint(mission, next), [mission, next]);
+  const now = useNow();
+  const c = useMemo(() => buildCheckpoint(mission, next, now), [mission, next, now]);
   return (
     <section className="ckp" aria-labelledby="ckp-title" data-status={c.status}>
       <header className="ckp-head">
