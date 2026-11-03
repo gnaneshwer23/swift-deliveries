@@ -34,8 +34,7 @@ describe("voice configuration", () => {
     });
     expect(voiceConfig({ ...on, DXSI_MODEL_ALLOWLIST: "other" })).toEqual({
       enabled: false,
-      problem:
-        'Model "transcribe-test" from DXSI_VOICE_TRANSCRIBE_MODEL is not in DXSI_MODEL_ALLOWLIST.',
+      problem: "The model in DXSI_VOICE_TRANSCRIBE_MODEL is not in DXSI_MODEL_ALLOWLIST.",
     });
   });
 

@@ -32,6 +32,8 @@ export type ConnectionsInput = {
   payments: { ok: true; environment: "live" | "sandbox" } | { ok: false; message: string };
   /** The checkout flag is on, so an error from `payments` is a real problem rather than "off". */
   checkoutFlagOn: boolean;
+  /** The payments kill switch: a deliberate pause, not a fault. */
+  paymentsKillSwitchOn: boolean;
   schedulerConfigured: boolean;
   googleSignIn: boolean;
 };
@@ -87,9 +89,9 @@ export function buildConnections(
       name: "Voice input",
       status: voice.problem && !voice.enabled ? "problem" : voice.enabled ? "on" : "off",
       label: voice.enabled ? "On" : voice.problem ? "Not set up" : "Off",
-      what: "Push-to-talk: speech is turned into text that you check before it is used.",
+      what: "Talk instead of typing: your speech is turned into text in the conversation.",
       now: voice.enabled
-        ? "Speech is transcribed only while you hold the button. You confirm the text before anything happens."
+        ? "Sound goes to the voice provider only between pressing Talk and Send, and the transcript is used as if you had typed it. DeliverX stores no audio; the provider may keep what it receives for a limited time under its own API data policy."
         : "Type instead. The microphone is never used.",
       problem: voice.enabled ? null : voice.problem,
     },
@@ -99,33 +101,42 @@ export function buildConnections(
       status: "on",
       label: "On · this device",
       what: "Reads a brief aloud.",
-      now: "Uses your browser's built-in speech. No audio or text is sent to a speech service.",
+      now: "Uses the speech built into your browser; DeliverX sends nothing to a speech service. Which voice is used, and whether it runs on the device or online, depends on your browser.",
       problem: null,
     },
     {
       id: "payments",
       name: "Card payments",
-      status: payments.ok ? "on" : input.checkoutFlagOn ? "problem" : "off",
+      status: payments.ok
+        ? "on"
+        : input.checkoutFlagOn || input.paymentsKillSwitchOn
+          ? "problem"
+          : "off",
       label: payments.ok
         ? payments.environment === "live"
           ? "On · Stripe"
           : "Test mode · Stripe"
-        : input.checkoutFlagOn
+        : input.paymentsKillSwitchOn
           ? "Paused"
-          : "Off",
+          : input.checkoutFlagOn
+            ? "Set up incorrectly"
+            : "Off",
       what: "Takes payment for a plan through Stripe's hosted checkout. DeliverX never sees card numbers.",
       now: payments.ok
         ? payments.environment === "live"
           ? "Paying for a plan charges your card through Stripe."
           : "Checkout runs in Stripe's test mode; no real card is charged."
         : "Checkout is not available, so nothing can be charged.",
-      problem: payments.ok || !input.checkoutFlagOn ? null : payments.message,
+      problem:
+        payments.ok || !(input.checkoutFlagOn || input.paymentsKillSwitchOn)
+          ? null
+          : payments.message,
     },
     {
       id: "scheduler",
       name: "Background steps",
       status: input.schedulerConfigured ? "on" : "off",
-      label: input.schedulerConfigured ? "On · every 5 minutes" : "Off",
+      label: input.schedulerConfigured ? "On" : "Off",
       what: "Wakes approved work on a schedule and picks up steps that were interrupted.",
       now: input.schedulerConfigured
         ? "Approved steps keep moving while you are away; interrupted steps are retried."

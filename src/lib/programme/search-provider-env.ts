@@ -7,8 +7,12 @@ type Env = Record<string, string | undefined>;
 export function resolveSearchProvider(
   env: Env = process.env,
 ): { name: string; key: string } | null {
-  if (env["EXA_API_KEY"]) return { name: "exa", key: env["EXA_API_KEY"] };
-  if (env["TAVILY_API_KEY"]) return { name: "tavily", key: env["TAVILY_API_KEY"] };
-  if (env["BRAVE_SEARCH_API_KEY"]) return { name: "brave", key: env["BRAVE_SEARCH_API_KEY"] };
+  // A blank or whitespace-only key is not a key.
+  const exa = env["EXA_API_KEY"]?.trim();
+  if (exa) return { name: "exa", key: exa };
+  const tavily = env["TAVILY_API_KEY"]?.trim();
+  if (tavily) return { name: "tavily", key: tavily };
+  const brave = env["BRAVE_SEARCH_API_KEY"]?.trim();
+  if (brave) return { name: "brave", key: brave };
   return null;
 }

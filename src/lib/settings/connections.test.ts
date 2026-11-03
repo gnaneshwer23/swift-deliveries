@@ -11,6 +11,7 @@ const off: ConnectionsInput = {
   voice: { enabled: false, problem: null },
   payments: { ok: false, message: "Checkout is not live." },
   checkoutFlagOn: false,
+  paymentsKillSwitchOn: false,
   schedulerConfigured: false,
   googleSignIn: false,
 };
@@ -41,7 +42,7 @@ describe("buildConnections", () => {
     });
     expect(rows["model"]?.label).toBe("On · model-x");
     expect(rows["research"]?.label).toBe("On · tavily");
-    expect(rows["scheduler"]?.label).toBe("On · every 5 minutes");
+    expect(rows["scheduler"]?.label).toBe("On");
   });
 
   it("separates test-mode payments from live, and a paused checkout from one that is off", () => {
@@ -51,13 +52,22 @@ describe("buildConnections", () => {
     expect(byId({ ...off, payments: { ok: true, environment: "live" } })["payments"]?.label).toBe(
       "On · Stripe",
     );
+    // The kill switch is a deliberate pause; a missing key is a fault.
     const paused = byId({
       ...off,
       checkoutFlagOn: true,
+      paymentsKillSwitchOn: true,
       payments: { ok: false, message: "Payments are paused (kill switch)." },
     })["payments"];
-    expect(paused?.status).toBe("problem");
+    expect(paused?.label).toBe("Paused");
     expect(paused?.problem).toMatch(/kill switch/);
+    const broken = byId({
+      ...off,
+      checkoutFlagOn: true,
+      payments: { ok: false, message: "Live payments need STRIPE_LIVE_API_KEY." },
+    })["payments"];
+    expect(broken?.status).toBe("problem");
+    expect(broken?.label).toBe("Set up incorrectly");
   });
 
   it("flags a misconfigured model and voice as problems", () => {
@@ -118,7 +128,27 @@ describe("readConnections", () => {
     );
     const model = summary.rows.find((r) => r.id === "model");
     expect(model?.status).toBe("problem");
-    expect(model?.problem).toBeTruthy();
+    // Names the setting, never its value.
+    expect(model?.problem).toMatch(/DXSI_MODEL\b/);
+    expect(JSON.stringify(summary)).not.toContain("not-allowed");
     expect(JSON.stringify(summary)).not.toContain(SECRET);
+  });
+
+  it("flags model mode switched on with no provider credentials", () => {
+    const model = readConnections({ DXSI_MODEL_ENABLED: "true" }, false, NOW).rows.find(
+      (r) => r.id === "model",
+    );
+    expect(model?.status).toBe("problem");
+    expect(model?.problem).toMatch(/no provider credentials/);
+  });
+
+  it("does not report a blank research key or an unusable scheduler secret as on", () => {
+    const rows = Object.fromEntries(
+      readConnections({ TAVILY_API_KEY: "   ", CRON_SECRET: "has space" }, false, NOW).rows.map(
+        (r) => [r.id, r],
+      ),
+    );
+    expect(rows["research"]?.status).toBe("off");
+    expect(rows["scheduler"]?.status).toBe("off");
   });
 });

@@ -3,23 +3,14 @@
  * disagree with what a project actually does. Some helpers return API keys (they need them to
  * make calls); only booleans, provider and model names, and configuration problems are kept.
  */
-import { resolveProvider } from "@/lib/workforce/model-runner.server";
+import { modelModeStatus } from "@/lib/workforce/model-runner.server";
 import { voiceConfig } from "@/lib/conversation/voice.server";
 import { researchProviderReadiness } from "@/lib/pilot-mission/research-mode";
-import { resolvePsiPaymentsMode } from "@/lib/pilot/psi-payments-mode";
+import { isPaymentsKillSwitchOn, resolvePsiPaymentsMode } from "@/lib/pilot/psi-payments-mode";
 import { isCheckoutFlagEnabled } from "@/lib/pilot/psi-catalog";
-import { buildConnections, type ConnectionsInput, type ConnectionsSummary } from "./connections";
+import { buildConnections, type ConnectionsSummary } from "./connections";
 
 type Env = Record<string, string | undefined>;
-
-function modelStatus(env: Env): ConnectionsInput["model"] {
-  try {
-    const p = resolveProvider(env);
-    return { enabled: !!p, provider: p?.name ?? null, model: p?.model ?? null, problem: null };
-  } catch (error) {
-    return { enabled: false, provider: null, model: null, problem: (error as Error).message };
-  }
-}
 
 export function readConnections(
   env: Env = process.env,
@@ -30,13 +21,15 @@ export function readConnections(
   const research = researchProviderReadiness(env);
   return buildConnections(
     {
-      model: modelStatus(env),
+      model: modelModeStatus(env),
       research: { configured: research.configured, provider: research.provider },
       voice: { enabled: voice.enabled, problem: voice.enabled ? null : voice.problem },
       payments: resolvePsiPaymentsMode(env),
       checkoutFlagOn: isCheckoutFlagEnabled(env),
-      // The worker tick refuses every call without this secret (routes/api/worker/tick.ts).
-      schedulerConfigured: Boolean(env["CRON_SECRET"]?.trim()),
+      paymentsKillSwitchOn: isPaymentsKillSwitchOn(env),
+      // routes/api/worker/tick.ts refuses every call without this secret, and its bearer token
+      // can't contain whitespace, so a secret that does could never match.
+      schedulerConfigured: /^\S+$/.test(env["CRON_SECRET"] ?? ""),
       // The sign-in page reads the same build-time flag (lib/auth-oauth.ts).
       googleSignIn,
     },
