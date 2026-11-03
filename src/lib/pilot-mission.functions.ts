@@ -1161,3 +1161,49 @@ export const getSupervisedProjectShelf = createServerFn({ method: "GET" })
       throw error;
     }
   });
+
+/**
+ * Settings → Audit log: the owner's projects with their full saved activity, read from the
+ * owner's own workspace only. The page builds the log, its filters and the CSV from this.
+ */
+export const getMyAuditLog = createServerFn({ method: "GET" })
+  .middleware([requireAuth])
+  .handler(async ({ context }) => {
+    try {
+      const workspace = await workspaceFor(context.supabase, context.userId);
+      const { service } = await serviceFor();
+      const missions = await service.list(workspace.id);
+      return {
+        ready: true as const,
+        reason: null,
+        projects: missions.map((mission) => {
+          const next = nextRequiredAction(mission);
+          return {
+            id: mission.id,
+            version: mission.version,
+            question: mission.brief.question,
+            name: mission.brief.question.trim() || "Untitled project",
+            stage: mission.stage,
+            next,
+            updatedAt: mission.updatedAt,
+            favourite: Boolean(mission.studioMeta?.favourite),
+            archived: Boolean(mission.studioMeta?.archived),
+            teamIds: mission.team?.capabilityIds ?? [],
+            delivery: Boolean(mission.delivery),
+            activity: mission.activity.map((e) => ({
+              id: e.id,
+              at: e.at,
+              kind: e.kind,
+              actor: e.actor,
+              summary: e.summary,
+            })),
+          };
+        }),
+      };
+    } catch (error) {
+      if (error instanceof MissionStoreUnavailableError) {
+        return { ready: false as const, reason: error.message, projects: [] };
+      }
+      throw error;
+    }
+  });

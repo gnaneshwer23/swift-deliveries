@@ -70,7 +70,12 @@ const OWNER_KINDS = new Set([
   "meeting.proposal_accepted",
   "meeting.proposal_dismissed",
   "meeting.proposal_proposed",
+  // Favourite, rename and archive are saved only by the owner (kept out of the feed).
+  "studio.meta_saved",
 ]);
+
+/** Each project's record keeps its latest this-many activity events (older ones drop off). */
+export const ACTIVITY_KEPT = 200;
 
 /** Housekeeping that is not work: kept in the record, left out of the feed. */
 export const HIDDEN_KINDS = new Set(["studio.meta_saved"]);
@@ -91,14 +96,22 @@ function actorOf(e: FeedSource["activity"][number]): { who: string; by: "you" | 
   return { who: "DeliverX", by: "team" };
 }
 
+/** Who did it and what, in the feed's words; `what` is empty when nothing can be said. */
+export function describeEvent(e: FeedSource["activity"][number]): {
+  who: string;
+  by: "you" | "team";
+  what: string;
+} {
+  const { who, by } = actorOf(e);
+  return { who, by, what: LABELS[e.kind] ?? firstSentence(e.summary) };
+}
+
 export function buildActivityFeed(projects: FeedSource[], limit = 6): FeedItem[] {
   const items: FeedItem[] = [];
   for (const p of projects) {
     for (const e of p.activity) {
       if (HIDDEN_KINDS.has(e.kind) || !Date.parse(e.at)) continue;
-      const { who, by } = actorOf(e);
-      const label = LABELS[e.kind];
-      const what = label ?? firstSentence(e.summary);
+      const { who, by, what } = describeEvent(e);
       if (!what) continue;
       items.push({
         key: `${p.id}:${e.id}`,

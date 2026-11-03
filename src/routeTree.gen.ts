@@ -56,6 +56,7 @@ import { Route as AuthenticatedCommandPilotRequestsRouteImport } from './routes/
 import { Route as AuthenticatedCommandPortfolioRouteImport } from './routes/_authenticated/command.portfolio'
 import { Route as AuthenticatedCommandProjectsRouteImport } from './routes/_authenticated/command.projects'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings.index'
+import { Route as AuthenticatedSettingsAuditRouteImport } from './routes/_authenticated/settings.audit'
 import { Route as AuthenticatedSettingsBillingRouteImport } from './routes/_authenticated/settings.billing'
 import { Route as AuthenticatedSettingsProfileRouteImport } from './routes/_authenticated/settings.profile'
 import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated/workspace.index'
@@ -332,6 +333,12 @@ const AuthenticatedSettingsIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedSettingsRoute,
   } as any)
+const AuthenticatedSettingsAuditRoute =
+  AuthenticatedSettingsAuditRouteImport.update({
+    id: '/audit',
+    path: '/audit',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
 const AuthenticatedSettingsBillingRoute =
   AuthenticatedSettingsBillingRouteImport.update({
     id: '/billing',
@@ -573,6 +580,7 @@ export interface FileRoutesByFullPath {
   '/command/pilot-requests': typeof AuthenticatedCommandPilotRequestsRoute
   '/command/portfolio': typeof AuthenticatedCommandPortfolioRoute
   '/command/projects': typeof AuthenticatedCommandProjectsRoute
+  '/settings/audit': typeof AuthenticatedSettingsAuditRoute
   '/settings/billing': typeof AuthenticatedSettingsBillingRoute
   '/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
@@ -651,6 +659,7 @@ export interface FileRoutesByTo {
   '/command/pilot-requests': typeof AuthenticatedCommandPilotRequestsRoute
   '/command/portfolio': typeof AuthenticatedCommandPortfolioRoute
   '/command/projects': typeof AuthenticatedCommandProjectsRoute
+  '/settings/audit': typeof AuthenticatedSettingsAuditRoute
   '/settings/billing': typeof AuthenticatedSettingsBillingRoute
   '/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
@@ -733,6 +742,7 @@ export interface FileRoutesById {
   '/_authenticated/command/pilot-requests': typeof AuthenticatedCommandPilotRequestsRoute
   '/_authenticated/command/portfolio': typeof AuthenticatedCommandPortfolioRoute
   '/_authenticated/command/projects': typeof AuthenticatedCommandProjectsRoute
+  '/_authenticated/settings/audit': typeof AuthenticatedSettingsAuditRoute
   '/_authenticated/settings/billing': typeof AuthenticatedSettingsBillingRoute
   '/_authenticated/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/_authenticated/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
@@ -816,6 +826,7 @@ export interface FileRouteTypes {
     | '/command/pilot-requests'
     | '/command/portfolio'
     | '/command/projects'
+    | '/settings/audit'
     | '/settings/billing'
     | '/settings/profile'
     | '/workspace/applications'
@@ -894,6 +905,7 @@ export interface FileRouteTypes {
     | '/command/pilot-requests'
     | '/command/portfolio'
     | '/command/projects'
+    | '/settings/audit'
     | '/settings/billing'
     | '/settings/profile'
     | '/workspace/applications'
@@ -975,6 +987,7 @@ export interface FileRouteTypes {
     | '/_authenticated/command/pilot-requests'
     | '/_authenticated/command/portfolio'
     | '/_authenticated/command/projects'
+    | '/_authenticated/settings/audit'
     | '/_authenticated/settings/billing'
     | '/_authenticated/settings/profile'
     | '/_authenticated/workspace/applications'
@@ -1387,6 +1400,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
       parentRoute: typeof AuthenticatedSettingsRoute
     }
+    '/_authenticated/settings/audit': {
+      id: '/_authenticated/settings/audit'
+      path: '/audit'
+      fullPath: '/settings/audit'
+      preLoaderRoute: typeof AuthenticatedSettingsAuditRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
+    }
     '/_authenticated/settings/billing': {
       id: '/_authenticated/settings/billing'
       path: '/billing'
@@ -1657,12 +1677,14 @@ const AuthenticatedCommandRouteWithChildren =
   AuthenticatedCommandRoute._addFileChildren(AuthenticatedCommandRouteChildren)
 
 interface AuthenticatedSettingsRouteChildren {
+  AuthenticatedSettingsAuditRoute: typeof AuthenticatedSettingsAuditRoute
   AuthenticatedSettingsBillingRoute: typeof AuthenticatedSettingsBillingRoute
   AuthenticatedSettingsProfileRoute: typeof AuthenticatedSettingsProfileRoute
   AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
 }
 
 const AuthenticatedSettingsRouteChildren: AuthenticatedSettingsRouteChildren = {
+  AuthenticatedSettingsAuditRoute: AuthenticatedSettingsAuditRoute,
   AuthenticatedSettingsBillingRoute: AuthenticatedSettingsBillingRoute,
   AuthenticatedSettingsProfileRoute: AuthenticatedSettingsProfileRoute,
   AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
