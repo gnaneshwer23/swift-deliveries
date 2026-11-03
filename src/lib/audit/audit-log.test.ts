@@ -31,14 +31,20 @@ const projects = [
     activity: [
       ev("a", "2026-11-01T09:00:00Z", "plan.proposed"),
       ev("b", "2026-11-01T10:00:00Z", "plan.approved", "owner-1"),
-      ev("c", "2026-11-02T10:00:00Z", "studio.meta_saved", "owner-1"),
+      ev(
+        "c",
+        "2026-11-02T10:00:00Z",
+        "studio.meta_saved",
+        "owner-1",
+        "Project archived. Its work was not stopped.",
+      ),
     ],
   },
   {
     id: "p2",
     name: "Tutor booking",
     activity: [
-      ev("d", "2026-11-03T08:00:00Z", "pack.exported", "owner-1"),
+      ev("d", "2026-11-05T08:00:00Z", "pack.exported", "owner-1"),
       ev("bad", "not a date", "plan.proposed"),
     ],
   },
@@ -50,7 +56,15 @@ describe("audit log", () => {
     expect(log.entries.map((e) => e.key)).toEqual(["p2:d", "p1:c", "p1:b", "p1:a"]);
     const approved = log.entries.find((e) => e.key === "p1:b")!;
     expect(approved).toMatchObject({ who: "You", by: "you", what: "approved the plan" });
-    expect(log.entries.find((e) => e.key === "p1:c")!.what).toBe("updated project settings");
+    expect(log.entries.find((e) => e.key === "p1:c")!.what).toBe("Project archived.");
+    const bare = buildAuditLog([
+      {
+        id: "q",
+        name: "Q",
+        activity: [ev("x", "2026-11-01T00:00:00Z", "studio.meta_saved", "o", "")],
+      },
+    ]);
+    expect(bare.entries[0]!.what).toBe("updated project settings");
   });
 
   it("files events into plain categories", () => {
@@ -85,7 +99,8 @@ describe("audit log", () => {
       const d = new Date(iso);
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     };
-    expect(keys({ from: day("2026-11-03T08:00:00Z"), to: day("2026-11-03T08:00:00Z") })).toEqual([
+    // Two days from every other event, so the local day matches only it in any timezone.
+    expect(keys({ from: day("2026-11-05T08:00:00Z"), to: day("2026-11-05T08:00:00Z") })).toEqual([
       "p2:d",
     ]);
   });
@@ -99,6 +114,6 @@ describe("audit log", () => {
     expect(csv.startsWith("\uFEFF")).toBe(true);
     const lines = csv.trim().split("\r\n");
     expect(lines).toHaveLength(5);
-    expect(lines[1]).toContain('"2026-11-03T08:00:00.000Z","Tutor booking","You"');
+    expect(lines[1]).toContain('"2026-11-05T08:00:00.000Z","Tutor booking","You"');
   });
 });

@@ -1195,7 +1195,7 @@ export const getMyAuditLog = createServerFn({ method: "GET" })
               at: e.at,
               kind: e.kind,
               actor: e.actor,
-              summary: e.summary.slice(0, 500),
+              summary: e.summary,
             })),
           };
         }),

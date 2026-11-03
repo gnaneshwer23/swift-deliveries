@@ -5,10 +5,9 @@
  * have older events that are no longer stored; the log says so instead of implying it is
  * complete.
  */
-import { describeEvent, HIDDEN_KINDS } from "@/lib/pilot-mission/activity-feed";
+import { ACTIVITY_KEPT, describeEvent, HIDDEN_KINDS } from "@/lib/pilot-mission/activity-feed";
 
-/** Each project's record keeps its latest this-many events (see pilot-mission/service.ts). */
-export const ACTIVITY_KEPT = 200;
+export { ACTIVITY_KEPT };
 
 export type AuditEventSource = {
   id: string;
@@ -90,7 +89,8 @@ export function buildAuditLog(projects: AuditProjectSource[]): AuditLog {
         actor: e.actor,
         who: d.who,
         by: d.by,
-        what: category === "settings" ? "updated project settings" : d.what || e.kind,
+        // Settings saves say what changed (deleted, archived, restored…) in their summary.
+        what: d.what || (category === "settings" ? "updated project settings" : e.kind),
         summary: e.summary,
         category,
       });

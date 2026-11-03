@@ -127,6 +127,11 @@
     min-width: 0;
     width: 100%;
   }
+  /* 16px or more stops iOS Safari zooming the page when a filter gets focus. */
+  .al-filters select,
+  .al-filters input {
+    font-size: 16px;
+  }
   .al-filters label:not(.al-date) select {
     width: 100%;
     max-width: 100%;

@@ -74,6 +74,9 @@ const OWNER_KINDS = new Set([
   "studio.meta_saved",
 ]);
 
+/** Each project's record keeps its latest this-many activity events (older ones drop off). */
+export const ACTIVITY_KEPT = 200;
+
 /** Housekeeping that is not work: kept in the record, left out of the feed. */
 export const HIDDEN_KINDS = new Set(["studio.meta_saved"]);
 
