@@ -9,6 +9,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AgentAvatar } from "@/components/command/agent-avatar";
 import { CaseChatPanel } from "@/components/command/case-chat-panel";
+import { ChiefOfStaffChat } from "@/components/command/chief-of-staff-chat";
 import { useExplainMode } from "@/hooks/use-explain-mode";
 import { BuildCard, GateReview } from "@/components/command/delivery-build";
 import { downloadSavedDocuments } from "@/lib/download-file";
@@ -35,7 +36,8 @@ import type { SupervisedMission } from "@/lib/pilot-mission/types";
 import "@/styles/studio-system.css";
 import "@/styles/room.css";
 
-type Panel = "plan" | "work" | "decide" | "delivery" | "gate" | "ask" | "workroom" | "meetings";
+type Panel =
+  "plan" | "work" | "decide" | "delivery" | "gate" | "ask" | "cos" | "workroom" | "meetings";
 
 /** The linked delivery build, read from the delivery engine by the page. */
 export type CaseRoomBuild = {
@@ -73,6 +75,7 @@ const PANEL_WHY: Partial<Record<Panel, string>> = {
     "This is how the team plans: who owns each task, what it must include, what it builds on and how it is checked.",
   meetings:
     "Only notes from meetings you actually held count as evidence. You decide which items join the project.",
+  cos: "Chief of Staff reads the programme record and can prepare the package. Approvals and gates stay yours.",
 };
 
 /** The lesson behind each panel's "why this matters" note. */
@@ -94,6 +97,7 @@ const PANEL_TITLE: Record<Panel, string> = {
   workroom: "Workroom",
   meetings: "Meeting notes",
   ask: "Ask Aria",
+  cos: "Talk to Chief of Staff",
 };
 
 function Aria({ children }: { children: ReactNode }) {
@@ -417,6 +421,7 @@ export function CaseRoom({
   build,
   downloads,
   completionDownloads,
+  onRecordChange,
 }: {
   mission: SupervisedMission;
   panels: CaseRoomPanels;
@@ -425,6 +430,8 @@ export function CaseRoom({
   downloads?: ReactNode;
   /** The same package controls, rendered again on the completion panel. */
   completionDownloads?: ReactNode;
+  /** Refresh the case after a confirmed pause, resume or cancel. */
+  onRecordChange?: () => void | Promise<void>;
 }) {
   const model = buildRoomModel(mission);
   const gate = build?.room?.gate ?? null;
@@ -445,6 +452,7 @@ export function CaseRoom({
     if (
       panel &&
       panel !== "ask" &&
+      panel !== "cos" &&
       // Reviewing meeting items changes the record on every click; keep that sheet open.
       panel !== "meetings" &&
       openedFor &&
@@ -506,6 +514,7 @@ export function CaseRoom({
         : model.next.label;
   const dockActions: RoomDockAction[] = [
     { id: "ask", label: "Ask Aria", onClick: () => open("ask") },
+    { id: "cos", label: "Talk to Chief of Staff", onClick: () => open("cos") },
     {
       id: "meetings",
       label: "Meeting notes",
@@ -692,20 +701,22 @@ export function CaseRoom({
             </SheetTitle>
             <SheetDescription>
               {panel === "ask"
-                ? "Answers come from this case’s record."
-                : panel === "delivery"
-                  ? "Starts the build for your chosen direction. Nothing runs without this approval."
-                  : panel === "gate"
-                    ? "A human gate: agents can stop here but never pass it."
-                    : panel === "workroom"
-                      ? "How the team plans and does the work — read from the build’s records."
-                      : panel === "meetings"
-                        ? "Your notes, saved as written. You decide what joins the project."
-                        : panel === "plan"
-                          ? "Nothing runs until you approve."
-                          : panel === "decide"
-                            ? "Nothing proceeds until you save."
-                            : "One thing Aria needs from you."}
+                ? "Aria answers product questions from this case’s record."
+                : panel === "cos"
+                  ? "Chief of Staff answers programme questions and can prepare the package. Confirm before anything changes."
+                  : panel === "delivery"
+                    ? "Starts the build for your chosen direction. Nothing runs without this approval."
+                    : panel === "gate"
+                      ? "A human gate: agents can stop here but never pass it."
+                      : panel === "workroom"
+                        ? "How the team plans and does the work — read from the build’s records."
+                        : panel === "meetings"
+                          ? "Your notes, saved as written. You decide what joins the project."
+                          : panel === "plan"
+                            ? "Nothing runs until you approve."
+                            : panel === "decide"
+                              ? "Nothing proceeds until you save."
+                              : "One thing Aria needs from you."}
             </SheetDescription>
           </SheetHeader>
           <div className="room-sheet-body">
@@ -731,12 +742,20 @@ export function CaseRoom({
               <CaseChatPanel
                 mission={mission}
                 title="Ask Aria"
-                helperText="Ask about the evidence, the options, the risks or what happens next."
+                helperText="Aria is the product manager. Ask about the evidence, the options, the risks or what happens next."
                 suggestedPrompts={[
                   "What did the team find?",
                   "What are the biggest risks?",
                   "What happens next?",
                 ]}
+              />
+            ) : null}
+            {panel === "cos" ? (
+              <ChiefOfStaffChat
+                mission={mission}
+                deliveryState={build?.room?.state ?? null}
+                deliveryMissionId={mission.delivery?.wfMissionId ?? null}
+                {...(onRecordChange ? { onRecordChange } : {})}
               />
             ) : null}
             {panel === "plan" ? panels.plan : null}

@@ -20,7 +20,7 @@ export function crc32(bytes: Uint8Array): number {
 }
 
 export function createZip(
-  files: Array<{ path: string; content: string }>,
+  files: Array<{ path: string; content: string | Uint8Array }>,
   date = new Date(),
 ): Uint8Array {
   const enc = new TextEncoder();
@@ -34,7 +34,7 @@ export function createZip(
 
   for (const f of files) {
     const name = enc.encode(f.path);
-    const data = enc.encode(f.content);
+    const data = typeof f.content === "string" ? enc.encode(f.content) : f.content;
     const crc = crc32(data);
     const local = new Uint8Array(30 + name.length + data.length);
     const lv = new DataView(local.buffer);

@@ -10,6 +10,7 @@ import { HUMAN_NEXT_PATH_LABELS, normalizeDecisionChoice } from "./verdict";
 export const MISSION_DASH_NAV = [
   { id: "overview", label: "Overview" },
   { id: "pm-chat", label: "PM Chat" },
+  { id: "chief-of-staff", label: "Chief of Staff" },
   { id: "team", label: "Team" },
   { id: "research", label: "Research" },
   { id: "product-plan", label: "Product Plan" },

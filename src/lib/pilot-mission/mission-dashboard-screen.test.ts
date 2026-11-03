@@ -7,6 +7,7 @@ describe("mission dashboard screen", () => {
     expect(MISSION_DASH_NAV.map((n) => n.label)).toEqual([
       "Overview",
       "PM Chat",
+      "Chief of Staff",
       "Team",
       "Research",
       "Product Plan",

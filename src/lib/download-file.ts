@@ -36,11 +36,23 @@ export async function downloadBlobs(items: Array<{ blob: Blob; filename: string 
   }
 }
 
-export function downloadZip(
-  files: Array<{ path: string; content: string }>,
-  filename: string,
-): void {
-  const archive = createZip(files).slice();
+export type ArchiveDownloadFile = {
+  path: string;
+  content: string;
+  /** Base64 file bytes. Omitted files are UTF-8 text. */
+  encoding?: "utf8" | "base64";
+};
+
+export function downloadZip(files: ArchiveDownloadFile[], filename: string): void {
+  const archive = createZip(
+    files.map((file) => ({
+      path: file.path,
+      content:
+        file.encoding === "base64"
+          ? Uint8Array.from(atob(file.content), (char) => char.charCodeAt(0))
+          : file.content,
+    })),
+  ).slice();
   downloadBlob(new Blob([archive], { type: "application/zip" }), filename);
 }
 

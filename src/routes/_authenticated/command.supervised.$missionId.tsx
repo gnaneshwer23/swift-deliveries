@@ -325,6 +325,10 @@ function SupervisedMissionPage() {
 
         <CaseRoom
           mission={mission}
+          onRecordChange={async () => {
+            await invalidate();
+            await queryClient.invalidateQueries({ queryKey: ["command", "mission"] });
+          }}
           {...(build ? { build } : {})}
           downloads={
             mission.artefact || mission.exportBody || mission.delivery ? (
@@ -1260,8 +1264,8 @@ function ExportButton({
       )}
       <p className="cc-muted text-xs basis-full">
         {compact
-          ? "One ZIP. Open PROJECT.md first — it links only the documents this case saved."
-          : "One ZIP. Open PROJECT.md first: it links the charter, PRD, decision pack, evidence, decisions and handoffs this case saved, and lists anything not produced. Simulated drafts stay labelled."}
+          ? "One ZIP. Open PROJECT.md first — it links the saved documents plus editable DOCX files and a 20-slide PPTX."
+          : "One ZIP. Open PROJECT.md first: saved Markdown, editable DOCX files and a 20-slide PPTX from this case. Anything not saved is labelled not produced. Simulated drafts stay labelled."}
       </p>
       {failure ? (
         <p className="cc-error text-xs basis-full" role="alert">
