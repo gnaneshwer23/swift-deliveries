@@ -12,6 +12,7 @@ import { CaseChatPanel } from "@/components/command/case-chat-panel";
 import { useExplainMode } from "@/hooks/use-explain-mode";
 import { BuildCard, GateReview } from "@/components/command/delivery-build";
 import { downloadSavedDocuments } from "@/lib/download-file";
+import { RoomDock, type RoomDockAction } from "@/components/command/room-dock";
 import { RoomStage } from "@/components/command/room-stage";
 import {
   Sheet,
@@ -484,6 +485,74 @@ export function CaseRoom({
     setPanel(p);
   };
 
+  const dockWaiting = Boolean(gate) || (model.next.waitingOnYou && buildState !== "done");
+  const dockStatusLabel = dockWaiting
+    ? "Aria needs you"
+    : buildState === "done" ||
+        model.next.id === "completed" ||
+        model.next.id === "follow_up_approved"
+      ? "Completed"
+      : buildState === "running"
+        ? "The team is building"
+        : model.next.label;
+  const dockActions: RoomDockAction[] = [
+    { id: "ask", label: "Ask Aria", onClick: () => open("ask") },
+    {
+      id: "meetings",
+      label: "Meeting notes",
+      ...(meetingsToReview > 0 ? { count: meetingsToReview } : {}),
+      onClick: () => open("meetings"),
+    },
+  ];
+  if (gate) {
+    dockActions.push({
+      id: "gate",
+      label: `Review: ${gate.title.charAt(0).toLowerCase()}${gate.title.slice(1)}`,
+      primary: true,
+      onClick: () => open("gate"),
+    });
+  }
+  if (model.deliveryAvailable) {
+    dockActions.push({
+      id: "delivery",
+      label: "Begin delivery",
+      primary: true,
+      onClick: () => open("delivery"),
+    });
+  }
+  if (build?.stalled && build.onContinue) {
+    dockActions.push({
+      id: "continue",
+      label: "Continue the build",
+      primary: true,
+      onClick: build.onContinue,
+    });
+  }
+  if (build?.room && build.room.stages.some((stage) => stage.output?.content.trim())) {
+    const room = build.room;
+    dockActions.push({
+      id: "saved",
+      label: "Download saved documents",
+      primary: true,
+      onClick: () => downloadSavedDocuments(room, mission.id),
+    });
+  }
+  const nextPanel = model.next.panel;
+  if (nextPanel !== "none" && model.next.waitingOnYou) {
+    dockActions.push({
+      id: "next",
+      label: model.next.label,
+      primary: !(model.deliveryAvailable || gate),
+      onClick: () => open(nextPanel),
+    });
+  }
+  const peekId =
+    dockActions.find((action) => action.id === "gate")?.id ??
+    dockActions.find((action) => action.id === "next")?.id ??
+    dockActions.find((action) => action.id === "delivery")?.id ??
+    dockActions.find((action) => action.id === "continue")?.id ??
+    dockActions.find((action) => action.primary)?.id;
+
   const ariaLine = investigation?.live
     ? "The team is on it. Give me a few minutes — you can leave; I’ll come back when the record updates."
     : investigation
@@ -569,78 +638,14 @@ export function CaseRoom({
         </p>
       ) : null}
 
-      <div className="room-dock" role="region" aria-label="What happens next">
-        <div className="room-dock-in">
-          {gate || (model.next.waitingOnYou && buildState !== "done") ? (
-            <span className="room-waiting">Aria needs you</span>
-          ) : buildState === "done" ||
-            model.next.id === "completed" ||
-            model.next.id === "follow_up_approved" ? (
-            <span className="room-working">Completed</span>
-          ) : (
-            <span className="room-working">
-              {buildState === "running" ? "The team is building" : model.next.label}
-            </span>
-          )}
-          <div className="room-dock-actions">
-            <button type="button" className="room-pill" onClick={() => open("ask")}>
-              Ask Aria
-            </button>
-            <button type="button" className="room-pill" onClick={() => open("meetings")}>
-              Meeting notes
-              {meetingsToReview ? (
-                <span className="room-pill-count">{meetingsToReview}</span>
-              ) : null}
-            </button>
-            {gate ? (
-              <button
-                type="button"
-                className="room-pill room-pill-primary"
-                onClick={() => open("gate")}
-              >
-                Review: {gate.title.charAt(0).toLowerCase() + gate.title.slice(1)}
-              </button>
-            ) : null}
-            {model.deliveryAvailable ? (
-              <button
-                type="button"
-                className="room-pill room-pill-primary"
-                onClick={() => open("delivery")}
-              >
-                Begin delivery
-              </button>
-            ) : null}
-            {build?.stalled && build.onContinue ? (
-              <button
-                type="button"
-                className="room-pill room-pill-primary"
-                onClick={build.onContinue}
-              >
-                Continue the build
-              </button>
-            ) : null}
-            {build?.room && build.room.stages.some((st) => st.output?.content.trim()) ? (
-              <button
-                type="button"
-                className="room-pill room-pill-primary"
-                onClick={() => downloadSavedDocuments(build.room!, mission.id)}
-              >
-                Download saved documents
-              </button>
-            ) : null}
-            {downloads ? <div className="room-dock-downloads">{downloads}</div> : null}
-            {model.next.panel !== "none" && model.next.waitingOnYou ? (
-              <button
-                type="button"
-                className={`room-pill${model.deliveryAvailable || gate ? "" : " room-pill-primary"}`}
-                onClick={() => open(model.next.panel as Panel)}
-              >
-                {model.next.label}
-              </button>
-            ) : null}
-          </div>
-        </div>
-      </div>
+      <RoomDock
+        missionId={mission.id}
+        waiting={dockWaiting}
+        statusLabel={dockStatusLabel}
+        actions={dockActions}
+        {...(peekId ? { peekId } : {})}
+        {...(downloads ? { downloads } : {})}
+      />
 
       <Sheet open={panel !== null} onOpenChange={(o) => !o && setPanel(null)}>
         <SheetContent
