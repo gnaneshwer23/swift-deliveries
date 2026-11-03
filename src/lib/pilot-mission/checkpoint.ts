@@ -5,7 +5,7 @@
  * a field with no saved source says so.
  */
 import { buildActivityFeed, feedTime, HIDDEN_KINDS } from "./activity-feed";
-import { buildFirstProject } from "./first-project";
+import { projectSteps } from "./first-project";
 import { missionNeedsAttention } from "./portfolio";
 import { lastActivityAt, quietDaysSince, STALL_DAYS } from "./projects-dashboard";
 import { studioInboxFields } from "./studio-inbox";
@@ -46,6 +46,8 @@ function statusFor(mission: SupervisedMission, next: Next, now: number): Checkpo
   if (mission.job.status === "leased" && (!Number.isFinite(leaseUntil) || leaseUntil > now)) {
     return "team_working";
   }
+  // Paused work waits for you to resume it, even with research queued.
+  if (mission.studioMeta?.investigationPaused) return "waiting_on_you";
   if (next.id === "research_queued") return "team_working";
   if (missionNeedsAttention(next.id)) return "waiting_on_you";
   return "in_progress";
@@ -66,19 +68,18 @@ export function buildCheckpoint(
     1,
   );
 
-  const path = buildFirstProject([
-    {
-      id: mission.id,
-      question: mission.brief.question,
-      stage: mission.stage,
-      archived: false,
-      updatedAt: mission.updatedAt,
-      planApproved: Boolean(mission.team?.approvedAt),
-      decisionRecorded: Boolean(mission.approval),
-      delivery: Boolean(mission.delivery),
-      observationRecorded: Boolean(mission.observation),
-    },
-  ]);
+  // Every step the record shows, even on a stopped project: its history still counts.
+  const steps = projectSteps({
+    id: mission.id,
+    question: mission.brief.question,
+    stage: mission.stage,
+    archived: false,
+    updatedAt: mission.updatedAt,
+    planApproved: Boolean(mission.team?.approvedAt),
+    decisionRecorded: Boolean(mission.approval),
+    delivery: Boolean(mission.delivery),
+    observationRecorded: Boolean(mission.observation),
+  });
 
   const checks: string[] = [];
   const inbox = studioInboxFields(mission);
@@ -112,7 +113,7 @@ export function buildCheckpoint(
       ? { who: latest.who, what: latest.what, when: feedTime(latest.at, new Date(now)) }
       : null,
     next: { title: next.title, detail: next.detail },
-    done: path ? path.steps.filter((s) => s.done).map((s) => s.label) : [],
+    done: steps.filter((s) => s.done).map((s) => s.label),
     checks,
   };
 }

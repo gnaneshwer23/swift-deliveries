@@ -98,6 +98,7 @@ describe("buildProjectsDashboard", () => {
         // A favourite saved yesterday does not make an old project look busy.
         project({
           id: "c",
+          favourite: true,
           updatedAt: "2026-11-09T12:00:00Z",
           recentActivity: [{ at: "2026-10-30T12:00:00Z" }],
         }),
