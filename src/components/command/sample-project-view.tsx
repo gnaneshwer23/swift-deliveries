@@ -132,7 +132,7 @@ export function SampleProjectView() {
           <b>Ready to try it on your own idea?</b>
           <span>One or two lines is enough to start. Nothing runs until you approve the plan.</span>
         </div>
-        <Link to="/command" className="sp-btn">
+        <Link to="/command" hash="new-project" className="sp-btn">
           Start your own project <ArrowRight size={15} aria-hidden="true" />
         </Link>
       </footer>

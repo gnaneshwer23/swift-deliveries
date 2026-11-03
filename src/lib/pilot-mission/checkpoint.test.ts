@@ -104,7 +104,7 @@ describe("project checkpoint", () => {
         team: {
           version: "pilot-team-v1",
           capabilityIds: [],
-          staffingBand: "small",
+          staffingBand: "S",
           tasks: [],
           approvedAt: "2026-11-01T00:00:00Z",
           approvedBy: "u",
@@ -154,7 +154,7 @@ describe("project checkpoint", () => {
         team: {
           version: "pilot-team-v1",
           capabilityIds: [],
-          staffingBand: "small",
+          staffingBand: "S",
           tasks: [],
           approvedAt: "2026-11-01T00:00:00Z",
           approvedBy: "u",

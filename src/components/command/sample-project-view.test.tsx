@@ -3,7 +3,9 @@ import { describe, expect, it, vi } from "vitest";
 import type { ReactNode } from "react";
 
 vi.mock("@tanstack/react-router", () => ({
-  Link: ({ children, to }: { children: ReactNode; to: string }) => <a href={to}>{children}</a>,
+  Link: ({ children, to, hash }: { children: ReactNode; to: string; hash?: string }) => (
+    <a href={hash ? `${to}#${hash}` : to}>{children}</a>
+  ),
 }));
 // Any call to a project server function fails the test: the sample must never make one.
 vi.mock(
@@ -28,7 +30,8 @@ describe("SampleProjectView", () => {
     expect(html).toContain("Checkpoint");
     expect(html).toContain("Waiting on you");
     expect(html).toContain("Team’s recommendation");
-    expect(html).toContain('href="/command"');
+    // Opens the new-project form, like the other "new project" links.
+    expect(html).toContain('href="/command#new-project"');
     expect(fetchSpy).not.toHaveBeenCalled();
     fetchSpy.mockRestore();
   });

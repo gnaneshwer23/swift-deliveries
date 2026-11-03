@@ -21,6 +21,19 @@ describe("sample project", () => {
 
   it("labels every source and the whole project as invented", () => {
     for (const e of sample.evidence) expect(e.source).toMatch(/sample|invented/i);
+    // The missing interviews stay visible as a gap rather than being filled in.
+    expect(sample.evidence).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          classification: "gap",
+          statement: expect.stringMatching(/interviews/i),
+        }),
+      ]),
+    );
+    // The compared options live in the proposal, marked as a simulated draft.
+    expect(sample.proposal?.options.map((o) => o.id)).toEqual(["A", "B", "C"]);
+    expect(sample.proposal?.generation.ran).toBe(false);
+    expect(sample.proposal?.generation.label).toMatch(/simulated/i);
     expect(sample.brief.audience).toMatch(/sample/i);
     expect(SAMPLE_NOTICE).toMatch(/invented/i);
     expect(SAMPLE_NOTICE).toMatch(/nothing is saved/i);
