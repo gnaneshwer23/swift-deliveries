@@ -123,3 +123,8 @@
     grid-template-columns: 1fr;
   }
 }
+.ckp-complete {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.45;
+}

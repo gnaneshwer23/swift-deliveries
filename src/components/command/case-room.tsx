@@ -13,6 +13,7 @@ import { useExplainMode } from "@/hooks/use-explain-mode";
 import { BuildCard, GateReview } from "@/components/command/delivery-build";
 import { downloadSavedDocuments } from "@/lib/download-file";
 import { RoomDock, type RoomDockAction } from "@/components/command/room-dock";
+import { RoomDecisionTrail } from "@/components/command/room-decision-trail";
 import { RoomStage } from "@/components/command/room-stage";
 import {
   Sheet,
@@ -388,8 +389,8 @@ function Beat({
         <Aria>
           <p>
             {beat.ready
-              ? "Your decision pack is ready. Everything in it says how it was made."
-              : "I’m preparing the decision pack from the record."}
+              ? "Your decision pack is saved, so this case is complete. Download the project package for a linked index of every document on the record. Anything that was not saved is listed as not produced on this case."
+              : "The decision pack is not exported yet. That export is what completes this case."}
             {build?.room
               ? ` The project download also holds the build so far: ${build.room.stages.filter((st) => st.output).length} saved stage outputs, each saying who made it and how, plus the team record.`
               : ""}
@@ -415,12 +416,15 @@ export function CaseRoom({
   panels,
   build,
   downloads,
+  completionDownloads,
 }: {
   mission: SupervisedMission;
   panels: CaseRoomPanels;
   build?: CaseRoomBuild;
   /** Decision pack and archive controls, when the case has something to save. */
   downloads?: ReactNode;
+  /** The same package controls, rendered again on the completion panel. */
+  completionDownloads?: ReactNode;
 }) {
   const model = buildRoomModel(mission);
   const gate = build?.room?.gate ?? null;
@@ -485,12 +489,17 @@ export function CaseRoom({
     setPanel(p);
   };
 
-  const dockWaiting = Boolean(gate) || (model.next.waitingOnYou && buildState !== "done");
+  const ending = model.ending;
+  const stuck =
+    model.next.waitingOnYou &&
+    (model.next.id === "expectation" || model.next.id === "artefact" || model.next.id === "export");
+  const dockWaiting =
+    Boolean(gate) ||
+    stuck ||
+    (model.next.waitingOnYou && buildState !== "done" && !ending.completed);
   const dockStatusLabel = dockWaiting
     ? "Aria needs you"
-    : buildState === "done" ||
-        model.next.id === "completed" ||
-        model.next.id === "follow_up_approved"
+    : ending.completed
       ? "Completed"
       : buildState === "running"
         ? "The team is building"
@@ -516,7 +525,7 @@ export function CaseRoom({
     dockActions.push({
       id: "delivery",
       label: "Begin delivery",
-      primary: true,
+      primary: !stuck && !gate,
       onClick: () => open("delivery"),
     });
   }
@@ -533,7 +542,7 @@ export function CaseRoom({
     dockActions.push({
       id: "saved",
       label: "Download saved documents",
-      primary: true,
+      primary: !stuck && !gate && !model.deliveryAvailable && !model.next.waitingOnYou,
       onClick: () => downloadSavedDocuments(room, mission.id),
     });
   }
@@ -542,16 +551,17 @@ export function CaseRoom({
     dockActions.push({
       id: "next",
       label: model.next.label,
-      primary: !(model.deliveryAvailable || gate),
+      primary: stuck || (!ending.completed && !(model.deliveryAvailable || gate)),
       onClick: () => open(nextPanel),
     });
   }
-  const peekId =
-    dockActions.find((action) => action.id === "gate")?.id ??
-    dockActions.find((action) => action.id === "next")?.id ??
-    dockActions.find((action) => action.id === "delivery")?.id ??
-    dockActions.find((action) => action.id === "continue")?.id ??
-    dockActions.find((action) => action.primary)?.id;
+  const peekId = ending.completed
+    ? undefined
+    : (dockActions.find((action) => action.id === "gate")?.id ??
+      dockActions.find((action) => action.id === "next")?.id ??
+      dockActions.find((action) => action.id === "delivery")?.id ??
+      dockActions.find((action) => action.id === "continue")?.id ??
+      dockActions.find((action) => action.primary)?.id);
 
   const ariaLine = investigation?.live
     ? "The team is on it. Give me a few minutes — you can leave; I’ll come back when the record updates."
@@ -582,21 +592,23 @@ export function CaseRoom({
         >
           {gate
             ? `Aria needs you: ${gate.title.toLowerCase()}.`
-            : buildState === "running"
-              ? "The team is building. Aria will come back after each stage."
-              : buildState === "failed"
-                ? "A stage failed, so later stages will not run. Documents saved before that can be downloaded."
-                : buildState === "done" &&
-                    model.next.id !== "completed" &&
-                    model.next.id !== "follow_up_approved"
-                  ? `The build is complete. Next: ${model.next.label}. Documents already saved can be downloaded.`
-                  : buildState === "done" ||
-                      model.next.id === "completed" ||
-                      model.next.id === "follow_up_approved"
+            : stuck
+              ? `Aria needs you: ${model.next.label}.`
+              : buildState === "running"
+                ? "The team is building. Aria will come back after each stage."
+                : buildState === "failed"
+                  ? "A stage failed, so later stages will not run. Documents saved before that can be downloaded."
+                  : ending.completed
                     ? "Completed. Saved documents are ready to download."
-                    : model.status.line}
+                    : buildState === "done"
+                      ? `The build is complete. Next: ${model.next.label}. Documents already saved can be downloaded.`
+                      : model.status.line}
         </p>
       </header>
+
+      {mission.delivery && !ending.completed ? (
+        <p className="room-ending-note">{ending.howItEnds}</p>
+      ) : null}
 
       <ol className="room-thread">
         {beforeStage.map((beat, i) => (
@@ -632,6 +644,24 @@ export function CaseRoom({
         ))}
       </ol>
 
+      {ending.completed ? (
+        <section className="room-complete" aria-label="Project completion">
+          <p className="room-mono">Completed</p>
+          <h2>This case is complete</h2>
+          <p>{ending.meaning}</p>
+          <p>
+            {ending.nextHumanGate
+              ? `Next human gate: ${ending.nextHumanGate}.`
+              : "No further human gate is required to finish this case."}
+          </p>
+          {completionDownloads ? (
+            <div className="room-complete-downloads">{completionDownloads}</div>
+          ) : null}
+        </section>
+      ) : null}
+
+      <RoomDecisionTrail mission={mission} />
+
       {toast ? (
         <p className="room-toast" role="status">
           <b>Aria is back.</b> {toast}
@@ -645,6 +675,8 @@ export function CaseRoom({
         actions={dockActions}
         {...(peekId ? { peekId } : {})}
         {...(downloads ? { downloads } : {})}
+        pinDownloads={ending.completed}
+        stuck={stuck}
       />
 
       <Sheet open={panel !== null} onOpenChange={(o) => !o && setPanel(null)}>

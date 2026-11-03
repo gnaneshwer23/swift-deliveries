@@ -340,6 +340,19 @@ function SupervisedMissionPage() {
               />
             ) : null
           }
+          completionDownloads={
+            mission.artefact || mission.exportBody || mission.delivery ? (
+              <ExportButton
+                recordVersion={mission.version}
+                missionId={missionId}
+                existingMd={mission.exportBody}
+                existingPdf={mission.exportPdfBase64}
+                hasArtefact={Boolean(mission.artefact)}
+                hasDelivery={Boolean(mission.delivery)}
+                onError={onError}
+              />
+            ) : null
+          }
           panels={{
             plan: (
               <PlanReview
@@ -453,10 +466,22 @@ function SupervisedMissionPage() {
             theatre={theatre}
           />
 
-          <details className="ps-quiet-inspect" id="mission-inspect">
-            <summary>Inspect full record</summary>
+          <details
+            className="ps-quiet-inspect"
+            id="mission-inspect"
+            open={
+              recordSection === "mission-inspect" || recordSection === "mission-team-activity"
+                ? true
+                : undefined
+            }
+          >
+            <summary>Inspect full record — decisions, handoffs and evidence</summary>
 
-            <details className="ps-quiet-inspect mt-3" id="mission-team-activity">
+            <details
+              className="ps-quiet-inspect mt-3"
+              id="mission-team-activity"
+              open={recordSection === "mission-team-activity" ? true : undefined}
+            >
               <summary>View team activity</summary>
               <TeamActivityPanel mission={mission} />
             </details>
@@ -1173,12 +1198,22 @@ function ExportButton({
   const canPack = Boolean(existingMd || hasArtefact);
   const canArchive = Boolean(existingMd || hasArtefact || hasDelivery);
   const failure = save.error ?? executive.error ?? fullArchive.error ?? zip.error;
-  return (
-    <div className={`ps-quiet-downloads${compact ? " ps-quiet-downloads-compact" : ""}`}>
+  const packageButton = (
+    <button
+      type="button"
+      className="cc-btn cc-btn-primary"
+      disabled={fullArchive.isPending || !canArchive}
+      onClick={() => fullArchive.mutate()}
+    >
+      {fullArchive.isPending ? "Packaging…" : "Download project package"}
+    </button>
+  );
+  const otherDownloads = (
+    <>
       {canPack ? (
         <button
           type="button"
-          className="cc-btn cc-btn-primary"
+          className="cc-btn cc-btn-secondary"
           disabled={save.isPending}
           onClick={() => {
             if (existingMd) void downloadPack(existingMd, existingPdf, names).catch(onError);
@@ -1198,15 +1233,7 @@ function ExportButton({
         disabled={executive.isPending}
         onClick={() => executive.mutate()}
       >
-        {executive.isPending ? "Preparing…" : "Executive + roadmap"}
-      </button>
-      <button
-        type="button"
-        className="cc-btn cc-btn-secondary"
-        disabled={fullArchive.isPending || !canArchive}
-        onClick={() => fullArchive.mutate()}
-      >
-        {fullArchive.isPending ? "Packaging…" : "Full archive"}
+        {executive.isPending ? "Preparing…" : "Executive summary"}
       </button>
       {!compact ? (
         <button
@@ -1218,18 +1245,24 @@ function ExportButton({
           {zip.isPending ? "Packaging…" : "Decision ZIP"}
         </button>
       ) : null}
-      {!compact ? (
-        <p className="cc-muted text-xs basis-full">
-          Downloads include a decision roadmap (human gates, agent tasks, recommendation, path,
-          artefacts) with honest simulated vs model labels. Linked URLs and secrets are never
-          bundled.
-        </p>
+    </>
+  );
+  return (
+    <div className={`ps-quiet-downloads${compact ? " ps-quiet-downloads-compact" : ""}`}>
+      {packageButton}
+      {compact ? (
+        <details className="ps-quiet-downloads-more">
+          <summary>Other downloads</summary>
+          {otherDownloads}
+        </details>
       ) : (
-        <p className="cc-muted text-xs basis-full mb-0">
-          Charter, PRD and other saved stage files download from the build. This pack is the
-          decision record.
-        </p>
+        otherDownloads
       )}
+      <p className="cc-muted text-xs basis-full">
+        {compact
+          ? "One ZIP. Open PROJECT.md first — it links only the documents this case saved."
+          : "One ZIP. Open PROJECT.md first: it links the charter, PRD, decision pack, evidence, decisions and handoffs this case saved, and lists anything not produced. Simulated drafts stay labelled."}
+      </p>
       {failure ? (
         <p className="cc-error text-xs basis-full" role="alert">
           {failure instanceof Error ? failure.message : "The download could not be prepared."}

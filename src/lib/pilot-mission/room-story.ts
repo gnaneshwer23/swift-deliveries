@@ -9,6 +9,7 @@ import { buildEstimate, type BuildEstimate } from "./build-estimate";
 import { evidenceLabel, type EvidenceLabel } from "./case-log";
 import { deliveryEligibility } from "./delivery";
 import { nextGateLabel } from "./next-gate";
+import { projectEnding, type ProjectEnding } from "./project-ending";
 import { buildPmBrief } from "./pm-brief";
 import { buildPmBriefingPack } from "./pm-briefing-pack";
 import { buildPmBriefingScreen } from "./pm-briefing-screen";
@@ -122,6 +123,8 @@ export type RoomModel = {
   next: RoomNext;
   /** Begin delivery is offered once a decision exists and delivery may start. */
   deliveryAvailable: boolean;
+  /** What finished means, and the next human gate, from the saved record. */
+  ending: ProjectEnding;
   stage: { idea: string; findings: RoomFinding[]; agents: RoomAgent[] };
 };
 
@@ -428,10 +431,11 @@ export function buildRoomModel(mission: SupervisedMission): RoomModel {
     beats.push({ kind: "package", ready: Boolean(mission.exportBody) });
   }
 
+  const ending = projectEnding(mission);
   const working = live || next.id === "recover";
   const line = working
     ? "The team is working. Aria will come back with an update."
-    : next.id === "completed" || next.id === "follow_up_approved"
+    : ending.completed
       ? "Completed. Your documents are saved and ready to download."
       : next.id === "cancelled"
         ? "This case is cancelled."
@@ -444,6 +448,7 @@ export function buildRoomModel(mission: SupervisedMission): RoomModel {
     next,
     deliveryAvailable:
       Boolean(mission.approval) && !mission.delivery && deliveryEligibility(mission).ok,
+    ending,
     stage: { idea: mission.brief.question, findings, agents: roomAgents(mission, live) },
   };
 }

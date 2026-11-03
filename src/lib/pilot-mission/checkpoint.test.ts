@@ -180,6 +180,27 @@ describe("project checkpoint", () => {
     expect(buildCheckpoint(mission({ stage: "cancelled" }), obs, NOW).status).toBe("stopped");
   });
 
+  it("marks the case complete once the decision pack is saved, and keeps a follow-up gate open", () => {
+    const done = buildCheckpoint(
+      mission({ stage: "exported", exportBody: "# Pack\n" }),
+      { id: "completed", title: "Completed", detail: "The pack is saved." },
+      NOW,
+    );
+    expect(done.caseCompleted).toBe(true);
+    expect(done.packSaved).toBe(true);
+    expect(done.completionMeaning).toMatch(/decision pack is saved/);
+    expect(done.nextHumanGate).toBeNull();
+
+    const followUp = buildCheckpoint(
+      mission({ stage: "exported", exportBody: "# Pack\n" }),
+      { id: "approve_follow_up", title: "Approve the follow-up mission", detail: "" },
+      NOW,
+    );
+    expect(followUp.caseCompleted).toBe(false);
+    expect(followUp.packSaved).toBe(true);
+    expect(followUp.nextHumanGate).toBe("Approve the follow-up mission");
+  });
+
   it("flags what to check before acting", () => {
     const c = buildCheckpoint(
       mission({

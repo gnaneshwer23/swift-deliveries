@@ -865,6 +865,10 @@ button.room-chip {
   pointer-events: none;
 }
 
+.room-dock[data-stuck="true"] .room-pill-primary {
+  box-shadow: 0 0 0 2px var(--sx-accent);
+}
+
 .room-dock-in {
   pointer-events: auto;
   max-width: min(76rem, 100%);
@@ -2478,6 +2482,70 @@ li[data-status="waiting_on_you"] .room-build-status {
   margin-bottom: 0.15rem;
 }
 .room-explain a {
+  color: var(--sx-accent);
+  font-weight: 600;
+}
+
+.room-ending-note,
+.room-complete,
+.room-trail {
+  max-width: 46rem;
+  margin: 0 0 var(--sx-space-lg);
+}
+
+.room-ending-note,
+.room-complete {
+  padding: var(--sx-space-md);
+  border: 1px solid var(--sx-rule);
+  border-radius: 16px;
+  background: var(--sx-surface);
+}
+
+.room-complete h2 {
+  margin: 0.25rem 0 0.5rem;
+  font: 500 1.35rem / 1.2 var(--sx-font-display);
+}
+
+.room-complete p,
+.room-ending-note,
+.room-trail p {
+  margin: 0.35rem 0 0;
+  line-height: 1.45;
+}
+
+.room-trail h2 {
+  margin: 0;
+  font: 500 1.35rem / 1.2 var(--sx-font-display);
+}
+
+.room-trail-list {
+  list-style: none;
+  margin: var(--sx-space-sm) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--sx-space-xs);
+}
+
+.room-trail-title {
+  margin: 0;
+}
+
+.room-trail-badge {
+  display: inline-block;
+  margin-right: 0.4rem;
+  font: 500 0.6875rem / 1.2 var(--sx-font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sx-muted);
+}
+
+.room-trail-detail {
+  margin: 0.15rem 0 0;
+  color: var(--sx-ink-2);
+}
+
+.room-trail a,
+.room-complete a {
   color: var(--sx-accent);
   font-weight: 600;
 }

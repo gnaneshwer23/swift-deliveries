@@ -137,6 +137,10 @@ describe("buildRoomModel", () => {
     });
     expect(model.status.line).toBe("Completed. Your documents are saved and ready to download.");
     expect(model.status.working).toBe(false);
+    expect(model.ending.completed).toBe(true);
+    expect(model.ending.nextHumanGate).toBeNull();
+    expect(model.ending.meaning).toMatch(/decision pack is saved/);
+    expect(model.ending.howItEnds).not.toMatch(/\d+ minute/);
   });
 
   it("offers Begin delivery only before delivery has started", () => {
