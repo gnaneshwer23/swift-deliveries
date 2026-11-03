@@ -151,6 +151,7 @@ export function mapTask(row: any): WfMissionTask {
     produces: decoded.meta?.produces ?? null,
     startedAt: row.started_at ?? null,
     completedAt: row.completed_at ?? null,
+    leaseUntil: row.lease_until ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

@@ -122,6 +122,23 @@ describe("buildRoomModel", () => {
     );
   });
 
+  it("says the case is complete once the pack is exported", () => {
+    const model = buildRoomModel(
+      baseMission({
+        proposal,
+        stage: "exported",
+        exportBody: "# Pack\n",
+      }),
+    );
+    expect(model.next).toMatchObject({
+      id: "completed",
+      waitingOnYou: false,
+      panel: "none",
+    });
+    expect(model.status.line).toBe("Completed. Your documents are saved and ready to download.");
+    expect(model.status.working).toBe(false);
+  });
+
   it("offers Begin delivery only before delivery has started", () => {
     expect(buildRoomModel(baseMission({ proposal })).deliveryAvailable).toBe(true);
     const started = baseMission({

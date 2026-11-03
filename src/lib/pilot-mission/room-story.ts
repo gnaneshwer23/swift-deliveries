@@ -248,6 +248,8 @@ const NEXT_PANEL: Record<string, { panel: RoomNext["panel"]; you: boolean }> = {
   expectation: { panel: "work", you: true },
   artefact: { panel: "work", you: true },
   export: { panel: "work", you: true },
+  completed: { panel: "none", you: false },
+  follow_up_approved: { panel: "none", you: false },
   cancelled: { panel: "none", you: false },
 };
 
@@ -429,9 +431,11 @@ export function buildRoomModel(mission: SupervisedMission): RoomModel {
   const working = live || next.id === "recover";
   const line = working
     ? "The team is working. Aria will come back with an update."
-    : next.id === "cancelled"
-      ? "This case is cancelled."
-      : `Aria needs you: ${next.label.toLowerCase()}.`;
+    : next.id === "completed" || next.id === "follow_up_approved"
+      ? "Completed. Your documents are saved and ready to download."
+      : next.id === "cancelled"
+        ? "This case is cancelled."
+        : `Aria needs you: ${next.label.toLowerCase()}.`;
 
   return {
     title: mission.brief.question,

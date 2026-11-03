@@ -23,6 +23,9 @@ export function nextGateLabel(next: { id: string; title: string }): string {
       return "Prepare the decision pack";
     case "export":
       return "Download the decision pack";
+    case "completed":
+    case "follow_up_approved":
+      return "Completed — your documents are ready";
     case "cancelled":
       return "This case is cancelled";
     default:

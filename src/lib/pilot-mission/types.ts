@@ -475,12 +475,24 @@ export function nextRequiredAction(mission: SupervisedMission): {
       detail: "The export is stored on the mission. Opening it again does not add a usage record.",
     };
   }
-  if (mission.exportBody && !mission.prototype && !mission.observation && !mission.reviews.length) {
+  if (mission.exportBody || mission.stage === "exported") {
+    // The pack handover is complete. A sandboxed prototype and a later observed
+    // result stay available; they do not leave the case looking unfinished.
+    if (mission.observation || mission.reviews.length || mission.followUp) {
+      return learningNext(mission);
+    }
+    if (!mission.exportBody) {
+      return {
+        id: "export",
+        title: "Export the pack",
+        detail: "The export is stored on the mission. Opening it again does not add a usage record.",
+      };
+    }
     return {
-      id: "approve_prototype",
-      title: "Approve sandboxed HTML prototype",
+      id: "completed",
+      title: "Completed",
       detail:
-        "Human gate — the UX Prototype Agent drafts a sandboxed HTML artefact only after you approve. Static verify failures stay visible.",
+        "The decision pack is saved on this case. Download it any time. A sandboxed HTML prototype is a separate approval and is not required to finish. Record an observed result when you have one — DeliverX does not measure it.",
     };
   }
   return learningNext(mission);

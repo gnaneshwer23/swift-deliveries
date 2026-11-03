@@ -62,7 +62,11 @@ function ExpectationForm({
     onSuccess: onDone,
     onError,
   });
-  const ready = hypothesis.trim() && metric.trim();
+  const hypothesisOk = hypothesis.trim().length >= 8;
+  const metricOk = metric.trim().length >= 3;
+  const baselineOk = baseline.trim().length >= 3;
+  const windowOk = window.trim().length >= 3;
+  const ready = hypothesisOk && metricOk && baselineOk && windowOk;
   return (
     <form
       className="plan"
@@ -96,16 +100,16 @@ function ExpectationForm({
           />
         </label>
         <label className="room-gate-note">
-          Where it is today (optional)
+          Where it is today
           <input
             value={baseline}
             maxLength={500}
             onChange={(e) => setBaseline(e.target.value)}
-            placeholder="e.g. Not tracked"
+            placeholder="e.g. Not tracked today"
           />
         </label>
         <label className="room-gate-note">
-          When to check (optional)
+          When to check
           <input
             value={window}
             maxLength={500}
@@ -122,7 +126,10 @@ function ExpectationForm({
         >
           {save.isPending ? "Saving…" : "Save and continue"}
         </button>
-        <p className="plan-hint">Saved with your case. You record what actually happened later.</p>
+        <p className="plan-hint">
+          All four fields are saved with your case. The expectation needs at least a short
+          sentence; the other three need a few words. You record what actually happened later.
+        </p>
       </div>
     </form>
   );
@@ -210,11 +217,13 @@ export function NextStepPanel({
     );
   }
 
-  if (nextId === "export") {
+  if (nextId === "export" || nextId === "completed") {
     return (
       <div className="plan">
         <Aria>
-          Your decision pack is ready. Download it as Markdown and PDF, or the full project ZIP.
+          {nextId === "completed"
+            ? "This case is complete. The decision pack is saved — download it below. Charter, PRD and other delivery documents download from the build only when they are on the record."
+            : "Your decision pack is ready. Download it as Markdown and PDF, or the full project ZIP."}
         </Aria>
         {errorLine}
         <div className="next-export">{exportSlot}</div>

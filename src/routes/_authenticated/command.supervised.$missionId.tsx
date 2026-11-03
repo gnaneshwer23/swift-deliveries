@@ -43,9 +43,9 @@ import {
   saveSupervisedEvidence,
   setSupervisedResearchMode,
 } from "@/lib/pilot-mission.functions";
+import { downloadBlobs, downloadText, downloadZip } from "@/lib/download-file";
 import { decisionPackFilenames } from "@/lib/pilot-mission/decision-pack";
 import { nextGateLabel } from "@/lib/pilot-mission/next-gate";
-import { createZip } from "@/lib/programme/zip";
 import { type ResearchMode } from "@/lib/pilot-mission/research-mode";
 import { type DecisionChoice, type SupervisedMission } from "@/lib/pilot-mission/types";
 import {
@@ -220,12 +220,14 @@ function SupervisedMissionPage() {
       <QuietMissionBar
         mission={mission}
         downloadSlot={
-          mission.artefact || mission.exportBody ? (
+          mission.artefact || mission.exportBody || mission.delivery ? (
             <ExportButton
               recordVersion={mission.version}
               missionId={missionId}
               existingMd={mission.exportBody}
               existingPdf={mission.exportPdfBase64}
+              hasArtefact={Boolean(mission.artefact)}
+              hasDelivery={Boolean(mission.delivery)}
               onError={onError}
               compact
             />
@@ -260,12 +262,14 @@ function SupervisedMissionPage() {
           prototypePending: approvePrototype.isPending,
           onApprovePrototype: () => approvePrototype.mutate(),
           exportSlot:
-            next.id === "export" || mission.exportBody ? (
+            next.id === "export" || next.id === "completed" || mission.exportBody ? (
               <ExportButton
                 recordVersion={mission.version}
                 missionId={missionId}
                 existingMd={mission.exportBody}
                 existingPdf={mission.exportPdfBase64}
+                hasArtefact={Boolean(mission.artefact)}
+                hasDelivery={Boolean(mission.delivery)}
                 onError={onError}
               />
             ) : null,
@@ -322,6 +326,20 @@ function SupervisedMissionPage() {
         <CaseRoom
           mission={mission}
           {...(build ? { build } : {})}
+          downloads={
+            mission.artefact || mission.exportBody || mission.delivery ? (
+              <ExportButton
+                recordVersion={mission.version}
+                missionId={missionId}
+                existingMd={mission.exportBody}
+                existingPdf={mission.exportPdfBase64}
+                hasArtefact={Boolean(mission.artefact)}
+                hasDelivery={Boolean(mission.delivery)}
+                onError={onError}
+                compact
+              />
+            ) : null
+          }
           panels={{
             plan: (
               <PlanReview
@@ -362,6 +380,8 @@ function SupervisedMissionPage() {
                       missionId={missionId}
                       existingMd={mission.exportBody}
                       existingPdf={mission.exportPdfBase64}
+                      hasArtefact={Boolean(mission.artefact)}
+                      hasDelivery={Boolean(mission.delivery)}
                       onError={onError}
                     />
                   ),
@@ -418,12 +438,14 @@ function SupervisedMissionPage() {
               ) : null
             }
             downloadsSlot={
-              mission.artefact || mission.exportBody ? (
+              mission.artefact || mission.exportBody || mission.delivery ? (
                 <ExportButton
                   recordVersion={mission.version}
                   missionId={missionId}
                   existingMd={mission.exportBody}
                   existingPdf={mission.exportPdfBase64}
+                  hasArtefact={Boolean(mission.artefact)}
+                  hasDelivery={Boolean(mission.delivery)}
                   onError={onError}
                 />
               ) : null
@@ -632,13 +654,7 @@ function SupervisedMissionPage() {
                     className="cc-btn cc-btn-secondary mt-4"
                     onClick={() => {
                       const md = buildContinuationPlanMarkdown(mission, mission.continuationPlan!);
-                      const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
-                      const url = URL.createObjectURL(blob);
-                      const a = document.createElement("a");
-                      a.href = url;
-                      a.download = continuationPlanFilename(mission.id);
-                      a.click();
-                      URL.revokeObjectURL(url);
+                      downloadText(md, continuationPlanFilename(mission.id));
                     }}
                   >
                     Download continuation plan
@@ -1114,6 +1130,8 @@ function ExportButton({
   missionId,
   existingMd,
   existingPdf,
+  hasArtefact = false,
+  hasDelivery = false,
   onError,
   compact = false,
 }: {
@@ -1121,6 +1139,8 @@ function ExportButton({
   missionId: string;
   existingMd: string | null;
   existingPdf: string | null;
+  hasArtefact?: boolean;
+  hasDelivery?: boolean;
   onError: (error: unknown) => void;
   compact?: boolean;
 }) {
@@ -1130,22 +1150,11 @@ function ExportButton({
     mutationFn: () =>
       exportSupervisedMission({ data: { id: missionId, expectedVersion: recordVersion } }),
     onSuccess: async (result) => {
-      downloadPack(result.mission.exportBody, result.mission.exportPdfBase64, names);
+      await downloadPack(result.mission.exportBody, result.mission.exportPdfBase64, names);
       await queryClient.invalidateQueries({ queryKey: ["supervised"] });
     },
     onError,
   });
-  const downloadZip = (files: Array<{ path: string; content: string }>, filename: string) => {
-    const archive = createZip(files);
-    const url = URL.createObjectURL(
-      new Blob([archive.buffer as ArrayBuffer], { type: "application/zip" }),
-    );
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
   const zip = useMutation({
     mutationFn: () => exportSupervisedMissionZip({ data: { id: missionId } }),
     onSuccess: ({ files, filename }) => downloadZip(files, filename),
@@ -1153,14 +1162,7 @@ function ExportButton({
   });
   const executive = useMutation({
     mutationFn: () => exportSupervisedExecutivePack({ data: { id: missionId } }),
-    onSuccess: ({ markdown, filename }) => {
-      const url = URL.createObjectURL(new Blob([markdown], { type: "text/markdown" }));
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(url);
-    },
+    onSuccess: ({ markdown, filename }) => downloadText(markdown, filename),
     onError,
   });
   const fullArchive = useMutation({
@@ -1168,14 +1170,19 @@ function ExportButton({
     onSuccess: ({ files, filename }) => downloadZip(files, filename),
     onError,
   });
+  const canPack = Boolean(existingMd || hasArtefact);
+  const canArchive = Boolean(existingMd || hasArtefact || hasDelivery);
+  const failure =
+    save.error ?? executive.error ?? fullArchive.error ?? zip.error;
   return (
     <div className={`ps-quiet-downloads${compact ? " ps-quiet-downloads-compact" : ""}`}>
+      {canPack ? (
       <button
         type="button"
         className="cc-btn cc-btn-primary"
         disabled={save.isPending}
         onClick={() => {
-          if (existingMd) downloadPack(existingMd, existingPdf, names);
+          if (existingMd) void downloadPack(existingMd, existingPdf, names).catch(onError);
           else save.mutate();
         }}
       >
@@ -1185,6 +1192,7 @@ function ExportButton({
             ? "Decision pack"
             : "Download decision pack (PDF + Markdown)"}
       </button>
+      ) : null}
       <button
         type="button"
         className="cc-btn cc-btn-secondary"
@@ -1196,7 +1204,7 @@ function ExportButton({
       <button
         type="button"
         className="cc-btn cc-btn-secondary"
-        disabled={fullArchive.isPending || !existingMd}
+        disabled={fullArchive.isPending || !canArchive}
         onClick={() => fullArchive.mutate()}
       >
         {fullArchive.isPending ? "Packaging…" : "Full archive"}
@@ -1219,37 +1227,39 @@ function ExportButton({
         </p>
       ) : (
         <p className="cc-muted text-xs basis-full mb-0">
-          Roadmap and evidence trail are in the pack — not on this screen.
+          Charter, PRD and other saved stage files download from the build. This pack is the
+          decision record.
         </p>
       )}
+      {failure ? (
+        <p className="cc-error text-xs basis-full" role="alert">
+          {failure instanceof Error ? failure.message : "The download could not be prepared."}
+        </p>
+      ) : null}
     </div>
   );
 }
 
-function downloadPack(
+async function downloadPack(
   markdown: string | null,
   pdfBase64: string | null,
   names: { md: string; pdf: string },
 ) {
+  const items: Array<{ blob: Blob; filename: string }> = [];
   if (markdown) {
-    const url = URL.createObjectURL(new Blob([markdown], { type: "text/markdown;charset=utf-8" }));
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = names.md;
-    link.click();
-    URL.revokeObjectURL(url);
+    items.push({
+      blob: new Blob([markdown], { type: "text/markdown;charset=utf-8" }),
+      filename: names.md,
+    });
   }
   if (pdfBase64) {
     const binary = atob(pdfBase64);
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    const url = URL.createObjectURL(new Blob([bytes], { type: "application/pdf" }));
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = names.pdf;
-    link.click();
-    URL.revokeObjectURL(url);
+    items.push({ blob: new Blob([bytes], { type: "application/pdf" }), filename: names.pdf });
   }
+  if (!items.length) throw new Error("No decision pack is stored on this case yet.");
+  await downloadBlobs(items);
 }
 
 function RecordStepPending({ title, detail }: { title: string; detail: string }) {

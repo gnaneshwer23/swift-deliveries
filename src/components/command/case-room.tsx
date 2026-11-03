@@ -10,7 +10,11 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AgentAvatar } from "@/components/command/agent-avatar";
 import { CaseChatPanel } from "@/components/command/case-chat-panel";
 import { useExplainMode } from "@/hooks/use-explain-mode";
-import { BuildCard, GateReview } from "@/components/command/delivery-build";
+import {
+  BuildCard,
+  downloadSavedDocuments,
+  GateReview,
+} from "@/components/command/delivery-build";
 import { RoomStage } from "@/components/command/room-stage";
 import {
   Sheet,
@@ -41,6 +45,10 @@ export type CaseRoomBuild = {
   workroom: WorkroomModel | null;
   error: string | null;
   deciding: boolean;
+  /** The open Room stopped asking for the next step after several that saved nothing. */
+  stalled?: boolean;
+  stallNote?: string | null;
+  onContinue?: () => void;
   onDecideGate: (taskId: string, decision: "approve" | "reject", note: string) => void;
 };
 
@@ -167,10 +175,12 @@ function TeamIntro({ beat }: { beat: Extract<RoomBeat, { kind: "team" }> }) {
 function Beat({
   beat,
   build,
+  missionId,
   onOpenWorkroom,
 }: {
   beat: RoomBeat;
   build?: CaseRoomBuild | undefined;
+  missionId: string;
   onOpenWorkroom?: () => void;
 }) {
   switch (beat.kind) {
@@ -327,7 +337,27 @@ function Beat({
                   ? `I can’t read the build right now: ${build.error}`
                   : "Loading the build…"}
             </p>
+            {build?.stalled ? (
+              <p>
+                The build paused before the next document was saved.
+                {build.stallNote ? ` ${build.stallNote}` : ""} Nothing was marked finished.
+              </p>
+            ) : null}
             {build?.room ? <BuildCard room={build.room} /> : null}
+            {build?.room && build.room.stages.some((st) => st.output?.content.trim()) ? (
+              <button
+                type="button"
+                className="room-pill room-pill-primary"
+                onClick={() => downloadSavedDocuments(build.room!, missionId)}
+              >
+                Download saved documents
+              </button>
+            ) : build?.room ? (
+              <p className="room-output-note">
+                No charter, PRD or other stage document is saved yet. Each file appears here when
+                its stage finishes, labelled simulated draft or model.
+              </p>
+            ) : null}
             {build?.workroom && onOpenWorkroom ? (
               <button
                 type="button"
@@ -386,10 +416,13 @@ export function CaseRoom({
   mission,
   panels,
   build,
+  downloads,
 }: {
   mission: SupervisedMission;
   panels: CaseRoomPanels;
   build?: CaseRoomBuild;
+  /** Decision pack and archive controls, when the case has something to save. */
+  downloads?: ReactNode;
 }) {
   const model = buildRoomModel(mission);
   const gate = build?.room?.gate ?? null;
@@ -485,15 +518,23 @@ export function CaseRoom({
             ? `Aria needs you: ${gate.title.toLowerCase()}.`
             : buildState === "running"
               ? "The team is building. Aria will come back after each stage."
-              : buildState === "done"
-                ? "The build is complete."
-                : model.status.line}
+              : buildState === "failed"
+                ? "A stage failed, so later stages will not run. Documents saved before that can be downloaded."
+                : buildState === "done" &&
+                  model.next.id !== "completed" &&
+                  model.next.id !== "follow_up_approved"
+                ? `The build is complete. Next: ${model.next.label}. Documents already saved can be downloaded.`
+                : buildState === "done" ||
+                    model.next.id === "completed" ||
+                    model.next.id === "follow_up_approved"
+                  ? "Completed. Saved documents are ready to download."
+                    : model.status.line}
         </p>
       </header>
 
       <ol className="room-thread">
         {beforeStage.map((beat, i) => (
-          <Beat key={`${beat.kind}-${i}`} beat={beat} />
+          <Beat key={`${beat.kind}-${i}`} beat={beat} missionId={mission.id} />
         ))}
         {investigation ? (
           <Aria>
@@ -519,6 +560,7 @@ export function CaseRoom({
             key={`${beat.kind}-${i}`}
             beat={beat}
             build={build}
+            missionId={mission.id}
             onOpenWorkroom={() => open("workroom")}
           />
         ))}
@@ -532,8 +574,12 @@ export function CaseRoom({
 
       <div className="room-dock" role="region" aria-label="What happens next">
         <div className="room-dock-in">
-          {gate || model.next.waitingOnYou ? (
+          {gate || (model.next.waitingOnYou && buildState !== "done") ? (
             <span className="room-waiting">Aria needs you</span>
+          ) : buildState === "done" ||
+            model.next.id === "completed" ||
+            model.next.id === "follow_up_approved" ? (
+            <span className="room-working">Completed</span>
           ) : (
             <span className="room-working">
               {buildState === "running" ? "The team is building" : model.next.label}
@@ -567,6 +613,21 @@ export function CaseRoom({
                 Begin delivery
               </button>
             ) : null}
+            {build?.stalled && build.onContinue ? (
+              <button type="button" className="room-pill room-pill-primary" onClick={build.onContinue}>
+                Continue the build
+              </button>
+            ) : null}
+            {build?.room && build.room.stages.some((st) => st.output?.content.trim()) ? (
+              <button
+                type="button"
+                className="room-pill room-pill-primary"
+                onClick={() => downloadSavedDocuments(build.room!, mission.id)}
+              >
+                Download saved documents
+              </button>
+            ) : null}
+            {downloads ? <div className="room-dock-downloads">{downloads}</div> : null}
             {model.next.panel !== "none" && model.next.waitingOnYou ? (
               <button
                 type="button"
