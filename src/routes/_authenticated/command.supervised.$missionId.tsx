@@ -1172,26 +1172,25 @@ function ExportButton({
   });
   const canPack = Boolean(existingMd || hasArtefact);
   const canArchive = Boolean(existingMd || hasArtefact || hasDelivery);
-  const failure =
-    save.error ?? executive.error ?? fullArchive.error ?? zip.error;
+  const failure = save.error ?? executive.error ?? fullArchive.error ?? zip.error;
   return (
     <div className={`ps-quiet-downloads${compact ? " ps-quiet-downloads-compact" : ""}`}>
       {canPack ? (
-      <button
-        type="button"
-        className="cc-btn cc-btn-primary"
-        disabled={save.isPending}
-        onClick={() => {
-          if (existingMd) void downloadPack(existingMd, existingPdf, names).catch(onError);
-          else save.mutate();
-        }}
-      >
-        {save.isPending
-          ? "Exporting…"
-          : compact
-            ? "Decision pack"
-            : "Download decision pack (PDF + Markdown)"}
-      </button>
+        <button
+          type="button"
+          className="cc-btn cc-btn-primary"
+          disabled={save.isPending}
+          onClick={() => {
+            if (existingMd) void downloadPack(existingMd, existingPdf, names).catch(onError);
+            else save.mutate();
+          }}
+        >
+          {save.isPending
+            ? "Exporting…"
+            : compact
+              ? "Decision pack"
+              : "Download decision pack (PDF + Markdown)"}
+        </button>
       ) : null}
       <button
         type="button"

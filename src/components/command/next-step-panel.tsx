@@ -127,8 +127,8 @@ function ExpectationForm({
           {save.isPending ? "Saving…" : "Save and continue"}
         </button>
         <p className="plan-hint">
-          All four fields are saved with your case. The expectation needs at least a short
-          sentence; the other three need a few words. You record what actually happened later.
+          All four fields are saved with your case. The expectation needs at least a short sentence;
+          the other three need a few words. You record what actually happened later.
         </p>
       </div>
     </form>

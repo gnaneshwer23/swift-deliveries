@@ -10,11 +10,8 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AgentAvatar } from "@/components/command/agent-avatar";
 import { CaseChatPanel } from "@/components/command/case-chat-panel";
 import { useExplainMode } from "@/hooks/use-explain-mode";
-import {
-  BuildCard,
-  downloadSavedDocuments,
-  GateReview,
-} from "@/components/command/delivery-build";
+import { BuildCard, GateReview } from "@/components/command/delivery-build";
+import { downloadSavedDocuments } from "@/lib/download-file";
 import { RoomStage } from "@/components/command/room-stage";
 import {
   Sheet,
@@ -521,13 +518,13 @@ export function CaseRoom({
               : buildState === "failed"
                 ? "A stage failed, so later stages will not run. Documents saved before that can be downloaded."
                 : buildState === "done" &&
-                  model.next.id !== "completed" &&
-                  model.next.id !== "follow_up_approved"
-                ? `The build is complete. Next: ${model.next.label}. Documents already saved can be downloaded.`
-                : buildState === "done" ||
-                    model.next.id === "completed" ||
-                    model.next.id === "follow_up_approved"
-                  ? "Completed. Saved documents are ready to download."
+                    model.next.id !== "completed" &&
+                    model.next.id !== "follow_up_approved"
+                  ? `The build is complete. Next: ${model.next.label}. Documents already saved can be downloaded.`
+                  : buildState === "done" ||
+                      model.next.id === "completed" ||
+                      model.next.id === "follow_up_approved"
+                    ? "Completed. Saved documents are ready to download."
                     : model.status.line}
         </p>
       </header>
@@ -614,7 +611,11 @@ export function CaseRoom({
               </button>
             ) : null}
             {build?.stalled && build.onContinue ? (
-              <button type="button" className="room-pill room-pill-primary" onClick={build.onContinue}>
+              <button
+                type="button"
+                className="room-pill room-pill-primary"
+                onClick={build.onContinue}
+              >
                 Continue the build
               </button>
             ) : null}

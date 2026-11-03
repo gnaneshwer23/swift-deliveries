@@ -4,8 +4,8 @@
  */
 import { useState } from "react";
 import { AgentAvatar } from "@/components/command/agent-avatar";
-import { downloadText, downloadZip, fileSlug } from "@/lib/download-file";
-import { assembleDeliveryDownload, stageDownloadFile } from "@/lib/pilot-mission/delivery-package";
+import { downloadText, fileSlug } from "@/lib/download-file";
+import { stageDownloadFile } from "@/lib/pilot-mission/delivery-package";
 import {
   BUILD_STATUS_LABEL,
   type BuildOutput,
@@ -20,17 +20,6 @@ function downloadStage(stage: BuildStage, index: number) {
   const type =
     ext === "html" ? "text/html;charset=utf-8" : ext === "json" ? "application/json" : undefined;
   downloadText(file.content, file.path.split("/").pop() ?? `${fileSlug(stage.title)}.${ext}`, type);
-}
-
-/** ZIP of documents the build has actually saved. Returns false when none exist. */
-export function downloadSavedDocuments(room: DeliveryRoom, missionId: string): boolean {
-  const { files, outputs } = assembleDeliveryDownload(room);
-  if (!outputs.length) return false;
-  downloadZip(
-    files.map((file) => ({ path: file.path, content: file.content })),
-    `deliverx-documents-${missionId.slice(0, 8)}.zip`,
-  );
-  return true;
 }
 
 function OutputPreview({ out, label }: { out: BuildOutput; label?: string }) {

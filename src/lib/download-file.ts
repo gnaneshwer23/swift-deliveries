@@ -3,6 +3,8 @@
  * document, and the object URL has to outlive the click. Two files in the same
  * turn are staggered so the second is not dropped.
  */
+import { assembleDeliveryDownload } from "@/lib/pilot-mission/delivery-package";
+import type { DeliveryRoom } from "@/lib/pilot-mission/delivery-room";
 import { createZip } from "@/lib/programme/zip";
 
 export function downloadBlob(blob: Blob, filename: string): void {
@@ -25,9 +27,7 @@ export function downloadText(
   downloadBlob(new Blob([content], { type }), filename);
 }
 
-export async function downloadBlobs(
-  items: Array<{ blob: Blob; filename: string }>,
-): Promise<void> {
+export async function downloadBlobs(items: Array<{ blob: Blob; filename: string }>): Promise<void> {
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     if (!item) continue;
@@ -36,7 +36,10 @@ export async function downloadBlobs(
   }
 }
 
-export function downloadZip(files: Array<{ path: string; content: string }>, filename: string): void {
+export function downloadZip(
+  files: Array<{ path: string; content: string }>,
+  filename: string,
+): void {
   const archive = createZip(files).slice();
   downloadBlob(new Blob([archive], { type: "application/zip" }), filename);
 }
@@ -67,6 +70,17 @@ export function downloadProducedDocument(input: {
     `# ${input.title}\n\n- How it was made: ${input.production}\n\n---\n\n${input.content}\n`,
     filename,
   );
+}
+
+/** ZIP of documents the build has actually saved. Returns false when none exist. */
+export function downloadSavedDocuments(room: DeliveryRoom, missionId: string): boolean {
+  const { files, outputs } = assembleDeliveryDownload(room);
+  if (!outputs.length) return false;
+  downloadZip(
+    files.map((file) => ({ path: file.path, content: file.content })),
+    `deliverx-documents-${missionId.slice(0, 8)}.zip`,
+  );
+  return true;
 }
 
 export function fileSlug(title: string): string {

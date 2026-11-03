@@ -485,7 +485,8 @@ export function nextRequiredAction(mission: SupervisedMission): {
       return {
         id: "export",
         title: "Export the pack",
-        detail: "The export is stored on the mission. Opening it again does not add a usage record.",
+        detail:
+          "The export is stored on the mission. Opening it again does not add a usage record.",
       };
     }
     return {
