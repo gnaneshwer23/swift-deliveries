@@ -1,0 +1,119 @@
+/* Project checkpoint — palette B tokens from psi-foundation.css. */
+.ckp {
+  margin: 0 0 20px;
+  padding: 16px 18px;
+  border: 1px solid var(--psi-border, #e6dfd4);
+  border-radius: var(--psi-radius-panel, 18px);
+  background: var(--psi-surface, #fffdf9);
+  color: var(--psi-ink, #1c1b19);
+}
+.ckp-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin-bottom: 12px;
+}
+.ckp-head h2 {
+  margin: 0 6px 0 0;
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--psi-muted, #6f6961);
+}
+.ckp-status {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--psi-lavender, #f3ece2);
+  color: var(--psi-text, #55514a);
+}
+.ckp[data-status="waiting_on_you"] .ckp-status {
+  background: var(--psi-warning-soft, #fcf6df);
+  color: var(--psi-warning, #665503);
+}
+.ckp[data-status="team_working"] .ckp-status {
+  background: var(--psi-indigo-soft, #f6ebdc);
+  color: var(--psi-indigo, #985808);
+}
+.ckp[data-status="done"] .ckp-status {
+  background: var(--psi-success-soft, #ecf5ef);
+  color: var(--psi-success, #376e4c);
+}
+.ckp[data-status="stopped"] .ckp-status {
+  background: var(--psi-danger-soft, #fff0ee);
+  color: var(--psi-danger, #b42318);
+}
+.ckp-quiet {
+  padding: 1px 9px;
+  border: 1px dashed var(--psi-warning, #665503);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--psi-warning, #665503);
+}
+.ckp-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+}
+.ckp-grid dt {
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--psi-muted, #6f6961);
+}
+.ckp-grid dd {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.ckp-detail,
+.ckp-note {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--psi-muted, #6f6961);
+}
+.ckp-when,
+.ckp-muted {
+  color: var(--psi-muted, #6f6961);
+}
+.ckp-muted {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.ckp-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+.ckp-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+.ckp-list svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: var(--psi-success, #376e4c);
+}
+.ckp-checks svg {
+  color: var(--psi-warning, #665503);
+}
+@media (max-width: 900px) {
+  .ckp-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 520px) {
+  .ckp-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -11,6 +11,10 @@ import { missionNeedsAttention } from "./portfolio";
 
 export type ProjectPhase = "needs_you" | "researching" | "building" | "done" | "stopped";
 
+/** A live project with no saved activity for this many days is shown as stalled. */
+export const STALL_DAYS = 7;
+const DAY_MS = 86_400_000;
+
 export const PROJECT_PHASE_LABEL: Record<ProjectPhase, string> = {
   needs_you: "Needs you",
   researching: "In research",
@@ -31,6 +35,8 @@ export type ProjectSource = {
   archived: boolean;
   teamIds: string[];
   delivery: boolean;
+  /** Saved activity, used to tell how long the project has been quiet. */
+  recentActivity?: { at: string }[];
 };
 
 export type ProjectRole = { id: string; name: string; department: string };
@@ -45,16 +51,23 @@ export type ProjectRow = {
   phase: ProjectPhase;
   next: string;
   updatedAt: string;
+  /** Last saved activity (or the last update when no activity is saved). */
+  lastActivityAt: string;
+  /** Whole days since then. */
+  quietDays: number;
+  /** Live, not finished, and quiet for STALL_DAYS or more. */
+  stalled: boolean;
   favourite: boolean;
   deleted: boolean;
   roles: ProjectRole[];
 };
 
-export type ProjectFilter = "active" | "needs_you" | "building" | "done" | "deleted";
+export type ProjectFilter = "active" | "needs_you" | "stalled" | "building" | "done" | "deleted";
 
 export const PROJECT_FILTERS: Array<{ id: ProjectFilter; label: string }> = [
   { id: "active", label: "All projects" },
   { id: "needs_you", label: "Needs you" },
+  { id: "stalled", label: "Stalled" },
   { id: "building", label: "In delivery" },
   { id: "done", label: "Done" },
   { id: "deleted", label: "Deleted" },
@@ -105,28 +118,68 @@ export function projectRoles(p: Pick<ProjectSource, "teamIds" | "delivery">): Pr
   return [...ids].map(role).filter((r): r is ProjectRole => r !== null);
 }
 
-export function buildProjectsDashboard(projects: ProjectSource[]): ProjectsDashboard {
-  const rows: ProjectRow[] = [...projects]
+/**
+ * The newest saved activity, or the last update only when no activity is saved. Housekeeping
+ * saves (a favourite, a rename) touch the update time but are not work, so they never reset
+ * how long a project has been quiet.
+ */
+export function lastActivityAt(p: Pick<ProjectSource, "updatedAt" | "recentActivity">): string {
+  let best = -Infinity;
+  let iso: string | null = null;
+  for (const e of p.recentActivity ?? []) {
+    const t = Date.parse(e.at);
+    if (Number.isFinite(t) && t > best) {
+      best = t;
+      iso = e.at;
+    }
+  }
+  return iso ?? p.updatedAt;
+}
+
+/** Whole days between `iso` and `now`, never negative. */
+export function quietDaysSince(iso: string, now: number): number {
+  const t = Date.parse(iso);
+  return Number.isFinite(t) ? Math.max(0, Math.floor((now - t) / DAY_MS)) : 0;
+}
+
+/** What needs you comes first; stalled projects have their own tab and badge. */
+const ATTENTION = (r: ProjectRow) => (r.phase === "needs_you" ? 0 : 1);
+
+export function buildProjectsDashboard(
+  projects: ProjectSource[],
+  now: number = Date.now(),
+): ProjectsDashboard {
+  const rows: ProjectRow[] = projects
+    .map((p) => {
+      const phase = phaseFor(p);
+      const last = lastActivityAt(p);
+      const quietDays = quietDaysSince(last, now);
+      return {
+        id: p.id,
+        version: p.version,
+        name: p.question.trim() || "Untitled project",
+        phase,
+        next: p.next.title,
+        updatedAt: p.updatedAt,
+        lastActivityAt: last,
+        quietDays,
+        stalled: !p.archived && phase !== "done" && phase !== "stopped" && quietDays >= STALL_DAYS,
+        favourite: p.favourite,
+        deleted: p.archived,
+        roles: projectRoles(p),
+      };
+    })
     .sort((a, b) => {
       if (a.favourite !== b.favourite) return a.favourite ? -1 : 1;
-      return Date.parse(b.updatedAt) - Date.parse(a.updatedAt);
-    })
-    .map((p) => ({
-      id: p.id,
-      version: p.version,
-      name: p.question.trim() || "Untitled project",
-      phase: phaseFor(p),
-      next: p.next.title,
-      updatedAt: p.updatedAt,
-      favourite: p.favourite,
-      deleted: p.archived,
-      roles: projectRoles(p),
-    }));
+      if (ATTENTION(a) !== ATTENTION(b)) return ATTENTION(a) - ATTENTION(b);
+      return Date.parse(b.lastActivityAt) - Date.parse(a.lastActivityAt);
+    });
 
   const live = rows.filter((r) => !r.deleted);
   const counts: Record<ProjectFilter, number> = {
     active: live.length,
     needs_you: live.filter((r) => r.phase === "needs_you").length,
+    stalled: live.filter((r) => r.stalled).length,
     building: live.filter((r) => r.phase === "building").length,
     done: live.filter((r) => r.phase === "done").length,
     deleted: rows.length - live.length,
@@ -174,6 +227,7 @@ export function filterProjects(
   return rows.filter((r) => {
     if (filter === "deleted" ? !r.deleted : r.deleted) return false;
     if (filter === "needs_you" && r.phase !== "needs_you") return false;
+    if (filter === "stalled" && !r.stalled) return false;
     if (filter === "building" && r.phase !== "building") return false;
     if (filter === "done" && r.phase !== "done") return false;
     return !q || r.name.toLowerCase().includes(q);

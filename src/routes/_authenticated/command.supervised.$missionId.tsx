@@ -9,6 +9,7 @@ import { CommerceDisclosurePanel } from "@/components/command/commerce-disclosur
 import { LearnerLensPanel } from "@/components/command/learner-lens-panel";
 import { MissionTheatre } from "@/components/command/mission-theatre";
 import { QuietMissionBar } from "@/components/command/quiet-mission-bar";
+import { CheckpointCard } from "@/components/command/checkpoint-card";
 import { HonestyPosturePanel } from "@/components/command/honesty-posture-panel";
 import { PathArtefactsPanel } from "@/components/command/path-artefacts-panel";
 import { ProjectRoomNav } from "@/components/command/project-room-nav";
@@ -314,6 +315,8 @@ function SupervisedMissionPage() {
             ) : null}
           </div>
         </div>
+
+        <CheckpointCard mission={mission} next={next} />
 
         <CaseRoom
           mission={mission}

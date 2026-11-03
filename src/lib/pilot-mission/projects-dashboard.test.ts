@@ -72,6 +72,93 @@ describe("buildProjectsDashboard", () => {
     expect(d.rows.map((r) => r.id)).toEqual(["fav", "new", "old"]);
   });
 
+  it("puts what needs you first, after favourites", () => {
+    const d = buildProjectsDashboard([
+      project({ id: "recent", updatedAt: "2026-10-31T00:00:00Z" }),
+      project({
+        id: "ask",
+        updatedAt: "2026-10-01T00:00:00Z",
+        next: { id: "decide", title: "Decide", detail: "" },
+      }),
+      project({ id: "fav", favourite: true, updatedAt: "2026-09-01T00:00:00Z" }),
+    ]);
+    expect(d.rows.map((r) => r.id)).toEqual(["fav", "ask", "recent"]);
+  });
+
+  it("measures quiet days from the newest saved activity, not the last edit", () => {
+    const now = Date.parse("2026-11-10T12:00:00Z");
+    const d = buildProjectsDashboard(
+      [
+        project({
+          id: "a",
+          updatedAt: "2026-10-01T00:00:00Z",
+          recentActivity: [{ at: "2026-10-20T09:00:00Z" }, { at: "2026-11-08T09:00:00Z" }],
+        }),
+        project({ id: "b", updatedAt: "2026-11-01T00:00:00Z" }),
+        // A favourite saved yesterday does not make an old project look busy.
+        project({
+          id: "c",
+          favourite: true,
+          updatedAt: "2026-11-09T12:00:00Z",
+          recentActivity: [{ at: "2026-10-30T12:00:00Z" }],
+        }),
+      ],
+      now,
+    );
+    expect(d.rows.find((r) => r.id === "c")!.quietDays).toBe(11);
+    const a = d.rows.find((r) => r.id === "a")!;
+    expect(a.lastActivityAt).toBe("2026-11-08T09:00:00Z");
+    expect(a.quietDays).toBe(2);
+    expect(d.rows.find((r) => r.id === "b")!.quietDays).toBe(9);
+  });
+
+  it("marks a live, unfinished project quiet for 7 days or more as stalled", () => {
+    const now = Date.parse("2026-11-10T12:00:00Z");
+    const d = buildProjectsDashboard(
+      [
+        project({ id: "six", updatedAt: "2026-11-04T13:00:00Z" }),
+        project({ id: "seven", updatedAt: "2026-11-03T12:00:00Z" }),
+        project({
+          id: "waiting",
+          updatedAt: "2026-10-01T00:00:00Z",
+          next: { id: "decide", title: "Decide", detail: "" },
+        }),
+        project({
+          id: "done",
+          stage: "exported",
+          updatedAt: "2026-09-01T00:00:00Z",
+          next: { id: "follow_up_approved", title: "", detail: "" },
+        }),
+        project({ id: "stopped", stage: "cancelled", updatedAt: "2026-09-01T00:00:00Z" }),
+        project({ id: "deleted", archived: true, updatedAt: "2026-09-01T00:00:00Z" }),
+      ],
+      now,
+    );
+    const stalled = Object.fromEntries(d.rows.map((r) => [r.id, r.stalled]));
+    expect(stalled).toEqual({
+      six: false,
+      seven: true,
+      waiting: true,
+      done: false,
+      stopped: false,
+      deleted: false,
+    });
+    expect(d.counts.stalled).toBe(2);
+    expect(
+      filterProjects(d.rows, "stalled")
+        .map((r) => r.id)
+        .sort(),
+    ).toEqual(["seven", "waiting"]);
+  });
+
+  it("never reports negative quiet days for a timestamp in the future", () => {
+    const d = buildProjectsDashboard(
+      [project({ updatedAt: "2026-12-01T00:00:00Z" })],
+      Date.parse("2026-11-10T00:00:00Z"),
+    );
+    expect(d.rows[0]!.quietDays).toBe(0);
+  });
+
   it("staffs each project only with the roles it was given", () => {
     expect(projectRoles({ teamIds: ["DX-001"], delivery: false }).map((r) => r.id)).toEqual([
       "DX-001",
