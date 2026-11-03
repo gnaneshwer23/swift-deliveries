@@ -1,7 +1,7 @@
 import { buildClaimsBoundary } from "@/lib/pilot-mission/claims-boundary";
 import { buildInvestigationCommitment } from "@/lib/pilot-mission/investigation-commitment";
-import type { SupervisedMission } from "@/lib/pilot-mission/types";
-import { nextRequiredAction } from "@/lib/pilot-mission/types";
+import { nextGateLabel } from "@/lib/pilot-mission/next-gate";
+import { nextRequiredAction, type SupervisedMission } from "@/lib/pilot-mission/types";
 
 /** Right rail: anti-overdependence, claims boundary, working context — all from persisted fields. */
 export function IndigoCaseRail({ mission }: { mission: SupervisedMission }) {
@@ -28,7 +28,7 @@ export function IndigoCaseRail({ mission }: { mission: SupervisedMission }) {
         <h3 className="text-sm font-semibold mt-1 mb-0">You stay the decision owner</h3>
         <p className="cc-muted text-sm mb-0">
           Agents draft and specialists research; only explicit human clicks pass gates. Next on this
-          case: <strong>{next.title}</strong>.
+          case: <strong>{nextGateLabel(next)}</strong>.
         </p>
       </section>
 

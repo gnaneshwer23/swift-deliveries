@@ -22,7 +22,12 @@ import {
 import type { DeliveryRoom } from "@/lib/pilot-mission/delivery-room";
 import type { Workroom as WorkroomModel } from "@/lib/pilot-mission/workroom";
 import { Workroom } from "@/components/command/workroom";
-import { buildRoomModel, roomDateLabel, type RoomBeat } from "@/lib/pilot-mission/room-story";
+import {
+  buildRoomModel,
+  roomDateLabel,
+  roomInvestigationLine,
+  type RoomBeat,
+} from "@/lib/pilot-mission/room-story";
 import type { SupervisedMission } from "@/lib/pilot-mission/types";
 import "@/styles/studio-system.css";
 import "@/styles/room.css";
@@ -205,6 +210,22 @@ function Beat({
     case "investigation":
       return null; // rendered with the stage, below
     case "briefing":
+      if (!beat.ready) {
+        return (
+          <Aria>
+            <p>
+              <b>{beat.headline}.</b> {beat.howMade}
+            </p>
+            <div className="room-card">
+              <div className="room-verdict">
+                <span className="room-mono">{beat.kicker}</span>
+                <strong>{beat.nextLabel}</strong>
+              </div>
+              <p className="room-wait-copy">{beat.summary}</p>
+            </div>
+          </Aria>
+        );
+      }
       return (
         <Aria>
           <p>
@@ -212,9 +233,13 @@ function Beat({
           </p>
           <div className="room-card">
             <div className="room-verdict">
-              <span className="room-mono">Aria’s recommendation</span>
+              <span className="room-mono">{beat.kicker}</span>
               <strong>{beat.verdict}</strong>
             </div>
+            <p className="room-next-line">
+              <span className="room-mono">Next step</span>
+              {beat.nextLabel}
+            </p>
             <Facts facts={beat.facts} />
             <div className="room-estimate">
               <span className="room-mono">If you build it</span>
@@ -430,9 +455,9 @@ export function CaseRoom({
   };
 
   const ariaLine = investigation?.live
-    ? "The team is on it. Give me a few minutes — you can leave; I’ll have a briefing when you’re back."
+    ? "The team is on it. Give me a few minutes — you can leave; I’ll come back when the record updates."
     : investigation
-      ? `The team recorded ${investigation.findings} finding${investigation.findings === 1 ? "" : "s"} and ${investigation.gaps} open question${investigation.gaps === 1 ? "" : "s"}${investigation.provider ? ` with ${investigation.provider} web research` : ""}.`
+      ? roomInvestigationLine(investigation, model.next)
       : "";
 
   const beforeStage = model.beats.filter((b) => b.kind === "idea" || b.kind === "plan");
@@ -478,10 +503,13 @@ export function CaseRoom({
               findings={model.stage.findings}
               agents={model.stage.agents}
               live={investigation.live}
+              missionId={mission.id}
               ariaLine={
                 investigation.live
-                  ? "Working on it. I’ll come back with a briefing."
-                  : "That’s everything the team recorded."
+                  ? "Working on it. I’ll come back when something is saved."
+                  : model.next.waitingOnYou
+                    ? `Next: ${model.next.label}.`
+                    : "That’s everything the team recorded."
               }
             />
           </Aria>

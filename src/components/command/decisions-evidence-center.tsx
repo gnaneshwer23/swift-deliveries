@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { buildMissionInspection } from "@/lib/pilot-mission/mission-inspection";
 import { ensureTeamCollaboration } from "@/lib/pilot-mission/team-collaboration";
-import type { SupervisedMission } from "@/lib/pilot-mission/types";
-import { nextRequiredAction } from "@/lib/pilot-mission/types";
+import { nextGateLabel } from "@/lib/pilot-mission/next-gate";
+import { nextRequiredAction, type SupervisedMission } from "@/lib/pilot-mission/types";
 import {
   AGENT_RECOMMENDATION_LABELS,
   HUMAN_NEXT_PATH_LABELS,
@@ -32,7 +32,7 @@ export function DecisionsEvidenceCenter({ mission }: { mission: SupervisedMissio
 
       <article className="ps-exec-card ps-indigo-active-gate">
         <p className="ps-exec-section-kicker">Active human gate</p>
-        <h3 className="text-base font-semibold mt-1">{next.title}</h3>
+        <h3 className="text-base font-semibold mt-1">{nextGateLabel(next)}</h3>
         <p className="cc-muted text-sm mb-0">{next.detail}</p>
         {inspection.decisionAttention && inspection.decisionAttention.id !== next.id ? (
           <p className="cc-muted text-xs mt-2 mb-0">
