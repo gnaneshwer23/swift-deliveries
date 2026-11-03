@@ -1,0 +1,64 @@
+/* Settings → Connections, on the Settings shell (settings.css, profile.css). */
+.cn-accounts h2,
+.cn-row h3 {
+  margin: 0;
+}
+.cn-list {
+  display: grid;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.cn-row {
+  display: grid;
+  gap: 4px;
+  padding: 14px 0;
+  border-top: 1px solid var(--psi-border);
+  min-width: 0;
+}
+.cn-row:first-child {
+  border-top: 0;
+  padding-top: 4px;
+}
+.cn-row-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 12px;
+}
+.cn-row h3 {
+  font-size: 15px;
+  font-weight: 650;
+  color: var(--psi-text);
+}
+.cn-what,
+.cn-now,
+.cn-problem,
+.cn-method {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.cn-what {
+  color: var(--psi-muted);
+}
+.cn-now {
+  color: var(--psi-text);
+}
+.cn-problem {
+  margin-top: 4px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--psi-warning-soft);
+  color: var(--psi-text);
+  font-size: 13px;
+}
+.cn-method {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--psi-border);
+  color: var(--psi-muted);
+  font-size: 13px;
+}

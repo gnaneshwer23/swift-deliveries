@@ -58,6 +58,7 @@ import { Route as AuthenticatedCommandProjectsRouteImport } from './routes/_auth
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings.index'
 import { Route as AuthenticatedSettingsAuditRouteImport } from './routes/_authenticated/settings.audit'
 import { Route as AuthenticatedSettingsBillingRouteImport } from './routes/_authenticated/settings.billing'
+import { Route as AuthenticatedSettingsConnectionsRouteImport } from './routes/_authenticated/settings.connections'
 import { Route as AuthenticatedSettingsProfileRouteImport } from './routes/_authenticated/settings.profile'
 import { Route as AuthenticatedWorkspaceIndexRouteImport } from './routes/_authenticated/workspace.index'
 import { Route as AuthenticatedWorkspaceApplicationsRouteImport } from './routes/_authenticated/workspace.applications'
@@ -345,6 +346,12 @@ const AuthenticatedSettingsBillingRoute =
     path: '/billing',
     getParentRoute: () => AuthenticatedSettingsRoute,
   } as any)
+const AuthenticatedSettingsConnectionsRoute =
+  AuthenticatedSettingsConnectionsRouteImport.update({
+    id: '/connections',
+    path: '/connections',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
 const AuthenticatedSettingsProfileRoute =
   AuthenticatedSettingsProfileRouteImport.update({
     id: '/profile',
@@ -582,6 +589,7 @@ export interface FileRoutesByFullPath {
   '/command/projects': typeof AuthenticatedCommandProjectsRoute
   '/settings/audit': typeof AuthenticatedSettingsAuditRoute
   '/settings/billing': typeof AuthenticatedSettingsBillingRoute
+  '/settings/connections': typeof AuthenticatedSettingsConnectionsRoute
   '/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
@@ -661,6 +669,7 @@ export interface FileRoutesByTo {
   '/command/projects': typeof AuthenticatedCommandProjectsRoute
   '/settings/audit': typeof AuthenticatedSettingsAuditRoute
   '/settings/billing': typeof AuthenticatedSettingsBillingRoute
+  '/settings/connections': typeof AuthenticatedSettingsConnectionsRoute
   '/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
   '/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
@@ -744,6 +753,7 @@ export interface FileRoutesById {
   '/_authenticated/command/projects': typeof AuthenticatedCommandProjectsRoute
   '/_authenticated/settings/audit': typeof AuthenticatedSettingsAuditRoute
   '/_authenticated/settings/billing': typeof AuthenticatedSettingsBillingRoute
+  '/_authenticated/settings/connections': typeof AuthenticatedSettingsConnectionsRoute
   '/_authenticated/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/_authenticated/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
   '/_authenticated/workspace/capability': typeof AuthenticatedWorkspaceCapabilityRoute
@@ -828,6 +838,7 @@ export interface FileRouteTypes {
     | '/command/projects'
     | '/settings/audit'
     | '/settings/billing'
+    | '/settings/connections'
     | '/settings/profile'
     | '/workspace/applications'
     | '/workspace/capability'
@@ -907,6 +918,7 @@ export interface FileRouteTypes {
     | '/command/projects'
     | '/settings/audit'
     | '/settings/billing'
+    | '/settings/connections'
     | '/settings/profile'
     | '/workspace/applications'
     | '/workspace/capability'
@@ -989,6 +1001,7 @@ export interface FileRouteTypes {
     | '/_authenticated/command/projects'
     | '/_authenticated/settings/audit'
     | '/_authenticated/settings/billing'
+    | '/_authenticated/settings/connections'
     | '/_authenticated/settings/profile'
     | '/_authenticated/workspace/applications'
     | '/_authenticated/workspace/capability'
@@ -1414,6 +1427,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsBillingRouteImport
       parentRoute: typeof AuthenticatedSettingsRoute
     }
+    '/_authenticated/settings/connections': {
+      id: '/_authenticated/settings/connections'
+      path: '/connections'
+      fullPath: '/settings/connections'
+      preLoaderRoute: typeof AuthenticatedSettingsConnectionsRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
+    }
     '/_authenticated/settings/profile': {
       id: '/_authenticated/settings/profile'
       path: '/profile'
@@ -1679,6 +1699,7 @@ const AuthenticatedCommandRouteWithChildren =
 interface AuthenticatedSettingsRouteChildren {
   AuthenticatedSettingsAuditRoute: typeof AuthenticatedSettingsAuditRoute
   AuthenticatedSettingsBillingRoute: typeof AuthenticatedSettingsBillingRoute
+  AuthenticatedSettingsConnectionsRoute: typeof AuthenticatedSettingsConnectionsRoute
   AuthenticatedSettingsProfileRoute: typeof AuthenticatedSettingsProfileRoute
   AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
 }
@@ -1686,6 +1707,7 @@ interface AuthenticatedSettingsRouteChildren {
 const AuthenticatedSettingsRouteChildren: AuthenticatedSettingsRouteChildren = {
   AuthenticatedSettingsAuditRoute: AuthenticatedSettingsAuditRoute,
   AuthenticatedSettingsBillingRoute: AuthenticatedSettingsBillingRoute,
+  AuthenticatedSettingsConnectionsRoute: AuthenticatedSettingsConnectionsRoute,
   AuthenticatedSettingsProfileRoute: AuthenticatedSettingsProfileRoute,
   AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
 }
