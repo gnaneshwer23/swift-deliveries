@@ -4,7 +4,7 @@
  * open, and records gate decisions. Gates stay human-only: this hook never passes one.
  */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { CaseRoomBuild } from "@/components/command/case-room";
 import { buildDeliveryRoom } from "@/lib/pilot-mission/delivery-room";
 import { buildWorkroom } from "@/lib/pilot-mission/workroom";
@@ -60,30 +60,45 @@ export function useDeliveryBuild(wfMissionId: string | null): CaseRoomBuild | un
   });
 
   // Continue the build while the Room is open; the worker and its schedule cover the rest.
+  // After a few steps that save nothing, stop and say so — a silent stop looked like a stall.
   const lastStep = useRef(0);
   const idle = useRef(0);
+  const [paused, setPaused] = useState(false);
+  const [stallNote, setStallNote] = useState<string | null>(null);
   const done = room?.progress.done ?? 0;
   useEffect(() => {
     idle.current = 0;
+    setPaused(false);
+    setStallNote(null);
   }, [done]);
   useEffect(() => {
-    if (!wfMissionId || !room?.canAdvance || step.isPending || idle.current >= MAX_IDLE_STEPS)
-      return;
+    if (!wfMissionId || !room?.canAdvance || step.isPending || paused) return;
     const wait = Math.max(0, lastStep.current + STEP_GAP_MS - Date.now());
     const timer = setTimeout(() => {
       lastStep.current = Date.now();
       const before = room.progress.done;
       step.mutate(wfMissionId, {
         onSuccess: (next) => {
-          if (buildDeliveryRoom(next).progress.done <= before) idle.current += 1;
-        },
-        onError: () => {
+          if (buildDeliveryRoom(next).progress.done > before) return;
+          const note = "note" in next && typeof next.note === "string" ? next.note : null;
+          if (note?.startsWith("Waiting for work in progress")) return;
           idle.current += 1;
+          if (idle.current >= MAX_IDLE_STEPS) {
+            setPaused(true);
+            setStallNote(note ?? "The last steps did not save a new document.");
+          }
+        },
+        onError: (error) => {
+          idle.current += 1;
+          if (idle.current >= MAX_IDLE_STEPS) {
+            setPaused(true);
+            setStallNote(error instanceof Error ? error.message : "The build step failed.");
+          }
         },
       });
     }, wait);
     return () => clearTimeout(timer);
-  }, [wfMissionId, room, step]);
+  }, [wfMissionId, room, step, paused]);
 
   if (!wfMissionId) return undefined;
   const error = query.error ?? decide.error;
@@ -92,6 +107,13 @@ export function useDeliveryBuild(wfMissionId: string | null): CaseRoomBuild | un
     workroom,
     error: error instanceof Error ? error.message : error ? "The build could not be loaded." : null,
     deciding: decide.isPending,
+    stalled: paused && Boolean(room?.canAdvance),
+    stallNote,
+    onContinue: () => {
+      idle.current = 0;
+      setStallNote(null);
+      setPaused(false);
+    },
     onDecideGate: (taskId, decision, note) =>
       decide.mutate({ missionId: wfMissionId, taskId, decision, note }),
   };

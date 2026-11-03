@@ -502,9 +502,11 @@ function BuildBeatRail({
 
 function FocalGate({
   actions,
+  mission,
   leaseUntil,
 }: {
   actions: MissionTheatreActions;
+  mission: SupervisedMission;
   leaseUntil: string | null;
 }) {
   const next = actions.next;
@@ -562,14 +564,16 @@ function FocalGate({
         </button>
       ) : null}
 
-      {next.id === "approve_prototype" ? (
+      {mission.exportBody && !mission.prototype ? (
         <button
           type="button"
-          className="cc-btn cc-btn-primary"
+          className="cc-btn cc-btn-secondary"
           disabled={actions.prototypePending}
           onClick={actions.onApprovePrototype}
         >
-          {actions.prototypePending ? "Building prototype…" : "Approve sandboxed HTML prototype"}
+          {actions.prototypePending
+            ? "Building prototype…"
+            : "Approve sandboxed HTML prototype (optional)"}
         </button>
       ) : null}
 
@@ -620,7 +624,11 @@ function ActWork({
   const gateBlock = (
     <>
       {showGate ? (
-        <FocalGate actions={actions} leaseUntil={mission.job.leaseUntil ?? null} />
+        <FocalGate
+          actions={actions}
+          mission={mission}
+          leaseUntil={mission.job.leaseUntil ?? null}
+        />
       ) : null}
       {!showGate && actions.exportSlot && mission.exportBody ? (
         <div className="ps-theatre-gate">{actions.exportSlot}</div>

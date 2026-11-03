@@ -4,11 +4,23 @@
  */
 import { useState } from "react";
 import { AgentAvatar } from "@/components/command/agent-avatar";
+import { downloadText, fileSlug } from "@/lib/download-file";
+import { stageDownloadFile } from "@/lib/pilot-mission/delivery-package";
 import {
   BUILD_STATUS_LABEL,
   type BuildOutput,
+  type BuildStage,
   type DeliveryRoom,
 } from "@/lib/pilot-mission/delivery-room";
+
+function downloadStage(stage: BuildStage, index: number) {
+  const file = stageDownloadFile(stage, index);
+  if (!file) return;
+  const ext = file.path.split(".").pop() ?? "md";
+  const type =
+    ext === "html" ? "text/html;charset=utf-8" : ext === "json" ? "application/json" : undefined;
+  downloadText(file.content, file.path.split("/").pop() ?? `${fileSlug(stage.title)}.${ext}`, type);
+}
 
 function OutputPreview({ out, label }: { out: BuildOutput; label?: string }) {
   return (
@@ -51,7 +63,7 @@ export function BuildCard({ room }: { room: DeliveryRoom }) {
         </span>
       </div>
       <ol className="room-build-list">
-        {room.stages.map((s) => (
+        {room.stages.map((s, index) => (
           <li key={s.taskId} data-status={s.status} data-gate={s.gate ? "true" : "false"}>
             <span className="room-build-tick" aria-hidden="true" />
             {s.gate ? (
@@ -69,11 +81,20 @@ export function BuildCard({ room }: { room: DeliveryRoom }) {
               <p className="room-build-role">
                 {s.gate ? "Your decision" : `${s.owner} · ${s.role}`}
               </p>
-              {s.output ? (
-                <OutputPreview
-                  out={s.output}
-                  {...(s.output.title === s.title ? { label: "View the output" } : {})}
-                />
+              {s.output?.content.trim() ? (
+                <div className="room-output-actions">
+                  <OutputPreview
+                    out={s.output}
+                    {...(s.output.title === s.title ? { label: "View the output" } : {})}
+                  />
+                  <button
+                    type="button"
+                    className="room-pill"
+                    onClick={() => downloadStage(s, index)}
+                  >
+                    Download
+                  </button>
+                </div>
               ) : null}
             </div>
           </li>

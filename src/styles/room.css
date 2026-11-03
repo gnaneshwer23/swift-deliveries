@@ -1086,6 +1086,22 @@ li[data-status="waiting_on_you"] .room-build-status {
   margin-top: var(--sx-space-3xs);
 }
 
+.room-output-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sx-space-2xs);
+  margin-top: var(--sx-space-3xs);
+}
+
+.room-output-actions .room-output {
+  margin-top: 0;
+}
+
+.room-dock-downloads {
+  flex: 1 1 100%;
+}
+
 .room-output summary {
   cursor: pointer;
   display: flex;

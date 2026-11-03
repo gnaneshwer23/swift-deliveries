@@ -80,7 +80,7 @@ describe("mission dashboard screen", () => {
       qa: "upcoming",
       handover: "done",
     });
-    expect(exported.stageLabel).toBe("Approve sandboxed HTML prototype");
+    expect(exported.stageLabel).toBe("Completed");
   });
 
   it("does not count research tasks whose words merely contain 'api' or 'service'", () => {

@@ -8,6 +8,7 @@ import { MissionEvidence } from "@/components/command/mission-evidence";
 import { LifecycleWheel } from "@/components/command/lifecycle-wheel";
 import { PlanDependencies } from "@/components/command/plan-dependencies";
 import { ConversationPanel } from "@/components/command/conversation-panel";
+import { downloadProducedDocument } from "@/lib/download-file";
 import { missionBundleQuery } from "@/lib/workforce-queries";
 import {
   answerClarifications,
@@ -820,6 +821,24 @@ function MissionDetail() {
                       </span>
                     ))}
                   </div>
+                  {selectedArtefact.content.trim() ? (
+                    <button
+                      type="button"
+                      className="cc-btn cc-btn-secondary text-xs py-1 px-2.5"
+                      onClick={() =>
+                        downloadProducedDocument({
+                          title: selectedArtefact.title,
+                          content: selectedArtefact.content,
+                          format: selectedArtefact.contentFormat,
+                          production:
+                            artefactProduction(selectedArtefact)?.label ??
+                            "Production not recorded",
+                        })
+                      }
+                    >
+                      Download
+                    </button>
+                  ) : null}
                   {!selectedArtefact.qualityLabels.includes("human_reviewed") ? (
                     <button
                       type="button"

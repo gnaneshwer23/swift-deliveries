@@ -868,8 +868,10 @@ export const exportSupervisedFullArchive = createServerFn({ method: "POST" })
       const { service } = await serviceFor();
       const mission = await service.get(workspace.id, data.id);
       if (!mission) throw new Error("Mission not found in this workspace.");
-      if (!mission.artefact) {
-        throw new Error("Prepare the decision pack before downloading the full archive.");
+      if (!mission.artefact && !mission.delivery && !mission.exportBody) {
+        throw new Error(
+          "Nothing is ready to archive yet. Prepare the decision pack, or wait until a delivery stage saves a document.",
+        );
       }
       const { buildFullArchiveZip } = await import("@/lib/pilot-mission/executive-pack");
       const { delivery, records } = await buildSourcesFor(context.supabase, workspace.id, mission);
