@@ -55,6 +55,7 @@ import { Route as AuthenticatedCommandCapabilitiesRouteImport } from './routes/_
 import { Route as AuthenticatedCommandPilotRequestsRouteImport } from './routes/_authenticated/command.pilot-requests'
 import { Route as AuthenticatedCommandPortfolioRouteImport } from './routes/_authenticated/command.portfolio'
 import { Route as AuthenticatedCommandProjectsRouteImport } from './routes/_authenticated/command.projects'
+import { Route as AuthenticatedCommandSampleRouteImport } from './routes/_authenticated/command.sample'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings.index'
 import { Route as AuthenticatedSettingsBillingRouteImport } from './routes/_authenticated/settings.billing'
 import { Route as AuthenticatedSettingsProfileRouteImport } from './routes/_authenticated/settings.profile'
@@ -326,6 +327,12 @@ const AuthenticatedCommandProjectsRoute =
     path: '/projects',
     getParentRoute: () => AuthenticatedCommandRoute,
   } as any)
+const AuthenticatedCommandSampleRoute =
+  AuthenticatedCommandSampleRouteImport.update({
+    id: '/sample',
+    path: '/sample',
+    getParentRoute: () => AuthenticatedCommandRoute,
+  } as any)
 const AuthenticatedSettingsIndexRoute =
   AuthenticatedSettingsIndexRouteImport.update({
     id: '/',
@@ -573,6 +580,7 @@ export interface FileRoutesByFullPath {
   '/command/pilot-requests': typeof AuthenticatedCommandPilotRequestsRoute
   '/command/portfolio': typeof AuthenticatedCommandPortfolioRoute
   '/command/projects': typeof AuthenticatedCommandProjectsRoute
+  '/command/sample': typeof AuthenticatedCommandSampleRoute
   '/settings/billing': typeof AuthenticatedSettingsBillingRoute
   '/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
@@ -651,6 +659,7 @@ export interface FileRoutesByTo {
   '/command/pilot-requests': typeof AuthenticatedCommandPilotRequestsRoute
   '/command/portfolio': typeof AuthenticatedCommandPortfolioRoute
   '/command/projects': typeof AuthenticatedCommandProjectsRoute
+  '/command/sample': typeof AuthenticatedCommandSampleRoute
   '/settings/billing': typeof AuthenticatedSettingsBillingRoute
   '/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
@@ -733,6 +742,7 @@ export interface FileRoutesById {
   '/_authenticated/command/pilot-requests': typeof AuthenticatedCommandPilotRequestsRoute
   '/_authenticated/command/portfolio': typeof AuthenticatedCommandPortfolioRoute
   '/_authenticated/command/projects': typeof AuthenticatedCommandProjectsRoute
+  '/_authenticated/command/sample': typeof AuthenticatedCommandSampleRoute
   '/_authenticated/settings/billing': typeof AuthenticatedSettingsBillingRoute
   '/_authenticated/settings/profile': typeof AuthenticatedSettingsProfileRoute
   '/_authenticated/workspace/applications': typeof AuthenticatedWorkspaceApplicationsRoute
@@ -816,6 +826,7 @@ export interface FileRouteTypes {
     | '/command/pilot-requests'
     | '/command/portfolio'
     | '/command/projects'
+    | '/command/sample'
     | '/settings/billing'
     | '/settings/profile'
     | '/workspace/applications'
@@ -894,6 +905,7 @@ export interface FileRouteTypes {
     | '/command/pilot-requests'
     | '/command/portfolio'
     | '/command/projects'
+    | '/command/sample'
     | '/settings/billing'
     | '/settings/profile'
     | '/workspace/applications'
@@ -975,6 +987,7 @@ export interface FileRouteTypes {
     | '/_authenticated/command/pilot-requests'
     | '/_authenticated/command/portfolio'
     | '/_authenticated/command/projects'
+    | '/_authenticated/command/sample'
     | '/_authenticated/settings/billing'
     | '/_authenticated/settings/profile'
     | '/_authenticated/workspace/applications'
@@ -1380,6 +1393,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCommandProjectsRouteImport
       parentRoute: typeof AuthenticatedCommandRoute
     }
+    '/_authenticated/command/sample': {
+      id: '/_authenticated/command/sample'
+      path: '/sample'
+      fullPath: '/command/sample'
+      preLoaderRoute: typeof AuthenticatedCommandSampleRouteImport
+      parentRoute: typeof AuthenticatedCommandRoute
+    }
     '/_authenticated/settings/': {
       id: '/_authenticated/settings/'
       path: '/'
@@ -1626,6 +1646,7 @@ interface AuthenticatedCommandRouteChildren {
   AuthenticatedCommandPilotRequestsRoute: typeof AuthenticatedCommandPilotRequestsRoute
   AuthenticatedCommandPortfolioRoute: typeof AuthenticatedCommandPortfolioRoute
   AuthenticatedCommandProjectsRoute: typeof AuthenticatedCommandProjectsRoute
+  AuthenticatedCommandSampleRoute: typeof AuthenticatedCommandSampleRoute
   AuthenticatedCommandIndexRoute: typeof AuthenticatedCommandIndexRoute
   AuthenticatedCommandMissionsMissionIdRoute: typeof AuthenticatedCommandMissionsMissionIdRoute
   AuthenticatedCommandProductMemoryProjectIdRoute: typeof AuthenticatedCommandProductMemoryProjectIdRoute
@@ -1640,6 +1661,7 @@ const AuthenticatedCommandRouteChildren: AuthenticatedCommandRouteChildren = {
     AuthenticatedCommandPilotRequestsRoute,
   AuthenticatedCommandPortfolioRoute: AuthenticatedCommandPortfolioRoute,
   AuthenticatedCommandProjectsRoute: AuthenticatedCommandProjectsRoute,
+  AuthenticatedCommandSampleRoute: AuthenticatedCommandSampleRoute,
   AuthenticatedCommandIndexRoute: AuthenticatedCommandIndexRoute,
   AuthenticatedCommandMissionsMissionIdRoute:
     AuthenticatedCommandMissionsMissionIdRoute,

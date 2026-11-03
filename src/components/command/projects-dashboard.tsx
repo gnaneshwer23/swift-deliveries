@@ -483,6 +483,9 @@ export function ProjectsDashboard({
                       <b>Start a project</b>
                       <span className="prj-muted">One or two lines is enough</span>
                     </button>
+                    <Link to="/command/sample" className="prj-sample-link">
+                      Or look around a sample project first
+                    </Link>
                   </li>
                 ) : null}
               </ul>
@@ -554,9 +557,14 @@ export function ProjectsDashboard({
           ) : (
             <div className="prj-empty">
               {showStart ? (
-                <button type="button" className="prj-btn prj-btn-primary" onClick={onNewProject}>
-                  Start your first project
-                </button>
+                <>
+                  <button type="button" className="prj-btn prj-btn-primary" onClick={onNewProject}>
+                    Start your first project
+                  </button>
+                  <Link to="/command/sample" className="prj-sample-link">
+                    Or look around a sample project first
+                  </Link>
+                </>
               ) : (
                 <p>Nothing here.</p>
               )}
