@@ -1,0 +1,182 @@
+/* Settings → Audit log, on the Settings shell (settings.css, profile.css). */
+.al-attention h3 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--psi-text);
+}
+.al-attention-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 24px;
+}
+.al-attention ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.al-attention li {
+  display: grid;
+  gap: 2px;
+  font-size: 14px;
+}
+.al-attention li span {
+  font-size: 12px;
+  color: var(--psi-muted);
+}
+.al-events-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.al-count {
+  margin-left: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--psi-muted);
+}
+.al-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.al-filters select,
+.al-filters input {
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--psi-border);
+  border-radius: var(--psi-radius-control);
+  background: var(--psi-surface);
+  color: var(--psi-ink);
+  font: inherit;
+  font-size: 13px;
+}
+.al-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 10px;
+  border: 1px solid var(--psi-border);
+  border-radius: var(--psi-radius-control);
+  background: var(--psi-surface);
+  color: var(--psi-muted);
+}
+.al-search input {
+  border: 0;
+  padding-left: 0;
+  min-width: 160px;
+}
+.al-search input:focus {
+  outline: none;
+}
+.al-search:focus-within {
+  outline: 2px solid var(--psi-indigo);
+  outline-offset: 2px;
+}
+.al-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--psi-muted);
+}
+.al-notes {
+  margin: 0;
+  padding: 10px 12px 10px 28px;
+  border-radius: var(--psi-radius-control);
+  background: var(--psi-warning-soft);
+  color: var(--psi-warning);
+  font-size: 13px;
+}
+.al-table td {
+  vertical-align: top;
+}
+.al-project {
+  max-width: 220px;
+  white-space: normal !important;
+}
+.al-what {
+  white-space: normal !important;
+  min-width: 220px;
+}
+.al-cat {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--psi-muted);
+}
+.st-main .pf-card,
+.st-main .pf-card > * {
+  min-width: 0;
+}
+@media (max-width: 760px) {
+  .al-attention-grid {
+    grid-template-columns: 1fr;
+  }
+  .al-search,
+  .al-filters label:not(.al-date),
+  .al-filters select {
+    flex: 1 1 100%;
+  }
+  .al-search input {
+    min-width: 0;
+    width: 100%;
+  }
+  .al-filters label:not(.al-date) select {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+  .al-date {
+    flex: 1 1 calc(50% - 4px);
+    min-width: 0;
+  }
+  .al-date input {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+  }
+  /* One event per block: time and who on a line, then the project, then what happened. */
+  .al-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .al-table,
+  .al-table tbody {
+    display: block;
+  }
+  .al-table tr {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 8px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--psi-border);
+  }
+  .al-table td {
+    padding: 0;
+    border: 0;
+    white-space: normal;
+  }
+  .al-table td:nth-child(1) {
+    font-size: 12px;
+    color: var(--psi-muted);
+  }
+  .al-table td:nth-child(2),
+  .al-table td:nth-child(4) {
+    grid-column: 1 / -1;
+    max-width: none;
+    min-width: 0;
+  }
+  .al-table td:nth-child(3) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
