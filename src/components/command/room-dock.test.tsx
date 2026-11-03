@@ -109,6 +109,25 @@ describe("RoomDockView", () => {
     expect(panel).toContain("Ask Aria");
     expect(panel).toContain("Charter note");
   });
+
+  it("keeps the project package on the minimized chip once the case is complete", () => {
+    const html = clean(
+      renderToString(
+        <RoomDockView
+          minimized
+          onMinimizedChange={() => undefined}
+          waiting={false}
+          statusLabel="Completed"
+          actions={actions.slice(0, 1)}
+          pinDownloads
+          downloads={<button type="button">Download project package</button>}
+        />,
+      ),
+    );
+    const panelAt = html.indexOf('id="room-dock-panel"');
+    expect(html.slice(0, panelAt)).toContain("Download project package");
+    expect(html).toContain('data-stuck="false"');
+  });
 });
 
 describe("RoomDock", () => {

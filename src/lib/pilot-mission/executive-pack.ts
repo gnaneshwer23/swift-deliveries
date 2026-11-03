@@ -5,6 +5,7 @@ import { buildContinuationPlanMarkdown } from "./continuation-plan";
 import { buildDecisionRoadmapMarkdown } from "./decision-roadmap";
 import { buildDecisionPackMarkdown, honestyFor } from "./decision-pack";
 import { buildPmBriefingPack } from "./pm-briefing-pack";
+import { buildProjectPackageMarkdown, type PackageEntry } from "./project-package";
 import {
   buildSupervisedZip,
   type CompanyRecordSources,
@@ -80,23 +81,34 @@ export function buildFullArchiveZip(
   const base = buildSupervisedZip(mission, exportedAt, delivery, records);
   const root = base.filename.replace(/\.zip$/, "");
   const files = [...base.files];
+  const entries: PackageEntry[] = base.inventory.map((item) => ({
+    path: item.path,
+    note: item.note,
+    bundled: item.bundled,
+  }));
+  const add = (path: string, content: string, note: string) => {
+    files.push({ path: `${root}/${path}`, content });
+    entries.push({ path, note, bundled: true });
+  };
 
-  files.push({
-    path: `${root}/executive/executive-pack.md`,
-    content: buildExecutivePackMarkdown(mission),
-  });
+  add(
+    "executive/executive-pack.md",
+    buildExecutivePackMarkdown(mission),
+    "Short executive pack from the saved record",
+  );
 
   if (mission.continuationPlan) {
-    files.push({
-      path: `${root}/continuation/continuation-plan.md`,
-      content: buildContinuationPlanMarkdown(mission, mission.continuationPlan),
-    });
+    add(
+      "continuation/continuation-plan.md",
+      buildContinuationPlanMarkdown(mission, mission.continuationPlan),
+      "Continuation plan on the record",
+    );
   }
 
   if (mission.caseRoom) {
-    files.push({
-      path: `${root}/case-room/folders.json`,
-      content: JSON.stringify(
+    add(
+      "case-room/folders.json",
+      JSON.stringify(
         {
           folders: mission.caseRoom.folders,
           handoffs: mission.caseRoom.handoffs,
@@ -113,8 +125,19 @@ export function buildFullArchiveZip(
         null,
         2,
       ),
-    });
+      "Case room folders, handoffs and artefacts on the record",
+    );
   }
+
+  files.unshift({
+    path: `${root}/PROJECT.md`,
+    content: buildProjectPackageMarkdown({
+      mission,
+      exportedAt,
+      entries,
+      deliveryReadable: !mission.delivery || delivery !== null,
+    }),
+  });
 
   // Refresh manifest note
   files.push({
@@ -124,6 +147,7 @@ export function buildFullArchiveZip(
         kind: "full-project-archive",
         missionId: mission.id,
         exportedAt,
+        projectIndex: "PROJECT.md",
         levels: ["executive", "full"],
         exclusions: [
           "Linked web page bodies",

@@ -40,6 +40,8 @@ export function RoomDockView({
   actions,
   peekId,
   downloads,
+  pinDownloads = false,
+  stuck = false,
 }: {
   minimized: boolean;
   onMinimizedChange: (minimized: boolean) => void;
@@ -48,6 +50,10 @@ export function RoomDockView({
   actions: RoomDockAction[];
   peekId?: string;
   downloads?: ReactNode;
+  /** Keep the package download on the chip after minimize, once the case is complete. */
+  pinDownloads?: boolean;
+  /** The next human step is expectation, the pack, or the export. */
+  stuck?: boolean;
 }) {
   const peek = peekId ? actions.find((action) => action.id === peekId) : undefined;
   // The next-step button stays after the download note, as it did before minimize existed.
@@ -57,11 +63,15 @@ export function RoomDockView({
     <div
       className="room-dock"
       data-minimized={minimized ? "true" : "false"}
+      data-stuck={stuck ? "true" : "false"}
       role="region"
       aria-label="What happens next"
     >
       <div className="room-dock-in">
         <span className={waiting ? "room-waiting" : "room-working"}>{statusLabel}</span>
+        {minimized && pinDownloads && downloads ? (
+          <div className="room-dock-peek">{downloads}</div>
+        ) : null}
         {minimized && peek ? (
           <div className="room-dock-peek">
             <DockButton action={peek} />
@@ -105,6 +115,8 @@ export function RoomDock({
   actions: RoomDockAction[];
   peekId?: string;
   downloads?: ReactNode;
+  pinDownloads?: boolean;
+  stuck?: boolean;
 }) {
   const [minimized, setMinimized] = useState(false);
 

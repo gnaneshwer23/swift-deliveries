@@ -85,6 +85,14 @@ export function CheckpointCard({
           </dd>
         </div>
       </dl>
+      {c.packSaved && c.completionMeaning ? (
+        <p className="ckp-complete">
+          <b>{c.caseCompleted ? "Completed." : "Decision pack saved."}</b> {c.completionMeaning}{" "}
+          {c.nextHumanGate
+            ? `Next human gate: ${c.nextHumanGate}.`
+            : "No further human gate is required to finish this case."}
+        </p>
+      ) : null}
     </section>
   );
 }
