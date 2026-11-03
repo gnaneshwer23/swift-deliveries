@@ -278,6 +278,31 @@ a.prj-name:hover {
   color: var(--sx-danger);
 }
 
+/* Quiet for a week or more: an outline badge, so it reads as a nudge, not a status. */
+.prj-stalled {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: fit-content;
+  padding: 0.15rem 0.55rem;
+  border: 1px dashed var(--sx-waiting);
+  border-radius: var(--sx-radius-pill);
+  font-size: var(--sx-text-xs);
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--sx-waiting);
+}
+.prj-stalled::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+td .prj-stalled {
+  margin-left: 0.4rem;
+}
+
 .prj-roles {
   display: inline-flex;
   align-items: center;
