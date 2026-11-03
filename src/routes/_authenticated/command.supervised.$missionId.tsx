@@ -44,6 +44,7 @@ import {
   setSupervisedResearchMode,
 } from "@/lib/pilot-mission.functions";
 import { decisionPackFilenames } from "@/lib/pilot-mission/decision-pack";
+import { nextGateLabel } from "@/lib/pilot-mission/next-gate";
 import { createZip } from "@/lib/programme/zip";
 import { type ResearchMode } from "@/lib/pilot-mission/research-mode";
 import { type DecisionChoice, type SupervisedMission } from "@/lib/pilot-mission/types";
@@ -389,7 +390,10 @@ function SupervisedMissionPage() {
           // A deep link into the record (e.g. #mission-evidence) opens it.
           open={Boolean(recordSection) || undefined}
         >
-          <summary>Open the full project record</summary>
+          <summary>
+            Open the full project record
+            <span className="room-record-next">Next step: {nextGateLabel(next)}</span>
+          </summary>
           <MissionInspectionStrip mission={mission} missionId={missionId} />
 
           <InvestigationStageShell

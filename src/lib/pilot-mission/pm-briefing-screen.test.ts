@@ -121,6 +121,25 @@ describe("buildPmBriefingScreen", () => {
     );
     expect(model.ready).toBe(false);
     expect(model.cards).toHaveLength(0);
+    expect(model.headline).toBe("Briefing not ready");
+  });
+
+  it("names the compare gate when research is saved and options are not", () => {
+    const model = buildPmBriefingScreen(
+      baseMission({
+        stage: "evidence",
+        proposal: null,
+        approval: null,
+        researchPassCompletedAt: "2026-11-03T21:54:00Z",
+        researchProvider: "tavily",
+      }),
+    );
+    expect(model.ready).toBe(false);
+    expect(model.headline).toBe("Let the team compare options");
+    expect(model.ariaMessage.toLowerCase()).not.toContain("briefing not ready");
+    expect(model.ariaMessage.toLowerCase()).not.toContain("proceed to a bounded test");
+    expect(model.ariaMessage).toContain("Research pass is on the record");
+    expect(model.cards).toHaveLength(0);
   });
 
   it("builds Aria message and structured cards from the case record", () => {

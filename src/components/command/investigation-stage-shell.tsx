@@ -16,6 +16,7 @@ import {
   type InvestigationStagePhase,
 } from "@/lib/pilot-mission/investigation-stage-phase";
 import { buildMissionDashboard } from "@/lib/pilot-mission/mission-dashboard-screen";
+import { nextGateLabel } from "@/lib/pilot-mission/next-gate";
 import { nextRequiredAction, type SupervisedMission } from "@/lib/pilot-mission/types";
 import "@/styles/studio-system.css";
 
@@ -58,7 +59,7 @@ export function InvestigationStageShell(props: ShellProps) {
         <h1>{mission.brief.question}</h1>
         <p className="sx-case-meta">
           <span>
-            Next: <strong>{next.title}</strong>
+            Next: <strong>{nextGateLabel(next)}</strong>
           </span>
           {waiting ? (
             <span className="sx-status" data-state="waiting">

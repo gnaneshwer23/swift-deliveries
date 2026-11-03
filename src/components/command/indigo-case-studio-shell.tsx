@@ -4,8 +4,8 @@ import { IndigoCaseRail } from "@/components/command/indigo-case-rail";
 import { ProjectBriefingBanner } from "@/components/command/project-briefing-banner";
 import { CommunicationKitPanel } from "@/components/command/communication-kit-panel";
 import { DecisionsEvidenceCenter } from "@/components/command/decisions-evidence-center";
-import type { SupervisedMission } from "@/lib/pilot-mission/types";
-import { nextRequiredAction } from "@/lib/pilot-mission/types";
+import { nextGateLabel } from "@/lib/pilot-mission/next-gate";
+import { nextRequiredAction, type SupervisedMission } from "@/lib/pilot-mission/types";
 
 function tabFromHash(hash: string): IndigoCaseTabId {
   const id = hash.replace(/^#/, "") as IndigoCaseTabId;
@@ -44,7 +44,7 @@ export function IndigoCaseStudioShell({
         <p className="ps-exec-section-kicker">Project case</p>
         <h1 className="ps-indigo-case-title">{mission.brief.question}</h1>
         <p className="ps-exec-meta">
-          Stage {mission.stage} · Next gate: {next.title}
+          Stage {mission.stage} · Next gate: {nextGateLabel(next)}
         </p>
         <IndigoCaseTabs missionId={missionId} activeId={activeTab} />
       </header>

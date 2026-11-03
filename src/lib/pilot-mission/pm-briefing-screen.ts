@@ -2,9 +2,10 @@
  * Screen 6 — view-model for the PM briefing layout.
  * All copy is derived from the mission pack / brief — never a hardcoded product story.
  */
+import { nextGateLabel } from "./next-gate";
 import { buildPmBrief } from "./pm-brief";
 import { buildPmBriefingPack } from "./pm-briefing-pack";
-import type { OptionDraft, SupervisedMission } from "./types";
+import { nextRequiredAction, type OptionDraft, type SupervisedMission } from "./types";
 
 export type PmBriefingActionIntent =
   "approve_and_build" | "discuss" | "more_research" | "change_direction";
@@ -103,11 +104,14 @@ function optionCards(mission: SupervisedMission): PmBriefingOptionCard[] {
 export function buildPmBriefingScreen(mission: SupervisedMission): PmBriefingScreenModel {
   const pack = buildPmBriefingPack(mission);
   if (!pack.ready) {
+    const next = nextRequiredAction(mission);
+    const compareGate = next.id === "compare" || next.id === "evidence" || next.id === "retry";
     return {
       ready: false,
-      headline: "Briefing not ready",
-      ariaMessage:
-        "The briefing opens when options or a decision are on the mission record — not before investigation work completes.",
+      headline: compareGate ? nextGateLabel(next) : "Briefing not ready",
+      ariaMessage: compareGate
+        ? `${next.detail} Directions and a recommendation are not on the record until that step is saved.`
+        : "The briefing opens when options or a decision are on the mission record — not before investigation work completes.",
       honesty: pack.honesty,
       roleDisclosure: pack.roleDisclosure,
       cards: [],
