@@ -39,8 +39,10 @@ const USAGE_WARN = 0.8;
 
 function statusFor(mission: SupervisedMission, next: Next, now: number): CheckpointStatus {
   if (mission.stage === "cancelled") return "stopped";
-  // Once the package is out, recording what happened afterwards is optional.
-  if (mission.stage === "exported" || next.id === "follow_up_approved") return "done";
+  // Once the package is out, recording what happened afterwards is optional; approving a
+  // proposed follow-up is not, so that gate still waits on you.
+  if (next.id === "follow_up_approved") return "done";
+  if (mission.stage === "exported" && next.id !== "approve_follow_up") return "done";
   // A worker holds the step until its lease ends; only then is recovering it yours to do.
   const leaseUntil = mission.job.leaseUntil ? Date.parse(mission.job.leaseUntil) : NaN;
   if (mission.job.status === "leased" && (!Number.isFinite(leaseUntil) || leaseUntil > now)) {

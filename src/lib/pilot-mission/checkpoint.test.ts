@@ -167,6 +167,13 @@ describe("project checkpoint", () => {
     expect(c.done).toEqual(["Describe your idea", "Approve the plan"]);
   });
 
+  it("still waits on you when an exported project has a follow-up to approve", () => {
+    const gate = { id: "approve_follow_up", title: "Approve the follow-up mission", detail: "" };
+    expect(buildCheckpoint(mission({ stage: "exported" }), gate, NOW).status).toBe(
+      "waiting_on_you",
+    );
+  });
+
   it("is done once the package is out, and stopped when cancelled", () => {
     const obs = { id: "observation", title: "Supply the observed result", detail: "" };
     expect(buildCheckpoint(mission({ stage: "exported" }), obs, NOW).status).toBe("done");
