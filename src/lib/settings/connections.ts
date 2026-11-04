@@ -30,7 +30,7 @@ export type ConnectionsInput = {
   research: { configured: boolean; provider: string | null };
   voice: { enabled: boolean; problem: string | null };
   payments: { ok: true; environment: "live" | "sandbox" } | { ok: false; message: string };
-  /** The checkout flag is on, so an error from `payments` is a real problem rather than "off". */
+  /** The checkout flag. When it is on and the kill switch is off, an error from `payments` is a real problem rather than "off". */
   checkoutFlagOn: boolean;
   /** The payments kill switch: a deliberate pause, not a fault. */
   paymentsKillSwitchOn: boolean;
