@@ -1,0 +1,199 @@
+/* Sample project — palette B tokens from psi-foundation.css. */
+.sp {
+  display: grid;
+  gap: 20px;
+  max-width: 1120px;
+  margin: 0 auto;
+  color: var(--psi-ink, #1c1b19);
+}
+.sp-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px dashed var(--psi-warning, #665503);
+  border-radius: var(--psi-radius-control, 10px);
+  background: var(--psi-warning-soft, #fcf6df);
+  color: var(--psi-warning, #665503);
+  font-size: 14px;
+  font-weight: 600;
+}
+.sp-notice svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.sp-eyebrow {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--psi-indigo, #985808);
+}
+.sp-head h1 {
+  margin: 0;
+  font-size: clamp(1.25rem, 2.6vw, 1.6rem);
+  font-weight: 650;
+  line-height: 1.25;
+}
+.sp-sub {
+  margin: 8px 0 0;
+  max-width: 68ch;
+  color: var(--psi-text, #55514a);
+}
+.sp-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.sp-card {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 18px 20px;
+  border: 1px solid var(--psi-border, #e6dfd4);
+  border-radius: var(--psi-radius-panel, 18px);
+  background: var(--psi-surface, #fffdf9);
+}
+.sp-card h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 650;
+}
+.sp-muted {
+  margin: 0;
+  font-size: 13px;
+  color: var(--psi-muted, #6f6961);
+}
+.sp-steps,
+.sp-evidence,
+.sp-options,
+.sp-feed {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.sp-steps li {
+  display: flex;
+  gap: 10px;
+  color: var(--psi-muted, #6f6961);
+}
+.sp-steps li[data-done="true"] {
+  color: var(--psi-ink, #1c1b19);
+}
+.sp-steps li[data-done="true"] svg {
+  color: var(--psi-success, #376e4c);
+}
+.sp-steps svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.sp-steps div,
+.sp-options li {
+  display: grid;
+  gap: 2px;
+  font-size: 14px;
+}
+.sp-steps span,
+.sp-options span {
+  font-size: 13px;
+  color: var(--psi-muted, #6f6961);
+}
+.sp-evidence li {
+  display: grid;
+  gap: 4px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--psi-border, #e6dfd4);
+}
+.sp-evidence li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.sp-evidence p {
+  margin: 0;
+  font-size: 14px;
+}
+.sp-tag {
+  width: fit-content;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--psi-success-soft, #ecf5ef);
+  color: var(--psi-success, #376e4c);
+}
+.sp-tag[data-kind="assumption"] {
+  background: var(--psi-lavender, #f3ece2);
+  color: var(--psi-text, #55514a);
+}
+.sp-tag[data-kind="gap"] {
+  background: var(--psi-warning-soft, #fcf6df);
+  color: var(--psi-warning, #665503);
+}
+.sp-options li {
+  padding: 10px 12px;
+  border: 1px solid var(--psi-border, #e6dfd4);
+  border-radius: var(--psi-radius-control, 10px);
+}
+.sp-options li[data-recommended="true"] {
+  border-color: var(--psi-indigo, #985808);
+}
+.sp-options em {
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--psi-indigo, #985808);
+}
+.sp-feed li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  font-size: 14px;
+}
+.sp-feed time {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--psi-muted, #6f6961);
+}
+.sp-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px;
+  border-radius: var(--psi-radius-panel, 18px);
+  background: var(--psi-ink, #1c1b19);
+  color: var(--psi-canvas, #f6f3ee);
+}
+.sp-cta div {
+  display: grid;
+  gap: 2px;
+}
+.sp-cta span {
+  font-size: 13px;
+  color: #d8d1c6;
+}
+.sp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: var(--psi-radius-control, 10px);
+  background: var(--psi-canvas, #f6f3ee);
+  color: var(--psi-ink, #1c1b19);
+  font-weight: 600;
+  text-decoration: none;
+}
+.sp-btn:hover {
+  background: #fff;
+}
+@media (max-width: 860px) {
+  .sp-grid {
+    grid-template-columns: 1fr;
+  }
+}
