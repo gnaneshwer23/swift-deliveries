@@ -51,7 +51,8 @@ export function allowedModel(
       "Model mode is on but DXSI_MODEL_ALLOWLIST is empty. List the allowed model IDs.",
     );
   if (!allowed.includes(model))
-    throw new Error(`Model "${model}" from ${setting} is not in DXSI_MODEL_ALLOWLIST.`);
+    // Names the setting, never its value: this message is shown in the app.
+    throw new Error(`The model in ${setting} is not in DXSI_MODEL_ALLOWLIST.`);
   return model;
 }
 
@@ -101,7 +102,7 @@ export function resolveProvider(
   return null;
 }
 
-export function modelModeStatus(): {
+export function modelModeStatus(env: Record<string, string | undefined> = process.env): {
   enabled: boolean;
   provider: string | null;
   model: string | null;
@@ -109,8 +110,13 @@ export function modelModeStatus(): {
   problem: string | null;
 } {
   try {
-    const p = resolveProvider();
-    return { enabled: !!p, provider: p?.name ?? null, model: p?.model ?? null, problem: null };
+    const p = resolveProvider(env);
+    // On, but nothing to call: the worker stops model steps rather than simulating them.
+    const problem =
+      !p && env["DXSI_MODEL_ENABLED"] === "true"
+        ? "Model mode is on but no provider credentials are set."
+        : null;
+    return { enabled: !!p, provider: p?.name ?? null, model: p?.model ?? null, problem };
   } catch (error) {
     return { enabled: false, provider: null, model: null, problem: (error as Error).message };
   }
