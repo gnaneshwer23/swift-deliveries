@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { deriveQuietStatus } from "./quiet-status";
+import { nextRequiredAction } from "./types";
 import { buildPilotTeamPlan } from "./specialist-team";
 import type { SupervisedMission } from "./types";
 
@@ -81,5 +82,37 @@ describe("deriveQuietStatus", () => {
     const s = deriveQuietStatus(base({ stage: "cancelled" }));
     expect(s.presence).toBe("idle");
     expect(s.label).toBe("Closed");
+  });
+
+  it("says completed once the decision pack is exported", () => {
+    const mission = base({
+      stage: "exported",
+      exportBody: "# Pack\n",
+      team: approvedTeam,
+      artefact: { title: "Pack", decisionBrief: "d", experimentBrief: "e", provenance: "p" },
+    });
+    expect(nextRequiredAction(mission).id).toBe("completed");
+    const s = deriveQuietStatus(mission);
+    expect(s.presence).toBe("idle");
+    expect(s.label).toBe("Completed");
+    expect(s.nextId).toBe("completed");
+  });
+
+  it("does not call a case complete when the pack was never exported", () => {
+    const mission = base({ stage: "exported", exportBody: null, team: approvedTeam });
+    expect(nextRequiredAction(mission).id).toBe("export");
+  });
+
+  it("still waits on a proposed follow-up after the pack exists", () => {
+    const mission = base({
+      stage: "exported",
+      exportBody: "# Pack\n",
+      team: approvedTeam,
+      expectation: { hypothesis: "Owners log waste daily." } as SupervisedMission["expectation"],
+      observation: { id: "obs" } as SupervisedMission["observation"],
+      reviews: [{ version: 1 }] as unknown as SupervisedMission["reviews"],
+      followUp: { status: "proposed", missionId: null } as SupervisedMission["followUp"],
+    });
+    expect(nextRequiredAction(mission).id).toBe("approve_follow_up");
   });
 });

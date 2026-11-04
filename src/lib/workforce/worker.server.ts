@@ -345,6 +345,9 @@ export async function advanceMission(input: {
   workerId: string;
 }): Promise<AdvanceResult> {
   const { workspaceId, missionId, actor, workerId } = input;
+  // A worker that died mid-step leaves the task "running" until the lease ends.
+  // Recover that before reading, or the mission stays midway with no next step.
+  await transaction((_db, query) => recoverExpiredLeases(query));
   const reader = await adminDb();
   const bundle = await loadMissionBundle(reader, workspaceId, missionId);
   const { mission, tasks } = bundle;

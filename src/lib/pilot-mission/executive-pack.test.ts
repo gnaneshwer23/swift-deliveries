@@ -103,6 +103,14 @@ describe("PT-3 executive pack + full archive", () => {
       files.find((f) => f.path.endsWith("archive-manifest.json"))!.content,
     );
     expect(manifest.kind).toBe("full-project-archive");
+    expect(manifest.projectIndex).toBe("PROJECT.md");
+    const index = files.find((f) => f.path.endsWith("/PROJECT.md"))!.content;
+    expect(index).toContain("# Project package");
+    expect(index).toContain("](decision-pack/decision-pack.md)");
+    expect(index).toContain("Not produced on this case");
+    expect(index).toContain("PRD and success metrics");
+    expect(index).toContain("Project charter");
+    expect(index).not.toMatch(/\bVerified\b/);
     expect(manifest.exclusions).toEqual(
       expect.arrayContaining(["API keys and credentials", "Hidden model chain-of-thought"]),
     );

@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { buildMissionInspection } from "@/lib/pilot-mission/mission-inspection";
+import { nextGateLabel } from "@/lib/pilot-mission/next-gate";
 import type { SupervisedMission } from "@/lib/pilot-mission/types";
 
 /** On-mission compact pointer to the gate and inspect record (reload-safe). */
@@ -19,7 +20,7 @@ export function MissionInspectionStrip({
     <aside className="ps-mission-inbox-strip" aria-label="Attention on this case">
       {inspection.decisionAttention ? (
         <p className="text-sm">
-          <strong>{inspection.decisionAttention.title}</strong>
+          <strong>{nextGateLabel(inspection.decisionAttention)}</strong>
           <span className="cc-muted"> — {inspection.decisionAttention.detail}</span>
         </p>
       ) : null}

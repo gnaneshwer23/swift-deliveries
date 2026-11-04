@@ -860,7 +860,7 @@ export const exportSupervisedFullArchive = createServerFn({ method: "POST" })
       context,
       data,
     }): Promise<{
-      files: Array<{ path: string; content: string }>;
+      files: Array<{ path: string; content: string; encoding?: "utf8" | "base64" }>;
       title: string;
       filename: string;
     }> => {
@@ -868,12 +868,42 @@ export const exportSupervisedFullArchive = createServerFn({ method: "POST" })
       const { service } = await serviceFor();
       const mission = await service.get(workspace.id, data.id);
       if (!mission) throw new Error("Mission not found in this workspace.");
-      if (!mission.artefact) {
-        throw new Error("Prepare the decision pack before downloading the full archive.");
+      if (!mission.artefact && !mission.delivery && !mission.exportBody) {
+        throw new Error(
+          "Nothing is ready to archive yet. Prepare the decision pack, or wait until a delivery stage saves a document.",
+        );
       }
       const { buildFullArchiveZip } = await import("@/lib/pilot-mission/executive-pack");
+      const { renderOfficePackage, mergeOfficePackage } =
+        await import("@/lib/pilot-mission/office-package");
       const { delivery, records } = await buildSourcesFor(context.supabase, workspace.id, mission);
-      return buildFullArchiveZip(mission, new Date().toISOString(), delivery, records);
+      const archive = buildFullArchiveZip(mission, new Date().toISOString(), delivery, records);
+      const office = await renderOfficePackage(mission);
+      return mergeOfficePackage(archive, office);
+    },
+  );
+
+/** Editable DOCX set and 20-slide PPTX from the case, before a full Markdown archive exists. */
+export const exportSupervisedOfficePackage = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(
+    async ({
+      context,
+      data,
+    }): Promise<{
+      files: Array<{ path: string; content: string; encoding?: "utf8" | "base64" }>;
+      title: string;
+      filename: string;
+    }> => {
+      const workspace = await workspaceFor(context.supabase, context.userId);
+      const { service } = await serviceFor();
+      const mission = await service.get(workspace.id, data.id);
+      if (!mission) throw new Error("Mission not found in this workspace.");
+      const { renderOfficePackage, buildOfficeOnlyArchive } =
+        await import("@/lib/pilot-mission/office-package");
+      const office = await renderOfficePackage(mission);
+      return buildOfficeOnlyArchive(mission, office, new Date().toISOString());
     },
   );
 

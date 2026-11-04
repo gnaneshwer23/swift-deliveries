@@ -19,6 +19,7 @@ import { INTENT_LABELS } from "@/lib/workforce/types";
 import { WORKFORCE_INTENTS } from "@/lib/marketing/workforce-summary";
 import { intentForGoal } from "@/lib/onboarding-intent";
 import { OnboardingStage } from "@/components/onboarding/onboarding-stage";
+import { SetupOfferChoice } from "@/components/onboarding/setup-offer-choice";
 import { useQueryClient } from "@tanstack/react-query";
 import { auth, type AppUser as User } from "@/lib/auth/client";
 import { getMyProfileDraft, saveMyProfile, saveMyProfileDraft } from "@/lib/profile.functions";
@@ -39,8 +40,13 @@ export const Route = createFileRoute("/_authenticated/onboarding")({
 
 import { claimStoredPilotRequest } from "@/lib/pilot/continuity";
 import { getMyPilotContinuity } from "@/lib/pilot/enquiry.functions";
-import { PILOT_PLAN_LABELS, type PilotPlan } from "@/lib/pilot/model";
-import { hasPilotBrief, loadPilotBrief, loadPilotClaim, loadPilotPlan } from "@/lib/pilot/storage";
+import {
+  applyOnboardingOfferChoice,
+  canOpenWorkspace,
+  type OnboardingOfferChoice,
+  type StoredOfferRequest,
+} from "@/lib/onboarding-offer";
+import { hasPilotBrief, loadPilotBrief, loadPilotClaim } from "@/lib/pilot/storage";
 import {
   contextComplete,
   directionComplete,
@@ -130,8 +136,8 @@ export function OnboardingForm({
   const [saveNote, setSaveNote] = useState("");
   const [storageAvailable, setStorageAvailable] = useState(true);
   const [prepared, setPrepared] = useState<ProductBrief | null>(null);
-  const [chosenPlan, setChosenPlan] = useState<PilotPlan | null>(null);
-  const [requestReference, setRequestReference] = useState<string | null>(null);
+  const [offerChoice, setOfferChoice] = useState<OnboardingOfferChoice | null>(null);
+  const [storedRequest, setStoredRequest] = useState<StoredOfferRequest | null>(null);
   const inFlight = useRef(false);
   const heading = useRef<HTMLHeadingElement>(null);
   const draftKey = `dx-product-setup:${user.id}`;
@@ -146,8 +152,8 @@ export function OnboardingForm({
     }
     const brief = loadPilotBrief();
     setPrepared(brief);
-    setChosenPlan(loadPilotPlan());
-    setRequestReference(loadPilotClaim()?.reference ?? null);
+    const claim = loadPilotClaim();
+    if (claim) setStoredRequest({ reference: claim.reference, plan: claim.plan });
     const account = Promise.allSettled([
       existing ? Promise.resolve(null) : getMyProfileDraft(),
       existing
@@ -173,8 +179,7 @@ export function OnboardingForm({
         setFields(restored.fields);
         setStep(restored.step);
         if (continuity) {
-          setChosenPlan(continuity.plan);
-          setRequestReference(continuity.reference);
+          setStoredRequest({ reference: continuity.reference, plan: continuity.plan });
           setPrepared((current) => current ?? continuity.brief);
         }
         const failed = !results || results.some((r) => r.status === "rejected");
@@ -220,10 +225,15 @@ export function OnboardingForm({
     setError(null);
   };
   const firstAction = firstActionFor(fields);
-  const canNext = step === 0 ? contextComplete(fields) : directionComplete(fields);
+  const canContinue =
+    step === 0
+      ? contextComplete(fields)
+      : step === 1
+        ? directionComplete(fields)
+        : contextComplete(fields) && directionComplete(fields) && canOpenWorkspace(offerChoice);
 
   async function advance() {
-    if (inFlight.current || !ready || !canNext) return;
+    if (inFlight.current || !ready || !canContinue) return;
     inFlight.current = true;
     setSaving(true);
     setError(null);
@@ -250,11 +260,16 @@ export function OnboardingForm({
       setError("Complete your context and product direction before continuing.");
       return;
     }
+    if (!offerChoice) {
+      setError("Choose an offer or the demo workspace before opening. Nothing is selected.");
+      return;
+    }
     inFlight.current = true;
     setSaving(true);
     setError(null);
     try {
       const profile = await saveMyProfile({ data: fields });
+      applyOnboardingOfferChoice(offerChoice);
       void auth.updateName(profile.fullName).catch(() => null);
       queryClient.setQueryData(myProfileQuery.queryKey, profile);
       try {
@@ -335,7 +350,7 @@ export function OnboardingForm({
                     ? "This sets how much your team explains."
                     : step === 1
                       ? "Pick a goal. Add a question if you have one."
-                      : "Check your answers. Opening saves them; nothing runs yet."}
+                      : "Check your answers and choose an offer. Opening saves them; nothing runs and no payment starts."}
                 </p>
                 <fieldset disabled={saving} className="setup-fields">
                   {step === 0 && (
@@ -480,13 +495,14 @@ export function OnboardingForm({
                           </li>
                         </ul>
                       </aside>
-                      {chosenPlan && (
-                        <p className="setup-help">
-                          Chosen offer: {PILOT_PLAN_LABELS[chosenPlan]}
-                          {requestReference ? ` · Request ${requestReference}` : ""}. Account setup
-                          does not activate a paid pilot.
-                        </p>
-                      )}
+                      <SetupOfferChoice
+                        value={offerChoice}
+                        onChange={(choice) => {
+                          setOfferChoice(choice);
+                          setError(null);
+                        }}
+                        storedRequest={storedRequest}
+                      />
                     </>
                   )}
                 </fieldset>
@@ -523,7 +539,8 @@ export function OnboardingForm({
                   <button
                     type="submit"
                     className="ob-btn ob-btn-primary"
-                    disabled={saving || !canNext}
+                    disabled={saving || !canContinue}
+                    aria-describedby={step === 2 ? "setup-offer-status" : undefined}
                   >
                     {saving ? "Saving…" : step === 2 ? "Open my workspace" : "Continue"}
                     <ArrowRight size={15} />

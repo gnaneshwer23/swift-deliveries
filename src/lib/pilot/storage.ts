@@ -80,6 +80,10 @@ export function loadPilotPlan(): PilotPlan | null {
   return isPilotPlan(value) ? value : null;
 }
 
+export function clearPilotPlan(): void {
+  remove(PLAN_KEY);
+}
+
 export function savePilotClaim(claim: PilotClaim): void {
   write(CLAIM_KEY, JSON.stringify(claim));
 }

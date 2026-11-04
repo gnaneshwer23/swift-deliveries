@@ -112,7 +112,12 @@ function output(artefact: WfArtefact | undefined): BuildOutput | null {
 function stageStatus(task: WfMissionTask, bundle: MissionBundle): BuildStageStatus {
   if (task.status === "completed") return "done";
   if (task.status === "skipped") return "skipped";
-  if (task.status === "running") return "working";
+  if (task.status === "running") {
+    const until = task.leaseUntil ? Date.parse(task.leaseUntil) : NaN;
+    // The worker that claimed this step is gone. Treat it as ready to run again.
+    if (Number.isFinite(until) && until <= Date.now()) return "next";
+    return "working";
+  }
   if (task.status === "failed") return task.gate ? "sent_back" : "failed";
   const byKey = new Map(bundle.tasks.map((t) => [t.key, t.status]));
   // Same rule as the scheduler and the gate decision: a skipped prerequisite is satisfied.
@@ -216,6 +221,9 @@ export function buildDeliveryRoom(bundle: MissionBundle): DeliveryRoom {
     updates,
     gate,
     canAdvance:
-      state === "running" && anyRunnable && !anyRunning && ["queued", "running"].includes(status),
+      state === "running" &&
+      anyRunnable &&
+      !anyRunning &&
+      ["queued", "running", "blocked"].includes(status),
   };
 }

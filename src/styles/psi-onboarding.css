@@ -705,6 +705,57 @@
   font-size: 11px;
   color: var(--psi-muted);
 }
+.setup-offers {
+  margin-top: 18px;
+}
+.setup-offers .ob-label {
+  margin-top: 0;
+}
+.setup-offer-list {
+  display: grid;
+  gap: 8px;
+}
+.setup-offer-list button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 12px;
+  row-gap: 2px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--psi-border);
+  background: var(--psi-surface);
+  color: var(--psi-text);
+  text-align: left;
+  cursor: pointer;
+}
+.setup-offer-list button:hover {
+  border-color: #e3bfa0;
+}
+.setup-offer-list button[aria-checked="true"] {
+  border-color: var(--psi-indigo);
+  background: var(--psi-indigo-soft);
+  box-shadow: 0 0 0 3px var(--psi-indigo-soft);
+}
+.setup-offer-list strong {
+  color: var(--psi-ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+.setup-offer-list .setup-offer-price {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--psi-ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+.setup-offer-list small {
+  grid-column: 1 / -1;
+  color: var(--psi-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
 @media (max-width: 640px) {
   .setup-flow {
     grid-template-columns: repeat(2, minmax(0, 1fr));
