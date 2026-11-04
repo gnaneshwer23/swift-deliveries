@@ -107,9 +107,10 @@ export function buildConnections(
     {
       id: "payments",
       name: "Card payments",
+      // A kill-switch pause is deliberate, so it reads as off, not as a fault.
       status: payments.ok
         ? "on"
-        : input.checkoutFlagOn || input.paymentsKillSwitchOn
+        : input.checkoutFlagOn && !input.paymentsKillSwitchOn
           ? "problem"
           : "off",
       label: payments.ok
@@ -128,7 +129,7 @@ export function buildConnections(
           : "Checkout runs in Stripe's test mode; no real card is charged."
         : "Checkout is not available, so nothing can be charged.",
       problem:
-        payments.ok || !(input.checkoutFlagOn || input.paymentsKillSwitchOn)
+        payments.ok || input.paymentsKillSwitchOn || !input.checkoutFlagOn
           ? null
           : payments.message,
     },

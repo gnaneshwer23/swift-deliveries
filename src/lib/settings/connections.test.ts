@@ -60,7 +60,8 @@ describe("buildConnections", () => {
       payments: { ok: false, message: "Payments are paused (kill switch)." },
     })["payments"];
     expect(paused?.label).toBe("Paused");
-    expect(paused?.problem).toMatch(/kill switch/);
+    expect(paused?.status).toBe("off");
+    expect(paused?.problem).toBeNull();
     const broken = byId({
       ...off,
       checkoutFlagOn: true,
