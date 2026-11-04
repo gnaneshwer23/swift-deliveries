@@ -6,7 +6,10 @@
  * derived from the mission document, and a beat appears only once its record exists.
  */
 import { buildEstimate, type BuildEstimate } from "./build-estimate";
+import { evidenceLabel, type EvidenceLabel } from "./case-log";
 import { deliveryEligibility } from "./delivery";
+import { nextGateLabel } from "./next-gate";
+import { projectEnding, type ProjectEnding } from "./project-ending";
 import { buildPmBrief } from "./pm-brief";
 import { buildPmBriefingPack } from "./pm-briefing-pack";
 import { buildPmBriefingScreen } from "./pm-briefing-screen";
@@ -25,14 +28,26 @@ export const ROOM_STREAMS: Array<{ id: RoomStreamId; label: string }> = [
   { id: "direction", label: "Direction" },
 ];
 
-/** One recorded event shown on the live stage. `kind` drives its colour and wording. */
+/** Honest badge for a map event. Evidence uses the register labels; activity is not evidence. */
+export type RoomBadge = EvidenceLabel | "Team note";
+
+/** One recorded event shown on the live stage. `kind` drives its colour; `badge` is the label. */
 export type RoomFinding = {
   id: string;
+  /** Short line for the map chip. */
   text: string;
+  /** Full saved statement. The chip never invents a shorter claim. */
+  statement: string;
   stream: RoomStreamId;
   kind: "finding" | "gap" | "assumption" | "activity";
+  badge: RoomBadge;
+  /** http(s) source, when the record has one. */
   source: string | null;
+  /** Non-URL source text already stored on the evidence row. */
+  sourceNote: string | null;
   at: string | null;
+  /** Anchor into the full record for evidence rows. Team notes have none. */
+  recordHref: "#mission-evidence" | null;
 };
 
 export type RoomAgent = {
@@ -56,19 +71,28 @@ export type RoomBeat =
   | {
       kind: "investigation";
       live: boolean;
+      /** Supplied evidence rows. */
       findings: number;
+      assumptions: number;
+      /** Gap rows — unverified, not interviews. */
       gaps: number;
       provider: string | null;
     }
   | {
       kind: "briefing";
+      /** False until a comparison or a decision is saved. The card then names the next gate. */
+      ready: boolean;
       headline: string;
+      /** Small label above the main line: next step, or draft vs recorded recommendation. */
+      kicker: string;
       verdict: string;
       summary: string;
+      /** Same gate label as the checkpoint and the dock. */
+      nextLabel: string;
       facts: RoomFact[];
       detail: RoomFact[];
       options: Array<{ id: string; title: string; detail: string }>;
-      /** What building the first version would take, with its method. */
+      /** What building the first version would take, with its method. Hidden until the briefing is ready. */
       estimate: BuildEstimate;
       howMade: string;
     }
@@ -99,6 +123,8 @@ export type RoomModel = {
   next: RoomNext;
   /** Begin delivery is offered once a decision exists and delivery may start. */
   deliveryAvailable: boolean;
+  /** What finished means, and the next human gate, from the saved record. */
+  ending: ProjectEnding;
   stage: { idea: string; findings: RoomFinding[]; agents: RoomAgent[] };
 };
 
@@ -151,26 +177,37 @@ export function roomFindings(mission: SupervisedMission): RoomFinding[] {
           : "finding";
     const fallback: RoomStreamId =
       kind === "gap" ? "risks" : kind === "assumption" ? "opportunities" : "direction";
+    const source = item.source.trim();
+    const url = /^https?:\/\//i.test(source);
     return {
       id: `e:${item.id}`,
       text: clip(item.statement),
+      statement: item.statement,
       stream: kind === "gap" ? "risks" : streamFor(item.statement, fallback),
       kind,
-      source: /^https?:\/\//i.test(item.source) ? item.source : null,
+      badge: evidenceLabel(item),
+      source: url ? source : null,
+      sourceNote: source && !url ? source : null,
       at: null,
+      recordHref: "#mission-evidence",
     };
   });
   const fromActivity: RoomFinding[] = mission.activity
     .filter((event) => event.actor !== "human" && event.summary.trim())
     .map((event) => {
       const who = names.get(event.actor)?.name;
+      const statement = who ? `${who}: ${event.summary}` : event.summary;
       return {
         id: `a:${event.id}`,
-        text: clip(who ? `${who}: ${event.summary}` : event.summary),
+        text: clip(statement),
+        statement,
         stream: streamFor(event.summary, "direction"),
         kind: "activity" as const,
+        badge: "Team note" as const,
         source: null,
+        sourceNote: null,
         at: event.at,
+        recordHref: null,
       };
     });
   // Activity first (chronological), then findings: the order the team produced them.
@@ -203,30 +240,55 @@ function roomAgents(mission: SupervisedMission, live: boolean): RoomAgent[] {
     }));
 }
 
-const NEXT_COPY: Record<string, { label: string; panel: RoomNext["panel"]; you: boolean }> = {
-  approve_plan: { label: "Review and approve the plan", panel: "plan", you: true },
-  evidence: { label: "Let the team compare options", panel: "work", you: true },
-  compare: { label: "Let the team compare options", panel: "work", you: true },
-  retry: { label: "Try the comparison again", panel: "work", you: true },
-  recover: { label: "Check on the comparison", panel: "work", you: false },
-  research_queued: { label: "The team is investigating", panel: "none", you: false },
-  decide: { label: "Make your decision", panel: "decide", you: true },
-  expectation: { label: "Say what you expect to happen", panel: "work", you: true },
-  artefact: { label: "Prepare the decision pack", panel: "work", you: true },
-  export: { label: "Download the decision pack", panel: "work", you: true },
-  cancelled: { label: "This case is cancelled", panel: "none", you: false },
+const NEXT_PANEL: Record<string, { panel: RoomNext["panel"]; you: boolean }> = {
+  approve_plan: { panel: "plan", you: true },
+  evidence: { panel: "work", you: true },
+  compare: { panel: "work", you: true },
+  retry: { panel: "work", you: true },
+  recover: { panel: "work", you: false },
+  research_queued: { panel: "none", you: false },
+  decide: { panel: "decide", you: true },
+  expectation: { panel: "work", you: true },
+  artefact: { panel: "work", you: true },
+  export: { panel: "work", you: true },
+  completed: { panel: "none", you: false },
+  follow_up_approved: { panel: "none", you: false },
+  cancelled: { panel: "none", you: false },
 };
 
 function roomNext(mission: SupervisedMission): RoomNext {
   const next = nextRequiredAction(mission);
-  const copy = NEXT_COPY[next.id] ?? { label: next.title, panel: "work" as const, you: true };
+  const copy = NEXT_PANEL[next.id] ?? { panel: "work" as const, you: true };
   return {
     id: next.id,
-    label: copy.label,
+    label: nextGateLabel(next),
     detail: next.detail,
     waitingOnYou: copy.you,
     panel: copy.panel,
   };
+}
+
+function listPhrase(parts: string[]): string {
+  if (parts.length <= 1) return parts[0] ?? "";
+  if (parts.length === 2) return `${parts[0]} and ${parts[1]}`;
+  return `${parts.slice(0, -1).join(", ")} and ${parts[parts.length - 1]}`;
+}
+
+/** Aria's line above the map: counts from the register, then the same next gate as the dock. */
+export function roomInvestigationLine(
+  beat: { findings: number; assumptions: number; gaps: number; provider: string | null },
+  next: { label: string; waitingOnYou: boolean },
+): string {
+  const parts: string[] = [];
+  if (beat.findings) parts.push(`${beat.findings} finding${beat.findings === 1 ? "" : "s"}`);
+  if (beat.assumptions)
+    parts.push(`${beat.assumptions} assumption${beat.assumptions === 1 ? "" : "s"}`);
+  if (beat.gaps) parts.push(`${beat.gaps} unverified`);
+  const recorded = parts.length
+    ? `The team recorded ${listPhrase(parts)}${beat.provider ? ` with ${beat.provider} web research` : ""}.`
+    : "No evidence rows are on the register yet.";
+  if (!next.waitingOnYou) return recorded;
+  return `${recorded} Next: ${next.label}.`;
 }
 
 function dateLabel(iso: string): string {
@@ -239,6 +301,7 @@ function dateLabel(iso: string): string {
 export function buildRoomModel(mission: SupervisedMission): RoomModel {
   const live = isLive(mission);
   const findings = roomFindings(mission);
+  const next = roomNext(mission);
   const beats: RoomBeat[] = [];
 
   const context: RoomFact[] = [];
@@ -273,35 +336,64 @@ export function buildRoomModel(mission: SupervisedMission): RoomModel {
       kind: "investigation",
       live,
       findings: mission.evidence.filter((e) => e.classification === "supplied").length,
-      gaps: mission.evidence.filter((e) => e.classification !== "supplied").length,
+      assumptions: mission.evidence.filter((e) => e.classification === "assumption").length,
+      gaps: mission.evidence.filter((e) => e.classification === "gap").length,
       provider: mission.researchProvider,
     });
   }
 
-  const screen = buildPmBriefingScreen(mission);
   if (planApproved && !live && (mission.proposal || mission.researchPassCompletedAt)) {
     const pack = buildPmBriefingPack(mission);
-    const cardValue = (pattern: RegExp) =>
-      screen.cards.find((card) => pattern.test(card.title))?.body ?? null;
-    const facts: RoomFact[] = [
-      { label: "Who it’s for", value: cardValue(/users/i) },
-      { label: "Competitors", value: cardValue(/competitor/i) },
-      { label: "Recommended next step", value: cardValue(/recommended|first version/i) },
-      { label: "Investigation time and cost", value: cardValue(/timeline|cost/i) },
-    ]
-      .filter((f): f is RoomFact => Boolean(f.value))
-      .map((f) => ({ label: f.label, value: firstSentence(f.value) }));
-    beats.push({
-      kind: "briefing",
-      headline: screen.headline,
-      verdict: pack.recommendationLabel ?? "No recommendation yet",
-      summary: firstSentence(pack.recommendationRationale || pack.smallestNextStep),
-      facts,
-      detail: screen.cards.map((card) => ({ label: card.title, value: card.body })),
-      options: screen.options.map((o) => ({ id: o.id, title: o.title, detail: plain(o.detail) })),
-      estimate: buildEstimate(mission.brief),
-      howMade: `${screen.roleDisclosure} ${screen.honesty}`.trim(),
-    });
+    const estimate = buildEstimate(mission.brief);
+    const awaitingComparison =
+      next.id === "compare" ||
+      next.id === "evidence" ||
+      next.id === "retry" ||
+      next.id === "recover";
+    if (!pack.ready || awaitingComparison) {
+      beats.push({
+        kind: "briefing",
+        ready: false,
+        headline: "Research is on the record",
+        kicker: "Next step",
+        verdict: next.label,
+        summary: next.detail,
+        nextLabel: next.label,
+        facts: [],
+        detail: [],
+        options: [],
+        estimate,
+        howMade: pack.ready
+          ? "A comparison draft may already be saved. This card still follows the open gate, not a build. You decide after that; nothing external runs from this step."
+          : "Directions and a recommendation are drafted when this comparison is saved. They are not on the record yet. You decide after that; nothing external runs from this step.",
+      });
+    } else {
+      const screen = buildPmBriefingScreen(mission);
+      const cardValue = (pattern: RegExp) =>
+        screen.cards.find((card) => pattern.test(card.title))?.body ?? null;
+      const facts: RoomFact[] = [
+        { label: "Who it’s for", value: cardValue(/users/i) },
+        { label: "Competitors", value: cardValue(/competitor/i) },
+        { label: "Recommended next step", value: cardValue(/recommended|first version/i) },
+        { label: "Investigation time and cost", value: cardValue(/timeline|cost/i) },
+      ]
+        .filter((f): f is RoomFact => Boolean(f.value))
+        .map((f) => ({ label: f.label, value: firstSentence(f.value) }));
+      beats.push({
+        kind: "briefing",
+        ready: true,
+        headline: screen.headline,
+        kicker: mission.approval ? "Recommendation on record" : "Draft recommendation",
+        verdict: pack.recommendationLabel ?? "No recommendation yet",
+        summary: firstSentence(pack.recommendationRationale || pack.smallestNextStep),
+        nextLabel: next.label,
+        facts,
+        detail: screen.cards.map((card) => ({ label: card.title, value: card.body })),
+        options: screen.options.map((o) => ({ id: o.id, title: o.title, detail: plain(o.detail) })),
+        estimate,
+        howMade: `${screen.roleDisclosure} ${screen.honesty}`.trim(),
+      });
+    }
   }
 
   if (mission.approval) {
@@ -339,13 +431,15 @@ export function buildRoomModel(mission: SupervisedMission): RoomModel {
     beats.push({ kind: "package", ready: Boolean(mission.exportBody) });
   }
 
-  const next = roomNext(mission);
+  const ending = projectEnding(mission);
   const working = live || next.id === "recover";
   const line = working
     ? "The team is working. Aria will come back with an update."
-    : next.id === "cancelled"
-      ? "This case is cancelled."
-      : `Aria needs you: ${next.label.toLowerCase()}.`;
+    : ending.completed
+      ? "Completed. Your documents are saved and ready to download."
+      : next.id === "cancelled"
+        ? "This case is cancelled."
+        : `Aria needs you: ${next.label.toLowerCase()}.`;
 
   return {
     title: mission.brief.question,
@@ -354,6 +448,7 @@ export function buildRoomModel(mission: SupervisedMission): RoomModel {
     next,
     deliveryAvailable:
       Boolean(mission.approval) && !mission.delivery && deliveryEligibility(mission).ok,
+    ending,
     stage: { idea: mission.brief.question, findings, agents: roomAgents(mission, live) },
   };
 }

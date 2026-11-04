@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { CaseChatPanel } from "@/components/command/case-chat-panel";
+import { ChiefOfStaffChat } from "@/components/command/chief-of-staff-chat";
 import {
   buildMissionDashboard,
   MISSION_DASH_NAV,
@@ -71,6 +72,9 @@ export function MissionDashboardScreen({
         <div className="mdash-top-actions">
           <button type="button" className="mdash-btn" onClick={() => go("pm-chat")}>
             PM chat
+          </button>
+          <button type="button" className="mdash-btn" onClick={() => go("chief-of-staff")}>
+            Chief of Staff
           </button>
           {model.downloadAvailable ? (
             <button
@@ -270,6 +274,19 @@ export function MissionDashboardScreen({
                   "Summarise active agents and outputs.",
                   "What should I approve next?",
                 ]}
+              />
+            </div>
+          ) : null}
+
+          {nav === "chief-of-staff" ? (
+            <div className="mdash-section" id="mdash-chief-of-staff">
+              <h3>Chief of Staff</h3>
+              <p className="mdash-disclosure" style={{ marginBottom: "0.75rem" }}>
+                Programme answers and the document package. Aria remains the product-manager chat.
+              </p>
+              <ChiefOfStaffChat
+                mission={mission}
+                deliveryMissionId={mission.delivery?.wfMissionId ?? null}
               />
             </div>
           ) : null}

@@ -52,6 +52,21 @@ describe("buildDeliveryRoom", () => {
     expect(room.stages.find((s) => s.key === "gate_scope")?.status).toBe("waiting_on_you");
   });
 
+  it("treats an expired running lease as ready to continue", () => {
+    const stuck = bundle({ charter: "running" });
+    const charter = stuck.tasks.find((t) => t.key === "charter");
+    if (!charter) throw new Error("charter missing");
+    charter.leaseUntil = "2000-01-01T00:00:00Z";
+    const expired = buildDeliveryRoom(stuck);
+    expect(expired.stages.find((s) => s.key === "charter")?.status).toBe("next");
+    expect(expired.canAdvance).toBe(true);
+
+    charter.leaseUntil = "2999-01-01T00:00:00Z";
+    const live = buildDeliveryRoom(stuck);
+    expect(live.stages.find((s) => s.key === "charter")?.status).toBe("working");
+    expect(live.canAdvance).toBe(false);
+  });
+
   it("asks for the next step only when work is runnable and nothing is running", () => {
     expect(buildDeliveryRoom(bundle({ charter: "completed" })).canAdvance).toBe(true);
     expect(

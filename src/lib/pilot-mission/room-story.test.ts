@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildRoomModel, roomFindings } from "./room-story";
+import { buildRoomModel, roomFindings, roomInvestigationLine } from "./room-story";
 import { baseMission } from "./test-fixtures";
 
 const proposal = {
@@ -66,6 +66,81 @@ describe("buildRoomModel", () => {
       "Waste log",
       "POS sync",
     ]);
+    expect(briefing).toMatchObject({
+      ready: true,
+      kicker: "Recommendation on record",
+      nextLabel: "Download the decision pack",
+    });
+  });
+
+  it("keeps the compare gate when research is saved and no recommendation is on record", () => {
+    const model = buildRoomModel(
+      baseMission({
+        stage: "evidence",
+        approval: null,
+        continuationPlan: null,
+        proposal: null,
+        researchPassQueuedAt: "2026-11-03T21:00:00Z",
+        researchPassCompletedAt: "2026-11-03T21:54:00Z",
+        researchProvider: "tavily",
+        researchGaps: [],
+      }),
+    );
+    const briefing = model.beats.find((b) => b.kind === "briefing");
+    expect(model.next).toMatchObject({
+      id: "compare",
+      label: "Let the team compare options",
+      waitingOnYou: true,
+      panel: "work",
+    });
+    expect(model.status.line).toBe("Aria needs you: let the team compare options.");
+    expect(briefing).toMatchObject({
+      ready: false,
+      headline: "Research is on the record",
+      kicker: "Next step",
+      nextLabel: "Let the team compare options",
+      verdict: "Let the team compare options",
+      options: [],
+    });
+    expect(briefing && "summary" in briefing ? briefing.summary : "").toContain(
+      "Research pass is on the record",
+    );
+    expect(JSON.stringify(briefing)).not.toMatch(/briefing not ready|proceed to a bounded test/i);
+    const investigation = model.beats.find((b) => b.kind === "investigation");
+    expect(investigation && "findings" in investigation ? investigation : null).toMatchObject({
+      findings: 1,
+      assumptions: 0,
+      gaps: 1,
+      provider: "tavily",
+    });
+    expect(
+      investigation && "findings" in investigation
+        ? roomInvestigationLine(investigation, model.next)
+        : "",
+    ).toBe(
+      "The team recorded 1 finding and 1 unverified with tavily web research. Next: Let the team compare options.",
+    );
+  });
+
+  it("says the case is complete once the pack is exported", () => {
+    const model = buildRoomModel(
+      baseMission({
+        proposal,
+        stage: "exported",
+        exportBody: "# Pack\n",
+      }),
+    );
+    expect(model.next).toMatchObject({
+      id: "completed",
+      waitingOnYou: false,
+      panel: "none",
+    });
+    expect(model.status.line).toBe("Completed. Your documents are saved and ready to download.");
+    expect(model.status.working).toBe(false);
+    expect(model.ending.completed).toBe(true);
+    expect(model.ending.nextHumanGate).toBeNull();
+    expect(model.ending.meaning).toMatch(/decision pack is saved/);
+    expect(model.ending.howItEnds).not.toMatch(/\d+ minute/);
   });
 
   it("offers Begin delivery only before delivery has started", () => {
@@ -111,7 +186,18 @@ describe("roomFindings", () => {
   it("puts open questions under risks and keeps only real links as sources", () => {
     const findings = roomFindings(baseMission());
     const gap = findings.find((f) => f.id === "e:e2");
-    expect(gap).toMatchObject({ kind: "gap", stream: "risks", source: null });
-    expect(findings.find((f) => f.id === "e:e1")?.source).toBe("https://example.com/e1");
+    expect(gap).toMatchObject({
+      kind: "gap",
+      stream: "risks",
+      badge: "Unverified",
+      source: null,
+      recordHref: "#mission-evidence",
+    });
+    const cited = findings.find((f) => f.id === "e:e1");
+    expect(cited).toMatchObject({
+      badge: "Source-backed",
+      source: "https://example.com/e1",
+      statement: "Surplus tracking is the first pain.",
+    });
   });
 });

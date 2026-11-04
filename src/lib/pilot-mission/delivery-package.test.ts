@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { buildDeliveryPackage } from "./delivery-package";
+import { buildDeliveryPackage, stageDownloadFile } from "./delivery-package";
+import { buildDeliveryRoom } from "./delivery-room";
 import { deliveryBundle } from "./delivery-test-fixtures";
 import { buildSupervisedZip, supervisedZipInventory } from "./supervised-zip";
 import { baseMission } from "./test-fixtures";
@@ -24,6 +25,16 @@ describe("buildDeliveryPackage", () => {
     expect(charter).toContain("Quality: Agent-reviewed");
     expect(pack.manifest.outputs.map((o) => o.simulated)).toEqual([true, false]);
     expect(pack.manifest.progress).toEqual({ done: 2, total: 14 });
+  });
+
+  it("offers a file only for a stage that saved a document", () => {
+    const room = buildDeliveryRoom(deliveryBundle(done, { artefactsFor: ["charter"] }));
+    const charter = room.stages.find((stage) => stage.key === "charter");
+    const research = room.stages.find((stage) => stage.key === "research");
+    expect(charter && stageDownloadFile(charter, room.stages.indexOf(charter))?.content).toContain(
+      "Simulated draft",
+    );
+    expect(research ? stageDownloadFile(research, room.stages.indexOf(research)) : null).toBeNull();
   });
 
   it("records who did what and the owner's gate decisions in the team record", () => {

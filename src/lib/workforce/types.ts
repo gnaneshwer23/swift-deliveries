@@ -236,6 +236,11 @@ export type WfMissionTask = {
   produces: WfArtefact["kind"] | null;
   startedAt: string | null;
   completedAt: string | null;
+  /**
+   * When the current worker's lease ends. A running task past this time is free
+   * to be recovered; omitted on reads that predate the column.
+   */
+  leaseUntil?: string | null;
   createdAt: string;
   updatedAt: string;
 };

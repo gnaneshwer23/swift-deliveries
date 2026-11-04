@@ -7,6 +7,7 @@
 import { CheckCircle2, Circle, CircleAlert } from "lucide-react";
 import { useMemo } from "react";
 import { buildCheckpoint, CHECKPOINT_STATUS_LABEL } from "@/lib/pilot-mission/checkpoint";
+import { nextGateLabel } from "@/lib/pilot-mission/next-gate";
 import type { SupervisedMission } from "@/lib/pilot-mission/types";
 import { useNow } from "@/hooks/use-now";
 import "@/styles/checkpoint.css";
@@ -44,7 +45,7 @@ export function CheckpointCard({
         <div>
           <dt>Next step</dt>
           <dd>
-            <b>{c.next.title}</b>
+            <b>{nextGateLabel(next)}</b>
             {c.next.detail ? <span className="ckp-detail">{c.next.detail}</span> : null}
           </dd>
         </div>
@@ -84,6 +85,14 @@ export function CheckpointCard({
           </dd>
         </div>
       </dl>
+      {c.packSaved && c.completionMeaning ? (
+        <p className="ckp-complete">
+          <b>{c.caseCompleted ? "Completed." : "Decision pack saved."}</b> {c.completionMeaning}{" "}
+          {c.nextHumanGate
+            ? `Next human gate: ${c.nextHumanGate}.`
+            : "No further human gate is required to finish this case."}
+        </p>
+      ) : null}
     </section>
   );
 }

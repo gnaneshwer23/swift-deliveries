@@ -1,6 +1,7 @@
 import { useMemo, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { downloadProducedDocument } from "@/lib/download-file";
 import { supervisedZipInventory } from "@/lib/pilot-mission/supervised-zip";
 import type { SupervisedMission } from "@/lib/pilot-mission/types";
 import { missionBundleQuery } from "@/lib/workforce-queries";
@@ -89,7 +90,7 @@ function DeliveryArtefacts({ mission }: { mission: SupervisedMission }) {
           params={{ missionId: delivery.wfMissionId }}
           className="sx-btn"
         >
-          Review and download in the delivery mission
+          Open the delivery mission
         </Link>
       </div>
       {bundle.isPending ? (
@@ -115,6 +116,26 @@ function DeliveryArtefacts({ mission }: { mission: SupervisedMission }) {
                   ? a.qualityLabels.map((q) => QUALITY_LABEL_DISPLAY[q]).join(" · ")
                   : "No quality checks recorded yet"}
               </p>
+              {a.content.trim() ? (
+                <button
+                  type="button"
+                  className="sx-btn"
+                  onClick={() =>
+                    downloadProducedDocument({
+                      title: a.title,
+                      content: a.content,
+                      format: a.contentFormat,
+                      production: artefactProduction(a)?.label ?? "Production not recorded",
+                    })
+                  }
+                >
+                  Download
+                </button>
+              ) : (
+                <p className="sx-detail">
+                  Saved without document text, so there is nothing to download.
+                </p>
+              )}
             </li>
           ))}
         </ul>

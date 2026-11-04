@@ -42,8 +42,11 @@ export function deriveQuietStatus(mission: SupervisedMission): QuietStatus {
   if (next.id === "cancelled") {
     return { presence: "idle", label: "Closed", detail: next.title, nextId: next.id };
   }
+  if (next.id === "completed") {
+    return { presence: "idle", label: "Completed", detail: next.detail, nextId: next.id };
+  }
   if (next.id === "follow_up_approved") {
-    return { presence: "idle", label: "Idle", detail: next.title, nextId: next.id };
+    return { presence: "idle", label: "Completed", detail: next.detail, nextId: next.id };
   }
 
   if (NEEDS_YOU.has(next.id)) {

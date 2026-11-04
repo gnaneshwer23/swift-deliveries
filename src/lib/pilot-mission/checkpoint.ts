@@ -6,6 +6,7 @@
  */
 import { buildActivityFeed, feedTime, HIDDEN_KINDS } from "./activity-feed";
 import { projectSteps } from "./first-project";
+import { projectEnding } from "./project-ending";
 import { missionNeedsAttention } from "./portfolio";
 import { lastActivityAt, quietDaysSince, STALL_DAYS } from "./projects-dashboard";
 import { studioInboxFields } from "./studio-inbox";
@@ -18,7 +19,7 @@ export const CHECKPOINT_STATUS_LABEL: Record<CheckpointStatus, string> = {
   waiting_on_you: "Waiting on you",
   team_working: "Team working",
   in_progress: "In progress",
-  done: "Done",
+  done: "Completed",
   stopped: "Stopped",
 };
 
@@ -30,6 +31,12 @@ export type Checkpoint = {
   next: { title: string; detail: string };
   done: string[];
   checks: string[];
+  /** True once the decision pack export is stored. */
+  packSaved: boolean;
+  /** The case is complete: the pack is saved and no follow-up approval is waiting. */
+  caseCompleted: boolean;
+  completionMeaning: string | null;
+  nextHumanGate: string | null;
 };
 
 type Next = { id: string; title: string; detail: string };
@@ -105,6 +112,7 @@ export function buildCheckpoint(
     );
   }
 
+  const ending = projectEnding(mission, next);
   return {
     status,
     quietDays,
@@ -117,5 +125,9 @@ export function buildCheckpoint(
     next: { title: next.title, detail: next.detail },
     done: steps.filter((s) => s.done).map((s) => s.label),
     checks,
+    packSaved: Boolean(mission.exportBody),
+    caseCompleted: ending.completed,
+    completionMeaning: mission.exportBody ? ending.meaning : null,
+    nextHumanGate: ending.nextHumanGate,
   };
 }

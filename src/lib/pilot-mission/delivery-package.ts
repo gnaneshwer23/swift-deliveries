@@ -68,22 +68,35 @@ function withProvenance(stage: BuildStage): string {
 const PERSONA_NOTE =
   "Agent names (Aria, Scout, Lumen…) are display names for catalogue roles; each file names the real role.";
 
-export function buildDeliveryPackage(bundle: MissionBundle): DeliveryPackage {
-  const room = buildDeliveryRoom(bundle);
+/** One saved stage document, with who made it and how. Null when that stage saved nothing. */
+export function stageDownloadFile(
+  stage: BuildStage,
+  index: number,
+): { path: string; content: string } | null {
+  if (!stage.output?.content.trim()) return null;
+  const path = outputPath(stage, index);
+  if (!path) return null;
+  return { path, content: withProvenance(stage) };
+}
+
+/** Saved stage files, the build summary and the team record. Nothing that was not saved. */
+export function assembleDeliveryDownload(room: ReturnType<typeof buildDeliveryRoom>): {
+  files: DeliveryPackage["files"];
+  outputs: DeliveryPackageOutput[];
+} {
   const paths = room.stages.map((s, i) => outputPath(s, i));
   const files: DeliveryPackage["files"] = [];
   const outputs: DeliveryPackageOutput[] = [];
 
   room.stages.forEach((stage, i) => {
-    const path = paths[i];
-    if (!path || !stage.output) return;
+    const file = stageDownloadFile(stage, i);
+    if (!file || !stage.output) return;
     files.push({
-      path,
-      content: withProvenance(stage),
+      ...file,
       note: `${stage.title} · ${stage.owner} (${stage.role}) · ${stage.output.production}`,
     });
     outputs.push({
-      path,
+      path: file.path,
       stage: stage.title,
       owner: stage.owner,
       role: stage.role,
@@ -140,6 +153,12 @@ ${PERSONA_NOTE} Stages after a gate run only once you approve that gate. Nothing
     content: `# Team record\n\n${PERSONA_NOTE}\n\n${memberLines || "No specialist work recorded yet."}\n\n## Your decisions\n\n${gates || "- No gates on this build."}\n`,
   });
 
+  return { files, outputs };
+}
+
+export function buildDeliveryPackage(bundle: MissionBundle): DeliveryPackage {
+  const room = buildDeliveryRoom(bundle);
+  const { files, outputs } = assembleDeliveryDownload(room);
   return {
     files,
     manifest: {

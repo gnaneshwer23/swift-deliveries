@@ -60,6 +60,9 @@
   gap: 16px;
   margin: 0;
 }
+.ckp-grid > div {
+  min-width: 0;
+}
 .ckp-grid dt {
   margin-bottom: 4px;
   font-size: 12px;
@@ -70,6 +73,7 @@
   margin: 0;
   font-size: 14px;
   line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 .ckp-detail,
 .ckp-note {
@@ -98,6 +102,8 @@
   display: flex;
   align-items: flex-start;
   gap: 6px;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .ckp-list svg {
   flex-shrink: 0;
@@ -116,4 +122,9 @@
   .ckp-grid {
     grid-template-columns: 1fr;
   }
+}
+.ckp-complete {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.45;
 }

@@ -1128,3 +1128,14 @@ td .prj-stalled {
 .prj-feed-empty {
   white-space: normal;
 }
+
+/* A quiet link to the read-only sample project, under "Start a project". */
+.prj-sample-link {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: var(--sx-text-xs);
+  color: var(--sx-accent);
+  text-align: center;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
